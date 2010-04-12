@@ -1,0 +1,22 @@
+.draggable_box {
+	border:1px solid red;
+	cursor:move;
+	padding:5px;
+	
+}
+.box_options {
+	display: block;
+	width: 100%;
+	top: 0px;
+	padding-left:2px;
+	text-align: right;
+}
+.options_text {
+	cursor:pointer;
+	background-color:black;
+	color:white;
+	float:right;
+}
+
+.options_text_selected {
+}
