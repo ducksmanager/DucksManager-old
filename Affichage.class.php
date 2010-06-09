@@ -7,25 +7,35 @@ class Affichage {
 	
 	function onglets($selected,$tab_onglets,$argument,$prefixe,$jump_lines) {
 		
-		echo '<table border="0">';
-		echo '<tr>';
+		echo '<ul class="tabnav">';
 		$cpt=0;
 		$nb_onglets=count($tab_onglets);
 		$largeur_tab=intval(100/$nb_onglets);
 		foreach($tab_onglets as $nom_onglet=>$infos_lien) {
-			if ($jump_lines!=-1&&$cpt++%$jump_lines==0) echo '</tr><tr>';
-			if ($infos_lien[0]==$selected)		
-				echo '<td><span class="raised_sel">';
-			else
-				echo '<td><span class="raised">';
-			echo '<b class="top"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b></b>';
-				echo '<span class="boxcontent"><p><a title="'.$nom_onglet.'" href="'.$prefixe.'&amp;'.$argument.'='.$infos_lien[0].'">'.$infos_lien[1].'</a></p></span>';
-					echo '<b class="bottom"><b class="b4b"></b><b class="b3b"></b><b class="b2b"></b><b class="b1b"></b></b>';
-				echo '</span>
-				  </td>';
-		} 
-		echo '</tr>';
-		echo '</table>';
+                    $contenu_lien_onglet=$nom_onglet;
+                    $pos_slash=strpos($nom_onglet,'/');
+                    if ($pos_slash!==false) {
+                        $pays=substr($nom_onglet,0,$pos_slash);
+                        $image_pays='images/flags/'.$pays.'.png';
+                        $magazine=substr($nom_onglet,$pos_slash+1, strlen($nom_onglet));
+                        $contenu_lien_onglet='<img src="'.$image_pays.'" /><span>'.$magazine.'</span>';
+                    }
+                    //if ($jump_lines!=-1&&$cpt++%$jump_lines==0) echo '</tr><tr>';
+                    echo '<li class="';
+                    if ($infos_lien[1]==L::_('ajouter_magazine'))
+                        echo 'nouveau;';
+                    if ($infos_lien[0]==$selected)
+                        echo 'active;';
+                    echo '"><a title="'.$infos_lien[1].'" href="'.$prefixe.'&amp;'.$argument.'='.$infos_lien[0].'">'.$contenu_lien_onglet.'</a></li>';
+                    /*echo '<b class="top"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b></b>';
+                            echo '<span class="boxcontent"><p><a title="'.$nom_onglet.'" href="'.$prefixe.'&amp;'.$argument.'='.$infos_lien[0].'">'.$infos_lien[1].'</a></p></span>';
+                                    echo '<b class="bottom"><b class="b4b"></b><b class="b3b"></b><b class="b2b"></b><b class="b1b"></b></b>';
+                            echo '</span>
+                              </td>';*/
+		}
+                echo '</ul><br />';
+		//echo '</tr>';
+		//echo '</table>';
 	}
 	function afficher_numeros($liste,$pays,$magazine,$numeros) {
 		
