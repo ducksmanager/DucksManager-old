@@ -11,7 +11,7 @@ require_once('Inducks.class.php');
 
 $d=new Database();
 if (!$d) {
-	echo L::_('probleme_bd');
+	echo PROBLEME_BD;
 	exit(-1);
 }
 /*$_SESSION['user']='nonoox';
@@ -27,7 +27,7 @@ if ($handle) {
 	fclose($handle);
 }
 else {
-	echo L::_('erreur_connexion_inducks');
+	echo ERREUR_CONNEXION_INDUCKS;
 	exit(0);
 }
 $regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
@@ -65,24 +65,24 @@ foreach($counts as $pays=>$magazines) {
 		fclose($handle);
 	}
 	else {
-		echo L::_('erreur_connexion_inducks');
+		echo ERREUR_CONNEXION_INDUCKS;
 	}
 	foreach($magazines as $magazine=>$cpt) {
 		$regex_nb_numeros='#<li><A HREF="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</A>&nbsp;<i>\(([^ ]+) num#';
 		preg_match($regex_nb_numeros,$buffer,$nb);
-			
+
 		array_push($possede_pct,round(100*($cpt/$nb[1])));
 		array_push($total_pct,100-round(100*($cpt/$nb[1])));
-			
+
 		array_push($possede,$cpt);
 		array_push($total,$nb[1]);
-		
+
 		array_push($noms_magazines_courts,utf8_encode($magazine));
 		$noms_magazines[$j]=$liste_magazines[$magazine];
 		$j++;
 	}
 }
-$title = new title(utf8_encode(L::_('possession_numeros')));
+$title = new title(utf8_encode(POSSESSION_NUMEROS));
 $title->set_style( "{font-size: 20px; color: #F24062; font-family:Tuffy; text-align: center;}" );
 
 $bar_stack = new bar_stack();
@@ -94,20 +94,20 @@ $bar_stack_pct->set_colours(array('#FF8000','#04B404'));
 foreach ($possede as $index=>$poss) {
 	$tmp = new bar_stack_value($poss,'#FF8000');
 	$tmp2 = new bar_stack_value(intval($total[$index])-$poss,'#04B404');
-	$tmp->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.L::_('numeros_possedes').' : '.$poss.'<br>'.L::_('total').' : '.intval($total[$index])));
-	$tmp2->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.L::_('numeros_manquants').' : '.($total[$index]-$poss).'<br>'.L::_('total').' : #total#'));
+	$tmp->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.NUMEROS_POSSEDES.' : '.$poss.'<br>'.TOTAL.' : '.intval($total[$index])));
+	$tmp2->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.NUMEROS_MANQUANTS.' : '.($total[$index]-$poss).'<br>'.TOTAL.' : #total#'));
 	$bar_stack->append_stack(array($tmp,$tmp2));
 
 	//$b->set_tooltip('a');
 	//$bar_stack->append_stack(array($poss, intval($total[$index])));
 }
 
-	
+
 foreach ($possede_pct as $index=>$poss) {
 	$tmp = new bar_stack_value($poss,'#FF8000');
 	$tmp2 = new bar_stack_value(intval($total_pct[$index]),'#04B404');
-	$tmp->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.L::_('numeros_possedes').' : #val#%'));
-	$tmp2->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.L::_('numeros_manquants').' : '.(100-$poss).'%'));
+	$tmp->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.NUMEROS_POSSEDES).' : #val#%');
+	$tmp2->set_tooltip($noms_magazines[$index].utf8_encode('<br>'.NUMEROS_MANQUANTS).' : '.(100-$poss).'%');
 	$bar_stack_pct->append_stack(array($tmp,$tmp2));
 }
 
@@ -118,17 +118,17 @@ foreach($total as $index=>$total_mag)
 
 $bar_stack->set_keys(
 array(
-	new bar_stack_key('#FF8000', utf8_encode(L::_('numeros_possedes')), 13 ),
-	new bar_stack_key('#04B404', utf8_encode(L::_('numeros_references')), 13 )
+	new bar_stack_key('#FF8000', utf8_encode(NUMEROS_POSSEDES), 13 ),
+	new bar_stack_key('#04B404', utf8_encode(NUMEROS_REFERENCES), 13 )
 ));
 
-//$bar_stack->set_tooltip('#x_label# : #val# '.utf8_encode(L::_('numeros__graphique')).'<br>'.L::_('total').' : #total# '.utf8_encode(L::_('references')));
+//$bar_stack->set_tooltip('#x_label# : #val# '.utf8_encode(NUMEROS__GRAPHIQUE')).'<br>'.TOTAL.' : #total# '.utf8_encode(REFERENCES);
 
 
 $bar_stack_pct->set_keys(
 array(
-	new bar_stack_key('#FF8000', utf8_encode(L::_('numeros_possedes')), 13 ),
-	new bar_stack_key('#04B404', utf8_encode(L::_('numeros_references')), 13 )
+	new bar_stack_key('#FF8000', utf8_encode(NUMEROS_POSSEDES), 13 ),
+	new bar_stack_key('#04B404', utf8_encode(NUMEROS_REFERENCES), 13 )
 ));
 
 //$bar_stack_pct->set_tooltip('#x_label# : #val# %' );
@@ -176,7 +176,7 @@ swfobject.embedSWF("open-flash-chart.swf", "my_chart", "<?php echo $taille_graph
 
 function ofc_ready(){
 	parent.$('iframe_graphique').writeAttribute({'width':'<?php echo 80+$taille_graphique;?>px','height':'450px'});
-	
+
 }
 
 function open_flash_chart_data()
@@ -204,7 +204,7 @@ function findSWF(movieName) {
     return document[movieName];
   }
 }
-    
+
 var data_1 = <?php echo $chart->toPrettyString(); ?>;
 var data_2 = <?php echo $chart_pct->toPrettyString(); ?>;
 
@@ -216,8 +216,8 @@ var data_2 = <?php echo $chart_pct->toPrettyString(); ?>;
 
 <div id="my_chart"></div>
 <br>
-<a href="javascript:load_1()"><?php echo L::_('afficher_valeurs_reelles');?></a>
+<a href="javascript:load_1()"><?php echo AFFICHER_VALEURS_REELLES;?></a>
 &nbsp;&nbsp;-&nbsp;&nbsp;
-<a href="javascript:load_2()"><?php echo L::_('afficher_pourcentages');?></a>
+<a href="javascript:load_2()"><?php echo AFFICHER_POURCENTAGES;?></a>
 </body>
 </html>

@@ -23,25 +23,25 @@ $totaux=array();
 $auteurs=array();
 foreach($resultat_auteurs as $auteur) {
 	$total=$auteur['NbNonPossedesEtranger']+$auteur['NbNonPossedesFrance']+$auteur['NbPossedes'];
-	
+
 	array_push($non_poss_etr_pct,round(100*$auteur['NbNonPossedesEtranger']/$total));
 	array_push($non_poss_fr_pct,round(100*$auteur['NbNonPossedesFrance']/$total));
 	array_push($poss_pct,round(100*$auteur['NbPossedes']/$total));
-	
+
 	array_push($non_poss_etr,$auteur['NbNonPossedesEtranger']);
 	array_push($non_poss_fr,$auteur['NbNonPossedesFrance']);
 	array_push($poss,$auteur['NbPossedes']);
-		
+
 	array_push($auteurs,$auteur['NomAuteur']);
 	array_push($totaux,$total);
-}	
+}
 if (count($resultat_auteurs)<=5)
 	$largeur=500;
 else
 	$largeur=100*count($resultat_auteurs);
 date_default_timezone_set('UTC');
 $regex_date='#([^-]+)-([^-]+)-(.+)#is';
-$title = new title(utf8_encode(L::_('possession_histoires_auteurs').' ('
+$title = new title(utf8_encode(POSSESSION_HISTOIRES_AUTEURS.' ('
 				   .preg_replace($regex_date,'$3/$2/$1',$date_dernier_calcul)
 				   .')'));
 $title->set_style( "{font-size: 20px; color: #F24062; font-family:Tuffy; text-align: center;}" );
@@ -54,10 +54,10 @@ foreach ($poss as $index=>$val_poss) {
 	$tmp = new bar_stack_value(intval($val_poss),'#FF8000');
 	$tmp2 = new bar_stack_value(intval($val_non_poss_fr),'#04B404');
 	$tmp3 = new bar_stack_value(intval($val_non_poss_etr),'#C12346');
-	$tmp->set_tooltip(utf8_encode($auteurs[$index].'<br>'.L::_('histoires_possedees').' : '.$val_poss.'<br>'.L::_('total').' : '.$totaux[$index]));
-	$tmp2->set_tooltip(utf8_encode($auteurs[$index].'<br>'.L::_('histoires_non_possedees_pays').' : '.$val_non_poss_fr.'<br>'.L::_('total').' : '.$totaux[$index]));
-	$tmp3->set_tooltip(utf8_encode($auteurs[$index].'<br>'.L::_('histoires_non_possedees_etranger').' : '.$val_non_poss_etr.'<br>'.L::_('total').' : '.$totaux[$index]));
-	
+	$tmp->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_POSSEDEES.' : '.$val_poss.'<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp2->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_PAYS.' : '.$val_non_poss_fr.'<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp3->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_ETRANGER.' : '.$val_non_poss_etr.'<br>'.TOTAL.' : '.$totaux[$index]));
+
 	$bar_stack->append_stack(array($tmp,$tmp2,$tmp3));
 }
 
@@ -67,10 +67,10 @@ foreach ($poss_pct as $index=>$val_poss) {
 	$tmp = new bar_stack_value($val_poss,'#FF8000');
 	$tmp2 = new bar_stack_value($val_non_poss_fr,'#04B404');
 	$tmp3 = new bar_stack_value(100-$val_poss-$val_non_poss_fr,'#C12346');
-	$tmp->set_tooltip(utf8_encode($auteurs[$index].'<br>'.L::_('histoires_possedees').' : '.$val_poss.'%<br>'.L::_('total').' : '.$totaux[$index]));
-	$tmp2->set_tooltip(utf8_encode($auteurs[$index].'<br>'.L::_('histoires_non_possedees_pays').' : '.$val_non_poss_fr.'%<br>'.L::_('total').' : '.$totaux[$index]));
-	$tmp3->set_tooltip(utf8_encode($auteurs[$index].'<br>'.L::_('histoires_non_possedees_etranger').' : '.$val_non_poss_etr.'%<br>'.L::_('total').' : '.$totaux[$index]));
-	
+	$tmp->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_POSSEDEES.' : '.$val_poss.'%<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp2->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_PAYS.' : '.$val_non_poss_fr.'%<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp3->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_ETRANGER.' : '.$val_non_poss_etr.'%<br>'.TOTAL.' : '.$totaux[$index]));
+
 	$bar_stack_pct->append_stack(array($tmp,$tmp2,$tmp3));
 }
 
@@ -124,7 +124,7 @@ swfobject.embedSWF("open-flash-chart.swf", "my_chart", "<?php echo $largeur;?>",
 
 function ofc_ready(){
 	parent.$('iframe_graphique').writeAttribute({'width':'<?php echo 80+$largeur;?>px','height':'450px'});
-	
+
 }
 
 function open_flash_chart_data()
@@ -152,7 +152,7 @@ function findSWF(movieName) {
     return document[movieName];
   }
 }
-    
+
 var data_1 = <?php echo $chart->toPrettyString(); ?>;
 var data_2 = <?php echo $chart_pct->toPrettyString(); ?>;
 
@@ -164,8 +164,8 @@ var data_2 = <?php echo $chart_pct->toPrettyString(); ?>;
 
 <div id="my_chart"></div>
 <br>
-<a href="javascript:load_1()"><?php echo L::_('afficher_valeurs_reelles');?></a>
+<a href="javascript:load_1()"><?php echo AFFICHER_VALEURS_REELLES;?></a>
 &nbsp;&nbsp;-&nbsp;&nbsp;
-<a href="javascript:load_2()"><?php echo L::_('afficher_pourcentages');?></a>
+<a href="javascript:load_2()"><?php echo AFFICHER_POURCENTAGES;?></a>
 </body>
 </html>

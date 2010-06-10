@@ -6,8 +6,13 @@ ul.tabnav {
     padding:0 0 24px 0;
 }
 .nouveau {
-    font-size: 14px;
+    padding-bottom:10px;
 }
+
+.nouveau a:hover {
+    padding-bottom:13px;
+}
+
 ul.tabnav li {
     background-color:rgb(200, 137, 100);
     float:left;

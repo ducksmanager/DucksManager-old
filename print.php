@@ -13,14 +13,14 @@ require_once('JS.class.php');
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>DucksManager : <?php L::_('impression_collection');?></title>
+  <title>DucksManager : <?php IMPRESSION_COLLECTION;?></title>
   <link rel="stylesheet" type="text/css" href="style.css" />
   <!--[if IE]>
 	<style type="text/css" media="all">@import "fix-ie.css";</style>
   <![endif]-->
   <link rel="stylesheet" type="text/css" href="scriptaculous.css" />
   <link rel="icon" type="image/png" href="favicon.png" />
-  <?php 
+  <?php
   new JS('prototype.js');
   new JS('js/scriptaculous/src/scriptaculous.js');
   new JS('js/my_scriptaculous.js');
@@ -30,12 +30,12 @@ require_once('JS.class.php');
 <?php
 $d=new Database();
 if (!$d) {
-	echo L::_('probleme_bd');
+	echo PROBLEME_BD;
 	exit(-1);
 }
 $id_user=$d->user_to_id($_SESSION['user']);
 $l=$d->toList($id_user);
-foreach($l->collection as $pays=>$magazines) { 
+foreach($l->collection as $pays=>$magazines) {
 	$i=new Inducks();
 	$noms_complets_magazines=$i->get_noms_complets_magazines($pays);
 	foreach($magazines as $nom_magazine=>$magazine) {
@@ -43,7 +43,7 @@ foreach($l->collection as $pays=>$magazines) {
 		/*if ($nom_magazine=='D') {
 			$sous_liste=new Liste();
 			$sous_liste=$l->sous_liste($pays,$nom_magazine);
-			
+
 			$sous_liste2=new Liste();
 			$sous_liste2=$l->sous_liste('fr','JM');
 			$sous_liste->fusionnerAvec($sous_liste2);

@@ -17,15 +17,15 @@ if (!isset($GLOBALS['firephp'])) {
 	            $throwAssertionExceptions=false);
 	ob_start();
 }
-Database::$etats=array(		   'mauvais'=>array(L::_('mauvais'),'#FF0000'),
-							   'moyen'=>array(L::_('moyen'),'#FF8000'),
-							   'bon'=>array(L::_('bon'),'#2CA77B'),
-							   'indefini'=>array(L::_('indefini'),'#808080'));
+Database::$etats=array(		   'mauvais'=>array(MAUVAIS,'#FF0000'),
+                                   'moyen'=>array(MOYEN,'#FF8000'),
+                                   'bon'=>array(BON,'#2CA77B'),
+                                   'indefini'=>array(INDEFINI,'#808080'));
 
 Database::$etats_fr=array(	   'mauvais'=>array('Mauvais','#FF0000'),
-							   'moyen'=>array('Moyen','#FF8000'),
-							   'bon'=>array('Bon','#2CA77B'),
-							   'indefini'=>array('Indéfini','#808080'));
+                                                    'moyen'=>array('Moyen','#FF8000'),
+                                                    'bon'=>array('Bon','#2CA77B'),
+                                                    'indefini'=>array('Indéfini','#808080'));
 class Database {
 	public static $etats;
 	public static $etats_fr;
@@ -33,19 +33,19 @@ class Database {
 	var $database;
 	var $user;
 	var $password;
-	
-	
+
+
 	function Database() {
 		require_once('_priv/Database.priv.class.php');
 		return DatabasePriv::connect();
-		
+
 	}
-	
+
 	function connect($user,$password) {
 		$this->user=$user;
 		$this->password=$password;
 	}
-	
+
 	function requete_select($requete) {
 		$requete_resultat=mysql_query($requete);
 		$arr=array();
@@ -53,18 +53,18 @@ class Database {
 			array_push($arr,$arr_tmp);
 		return $arr;
 	}
-	
+
 	function requete($requete) {
 		$requete_resultat=mysql_query($requete);
 	}
-	
+
 	function liste_numeros($requete) {
 		$requete_resultat=mysql_query($requete);
 		while ($infos=mysql_fetch_array($requete_resultat)) {
 			echo '!';
 		}
 	}
-	
+
 	function user_to_id($user) {
 		if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
 			$user=$_COOKIE['user'];
@@ -76,7 +76,7 @@ class Database {
 			return $infos['ID'];
 		}
 	}
-	
+
 	function user_connects($user,$pass) {
 		if (!$this->user_exists($user)) {
 			//echo 'Ce nom d\'utilisateur n\'existe pas !';
@@ -88,19 +88,19 @@ class Database {
 			return (mysql_num_rows($requete_resultat)!=0);
 		}
 	}
-	
+
 	function user_exists($user) {
 		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
 		$requete_resultat=mysql_query($requete);
 		return (mysql_num_rows($requete_resultat)!=0);
 	}
-	
+
 	function nouveau_user($user,$pass) {
 		date_default_timezone_set('Europe/Paris');
 		$requete='INSERT INTO users(username,password,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.date('Y-m-d').'\')';
 		echo $requete;
 		if (false===mysql_query($requete)) {
-			echo L::_('erreur_execution_requete');
+			echo ERREUR_EXECUTION_REQUETE;
 			return false;
 		}
 		return true;
@@ -122,7 +122,7 @@ class Database {
 		}
 		echo '</table>';
 	}*/
-	
+
 	function liste_etats() {
 		$debut=true;
 		foreach(self::$etats as $etat_court=>$infos_etat) {
@@ -135,7 +135,7 @@ class Database {
 			}
 		}
 	}
-	
+
 	function liste_numeros_externes_dispos($id_user) {
 		$requete_numeros_externes='SELECT Id_Utilisateur, Pays,Magazine,Numéro,Etat,AV FROM numeros WHERE (Id_Utilisateur<>'.$id_user.' AND AV=1) ORDER BY Id_Utilisateur, Pays, Magazine';
 		$numeros_externes=$this->requete_select($requete_numeros_externes);
@@ -166,11 +166,11 @@ class Database {
 					$id_utilisateur=$numero['Id_Utilisateur'];
 				}
 			}
-		}	
+		}
 		else
 			echo 'Pour l\'instant, vous poss&eacute;dez tous les num&eacute;ros propos&eacute;s &agrave; la vente par les autres utilisateurs.';
 	}
-	
+
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
 		if ($etat=='possede') $etat='indefini';
 		switch($etat) {
@@ -186,7 +186,7 @@ class Database {
 				$requete.=')';
 			break;
 			default:
-				
+
 				$intitule=$etat=='non_marque'?'':self::$etats[$etat][0];
 				$requete_insert='INSERT INTO numeros(Pays,Magazine,Numéro,';
 				$arr=array($etat=>array('non_marque','Etat'),
@@ -218,9 +218,9 @@ class Database {
 					}
 					if (!$debut)
 						$requete_insert.=', ';
-					
+
 					$requete_insert.='(\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',';
-					
+
 					$arr=array($etat=>array('non_marque','\''.$intitule.'\''),
 							   $id_acquisition=>array(-2,$id_acquisition),
 							   $av=>array(-1,$av)
@@ -243,8 +243,8 @@ class Database {
 				}
 				//echo $requete_insert;
 				$this->requete($requete_insert);
-				$requete_update='UPDATE numeros SET '; 
-				
+				$requete_update='UPDATE numeros SET ';
+
 				$arr=array($etat=>array('non_marque','Etat=\''.$intitule.'\''),
 						   $id_acquisition=>array(-2,'ID_Acquisition='.$id_acquisition),
 						   $av=>array(-1,'AV='.$av)
@@ -258,7 +258,7 @@ class Database {
 						$debut=false;
 					}
 				}
-				
+
 				$requete_update.=' WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.$this->user_to_id($_SESSION['user']).' AND (';
 				$debut=true;
 				foreach($liste_deja_possedes as $numero) {
@@ -270,12 +270,12 @@ class Database {
 				$requete_update.='))';
 				$this->requete($requete_update);
 				echo $requete_update;
-				
+
 		}
 		if (isset($requete))
 			mysql_query($requete);
 	}
-	
+
 	function toList($id_user) {
 		$requete='SELECT DISTINCT Pays,	Magazine,Numéro,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros WHERE (ID_Utilisateur='.$id_user.') ORDER BY Pays, Magazine, Numéro';
 		$d=new Database();
@@ -295,23 +295,23 @@ class Database {
 			else {
 				$l->collection[$infos['Pays']]=array($infos['Magazine']=>0);
 				$l->collection[$infos['Pays']][$infos['Magazine']]=array(0=>array($infos['Numéro'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']));
-				
+
 			}
 		}
 		//echo '<pre>';print_r($l);echo '</pre>';
 		return $l;
 	}
-	
+
 	function ajouter_numero($requete) {
 		mysql_query($requete);
 	}
-	
+
 	function ajouter_auteur($id,$nom) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_auteur_existe='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE NomAuteurAbrege LIKE \''.$id.'\' AND DateStat LIKE \'0000-00-00\' AND ID_User='.$id_user;
 		$resultat_auteur_existe=$this->requete_select($requete_auteur_existe);
 		if (count($resultat_auteur_existe)>0) {
-			echo L::_('auteur_deja_dans_liste').'<br />';
+			echo AUTEUR_DEJA_DANS_LISTE.'<br />';
 		}
 		else {
 			$requete_ajout_auteur='INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat) '
@@ -319,11 +319,11 @@ class Database {
 			$this->requete($requete_ajout_auteur);
 		}
 	}
-	
+
 	function liste_auteurs_surveilles($auteurs_surveilles,$affiche_notation) {
-		
+
 		if (count($auteurs_surveilles)==0) {
-			echo L::_('aucun_auteur_surveille').'<br />';
+			echo AUCUN_AUTEUR_SURVEILLE.'<br />';
 		}
 		else {
 			if ($affiche_notation)
@@ -343,40 +343,40 @@ class Database {
 					echo '</td>';
 					echo '<td><input type="checkbox" '.($auteur['Notation']==-1?'checked="checked"':'')
 						.' id="aucune_note'.$num.'" onclick="set_aucunenote('.$num.')" name="aucune_note'.$num.'" />&nbsp;'
-						.L::_('aucune_note');
+						.AUCUNE_NOTE;
 				}
-				echo '<td><a href="javascript:void(0)" onclick="supprimer_auteur(\''.$auteur['NomAuteurAbrege'].'\')">Supprimer</a></td>';
+				echo '<td><a href="javascript:void(0)" onclick="supprimer_auteur(\''.$auteur['NomAuteurAbrege'].'\')">'.SUPPRIMER.'</a></td>';
 				echo '</tr>';
 			}
 			echo '</table>';
 			if ($affiche_notation) {
 				$d=new Database();
-				$id_user=$d->user_to_id($_SESSION['user']);	
+				$id_user=$d->user_to_id($_SESSION['user']);
 				$requete_get_recommandations_liste_mags='SELECT RecommandationsListeMags FROM users WHERE ID='.$id_user;
 				$resultat_get_recommandations_liste_mags=$d->requete_select($requete_get_recommandations_liste_mags);
 				$recommandations_liste_mags=$resultat_get_recommandations_liste_mags[0]['RecommandationsListeMags'];
-				echo L::_('explication_notation_auteurs1').'<br />'.L::_('explication_notation_auteurs2');
+				echo EXPLICATION_NOTATION_AUTEURS1.'<br />'.EXPLICATION_NOTATION_AUTEURS2;
 				echo '<br /><br />';
 				echo '<input type="checkbox" '.($recommandations_liste_mags?'checked="checked" ':'')
-					.'name="proposer_magazines_possedes">&nbsp;'.L::_('proposer_magazines_possedes').'<br />'
-					.'<span style="font-size:12px">'.L::_('proposer_magazines_possedes_explication').'</span>';
-				echo '<br /><br /><input type="submit" value="'.L::_('valider_notations').'" /></form>';
+					.'name="proposer_magazines_possedes">&nbsp;'.PROPOSER_MAGAZINES_POSSEDES.'<br />'
+					.'<span style="font-size:12px">'.PROPOSER_MAGAZINES_POSSEDES_EXPLICATION.'</span>';
+				echo '<br /><br /><input type="submit" value="'.VALIDER_NOTATIONS.'" /></form>';
 			}
 		}
 	}
 
 	function liste_suggestions_magazines() {
 		$d=new Database();
-		$id_user=$d->user_to_id($_SESSION['user']);	
+		$id_user=$d->user_to_id($_SESSION['user']);
 		$requete_numeros_recommandes='SELECT Pays, Magazine, Numéro, Texte FROM numeros_recommandes '
 									.'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
 		$resultat_numeros_recommandes=$d->requete_select($requete_numeros_recommandes);
 		if (count($resultat_numeros_recommandes)!=0) {
-			echo L::_('intro_numeros_recommandes').'<br />';
+			echo INTRO_NUMEROS_RECOMMANDES.'<br />';
 			echo '<ul>';
 			$pays_parcourus=array();
 			$auteurs=array();
-			
+
 			foreach($resultat_numeros_recommandes as $numero) {
 				$pays=$numero['Pays'];
 				if (!array_key_exists($pays,$pays_parcourus))
@@ -390,23 +390,23 @@ class Database {
 						$auteurs[$auteur]=Inducks::get_auteur($auteur);
 					if (!$debut) {
 						if ($i==count($histoires)-1)
-							echo ' '.L::_('et').' ';
+							echo ' '.ET.' ';
 						else
 							echo ', ';
 					}
 					if ($nb_histoires==1)
-						echo (1).' '.L::_('histoire');
+						echo (1).' '.HISTOIRE;
 					else
-						echo $nb_histoires.' '.L::_('histoires');
-					echo ' '.L::_('de').' '.$auteurs[$auteur];
+						echo $nb_histoires.' '.HISTOIRES;
+					echo ' '.DE.' '.$auteurs[$auteur];
 					$debut=false;
 				}
 			}
 			echo '</ul>';
 		}
-		else echo L::_('calculs_pas_encore_faits').'<br />';
+		else echo CALCULS_PAS_ENCORE_FAITS.'<br />';
 	}
-	
+
 	function liste_auteurs_notes($auteurs_surveilles) {
 		foreach($auteurs_surveilles as $auteur) {
 			if ($auteur['Notation']>=1)
@@ -422,7 +422,7 @@ if (isset($_POST['database'])) {
 	@session_start();
 	$d=new Database();
 	if (!$d) {
-		echo L::_('probleme_bd');
+		echo PROBLEME_BD;
 		exit(-1);
 	}
 	if (isset($_POST['pass'])) {
@@ -445,18 +445,18 @@ if (isset($_POST['database'])) {
 			$l=new Liste($fichier);
 			$l->lire();
 			$cpt=$l->add_to_database($d,$d->user_to_id($_SESSION['user']));
-			echo 'OK.'.$cpt.' '.L::_('numeros_importes');
+			echo 'OK.'.$cpt.' '.NUMEROS_IMPORTES;
 		}
 	}
 	else if (isset($_POST['from_file'])) { // Import avec un utilisateur existant
 		$id_user=$d->user_to_id($_SESSION['user']);
-		
+
 		$fichier=$_POST['from_file'];
 		$l=new Liste($fichier);
 		$l->lire();
 		$l->synchro_to_database($d,$id_user,$l);
 	}
-	
+
 	else if (isset($_POST['update'])) {
 		//print_r($_SESSION);
 		$id_user=$d->user_to_id($_SESSION['user']);
@@ -482,7 +482,7 @@ if (isset($_POST['database'])) {
 		}
 		//$l->update_numeros($pays,$magazine,$etat,$liste,$id_acquisition);
 		$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
-		
+
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);
@@ -493,21 +493,21 @@ if (isset($_POST['database'])) {
 		if (false!=($numeros=Inducks::get_numeros($pays,$magazine))) {
 			Affichage::afficher_etiquettes();
 			Affichage::afficher_numeros($l,$pays,$magazine,$numeros);
-			
+
 		}
-		else 
-			echo L::_('aucun_numero_importe_1').$magazine.' ('.L::_('pays_publication').' : '.$pays.')';
+		else
+			echo AUCUN_NUMERO_IMPORTE_1.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
 	}
 	else if (isset($_POST['acquisition'])) {
 		//print_r($_SESSION);
 		$id_user=$d->user_to_id($_SESSION['user']);
-		
+
 		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
 		$compte_acquisition_date=$d->requete_select('SELECT Count(ID_Acquisition) as c FROM achats WHERE ID_User='.$id_user.' AND Date LIKE \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\'');
 		if ($compte_acquisition_date[0]['c']!=0) {
 			echo 'Date';exit(0);
 		}
-		
+
 		$d->requete('INSERT INTO achats(ID_User,Date,Description)'
 				   .' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
 		echo 'INSERT INTO achats(ID_User,Date,Description)'
@@ -516,7 +516,7 @@ if (isset($_POST['database'])) {
 		$liste_acquisitions=$d->requete_select($requete_acquisition);
 		$a=new Affichage();
 		$a->afficher_acquisitions($_POST['afficher_non_defini']);
-		
+
 	}
 	else if (isset($_POST['modif_acquisition'])) {
 		$id_user=$d->user_to_id($_SESSION['user']);
@@ -545,14 +545,14 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=$d->user_to_id($_SESSION['user']);
-		$d->requete('DELETE FROM auteurs_pseudos ' 
+		$d->requete('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege LIKE \''.$_POST['nom_auteur'].'\'');
 	}
 	else { // Vérification de l'utilisateur
 		if ($d->user_exists($_POST['user']))
-			echo L::_('utilisateur_existant');
+			echo UTILISATEUR_EXISTANT;
 		else
-			echo 'OK, '.L::_('utilisateur_valide');
+			echo 'OK, '.UTILISATEUR_VALIDE;
 	}
 }
 ?>

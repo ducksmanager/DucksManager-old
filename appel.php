@@ -44,7 +44,7 @@ if (isset($_POST['ecrire']) && $_POST['ecrire']=='true') {
 	$regex_retrieve_numeros='#<b>[^<]+</b><p><pre>.country\^entrycode\^collectiontype\^comment.(.*)</pre><hr>#is';
 	$found=(preg_match($regex_retrieve_numeros,$contenu,$liste)>0);
 	if (!$found) {
-		echo htmlentities(L::_('erreur_lecture_numeros'));
+		echo htmlentities(ERREUR_LECTURE_NUMEROS);
 		exit(-1);
 	}
 	//$regex_split_numeros='#[^^]*#'

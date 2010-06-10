@@ -1,328 +1,328 @@
 <?php
-	$l10n=array(
-		''=>'',
-		'accueil'=>'Accueil',
-		'achat_vente_numeros'=>'Achat/Vente de num&eacute;ros',
-		'achete_le'=>'Achet&eacute; le',
-		'acquisition_existante'=>'Acquisition existante !',
-		'activer_partage'=>'Activer le partage de ma collection',
-		'adresse'=>'Adresse',
-		'affichage_liste'=>'Affichage de la liste (exemple)',
-		'afficher_numeros_possedes'=>'Afficher les num&eacute;ros poss&eacute;d&eacute;s',
-		'afficher_numeros_manquants'=>'Afficher les num&eacute;ros manquants',
-		'afficher_pourcentages'=>'Afficher en pourcentages',
-		'afficher_valeurs_reelles'=>'Afficher en valeurs r&eacute;elles',
-		'agrandir_collection'=>'Agrandir ma collection',
-		'ajouter_bouquinerie'=>'Ajouter la bouquinerie',
-		'ajouter_magazine'=>'Ajouter un magazine',
-		'analyse_liste'=>'Analyse de la liste...',
-		'annonce_agrandir_collection1'=>'Vous pouvez &agrave; pr&eacute;sent utiliser DucksManager pour agrandir votre collection en fonction des auteurs que vous appr&eacute;ciez !<br />',
-		'annonce_agrandir_collection2'=>'Cliquez',
-		'annonce_agrandir_collection3'=>' pour en savoir plus!',
-		'associer_date_achat'=>'Associer avec une date d\'achat',
-		'attention_mot_de_passe_inducks'=>'Attention ! Si vous souhaitez utiliser le m&ecirc;me mot de passe pour votre collection DucksManager et votre compte Inducks, votre mot de passe Inducks doit obligatoirement &ecirc;tre compos&eacute; de plus de 6 caract&egrave;res !',
-		'aucun_auteur_surveille'=>'Aucun auteur surveill&eacute;',
-		'aucune_acquisition'=>'Aucune acquisition enregistr&eacute;e',
-		'aucune_date_acquisition'=>'Vous n\'avez entr&eacute; aucune date d\'acquisition pour le moment',
-		'aucune_note'=>'Aucune note',
-		'aucun_numero_importe'=>'Aucun num&eacute;ro n\'est r&eacute;pertori&eacute; pour ',
-		'aucun_numero_inducks'=>'DucksManager n\'a trouv&eacute; aucun num&eacute;ro dans votre compte Inducks !',
-		'aucun_numero_possede_1'=>'Vous ne poss&eacute;dez aucun num&eacute;ro ! Cliquez ',
-		'aucun_numero_possede_2'=>'pour en ajouter &agrave; votre collection !',
-		'auteur_deja_dans_liste'=>'Cet auteur est d&eacute;j&agrave; dans votre liste !',
-		'auteurs'=>'Auteurs',
-		'auteurs_court'=>'Statistiques sur les auteurs',
-		'auteurs_favoris'=>'Mes auteurs favoris',
-		'auteurs_favoris_texte'=>'Trouvez quels magazines acheter en fonction des auteurs que vous aimez',
-		'auteurs_favoris_intro_1'=>'Entrez les noms de vos auteurs pr&eacute;f&eacute;r&eacute;s puis cliquez sur le bouton "Ajouter" pour que DucksManager le privil&eacute;gie dans la recherche de magazines.',
-		'auteurs_non_notes'=>'Vous n\'avez pas encore not&eacute; vos auteurs favoris. Passez &agrave; l\'onglet "Pr&eacute;f&eacute;rences d\'auteurs pour le faire.',
-		'autres'=>'Autres',
-		'avec_acquisition'=>'avec la date d\'acquisition',
-		'avec_etat'=>'avec l\'&eacute;tat',
-		'base_donnees'=>'Base de donn&eacute;es DucksManager',
-		'bienvenue'=>'Bienvenue sur DucksManager !',
-		'bon'=>'Bon',
-		'calcul_en_cours'=>'Calcul en cours...',
-		'calcul_termine'=>'Calcul termin&eacute;. La page va se recharger...',
-		'calculs_pas_encore_faits'=>'Les calculs n\'ont pas encore &eacute;t&eacute; effectu&eacute;s. Lancez les statistiques manuellement ou attendez demain !',
-		'chargement'=>'Chargement',
-		'classement'=>'Classement',
-		'classement_court'=>'Mon classement',
-		'classique_abrege_description'=>'It\'s not really a list : it only displays the number of possessed issues for a magazine.',
-		'classique_abrege_moins_1'=>'Pas vraiment une liste',
-		'classique_abrege_moins_2'=>'Impossible to add issues manually',
-		'classique_abrege_plus_1'=>'Tr&egrave;s succint',
-		'classique_description'=>'Liste "classique", facile &agrave; utiliser.',
-		'classique_moins_1'=>'Difficult&eacute;s pour rep&eacute;rer une s&eacute;rie continue de num&eacute;ros',
-		'classique_moins_2'=>'Difficult&eacute;s pour ajouter un num&eacute;ro manuellement sans perturber l\'ordre',
-		'classique_moins_3'=>'Avouez que cette liste manque de style ;-)',
-		'classique_plus_1'=>'Simple d\'utilisation',
-		'clic_impression'=>'Cliquez ici pour imprimer votre collection !',
-		'code_postal'=>'Code postal',
-		'collection_inducks'=>'Collection Inducks',
-		'collection'=>'Collection',
-		'comment_partager_collection'=>'Si vous souhaitez que d\'autres utilisateurs puissent acc&eacute;der &agrave; votre collection, sp&eacute;cifiez cette option sur votre',
-		'comment_s_identifier'=>'Cliquez sur "Ouvrir ma collection", dans le menu, pour vous identifier.',
-		'commentaires_bouquinerie'=>'Commentaires',
-		'commentaires_bouquinerie,exemple'=>'Ambiance, exemples de prix,...',
-		'completer_series'=>'Compl&eacute;ter mes s&eacute;ries',
-		'completer_series_texte'=>'Trouvez quels num&eacute;ros acheter pour compl&eacute;ter vos s&eacute;ries',
-		'compte_inducks'=>'Compte Inducks',
-		'compte_supprime_deconnecte'=>'Votre compte a &eacute;galement &eacute;t&eacute; supprim&eacute;. Vous avez &eacute;t&eacute; d&eacute;connect&eacute;(e).',
-		'confirmer'=>'Confirmer ?',
-		'connecte_en_tant_que'=>'Connect&eacute;(e)<br />en tant que ',
-		'connexion'=>'Connexion',
-		'connexion_inducks'=>'Connexion &agrave; Inducks...',
-		'connexion_reussie'=>'Connexion r&eacute;ussie.',
-		'conserver_date_achat'=>'Conserver la date d\'achat',
-		'conserver_etat_actuel'=>'Conserver l\'&eacute;tat actuel',
-		'conserver_volonte_vente'=>'Conserver la volont&eacute; de vente',
-		'contact_utilisateurs'=>'Contacter d\'autres utilisateurs de DucksManager',
-		'continuer_oui_non'=>'Continuer ?',
-		'creer_date_achat'=>'Cr&eacute;er une date d\'achat',
-		'date'=>'Date',
-		'date_invalide'=>'Date invalide !',
-		'date_question'=>'A quelle date avez-vous effectué l\'achat ? (JJ/MM/AAAA)',		
-		'date_non_specifiee'=>'Date non sp&eacute;cifi&eacute;e',
-		'dates_existantes'=>'Dates existantes',
-		'de'=>'de',
-		'debug_description'=>'Liste "debug", principalement destin&eacute;e aux d&eacute;veloppeurs.',
-		'debug_moins_1'=>'Difficult&eacute;s pour rep&eacute;rer une s&eacute;rie continue de num&eacute;ros',
-		'debug_moins_2'=>'Difficult&eacute;s pour ajouter un num&eacute;ro sans perturber l\'ordre',
-		'debug_moins_3'=>'Prend une ligne par num&eacute;ro',
-		'debug_moins_4'=>'Pas joli !',
-		'debug_plus_1'=>'Pratique pour debugger les listes corrompues',
-		'deconnexion'=>'D&eacute;connexion',
-		'deconnexion_ok'=>'Vous avez &eacute;t&eacute; d&eacute;connect&eacute(e).',
-		'departement'=>'D&eacute;partement ',
-		'desassocier_date_achat'=>'D&eacute;sassocier de la date d\'achat',
-		'description'=>'Description',
-		'description_invalide'=>'Votre description doit faire moins de 30 caractères',
-		'description_question'=>'Entrez une courte description correspondant à cet achat',
-		'dmspiral_description'=>'Liste en spirale, plut&ocirc;t jolie, surtout utile pour les magazines avec peu de num&eacute;ros.',
-		'dmspiral_moins_1'=>'Prend beaucoup d\'espace pour les magazines &agrave; fr&eacute;quence &eacute;lev&eacute;e (Journal de Mickey,...)',
-		'dmspiral_moins_2'=>'Parfois laborieux pour rep&eacute;rer un num&eacute;ro ou l\'ajouter',
-		'dmspiral_moins_3'=>'Ce mode de liste est actuellement en d&eacute;veloppement',
-		'dmspiral_plus_1'=>'Assez esth&eacute;tique',
-		'dmspiral_plus_2'=>'Peut prendre en compte l\'&eacute;tat du num&eacute;ro (Mauvais &eacute;tat, bon &eacute;tat,...)',
-		'dmspiral_plus_3'=>'Reconaissance rapide des s&eacute;ries de num&eacute;ros et des num&eacute;ros manquants',
-		'dmtable_description'=>'La liste "DMtable", condens&eacute;e et tr&egrave;s pratique.',
-		'dmtable_moins_1'=>'Petit temps d\'adaptation n&eacute;cessaire pour la recherche de num&eacute;ros dans la table',
-		'dmtable_moins_2'=>'Some problems when you\'ve got a lot of issues with the same unit numbers (for instance 100,200,300). In this case the cell is enlarged.',
-		'dmtable_plus_1'=>'Affichage condens&eacute; (4 lignes de texte maximum par magazine)',
-		'dmtable_plus_2'=>'Les doublons peuvent &ecirc;tre repr&eacute;sent&eacute;s',
-		'dmtable_plus_3'=>'The purchase date can be represented',
-		'email_envoye'=>'Un e-mail vient d\'&ecirc;tre envoy&eacute; au webmaster. Si votre bouquinerie est valide, elle sera ajout&eacute;e sur le site tr&egrave;s prochainement.',
-		'enregistrer_changements'=>'Enregistrer les changements',
-		'entrez_identifiants_inducks'=>'Merci d\'entrer vos identifiants de compte Inducks',
-		'erreur_connexion_inducks'=>'Erreur de connexion &agrave; Inducks!',
-		'erreur_execution_requete'=>'Erreur lors de l\'&eacute;x&eacute;cution de la requete !',
-		'erreur_lecture_numeros'=>'Erreur lors de la lecture de la liste de num&eacute;ros',
-		'erreur_recuperation_inducks'=>'Erreur lors de la r&eacute;cup&eacute;ration des num&eacute;ros depuis Inducks !',
-		'et'=>'et',
-		'etat_bon'=>'En bon &eacute;tat',
-		'etat_excellent'=>'En excellent &eacute;tat',
-		'etat_indefini'=>'En &eacute;tat ind&eacute;fini',
-		'etat_manquants'=>'Manquants',
-		'etat_mauvais'=>'En mauvais &eacute;tat',
-		'etat_moyen'=>'En moyen &eacute;tat',
-		'etats_magazines'=>'Part des états des magazines dans la collection',
-		'etats_numeros'=>'Etats des num&eacute;ros',
-		'etats_numeros_court'=>'Etats des num&eacute;ros',
-		'excellent'=>'Excellent',
-		'explication_notation_auteurs1'=>'D&eacute;placez le curseur puis cliquez pour valider l\'appr&eacute;ciation que vous associez &agrave; chaque auteur.',
-		'explication_notation_auteurs2'=>'Gr&acirc;ce &agrave; cette notation, DucksManager d&eacute;terminera les magazines les plus susceptibles de vous int&eacute;resser.',
-		'exporter_inducks'=>'Exporter vers ma collection Inducks',
-		'gerer_collection'=>'G&eacute;rer ma collection',
-		'gestion_acquisitions'=>'Gestion de vos acquisitions',
-		'gestion_acquisitions_court'=>'Mes acquisitions',
-		'gestion_collection'=>'Gestion de ma collection',
-		'gestion_compte'=>'Gestion de votre compte DucksManager',
-		'gestion_compte_court'=>'Mon compte',
-		'gestion_numeros'=>'Gestion des num&eacute;ros de votre collecton',
-		'gestion_numeros_court'=>'Mes num&eacute;ros',
-		'gratuit_aucune_limite'=>'DucksManager est gratuit et sans limite d\'utilisation.',
-		'histoire'=>'histoire',
-		'histoires'=>'histoires',
-		'histoires_non_possedees_etranger'=>'Histoires non possédés publiées à l\'étranger uniquement',
-		'histoires_non_possedees_pays'=>'Histoires non possédés publiées en France',
-		'histoires_possedees'=>'Histoires possédées',
-		'ici'=>'ici',
-		'identifiants_incorrects'=>'Identifiants incorrects !',
-		'identification_obligatoire'=>'Vous devez &ecirc;tre connect&eacute;(e) pour acc&eacute;der &agrave; cette page.',
-		'identifiez_vous'=>'Identifiez-vous pour acc&eacute;der &agrave; votre compte DucksManager.',
-		'importation_en_cours'=>'L\'importation depuis Inducks est en cours...',
-		'importation_numeros'=>'Importation des num&eacute;ros...',
-		'import_impossible_si_connecte1'=>'Pour l\'instant, cette fonctionnalit&eacute; ne peut pas &ecirc;tre ex&eacute;cut&eacute;e lorsque vous &ecirc;tes connect&eacute;...',
-		'import_impossible_si_connecte2'=>'Pour utiliser l\'import de num&eacute;ros, d&eacute;connectez-vous puis cliquez sur "Importer ma collection Inducks", &agrave; partir du menu.',
-		'import_impossible_si_connecte3'=>'Vous aurez alors la possibilit&eacute; de vous r&eacute;inscrire.',
-		'import_utilisateur_existant1'=>'Vous poss&eacute;dez d&eacute;j&agrave; un compte DucksManager. Votre collection Inducks sera donc ajout&eacute;e &agrave; celle de DucksManager de la mani&egrave;re suivante :',
-		'import_utilisateur_existant2_1'=>'Si vous poss&eacute;dez des num&eacute;ros communs dans les 2 collections, ils seront conserv&eacute;s dans votre compte DucksManager, ainsi que les dates d\'acquisition, &eacute;tats, etc. associ&eacute;s.',
-		'import_utilisateur_existant2_2'=>'Si des num&eacute;ros apparaissent dans votre collection Inducks mais pas dans celle de DucksManager, les num&eacute;ros seront ajout&eacute;s &agrave; DucksManager.',
-		'import_utilisateur_existant2_3'=>'Inversement, si des num&eacute;ros sont pr&eacute;sents sur DucksManager mais pas sur Inducks, ils seront supprim&eacute;s de DucksManager.',
-		'importer_inducks'=>'Importer ma collection Inducks',
-		'imprimer_collection'=>'Imprimer ma collection',
-		'impression_collection'=>'Impression de la collection',
-		'indefini'=>'Indéfini',
-		'inscription'=>'Inscription',
-		'inscription_en_cours'=>'Inscription...',
-		'inscription_reussie'=>'Inscription r&eacute;ussie!',
-		'inscrivez_vous'=>'Inscrivez-vous !',
-		'intro_achat_vente'=>'Cette page vous permet de contacter d\'autres utilisateurs de DucksManager qui ont accept&eacute; de partager leur collection.',
-		'intro_acquisitions1'=>'Sur cette page vous pouvez cr&eacute;er, modifier ou supprimer vos dates d\'acquisition.',
-		'intro_acquisitions2'=>'Entrer une date d\'acquisition vous permet d\'associer une date et une description &agrave; l\'achat d\'un ou plusieurs magazines.',
-		'intro_bouquineries'=>'Cette page vous permet de trouver pr&egrave;s de chez vous des bouquineries qui proposent fr&eacute;quemment des magazines Disney.',
-		'intro_completer_series'=>'Cette page vous aide &agrave; d&eacute;terminer quels magazines vous devez acheter en priorit&eacute; pour compl&eacute;ter vos s&eacute;ries de num&eacute;ros.',
-		'intro_impression_collection1'=>'Il n\'est pas toujours facile de cr&eacute;er une liste de num&eacute;ros !',
-		'intro_impression_collection2'=>'Avec DucksManager, vous avez tous les choix ! Des listes <b>les plus classiques</b>, mais coûteuses en place, aux plus ing&eacute;nieuses et <b>de taille minimale</b>, c\'est vous qui d&eacute;cidez!',
-		'intro_impression_collection3'=>'Vous trouverez des informations d&eacute;taill&eacute;es sur les formats de liste que DucksManager peut utiliser pour imprimer votre liste ci-dessous : ',
-		'intro_nouvelle_bouquinerie'=>'Entrez ci-dessous les informations sur la bouquinerie que vous connaissez, puis entrez des exemples de prix de magazines.',
-		'intro_numeros_recommandes'=>'Les 20 num&eacute;ros suivants sont ceux qui sont les plus susceptibles de vous int&eacute;resser, d\'apr&egrave;s vos go&ucirc;ts :',
-		'l10n_introuvable'=>'Localisation introuvable pour ',
-		'lancer_calcul'=>'Lancer le calcul des statistiques',
-		'lancer_calcul_manuellement'=>'Vous pouvez lancer les statistiques manuellement, mais le calcul peut prendre plusieurs minutes.',
-		'lancer_calcul_suggestions'=>'Lancer le calcul des suggestions',
-		'lancer_calcul_suggestions_manuellement'=>'Vous pouvez lancer le calcul des suggestions manuellement, mais il peut prendre plusieurs minutes.',
-		'legende_numeros'=>'L&eacute;gende num&eacute;ros',
-		'les'=>'Les',
-		'licence_inducks1'=>'Ce site se base en partie sur les donn&eacute;es du site Inducks.',
-		'licence_inducks2'=>'Cliquez ici pour lire la licence Inducks.',
-		'licence_inducks3'=>'Toutes les images de personnages et / ou produits Disney: &copy; The Walt Disney Company.',
-		'liste_auteurs_intro'=>'Votre liste d\'auteurs est la suivante : ',
-		'liste_bouquineries'=>'Liste des bouquineries',
-		'listes_identiques'=>'Vos collections Inducks et DucksManager sont identiques. Aucune action n\'est requise.',
-		'magazine'=>'Magazine',
-		'magazines'=>'Magazines',
-		'magazines__lowercase'=>'magazines',
-		'magazines_court'=>'Ma collection de magazines',
-		'marquer_a_vendre'=>'Marquer comme "A vendre"',
-		'marquer_pas_a_vendre'=>'Enlever la mention "A vendre"',
-		'marquer_bon_etat'=>'Marquer comme en bon &eacute;tat',
-		'marquer_etat_moyen'=>'Marquer comme en &eacute;tat moyen',
-		'marquer_mauvais_etat'=>'Marquer comme en mauvais &eacute;tat',
-		'marquer_non_possede'=>'Marquer comme non-poss&eacute;d&eacute;(s)',
-		'marquer_possede'=>'Marquer comme poss&eacute;d&eacute;(s)',
-		'mauvais'=>'Mauvais',
-		'merci_contribution'=>'Merci pour votre contribution !',
-		'mise_a_jour'=>'Mise &agrave; jour...',
-		'modifier_acquisition'=>'Modifier cette acquisition',
-		'modifications_ok'=>'Vos modifications ont &eacute;t&eacute; prises en compte.',
-		'mot_de_passe'=>'Mot de passe',
-		'mot_de_passe_6_char'=>'Mot de passe (au moins 6 caract&egrave;res)',
-		'mot_de_passe_6_char_erreur'=>'Le mot de passe doit comporter au moins 6 caract&egrave;res !',
-		'mot_de_passe_conf'=>'Mot de passe (confirmation)',
-		'mot_de_passe_inducks'=>'Mot de passe Inducks',
-		'mots_de_passe_differents'=>'Les deux mots de passe ne correspondent pas !',
-		'moyen'=>'Moyen',
-		'nom_bouquinerie'=>'Nom de la bouquinerie',
-		'nombre_histoires'=>'Nombre d\'histoires',
-		'nom_utilisateur'=>'Nom d\'utilisateur',
-		'non'=>'Non',
-		'non_connecte'=>'Non connect&eacute;(e)',
-		'non_numeraux'=>'Non-num&eacute;raux',
-		'nouveau'=>'Nouveau!',
-		'nouveau_magazine'=>'Nouveau magazine',
-		'nouvel_achat'=>'Nouvel achat',
-		'nouvelle_acquisition_sauvegarder'=>'Sauvegarder la nouvelle acquisition',
-		'nouvelle_collection'=>'Nouvelle collection (Inscription)',
-		'nouvelle_date_achat'=>'Nouvelle date d\'achat...',
-		'numero'=>'num&eacute;ro',
-		'numero_contient'=>'Ce num&eacute;ro contient',
-		'numero_selectionne'=>'num&eacute;ro s&eacute;lectionn&eacute;',
-		'numeros'=>'num&eacute;ros',
-		'numeros_selectionnes'=>'num&eacute;ros s&eacute;lectionn&eacute;s',
-		'numeros__graphique'=>'numéros',
-		'numeros_a_ajouter'=>'num&eacute;ros vont &ecirc;tre ajout&eacute;s &agrave; DucksManager',
-		'numeros_a_supprimer'=>'num&eacute;ros vont &ecirc;tre supprim&eacute;s de DucksManager',
-		'numeros_communs'=>'num&eacute;ros sont communs aux deux collections',
-		'numeros_importes'=>'num&eacute;ros import&eacute;s.',
-		'numeros_manquants'=>'Numéros manquants',
-		'numeros_possedes'=>'Numéros possédés',
-		'numeros_references'=>'Numéros référencés',
-		'numeros_selectionnes_enregistres'=>'num&eacute;ros s&eacute;lectionn&eacute;s seront enregistr&eacute;s dans votre collection',
-		'numeros_supprimes'=>'Les num&eacute;ros de votre collection ont &eacute;t&eacute; supprim&eacute;s',
-		'ok'=>'OK',
-		'operation_irreversible'=>'Attention ! Cette op&eacute;ration est irr&eacute;versible !',
-		'operations_executees'=>'Les op&eacute;rations ont &eacute;t&eacute; ex&eacute;cut&eacute;es avec succ&egrave;s.',
-		'options'=>'Options',
-		'oui'=>'Oui',
-		'ouvrir_collection'=>'Ouvrir ma collection (Connexion)',
-		'page_options'=>'page d\'options DucksManager',
-		'parametrage_compte'=>'Param&eacute;trage de votre compte DucksManager',
-		'parametrage_compte_court'=>'Mes options',
-		'part_magazines_collection'=>'Part des magazines dans la collection',
-//		'participez_au_developpement'=>'Participez au d&eacute;veloppement de DucksManager : testez-le !',
-		'pays_publication'=>'Pays de publication',
-		'phrase_maintenance_inducks1'=>'Le site Internet',
-		'phrase_maintenance_inducks2'=>'sur lequel se base DucksManager, semble être en maintenance',
-		'phrase_maintenance_inducks3'=>'Certaines pages de DucksManager peuvent ne pas fonctionner correctement.',
-		'possession_histoires_auteurs'=>'Possession des histoires d\'auteurs',
-		'possession_magazines_1'=>'Vous poss&eacute;dez des num&eacute;ros pour les magazines suivants',
-		'possession_magazines_2'=>'Cliquez sur l\'un d\'eux pour &eacute;diter sa liste !',
-		'possession_numeros'=>'Possession des numéros',
-		'pour_voir_la_video'=>'pour voir cette vid&eacute;o',
-		'preferences_auteurs'=>'Pr&eacute;f&eacute;rences d\'auteurs',
-		'presentation1'=>'DucksManager est un outil vous permettant de g&eacute;rer votre liste de magazines Disney en toute simplicit&eacute;.',
-		'presentation2'=>'De la gestion simple de votre collection &agrave; leur impression en tant que liste, en passant par des statistiques compl&egrave;tes, toutes les fonctions que vous attendiez d\'un gestionnaire de collection sont l&agrave; !',
-//		'presentation3'=>'Notez que DucksManager est en d&eacute;veloppement. Cela signifie que les fonctionnalit&eacute;s sont ajout&eacute;es au fur et &agrave; mesure et que certaines peuvent &ecirc;tre incompl&egrave;tes.',
-		'presentation_auteurs_favoris'=>'Cette rubrique vous permet de trouver quels magazines chercher pour agrandir votre collection en privil&eacute;giant les magazines contenant des histoires de vos auteurs favoris.',
-		'presentation_bouquinerie1'=>'Vous connaissez une bouquinerie sympa ? Faites-en profiter d\'autres collectionneurs !',
-		'presentation_generale'=>'Une gestion de collection compl&egrave;te, des statistiques personnalis&eacute;es, un &eacute;ventail d\'outils pour agrandir votre collection, et bien d\'autres choses...',
-		'presentation_gerer_1'=>'Si la qualit&eacute; de votre collection vous int&eacute;resse, sp&eacute;cifiez l\'&eacute;tat de conservation des num&eacute;ros.',
-		'presentation_gerer_2'=>'Vous pouvez aussi indiquer leurs dates d\'achat.',
-		'presentation_gerer_3'=>'Vous pr&eacute;f&eacute;rez vendre des num&eacute;ros ? Proposez-les aux autres utilisateurs de DucksManager gr&acirc;ce au menu contextuel.',
-		'presentation_gerer_titre'=>'Pour chaque magazine, s&eacute;lectionnez les num&eacute;ros que vous poss&eacute;dez',
-		'presentation_stats_1'=>'Mises &agrave; jour quotidiennement pour prendre en compte tous vos changements, les statistiques de DucksManager vous informent sur les num&eacute;ros que vous poss&eacute;dez, et vous pr&eacute;cisent combien en acqu&eacute;rir pour compl&eacute;ter des s&eacute;ries.',
-		'presentation_stats_2'=>'Si vous avez sp&eacute;cifi&eacute; l\'&eacute;tat de chacun de vos num&eacute;ros, un graphique les r&eacute;sumera.',
-		'presentation_stats_3'=>'Vous aimez un sc&eacute;nariste ou un dessinateur en particulier ? DucksManager g&eacute;n&egrave;re pour vous un histogramme r&eacute;sumant la proportion des histoires que vous poss&eacute;dez de cet auteur.',
-		'presentation_stats_titre'=>'Des statistiques compl&egrave;tes et tous les outils pour agrandir votre collection !',
-		'prix_honnetes'=>'Nous comptons sur votre honn&ecirc;tet&eacute; concernant les prix si vous en mentionnez.',
-		'probleme_bd'=>'Probl&egrave;me avec la base de donn&eacute;es !',
-		'propose_par'=>'Propos&eacute;e par ',
-		'proposer_bouquinerie'=>'Proposer une bouquinerie',
-		'proposer_magazines_possedes'=>'Me proposer uniquement des magazines appartenant &agrave; ma liste',
-		'proposer_magazines_possedes_explication'=>'Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.',
-		'question_executer_ops_inducks'=>'Voulez-vous ex&eacute;cuter ces op&eacute;rations ?',
-		'question_importer_inducks'=>'Voulez-vous les importer ?',
-		'rechercher_bouquineries'=>'Chercher des bouquineries',
-		'rechercher_bouquineries_texte'=>'Rechercher des bouquineries pr&egrave;s de chez vous',
-		'recuperation_liste'=>'R&eacute;cup&eacute;ration liste...',
-		'recuperation_numeros'=>'R&eacute;cup&eacute;ration...',
-		'references'=>'référencés',
-		'remplir_infos_nouveau_magazine'=>'Remplissez les informations ci-dessous pour que DucksManager d&eacute;termine le nouveau magazine pour lequel vous souhaitez ajouter des num&eacute;ros.',
-		'remplir_pays_et_magazine'=>'Vous devez remplir les champs correspondant au pays et au nom du magazine\n pour lequel vous souhaitez ajouter des num&eacute;ros !',
-		'resultat_numeros_inducks'=>'DucksManager a trouv&eacute; les num&eacute;ros suivants sur votre compte Inducks.',
-		'resultats_suggestions_mags'=>'R&eacute;sultats des suggestions de magazines de DucksManager',
-		'selectionner_date_achat'=>'Vous devez selectionner une date d\'achat !',
-		'selectionner_magazine'=>'Veuillez s&eacute;lectionner un magazine !',
-		'selectionner_nouvelle_date_acquisition'=>'S&eacute;lectionnez "Nouvelle date d\'acquisition" dans la liste d&eacute;roulante pour en cr&eacute;er une.',
-		'selectionner_numeros_a_marquer'=>'Sélectionnez d\'abord les numéros à marquer !',
-		'selectionner_pays'=>'S&eacute;lectionnez un pays',
-		'statistiques_auteurs_intro_1'=>'Entrez les noms de vos auteurs pr&eacute;f&eacute;r&eacute;s puis cliquez sur le bouton "Ajouter" pour voir si vous poss&eacute;dez toutes ses histoires !',
-		'statistiques_auteurs_intro_2'=>'Au fur et &agrave; mesure que vous entrerez le nom de l\'auteur, des suggestions apparaitront.',
-		'statistiques_collection'=>'Statistiques de ma collection',
-		'statistiques_quotidiennes'=>'Les statistiques sont mises &agrave; jour quotidiennement.',
-		'succes'=>'Succ&egrave;s!',
-		'suggestions_achats'=>'Suggestions d\'achats',
-		'suggestions_achats_quotidiennes'=>'Les suggestions d\'achat sont mises &agrave; jour quotidiennement.',
-		'suppression_acquisition_confirmation'=>'Confirmez-vous la suppression de cette acquisition ?\nLes numéros correspondant à cette date d\'acquisition seront conservés.',
-		'supprimer_acquisition'=>'Supprimer cette acquisition',
-		'supprimer_compte'=>'Supprimer mon compte DucksManager',
-		'sur'=>'sur',
-		'telecharger_flash'=>'T&eacute;l&eacute;chargez Flash',
-		'termine'=>'Termin&eacute;.',
-		'texte_selectionner_numeros1'=>'<b>S&eacute;lectionnez dans la liste ci-dessous les num&eacute;ros</b> que vous avez ajout&eacute; ou retir&eacute; de votre collection.',
-		'texte_selectionner_numeros2'=>'Pour s&eacute;lectionner plusieurs num&eacute;ros, laissez votre souris appuy&eacute;e pendant que vous la d&eacute;placez sur les num&eacute;ros.',
-		'texte_selectionner_numeros3'=>'Une fois que vous avez termin&eacute; votre s&eacute;lection, <b>faites un clic droit</b> pour modifier les caract&eacute;ristiques de ces num&eacute;ros.',
-		'titre'=>'DucksManager : Gestion de votre collection de Mickey Parade, Picsou Magazine, Journal de Mickey,...',
-		'total'=>'Total',
-		'utilisateur_existant'=>'Ce nom d\'utilisateur est d&eacute;j&agrave; utilis&eacute; !',
-		'utilisateur_inducks'=>'Nom d\'utilisateur Inducks',
-		'utilisateur_valide'=>'Utilisateur valide',
-		'utilisateurs_inscrits'=>'utilisateurs sont inscrits sur DucksManager',
-		'valider'=>'Valider',
-		'valider_notations'=>'Valider les notations',
-		'verification_utilisateur'=>'V&eacute;rification utilisateur...',
-		'vider_liste'=>'Vider ma liste de num&eacute;ros',
-		'ville'=>'Ville'
-);?>
+define('','');
+define('ACCUEIL','Accueil');
+define('ACHAT_VENTE_NUMEROS','Achat/Vente de num&eacute;ros');
+define('ACHETE_LE','Achet&eacute; le');
+define('ACQUISITION_EXISTANTE','Acquisition existante !');
+define('ACTIVER_PARTAGE','Activer le partage de ma collection');
+define('ADRESSE','Adresse');
+define('AFFICHAGE_LISTE','Affichage de la liste (exemple)');
+define('AFFICHER_NUMEROS_POSSEDES','Afficher les num&eacute;ros poss&eacute;d&eacute;s');
+define('AFFICHER_NUMEROS_MANQUANTS','Afficher les num&eacute;ros manquants');
+define('AFFICHER_POURCENTAGES','Afficher en pourcentages');
+define('AFFICHER_VALEURS_REELLES','Afficher en valeurs r&eacute;elles');
+define('AGRANDIR_COLLECTION','Agrandir ma collection');
+define('AJOUTER_BOUQUINERIE','Ajouter la bouquinerie');
+define('AJOUTER_MAGAZINE','Ajouter un magazine');
+define('ANALYSE_LISTE','Analyse de la liste...');
+define('ANNONCE_AGRANDIR_COLLECTION1','Vous pouvez &agrave; pr&eacute;sent utiliser DucksManager pour agrandir votre collection en fonction des auteurs que vous appr&eacute;ciez !<br />');
+define('ANNONCE_AGRANDIR_COLLECTION2','Cliquez');
+define('ANNONCE_AGRANDIR_COLLECTION3',' pour en savoir plus!');
+define('ASSOCIER_DATE_ACHAT','Associer avec une date d\'achat');
+define('ATTENTION_MOT_DE_PASSE_INDUCKS','Attention ! Si vous souhaitez utiliser le m&ecirc;me mot de passe pour votre collection DucksManager et votre compte Inducks, votre mot de passe Inducks doit obligatoirement &ecirc;tre compos&eacute; de plus de 6 caract&egrave;res !');
+define('AUCUN_AUTEUR_SURVEILLE','Aucun auteur surveill&eacute;');
+define('AUCUNE_ACQUISITION','Aucune acquisition enregistr&eacute;e');
+define('AUCUNE_DATE_ACQUISITION','Vous n\'avez entr&eacute; aucune date d\'acquisition pour le moment');
+define('AUCUNE_NOTE','Aucune note');
+define('AUCUN_NUMERO_IMPORTE','Aucun num&eacute;ro n\'est r&eacute;pertori&eacute; pour ');
+define('AUCUN_NUMERO_INDUCKS','DucksManager n\'a trouv&eacute; aucun num&eacute;ro dans votre compte Inducks !');
+define('AUCUN_NUMERO_POSSEDE_1','Vous ne poss&eacute;dez aucun num&eacute;ro ! Cliquez ');
+define('AUCUN_NUMERO_POSSEDE_2','pour en ajouter &agrave; votre collection !');
+define('AUTEUR_DEJA_DANS_LISTE','Cet auteur est d&eacute;j&agrave; dans votre liste !');
+define('AUTEURS','Auteurs');
+define('AUTEURS_COURT','Statistiques sur les auteurs');
+define('AUTEURS_FAVORIS','Mes auteurs favoris');
+define('AUTEURS_FAVORIS_TEXTE','Trouvez quels magazines acheter en fonction des auteurs que vous aimez');
+define('AUTEURS_FAVORIS_INTRO_1','Entrez les noms de vos auteurs pr&eacute;f&eacute;r&eacute;s puis cliquez sur le bouton "Ajouter" pour que DucksManager le privil&eacute;gie dans la recherche de magazines.');
+define('AUTEURS_NON_NOTES','Vous n\'avez pas encore not&eacute; vos auteurs favoris. Passez &agrave; l\'onglet "Pr&eacute;f&eacute;rences d\'auteurs pour le faire.');
+define('AUTRES','Autres');
+define('AVEC_ACQUISITION','avec la date d\'acquisition');
+define('AVEC_ETAT','avec l\'&eacute;tat');
+define('BASE_DONNEES','Base de donn&eacute;es DucksManager');
+define('BIENVENUE','Bienvenue sur DucksManager !');
+define('BON','Bon');
+define('CALCUL_EN_COURS','Calcul en cours...');
+define('CALCUL_TERMINE','Calcul termin&eacute;. La page va se recharger...');
+define('CALCULS_PAS_ENCORE_FAITS','Les calculs n\'ont pas encore &eacute;t&eacute; effectu&eacute;s. Lancez les statistiques manuellement ou attendez demain !');
+define('CHARGEMENT','Chargement');
+define('CLASSEMENT','Classement');
+define('CLASSEMENT_COURT','Mon classement');
+define('CLASSIQUE_ABREGE_DESCRIPTION','Cet affichage permet de consulter le nombre de num&eacute;ros poss&eacute;d&eacute;s pour un magazine..');
+define('CLASSIQUE_ABREGE_MOINS_1','Pas vraiment une liste');
+define('CLASSIQUE_ABREGE_MOINS_2','Impossible d\'ajouter des num&eacute;ros manuellement');
+define('CLASSIQUE_ABREGE_PLUS_1','Tr&egrave;s succint');
+define('CLASSIQUE_DESCRIPTION','Liste "classique", facile &agrave; utiliser.');
+define('CLASSIQUE_MOINS_1','Difficult&eacute;s pour rep&eacute;rer une s&eacute;rie continue de num&eacute;ros');
+define('CLASSIQUE_MOINS_2','Difficult&eacute;s pour ajouter un num&eacute;ro manuellement sans perturber l\'ordre');
+define('CLASSIQUE_MOINS_3','Avouez que cette liste manque de style ;-)');
+define('CLASSIQUE_PLUS_1','Simple d\'utilisation');
+define('CLIC_IMPRESSION','Cliquez ici pour imprimer votre collection !');
+define('CODE_POSTAL','Code postal');
+define('COLLECTION_INDUCKS','Collection Inducks');
+define('COLLECTION','Collection');
+define('COMMENT_PARTAGER_COLLECTION','Si vous souhaitez que d\'autres utilisateurs puissent acc&eacute;der &agrave; votre collection, sp&eacute;cifiez cette option sur votre');
+define('COMMENT_S_IDENTIFIER','Cliquez sur "Ouvrir ma collection", dans le menu, pour vous identifier.');
+define('COMMENTAIRES_BOUQUINERIE','Commentaires');
+define('COMMENTAIRES_BOUQUINERIE_EXEMPLE','Ambiance, exemples de prix,...');
+define('COMPLETER_SERIES','Compl&eacute;ter mes s&eacute;ries');
+define('COMPLETER_SERIES_TEXTE','Trouvez quels num&eacute;ros acheter pour compl&eacute;ter vos s&eacute;ries');
+define('COMPTE_INDUCKS','Compte Inducks');
+define('COMPTE_SUPPRIME_DECONNECTE','Votre compte a &eacute;galement &eacute;t&eacute; supprim&eacute;. Vous avez &eacute;t&eacute; d&eacute;connect&eacute;(e).');
+define('CONFIRMER','Confirmer ?');
+define('CONNECTE_EN_TANT_QUE','Connect&eacute;(e)<br />en tant que ');
+define('CONNEXION','Connexion');
+define('CONNEXION_INDUCKS','Connexion &agrave; Inducks...');
+define('CONNEXION_REUSSIE','Connexion r&eacute;ussie.');
+define('CONSERVER_DATE_ACHAT','Conserver la date d\'achat');
+define('CONSERVER_ETAT_ACTUEL','Conserver l\'&eacute;tat actuel');
+define('CONSERVER_VOLONTE_VENTE','Conserver la volont&eacute; de vente');
+define('CONTACT_UTILISATEURS','Contacter d\'autres utilisateurs de DucksManager');
+define('CONTINUER_OUI_NON','Continuer ?');
+define('CREER_DATE_ACHAT','Cr&eacute;er une date d\'achat');
+define('DATE','Date');
+define('DATE_INVALIDE','Date invalide !');
+define('DATE_QUESTION','A quelle date avez-vous effectué l\'achat ? (JJ/MM/AAAA)');
+define('DATE_NON_SPECIFIEE','Date non sp&eacute;cifi&eacute;e');
+define('DATES_EXISTANTES','Dates existantes');
+define('DE','de');
+define('DEBUG_DESCRIPTION','Liste "debug", principalement destin&eacute;e aux d&eacute;veloppeurs.');
+define('DEBUG_MOINS_1','Difficult&eacute;s pour rep&eacute;rer une s&eacute;rie continue de num&eacute;ros');
+define('DEBUG_MOINS_2','Difficult&eacute;s pour ajouter un num&eacute;ro sans perturber l\'ordre');
+define('DEBUG_MOINS_3','Prend une ligne par num&eacute;ro');
+define('DEBUG_MOINS_4','Pas joli !');
+define('DEBUG_PLUS_1','Pratique pour debugger les listes corrompues');
+define('DECONNEXION','D&eacute;connexion');
+define('DECONNEXION_OK','Vous avez &eacute;t&eacute; d&eacute;connect&eacute(e).');
+define('DEPARTEMENT','D&eacute;partement ');
+define('DESASSOCIER_DATE_ACHAT','D&eacute;sassocier de la date d\'achat');
+define('DESCRIPTION','Description');
+define('DESCRIPTION_INVALIDE','Votre description doit faire moins de 30 caractères');
+define('DESCRIPTION_QUESTION','Entrez une courte description correspondant à cet achat');
+define('DMSPIRAL_DESCRIPTION','Liste en spirale, plut&ocirc;t jolie, surtout utile pour les magazines avec peu de num&eacute;ros.');
+define('DMSPIRAL_MOINS_1','Prend beaucoup d\'espace pour les magazines &agrave; fr&eacute;quence &eacute;lev&eacute;e (Journal de Mickey,...)');
+define('DMSPIRAL_MOINS_2','Parfois laborieux pour rep&eacute;rer un num&eacute;ro ou l\'ajouter');
+define('DMSPIRAL_MOINS_3','Ce mode de liste est actuellement en d&eacute;veloppement');
+define('DMSPIRAL_PLUS_1','Assez esth&eacute;tique');
+define('DMSPIRAL_PLUS_2','Peut prendre en compte l\'&eacute;tat du num&eacute;ro (Mauvais &eacute;tat, bon &eacute;tat,...)');
+define('DMSPIRAL_PLUS_3','Reconaissance rapide des s&eacute;ries de num&eacute;ros et des num&eacute;ros manquants');
+define('DMTABLE_DESCRIPTION','La liste "DMtable", condens&eacute;e et tr&egrave;s pratique.');
+define('DMTABLE_MOINS_1','Petit temps d\'adaptation n&eacute;cessaire pour la recherche de num&eacute;ros dans la table');
+define('DMTABLE_MOINS_2','Quelques problèmes lorsque l\'on poss&egrave;de de nombreux num&eacute;ros avec la m&ecirc;me unit&eacute; (par exemple 100, 200 et 400). Dans ce cas la case correspondante est &eacute;largie.');
+define('DMTABLE_PLUS_1','Affichage condens&eacute; (4 lignes de texte maximum par magazine)');
+define('DMTABLE_PLUS_2','Les doublons peuvent &ecirc;tre repr&eacute;sent&eacute;s');
+define('DMTABLE_PLUS_3','The purchase date can be represented');
+define('EMAIL_ENVOYE','Un e-mail vient d\'&ecirc;tre envoy&eacute; au webmaster. Si votre bouquinerie est valide, elle sera ajout&eacute;e sur le site tr&egrave;s prochainement.');
+define('ENREGISTRER_CHANGEMENTS','Enregistrer les changements');
+define('ENTREZ_IDENTIFIANTS_INDUCKS','Merci d\'entrer vos identifiants de compte Inducks');
+define('ERREUR_CONNEXION_INDUCKS','Erreur de connexion &agrave; Inducks!');
+define('ERREUR_EXECUTION_REQUETE','Erreur lors de l\'&eacute;x&eacute;cution de la requete !');
+define('ERREUR_LECTURE_NUMEROS','Erreur lors de la lecture de la liste de num&eacute;ros');
+define('ERREUR_RECUPERATION_INDUCKS','Erreur lors de la r&eacute;cup&eacute;ration des num&eacute;ros depuis Inducks !');
+define('ET','et');
+define('ETAT_BON','En bon &eacute;tat');
+define('ETAT_EXCELLENT','En excellent &eacute;tat');
+define('ETAT_INDEFINI','En &eacute;tat ind&eacute;fini');
+define('ETAT_MANQUANTS','Manquants');
+define('ETAT_MAUVAIS','En mauvais &eacute;tat');
+define('ETAT_MOYEN','En moyen &eacute;tat');
+define('ETATS_MAGAZINES','Part des états des magazines dans la collection');
+define('ETATS_NUMEROS','Etats des num&eacute;ros');
+define('ETATS_NUMEROS_COURT','Etats des num&eacute;ros');
+define('EXCELLENT','Excellent');
+define('EXPLICATION_NOTATION_AUTEURS1','D&eacute;placez le curseur puis cliquez pour valider l\'appr&eacute;ciation que vous associez &agrave; chaque auteur.');
+define('EXPLICATION_NOTATION_AUTEURS2','Gr&acirc;ce &agrave; cette notation, DucksManager d&eacute;terminera les magazines les plus susceptibles de vous int&eacute;resser.');
+define('EXPORTER_INDUCKS','Exporter vers ma collection Inducks');
+define('GERER_COLLECTION','G&eacute;rer ma collection');
+define('GESTION_ACQUISITIONS','Gestion de vos acquisitions');
+define('GESTION_ACQUISITIONS_COURT','Mes acquisitions');
+define('GESTION_COLLECTION','Gestion de ma collection');
+define('GESTION_COMPTE','Gestion de votre compte DucksManager');
+define('GESTION_COMPTE_COURT','Mon compte');
+define('GESTION_NUMEROS','Gestion des num&eacute;ros de votre collecton');
+define('GESTION_NUMEROS_COURT','Mes num&eacute;ros');
+define('GRATUIT_AUCUNE_LIMITE','DucksManager est gratuit et sans limite d\'utilisation.');
+define('HISTOIRE','histoire');
+define('HISTOIRES','histoires');
+define('HISTOIRES_NON_POSSEDEES_ETRANGER','Histoires non possédés publiées à l\'étranger uniquement');
+define('HISTOIRES_NON_POSSEDEES_PAYS','Histoires non possédés publiées en France');
+define('HISTOIRES_POSSEDEES','Histoires possédées');
+define('ICI','ici');
+define('IDENTIFIANTS_INCORRECTS','Identifiants incorrects !');
+define('IDENTIFICATION_OBLIGATOIRE','Vous devez &ecirc;tre connect&eacute;(e) pour acc&eacute;der &agrave; cette page.');
+define('IDENTIFIEZ_VOUS','Identifiez-vous pour acc&eacute;der &agrave; votre compte DucksManager.');
+define('IMPORTATION_EN_COURS','L\'importation depuis Inducks est en cours...');
+define('IMPORTATION_NUMEROS','Importation des num&eacute;ros...');
+define('IMPORT_IMPOSSIBLE_SI_CONNECTE1','Pour l\'instant, cette fonctionnalit&eacute; ne peut pas &ecirc;tre ex&eacute;cut&eacute;e lorsque vous &ecirc;tes connect&eacute;...');
+define('IMPORT_IMPOSSIBLE_SI_CONNECTE2','Pour utiliser l\'import de num&eacute;ros, d&eacute;connectez-vous puis cliquez sur "Importer ma collection Inducks", &agrave; partir du menu.');
+define('IMPORT_IMPOSSIBLE_SI_CONNECTE3','Vous aurez alors la possibilit&eacute; de vous r&eacute;inscrire.');
+define('IMPORT_UTILISATEUR_EXISTANT1','Vous poss&eacute;dez d&eacute;j&agrave; un compte DucksManager. Votre collection Inducks sera donc ajout&eacute;e &agrave; celle de DucksManager de la mani&egrave;re suivante :');
+define('IMPORT_UTILISATEUR_EXISTANT2_1','Si vous poss&eacute;dez des num&eacute;ros communs dans les 2 collections, ils seront conserv&eacute;s dans votre compte DucksManager, ainsi que les dates d\'acquisition, &eacute;tats, etc. associ&eacute;s.');
+define('IMPORT_UTILISATEUR_EXISTANT2_2','Si des num&eacute;ros apparaissent dans votre collection Inducks mais pas dans celle de DucksManager, les num&eacute;ros seront ajout&eacute;s &agrave; DucksManager.');
+define('IMPORT_UTILISATEUR_EXISTANT2_3','Inversement, si des num&eacute;ros sont pr&eacute;sents sur DucksManager mais pas sur Inducks, ils seront supprim&eacute;s de DucksManager.');
+define('IMPORTER_INDUCKS','Importer ma collection Inducks');
+define('IMPRIMER_COLLECTION','Imprimer ma collection');
+define('IMPRESSION_COLLECTION','Impression de la collection');
+define('INDEFINI','Indéfini');
+define('INSCRIPTION','Inscription');
+define('INSCRIPTION_EN_COURS','Inscription...');
+define('INSCRIPTION_REUSSIE','Inscription r&eacute;ussie!');
+define('INSCRIVEZ_VOUS','Inscrivez-vous !');
+define('INTRO_ACHAT_VENTE','Cette page vous permet de contacter d\'autres utilisateurs de DucksManager qui ont accept&eacute; de partager leur collection.');
+define('INTRO_ACQUISITIONS1','Sur cette page vous pouvez cr&eacute;er, modifier ou supprimer vos dates d\'acquisition.');
+define('INTRO_ACQUISITIONS2','Entrer une date d\'acquisition vous permet d\'associer une date et une description &agrave; l\'achat d\'un ou plusieurs magazines.');
+define('INTRO_BOUQUINERIES','Cette page vous permet de trouver pr&egrave;s de chez vous des bouquineries qui proposent fr&eacute;quemment des magazines Disney.');
+define('INTRO_COMPLETER_SERIES','Cette page vous aide &agrave; d&eacute;terminer quels magazines vous devez acheter en priorit&eacute; pour compl&eacute;ter vos s&eacute;ries de num&eacute;ros.');
+define('INTRO_IMPRESSION_COLLECTION1','Il n\'est pas toujours facile de cr&eacute;er une liste de num&eacute;ros !');
+define('INTRO_IMPRESSION_COLLECTION2','Avec DucksManager, vous avez tous les choix ! Des listes <b>les plus classiques</b>, mais coûteuses en place, aux plus ing&eacute;nieuses et <b>de taille minimale</b>, c\'est vous qui d&eacute;cidez!');
+define('INTRO_IMPRESSION_COLLECTION3','Vous trouverez des informations d&eacute;taill&eacute;es sur les formats de liste que DucksManager peut utiliser pour imprimer votre liste ci-dessous : ');
+define('INTRO_NOUVELLE_BOUQUINERIE','Entrez ci-dessous les informations sur la bouquinerie que vous connaissez, puis entrez des exemples de prix de magazines.');
+define('INTRO_NUMEROS_RECOMMANDES','Les 20 num&eacute;ros suivants sont ceux qui sont les plus susceptibles de vous int&eacute;resser, d\'apr&egrave;s vos go&ucirc;ts :');
+define('L10N_INTROUVABLE','Localisation introuvable pour ');
+define('LANCER_CALCUL','Lancer le calcul des statistiques');
+define('LANCER_CALCUL_MANUELLEMENT','Vous pouvez lancer les statistiques manuellement, mais le calcul peut prendre plusieurs minutes.');
+define('LANCER_CALCUL_SUGGESTIONS','Lancer le calcul des suggestions');
+define('LANCER_CALCUL_SUGGESTIONS_MANUELLEMENT','Vous pouvez lancer le calcul des suggestions manuellement, mais il peut prendre plusieurs minutes.');
+define('LEGENDE_NUMEROS','L&eacute;gende num&eacute;ros');
+define('LES','Les');
+define('LICENCE_INDUCKS1','Ce site se base en partie sur les donn&eacute;es du site Inducks.');
+define('LICENCE_INDUCKS2','Cliquez ici pour lire la licence Inducks.');
+define('LICENCE_INDUCKS3','Toutes les images de personnages et / ou produits Disney: &copy; The Walt Disney Company.');
+define('LISTE_AUTEURS_INTRO','Votre liste d\'auteurs est la suivante : ');
+define('LISTE_BOUQUINERIES','Liste des bouquineries');
+define('LISTES_IDENTIQUES','Vos collections Inducks et DucksManager sont identiques. Aucune action n\'est requise.');
+define('MAGAZINE','Magazine');
+define('MAGAZINES','Magazines');
+define('MAGAZINES__LOWERCASE','magazines');
+define('MAGAZINES_COURT','Ma collection de magazines');
+define('MARQUER_A_VENDRE','Marquer comme "A vendre"');
+define('MARQUER_PAS_A_VENDRE','Enlever la mention "A vendre"');
+define('MARQUER_BON_ETAT','Marquer comme en bon &eacute;tat');
+define('MARQUER_ETAT_MOYEN','Marquer comme en &eacute;tat moyen');
+define('MARQUER_MAUVAIS_ETAT','Marquer comme en mauvais &eacute;tat');
+define('MARQUER_NON_POSSEDE','Marquer comme non-poss&eacute;d&eacute;(s)');
+define('MARQUER_POSSEDE','Marquer comme poss&eacute;d&eacute;(s)');
+define('MAUVAIS','Mauvais');
+define('MERCI_CONTRIBUTION','Merci pour votre contribution !');
+define('MISE_A_JOUR','Mise &agrave; jour...');
+define('MODIFIER_ACQUISITION','Modifier cette acquisition');
+define('MODIFICATIONS_OK','Vos modifications ont &eacute;t&eacute; prises en compte.');
+define('MOT_DE_PASSE','Mot de passe');
+define('MOT_DE_PASSE_6_CHAR','Mot de passe (au moins 6 caract&egrave;res)');
+define('MOT_DE_PASSE_6_CHAR_ERREUR','Le mot de passe doit comporter au moins 6 caract&egrave;res !');
+define('MOT_DE_PASSE_CONF','Mot de passe (confirmation)');
+define('MOT_DE_PASSE_INDUCKS','Mot de passe Inducks');
+define('MOTS_DE_PASSE_DIFFERENTS','Les deux mots de passe ne correspondent pas !');
+define('MOYEN','Moyen');
+define('NOM_BOUQUINERIE','Nom de la bouquinerie');
+define('NOMBRE_HISTOIRES','Nombre d\'histoires');
+define('NOM_UTILISATEUR','Nom d\'utilisateur');
+define('NON','Non');
+define('NON_CONNECTE','Non connect&eacute;(e)');
+define('NON_NUMERAUX','Non-num&eacute;raux');
+define('NOUVEAU','Nouveau!');
+define('NOUVEAU_MAGAZINE','Nouveau magazine');
+define('NOUVEL_ACHAT','Nouvel achat');
+define('NOUVELLE_ACQUISITION_SAUVEGARDER','Sauvegarder la nouvelle acquisition');
+define('NOUVELLE_COLLECTION','Nouvelle collection (Inscription)');
+define('NOUVELLE_DATE_ACHAT','Nouvelle date d\'achat...');
+define('NUMERO','num&eacute;ro');
+define('NUMERO_CONTIENT','Ce num&eacute;ro contient');
+define('NUMERO_SELECTIONNE','num&eacute;ro s&eacute;lectionn&eacute;');
+define('NUMEROS','num&eacute;ros');
+define('NUMEROS_SELECTIONNES','num&eacute;ros s&eacute;lectionn&eacute;s');
+define('NUMEROS__GRAPHIQUE','numéros');
+define('NUMEROS_A_AJOUTER','num&eacute;ros vont &ecirc;tre ajout&eacute;s &agrave; DucksManager');
+define('NUMEROS_A_SUPPRIMER','num&eacute;ros vont &ecirc;tre supprim&eacute;s de DucksManager');
+define('NUMEROS_COMMUNS','num&eacute;ros sont communs aux deux collections');
+define('NUMEROS_IMPORTES','num&eacute;ros import&eacute;s.');
+define('NUMEROS_MANQUANTS','Numéros manquants');
+define('NUMEROS_POSSEDES','Numéros possédés');
+define('NUMEROS_REFERENCES','Numéros référencés');
+define('NUMEROS_SELECTIONNES_ENREGISTRES','num&eacute;ros s&eacute;lectionn&eacute;s seront enregistr&eacute;s dans votre collection');
+define('NUMEROS_SUPPRIMES','Les num&eacute;ros de votre collection ont &eacute;t&eacute; supprim&eacute;s');
+define('OK','OK');
+define('OPERATION_IRREVERSIBLE','Attention ! Cette op&eacute;ration est irr&eacute;versible !');
+define('OPERATIONS_EXECUTEES','Les op&eacute;rations ont &eacute;t&eacute; ex&eacute;cut&eacute;es avec succ&egrave;s.');
+define('OPTIONS','Options');
+define('OUI','Oui');
+define('OUVRIR_COLLECTION','Ouvrir ma collection (Connexion)');
+define('PAGE_OPTIONS','page d\'options DucksManager');
+define('PARAMETRAGE_COMPTE','Param&eacute;trage de votre compte DucksManager');
+define('PARAMETRAGE_COMPTE_COURT','Mes options');
+define('PART_MAGAZINES_COLLECTION','Part des magazines dans la collection');
+//		define('PARTICIPEZ_AU_DEVELOPPEMENT','Participez au d&eacute;veloppement de DucksManager : testez-le !');
+define('PAYS_PUBLICATION','Pays de publication');
+define('PHRASE_MAINTENANCE_INDUCKS1','Le site Internet');
+define('PHRASE_MAINTENANCE_INDUCKS2','sur lequel se base DucksManager, semble être en maintenance');
+define('PHRASE_MAINTENANCE_INDUCKS3','Certaines pages de DucksManager peuvent ne pas fonctionner correctement.');
+define('POSSESSION_HISTOIRES_AUTEURS','Possession des histoires d\'auteurs');
+define('POSSESSION_MAGAZINES_1','Vous poss&eacute;dez des num&eacute;ros pour les magazines suivants');
+define('POSSESSION_MAGAZINES_2','Cliquez sur l\'un d\'eux pour &eacute;diter sa liste !');
+define('POSSESSION_NUMEROS','Possession des numéros');
+define('POUR_VOIR_LA_VIDEO','pour voir cette vid&eacute;o');
+define('PREFERENCES_AUTEURS','Pr&eacute;f&eacute;rences d\'auteurs');
+define('PRESENTATION1','DucksManager est un outil vous permettant de g&eacute;rer votre liste de magazines Disney en toute simplicit&eacute;.');
+define('PRESENTATION2','De la gestion simple de votre collection &agrave; leur impression en tant que liste, en passant par des statistiques compl&egrave;tes, toutes les fonctions que vous attendiez d\'un gestionnaire de collection sont l&agrave; !');
+//		define('PRESENTATION3','Notez que DucksManager est en d&eacute;veloppement. Cela signifie que les fonctionnalit&eacute;s sont ajout&eacute;es au fur et &agrave; mesure et que certaines peuvent &ecirc;tre incompl&egrave;tes.');
+define('PRESENTATION_AUTEURS_FAVORIS','Cette rubrique vous permet de trouver quels magazines chercher pour agrandir votre collection en privil&eacute;giant les magazines contenant des histoires de vos auteurs favoris.');
+define('PRESENTATION_BOUQUINERIE1','Vous connaissez une bouquinerie sympa ? Faites-en profiter d\'autres collectionneurs !');
+define('PRESENTATION_GENERALE','Une gestion de collection compl&egrave;te, des statistiques personnalis&eacute;es, un &eacute;ventail d\'outils pour agrandir votre collection, et bien d\'autres choses...');
+define('PRESENTATION_GERER_1','Si la qualit&eacute; de votre collection vous int&eacute;resse, sp&eacute;cifiez l\'&eacute;tat de conservation des num&eacute;ros.');
+define('PRESENTATION_GERER_2','Vous pouvez aussi indiquer leurs dates d\'achat.');
+define('PRESENTATION_GERER_3','Vous pr&eacute;f&eacute;rez vendre des num&eacute;ros ? Proposez-les aux autres utilisateurs de DucksManager gr&acirc;ce au menu contextuel.');
+define('PRESENTATION_GERER_TITRE','Pour chaque magazine, s&eacute;lectionnez les num&eacute;ros que vous poss&eacute;dez');
+define('PRESENTATION_STATS_1','Mises &agrave; jour quotidiennement pour prendre en compte tous vos changements, les statistiques de DucksManager vous informent sur les num&eacute;ros que vous poss&eacute;dez, et vous pr&eacute;cisent combien en acqu&eacute;rir pour compl&eacute;ter des s&eacute;ries.');
+define('PRESENTATION_STATS_2','Si vous avez sp&eacute;cifi&eacute; l\'&eacute;tat de chacun de vos num&eacute;ros, un graphique les r&eacute;sumera.');
+define('PRESENTATION_STATS_3','Vous aimez un sc&eacute;nariste ou un dessinateur en particulier ? DucksManager g&eacute;n&egrave;re pour vous un histogramme r&eacute;sumant la proportion des histoires que vous poss&eacute;dez de cet auteur.');
+define('PRESENTATION_STATS_TITRE','Des statistiques compl&egrave;tes et tous les outils pour agrandir votre collection !');
+define('PRIX_HONNETES','Nous comptons sur votre honn&ecirc;tet&eacute; concernant les prix si vous en mentionnez.');
+define('PROBLEME_BD','Probl&egrave;me avec la base de donn&eacute;es !');
+define('PROPOSE_PAR','Propos&eacute;e par ');
+define('PROPOSER_BOUQUINERIE','Proposer une bouquinerie');
+define('PROPOSER_MAGAZINES_POSSEDES','Me proposer uniquement des magazines appartenant &agrave; ma liste');
+define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.');
+define('QUESTION_EXECUTER_OPS_INDUCKS','Voulez-vous ex&eacute;cuter ces op&eacute;rations ?');
+define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
+define('RECHERCHER_BOUQUINERIES','Chercher des bouquineries');
+define('RECHERCHER_BOUQUINERIES_TEXTE','Rechercher des bouquineries pr&egrave;s de chez vous');
+define('RECUPERATION_LISTE','R&eacute;cup&eacute;ration liste...');
+define('RECUPERATION_NUMEROS','R&eacute;cup&eacute;ration...');
+define('REFERENCES','référencés');
+define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Remplissez les informations ci-dessous pour que DucksManager d&eacute;termine le nouveau magazine pour lequel vous souhaitez ajouter des num&eacute;ros.');
+define('REMPLIR_PAYS_ET_MAGAZINE','Vous devez remplir les champs correspondant au pays et au nom du magazine\n pour lequel vous souhaitez ajouter des num&eacute;ros !');
+define('RESULTAT_NUMEROS_INDUCKS','DucksManager a trouv&eacute; les num&eacute;ros suivants sur votre compte Inducks.');
+define('RESULTATS_SUGGESTIONS_MAGS','R&eacute;sultats des suggestions de magazines de DucksManager');
+define('SELECTIONNER_DATE_ACHAT','Vous devez selectionner une date d\'achat !');
+define('SELECTIONNER_MAGAZINE','Veuillez s&eacute;lectionner un magazine !');
+define('SELECTIONNER_NOUVELLE_DATE_ACQUISITION','S&eacute;lectionnez "Nouvelle date d\'acquisition" dans la liste d&eacute;roulante pour en cr&eacute;er une.');
+define('SELECTIONNER_NUMEROS_A_MARQUER','Sélectionnez d\'abord les numéros à marquer !');
+define('SELECTIONNER_PAYS','S&eacute;lectionnez un pays');
+define('STATISTIQUES_AUTEURS_INTRO_1','Entrez les noms de vos auteurs pr&eacute;f&eacute;r&eacute;s puis cliquez sur le bouton "Ajouter" pour voir si vous poss&eacute;dez toutes ses histoires !');
+define('STATISTIQUES_AUTEURS_INTRO_2','Au fur et &agrave; mesure que vous entrerez le nom de l\'auteur, des suggestions apparaitront.');
+define('STATISTIQUES_COLLECTION','Statistiques de ma collection');
+define('STATISTIQUES_QUOTIDIENNES','Les statistiques sont mises &agrave; jour quotidiennement.');
+define('SUCCES','Succ&egrave;s!');
+define('SUGGESTIONS_ACHATS','Suggestions d\'achats');
+define('SUGGESTIONS_ACHATS_QUOTIDIENNES','Les suggestions d\'achat sont mises &agrave; jour quotidiennement.');
+define('SUPPRESSION_ACQUISITION_CONFIRMATION','Confirmez-vous la suppression de cette acquisition ?\nLes numéros correspondant à cette date d\'acquisition seront conservés.');
+define('SUPPRIMER','Supprimer');
+define('SUPPRIMER_ACQUISITION','Supprimer cette acquisition');
+define('SUPPRIMER_COMPTE','Supprimer mon compte DucksManager');
+define('SUR','sur');
+define('TELECHARGER_FLASH','T&eacute;l&eacute;chargez Flash');
+define('TERMINE','Termin&eacute;.');
+define('TEXTE_SELECTIONNER_NUMEROS1','<b>S&eacute;lectionnez dans la liste ci-dessous les num&eacute;ros</b> que vous avez ajout&eacute; ou retir&eacute; de votre collection.');
+define('TEXTE_SELECTIONNER_NUMEROS2','Pour s&eacute;lectionner plusieurs num&eacute;ros, laissez votre souris appuy&eacute;e pendant que vous la d&eacute;placez sur les num&eacute;ros.');
+define('TEXTE_SELECTIONNER_NUMEROS3','Une fois que vous avez termin&eacute; votre s&eacute;lection, <b>faites un clic droit</b> pour modifier les caract&eacute;ristiques de ces num&eacute;ros.');
+define('TITRE','DucksManager : Gestion de votre collection de Mickey Parade, Picsou Magazine, Journal de Mickey,...');
+define('TOTAL','Total');
+define('UTILISATEUR_EXISTANT','Ce nom d\'utilisateur est d&eacute;j&agrave; utilis&eacute; !');
+define('UTILISATEUR_INDUCKS','Nom d\'utilisateur Inducks');
+define('UTILISATEUR_VALIDE','Utilisateur valide');
+define('UTILISATEURS_INSCRITS','utilisateurs sont inscrits sur DucksManager');
+define('VALIDER','Valider');
+define('VALIDER_NOTATIONS','Valider les notations');
+define('VERIFICATION_UTILISATEUR','V&eacute;rification utilisateur...');
+define('VIDER_LISTE','Vider ma liste de num&eacute;ros');
+define('VILLE','Ville');
+?>

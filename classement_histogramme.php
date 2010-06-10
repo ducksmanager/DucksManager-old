@@ -21,7 +21,7 @@ require_once('Inducks.class.php');
 
 $d=new Database();
 if (!$d) {
-	echo L::_('probleme_bd');
+	echo PROBLEME_BD;
 	exit(-1);
 }
 $_SESSION['user']='nonoox';
@@ -37,7 +37,7 @@ if ($handle) {
    	fclose($handle);
 }
 else {
-	echo L::_('erreur_connexion_inducks');
+	echo ERREUR_CONNEXION_INDUCKS;
 	return false;
 }
 $regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
@@ -71,7 +71,7 @@ foreach($counts as $pays=>$magazines) {
 		fclose($handle);
 	}
 	else {
-		echo L::_('erreur_connexion_inducks');
+		echo ERREUR_CONNEXION_INDUCKS;
 	}
 	foreach($magazines as $magazine=>$cpt) {
 		$regex_nb_numeros='#<li><A HREF="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</A>&nbsp;<i>\(([^ ]+) num#';
@@ -85,7 +85,7 @@ foreach($counts as $pays=>$magazines) {
 			array_push($total,$nb[1]);
 		}
 		array_push($noms_magazines_courts,$magazine);
-		$noms_magazines[$magazine]=$liste_magazines[$magazine].' ['.$cpt.' '.($cpt==1?L::_('numero'):L::_('numeros')).' / '.$nb.' '.L::_('references').']';
+		$noms_magazines[$magazine]=$liste_magazines[$magazine].' ['.$cpt.' '.($cpt==1?NUMERO:NUMEROS).' / '.$nb.' '.REFERENCES.']';
 		$a=1;
 	}
 }
@@ -103,7 +103,7 @@ $graph->setBackgroundGradient(
 );
 
 
-$graph->title->set(L::_('possession_numeros'));
+$graph->title->set(POSSESSION_NUMEROS);
 $graph->title->setFont(new Tuffy(15));
 $graph->title->setColor(new Color(0x00, 0x00, 0x8B));
 
@@ -140,7 +140,7 @@ $plot->setBarPadding(0.15, 0.15);
 $plot->barShadow->smooth(TRUE);
 $plot->barShadow->setColor(new Color(200, 200, 200, 10));
 
-$group->legend->add($plot, L::_('numeros_references'), Legend::BACKGROUND);
+$group->legend->add($plot, NUMEROS_REFERENCES, Legend::BACKGROUND);
 $group->add($plot);
 
 // Add a second bar plot
@@ -150,7 +150,7 @@ $plot = new BarPlot($possede, 2, 2);
 $plot->setBarColor(new Orange);
 $plot->setBarPadding(0.15, 0.15);
 
-$group->legend->add($plot, L::_('numeros_possedes'), Legend::BACKGROUND);
+$group->legend->add($plot, NUMEROS_POSSEDES, Legend::BACKGROUND);
 $group->add($plot);
 
 $graph->add($group);

@@ -10,7 +10,7 @@ require_once('Inducks.class.php');
 $d=new Database();
 @session_start();
 if (!$d) {
-	echo L::_('probleme_bd');
+	echo PROBLEME_BD;
 	exit(-1);
 }
 $id_user=$d->user_to_id($_SESSION['user']);
@@ -41,7 +41,7 @@ foreach($counts as $pays=>$magazines) {
 		else {
 			$valeur=new pie_value($cpt,$magazine);
 			$valeur->set_tooltip($liste_magazines[$magazine]
-								 .utf8_encode('<br>'.L::_('numeros_possedes').' : '.$cpt.' ('.intval(100*$cpt/$total).'%)'));
+                                            .utf8_encode('<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.intval(100*$cpt/$total).'%)');
 			array_push($valeurs_magazines,$valeur);
 			//$cpt_magazines[$liste_magazines[$magazine].' ('.$cpt.')']=$cpt;
 		}
@@ -49,12 +49,12 @@ foreach($counts as $pays=>$magazines) {
 	$cpt_pays++;
 }
 if ($autres!=0) {
-	$valeur_autres=new pie_value($autres,L::_('autres'));
-	$valeur_autres->set_tooltip(utf8_encode(L::_('autres').' ('.$nb_magazines_autres.' '.L::_('magazines__lowercase').')'
-						 		.'<br>'.L::_('numeros_possedes').' : '.$autres.' ('.intval(100*$autres/$total).'%)'));
+	$valeur_autres=new pie_value($autres,AUTRES);
+	$valeur_autres->set_tooltip(utf8_encode(AUTRES).' ('.$nb_magazines_autres.' '.MAGAZINES__LOWERCASE.')'
+                                    .'<br>'.NUMEROS_POSSEDES.' : '.$autres.' ('.intval(100*$autres/$total).'%)');
 	array_push($valeurs_magazines,$valeur_autres);
 }
-$title=new title(L::_('part_magazines_collection'));
+$title=new title(PART_MAGAZINES_COLLECTION);
 $pie = new pie();
 $pie->set_alpha(0.6);
 $pie->set_start_angle( 35 );
@@ -102,7 +102,7 @@ function findSWF(movieName) {
     return document[movieName];
   }
 }
-    
+
 var data_1 = <?php echo $chart->toPrettyString(); ?>;
 
 </script>

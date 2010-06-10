@@ -7,20 +7,16 @@ include_once ('locales/lang.php');
 require_once('Format_liste.php');
 class DMspiral extends Format_liste {
 	function DMspiral() {
-		$this->les_plus=array(L::_('dmspiral_plus_1'),
-							  L::_('dmspiral_plus_2'),
-							  L::_('dmspiral_plus_3'));
-		$this->les_moins=array(L::_('dmspiral_moins_1'),
-							   L::_('dmspiral_moins_2'),
-							   L::_('dmspiral_moins_3'));
-		$this->description=L::_('dmspiral_description');
+		$this->les_plus=array(DMSPIRAL_PLUS_1,DMSPIRAL_PLUS_2,DMSPIRAL_PLUS_3);
+		$this->les_moins=array(DMSPIRAL_MOINS_1,DMSPIRAL_MOINS_2,DMSPIRAL_MOINS_3);
+		$this->description=DMSPIRAL_DESCRIPTION;
 	}
-	
+
 	function afficher($liste) {
 		foreach($liste as $pays=>$numeros_pays) {
 			foreach($numeros_pays as $magazine=>$numeros) {
 				$chaine='';
-				foreach($numeros as $numero_et_etat) { 
+				foreach($numeros as $numero_et_etat) {
 					$numero=$numero_et_etat[0];
 					$etat=$numero_et_etat[1];
 					$chaine.=$magazine.'!'.

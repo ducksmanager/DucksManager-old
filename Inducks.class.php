@@ -5,7 +5,7 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 class Inducks {
 	static $noms_complets;
-	
+
 	static function get_auteur($nom_auteur_abrege) {
 		$regex_auteur='#<font size=\+3><b><img[^>]+>[^&]*&nbsp; ([^<]+)</b></font>#isu';
 		$url='http://coa.inducks.org/creator.php?c='.$nom_auteur_abrege;
@@ -13,7 +13,7 @@ class Inducks {
 		preg_match($regex_auteur,$page,$auteur);
 		return $auteur[1];
 	}
-	
+
 	function get_numeros($pays,$magazine) {
 		$regex_magazine='#<a href=issue.php\?c='.$pays.'%2f'.$magazine.'[+]*([^>]*)>([^<]*)</a>#is';
 		$url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
@@ -26,7 +26,7 @@ class Inducks {
 		   	fclose($handle);
 		}
 		else {
-			echo L::_('erreur_connexion_inducks');
+			echo ERREUR_CONNEXION_INDUCKS;
 			return false;
 		}
 		preg_match_all($regex_magazine,$buffer,$numeros);
@@ -35,7 +35,7 @@ class Inducks {
 		}
 		return $numeros[0];
 	}
-	
+
 	function get_pays() {
 		$url='http://coa.inducks.org/legend-country.php?xch=1&lg=4';
 		$handle = @fopen($url, "r");
@@ -47,7 +47,7 @@ class Inducks {
 		   	fclose($handle);
 		}
 		else {
-			echo L::_('erreur_connexion_inducks');
+			echo ERREUR_CONNEXION_INDUCKS;
 			return false;
 		}
 		$regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
@@ -59,7 +59,7 @@ class Inducks {
 		array_multisort($liste_pays_courte,SORT_STRING);
 		return $liste_pays_courte;
 	}
-	
+
 	static function get_noms_complets_magazines($pays) {
 		global $codes_inducks;
 		if (!is_array(self::$noms_complets))
@@ -75,7 +75,7 @@ class Inducks {
 		   	fclose($handle);
 		}
 		else {
-			echo L::_('erreur_connexion_inducks');
+			echo ERREUR_CONNEXION_INDUCKS;
 		}
 		$regex_magazine='#<A HREF="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</A>&nbsp;#is';
 		$regex_pays='#; ([^:]+): publications</b></font>#is';
@@ -98,7 +98,7 @@ class Inducks {
 		self::$noms_complets[$pays]=$liste_magazines;
 		return $liste_magazines;
 	}
-	
+
 	function get_magazines($pays) {
 		$url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
 		$handle = @fopen($url, "r");
@@ -110,7 +110,7 @@ class Inducks {
 		   	fclose($handle);
 		}
 		else {
-			echo L::_('erreur_connexion_inducks');
+			echo ERREUR_CONNEXION_INDUCKS;
 			return false;
 		}
 		$regex_magazines='#<A HREF="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</A>&nbsp;#is';

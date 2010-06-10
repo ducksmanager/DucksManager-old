@@ -4,9 +4,9 @@ if (isset($_GET['lang'])) {
 }
 include_once ('locales/lang.php');
 class Affichage {
-	
+
 	function onglets($selected,$tab_onglets,$argument,$prefixe,$jump_lines) {
-		
+
 		echo '<ul class="tabnav">';
 		$cpt=0;
 		$nb_onglets=count($tab_onglets);
@@ -22,7 +22,7 @@ class Affichage {
                     }
                     //if ($jump_lines!=-1&&$cpt++%$jump_lines==0) echo '</tr><tr>';
                     echo '<li class="';
-                    if ($infos_lien[1]==L::_('ajouter_magazine'))
+                    if ($infos_lien[1]==AJOUTER_MAGAZINE)
                         echo 'nouveau ';
                     if ($infos_lien[0]==$selected)
                         echo 'active ';
@@ -38,20 +38,20 @@ class Affichage {
 		//echo '</table>';
 	}
 	function afficher_numeros($liste,$pays,$magazine,$numeros) {
-		
-		$etats=array('manque'=>L::_('etat_manquants'),
-				 'mauvais'=>L::_('etat_mauvais'),
-				 'moyen'=>L::_('etat_moyen'),
-				 'bon'=>L::_('etat_bon'),
-			 	 'excellent'=>L::_('etat_excellent'),
-				 'indefini'=>L::_('etat_indefini'));
+
+		$etats=array('manque'=>ETAT_MANQUANTS,
+				 'mauvais'=>ETAT_MAUVAIS,
+				 'moyen'=>ETAT_MOYEN,
+				 'bon'=>ETAT_BON,
+			 	 'excellent'=>ETAT_EXCELLENT,
+				 'indefini'=>ETAT_INDEFINI);
 		$cpt=0;
 		//print_r($liste->collection[$pays][$magazine]);
 		echo '<span id="pays" style="display:none">'.$pays.'</span>';
 		echo '<span id="magazine" style="display:none">'.$magazine.'</span>';
 		$d=new Database();
 		if (!$d) {
-			echo L::_('probleme_bd');
+			echo PROBLEME_BD;
 			exit(-1);
 		}
 		$id_user=$d->user_to_id($_SESSION['user']);
@@ -63,9 +63,9 @@ class Affichage {
 		echo '<tr><td rowspan="2"><span style="font-size:15pt;font-weight:bold;">'.$nom_complet.'</span></td>';
 		echo '<td align="right"><table>';
 		echo '<tr><td><input type="checkbox" id="sel_numeros_possede" checked="checked" onclick="changer_affichage(\'possede\')"/></td>'
-			 .'<td>'.L::_('afficher_numeros_possedes').'</td></tr>';
+			 .'<td>'.AFFICHER_NUMEROS_POSSEDES.'</td></tr>';
 		echo '<tr><td align="right"><input type="checkbox" id="sel_numeros_manque" checked="checked" onclick="changer_affichage(\'manque\')"/></td>'
-			 .'<td>'.L::_('afficher_numeros_manquants').'</td></tr>';
+			 .'<td>'.AFFICHER_NUMEROS_MANQUANTS.'</td></tr>';
 		echo '</table></td></tr>';
 		echo '</table>';
 		//echo '<pre>';print_r($liste);echo '</pre>';
@@ -96,7 +96,7 @@ class Affichage {
 					$resultat_date=$d->requete_select($requete_date_achat);
 					$regex_date='#([^-]+)-([^-]+)-(.+)#is';
 					$date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-					echo '&nbsp;'.L::_('achete_le').' '.$date;
+					echo '&nbsp;'.ACHETE_LE.' '.$date;
 				}
 			}
 			if ($av)
@@ -107,33 +107,33 @@ class Affichage {
 	}
 	function afficher_etiquettes() {
 		echo '<ol>';
-		echo '<li>'.L::_('texte_selectionner_numeros1').'<br />'
-				   .L::_('texte_selectionner_numeros2').'</li><br />';
-		echo '<li>'.L::_('texte_selectionner_numeros3');
-		
+		echo '<li>'.TEXTE_SELECTIONNER_NUMEROS1.'<br />'
+				   .TEXTE_SELECTIONNER_NUMEROS2.'</li><br />';
+		echo '<li>'.TEXTE_SELECTIONNER_NUMEROS3;
+
 		echo '</ol><br />';
 	}
-	
+
 	static function afficher_acquisitions($afficher_non_specifiee) {
-			
+
 		$d=new Database();
 		if (!$d) {
-			echo L::_('probleme_bd');
+			echo PROBLEME_BD;
 			exit(-1);
 		}
 		$id_user=$d->user_to_id($_SESSION['user']);
 		$requete_acquisition='SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
 		$liste_acquisitions=$d->requete_select($requete_acquisition);
 		if (count($liste_acquisitions)==0) {
-			echo L::_('aucune_date_acquisition').'<br />'
-				.L::_('selectionner_nouvelle_date_acquisition').'<br />';
+			echo AUCUNE_DATE_ACQUISITION.'<br />'
+				.SELECTIONNER_NOUVELLE_DATE_ACQUISITION.'<br />';
 		}
-		
-		echo '<select onchange="deselect_old(this)" multiple="multiple" id="date_acquisition">'; 
+
+		echo '<select onchange="deselect_old(this)" multiple="multiple" id="date_acquisition">';
 		if ($afficher_non_specifiee)
-			echo '<option onmouseup="effacer_infos_acquisition()">['.L::_('date_non_specifiee').']</option>';
+			echo '<option onmouseup="effacer_infos_acquisition()">['.DATE_NON_SPECIFIEE.']</option>';
 		if (count($liste_acquisitions)==0) {
-			echo '<option>['.L::_('aucune_acquisition').']</option>'; 
+			echo '<option>['.AUCUNE_ACQUISITION.']</option>';
 		}
 		foreach($liste_acquisitions as $acquisition) {
 			echo '<option label="'.$acquisition['ID_Acquisition'].'"';
@@ -144,7 +144,7 @@ class Affichage {
 				echo ' onmouseup="effacer_infos_acquisition()"';
 			echo '>['.$acquisition['Date'].'] '.$acquisition['Description'].'</option>';
 		}
-		echo '<option onmouseup="changer_date_acquisition(this,'.($afficher_non_specifiee?'true':'false').')">'.L::_('nouvelle_date_achat').'...</option>';
+		echo '<option onmouseup="changer_date_acquisition(this,'.($afficher_non_specifiee?'true':'false').')">'.NOUVELLE_DATE_ACHAT.'...</option>';
 		echo '</select>&nbsp;<span id="infos_liste_acquisition"></span>';
 	}
 }

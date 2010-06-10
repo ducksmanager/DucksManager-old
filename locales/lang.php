@@ -1,4 +1,5 @@
 <?php
+@session_start();
 $lang=array('fr'=>'Fran&ccedil;ais','en'=>'English');
 global $codes_inducks;$codes_inducks=array('en'=>0,'fr'=>4);
 if (!isset($_SESSION['lang'])) {
@@ -15,27 +16,14 @@ if (!isset($_SESSION['lang'])) {
 }
 @include_once ('locales/'.$_SESSION['lang'].'.php');
 @include_once ($_SESSION['lang'].'.php');
-L::setL10n($l10n);
+
 if (isset($_POST['index'])) {
 	if (strpos($_POST['index'],'~')===false)
-		echo L::_($_POST['index']);
+		echo constant(strtoupper ($_POST['index']));
 	else {
 		$arr_l10n=explode('~',$_POST['index']);
 		foreach ($arr_l10n as $str)
-			echo L::_($str).'~';
+                    echo constant(strtoupper ($str)).'~';
 	}
 		
-}
-class L {
-	static $l10n;
-	static function _($index) {
-		if (array_key_exists($index, self::$l10n))
-			return self::$l10n[$index];
-		else
-			return self::$l10n['l10n_introuvable'].' '.$index;
-	}
-	
-	static function setL10n($l10n) {
-		self::$l10n=$l10n;
-	}
 }

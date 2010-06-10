@@ -106,15 +106,15 @@ class Liste {
 				$counts[$pays][$magazine]=count($numeros);
 			}
 		}
-		$onglets=array(L::_('magazines')=>array('magazines',L::_('magazines_court')),
-					   L::_('classement')=>array('classement',L::_('classement_court')),
-					   L::_('etats_numeros')=>array('etats',L::_('etats_numeros_court')),
-					   L::_('auteurs')=>array('auteurs',L::_('auteurs_court')));
+		$onglets=array(MAGAZINES=>array('magazines',MAGAZINES_COURT),
+                               CLASSEMENT=>array('classement',CLASSEMENT_COURT),
+                               ETATS_NUMEROS=>array('etats',ETATS_NUMEROS_COURT),
+                               AUTEURS=>array('auteurs',AUTEURS_COURT));
 		Affichage::onglets($onglet,$onglets,'onglet','?action=stats',-1);
-	
+
 		if (count($counts)==0) {
-			echo L::_('aucun_numero_possede_1').'<a href="?action=gerer&onglet=ajout_suppr">'.L::_('ici').'</a> '
-				.L::_('aucun_numero_possede_2');
+			echo AUCUN_NUMERO_POSSEDE_1.'<a href="?action=gerer&onglet=ajout_suppr">'.ICI.'</a> '
+                            .AUCUN_NUMERO_POSSEDE_2;
 			return;
 		}
 		switch($onglet) {
@@ -123,11 +123,11 @@ class Liste {
 			break;
 			case 'classement':
 				echo '<iframe id="iframe_graphique" src="classement_histogramme2.php" style="border:0px"></iframe>';
-				
+
 				break;
 			case 'etats':
 				echo '<iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe>';
-				
+
 			break;
 			case 'auteurs':
 				$d=new Database();
@@ -141,7 +141,7 @@ class Liste {
 					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat NOT LIKE \'0000-00-00\'';
 					$resultat_calcul_effectue=$d->requete_select($requete_calcul_effectue);
 					if ($resultat_calcul_effectue[0]['cpt']==0) {
-						echo L::_('calculs_pas_encore_faits').'<br />';
+						echo CALCULS_PAS_ENCORE_FAITS.'<br />';
 					}
 					else {
 						echo '<iframe id="iframe_graphique" src="auteurs_histogramme.php" style="border:0px"></iframe>';
@@ -149,8 +149,8 @@ class Liste {
 				}
 				?><br /><br />
 				<?php
-				echo L::_('statistiques_auteurs_intro_1').'<br />';
-				echo L::_('statistiques_auteurs_intro_2').'<br />';
+				echo STATISTIQUES_AUTEURS_INTRO_1.'<br />';
+				echo STATISTIQUES_AUTEURS_INTRO_2.'<br />';
 				?>
 				<!-- <u>Note : </u>Seuls les histoires publi&eacute;es en France seront compt&eacute;es dans les statistiques.<br /> -->
 		        <form method="post" action="?action=stats&onglet=auteurs">
@@ -162,35 +162,35 @@ class Liste {
 				</form>
 				<div id="auteurs_ajoutes">
 				<br /><br />
-				<?php 
-				echo L::_('liste_auteurs_intro').'<br />';
+				<?php
+				echo LISTE_AUTEURS_INTRO.'<br />';
 				$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,false);
 				?>
 				</div>
 				<br />
 				<?php
-				echo L::_('statistiques_quotidiennes');
+				echo STATISTIQUES_QUOTIDIENNES;
 				if (count($resultat_auteurs_surveilles)>0) {
-					echo L::_('lancer_calcul_manuellement').'<br />';
-					?><button onclick="stats_auteur(<?php echo $id_user;?>)"><?php echo L::_('lancer_calcul');?></button>
+					echo LANCER_CALCUL_MANUELLEMENT.'<br />';
+					?><button onclick="stats_auteur(<?php echo $id_user;?>)"><?php echo LANCER_CALCUL;?></button>
 					<div id="resultat_stats"></div>
-				<?php 
+				<?php
 				}
-				echo '<br /><span style="color:red">'.L::_('nouveau').'</span>&nbsp;'
-					.L::_('annonce_agrandir_collection1').L::_('annonce_agrandir_collection2')
+				echo '<br /><span style="color:red">'.NOUVEAU.'</span>&nbsp;'
+					.ANNONCE_AGRANDIR_COLLECTION1.ANNONCE_AGRANDIR_COLLECTION2
 					.' <a href="?action=agrandir&onglet=auteurs_favoris">'
-					.L::_('ici').'</a>'.L::_('annonce_agrandir_collection3');
+					.ICI.'</a>';
 				?>
-				
+
 				<div id="update_stats"></div>
 				<span style="display:none" id="infos_maj"></span>
 				<br />
-				<?php 
+				<?php
 				$pays='fr';
-				
+
 			break;
-			
-			echo '<td>&nbsp;</td><td><table width="100%" border="1" cellspacing="2px" style="border-collapse:collapse;"><tr><td>'.L::_('nombre_histoires').'</td></tr>';
+
+			echo '<td>&nbsp;</td><td><table width="100%" border="1" cellspacing="2px" style="border-collapse:collapse;"><tr><td>'.NOMBRE_HISTOIRES.'</td></tr>';
 			//foreach($counts as $pays=>$magazines) {
 			echo '<tr><td colspan="2" width="300px"><u>'.$pays.'</u></td></tr>';
 			$auteurs=array('Don+Rosa');//,'Don+Rosa','Romano+Scarpa','Al+Taliaferro','Bruce+Hamilton','Massimo+De+Vita','Tony+Strobl');
@@ -266,14 +266,14 @@ class Liste {
 		}
 		return $cpt;
 	}
-	
+
 	function synchro_to_database($d,$id_user,$nouvelle_liste) {
 		$l_ducksmanager=$d->toList($id_user);
 		$l_ducksmanager->compareWith($nouvelle_liste,$id_user);
 
 	}
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-				
+
 		$liste_origine=$this->collection[$pays][$magazine];
 		foreach($liste as $numero) {
 			switch($etat) {
@@ -389,17 +389,17 @@ class Liste {
 		}
 		if ($id_user===false) {
 			echo '<ul>';
-			echo '<li>'.$numeros_a_ajouter.' '.L::_('numeros_a_ajouter');
+			echo '<li>'.$numeros_a_ajouter.' '.NUMEROS_A_AJOUTER;
 			echo $texte_a_ajouter;
 			echo '</li>';
-			echo '<li>'.$numeros_a_supprimer.' '.L::_('numeros_a_supprimer');
+			echo '<li>'.$numeros_a_supprimer.' '.NUMEROS_A_SUPPRIMER;
 			echo $texte_a_supprimer;
 			echo '</li>';
-			echo '<li>'.$numeros_communs.' '.L::_('numeros_communs').'</li>';
+			echo '<li>'.$numeros_communs.' '.NUMEROS_COMMUNS.'</li>';
 			echo '</ul>';
 			return $numeros_a_ajouter!=0 && $numeros_a_supprimer!=0;
 		}
-		else echo L::_('operations_excecutees'); 
+		else echo OPERATIONS_EXCECUTEES;
 	}
 
 	function afficher($type) {
@@ -437,33 +437,33 @@ if (isset($_POST['liste'])) {
 
 		$l=new Liste($_POST['liste']);
 		if ($l->collection==array())
-			echo L::_('aucun_numero_inducks');
+			echo AUCUN_NUMERO_INDUCKS;
 		else {
 			if (isset($_SESSION['user'])) {
-				echo L::_('import_utilisateur_existant1').'<br />';
+				echo IMPORT_UTILISATEUR_EXISTANT1.'<br />';
 				echo '<ul>';
-				echo '<li>'.L::_('import_utilisateur_existant2_1').'</li>';
-				echo '<li>'.L::_('import_utilisateur_existant2_2').'</li>';
-				echo '<li>'.L::_('import_utilisateur_existant2_3').'</li>';
+				echo '<li>'.IMPORT_UTILISATEUR_EXISTANT2_1.'</li>';
+				echo '<li>'.IMPORT_UTILISATEUR_EXISTANT2_2.'</li>';
+				echo '<li>'.IMPORT_UTILISATEUR_EXISTANT2_3.'</li>';
 				echo '</ul><br />';
 				$d=new Database();
 				$id_user=$d->user_to_id($_SESSION['user']);
 				$l_ducksmanager=$d->toList($id_user);
 				$operations_a_effectuer=$l_ducksmanager->compareWith($l,false);
 				if (!$operations_a_effectuer) {
-					echo L::_('listes_identiques');
+					echo LISTES_IDENTIQUES;
 					return;
 				}
 			}
 			else {
-				echo L::_('resultat_numeros_inducks');
+				echo RESULTAT_NUMEROS_INDUCKS;
 			}
-			
-		  	echo '<br />'.L::_('question_executer_ops_inducks')
+
+		  	echo '<br />'.QUESTION_EXECUTER_OPS_INDUCKS
 		  		.'<button onclick="importer(true,'.(isset($_SESSION['user'])?'true':'false').')">'
-		  		.L::_('oui').'</button> '
+		  		.OUI.'</button> '
 		  		.'<button onclick="importer(false,'.(isset($_SESSION['user'])?'true':'false').')">'
-		  		.L::_('non').'</button><br />';
+		  		.NON.'</button><br />';
 		}
 	}
 }
@@ -477,7 +477,7 @@ elseif(isset($_POST['sous_liste'])) {
 	$type_liste=$_POST['type_liste'];
 	$d=new Database();
 	if (!$d) {
-		echo L::_('probleme_bd');
+		echo PROBLEME_BD;
 		exit(-1);
 	}
 	$id_user=$d->user_to_id($_SESSION['user']);

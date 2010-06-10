@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED ); 
+error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED );
 @session_start();
 if (isset($_GET['lang'])) {
     $_SESSION['lang']=$_GET['lang'];
@@ -26,50 +26,50 @@ require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
 
-$menu=	array(L::_("collection")=>
+$menu=	array(COLLECTION=>
         array("new"=>
                 array("private"=>"never",
                         "link"=>true,
-                        "text"=>L::_("nouvelle_collection")),
+                        "text"=>NOUVELLE_COLLECTION),
                 "open"=>
                 array("private"=>"never",
                         "link"=>true,
                         "coa_related"=>true,
-                        "text"=>L::_("ouvrir_collection")),
+                        "text"=>OUVRIR_COLLECTION),
                 "gerer"=>
                 array("private"=>"always",
                         "link"=>true,
                         "coa_related"=>true,
-                        "text"=>L::_("gerer_collection")),
+                        "text"=>GERER_COLLECTION),
                 "stats"=>
                 array("private"=>"always",
                         "link"=>true,
                         "coa_related"=>true,
-                        "text"=>L::_("statistiques_collection")),
+                        "text"=>STATISTIQUES_COLLECTION),
                 "agrandir"=>
                 array("private"=>"always",
                         "link"=>true,
                         "coa_related"=>true,
-                        "text"=>L::_("agrandir_collection")),
+                        "text"=>AGRANDIR_COLLECTION),
                 "print"=>
                 array("private"=>"always",
                         "link"=>true,
-                        "text"=>L::_("imprimer_collection")),
+                        "text"=>IMPRIMER_COLLECTION),
                 "logout"=>
                 array("private"=>"always",
                         "link"=>true,
-                        "text"=>L::_("deconnexion")))
+                        "text"=>DECONNEXION))
         ,
-        L::_("collection_inducks")=>
+        COLLECTION_INDUCKS=>
         array("import"=>
                 array("private"=>"no",
                         "link"=>true,
                         "coa_related"=>true,
-                        "text"=>L::_("importer_inducks"))/*,
+                        "text"=>IMPORTER_INDUCKS)/*,
 				      "export"=>
 					array("private"=>"no",
 						  "link"=>false,
-						  "text"=>L::_("exporter_inducks")*/
+						  "text"=>EXPORTER_INDUCKS*/
         )
         )
 ;
@@ -79,7 +79,7 @@ $menu=	array(L::_("collection")=>
     <head>
         <meta content="text/html; charset=ISO-8859-1"
               http-equiv="content-type">
-        <title><?php echo L::_('titre');?></title>
+        <title><?php echo TITRE;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
               <style type="text/css" media="all">@import "fix-ie.css";</style>
@@ -218,9 +218,9 @@ $menu=	array(L::_("collection")=>
                                     <img id="light"
                                     <?php
                                     if (isset($_SESSION['user']) &&!($action=='logout')) {?>
-                                        src="vert.png" alt="O" />&nbsp;<span id="texte_connecte"><?=L::_('connecte_en_tant_que').$_SESSION['user']?></span>
+                                        src="vert.png" alt="O" />&nbsp;<span id="texte_connecte"><?=CONNECTE_EN_TANT_QUE.$_SESSION['user']?></span>
                                     <?php } else {?>
-                                        src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><a href="?action=open"><?=L::_('non_connecte')?></a></span><br /><br />
+                                        src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><a href="?action=open"><?=NON_CONNECTE?></a></span><br /><br />
                                     <?php }?>
                                 </div>
                             </td></tr>
@@ -244,7 +244,7 @@ $menu=	array(L::_("collection")=>
 
                             <param name="allowscriptaccess" value="always" />
                             <param name="flashvars" value="file=../morph/morph.swf.flv&amp;autostart=true&amp;controlbar=none&amp;image=morph/rfl.jpg" />
-                            <p><a href="http://get.adobe.com/flashplayer"><?php echo L::_('telecharger_flash');?></a> <?php echo L::_('pour_voir_la_video');?>.</p>
+                            <p><a href="http://get.adobe.com/flashplayer"><?=TELECHARGER_FLASH?></a> <?=POUR_VOIR_LA_VIDEO?>.</p>
                         </object>
                     </object>
                 </td>
@@ -255,7 +255,7 @@ $menu=	array(L::_("collection")=>
                     <table style="height:100%; width:100%" cellspacing="0"><tbody>
                             <tr>
                                 <td valign="top" style="padding:5px;">
-                                    <b><a href="?"><?=L::_('accueil')?></a></b><br /><br />
+                                    <b><a href="?"><?=ACCUEIL?></a></b><br /><br />
                                     <?php
                                     foreach($menu as $item=>$infos) {
                                         ?>
@@ -270,7 +270,7 @@ $menu=	array(L::_("collection")=>
                                                     continue;
                                                 }
                                                 ?>
-                                                <a href="?action='.$sous_item.'"><?=$infos_sous_item['text']?></a><br>
+                                                <a href="?action=<?=$sous_item?>"><?=$infos_sous_item['text']?></a><br>
                                                 <?php
                                             }
                                             else {
@@ -283,7 +283,7 @@ $menu=	array(L::_("collection")=>
                                                     }
                                                     if ($infos_sous_item['private']=='always'){
                                                         ?>
-                                                        <a href="?action='.$sous_item.'"><?=$infos_sous_item['text']?></a><br>
+                                                        <a href="?action=<?=$sous_item?>"><?=$infos_sous_item['text']?></a><br>
                                                         <?php
                                                     }
                                                 }
@@ -295,7 +295,7 @@ $menu=	array(L::_("collection")=>
                                                         continue;
                                                     }
                                                     ?>
-                                                    <a href="?action='.$sous_item.'"><?=$infos_sous_item['text']?></a><br>
+                                                    <a href="?action=<?=$sous_item?>"><?=$infos_sous_item['text']?></a><br>
                                                     <?php
                                                 }
                                             }
@@ -323,7 +323,7 @@ $menu=	array(L::_("collection")=>
                 <td colspan="2" style="padding-left:5px;vertical-align: top;background-color:rgb(61, 75, 95);">
                     <?php if (!isset($_GET['action'])) {
                         ?>
-                        <h3><?=L::_('bienvenue')?></h3>
+                        <h3><?=BIENVENUE?></h3>
                         <?php
                     }
                     ?>
@@ -339,16 +339,16 @@ $menu=	array(L::_("collection")=>
                                         $contenu_page=Util::get_page('http://coa.inducks.org/maccount.php');
                                         if (!(strpos($contenu_page,'is experiencing technical difficulties') === false)) {
                                             ?>
-                                            <span style="color:red;"><?=L::_('phrase_maintenance_inducks1')?>
+                                            <span style="color:red;"><?=PHRASE_MAINTENANCE_INDUCKS1?>
                                                     <a href="coa.inducks.org">COA</a>,
-                                                    <?=L::_('phrase_maintenance_inducks2')?><br />
-                                                    <?=L::_('phrase_maintenance_inducks3')?></span><br /><br />
+                                                    <?=PHRASE_MAINTENANCE_INDUCKS2?><br />
+                                                    <?=PHRASE_MAINTENANCE_INDUCKS3?></span><br /><br />
                                             <?php
                                         }
                                     }*/
                                     if ($infos_sous_item['private']=='always' && !isset($_SESSION['user'])) {
-                                        echo L::_('identification_obligatoire').'<br />';
-                                        echo L::_('comment_s_identifier');
+                                        echo IDENTIFICATION_OBLIGATOIRE.'<br />';
+                                        echo COMMENT_S_IDENTIFIER;
                                         $action='aucune';
                                     }
                                 }
@@ -357,32 +357,32 @@ $menu=	array(L::_("collection")=>
                         switch($action) {
                             case 'import':
                             /*if (isset($_SESSION['user'])) {
-			echo L::_('import_impossible_si_connecte1').'<br />';
-			echo L::_('import_impossible_si_connecte2');
+			echo IMPORT_IMPOSSIBLE_SI_CONNECTE1.'<br />';
+			echo IMPORT_IMPOSSIBLE_SI_CONNECTE2;
 			break;
 		}*/
                                 if (!isset($_POST['user'])) {
                                     afficher_form_inducks();
                                 }
-                                else echo L::_('importation_en_cours');
+                                else echo IMPORTATION_EN_COURS;
                                 break;
                             case 'new':
                                 ?>
                                 <table><tr><td colspan="2"></td></tr>
-                                    <tr><td><span id="user_text"><?=L::_('nom_utilisateur')?> : </span></td><td><input id="user" type="text">&nbsp;</td></tr>
-                                    <tr><td><span id="pass_text"><?=L::_('mot_de_passe_6_char')?> : </span></td><td><input id="pass" type="password">&nbsp;</td></tr>
-                                    <tr><td><span id="pass_text2"><?=L::_('mot_de_passe_conf')?> : </span></td><td><input id="pass2" type="password">&nbsp;</td></tr>
-                                    <tr><td colspan="2"><input type="submit" value="<?=L::_('inscription')?>" onclick="verif_valider_inscription($('user'),$('pass'),$('pass2'),false)"></td></tr></table>
+                                    <tr><td><span id="user_text"><?=NOM_UTILISATEUR?> : </span></td><td><input id="user" type="text">&nbsp;</td></tr>
+                                    <tr><td><span id="pass_text"><?=MOT_DE_PASSE_6_CHAR?> : </span></td><td><input id="pass" type="password">&nbsp;</td></tr>
+                                    <tr><td><span id="pass_text2"><?=MOT_DE_PASSE_CONF?> : </span></td><td><input id="pass2" type="password">&nbsp;</td></tr>
+                                    <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" onclick="verif_valider_inscription($('user'),$('pass'),$('pass2'),false)"></td></tr></table>
                                 <?php
                                 break;
                             case 'open':
                                 if (!isset($_SESSION['user'])) {
                                     ?>
-                                    <?=L::_('identifiez_vous')?><br /><br />
+                                    <?=IDENTIFIEZ_VOUS?><br /><br />
                                     <form method="post" action="index.php?action=open">
-                                    <table border="0"><tr><td><?=L::_('nom_utilisateur')?> :</td><td><input type="text" name="user" /></td></tr>
-                                    <tr><td><?=L::_('mot_de_passe')?> :</td><td><input type="password" name="pass" /></td></tr>
-                                    <tr><td align="center" colspan="2"><input type="submit" value="'.L::_('connexion').'"/></td></tr></table></form>
+                                    <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
+                                    <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
+                                    <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
                                     <?php
                                 }
                                 break;
@@ -391,22 +391,22 @@ $menu=	array(L::_("collection")=>
                                 session_unset();
                                 setCookie('user','',time()-3600);
                                 setCookie('pass','',time()-3600);
-                                echo L::_('deconnexion_ok');
+                                echo DECONNEXION_OK;
                                 break;
                             case 'gerer':
                                 $d=new Database();
                                 if (!$d) {
-                                    echo L::_('probleme_bd');
+                                    echo PROBLEME_BD;
                                     exit(-1);
                                 }
                                 $id_user=$d->user_to_id($_SESSION['user']);
                                 ?>
-                                <span style="font-weight: bold; text-decoration: underline;"><?=L::_('gestion_collection')?></span>
+                                <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php
                                 $onglets=array(
-                                        L::_('gestion_compte_court')=>array('compte',L::_('gestion_compte')),
-                                        L::_('gestion_numeros_court')=>array('ajout_suppr',L::_('gestion_numeros')),
-                                        L::_('gestion_acquisitions_court')=>array('acquisitions',L::_('gestion_acquisitions')));
+                                        GESTION_COMPTE_COURT=>array('compte',GESTION_COMPTE),
+                                        GESTION_NUMEROS_COURT=>array('ajout_suppr',GESTION_NUMEROS),
+                                        GESTION_ACQUISITIONS_COURT=>array('acquisitions',GESTION_ACQUISITIONS));
                                 if (!isset($_GET['onglet']))
                                     $onglet='ajout_suppr';
                                 else
@@ -415,7 +415,7 @@ $menu=	array(L::_("collection")=>
                                 switch($onglet) {
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
-                                            echo L::_('modifications_ok').'<br />';
+                                            echo MODIFICATIONS_OK.'<br />';
                                             if ($_POST['partage']=='on')
                                                 $d->requete('UPDATE users SET AccepterPartage=1 WHERE ID='.$id_user);
                                             else
@@ -429,8 +429,8 @@ $menu=	array(L::_("collection")=>
                                         if ($resultat_partage[0]['AccepterPartage']==1) {?>
                                             checked="checked"
                                         <?php } ?>
-                                         /><?=L::_('activer_partage')?><br />
-                                        <input name="submit_options" type="submit" value="<?=L::_('valider')?>" /></form>
+                                         /><?=ACTIVER_PARTAGE?><br />
+                                        <input name="submit_options" type="submit" value="<?=VALIDER?>" /></form>
                                         <br /><br /><br />
                                         <?php
                                         if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
@@ -440,33 +440,33 @@ $menu=	array(L::_("collection")=>
                                                     case 'vider':
                                                         $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
                                                         $d->requete($requete);
-                                                        echo L::_('numeros_supprimes').'.<br />';
+                                                        echo NUMEROS_SUPPRIMES.'.<br />';
                                                         break;
                                                     case 'supprimer':
                                                         $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
                                                         $d->requete($requete);
-                                                        echo L::_('numeros_supprimes').'<br />';
+                                                        echo NUMEROS_SUPPRIMES.'<br />';
                                                         $requete_compte='DELETE FROM users WHERE ID='.$id_user;
                                                         $d->requete($requete_compte);
                                                         session_destroy();
-                                                        echo L::_('compte_supprime_deconnecte').'<br />';
+                                                        echo COMPTE_SUPPRIME_DECONNECTE.'<br />';
                                                         break;
                                                 }
                                             }
                                             else {
                                                 ?>
-                                                <?=L::_('operation_irreversible')?><br /><?=L::_('continuer_oui_non')?><br />
+                                                <?=OPERATION_IRREVERSIBLE?><br /><?=CONTINUER_OUI_NON?><br />
                                                 <a href="?action=gerer&amp;onglet=compte&amp;<?php isset($_GET['vider'])?'vider':'supprimer'?>=true&amp;confirm=true">
-                                                    <button><?=L::_('oui')?></button></a>&nbsp;
+                                                    <button><?=OUI?></button></a>&nbsp;
                                                 <a href="?action=gerer">
-                                                    <button><?=L::_('non')?></button></a>
+                                                    <button><?=NON?></button></a>
                                                 <?php
                                             }
                                         }
                                         else {
                                             ?>
-                                            <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?=L::_('vider_liste')?></a><br /><br />
-                                            <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?=L::_('supprimer_compte')?></a><br />
+                                            <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?=VIDER_LISTE?></a><br /><br />
+                                            <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?=SUPPRIMER_COMPTE?></a><br />
                                             <?php
                                         }
 
@@ -474,34 +474,34 @@ $menu=	array(L::_("collection")=>
                                     case 'ajout_suppr':
                                         $l=$d->toList($id_user);
                                         ?>
-                                        <?=L::_('possession_magazines_1')?><br /><?=L::_('possession_magazines_2')?><br />
+                                        <?=POSSESSION_MAGAZINES_1?><br /><?=POSSESSION_MAGAZINES_2?><br />
                                         <?php
                                         //echo '<table border="0" width="20%">';
                                         $onglets_magazines=$l->liste_magazines();
                                         if (isset($_GET['onglet_magazine']))
                                             $onglet_magazine=$_GET['onglet_magazine'];
-                                        $onglets_magazines[L::_('nouveau_magazine')]=array('new',L::_('ajouter_magazine'));
+                                        $onglets_magazines[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
                                         //echo '<span id="onglets_magazines">';
                                         Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr',3);
 
                                         if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {
-                                            echo L::_('remplir_infos_nouveau_magazine');
+                                            echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
                                             ?>
                         <br /><br />
                         <form method="post" action="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new">
                             <input type="hidden" id="form_pays" name="pays" value="" />
                             <input type="hidden" id="form_magazine" name="magazine" value="" />
                             <input type="hidden" name="onglet_magazine" value="new" />
-                            <span style="text-decoration:underline"><?=L::_('pays_publication')?> : </span><br />
+                            <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
                             <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                                <option id="chargement_pays"><?=L::_('chargement')?>...
+                                <option id="chargement_pays"><?=CHARGEMENT?>...
                             </select><br /><br />
-                            <span style="text-decoration:underline"><?=L::_('magazine')?> : </span><br />
+                            <span style="text-decoration:underline"><?=MAGAZINE?> : </span><br />
                             <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
-                                <option id="vide"><?=L::_('selectionner_pays')?>
+                                <option id="vide"><?=SELECTIONNER_PAYS?>
                             </select>
                             <br /><br />
-                            <input type="submit" value="<?=L::_('valider')?>" />
+                            <input type="submit" value="<?=VALIDER?>" />
                         </form><br /><br />
                         <span id="liste_numeros">
                         </span>
@@ -527,7 +527,7 @@ $menu=	array(L::_("collection")=>
                                                     </td><td>
                                                     <?php
                                                 }
-                                                else echo L::_('erreur_recuperation_inducks');
+                                                else echo ERREUR_RECUPERATION_INDUCKS;
                                             }
                                             ?>
                                             </td></tr></table>
@@ -537,8 +537,8 @@ $menu=	array(L::_("collection")=>
                                     case 'acquisitions':
                                         $l=$d->toList($id_user);
                                         ?>
-                                        <?=L::_('intro_acquisitions1')?><br />
-                                        <?=L::_('intro_acquisitions2')?><br /><br />
+                                        <?=INTRO_ACQUISITIONS1?><br />
+                                        <?=INTRO_ACQUISITIONS2?><br /><br />
                                         <table border="0" cellspacing="2px">
                                             <tr>
                                                 <td>
@@ -561,9 +561,12 @@ $menu=	array(L::_("collection")=>
                             case 'stats':
                                 $d=new Database();
                                 if (!$d) {
-                                    echo L::_('probleme_bd');
+                                    echo PROBLEME_BD;
                                     exit(-1);
                                 }
+                                ?>
+                                <h2><?=STATISTIQUES_COLLECTION?></h2><br />
+                                <?php
                                 $id_user=$d->user_to_id($_SESSION['user']);
                                 $l=$d->toList($id_user);
                                 if (!isset($_GET['onglet']))
@@ -575,18 +578,18 @@ $menu=	array(L::_("collection")=>
 
                             case 'print':
                                 ?>
-                                <span style="font-weight: bold; text-decoration: underline;"><?=L::_('impression_collection')?> : </span><br /><br />
-                                <?=L::_('intro_impression_collection1')?><br />
-                                <?=L::_('intro_impression_collection2')?><br />
+                                <span style="font-weight: bold; text-decoration: underline;"><?=IMPRESSION_COLLECTION?> : </span><br /><br />
+                                <?=INTRO_IMPRESSION_COLLECTION1?><br />
+                                <?=INTRO_IMPRESSION_COLLECTION2?><br />
                                 <br />
                                 <div style="text-align:center;border:1px solid white;">
-                                    <a target="_blank" href="print.php"><?=L::_('clic_impression')?>!</a>
+                                    <a target="_blank" href="print.php"><?=CLIC_IMPRESSION?>!</a>
                                 </div><br /><br />
-                                <?=L::_('intro_impression_collection3')?><br /><br />
+                                <?=INTRO_IMPRESSION_COLLECTION3?><br /><br />
                                 <table border="1" cellpadding="4" cellspacing="2">
                                     <tr align="center">
-                                        <td><?=L::_('affichage_liste')?></td>
-                                        <td><?=L::_('description')?></td>
+                                        <td><?=AFFICHAGE_LISTE?></td>
+                                        <td><?=DESCRIPTION?></td>
                                     </tr>
                                 <?php
                                 $liste_exemple=new Liste();
@@ -634,16 +637,16 @@ $menu=	array(L::_("collection")=>
                             case 'agrandir':
                                 $d=new Database();
                                 if (!$d) {
-                                    echo L::_('probleme_bd');
+                                    echo PROBLEME_BD;
                                     exit(-1);
                                 }
                                 $id_user=$d->user_to_id($_SESSION['user']);
                                 $l=$d->toList($id_user);
 
-                                $onglets=array(L::_('achat_vente_numeros')=>array('achat_vente',L::_('contact_utilisateurs')),
-                                               L::_('auteurs_favoris')=>array('auteurs_favoris',L::_('auteurs_favoris_texte')),
-                                               L::_('completer_series')=>array('completer_series',L::_('completer_series_texte')),
-                                               L::_('rechercher_bouquineries')=>array('bouquineries',L::_('rechercher_bouquineries_texte')));
+                                $onglets=array(ACHAT_VENTE_NUMEROS=>array('achat_vente',CONTACT_UTILISATEURS),
+                                               AUTEURS_FAVORIS=>array('auteurs_favoris',AUTEURS_FAVORIS_TEXTE),
+                                               COMPLETER_SERIES=>array('completer_series',COMPLETER_SERIES_TEXTE),
+                                               RECHERCHER_BOUQUINERIES=>array('bouquineries',RECHERCHER_BOUQUINERIES_TEXTE));
                                 if (!isset($_GET['onglet']))
                                     $onglet='achat_vente';
                                 else
@@ -652,26 +655,26 @@ $menu=	array(L::_("collection")=>
                                 switch($onglet) {
                                     case 'achat_vente':
                                         ?>
-                                        <?=L::_('intro_achat_vente')?><br />
+                                        <?=INTRO_ACHAT_VENTE?><br />
                                         <?php
                                         $accepte=$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
                                         if ($accepte[0]['AccepterPartage']==0) {
-                                            echo L::_('comment_partager_collection');
+                                            echo COMMENT_PARTAGER_COLLECTION;
                                             ?>
-                                            <i><a href="?action=gerer&amp;onglet=options"><?=L::_('page_options')?></a></i>
+                                            <i><a href="?action=gerer&amp;onglet=options"><?=PAGE_OPTIONS?></a></i>
                                             <?php
                                         }
                                         $d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':
-                                        $onglets_auteurs=array(L::_('resultats_suggestions_mags')=>array('resultats',L::_('suggestions_achats')),
-                                                               L::_('preferences_auteurs')=>array('preferences',L::_('preferences_auteurs')));
+                                        $onglets_auteurs=array(RESULTATS_SUGGESTIONS_MAGS=>array('resultats',SUGGESTIONS_ACHATS),
+                                                               PREFERENCES_AUTEURS=>array('preferences',PREFERENCES_AUTEURS));
                                         if (!isset($_GET['onglet_auteur']))
                                             $onglet_auteurs='resultats';
                                         else
                                             $onglet_auteurs=$_GET['onglet_auteur'];
                                         Affichage::onglets($onglet_auteurs,$onglets_auteurs,'onglet_auteur','?action=agrandir&amp;onglet=auteurs_favoris',-1);
-                                        echo L::_('presentation_auteurs_favoris');
+                                        echo PRESENTATION_AUTEURS_FAVORIS;
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
                                                 $d=new Database();
@@ -680,24 +683,24 @@ $menu=	array(L::_("collection")=>
                                                 $resultat_auteurs_surveilles=$d->requete_select($requete_auteurs_surveilles);
                                                 ?>
                                                 <br /><br />
-                                                <?=L::_('suggestions_achats_quotidiennes')?><br />
+                                                <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?><br />
                                                 <?php
                                                 $auteur_note_existe=false;
                                                 foreach($resultat_auteurs_surveilles as $auteur_surveille) {
                                                     if ($auteur_surveille['Notation']!=-1) $auteur_note_existe=true;
                                                 }
                                                 if (count($resultat_auteurs_surveilles)>0) {
-                                                    if (!$auteur_note_existe) echo L::_('auteurs_non_notes');
+                                                    if (!$auteur_note_existe) echo AUTEURS_NON_NOTES;
                                                     else {
-                                                        echo L::_('lancer_calcul_suggestions_manuellement');
+                                                        echo LANCER_CALCUL_SUGGESTIONS_MANUELLEMENT;
                                                         ?>
                                                         <br />
-                                                        <button onclick="stats_auteur(<?=$id_user?>)"><?=L::_('lancer_calcul_suggestions')?></button>
+                                                        <button onclick="stats_auteur(<?=$id_user?>)"><?=LANCER_CALCUL_SUGGESTIONS?></button>
                                                         <div id="resultat_stats"></div>
                                                         <?php
                                                     }
                                                 }
-                                                else echo L::_('aucun_auteur_surveille');
+                                                else echo AUCUN_AUTEUR_SURVEILLE;
                                                 ?>
                                                 <br /><br />
                                                 <?php
@@ -711,9 +714,9 @@ $menu=	array(L::_("collection")=>
                                                 }
                                                 ?>
                                                 <br /><br />
-                                                <?=L::_('auteurs_favoris_intro_1')?>
+                                                <?=AUTEURS_FAVORIS_INTRO_1?>
                                                 <br />
-                                                <?=L::_('statistiques_auteurs_intro_2')?>
+                                                <?=STATISTIQUES_AUTEURS_INTRO_2?>
                         <br /><br />
                         <form method="post" action="?action=agrandir&amp;onglet=auteurs_favoris&amp;onglet_auteur=preferences">
                             <input type="text" name="auteur_cherche" id="auteur_cherche" value="" />
@@ -725,7 +728,7 @@ $menu=	array(L::_("collection")=>
                         <div id="auteurs_ajoutes">
                             <br /><br />
                                                     <?php
-                                                    echo L::_('liste_auteurs_intro');
+                                                    echo LISTE_AUTEURS_INTRO;
                                                     if (isset($_POST['auteur0'])) {
                                                         $recommandations_liste_mags=($_POST['proposer_magazines_possedes']==='on'?1:0);
                                                         $requete_update_recommandations_liste_mags='UPDATE users SET RecommandationsListeMags='.$recommandations_liste_mags.' '
@@ -758,13 +761,13 @@ $menu=	array(L::_("collection")=>
                                         }
                                         break;
                                     case 'completer_series':
-                                        echo L::_('intro_completer_series').'<br /><br />';
+                                        echo INTRO_COMPLETER_SERIES.'<br /><br />';
                                         break;
                                     case 'bouquineries':
-                                        echo L::_('intro_bouquineries').'<br />';
+                                        echo INTRO_BOUQUINERIES.'<br />';
                                         $d=new Database();
                                         if (!$d) {
-                                            echo L::_('probleme_bd');
+                                            echo PROBLEME_BD;
                                             exit(-1);
                                         }
 
@@ -777,15 +780,15 @@ $menu=	array(L::_("collection")=>
                                                 $d->requete($requete);
                                             else {
                                                 mail('perel.bruno@wanadoo.fr','Ajout de bouquinerie',$requete);
-                                                echo L::_('email_envoye');
+                                                echo EMAIL_ENVOYE;
                                             }
-                                            echo L::_('merci_contribution');
+                                            echo MERCI_CONTRIBUTION;
                                             ?>
                                             </span><br />
                                             <?php
                                         }
                                         ?>
-                                        <h2><?=L::_('liste_bouquineries')?></h2>
+                                        <h2><?=LISTE_BOUQUINERIES?></h2>
                                         <?php
                                         $requete_bouquineries='SELECT Nom, Adresse, CodePostal, Ville, Pays,ID_Utilisateur, Commentaire, username FROM bouquineries '
                                                 .'INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
@@ -800,7 +803,7 @@ $menu=	array(L::_("collection")=>
                                                 ?><h3><?=$bouquinerie['Pays']?></h3><?php
                                             }
                                             if ($departement!=$departement_courant) {
-                                                ?><h4><?=L::_('departement').$departement_courant?></h4><?php
+                                                ?><h4><?=DEPARTEMENT.$departement_courant?></h4><?php
                                             }
                                             if ($ville!=$bouquinerie['Ville']) {
                                                 ?><h5><?=$bouquinerie['Ville']?></h5><?php
@@ -809,7 +812,7 @@ $menu=	array(L::_("collection")=>
                                             <div style="cursor:help" title="<?=$bouquinerie['Commentaire']?>">
                                             <b><?=$bouquinerie['Nom']?></b> :
                                                <?=$bouquinerie['Adresse']?>,<?=$bouquinerie['CodePostal']?> <?=$bouquinerie['Ville']?>
-                                                    <i>(<?=L::_('propose_par').$bouquinerie['username']?>)</i></div><br />
+                                                    <i>(<?=PROPOSE_PAR.$bouquinerie['username']?>)</i></div><br />
                                             <?php
                                             $pays=$bouquinerie['Pays'];
                                             $departement=$departement_courant;
@@ -820,18 +823,18 @@ $menu=	array(L::_("collection")=>
                                         <?php
                                         $id_user=$d->user_to_id($_SESSION['user']);
                                         ?>
-                                        <h2><?=L::_('proposer_bouquinerie')?></h2>
-                                        <?=L::_('presentation_bouquinerie1')?><br />
-                                        <?=L::_('intro_nouvelle_bouquinerie')?><br />
-                                        <?=L::_('prix_honnetes')?>
+                                        <h2><?=PROPOSER_BOUQUINERIE?></h2>
+                                        <?=PRESENTATION_BOUQUINERIE1?><br />
+                                        <?=INTRO_NOUVELLE_BOUQUINERIE?><br />
+                                        <?=PRIX_HONNETES?>
                                         <br /><br />
                                         <form method="post" action="?action=agrandir&amp;onglet=bouquineries">
                                             <table border="0">';
-                                                <tr><td><?=L::_('nom_bouquinerie')?> :</td><td><input maxlength="25" size="26" name="nom" type="text" /></td></tr>
-                                                <tr><td><?=L::_('adresse')?> :</td><td><textarea cols="20" name="adresse"></textarea></td></tr>
-                                                <tr><td><?=L::_('code_postal')?> :</td><td><input maxlength="11" name="cp" type="text" size="5" maxlength="5"/></td></tr>
-                                                <tr><td><?=L::_('ville')?> :</td><td><input maxlength="20" size="26" name="ville" type="text" /></td></tr>
-                                                <tr><td><?=L::_('commentaires_bouquinerie')?><br />(<?=L::_('commentaires_bouquinerie_exemple')?>)</td>
+                                                <tr><td><?=NOM_BOUQUINERIE?> :</td><td><input maxlength="25" size="26" name="nom" type="text" /></td></tr>
+                                                <tr><td><?=ADRESSE?> :</td><td><textarea cols="20" name="adresse"></textarea></td></tr>
+                                                <tr><td><?=CODE_POSTAL?> :</td><td><input maxlength="11" name="cp" type="text" size="5" maxlength="5"/></td></tr>
+                                                <tr><td><?=VILLE?> :</td><td><input maxlength="20" size="26" name="ville" type="text" /></td></tr>
+                                                <tr><td><?=COMMENTAIRES_BOUQUINERIE?><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
                                                     <td><textarea name="commentaire" colspan="40" rowspan="5"></textarea></td></tr>
                                         <?php
                                         //echo '<tr><td>Pays :</td><td><input name="pays" type="text" /></td></tr>';
@@ -840,7 +843,7 @@ $menu=	array(L::_("collection")=>
                                         echo '<span id="ajouter_exemple"></span></div>';
                                         echo '<a href="javascript:void(0)" onclick="ajouter_exemple()">Ajouter un exemple de prix</a></td></tr>';*/
                                         ?>
-                                                <tr><td align="center" colspan="2"><input name="ajouter" type="submit" value="<?=L::_('ajouter_bouquinerie')?>" /></td></tr>
+                                                <tr><td align="center" colspan="2"><input name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" /></td></tr>
                                             </table>
                                         </form>
                                         <?php
@@ -852,67 +855,67 @@ $menu=	array(L::_("collection")=>
                             default:
                                 ?>
                                 <br /><br />
-                                <?=L::_('presentation1')?><br /><br />
-                                <?=L::_('presentation2')?><br /><br /><br />
+                                <?=PRESENTATION1?><br /><br />
+                                <?=PRESENTATION2?><br /><br /><br />
                                 <table>
                                     <tr>
                                         <td width="500"><img alt="demo 4" src="images/demo4.png" /></td>
                                         <td valign="middle">
-                                            <b><?=L::_('presentation_gerer_titre')?></b>
+                                            <b><?=PRESENTATION_GERER_TITRE?></b>
                                             <br /><br />
-                                            <?=L::_('presentation_gerer_1')?>
+                                            <?=PRESENTATION_GERER_1?>
                                             <br /><br />
-                                            <?=L::_('presentation_gerer_2')?>
+                                            <?=PRESENTATION_GERER_2?>
                                             <br /><br />
-                                            <?=L::_('presentation_gerer_3')?>
+                                            <?=PRESENTATION_GERER_3?>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <b><?=L::_('presentation_stats_titre')?></b>
+                                            <b><?=PRESENTATION_STATS_TITRE?></b>
                                             <br /><br />
-                                            <?=L::_('presentation_stats_1')?>
+                                            <?=PRESENTATION_STATS_1?>
                                             <br /><br />
-                                            <?=L::_('presentation_stats_2')?>
+                                            <?=PRESENTATION_STATS_2?>
                                             <br /><br />
-                                            <?=L::_('presentation_stats_3')?>
+                                            <?=PRESENTATION_STATS_3?>
                                             <br /><br /><br />
-                                            <span style="color:red"><?=L::_('nouveau')?></span><?=L::_('annonce_agrandir_collection1')?>
+                                            <span style="color:red"><?=NOUVEAU?></span><?=ANNONCE_AGRANDIR_COLLECTION1?>
                                             <br /><br /><br /><br />
                                             <div style="border:1px solid white;text-align:center;">
-                                                <?=L::_('presentation_generale')?>.<br />
-                                                <h3><?=L::_('bienvenue')?></h3>
+                                                <?=PRESENTATION_GENERALE?>.<br />
+                                                <h3><?=BIENVENUE?></h3>
                                             </div>
                                         </td>
                                         <td><img width="350" alt="demo 1-2-3" src="images/demo123.png" /></td>
                                     </tr>
                                 </table>
                                 <br />
-                                <?=L::_('gratuit_aucune_limite')?> <a href="?action=new"><?=L::_('inscrivez_vous')?></a>
+                                <?=GRATUIT_AUCUNE_LIMITE?> <a href="?action=new"><?=INSCRIVEZ_VOUS?></a>
                                 <?php
                                 break;
                         }
                         fin_de_page();
 
                         function afficher_form_inducks() {
-                            echo L::_('entrez_identifiants_inducks');
+                            echo ENTREZ_IDENTIFIANTS_INDUCKS;
                             ?>
                             <br /><br />
                             <?php
                             if (!isset($_SESSION['user'])) {
-                                ?><span style="color:red"><?=L::_('attention_mot_de_passe_inducks')?></span><br /><?php
+                                ?><span style="color:red"><?=ATTENTION_MOT_DE_PASSE_INDUCKS?></span><br /><?php
                             }
                             ?>
                             <form method="post" action="index.php?action=import">
                                 <table border="0">
                                     <tr>
-                                        <td><?=L::_('utilisateur_inducks')?> :</td>
+                                        <td><?=UTILISATEUR_INDUCKS?> :</td>
                                         <td><input type="text" name="user" />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <?=L::_('mot_de_passe_inducks')?> :
+                                            <?=MOT_DE_PASSE_INDUCKS?> :
                                         </td>
                                         <td>
                                             <input type="password" name="pass" />
@@ -920,7 +923,7 @@ $menu=	array(L::_("collection")=>
                                     </tr>
                                     <tr>
                                         <td align="center" colspan="2">
-                                            <input type="submit" value="<?=L::_('connexion')?>"/>
+                                            <input type="submit" value="<?=CONNEXION?>"/>
                                         </td>
                                     </tr>
                                 </table>
@@ -964,18 +967,18 @@ $menu=	array(L::_("collection")=>
                         <?php
                         $d=new Database();
                         if (!$d) {
-                            echo L::_('probleme_bd');
+                            echo PROBLEME_BD;
                             exit(-1);
                         }
                         $resultat_cpt_users=$d->requete_select('SELECT count(username) as cpt_users FROM users');
-                        echo $resultat_cpt_users[0]['cpt_users'].' '.L::_('utilisateurs_inscrits');
+                        echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
                         ?>
                 </td>
                 <td colspan="2" align="center">
-                        <?=L::_('licence_inducks1')?>
-                        <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=L::_('licence_inducks2')?></a>
+                        <?=LICENCE_INDUCKS1?>
+                        <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
                         <br />
-                        <?=L::_('licence_inducks3')?>
+                        <?=LICENCE_INDUCKS3?>
                 </td>
                 <td valign="bottom" align="right">
                         <?php
@@ -987,7 +990,7 @@ $menu=	array(L::_("collection")=>
                                     $nom_langue=substr($f,0,strrpos($f,'.'));
                                     ?>
                                     <a href="?<?=str_replace('&','&amp;',$_SERVER['QUERY_STRING'])?>&amp;lang=<?=$nom_langue?>">
-                                          <img style="border:0" src="images/'.$nom_langue.'.jpg" alt="'.$nom_langue.'"/>
+                                          <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
                                     </a>
                                     <?php
                                 }

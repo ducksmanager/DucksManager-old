@@ -9,7 +9,7 @@ require_once('Database.class.php');
 require_once('Inducks.class.php');
 $d=new Database();
 if (!$d) {
-	echo L::_('probleme_bd');
+	echo PROBLEME_BD;
 	exit(-1);
 }
 $id_user=$d->user_to_id($_SESSION['user']);
@@ -28,18 +28,18 @@ foreach(Database::$etats_fr as $etat_court=>$infos_etat) {
 	}
 	else {
 		$valeur=new pie_value($cpt*100,utf8_encode(Database::$etats[$etat_court][0]));
-		$valeur->set_tooltip(utf8_encode(Database::$etats[$etat_court][0].'<br>'.L::_('numeros_possedes').' : '.$cpt.' ('.round(100*$cpt/$total).'%)'));
+		$valeur->set_tooltip(utf8_encode(Database::$etats[$etat_court][0].'<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.round(100*$cpt/$total).'%)');
 		array_push($valeurs_magazines,$valeur);
 	}
 }
 if ($autres!=0) {
-	$valeur_autres=new pie_value($autres*100,utf8_encode(L::_('autres')));
-	$valeur_autres->set_tooltip(utf8_encode(L::_('autres')
-						 	    .'<br>'.L::_('numeros_possedes').' : '.$autres.' ('.round(100*$autres/$total).'%)'));
+	$valeur_autres=new pie_value($autres*100,utf8_encode(AUTRES));
+	$valeur_autres->set_tooltip(utf8_encode(AUTRES
+				   .'<br>'.NUMEROS_POSSEDES).' : '.$autres.' ('.round(100*$autres/$total).'%)');
 	array_push($valeurs_magazines,$valeur_autres);
 }
 
-$title=new title(utf8_encode(L::_('etats_magazines')));
+$title=new title(utf8_encode(ETATS_MAGAZINES));
 $pie = new pie();
 $pie->set_alpha(0.6);
 $pie->set_start_angle( 35 );
@@ -87,7 +87,7 @@ function findSWF(movieName) {
     return document[movieName];
   }
 }
-    
+
 var data_1 = <?php echo $chart->toPrettyString(); ?>;
 
 </script>

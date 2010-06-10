@@ -7,13 +7,11 @@ require_once('Inducks.class.php');
 require_once('Format_liste.php');
 class Classique extends Format_liste {
 	function Classique() {
-		$this->les_plus=array(L::_('classique_plus_1'));
-		$this->les_moins=array(L::_('classique_moins_1'),
-							   L::_('classique_moins_2'),
-							   L::_('classique_moins_3'));
-		$this->description=L::_('classique_description');
+		$this->les_plus=array(CLASSIQUE_PLUS_1);
+		$this->les_moins=array(CLASSIQUE_MOINS_1,CLASSIQUE_MOINS_2,CLASSIQUE_MOINS_3);
+		$this->description=CLASSIQUE_DESCRIPTION;
 	}
-	
+
 	function afficher($liste) {
 		foreach($liste as $pays=>$numeros_pays) {
 			$liste_magazines=Inducks::get_noms_complets_magazines($pays);
@@ -25,7 +23,7 @@ class Classique extends Format_liste {
 					if (!$debut) echo ',';
 					if (is_array($numero))
 						echo ' '.$numero[0];
-					else	
+					else
 						echo ' '.$numero;
 					$debut=false;
 				}

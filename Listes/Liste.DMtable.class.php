@@ -7,14 +7,11 @@ include_once ('locales/lang.php');
 require_once('Format_liste.php');
 class DMtable extends Format_liste {
 	function DMtable() {
-		$this->les_plus=array(L::_('dmtable_plus_1'),
-							  L::_('dmtable_plus_2'),
-							  L::_('dmtable_plus_3'));
-		$this->les_moins=array(L::_('dmtable_moins_1'),
-							   L::_('dmtable_moins_2'));
-		$this->description=L::_('dmtable_description');
+		$this->les_plus=array(DMTABLE_PLUS_1,DMTABLE_PLUS_2,DMTABLE_PLUS_3);
+		$this->les_moins=array(DMTABLE_MOINS_1,DMTABLE_MOINS_2);
+		$this->description=DMTABLE_DESCRIPTION;
 	}
-	
+
 	function afficher($liste) {
 		$max_centaines=0;
 		$max_diz_et_unites=1;
@@ -36,7 +33,7 @@ class DMtable extends Format_liste {
 					$total_magazine++;
 					$numero=$numero_et_etat[0];
 					if (false!=(array_search($numero,$liste_numeros)))
-						$liste_numeros[$numero]++; 
+						$liste_numeros[$numero]++;
 					else
 						$liste_numeros[$numero]=1;
 					if (!is_numeric($numero)) {
@@ -55,11 +52,11 @@ class DMtable extends Format_liste {
 					if ($diz_et_unites>$max_diz_et_unites)
 						$max_diz_et_unites=$diz_et_unites;
 				}
-				
+
 				echo '<tr><td rowspan="2" valign="middle">'.$magazine.'<br />('.$pays.')</td>';
-				
-				$array_values_number=array_count_values($liste_numeros);	
-				
+
+				$array_values_number=array_count_values($liste_numeros);
+
 				for($i=1;$i<=50;$i++) {
 					echo '<td>';
 					for ($j=0;$j<=$max_centaines;$j++)
@@ -68,7 +65,7 @@ class DMtable extends Format_liste {
 						}
 					echo '</td>';
 				}
-					echo '<td rowspan="2">'.$total_magazine.'</td></tr><tr>';				
+					echo '<td rowspan="2">'.$total_magazine.'</td></tr><tr>';
 					for($i=51;$i<=100;$i++) {
 						echo '<td>';
 						for ($j=0;$j<=$max_centaines;$j++) {
@@ -83,7 +80,7 @@ class DMtable extends Format_liste {
 				}*/
 				echo '</tr>';
 				if (count($liste_non_numeriques)>0) {
-					echo '<tr><td></td><td colspan="51">'.L::_('non_numeriques').' : ';
+					echo '<tr><td></td><td colspan="51">'.NON_NUMERIQUES.' : ';
 					$debut=true;
 					foreach($liste_non_numeriques as $numero) {
 						if (!$debut)
@@ -93,11 +90,11 @@ class DMtable extends Format_liste {
 					}
 					echo '</td></tr>';
 				}
-			
+
 			}
 		}
-		
-		echo '</table><table><tr><td colspan="2" align="center"><u>'.L::_('legende_numeros').'</u></td></tr><tr><td>';
+
+		echo '</table><table><tr><td colspan="2" align="center"><u>'.LEGENDE_NUMEROS.'</u></td></tr><tr><td>';
 		for ($i=0;$i<=$max_centaines;$i++) {
 			if ($i==intval($max_centaines/2)+1) echo '</td><td>';
 			echo number_to_letter($i);
