@@ -74,7 +74,7 @@ $menu=	array(L::_("collection")=>
         )
 ;
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
     <head>
         <meta content="text/html; charset=ISO-8859-1"
@@ -111,7 +111,7 @@ $menu=	array(L::_("collection")=>
         piwikTracker.trackPageView();
         piwikTracker.enableLinkTracking();
         } catch( err ) {}
-        </script><noscript><p><img src="http://www.ducksmanager.net/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+        </script>
         <!-- End Piwik Tag -->
         <?php
         new JS('prototype.js');
@@ -202,8 +202,8 @@ $menu=	array(L::_("collection")=>
     ?>
 
     <table
-        style="text-align: left; color: white; background-color: rgb(61, 75, 95); width: 100%; height: 100%;"
-        border="0" cellpadding="0" cellspacing="0">
+        style="text-align: left; color: white; background-color: rgb(61, 75, 95); width: 100%; height: 100%;border:0"
+        cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td align="center" style="height:45px;padding-left:3px;background-color:rgb(61, 75, 95);width:160px;">
@@ -373,7 +373,7 @@ $menu=	array(L::_("collection")=>
                                 }
                                 $id_user=$d->user_to_id($_SESSION['user']);
 
-                                echo '<u><b>'.L::_('gestion_collection').'</b></u>';
+                                echo '<span style="font-weight: bold; text-decoration: underline;">'.L::_('gestion_collection').'</span>';
                                 $onglets=array(
                                         L::_('gestion_compte_court')=>array('compte',L::_('gestion_compte')),
                                         L::_('gestion_numeros_court')=>array('ajout_suppr',L::_('gestion_numeros')),
@@ -409,13 +409,13 @@ $menu=	array(L::_("collection")=>
                                             else {
                                                 echo L::_('operation_irreversible').'<br />'.L::_('continuer_oui_non').'<br />';
                                                 $action=isset($_GET['vider'])?'vider':'supprimer';
-                                                echo '<a href="?action=gerer&onglet=compte&'.$action.'=true&confirm=true"><button>'.L::_('oui').'</button></a>&nbsp;';
+                                                echo '<a href="?action=gerer&amp;onglet=compte&amp;'.$action.'=true&amp;confirm=true"><button>'.L::_('oui').'</button></a>&nbsp;';
                                                 echo '<a href="?action=gerer"><button>'.L::_('non').'</button></a>';
                                             }
                                         }
                                         else {
-                                            echo '<a href="?action=gerer&onglet=compte&vider=true">'.L::_('vider_liste').'</a><br /><br />'
-                                                    .'<a href="?action=gerer&onglet=compte&supprimer=true">'.L::_('supprimer_compte').'</a><br />';
+                                            echo '<a href="?action=gerer&amp;onglet=compte&amp;vider=true">'.L::_('vider_liste').'</a><br /><br />'
+                                                    .'<a href="?action=gerer&amp;onglet=compte&amp;supprimer=true">'.L::_('supprimer_compte').'</a><br />';
                                         }
 
                                         break;
@@ -435,7 +435,7 @@ $menu=	array(L::_("collection")=>
                                             echo L::_('remplir_infos_nouveau_magazine');
                                             ?>
                         <br /><br />
-                        <form method="post" action="?action=gerer&onglet=ajout_suppr&onglet_magazine=new">
+                        <form method="post" action="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new">
                             <input type="hidden" id="form_pays" name="pays" value="" />
                             <input type="hidden" id="form_magazine" name="magazine" value="" />
                             <input type="hidden" name="onglet_magazine" value="new" />
@@ -520,7 +520,7 @@ $menu=	array(L::_("collection")=>
                                 break;
 
                             case 'print':
-                                echo '<b><u>'.L::_('impression_collection').' : </u></b><br /><br />';
+                                echo '<span style="font-weight: bold; text-decoration: underline;">'.L::_('impression_collection').' : </span><br /><br />';
 
                                 echo L::_('intro_impression_collection1').'<br />';
                                 echo L::_('intro_impression_collection2').'<br />';
@@ -577,7 +577,7 @@ $menu=	array(L::_("collection")=>
                                         echo L::_('intro_achat_vente').'<br />';
                                         $accepte=$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
                                         if ($accepte[0]['AccepterPartage']==0)
-                                            echo L::_('comment_partager_collection').' <i><a href="?action=gerer&onglet=options">'.L::_('page_options').'</a></i>.';
+                                            echo L::_('comment_partager_collection').' <i><a href="?action=gerer&amp;onglet=options">'.L::_('page_options').'</a></i>.';
                                         $d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':
@@ -587,7 +587,7 @@ $menu=	array(L::_("collection")=>
                                             $onglet_auteurs='resultats';
                                         else
                                             $onglet_auteurs=$_GET['onglet_auteur'];
-                                        Affichage::onglets($onglet_auteurs,$onglets_auteurs,'onglet_auteur','?action=agrandir&onglet=auteurs_favoris',-1);
+                                        Affichage::onglets($onglet_auteurs,$onglets_auteurs,'onglet_auteur','?action=agrandir&amp;onglet=auteurs_favoris',-1);
                                         echo L::_('presentation_auteurs_favoris');
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
@@ -624,7 +624,7 @@ $menu=	array(L::_("collection")=>
                                                 echo L::_('auteurs_favoris_intro_1').'<br />'.L::_('statistiques_auteurs_intro_2');
                                                 ?>
                         <br /><br />
-                        <form method="post" action="?action=agrandir&onglet=auteurs_favoris&onglet_auteur=preferences">
+                        <form method="post" action="?action=agrandir&amp;onglet=auteurs_favoris&amp;onglet_auteur=preferences">
                             <input type="text" name="auteur_cherche" id="auteur_cherche" value="" />
                             <div class="update" id="liste_auteurs"></div>
                             <input type="hidden" id="auteur_nom" name="auteur_nom" />
@@ -725,7 +725,7 @@ $menu=	array(L::_("collection")=>
                                         echo L::_('intro_nouvelle_bouquinerie').'<br />';
                                         echo L::_('prix_honnetes');
                                         echo '<br /><br />';
-                                        echo '<form method="post" action="?action=agrandir&onglet=bouquineries">';
+                                        echo '<form method="post" action="?action=agrandir&amp;onglet=bouquineries">';
                                         echo '<table border="0">';
                                         echo '<tr><td>'.L::_('nom_bouquinerie').' :</td><td><input maxlength="25" size="26" name="nom" type="text" /></td></tr>';
                                         echo '<tr><td>'.L::_('adresse').' :</td><td><textarea cols="20" name="adresse"></textarea></td></tr>';
@@ -847,7 +847,8 @@ $menu=	array(L::_("collection")=>
                             if(is_file($rep.$f)) {
                                 if (endsWith($f,'.php') && strpos($f,'lang')===false) {
                                     $nom_langue=substr($f,0,strrpos($f,'.'));
-                                    echo '<a href="?'.$_SERVER['QUERY_STRING'].'&lang='.$nom_langue.'"><img border="0" src="images/'.$nom_langue.'.jpg" /></a>';
+                                    echo '<a href="?'.str_replace('&','&amp;',$_SERVER['QUERY_STRING']).'&amp;lang='.$nom_langue.'">
+                                          <img style="border:0" src="images/'.$nom_langue.'.jpg" alt="'.$nom_langue.'"/></a>';
                                 }
                             }
                         }
@@ -856,7 +857,6 @@ $menu=	array(L::_("collection")=>
             </tr>
         </tbody>
     </table>
-    <br style="color: white;" />
 </body>
 </html>
     <?php
