@@ -402,6 +402,7 @@ function connexion(user,pass) {
 }
 
 function initPays() {
+        if (!$('liste_pays')) return;
 	var myAjax = new Ajax.Request('Inducks.class.php', {
 		   method: 'post',
 		   parameters:'get_pays=true',

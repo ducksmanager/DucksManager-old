@@ -15,7 +15,6 @@ ul.tabnav li {
     margin:2px 2px 0;
 }
 ul.tabnav li.active {
-    background-color:#FFFFFF;
     border-bottom:1px solid #FFFFFF;
 }
 ul.tabnav li.active a {

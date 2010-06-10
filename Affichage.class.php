@@ -18,14 +18,14 @@ class Affichage {
                         $pays=substr($nom_onglet,0,$pos_slash);
                         $image_pays='images/flags/'.$pays.'.png';
                         $magazine=substr($nom_onglet,$pos_slash+1, strlen($nom_onglet));
-                        $contenu_lien_onglet='<img src="'.$image_pays.'" /><span>'.$magazine.'</span>';
+                        $contenu_lien_onglet='<img src="'.$image_pays.'" alt="'.$pays.'" /><span>'.$magazine.'</span>';
                     }
                     //if ($jump_lines!=-1&&$cpt++%$jump_lines==0) echo '</tr><tr>';
                     echo '<li class="';
                     if ($infos_lien[1]==L::_('ajouter_magazine'))
-                        echo 'nouveau;';
+                        echo 'nouveau ';
                     if ($infos_lien[0]==$selected)
-                        echo 'active;';
+                        echo 'active ';
                     echo '"><a title="'.$infos_lien[1].'" href="'.$prefixe.'&amp;'.$argument.'='.$infos_lien[0].'">'.$contenu_lien_onglet.'</a></li>';
                     /*echo '<b class="top"><b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b></b>';
                             echo '<span class="boxcontent"><p><a title="'.$nom_onglet.'" href="'.$prefixe.'&amp;'.$argument.'='.$infos_lien[0].'">'.$infos_lien[1].'</a></p></span>';

@@ -101,6 +101,7 @@ function deselect_old(select) {
 	
 }
 function modifier_acquisition(id_acquisition,item) {
+	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
 	var select=$('date_acquisition');
 	for (var i=0;i<select.options.length;i++) {
 		if (select.options[i].label==id_acquisition) {
@@ -114,7 +115,6 @@ function modifier_acquisition(id_acquisition,item) {
 	var date_mois=date.substring(date.indexOf('-')+1,date.lastIndexOf('-'));
 	var date_jour=date.substring(date.lastIndexOf('-')+1,date.length);
 	var description=item.substring(item.indexOf(' ')+1,item.length);
-	var el_date_old=new Element('input',{'id':'date_old','type':'hidden','value':date});
 	var el_date_jour=new Element('input',{'id':'date_jour','type':'text','size':'2','value':date_jour});
 	var el_date_mois=new Element('input',{'id':'date_mois','type':'text','size':'2','value':date_mois});
 	var el_date_annee=new Element('input',{'id':'date_annee','type':'text','size':'4','value':date_annee});

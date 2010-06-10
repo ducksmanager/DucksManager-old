@@ -209,7 +209,7 @@ $menu=	array(L::_("collection")=>
                 <td align="center" style="height:45px;padding-left:3px;background-color:rgb(61, 75, 95);width:160px;">
                     <table width="100%" style="width:100%">
                         <tr>
-                            <td align="center" id="log" >&nbsp;</td>
+                            <td align="center" id="log" style="height:32px" >&nbsp;</td>
                             <td align="center" id="loading" style="width:40px;">&nbsp;</td>
                         </tr>
                         <tr>
@@ -377,8 +377,7 @@ $menu=	array(L::_("collection")=>
                                 $onglets=array(
                                         L::_('gestion_compte_court')=>array('compte',L::_('gestion_compte')),
                                         L::_('gestion_numeros_court')=>array('ajout_suppr',L::_('gestion_numeros')),
-                                        L::_('gestion_acquisitions_court')=>array('acquisitions',L::_('gestion_acquisitions')),
-                                        L::_('options')=>array('options',L::_('parametrage_compte')));
+                                        L::_('gestion_acquisitions_court')=>array('acquisitions',L::_('gestion_acquisitions')));
                                 if (!isset($_GET['onglet']))
                                     $onglet='ajout_suppr';
                                 else
@@ -386,6 +385,21 @@ $menu=	array(L::_("collection")=>
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=gerer',-1);
                                 switch($onglet) {
                                     case 'compte':
+                                        if (isset($_POST['submit_options'])) {
+                                            echo L::_('modifications_ok').'<br />';
+                                            if ($_POST['partage']=='on')
+                                                $d->requete('UPDATE users SET AccepterPartage=1 WHERE ID='.$id_user);
+                                            else
+                                                $d->requete('UPDATE users SET AccepterPartage=0 WHERE ID='.$id_user);
+                                        }
+                                        $resultat_partage=$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
+                                        echo '<form action="?action=gerer&amp;onglet=options" method="post">';
+                                        echo '<br /><input type="checkbox" name="partage"';
+                                        if ($resultat_partage[0]['AccepterPartage']==1)
+                                            echo ' checked="checked"';
+                                        echo ' /> '.L::_('activer_partage').'<br />';
+                                        echo '<input name="submit_options" type="submit" value="'.L::_('valider').'" /></form>';
+                                        echo '<br /><br /><br />';
                                         if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
                                             if (isset($_GET['confirm']) && $_GET['confirm']=='true') {
                                                 $action=isset($_GET['vider'])?'vider':'supprimer';
@@ -483,23 +497,6 @@ $menu=	array(L::_("collection")=>
                                         echo '</span></td>';
                                         echo '<td><span id="nouvelle_acquisition"></span>';
                                         echo '</td></tr></table>';
-                                        break;
-                                    case 'options':
-                                        if (isset($_POST['submit_options'])) {
-                                            echo L::_('modifications_ok').'<br />';
-                                            if ($_POST['partage']=='on')
-                                                $d->requete('UPDATE users SET AccepterPartage=1 WHERE ID='.$id_user);
-                                            else
-                                                $d->requete('UPDATE users SET AccepterPartage=0 WHERE ID='.$id_user);
-                                        }
-                                        $resultat_partage=$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
-                                        echo '<form action="?action=gerer&amp;onglet=options" method="post">';
-                                        echo '<br /><input type="checkbox" name="partage"';
-                                        if ($resultat_partage[0]['AccepterPartage']==1)
-                                            echo ' checked="checked"';
-                                        echo ' /> '.L::_('activer_partage').'<br />';
-                                        echo '<input name="submit_options" type="submit" value="'.L::_('valider').'" /></form>';
-
                                         break;
                                 }
 

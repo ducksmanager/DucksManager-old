@@ -6,7 +6,7 @@ class JS {
 		/*if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'],'localhost')===false) {
 			echo '<script type="text/javascript" src="'.$nom.'"></script>';return;
 		}*/
-		if ($nom=='js/my_scriptaculous.js' || $nom=='prototype.js' || $nom=='js/scriptaculous/src/scriptaculous.js') {
+		if ($nom=='js/my_scriptaculous.js' || $nom=='prototype.js' || $nom=='js/scriptaculous/src/scriptaculous.js' ||isset($_GET['debug'])) {
 			echo '<script type="text/javascript" src="'.$nom.'"></script>';return;
 		}
 		$prefixe=substr($nom,0,strrpos($nom,'.'));
