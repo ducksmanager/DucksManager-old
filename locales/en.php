@@ -48,7 +48,7 @@ define('CALCULS_PAS_ENCORE_FAITS','The calculations have not been done yet. Laun
 define('CHARGEMENT','Loading');
 define('CLASSEMENT','Rating');
 define('CLASSEMENT_COURT','My rating');
-define(        'CLASSIQUE_ABREGE_DESCRIPTION','This displays the number of possessed issues for a magazine');
+define('CLASSIQUE_ABREGE_DESCRIPTION','This displays the number of possessed issues for a magazine');
 define('CLASSIQUE_ABREGE_MOINS_1','Not really a list');
 define('classique_abrege_moins_2','Impossible to add issues manually');
 define('CLASSIQUE_ABREGE_PLUS_1','Very short');
@@ -120,6 +120,7 @@ define('ERREUR_EXECUTION_REQUETE','Error while submitting the query !');
 define('ERREUR_LECTURE_NUMEROS','Error while reading the issues list');
 define('ERREUR_RECUPERATION_INDUCKS','Error while retrieving the issues from Inducks!');
 define('ET','and');
+define('ETAT','Condition');
 define('ETAT_BON','In good condition');
 define('ETAT_EXCELLENT','In excellent condition');
 define('ETAT_INDEFINI','In undefined condition');

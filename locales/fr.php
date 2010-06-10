@@ -119,6 +119,7 @@ define('ERREUR_EXECUTION_REQUETE','Erreur lors de l\'&eacute;x&eacute;cution de 
 define('ERREUR_LECTURE_NUMEROS','Erreur lors de la lecture de la liste de num&eacute;ros');
 define('ERREUR_RECUPERATION_INDUCKS','Erreur lors de la r&eacute;cup&eacute;ration des num&eacute;ros depuis Inducks !');
 define('ET','et');
+define('ETAT','Etat');
 define('ETAT_BON','En bon &eacute;tat');
 define('ETAT_EXCELLENT','En excellent &eacute;tat');
 define('ETAT_INDEFINI','En &eacute;tat ind&eacute;fini');
