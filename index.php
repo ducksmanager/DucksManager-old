@@ -171,10 +171,20 @@ $menu=	array(COLLECTION=>
         case 'gerer':
             echo 'defiler_log(\'DucksManager\');';
             if (isset($_GET['onglet_magazine'])) {
-                echo 'init_observers_gerer_numeros();';
-
-                if ($_GET['onglet_magazine']=='new') {
+                $onglet_magazine=$_GET['onglet_magazine'];
+                if ($onglet_magazine=='new') {
+                    if (isset($_POST['magazine'])) {
+                        $pays=$_POST['pays'];
+                        $magazine=$_POST['magazine'];
+                    }
                     echo 'initPays();';
+                }
+                else {
+                    list($pays,$magazine)=explode('/',$onglet_magazine);
+                }
+                if (isset($magazine)) {
+                    echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
+                    echo 'init_observers_gerer_numeros();';
                 }
             }
             break;
@@ -478,8 +488,6 @@ $menu=	array(COLLECTION=>
                                         <?php
                                         //echo '<table border="0" width="20%">';
                                         $onglets_magazines=$l->liste_magazines();
-                                        if (isset($_GET['onglet_magazine']))
-                                            $onglet_magazine=$_GET['onglet_magazine'];
                                         $onglets_magazines[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
                                         //echo '<span id="onglets_magazines">';
                                         Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr',3);
@@ -503,8 +511,6 @@ $menu=	array(COLLECTION=>
                             <br /><br />
                             <input type="submit" value="<?=VALIDER?>" />
                         </form><br /><br />
-                        <span id="liste_numeros">
-                        </span>
                                             <?php
                                         }
                                         else {
@@ -512,22 +518,11 @@ $menu=	array(COLLECTION=>
                                             <table width="100%">
                                             <tr><td>
                                             <?php
-                                            if (isset($_POST['magazine']))
-                                                $onglet_magazine=$_POST['pays'].'/'.$_POST['magazine'];
-                                            if (isset($onglet_magazine)) {
-                                                list($pays,$magazine)=explode('/',$onglet_magazine);
-                                                if (false!=($numeros=Inducks::get_numeros($pays,$magazine))) {
-                                                    Affichage::afficher_etiquettes();
-                                                    ?>
-                                                    <span id="liste_numeros">
-                                                    <?php
-                                                    Affichage::afficher_numeros($l,$pays,$magazine,$numeros);
-                                                    ?>
-                                                    </span>
-                                                    </td><td>
-                                                    <?php
-                                                }
-                                                else echo ERREUR_RECUPERATION_INDUCKS;
+                                            if (isset($onglet_magazine) && isset($pays)) {
+                                                ?>
+                                                <span id="liste_numeros"><?=CHARGEMENT.'...'?></span>
+                                                </td><td>
+                                                <?php
                                             }
                                             ?>
                                             </td></tr></table>

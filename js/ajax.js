@@ -492,20 +492,22 @@ function select_etats() {
 	});
 }
 
-function afficher_numeros() { 
-	var el_select=$('liste_magazines');
-	if (el_select.options[0].id=='vide') {
-		l10n_action('alert','selectionner_magazine');
-		return;
-	}
-	var id_magazine=el_select.options[el_select.options.selectedIndex].id;
-	magazine_sel=id_magazine;
-	var pays=pays_sel;
-	var magazine=magazine_sel;
-	if (!pays || !magazine) {
-		l10n_action('alert','remplir_pays_et_magazine');
-		return;
-	}
+function afficher_numeros(pays,magazine) {
+        if (pays == null || magazine == null) {
+            var el_select=$('liste_magazines');
+            if (el_select.options[0].id=='vide') {
+                    l10n_action('alert','selectionner_magazine');
+                    return;
+            }
+            var id_magazine=el_select.options[el_select.options.selectedIndex].id;
+            magazine_sel=id_magazine;
+            pays=pays_sel;
+            magazine=magazine_sel;
+            if (!pays || !magazine) {
+                    l10n_action('alert','remplir_pays_et_magazine');
+                    return;
+            }
+        }
 	l10n_action('defiler_log','recuperation_numeros');
 	var myAjax = new Ajax.Request('Database.class.php', {
 		   method: 'post',
