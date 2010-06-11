@@ -13,23 +13,27 @@ class DMspiral extends Format_liste {
 	}
 
 	function afficher($liste) {
-		foreach($liste as $pays=>$numeros_pays) {
-			foreach($numeros_pays as $magazine=>$numeros) {
-				$chaine='';
-				foreach($numeros as $numero_et_etat) {
-					$numero=$numero_et_etat[0];
-					$etat=$numero_et_etat[1];
-					$chaine.=$magazine.'!'.
-					$numero.'!'.
-					$etat.'!'.
-					'2005-00-00'.'!'.
-					'a'.',';
-				}
-				//echo '<div id="mon_image"><table border="1"><tr><td>';
-				echo '<img src="image.php?chaine='.$chaine.'&amp;mag='.$magazine.'" />';
-				//echo '</td><td>'.$magazine.'('.$pays.')</td></tr></table></div>';
-			}
-		}
+            foreach($liste as $pays=>$numeros_pays) {
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    $chaine='';
+                    $premier=true;
+                    foreach($numeros as $numero_et_etat) {
+                        if (!$premier)
+                            $chaine.=',';
+                        $numero=$numero_et_etat[0];
+                        $etat=$numero_et_etat[1];
+                        $chaine.=$magazine.'!'.
+                                 $numero.'!'.
+                                 $etat.'!'.
+                                 '2005-00-00'.'!'.
+                                 'a';
+                        $premier=false;
+                    }
+                    //echo '<div id="mon_image"><table border="1"><tr><td>';
+                    echo '<img src="image.php?chaine='.$chaine.'&amp;mag='.$magazine.'" />';
+                    //echo '</td><td>'.$magazine.'('.$pays.')</td></tr></table></div>';
+                }
+            }
 	}
 }
 ?>

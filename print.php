@@ -13,7 +13,7 @@ require_once('JS.class.php');
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>DucksManager : <?php IMPRESSION_COLLECTION;?></title>
+  <title>DucksManager : <?=IMPRESSION_COLLECTION?></title>
   <link rel="stylesheet" type="text/css" href="style.css" />
   <!--[if IE]>
 	<style type="text/css" media="all">@import "fix-ie.css";</style>

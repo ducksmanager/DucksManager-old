@@ -10,18 +10,6 @@ error_reporting(E_ERROR);
 ini_set('session.lifetime', 0);
 require_once('Liste.class.php');
 require_once('JS.class.php');
-$types_listes=array();
-$rep = "Listes/";
-$dir = opendir($rep);
-while (null != ($f = readdir($dir))) {
-    if(is_file($rep.$f)) {
-        if (startsWith($f,'Liste.') && endsWith($f,'.class.php')) {
-            require_once($rep.$f);
-            $nom_liste=str_replace('Liste.','',str_replace('.class.php','',$f));
-            array_push($types_listes,$nom_liste);
-        }
-    }
-}
 require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
@@ -607,14 +595,14 @@ $menu=	array(COLLECTION=>
                                         </td>
                                         <td>
                                             <?=$objet->description?><br /><br />
-                                            <img src="plus.png" /> : <br />
+                                            <img src="plus.png" alt="plus" /><br />
                                             <?php
                                             foreach($objet->les_plus as $plus) {
                                                 ?>- <?=$plus?><br /><?php
                                             }
                                             ?>
                                             <br />
-                                            <img src="moins.png" /> : <br />
+                                            <img src="moins.png" alt="moins"/><br />
                                             <?php
                                             foreach($objet->les_moins as $moins) {
                                                 ?>- <?=$moins?><br /><?php

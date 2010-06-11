@@ -5,14 +5,16 @@ $types_listes=array();
 $dir = opendir($rep);
 $prefixe='Liste.';
 $suffixe='.class.php';
-/*while ($f = readdir($dir)) {
-	if(is_file($rep.$f)) {
-		if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
-			array_push($types_listes,substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe)));
-			require_once($rep.$f);
-		}
-	}
-}*/
+while ($f = readdir($dir)) {
+    if (strpos($f,'Debug')!==false)
+        continue;
+    if(is_file($rep.$f)) {
+        if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
+            array_push($types_listes,substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe)));
+            require_once($rep.$f);
+        }
+    }
+}
 require_once($rep.'Liste.Classique.class.php');
 
 function types_listes() {
@@ -41,8 +43,9 @@ class Liste {
 	}
 
 	function ListeExemple() {
-		$numeros=array(array(2,'Excellent',false,-1),array(173,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));
-		$this->collection=array('fr'=>(array('MP'=>$numeros)));
+		$numeros_mp=array(array(2,'Excellent',false,-1),array(273,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));
+		$numeros_mad=array(array(6,'Indéfini',false,-1),array(16,'Bon',false,-1));
+		$this->collection=array('fr'=>(array('MP'=>$numeros_mp)), 'us'=>array('MAD'=>$numeros_mad));
 	}
 
 	function fusionnerAvec($liste_autre) {
@@ -496,7 +499,19 @@ elseif(isset($_GET['liste_exemple'])) {
 	$l=new Liste();
 	$l->ListeExemple();
 	$objet =new $_GET['type_liste']();
-	$objet->afficher($l->collection).'</font>';
+        ?>
+        <html>
+            <head>
+                <meta content="text/html; charset=ISO-8859-1"
+                      http-equiv="content-type">
+                <title><?php echo TITRE;?></title>
+                <link rel="stylesheet" type="text/css" href="style.css">
+            </head>
+            <body>
+            <?php $objet->afficher($l->collection).'</font>';?>
+            </body>
+        </html>
+        <?php
 }
 
 /*
