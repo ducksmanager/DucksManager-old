@@ -260,7 +260,7 @@ function importer(accept,utilisateur_existant) {
 			tr4.insert(td4_1).insert(td4_2);
 			var tr5=new Element('tr');
 			var td5=new Element('td',{'colspan':'2'});
-			var valider=new Element('input',{'type':'submit','value':'Inscription'});
+			var valider=new Element('input',{'type':'submit','value':'Inscription'}).addClassName('valider');
 			valider.observe('click',function() {
 				verif_valider_inscription(user,pass,pass2,true);
 			});

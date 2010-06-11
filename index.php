@@ -440,7 +440,7 @@ $menu=	array(COLLECTION=>
                                             checked="checked"
                                         <?php } ?>
                                          /><?=ACTIVER_PARTAGE?><br />
-                                        <input name="submit_options" type="submit" value="<?=VALIDER?>" /></form>
+                                        <input name="submit_options" class="valider" type="submit" value="<?=VALIDER?>" /></form>
                                         <br /><br /><br />
                                         <?php
                                         if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
@@ -509,7 +509,7 @@ $menu=	array(COLLECTION=>
                                 <option id="vide"><?=SELECTIONNER_PAYS?>
                             </select>
                             <br /><br />
-                            <input type="submit" value="<?=VALIDER?>" />
+                            <input type="submit" class="valider" value="<?=VALIDER?>" />
                         </form><br /><br />
                                             <?php
                                         }

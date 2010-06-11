@@ -360,7 +360,7 @@ class Database {
 				echo '<input type="checkbox" '.($recommandations_liste_mags?'checked="checked" ':'')
 					.'name="proposer_magazines_possedes">&nbsp;'.PROPOSER_MAGAZINES_POSSEDES.'<br />'
 					.'<span style="font-size:12px">'.PROPOSER_MAGAZINES_POSSEDES_EXPLICATION.'</span>';
-				echo '<br /><br /><input type="submit" value="'.VALIDER_NOTATIONS.'" /></form>';
+				echo '<br /><br /><input type="submit" class="valider" value="'.VALIDER_NOTATIONS.'" /></form>';
 			}
 		}
 	}

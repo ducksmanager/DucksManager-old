@@ -131,3 +131,11 @@ a.important:HOVER {
 .bold {
     font-weight: bold;
 }
+
+.valider {
+    background-color:green;
+}
+
+.annuler {
+    background-color:red;
+}
