@@ -429,7 +429,7 @@ class Liste {
 				}
 			}
 		}
-		return '';
+		return array('','','');
 	}
 }
 if (isset($_POST['liste'])) {

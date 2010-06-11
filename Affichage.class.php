@@ -90,17 +90,19 @@ class Affichage {
 			echo '" id="n'.($cpt).'" title="'.$numero.'">';
 			echo 'n&deg;'.$numero;
 			if ($possede) {
-                                if (is_null($etat_class))
+                                if (!isset($etat_class))
                                     echo ' <span class="num_indefini"></span>';
 				else
                                     echo ' <span class="num_'.$etat_class.'">'.ETAT.' '.$etat_class.'</span>';
 				if ($id_acq!=-1 && $id_acq!=-2) {
-					$requete_date_achat='SELECT Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
-					$resultat_date=$d->requete_select($requete_date_achat);
-					$regex_date='#([^-]+)-([^-]+)-(.+)#is';
-					$date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-					if (!is_null($date) && !empty($date))
+                                    $requete_date_achat='SELECT Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
+                                    $resultat_date=$d->requete_select($requete_date_achat);
+                                    if (count($resultat_date)>0) {
+                                        $regex_date='#([^-]+)-([^-]+)-(.+)#is';
+                                        $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+                                        if (!is_null($date) && !empty($date))
                                             echo '&nbsp;'.ACHETE_LE.' '.$date;
+                                    }
 				}
 			}
 			if ($av)
