@@ -112,6 +112,7 @@ define('DMTABLE_MOINS_1','Needs a little bit of time to understand how it works 
 define('DMTABLE_MOINS_2','Some problems when you\'ve got a lot of issues with the same unit numbers (for instance 100,200,300). In this case the cell is enlarged.');
 define('DMTABLE_PLUS_1','Digest display (4 text lines max. per magazine)');
 define('DMTABLE_PLUS_2','The doublets can be represented');
+define('DMTABLE_PLUS_3','The purchase date can be represented');
 define('EMAIL_ENVOYE','An e-mail has just been sent to the webmaster. If your second-hand bookshop is valid, it should be available soon on DucksManager.');
 define('ENREGISTRER_CHANGEMENTS','Save changes');
 define('ENTREZ_IDENTIFIANTS_INDUCKS','Please type your Inducks account\'s username and password');
