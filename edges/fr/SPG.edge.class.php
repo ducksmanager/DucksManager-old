@@ -28,10 +28,10 @@ class SPG extends Edge {
 			$noir = imagecolorallocate($this->image, 0, 0, 0);
 			imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
 			imagefilledrectangle($this->image, .5*Edge::$grossissement, .5*Edge::$grossissement, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $blanc);
-			$titre=new Texte(mb_strtoupper('Super Picsou Geant','UTF-8'),$this->largeur*2/5,$this->largeur/2,
+			$titre=new Texte(mb_strtoupper('Super Picsou Geant','UTF-8'),$this->largeur*1.5/5,$this->largeur/2,
 							 6.2*Edge::$grossissement,-90,$noir,'ArialBlack.ttf');
 			$this->textes[]=$titre;
-			$texte_numero=new Texte($this->numero,$this->largeur*1/5,$this->hauteur-$this->largeur/2,
+			$texte_numero=new Texte($this->numero,$this->numero < 10 ?$this->largeur*1.7/5 : $this->largeur*1/5,$this->hauteur-$this->largeur/2,
 									7*Edge::$grossissement,0,$noir,'ArialBlack.ttf');
 			$this->textes[]=$texte_numero;
 			//imagerectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
@@ -41,26 +41,26 @@ class SPG extends Edge {
 			
 		}
 		else {
-                    $epaisseur_bordure=.25*Edge::$grossissement;
-                    $contenu_couleur='';
-                    if ($this->numero<141)
-                            list($rouge,$vert,$bleu)=array(223,51,9);
-                    else {
+            $epaisseur_bordure=.25*Edge::$grossissement;
+            $contenu_couleur='';
+            if ($this->numero<141)
+                    list($rouge,$vert,$bleu)=array(223,51,9);
+            else {
 
-                            $inF = fopen('fr/SPG.'.$this->numero.'.fond.txt',"r");
-                            while (!feof($inF)) {
-                               $contenu_couleur.= fgets($inF, 4096);
-                            }
-                            list($rouge,$vert,$bleu)=explode(',',$contenu_couleur);
+                    $inF = fopen('fr/SPG.'.$this->numero.'.fond.txt',"r");
+                    while (!feof($inF)) {
+                       $contenu_couleur.= fgets($inF, 4096);
                     }
-                    $noir = imagecolorallocate($this->image, 0, 0, 0);
-                    $blanc = imagecolorallocate($this->image, 255,255,255);
-                    $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
-                    imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
-                    imagefilledrectangle($this->image, $epaisseur_bordure, $epaisseur_bordure, $this->largeur-$epaisseur_bordure, $this->hauteur-$epaisseur_bordure, $fond);
+                    list($rouge,$vert,$bleu)=explode(',',$contenu_couleur);
+            }
+            $noir = imagecolorallocate($this->image, 0, 0, 0);
+            $blanc = imagecolorallocate($this->image, 255,255,255);
+            $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
+            imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
+            imagefilledrectangle($this->image, $epaisseur_bordure, $epaisseur_bordure, $this->largeur-$epaisseur_bordure, $this->hauteur-$epaisseur_bordure, $fond);
 
-                    $icone=imagecreatefrompng('edges/fr/SPG.'.$this->numero.'.icone.png');
-                    imagealphablending($icone, false);
+            $icone=imagecreatefrompng('edges/fr/SPG.'.$this->numero.'.icone.png');
+            imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
 		    imagefill($icone, 0, 0, $transparent);

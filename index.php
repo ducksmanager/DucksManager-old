@@ -403,6 +403,7 @@ $menu=	array(COLLECTION=>
                                     exit(-1);
                                 }
                                 $id_user=$d->user_to_id($_SESSION['user']);
+                                $l=$d->toList($id_user);
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php
@@ -419,6 +420,9 @@ $menu=	array(COLLECTION=>
                                 switch($onglet) {
                                     case 'bibliotheque':
                                         ?>
+                                        <span id="pcent_visible"></span>
+                                        <span id="pourcentage_collection_visible"></span>
+                                        <br /><br />
                                         <div id="bibliotheque" style="width:100%;height:100%"></div>
                                         <?php
                                     break;
@@ -481,7 +485,6 @@ $menu=	array(COLLECTION=>
 
                                         break;
                                     case 'ajout_suppr':
-                                        $l=$d->toList($id_user);
                                         ?>
                                         <?=POSSESSION_MAGAZINES_1?><br /><?=POSSESSION_MAGAZINES_2?><br />
                                         <?php
@@ -529,7 +532,6 @@ $menu=	array(COLLECTION=>
                                         }
                                         break;
                                     case 'acquisitions':
-                                        $l=$d->toList($id_user);
                                         ?>
                                         <?=INTRO_ACQUISITIONS1?><br />
                                         <?=INTRO_ACQUISITIONS2?><br /><br />

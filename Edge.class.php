@@ -8,23 +8,26 @@ class Edge {
 	var $textes=array();
 	var $largeur=20;
 	var $hauteur=200;
-        var $image;
-        var $o;
-        var $intervalles_validite=array();
-	static $grossissement=1.5;
-        static $largeur_numeros_precedents=0;
+    var $image;
+    var $o;
+	var $est_visible=true;
+    static $grossissement=1.5;
+    static $largeur_numeros_precedents=0;
+    
 	function Edge($pays=null,$magazine=null,$numero=null) {
             if (is_null($pays))
                 return;
             $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
             if (file_exists('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php')) {
-                /*include_once($this->pays.'/'.$this->magazine.'.edge.class.php');
-                $tranche=new $this->magazine();*/
                 require_once('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php');
                 $this->o=new $this->magazine($this->numero);
+                $intervalle_validite=new IntervalleValidite($this->o->intervalles_validite);
+                if (!$intervalle_validite->estValide($this->numero))
+                    $this->est_visible=false;
             }
             else {
                 $this->o=clone $this;
+                $this->est_visible=false;
             }
 	}
 
@@ -82,5 +85,5 @@ if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) 
 
 function getImgHTMLOf($pays,$magazine,$numero) {
     $e=new Edge($pays, $magazine, $numero);
-    return $e->getImgHTML();
+    return array($e->getImgHTML(),$e->est_visible);
 }

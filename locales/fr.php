@@ -262,6 +262,7 @@ define('POSSESSION_HISTOIRES_AUTEURS','Possession des histoires d\'auteurs');
 define('POSSESSION_MAGAZINES_1','Vous poss&eacute;dez des num&eacute;ros pour les magazines suivants');
 define('POSSESSION_MAGAZINES_2','Cliquez sur l\'un d\'eux pour &eacute;diter sa liste !');
 define('POSSESSION_NUMEROS','Possession des numéros');
+define('POURCENTAGE_COLLECTION_VISIBLE','% de votre collection est visible dans la biblioth&egrave;que.');
 define('POUR_VOIR_LA_VIDEO','pour voir cette vid&eacute;o');
 define('PREFERENCES_AUTEURS','Pr&eacute;f&eacute;rences d\'auteurs');
 define('PRESENTATION1','DucksManager est un outil vous permettant de g&eacute;rer votre liste de magazines Disney en toute simplicit&eacute;.');

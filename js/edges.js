@@ -73,6 +73,7 @@ function fermer(element) {
 
 function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2) {
     var section=$('bibliotheque');
+    l10n_action('remplirSpan','pourcentage_collection_visible');
     var myAjax3 = new Ajax.Request('edgetest.php', {
         method: 'post',
         parameters:'largeur='+section.clientWidth+'&hauteur='+section.clientHeight+'&texture1='+texture1+'&sous_texture1='+sous_texture1
@@ -86,6 +87,7 @@ function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2) 
                             background-color:black;opacity:0.5">&nbsp;</div>*/
             $('bibliotheque').setStyle({'zIndex':50,'width':$('largeur_etagere').readAttribute('name')+'px',
                                         'background':'transparent url(\'edges/textures/'+texture1+'/'+sous_texture1+'.jpg\') repeat left top'})
+            $('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
         }
 	});
 }
