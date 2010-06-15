@@ -35,16 +35,23 @@ $hauteur=$_POST['hauteur'];
         if ($width<Etagere::$largeur)
             Etagere::$largeur=$width;
         echo Edge::getEtagereHTML();
+        $total_numeros=0;
+        $total_numeros_visibles=0;
         foreach($l->collection as $pays=>$magazines) {
             foreach($magazines as $magazine=>$numeros) {
 				sort($numeros);
+                $total_numeros+=count($numeros);
 				foreach($numeros as $numero) {
-                    echo getImgHTMLOf($pays, $magazine, $numero[0]);
+                    list($texte,$est_visible)=getImgHTMLOf($pays, $magazine, $numero[0]);
+                    echo $texte;
+                    if ($est_visible===true)
+                        $total_numeros_visibles++;
                 }
             }
         }
         echo Edge::getEtagereHTML(false);
         ?>
     <div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
+    <div id="nb_numeros_visibles" style="display:none" name="<?=intval(100*$total_numeros_visibles/$total_numeros)?>"></div>
     </body>
 </html>
