@@ -53,6 +53,9 @@ class Edge {
                 $this->image=$this->dessiner();
             else
                 $this->image=$this->dessiner_defaut();
+            foreach($this->textes as $texte) {
+                imagettftext($this->image,$texte->taille,$texte->angle,$texte->pos_x,$texte->pos_y,$texte->couleur,$texte->police,$texte->texte);
+            }
             imageantialias($this->image, true);
             imagepng($this->image);
         }
