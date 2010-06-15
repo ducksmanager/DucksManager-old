@@ -17,14 +17,14 @@ function ouvrir(element) {
     current_width=element.width;
     current_height=element.height;
     var couverture=new Image();
-    couverture.src='fr/fr_spg_110a_001.jpg';
+    couverture.src='edges/fr/fr_spg_110a_001.jpg';
     current_element=element;//.absolutize();
     var pos_depart_couverture=new Array(current_element.getStyle('left'),current_element.getStyle('top'));
     pos_depart_couverture[0]=(parseInt(pos_depart_couverture[0].substring(0,pos_depart_couverture[0].length-2))+current_width)+'px';
     if ($('couv')==null) {
         current_couv=new Element('img', {'id':'couv','src':couverture.src})
                         .setStyle({'height':current_height,'width':couverture.width/(couverture.height/current_height), 'position':'absolute','display':'none',
-                                   'top':pos_depart_couverture[1], 'left':pos_depart_couverture[0]});
+                                   'top':pos_depart_couverture[1], 'left':pos_depart_couverture[0], 'zIndex':100});
         current_couv.observe('click', function () {
             ouvrirApres=false;
             fermer(current_element);
@@ -48,7 +48,7 @@ function ouvrir(element) {
     couverture_ouverte=true;
     setTimeout(function() {
         action_en_cours=false;
-    }, 2000);
+    }, 1700);
 }
 
 function fermer(element) {
@@ -68,6 +68,24 @@ function fermer(element) {
         couverture_ouverte=false;
         if (ouvrirApres==true)
             ouvrir(element);
-    }, 2000);
+    }, 1700);
+}
 
+function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2) {
+    var section=$('bibliotheque');
+    var myAjax3 = new Ajax.Request('edgetest.php', {
+        method: 'post',
+        parameters:'largeur='+section.clientWidth+'&hauteur='+section.clientHeight+'&texture1='+texture1+'&sous_texture1='+sous_texture1
+                  +'&texture2='+texture2+'&sous_texture2='+sous_texture2,
+        onSuccess:function(transport) {
+            $('bibliotheque').update(transport.responseText);
+            /*
+                <div style="z-index:50;position:inherit;width:100%;top:<?=Etagere::$hauteur*Edge::$grossissement?>;height:<?=Etagere::$epaisseur*Edge::$grossissement?>;
+                            background:transparent url('edges/textures/<?=Etagere::$texture2?>/<?=Etagere::$sous_texture2?>.jpg') repeat-x left top">&nbsp;</div>
+                <div style="z-index:50;position:inherit;width:100%;top:<?=Etagere::$hauteur*Edge::$grossissement?>;height:<?=Etagere::$epaisseur*Edge::$grossissement?>;
+                            background-color:black;opacity:0.5">&nbsp;</div>*/
+            $('bibliotheque').setStyle({'zIndex':50,'width':$('largeur_etagere').readAttribute('name')+'px',
+                                        'background':'transparent url(\'edges/textures/'+texture1+'/'+sous_texture1+'.jpg\') repeat left top'})
+        }
+	});
 }

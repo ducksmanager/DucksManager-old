@@ -371,20 +371,20 @@ function verif_valider_inscription(user,pass,pass2,importation) {
 
 function importer_numeros(utilisateur_existant) {
 	l10n_action('defiler_log','importation_numeros');
-		var myAjax3 = new Ajax.Request('Database.class.php', {
-	   	method: 'post',
-	   	parameters:'database=true&from_file='+fic_liste_tmp
-	   			  +(utilisateur_existant?'':('&user='+user.value+'&pass='+pass.value)),
-	   	onSuccess:function(transport,json) {
-	   		if (transport.responseText.indexOf('OK.')!=-1)
-	   			setTimeout(function() {window.location.replace("index.php?action=gerer"); },2000);
-	   		else {
-	   			if (utilisateur_existant)
-	   				$('contenu').update(transport.responseText);
-	   			else	
-	   				l10n_action('defiler_log',transport.responseText);
-	   		}
-	   	}
+        var myAjax3 = new Ajax.Request('Database.class.php', {
+        method: 'post',
+        parameters:'database=true&from_file='+fic_liste_tmp
+                          +(utilisateur_existant?'':('&user='+user.value+'&pass='+pass.value)),
+        onSuccess:function(transport,json) {
+            if (transport.responseText.indexOf('OK.')!=-1)
+                    setTimeout(function() {window.location.replace("index.php?action=gerer"); },2000);
+            else {
+                if (utilisateur_existant)
+                        $('contenu').update(transport.responseText);
+                else
+                        l10n_action('defiler_log',transport.responseText);
+            }
+        }
 	});
 }
 

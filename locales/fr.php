@@ -39,6 +39,8 @@ define('AUTRES','Autres');
 define('AVEC_ACQUISITION','avec la date d\'acquisition');
 define('AVEC_ETAT','avec l\'&eacute;tat');
 define('BASE_DONNEES','Base de donn&eacute;es DucksManager');
+define('BIBLIOTHEQUE','Visionnage de votre collection comme si vous &eacute;tiez devant!');
+define('BIBLIOTHEQUE_COURT','Ma biblioth&egrave;que');
 define('BIENVENUE','Bienvenue sur DucksManager !');
 define('BON','Bon');
 define('CALCUL_EN_COURS','Calcul en cours...');

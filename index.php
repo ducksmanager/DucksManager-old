@@ -111,6 +111,8 @@ $menu=	array(COLLECTION=>
         new JS('js/selection_menu.js');
         new JS('js/bouquineries.js');
         new JS('js/divers.js');
+        if (isset($_GET['onglet']) && $_GET['onglet']=='bibliotheque')
+            new JS('js/edges.js');
 
         if (isset($_GET['debug'])) {
             ?>
@@ -174,6 +176,9 @@ $menu=	array(COLLECTION=>
                     echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
                     echo 'init_observers_gerer_numeros();';
                 }
+            }
+            if (isset($_GET['onglet']) && $_GET['onglet']=='bibliotheque') {
+                echo 'charger_bibliotheque(\'bois\',\'HONDURAS MAHOGANY\', \'bois\',\'KNOTTY PINE\');';
             }
             break;
         case 'print_now':
@@ -325,7 +330,7 @@ $menu=	array(COLLECTION=>
                         <?php
                     }
                     ?>
-                    <span id="contenu">
+                    <div id="contenu">
 
                         <?php
                         echo $texte_debut;
@@ -402,15 +407,21 @@ $menu=	array(COLLECTION=>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php
                                 $onglets=array(
-                                        GESTION_COMPTE_COURT=>array('compte',GESTION_COMPTE),
+                                        BIBLIOTHEQUE_COURT=>array('bibliotheque',BIBLIOTHEQUE),
                                         GESTION_NUMEROS_COURT=>array('ajout_suppr',GESTION_NUMEROS),
-                                        GESTION_ACQUISITIONS_COURT=>array('acquisitions',GESTION_ACQUISITIONS));
+                                        GESTION_ACQUISITIONS_COURT=>array('acquisitions',GESTION_ACQUISITIONS),
+                                        GESTION_COMPTE_COURT=>array('compte',GESTION_COMPTE));
                                 if (!isset($_GET['onglet']))
                                     $onglet='ajout_suppr';
                                 else
                                     $onglet=$_GET['onglet'];
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=gerer',-1);
                                 switch($onglet) {
+                                    case 'bibliotheque':
+                                        ?>
+                                        <div id="bibliotheque" style="width:100%;height:100%"></div>
+                                        <?php
+                                    break;
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
                                             echo MODIFICATIONS_OK.'<br />';
@@ -927,7 +938,7 @@ $menu=	array(COLLECTION=>
 
                         function fin_de_page() {
                             ?>
-                    </span>
+                    </div>
                 </td>
                 <td valign="top">
                     <script type="text/javascript"><!--
