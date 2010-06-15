@@ -174,7 +174,6 @@ $menu=	array(COLLECTION=>
                 }
                 if (isset($magazine)) {
                     echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
-                    echo 'init_observers_gerer_numeros();';
                 }
             }
             if (isset($_GET['onglet']) && $_GET['onglet']=='bibliotheque') {

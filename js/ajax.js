@@ -515,6 +515,7 @@ function afficher_numeros(pays,magazine) {
 		   onSuccess:function(transport,json) {
 		    	$('liste_numeros').update(transport.responseText);
 		    	l10n_action('defiler_log','termine');
+                init_observers_gerer_numeros();
 		   }
 	});
 }

@@ -57,7 +57,13 @@ class Affichage {
 		$id_user=$d->user_to_id($_SESSION['user']);
 		$requete_nom_complet_magazine='SELECT NomComplet FROM magazines WHERE (PaysAbrege LIKE "'.$pays.'" AND NomAbrege LIKE "'.$magazine.'")';
 		$requete_nom_complet_magazine_resultat=$d->requete_select($requete_nom_complet_magazine);
-		$nom_complet=utf8_encode($requete_nom_complet_magazine_resultat[0]['NomComplet']);
+		if (!array_key_exists(0,$requete_nom_complet_magazine_resultat)) {
+            $liste_magazines=Inducks::get_noms_complets_magazines($pays);
+            $nom_complet=($liste_magazines[$magazine]);
+
+        }
+        else
+            $nom_complet=utf8_encode($requete_nom_complet_magazine_resultat[0]['NomComplet']);
 		echo '<br />';
 		echo '<table border="0" width="100%">';
 		echo '<tr><td rowspan="2"><span style="font-size:15pt;font-weight:bold;">'.$nom_complet.'</span></td>';
