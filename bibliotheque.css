@@ -1,0 +1,19 @@
+.bibliotheque  {
+    z-index:50;
+    background-color:transparent;
+    background-repeat:repeat;
+    background-position:left top;
+}
+
+.etagere {
+    margin-top:-3px;
+    background-color:transparent;
+    background-repeat:repeat;
+    background-position:left top;
+}
+
+.tranche {
+    position:relative;
+    z-index:100;
+    background-color:white;
+}

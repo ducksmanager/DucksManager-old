@@ -11,6 +11,7 @@ class Edge {
     var $image;
     var $o;
 	var $est_visible=true;
+    var $intervalles_validite=array();
     static $grossissement=1.5;
     static $largeur_numeros_precedents=0;
     
@@ -32,10 +33,11 @@ class Edge {
 	}
 
     static function getEtagereHTML($br=true) {
-        return '<div style="margin-top:-3px;width:'.Etagere::$largeur.';
-                                  background:transparent url(\'edges/textures/'.Etagere::$texture2.'/'.Etagere::$sous_texture2.'.jpg\') repeat-x left top">&nbsp;</div>';
+        $code= '<div class="etagere" style="width:'.Etagere::$largeur.';'
+                                          .'background-image: url(\'edges/textures/'.Etagere::$texture2.'/'.Etagere::$sous_texture2.'.jpg\')">&nbsp;</div>';
         if ($br===true)
-            echo '<br />';
+            $code.= '<br />';
+        return $code;
     }
         function getImgHTML() {
             $code='';
@@ -43,9 +45,11 @@ class Edge {
                 $code.=Edge::getEtagereHTML();
                 Edge::$largeur_numeros_precedents=0;
             }
-            $code.= '<img style="position:relative;z-index:100;top:'.(Edge::$grossissement*Etagere::$hauteur-$this->o->hauteur).'; left:'.Edge::$largeur_numeros_precedents.'" '
-                  .'src="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'" '
-                  .'width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" onclick="ouvrir(this)" />';
+            if ($this->o->hauteur > Etagere::$hauteur_max_etage)
+                Etagere::$hauteur_max_etage = $this->o->hauteur ;
+            $code.= '<img class="tranche" '
+                  .'name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'" '
+                  .'width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" />';
             Edge::$largeur_numeros_precedents+=$this->o->largeur;
             return $code;
         }

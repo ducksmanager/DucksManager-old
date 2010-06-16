@@ -3,11 +3,13 @@
 class IntervalleValidite {
     var $intervalles;
 
-    function IntervalleValidite(array $intervalles) {
+    function IntervalleValidite(array $intervalles=null) {
         $this->intervalles=$intervalles;
     }
 
     function estValide($numero) {
+        if (!is_array($this->intervalles))
+            return false;
         if (in_array($numero, $this->intervalles))
             return true;
         foreach($this->intervalles as $intervalle) {

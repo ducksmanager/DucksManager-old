@@ -53,5 +53,7 @@ $hauteur=$_POST['hauteur'];
         ?>
     <div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
     <div id="nb_numeros_visibles" style="display:none" name="<?=intval(100*$total_numeros_visibles/$total_numeros)?>"></div>
+    <div id="hauteur_etage" style="display:none" name="<?=Etagere::$hauteur_max_etage?>"></div>
+    <div id="grossissement" style="display:none" name="<?=Edge::$grossissement?>"></div>
     </body>
 </html>

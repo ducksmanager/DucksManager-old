@@ -46,12 +46,16 @@ class SPG extends Edge {
             if ($this->numero<141)
                     list($rouge,$vert,$bleu)=array(223,51,9);
             else {
-
-                    $inF = fopen('fr/SPG.'.$this->numero.'.fond.txt',"r");
+                $inF = @fopen('edges/fr/SPG.'.$this->numero.'.fond.txt',"r");
+                if ($inF === false) {
+                    list($rouge,$vert,$bleu)=array(127,127,127);
+                }
+                else {
                     while (!feof($inF)) {
                        $contenu_couleur.= fgets($inF, 4096);
                     }
                     list($rouge,$vert,$bleu)=explode(',',$contenu_couleur);
+                }
             }
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             $blanc = imagecolorallocate($this->image, 255,255,255);
