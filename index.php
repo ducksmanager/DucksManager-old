@@ -24,6 +24,11 @@ $menu=	array(COLLECTION=>
                         "link"=>true,
                         "coa_related"=>true,
                         "text"=>OUVRIR_COLLECTION),
+                "bibliotheque"=>
+                array("private"=>"always",
+                        "link"=>true,
+                        "coa_related"=>true,
+                        "text"=>BIBLIOTHEQUE_COURT),
                 "gerer"=>
                 array("private"=>"always",
                         "link"=>true,
@@ -95,14 +100,17 @@ $menu=	array(COLLECTION=>
         new JS('prototype.js');
         new JS('js/scriptaculous/src/scriptaculous.js');
         new JS('js/my_scriptaculous.js');
-        new JS('js/sel_num.js');
-        new JS('js/menu_contextuel.js');
         new JS('js/ajax.js');
-        new JS('js/selection_menu.js');
-        new JS('js/bouquineries.js');
-        new JS('js/divers.js');
-        if (isset($_GET['onglet']) && $_GET['onglet']=='bibliotheque')
-            new JS('js/edges.js');
+        if (isset($_GET['action'])) {
+            new JS('js/sel_num.js');
+            if ($_GET['action']=='gerer')
+                new JS('js/menu_contextuel.js');
+            new JS('js/selection_menu.js');
+            new JS('js/bouquineries.js');
+            new JS('js/divers.js');
+            if ($_GET['action']=='bibliotheque')
+                new JS('js/edges.js');
+        }
         ?>
     </head>
 
@@ -142,6 +150,9 @@ $menu=	array(COLLECTION=>
         case 'open':
             echo 'defiler_log(\'DucksManager\');';
             break;
+        case 'bibliotheque':
+            echo 'charger_bibliotheque(\'bois\',\'HONDURAS MAHOGANY\', \'bois\',\'KNOTTY PINE\');';
+        break;
         case 'gerer':
             echo 'defiler_log(\'DucksManager\');';
             if (isset($_GET['onglet_magazine'])) {
@@ -159,9 +170,6 @@ $menu=	array(COLLECTION=>
                 if (isset($magazine)) {
                     echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
                 }
-            }
-            if (isset($_GET['onglet']) && $_GET['onglet']=='bibliotheque') {
-                echo 'charger_bibliotheque(\'bois\',\'HONDURAS MAHOGANY\', \'bois\',\'KNOTTY PINE\');';
             }
             break;
         case 'print_now':
@@ -379,6 +387,20 @@ $menu=	array(COLLECTION=>
                                 setCookie('pass','',time()-3600);
                                 echo DECONNEXION_OK;
                                 break;
+                            case 'bibliotheque':
+                                ?>
+                                <h2><?=BIBLIOTHEQUE_COURT?></h2><br /><br />
+                                <span id="chargement_bibliotheque_termine"><?=CHARGEMENT?>..</span>.<br />
+                                <div id="barre_pct_bibliotheque" style="border: 1px solid white; width: 200px;">
+                                    <div id="pct_bibliotheque" style="width: 0%; background-color: red;">&nbsp;</div>
+                                </div>
+                                <span id="pcent_visible"></span>
+                                <span id="pourcentage_collection_visible"></span>
+                                <br /><br />
+                                <div id="bibliotheque" style="width:100%;height:100%"></div>
+                                <?php
+                            break;
+
                             case 'gerer':
                                 $d=new Database();
                                 if (!$d) {
@@ -391,7 +413,6 @@ $menu=	array(COLLECTION=>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php
                                 $onglets=array(
-                                        BIBLIOTHEQUE_COURT=>array('bibliotheque',BIBLIOTHEQUE),
                                         GESTION_NUMEROS_COURT=>array('ajout_suppr',GESTION_NUMEROS),
                                         GESTION_ACQUISITIONS_COURT=>array('acquisitions',GESTION_ACQUISITIONS),
                                         GESTION_COMPTE_COURT=>array('compte',GESTION_COMPTE));
@@ -401,14 +422,6 @@ $menu=	array(COLLECTION=>
                                     $onglet=$_GET['onglet'];
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=gerer',-1);
                                 switch($onglet) {
-                                    case 'bibliotheque':
-                                        ?>
-                                        <span id="pcent_visible"></span>
-                                        <span id="pourcentage_collection_visible"></span>
-                                        <br /><br />
-                                        <div id="bibliotheque" style="width:100%;height:100%"></div>
-                                        <?php
-                                    break;
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
                                             echo MODIFICATIONS_OK.'<br />';
@@ -924,19 +937,6 @@ $menu=	array(COLLECTION=>
                         function fin_de_page() {
                             ?>
                     </div>
-                </td>
-                <td valign="top">
-                    <script type="text/javascript"><!--
-                        google_ad_client = "pub-0175030099331206";
-                        /* 120x240, date de cr�ation 21/10/09 */
-                        google_ad_slot = "2052175046";
-                        google_ad_width = 120;
-                        google_ad_height = 240;
-                        //-->
-                    </script>
-                    <script type="text/javascript"
-                            src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-                    </script>
                 </td>
 
             </tr>

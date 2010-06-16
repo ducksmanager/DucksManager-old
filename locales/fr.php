@@ -47,6 +47,7 @@ define('CALCUL_EN_COURS','Calcul en cours...');
 define('CALCUL_TERMINE','Calcul termin&eacute;. La page va se recharger...');
 define('CALCULS_PAS_ENCORE_FAITS','Les calculs n\'ont pas encore &eacute;t&eacute; effectu&eacute;s. Lancez les statistiques manuellement ou attendez demain !');
 define('CHARGEMENT','Chargement');
+define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','Chargement termin&eacute;');
 define('CLASSEMENT','Classement');
 define('CLASSEMENT_COURT','Mon classement');
 define('CLASSIQUE_ABREGE_DESCRIPTION','Cet affichage permet de consulter le nombre de num&eacute;ros poss&eacute;d&eacute;s pour un magazine..');

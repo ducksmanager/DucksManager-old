@@ -10,6 +10,8 @@ var hauteur_section;
 var couverture;
 var hauteur_etage;
 var grossissement;
+var nb_etageres;
+var nb_etageres_terminees;
 
 function ouvrir(element) {
     if (action_en_cours)
@@ -104,6 +106,8 @@ function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2) 
             var premiere_tranche=$('bibliotheque').down(2);
             grossissement=$('grossissement').readAttribute('name');
             hauteur_etage=$('hauteur_etage').readAttribute('name');
+            nb_etageres=$$('.etagere').length;
+            nb_etageres_terminees=1;
             charger_tranche(premiere_tranche);
         }
 	});
@@ -116,9 +120,14 @@ function charger_tranche(element) {
         var element=this;
         var suivant=element.next();
         if (suivant.className.indexOf('tranche')==-1) {
+            nb_etageres_terminees++;
+            $('pct_bibliotheque').setStyle({'width':parseInt(100*nb_etageres_terminees/nb_etageres)+'%'});
             var tranche_suivante=suivant.next().next();
-            if (tranche_suivante.className.indexOf('tranche')==-1)
+            if (tranche_suivante.className.indexOf('tranche')==-1) {
                init_observers_tranches();
+               l10n_action('remplirSpan','chargement_bibliotheque_termine');
+               $('barre_pct_bibliotheque').remove();
+            }
             else
                 charger_tranche(tranche_suivante);
         }
