@@ -78,16 +78,6 @@ $menu=	array(COLLECTION=>
         <link rel="stylesheet" type="text/css" href="bibliotheque.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
-        <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-        </script>
-        <script type="text/javascript">
-            try {
-                var pageTracker = _gat._getTracker("UA-11433683-1");
-                pageTracker._trackPageview();
-            } catch(err) {}
-        </script>
         <!-- Piwik -->
         <script type="text/javascript">
         var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.ducksmanager.net/piwik/" : "http://www.ducksmanager.net/piwik/");
