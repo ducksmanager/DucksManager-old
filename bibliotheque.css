@@ -1,8 +1,9 @@
-.bibliotheque  {
+#bibliotheque  {
     z-index:50;
     background-color:transparent;
     background-repeat:repeat;
     background-position:left top;
+    padding-left:15px;
 }
 
 .etagere {
@@ -10,6 +11,7 @@
     background-color:transparent;
     background-repeat:repeat;
     background-position:left top;
+    margin-left:-15px;
 }
 
 .tranche {
