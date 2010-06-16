@@ -4,6 +4,7 @@
     background-repeat:repeat;
     background-position:left top;
     padding-left:15px;
+    padding-right:5px;
 }
 
 .etagere {
@@ -12,6 +13,7 @@
     background-repeat:repeat;
     background-position:left top;
     margin-left:-15px;
+    margin-right:-15px;
 }
 
 .tranche {
