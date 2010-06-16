@@ -72,10 +72,10 @@ $menu=	array(COLLECTION=>
         <!--[if IE]>
               <style type="text/css" media="all">@import "fix-ie.css";</style>
         <![endif]-->
-        <link rel="stylesheet" type="text/css" href="boxes.css">
         <link rel="stylesheet" type="text/css" href="scriptaculous.css">
         <link rel="stylesheet" type="text/css" href="autocompleter.css">
         <link rel="stylesheet" type="text/css" href="csstabs.css">
+        <link rel="stylesheet" type="text/css" href="bibliotheque.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <script type="text/javascript">
@@ -113,12 +113,6 @@ $menu=	array(COLLECTION=>
         new JS('js/divers.js');
         if (isset($_GET['onglet']) && $_GET['onglet']=='bibliotheque')
             new JS('js/edges.js');
-
-        if (isset($_GET['debug'])) {
-            ?>
-        <script type='text/javascript'
-        src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
-            <?php }
         ?>
     </head>
 
