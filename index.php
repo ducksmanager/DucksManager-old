@@ -420,7 +420,7 @@ $menu=	array(COLLECTION=>
                                     $onglet='ajout_suppr';
                                 else
                                     $onglet=$_GET['onglet'];
-                                Affichage::onglets($onglet,$onglets,'onglet','?action=gerer',-1);
+                                Affichage::onglets($onglet,$onglets,'onglet','?action=gerer');
                                 switch($onglet) {
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
@@ -488,7 +488,7 @@ $menu=	array(COLLECTION=>
                                         $onglets_magazines=$l->liste_magazines();
                                         $onglets_magazines[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
                                         //echo '<span id="onglets_magazines">';
-                                        Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr',3);
+                                        Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
 
                                         if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {
                                             echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
@@ -643,7 +643,7 @@ $menu=	array(COLLECTION=>
                                     $onglet='achat_vente';
                                 else
                                     $onglet=$_GET['onglet'];
-                                Affichage::onglets($onglet,$onglets,'onglet','?action=agrandir',-1);
+                                Affichage::onglets($onglet,$onglets,'onglet','?action=agrandir');
                                 switch($onglet) {
                                     case 'achat_vente':
                                         ?>
@@ -665,7 +665,7 @@ $menu=	array(COLLECTION=>
                                             $onglet_auteurs='resultats';
                                         else
                                             $onglet_auteurs=$_GET['onglet_auteur'];
-                                        Affichage::onglets($onglet_auteurs,$onglets_auteurs,'onglet_auteur','?action=agrandir&amp;onglet=auteurs_favoris',-1);
+                                        Affichage::onglets($onglet_auteurs,$onglets_auteurs,'onglet_auteur','?action=agrandir&amp;onglet=auteurs_favoris');
                                         echo PRESENTATION_AUTEURS_FAVORIS;
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
