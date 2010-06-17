@@ -13,6 +13,7 @@ require_once('JS.class.php');
 require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
+require_once('Util.class.php');
 
 $menu=	array(COLLECTION=>
         array("new"=>
@@ -151,7 +152,26 @@ $menu=	array(COLLECTION=>
             echo 'defiler_log(\'DucksManager\');';
             break;
         case 'bibliotheque':
-            echo 'charger_bibliotheque(\'bois\',\'HONDURAS MAHOGANY\', \'bois\',\'KNOTTY PINE\');';
+            if ((!isset($_GET['onglet']) || $_GET['onglet']=='affichage') && Util::getBrowser()!=='MSIE') {
+                $d=new Database();
+                if (!$d) {
+                    exit(-1);
+                }
+                $id_user=$d->user_to_id($_SESSION['user']);
+                $textures=array();
+                for ($i=1;$i<=2;$i++) {
+                    $requete_texture='SELECT Bibliotheque_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                    $resultat_texture=$d->requete_select($requete_texture);
+                    $textures[]=$resultat_texture[0]['Bibliotheque_Texture'.$i];
+                    $requete_sous_texture='SELECT Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                    $resultat_sous_texture=$d->requete_select($requete_sous_texture);
+                    $textures[]=$resultat_sous_texture[0]['Bibliotheque_Sous_Texture'.$i];
+                }
+                echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\');';
+            }
+            elseif ($_GET['onglet']=='options') {
+                echo 'initTextures();';
+            }
         break;
         case 'gerer':
             echo 'defiler_log(\'DucksManager\');';
@@ -209,7 +229,7 @@ $menu=	array(COLLECTION=>
                         <tr>
                             <td style="width:120px">
                                 <div style="padding-left:5px;border:2px solid rgb(255, 98, 98);" id="connected">
-                                    <img id="light"
+                                    <img id="light" 
                                     <?php
                                     if (isset($_SESSION['user']) &&!($action=='logout')) {?>
                                         src="vert.png" alt="O" />&nbsp;<span id="texte_connecte"><?=CONNECTE_EN_TANT_QUE.$_SESSION['user']?></span>
@@ -390,15 +410,77 @@ $menu=	array(COLLECTION=>
                             case 'bibliotheque':
                                 ?>
                                 <h2><?=BIBLIOTHEQUE_COURT?></h2><br /><br />
-                                <span id="chargement_bibliotheque_termine"><?=CHARGEMENT?>..</span>.<br />
-                                <div id="barre_pct_bibliotheque" style="border: 1px solid white; width: 200px;">
-                                    <div id="pct_bibliotheque" style="width: 0%; background-color: red;">&nbsp;</div>
-                                </div>
-                                <span id="pcent_visible"></span>
-                                <span id="pourcentage_collection_visible"></span>
-                                <br /><br />
-                                <div id="bibliotheque" style="width:100%;height:100%"></div>
                                 <?php
+                                $onglets=array(
+                                        BIBLIOTHEQUE_COURT=>array('affichage',BIBLIOTHEQUE),
+                                        BIBLIOTHEQUE_OPTIONS_COURT=>array('options',BIBLIOTHEQUE_OPTIONS),
+                                        BIBLIOTHEQUE_PARTICIPER_COURT=>array('participer',BIBLIOTHEQUE_PARTICIPER));
+                                if (!isset($_GET['onglet']))
+                                    $onglet='affichage';
+                                else
+                                    $onglet=$_GET['onglet'];
+                                Affichage::onglets($onglet,$onglets,'onglet','?action=bibliotheque');
+                                switch($onglet) {
+                                    case 'affichage':
+                                        if (Util::getBrowser()==='MSIE') {
+                                            echo IE_NON_SUPPORTE;
+                                        }
+                                        else {
+                                            ?>
+                                            <span id="chargement_bibliotheque_termine"><?=CHARGEMENT?>..</span>.<br />
+                                            <div id="barre_pct_bibliotheque" style="border: 1px solid white; width: 200px;">
+                                                <div id="pct_bibliotheque" style="width: 0%; background-color: red;">&nbsp;</div>
+                                            </div>
+                                            <span id="pcent_visible"></span>
+                                            <span id="pourcentage_collection_visible"></span>
+                                            <br /><br />
+                                            <div id="bibliotheque" style="width:100%;height:100%"></div>
+                                            <?php
+                                        }
+                                    break;
+                                    case 'options':
+                                        if (isset($_POST['texture1'])) {
+                                            $d=new Database();
+                                            if (!$d) {
+                                                echo PROBLEME_BD;
+                                                exit(-1);
+                                            }
+                                            $id_user=$d->user_to_id($_SESSION['user']);
+                                            for ($i=1;$i<=2;$i++) {
+                                                $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\'';
+                                                echo $requete_update_texture;
+                                                $d->requete($requete_update_texture);
+                                                $requete_update_sous_texture='UPDATE users SET Bibliotheque_Sous_Texture'.$i.'=\''.$_POST['sous_texture'.$i].'\'';
+                                                $d->requete($requete_update_sous_texture);
+                                            }
+                                        }
+                                        ?><form method="post" action="?action=bibliotheque&amp;onglet=options">
+                                            <span style="text-decoration:underline"><?=TEXTURE?> : </span><br />
+                                            <select style="width:300px;" id="texture1" name="texture1">
+                                                <option id="chargement_sous_texture"><?=CHARGEMENT?>...</option>
+                                            </select>
+                                            <br /><br />
+                                            <span style="text-decoration:underline"><?=SOUS_TEXTURE?> : </span><br />
+                                            <select style="width:300px;" id="sous_texture1" name="sous_texture1">
+                                                <option id="vide"><?=SELECTIONNER_TEXTURE?>
+                                            </select>
+                                            <br /><br /><br />
+                                            <span style="text-decoration:underline"><?=TEXTURE_ETAGERE?> : </span><br />
+                                            <select style="width:300px;" id="texture2" name="texture2">
+                                                <option id="chargement_sous_texture"><?=CHARGEMENT?>...</option>
+                                            </select>
+                                            <br /><br />
+                                            <span style="text-decoration:underline"><?=SOUS_TEXTURE_ETAGERE?> : </span><br />
+                                            <select style="width:300px;" id="sous_texture2" name="sous_texture2">
+                                                <option id="vide"><?=SELECTIONNER_TEXTURE?>
+                                            </select>
+                                            <br /><br />
+                                            <input type="submit" class="valider" value="<?=VALIDER?>" />
+                                        </form>
+                                        <?php
+
+                                    break;
+                                }
                             break;
 
                             case 'gerer':

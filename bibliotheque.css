@@ -10,8 +10,8 @@
 .etagere {
     margin-top:-3px;
     background-color:transparent;
-    background-repeat:repeat;
-    background-position:left top;
+    background-repeat:no-repeat;
+    background-position:10px 0px;
     margin-left:-15px;
     margin-right:-5px;
 }

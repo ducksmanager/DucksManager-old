@@ -86,6 +86,64 @@ if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) 
     $o=$e->o;
     $o->dessiner_tranche();
 }
+/*
+ *
+ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Texture1` VARCHAR(20) NOT NULL DEFAULT 'Bois' AFTER `RecommandationsListeMags`;
+ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Sous_Texture1` VARCHAR(50) NOT NULL DEFAULT 'HONDURAS MAHOGANY' AFTER `Bibliotheque_Texture1`;
+ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Texture2` VARCHAR(20) NOT NULL DEFAULT 'Bois' AFTER `Bibliotheque_Sous_Texture1`;
+ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Sous_Texture2` VARCHAR(50) NOT NULL DEFAULT 'KNOTTY PINE' AFTER `Bibliotheque_Texture2`;
+ */
+if (isset($_POST['get_texture'])) {
+    include_once('Database.class.php');
+    $d=new Database();
+    if (!$d) {
+        echo PROBLEME_BD;
+        exit(-1);
+    }
+    $id_user=$d->user_to_id($_SESSION['user']);
+    $requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
+    $resultat_texture=$d->requete_select($requete_texture);
+	$rep = "edges/textures";
+    $dir = opendir($rep);
+    while ($f = readdir($dir)) {
+        if( $f!=='.' && $f!=='..') {
+            ?>
+            <option 
+            <?php
+            if ($f==$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']])
+                echo 'selected="selected"';?>
+            ><?=$f?></option>
+            <?php
+        }
+    }
+}
+
+if (isset($_POST['get_sous_texture'])) {
+    include_once('Database.class.php');
+    $d=new Database();
+    if (!$d) {
+        echo PROBLEME_BD;
+        exit(-1);
+    }
+    $id_user=$d->user_to_id($_SESSION['user']);
+    $requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
+    $resultat_texture=$d->requete_select($requete_texture);
+
+	$rep = 'edges/textures/'.$_POST['texture'].'/miniatures';
+    $dir = opendir($rep);
+    while ($f = readdir($dir)) {
+        if( $f!=='.' && $f!=='..') {
+            $nom_sous_texture=substr($f,0, strrpos($f, '.'));
+            ?>
+            <option <?php
+            if ($nom_sous_texture==$resultat_texture[0]['Bibliotheque_Sous_Texture'.$_POST['n']])
+                echo 'selected="selected" ';?>
+            style="background:url('edges/textures/<?=$_POST['texture']?>/miniatures/<?=$f?>') no-repeat scroll center right transparent">
+                <?=$nom_sous_texture?>
+            </option><?php
+        }
+    }
+}
 
 function getImgHTMLOf($pays,$magazine,$numero) {
     $e=new Edge($pays, $magazine, $numero);

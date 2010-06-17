@@ -114,11 +114,9 @@ function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2) 
 }
 
 function charger_tranche(element) {
-    element.src=element.name;
-    element.name='';
     element.observe('load',function() {
-        var element=this;
-        var suivant=element.next();
+        var element2=this;
+        var suivant=element2.next();
         if (suivant.className.indexOf('tranche')==-1) {
             nb_etageres_terminees++;
             $('pct_bibliotheque').setStyle({'width':parseInt(100*nb_etageres_terminees/nb_etageres)+'%'});
@@ -135,6 +133,8 @@ function charger_tranche(element) {
             charger_tranche(suivant);
         }
     });
+    element.src=element.name;
+    element.name='';
 }
 
 function init_observers_tranches() {

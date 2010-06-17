@@ -377,7 +377,7 @@ function importer_numeros(utilisateur_existant) {
                           +(utilisateur_existant?'':('&user='+user.value+'&pass='+pass.value)),
         onSuccess:function(transport,json) {
             if (transport.responseText.indexOf('OK.')!=-1)
-                    setTimeout(function() {window.location.replace("index.php?action=gerer"); },2000);
+                    setTimeout(function() {window.location.replace("index.php?action=gerer");},2000);
             else {
                 if (utilisateur_existant)
                         $('contenu').update(transport.responseText);
@@ -414,6 +414,33 @@ function initPays() {
 	});
 }
 
+function initTextures() {
+    if (!$('texture1')) return;
+    [1,2].each (function (n) {
+        new Ajax.Request('Edge.class.php', {
+               method: 'post',
+               parameters:'get_texture=true&n='+n,
+               onSuccess:function(transport) {
+                    $('texture'+n).update(transport.responseText);
+                    setTimeout(function() {
+                        select_sous_texture(n);
+                    },1000);
+               }
+        });
+    });
+}
+
+function select_sous_texture (n) {
+    if (!$('sous_texture'+n)) return;
+    var el_select=$('texture'+n);
+    var myAjax = new Ajax.Request('Edge.class.php', {
+           method: 'post',
+           parameters:'get_sous_texture=true&texture='+$('texture'+n).options[$('texture'+n).options.selectedIndex].text+'&n='+n,
+           onSuccess:function(transport) {
+                $('sous_texture'+n).update(transport.responseText);
+           }
+    });
+}
 function select_magazine() {
 	var el_select=$('liste_pays');
 	$('form_pays').value=el_select.options[el_select.options.selectedIndex].id;
