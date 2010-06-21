@@ -14,7 +14,7 @@ class Inducks {
 		return $auteur[1];
 	}
 
-	function get_numeros($pays,$magazine) {
+	static function get_numeros($pays,$magazine) {
 		$regex_magazine='#<a href=issue.php\?c='.$pays.'%2f'.$magazine.'[+]*([^>]*)>([^<]*)</a>#is';
 		$url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
 		$handle = @fopen($url, "r");
