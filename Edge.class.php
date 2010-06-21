@@ -84,6 +84,8 @@ class Edge {
         $d=new Database();
         $requete_couleurs='SELECT CouleurR, CouleurG, CouleurB FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
         $resultat=$d->requete_select($requete_couleurs);
+        if (count($resultat)==0)
+            return array(255,255,255);
         return array($resultat[0]['CouleurR'], $resultat[0]['CouleurG'], $resultat[0]['CouleurB']);
     }
 
@@ -92,6 +94,8 @@ class Edge {
         $d=new Database();
         $requete_couleurs='SELECT Autre FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
         $resultat=$d->requete_select($requete_couleurs);
+        if (count($resultat)==0)
+            return '';
         return $resultat[0]['Autre'];
     }
 }
