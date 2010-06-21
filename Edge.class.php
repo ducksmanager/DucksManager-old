@@ -12,7 +12,7 @@ class Edge {
     var $o;
 	var $est_visible=true;
     var $intervalles_validite=array();
-    static $grossissement=1.5;
+    static $grossissement=3;
     static $largeur_numeros_precedents=0;
     
 	function Edge($pays=null,$magazine=null,$numero=null) {
@@ -78,6 +78,22 @@ class Edge {
             imageantialias($this->image, true);
             return $this->image;
 	}
+
+    function getColorsFromDB() {
+        include_once('Database.class.php');
+        $d=new Database();
+        $requete_couleurs='SELECT CouleurR, CouleurG, CouleurB FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
+        $resultat=$d->requete_select($requete_couleurs);
+        return array($resultat[0]['CouleurR'], $resultat[0]['CouleurG'], $resultat[0]['CouleurB']);
+    }
+
+    function getDataFromDB() {
+        include_once('Database.class.php');
+        $d=new Database();
+        $requete_couleurs='SELECT Autre FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
+        $resultat=$d->requete_select($requete_couleurs);
+        return $resultat[0]['Autre'];
+    }
 }
 if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
     if (!isset($_GET['debug']))
@@ -88,6 +104,15 @@ if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) 
 }
 /*
  *
+CREATE TABLE `bibliotheque_options` (  `Pays` VARCHAR(3) NULL,  `Magazine` VARCHAR(6) NULL,  `Numéro` VARCHAR(8) NULL,  `CouleurR` TINYINT(8) UNSIGNED NULL DEFAULT '0',  `CouleurG` TINYINT(8) UNSIGNED NULL DEFAULT '0',  `CouleurB` TINYINT(8) UNSIGNED NULL DEFAULT '0',  `Autre` TEXT NULL ) COLLATE='latin1_german2_ci' ENGINE=MyISAM ROW_FORMAT=DEFAULT;
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '142', 142, 85, 114);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '143', 243, 67, 77);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '144', 44, 156, 167);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '145', 238, 74, 3);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '146', 233, 65, 127);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '147', 21, 143, 190);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '148', 249, 182, 39);
+INSERT INTO `bibliotheque_options` (`Pays`, `Magazine`, `Numéro`, `CouleurR`, `CouleurG`, `CouleurB`) VALUES ('fr', 'SPG', '149', 231, 56, 61);
 ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Texture1` VARCHAR(20) NOT NULL DEFAULT 'Bois' AFTER `RecommandationsListeMags`;
 ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Sous_Texture1` VARCHAR(50) NOT NULL DEFAULT 'HONDURAS MAHOGANY' AFTER `Bibliotheque_Texture1`;
 ALTER TABLE `users`  ADD COLUMN `Bibliotheque_Texture2` VARCHAR(20) NOT NULL DEFAULT 'Bois' AFTER `Bibliotheque_Sous_Texture1`;

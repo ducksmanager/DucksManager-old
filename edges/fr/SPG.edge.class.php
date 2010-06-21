@@ -3,7 +3,7 @@ class SPG extends Edge {
 	var $pays='fr';
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
-                                        array('debut'=>89, 'fin'=>104),
+                                        array('debut'=>89, 'fin'=>109),
                                         array('debut'=>142,'fin'=>149));
         static $largeur_defaut=20;
         static $hauteur_defaut=219.7;
@@ -44,18 +44,9 @@ class SPG extends Edge {
             $epaisseur_bordure=.25*Edge::$grossissement;
             $contenu_couleur='';
             if ($this->numero<141)
-                    list($rouge,$vert,$bleu)=array(223,51,9);
+                list($rouge,$vert,$bleu)=array(223,51,9);
             else {
-                $inF = @fopen('edges/fr/SPG.'.$this->numero.'.fond.txt',"r");
-                if ($inF === false) {
-                    list($rouge,$vert,$bleu)=array(127,127,127);
-                }
-                else {
-                    while (!feof($inF)) {
-                       $contenu_couleur.= fgets($inF, 4096);
-                    }
-                    list($rouge,$vert,$bleu)=explode(',',$contenu_couleur);
-                }
+                list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             }
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             $blanc = imagecolorallocate($this->image, 255,255,255);
@@ -92,7 +83,7 @@ class SPG extends Edge {
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
 			imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 			$texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
-									7*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+									6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
 			if ($this->numero < 100) {
 				$texte_numero->pos_x=$this->largeur*.3/10;
 				$texte_numero->angle=0;
