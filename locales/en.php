@@ -268,7 +268,7 @@ define('POSSESSION_HISTOIRES_AUTEURS','Possession of issues');
 define('POSSESSION_MAGAZINES_1','You\'ve got some issues for the following magazines.');
 define('POSSESSION_MAGAZINES_2','Click on one of them in order to edit its list!');
 define('POSSESSION_NUMEROS','Issues possession');
-define('POURCENTAGE_COLLECTION_VISIBLE','&pcent; of your collection can be viewed in the bookcase.');
+define('POURCENTAGE_COLLECTION_VISIBLE','% of your collection can be viewed in the bookcase.');
 define('POUR_VOIR_LA_VIDEO','to see this video');
 define('PREFERENCES_AUTEURS','Authors preferences');
 define('PRESENTATION1','DucksManager is a tool allowing you to manage your Disney magazines collection... Try it, it\'s really simple!');
