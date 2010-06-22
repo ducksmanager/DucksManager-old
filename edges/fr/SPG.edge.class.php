@@ -5,6 +5,7 @@ class SPG extends Edge {
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
                                         array('debut'=>89, 'fin'=>109),
                                         array('debut'=>142,'fin'=>149));
+        var $en_cours=array(array('debut'=>110, 'fin'=>141));
         static $largeur_defaut=20;
         static $hauteur_defaut=219.7;
         
