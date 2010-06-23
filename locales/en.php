@@ -150,6 +150,8 @@ define('GESTION_COMPTE_COURT','My account');
 define('GESTION_NUMEROS','Management of your collection issues');
 define('GESTION_NUMEROS_COURT','My issues');
 define('GRATUIT_AUCUNE_LIMITE','DucksManager is free and has no use limits.');
+define('TAILLE_TRANCHES','Edges\' size');
+define('TAILLE_REELLE','Real size');
 define('HISTOIRE','story');
 define('HISTOIRES','stories');
 define('HISTOIRES_NON_POSSEDEES_ETRANGER','Non-possessed stories published abroad only');

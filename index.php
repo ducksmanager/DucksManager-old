@@ -160,14 +160,15 @@ $menu=	array(COLLECTION=>
                 $id_user=$d->user_to_id($_SESSION['user']);
                 $textures=array();
                 for ($i=1;$i<=2;$i++) {
-                    $requete_texture='SELECT Bibliotheque_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
-                    $resultat_texture=$d->requete_select($requete_texture);
-                    $textures[]=$resultat_texture[0]['Bibliotheque_Texture'.$i];
-                    $requete_sous_texture='SELECT Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
-                    $resultat_sous_texture=$d->requete_select($requete_sous_texture);
-                    $textures[]=$resultat_sous_texture[0]['Bibliotheque_Sous_Texture'.$i];
+                    $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                    $resultat_textures=$d->requete_select($requete_textures);
+                    $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
+                    $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
                 }
-                echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\');';
+                $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
+                $resultat_grossissement=$d->requete_select($requete_grossissement);
+                $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
+                echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\');';
             }
             elseif ($_GET['onglet']=='options') {
                 echo 'initTextures();';
@@ -439,6 +440,7 @@ $menu=	array(COLLECTION=>
                                         }
                                     break;
                                     case 'options':
+                                        require_once('Edge.class.php');
                                         if (isset($_POST['texture1'])) {
                                             $d=new Database();
                                             if (!$d) {
@@ -447,12 +449,15 @@ $menu=	array(COLLECTION=>
                                             }
                                             $id_user=$d->user_to_id($_SESSION['user']);
                                             for ($i=1;$i<=2;$i++) {
-                                                $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\'';
-                                                echo $requete_update_texture;
+                                                $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\' WHERE id='.$id_user;
                                                 $d->requete($requete_update_texture);
-                                                $requete_update_sous_texture='UPDATE users SET Bibliotheque_Sous_Texture'.$i.'=\''.$_POST['sous_texture'.$i].'\'';
+                                                $requete_update_sous_texture='UPDATE users SET Bibliotheque_Sous_Texture'.$i.'=\''.$_POST['sous_texture'.$i].'\' WHERE id='.$id_user;
                                                 $d->requete($requete_update_sous_texture);
                                             }
+                                            /*if (!is_numeric($_POST['grossissement']))
+                                                $_POST['grossissement']='taille_reelle';*/
+                                            $requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
+                                            $d->requete($requete_update_grossissement);
                                         }
                                         ?><form method="post" action="?action=bibliotheque&amp;onglet=options">
                                             <span style="text-decoration:underline"><?=TEXTURE?> : </span><br />
@@ -462,7 +467,7 @@ $menu=	array(COLLECTION=>
                                             <br /><br />
                                             <span style="text-decoration:underline"><?=SOUS_TEXTURE?> : </span><br />
                                             <select style="width:300px;" id="sous_texture1" name="sous_texture1">
-                                                <option id="vide"><?=SELECTIONNER_TEXTURE?>
+                                                <option id="vide"><?=SELECTIONNER_TEXTURE?></option>
                                             </select>
                                             <br /><br /><br />
                                             <span style="text-decoration:underline"><?=TEXTURE_ETAGERE?> : </span><br />
@@ -472,7 +477,29 @@ $menu=	array(COLLECTION=>
                                             <br /><br />
                                             <span style="text-decoration:underline"><?=SOUS_TEXTURE_ETAGERE?> : </span><br />
                                             <select style="width:300px;" id="sous_texture2" name="sous_texture2">
-                                                <option id="vide"><?=SELECTIONNER_TEXTURE?>
+                                                <option id="vide"><?=SELECTIONNER_TEXTURE?></option>
+                                            </select>
+                                            <br /><br />
+                                            <span style="text-decoration:underline"><?=TAILLE_TRANCHES?> : </span><br />
+                                            <select style="width:300px;" id="grossissement" name="grossissement">
+                                            <?php
+                                            $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE id='.$id_user;
+                                            $resultat_grossissement=$d->requete_select($requete_grossissement);
+                                            if (count($resultat_grossissement)==0)
+                                                $grossissement=Edge::$grossissement;
+                                            else
+                                                $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
+                                            $options_grossissement=array(1,1.5,2/*,TAILLE_REELLE*/);
+                                            foreach($options_grossissement as $option) {
+                                                ?><option <?php
+                                                if ($option==$grossissement || (!is_numeric($option) && $grossissement==='taille_reelle')) {
+                                                    ?>selected="selected"<?php
+                                                }
+                                                ?>
+                                                ><?=$option?></option>
+                                                <?php
+                                            }
+                                            ?>
                                             </select>
                                             <br /><br />
                                             <input type="submit" class="valider" value="<?=VALIDER?>" />

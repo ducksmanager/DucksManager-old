@@ -23,7 +23,7 @@ $hauteur=$_POST['hauteur'];
     </head>
     <body id="body" style="margin:0;padding:0" style="white-space:nowrap;">
         <?php
-        Edge::$grossissement=1.5;
+        Edge::$grossissement=$_POST['grossissement'];
         Etagere::$largeur=$largeur;
         Etagere::$hauteur=$hauteur;
         Etagere::$epaisseur=20;

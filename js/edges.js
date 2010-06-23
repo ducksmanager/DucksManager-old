@@ -89,22 +89,22 @@ function fermer(element) {
     });
 }
 
-function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2) {
+function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2, new_grossissement) {
     var section=$('bibliotheque');
+    grossissement=new_grossissement;
     largeur_section=section.clientWidth;
     hauteur_section=section.clientHeight;
     l10n_action('remplirSpan','pourcentage_collection_visible');
-    var myAjax3 = new Ajax.Request('edgetest.php', {
+    new Ajax.Request('edgetest.php', {
         method: 'post',
         parameters:'largeur='+largeur_section+'&hauteur='+hauteur_section+'&texture1='+texture1+'&sous_texture1='+sous_texture1
-                  +'&texture2='+texture2+'&sous_texture2='+sous_texture2,
+                  +'&texture2='+texture2+'&sous_texture2='+sous_texture2+'&grossissement='+grossissement,
         onSuccess:function(transport) {
             $('bibliotheque').update(transport.responseText);
             $('bibliotheque').setStyle({'width':$('largeur_etagere').readAttribute('name')+'px',
                                         'backgroundImage':'url(\'edges/textures/'+texture1+'/'+sous_texture1+'.jpg\')'});
             $('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
             var premiere_tranche=$('bibliotheque').down(2);
-            grossissement=$('grossissement').readAttribute('name');
             hauteur_etage=$('hauteur_etage').readAttribute('name');
             nb_etageres=$$('.etagere').length;
             nb_etageres_terminees=1;

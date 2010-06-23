@@ -149,6 +149,8 @@ define('GESTION_COMPTE_COURT','Mon compte');
 define('GESTION_NUMEROS','Gestion des num&eacute;ros de votre collecton');
 define('GESTION_NUMEROS_COURT','Mes num&eacute;ros');
 define('GRATUIT_AUCUNE_LIMITE','DucksManager est gratuit et sans limite d\'utilisation.');
+define('TAILLE_TRANCHES','Taille des tranches');
+define('TAILLE_REELLE','Taille r&eacute;elle');
 define('HISTOIRE','histoire');
 define('HISTOIRES','histoires');
 define('HISTOIRES_NON_POSSEDEES_ETRANGER','Histoires non possédés publiées à l\'étranger uniquement');
