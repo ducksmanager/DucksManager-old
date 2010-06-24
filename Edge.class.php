@@ -74,7 +74,7 @@ class Edge {
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
             imagerectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
-            imagettftext($this->image,7*Edge::$grossissement,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
+            imagettftext($this->image,$this->largeur/3,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
 			 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
             imageantialias($this->image, true);
             return $this->image;
