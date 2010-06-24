@@ -3,9 +3,9 @@ class SPG extends Edge {
 	var $pays='fr';
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
-                                        array('debut'=>89, 'fin'=>109),
+                                        array('debut'=>89, 'fin'=>123),
                                         array('debut'=>142,'fin'=>149));
-        var $en_cours=array(array('debut'=>110, 'fin'=>141));
+        var $en_cours=array(array('debut'=>124, 'fin'=>141));
         static $largeur_defaut=20;
         static $hauteur_defaut=219.7;
         
@@ -68,9 +68,13 @@ class SPG extends Edge {
 			$nouvelle_hauteur=($this->largeur-$epaisseur_bordure)*($height/$width);
 			if ($this->numero<100)
 				imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-			else
-				imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-3.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-			
+			else {
+                if ($this->numero==111)
+                    imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-1.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                else
+                    imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-3.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            }
+            
 			$icone=imagecreatefrompng('edges/fr/Texte_SPG.png');
 			imagealphablending($icone, false);
 		    # set the transparent color
@@ -82,9 +86,15 @@ class SPG extends Edge {
 			list($width, $height) = getimagesize('edges/fr/Texte_SPG.png');
 			$nouvelle_largeur=$this->largeur/1.5;
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
-			imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
-			$texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
-									6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+            imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+			if ($this->numero == 111) {
+                $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*2.2,
+                                        6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+            }
+            else {
+                $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
+                                        6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+            }
 			if ($this->numero < 100) {
 				$texte_numero->pos_x=$this->largeur*.3/10;
 				$texte_numero->angle=0;
