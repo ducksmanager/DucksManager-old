@@ -14,7 +14,7 @@ class IntervalleValidite {
             return true;
         foreach($this->intervalles as $intervalle) {
             if (is_array($intervalle))
-                if ($numero>=$intervalle['debut'] && $numero <= $intervalle['fin'])
+                if ($numero>=$intervalle['debut'] && $numero <= $intervalle['fin'] && (!array_key_exists('sauf', $intervalle) || !in_array($numero,$intervalle['sauf'])))
                     return true;
         }
         return false;

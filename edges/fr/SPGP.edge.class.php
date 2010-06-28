@@ -39,9 +39,6 @@ class SPGP extends Edge {
         $nouvelle_hauteur=$nouvelle_largeur*($height/$width);
         imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->hauteur-3*$this->largeur, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 
-        //imagerectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
-        imagerectangle($this->image, 0, 0, $this->largeur-1, $this->hauteur-1, $noir);
-
 		return $this->image;
 	}
 

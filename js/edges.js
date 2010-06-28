@@ -1,5 +1,6 @@
 var current_element;
 var current_couv;
+var current_animation;
 var largeur_image;
 var hauteur_image;
 var action_en_cours=false;
@@ -21,43 +22,66 @@ function ouvrir(element) {
         fermer(element);
         return;
     }
+    action_en_cours=true;
+    var infos_source=element.src.substring(element.src.indexOf('?'),element.src.length);
+    var reg=new RegExp("&", "g");
+    var tab_infos_source=infos_source.split(reg);
+    var infos=new Array();
+    reg=new RegExp("=", "g");
+    for (i in tab_infos_source) {
+        if (isNaN(i))
+            break;
+        var info_courante=tab_infos_source[i].split(reg);
+        if (info_courante[0][0]=='?')
+            info_courante[0]=info_courante[0].substring(1,info_courante[0].length);
+        infos[info_courante[0]]=info_courante[1];
+    }
+    infos['magazine']=infos['magazine'].toLowerCase();
     largeur_image=element.width;
-    var hauteur_image=element.height;
+    hauteur_image=element.height;
     couverture=new Image();
-    couverture.src='edges/fr/fr_spg_110a_001.jpg';
     current_element=element.cloneNode(true);
-    current_element.setStyle({'zIndex':500,'position':'absolute','left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
+    current_element.setStyle({'zIndex':500,'position':'absolute',
+                              'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
                    .setOpacity(0);
     $('bibliotheque').insert(current_element);
-
-    current_couv=new Element('img', {'id':'couv','src':couverture.src,'height':hauteur_image})
-                    .setStyle({'position':'absolute','display':'none',
-                               'left':(getScreenCenterX()+current_element.width)+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':500});
-    current_couv.observe('click', function () {
-        ouvrirApres=false;
-        fermer(element);
-    });
-    $('body').insert(current_couv);
-    
-    action_en_cours=true;
-    current_couv.observe('load',function() {
-        new Effect.Parallel([
-            new Effect.Opacity(element,{'from':1, 'to':0, sync: true}),
-            new Effect.Opacity(current_element, {'from':0, 'to':1, sync:true})
-        ], { 
+    new Effect.Parallel([
+        new Effect.Opacity(element,{'from':1, 'to':0, sync: true}),
+        new Effect.Opacity(current_element, {'from':0, 'to':1, sync:true})
+    ], {
         duration: 0.5,
         afterFinish:function() {
-            new Effect.Parallel([
-                new Effect.BlindRight(current_couv, {sync:true}),
-                new Effect.Move(current_couv, {'mode':'absolute', 'x':getScreenCenterX(), 'y':getScreenCenterY()-hauteur_image/2, sync:true}),
-                new Effect.BlindLeft(current_element, {sync:true})
-                 ], {
-                duration: 1
+            current_animation=new Element('div')
+                .setStyle({'position':'absolute', 'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':600})
+                .update(new Element('img',{'src':'loading.gif'}));
+            $('bibliotheque').insert(current_animation);
+        }});
+    new Ajax.Request('Inducks.class.php', {
+        method: 'post',
+        parameters:'get_cover=true&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
+        onSuccess:function(transport) {
+            couverture.src=transport.responseText;
+            current_couv=new Element('img', {'id':'couv','src':couverture.src,'height':hauteur_image})
+                    .setStyle({'position':'absolute','display':'none',
+                               'left':(getScreenCenterX()+current_element.width)+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':500});
+            $('body').insert(current_couv);
+            current_couv.observe('click', function () {
+                ouvrirApres=false;
+                fermer(element);
             });
-            action_en_cours=false;
-            couverture_ouverte=true;
+            current_couv.observe('load',function() {
+                current_animation.remove();
+                new Effect.Parallel([
+                    new Effect.BlindRight(current_couv, {sync:true}),
+                    new Effect.Move(current_couv, {'mode':'absolute', 'x':getScreenCenterX(), 'y':getScreenCenterY()-hauteur_image/2, sync:true}),
+                    new Effect.BlindLeft(current_element, {sync:true})
+                     ], {
+                    duration: 1
+                });
+                action_en_cours=false;
+                couverture_ouverte=true;
+            });
         }
-      });
     });
 }
 

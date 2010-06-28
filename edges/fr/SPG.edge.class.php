@@ -33,8 +33,6 @@ class SPG extends Edge {
 			$texte_numero=new Texte($this->numero,$this->numero < 10 ?$this->largeur*1.7/5 : $this->largeur*1/5,$this->hauteur-$this->largeur/2,
 									7*Edge::$grossissement,0,$noir,'ArialBlack.ttf');
 			$this->textes[]=$texte_numero;
-			//imagerectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
-			imagerectangle($this->image, 0, 0, $this->largeur-1, $this->hauteur-1, $noir);
 		}
 		elseif ($this->numero<=88) {
             list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
@@ -74,7 +72,6 @@ class SPG extends Edge {
 			$texte_numero->pos_x=$this->largeur*1/5;
 			$texte_numero->angle=0;
 			$texte_numero->dessiner($this->image);
-			imagerectangle($this->image, 0, 0, $this->largeur-1, $this->hauteur-1, $noir);
 
 		}
 		else {
@@ -136,7 +133,6 @@ class SPG extends Edge {
 				$texte_numero->angle=0;
 			}
 			$texte_numero->dessiner($this->image);
-			imagerectangle($this->image, 0, 0, $this->largeur-1, $this->hauteur-1, $noir);
 		}
 		return $this->image;
 	}

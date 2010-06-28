@@ -64,6 +64,7 @@ class Edge {
             foreach($this->textes as $texte) {
                 imagettftext($this->image,$texte->taille,$texte->angle,$texte->pos_x,$texte->pos_y,$texte->couleur,$texte->police,$texte->texte);
             }
+            $this->dessiner_contour();
             imageantialias($this->image, true);
             imagepng($this->image);
         }
@@ -101,6 +102,21 @@ class Edge {
             return $default_text;
         return $resultat[0]['Autre'];
     }
+
+    function agrafer() {
+        $noir=imagecolorallocate($this->image, 0, 0, 0);
+        for ($i=-.25*Edge::$grossissement;$i<.25*Edge::$grossissement;$i++) {
+            imageline($this->image, $this->largeur/2 - $i, $this->hauteur/5, $this->largeur/2 - $i, $this->hauteur/4, $noir);
+            imageline($this->image, $this->largeur/2 - $i, $this->hauteur*4/5, $this->largeur/2 - $i, $this->hauteur*4/5 - ($this->hauteur/4 - $this->hauteur/5), $noir);
+        }
+    }
+
+    function dessiner_contour() {
+        $noir=imagecolorallocate($this->image, 0, 0, 0);
+        for ($i=0;$i<.5*Edge::$grossissement;$i++)
+            imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
+    }
+
 }
 if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
     if (!isset($_GET['debug']))

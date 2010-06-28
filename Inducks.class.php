@@ -136,10 +136,34 @@ if (isset($_POST['get_pays'])) {
 			echo '<option id="'.$id.'">'.$pays;
 	}
 }
-else if (isset($_POST['get_magazines'])) {
+elseif (isset($_POST['get_magazines'])) {
 	Inducks::get_magazines($_POST['pays']);
 }
-else if (isset($_POST['get_numeros'])) {
+elseif (isset($_POST['get_numeros'])) {
 	Inducks::get_numeros($_POST['pays'],$_POST['magazine']);
+}
+elseif (isset($_POST['get_cover'])) {
+    $nb_plus=5-strlen($_POST['numero']);
+    $regex_image='#<td><img src="([^"]+)"><tr><td[^>]+><small>[^<]+<a href=\'http://outducks.org\'>outducks.org</a>#is';
+    $adresse_numero='http://coa.inducks.org/issue.php?c='.$_POST['pays'].'%2F'.$_POST['magazine'];
+    for ($i=0;$i<$nb_plus;$i++)
+        $adresse_numero.='+';
+    $adresse_numero.=$_POST['numero'];
+    $handle = @fopen($adresse_numero, "r");
+    if ($handle) {
+        $buffer="";
+        while (!feof($handle)) {
+            $buffer.= fgets($handle, 4096);
+        }
+        fclose($handle);
+
+		if (preg_match($regex_image,$buffer,$code_image)==0)
+            echo 'images/cover_not_found.png';
+        else
+            echo $code_image[1];
+    }
+    else {
+        echo ERREUR_CONNEXION_INDUCKS;
+    }
 }
 ?>
