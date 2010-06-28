@@ -704,7 +704,7 @@ $menu=	array(COLLECTION=>
                                             <?php
                                             if ($type=='DMtable') {
                                                 ?>
-                                                <iframe height="200px" width="400px" src="Liste.class.php?liste_exemple=true&amp;type_liste=<?=$type?>"></iframe>
+                                                <iframe height="200px" width="100%" src="Liste.class.php?liste_exemple=true&amp;type_liste=<?=$type?>"></iframe>
                                                 <?php
                                             }
                                             else
