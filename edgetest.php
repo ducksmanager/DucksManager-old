@@ -2,11 +2,6 @@
 include_once('JS.class.php');
 include_once('Etagere.class.php');
 include_once('Edge.class.php');
-include_once('Database.class.php');
-@session_start();
-$d=new Database();
-$id_user=$d->user_to_id($_SESSION['user']);
-$l=$d->toList($id_user);
 
 
 $largeur=$_POST['largeur'];
@@ -35,24 +30,12 @@ $hauteur=$_POST['hauteur'];
         if ($width<Etagere::$largeur)
             Etagere::$largeur=$width;
         echo Edge::getEtagereHTML();
-        $total_numeros=0;
-        $total_numeros_visibles=0;
-        foreach($l->collection as $pays=>$magazines) {
-            foreach($magazines as $magazine=>$numeros) {
-				sort($numeros);
-                $total_numeros+=count($numeros);
-				foreach($numeros as $numero) {
-                    list($texte,$est_visible)=getImgHTMLOf($pays, $magazine, $numero[0]);
-                    echo $texte;
-                    if ($est_visible===true)
-                        $total_numeros_visibles++;
-                }
-            }
-        }
+        list($html, $pourcentage_visible)=Edge::getHTML(true);
+        echo $html;
         echo Edge::getEtagereHTML(false);
         ?>
     <div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
-    <div id="nb_numeros_visibles" style="display:none" name="<?=intval(100*$total_numeros_visibles/$total_numeros)?>"></div>
+    <div id="nb_numeros_visibles" style="display:none" name="<?=$pourcentage_visible?>"></div>
     <div id="hauteur_etage" style="display:none" name="<?=Etagere::$hauteur_max_etage?>"></div>
     <div id="grossissement" style="display:none" name="<?=Edge::$grossissement?>"></div>
     </body>

@@ -13,7 +13,7 @@ class Edge {
 	var $est_visible=true;
     var $intervalles_validite=array();
     var $en_cours=array();
-    static $grossissement=1.5;
+    static $grossissement=10;
     static $largeur_numeros_precedents=0;
     
 	function Edge($pays=null,$magazine=null,$numero=null) {
@@ -113,8 +113,40 @@ class Edge {
 
     function dessiner_contour() {
         $noir=imagecolorallocate($this->image, 0, 0, 0);
-        for ($i=0;$i<.5*Edge::$grossissement;$i++)
+        for ($i=0;$i<.1*Edge::$grossissement;$i++)
             imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
+    }
+
+    static function getPourcentageVisible($get_html=false) {
+        include_once('Database.class.php');
+        @session_start();
+        $d=new Database();
+        $id_user=$d->user_to_id($_SESSION['user']);
+        $l=$d->toList($id_user);
+        $texte_final='';
+        $total_numeros=0;
+        $total_numeros_visibles=0;
+        foreach($l->collection as $pays=>$magazines) {
+            foreach($magazines as $magazine=>$numeros) {
+				sort($numeros);
+                $total_numeros+=count($numeros);
+				foreach($numeros as $numero) {
+                    if ($get_html) {
+                        list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true);
+                        $texte_final.=$texte;
+                    }
+                    else
+                        $est_visible=getEstVisible($pays, $magazine, $numero[0]);
+                    if ($est_visible===true)
+                        $total_numeros_visibles++;
+                }
+            }
+        }
+        $pourcentage_visible=intval(100*$total_numeros_visibles/$total_numeros);
+        if ($get_html)
+            return array($texte_final, $pourcentage_visible);
+        else
+            return $pourcentage_visible;
     }
 
 }
@@ -180,7 +212,10 @@ if (isset($_POST['get_sous_texture'])) {
     }
 }
 
-function getImgHTMLOf($pays,$magazine,$numero) {
+function getEstVisible($pays,$magazine,$numero, $get_html=false) {
     $e=new Edge($pays, $magazine, $numero);
-    return array($e->getImgHTML(),$e->est_visible);
+    if ($get_html)
+        return array($e->getImgHTML(),$e->est_visible);
+    else
+        return $e->est_visible;
 }

@@ -119,9 +119,11 @@ define('DMTABLE_MOINS_2','Some problems when you\'ve got a lot of issues with th
 define('DMTABLE_PLUS_1','Digest display (4 text lines max. per magazine)');
 define('DMTABLE_PLUS_2','The doublets can be represented');
 define('DMTABLE_PLUS_3','The purchase date can be represented');
-define('EMAIL_ENVOYE','An e-mail has just been sent to the webmaster. If your second-hand bookshop is valid, it should be available soon on DucksManager.');
+define('EMAIL_ENVOYE','An e-mail has been sent to the webmaster.');
+define('EMAIL_ENVOYE_BOUQUINERIE','If your second-hand bookshop is valid, it should be available soon on DucksManager.');
 define('ENREGISTRER_CHANGEMENTS','Save changes');
 define('ENTREZ_IDENTIFIANTS_INDUCKS','Please type your Inducks account\'s username and password');
+define('ERREUR_CAPTCHA','The code you have typed is invalid. Please try again.');
 define('ERREUR_CONNEXION_INDUCKS','Error while connecting to Inducks!');
 define('ERREUR_EXECUTION_REQUETE','Error while submitting the query !');
 define('ERREUR_LECTURE_NUMEROS','Error while reading the issues list');
@@ -189,6 +191,12 @@ define('INTRO_IMPRESSION_COLLECTION2','With DucksManager, you\'ve got all the ch
 define('INTRO_IMPRESSION_COLLECTION3','You can view below the details on the list formats DucksManager can use to print your list : ');
 define('INTRO_NOUVELLE_BOUQUINERIE','Please type below the details you have got about the second-hand bookshop you know, then enter some examples about the issues prices in it.');
 define('INTRO_NUMEROS_RECOMMANDES','The 20 following issues are the most likely to interest you, based on your favorite authors :');
+define('INTRO_PARTICIPER_BIBLIOTHEQUE_1','The DucksManager bookcase allows to visualize your Disney collection like if you are in front of it.');
+define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_IMPOSSIBLE','Currently, you can see all your collection in the bookcase. Your participation to the project is not possible.');
+define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1','Currently, you can only visualize ');
+define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2','% of your collection in the DucksManager bookcase. You prabably have got rare or recent magazines.');
+define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3','Why not participate ? This way, you will have a more complete view of your collection in your DucksManager bookcase, and it will also benefit some other users of DucksManager having the same magazines !');
+define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4','Participating to the project is quite simple. Just fill the following form to propose your help to the webmaster of DucksManager.');
 define('L10N_INTROUVABLE','Localisation not found for ');
 define('LANCER_CALCUL','Launch the statistics calculation');
 define('LANCER_CALCUL_MANUELLEMENT','You can launch the calculation manually, but be warned that it can take several minutes.');
@@ -297,6 +305,7 @@ define('QUESTION_EXECUTER_OPS_INDUCKS','Do you wish to execute these operations 
 define('QUESTION_IMPORTER_INDUCKS','Do you wish to import them?');
 define('RECHERCHER_BOUQUINERIES','Search for second-hand bookshops');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Search for second-hand bookshops in your city');
+define('RECOPIER_CODE_SUIVANT', 'Please type the following code');
 define('RECUPERATION_LISTE','Retrieving the list...');
 define('RECUPERATION_NUMEROS','Retrieving issues...');
 define('REFERENCES','referenced');
@@ -310,6 +319,7 @@ define('SELECTIONNER_NOUVELLE_DATE_ACQUISITION','Select "New purchase date" from
 define('SELECTIONNER_NUMEROS_A_MARQUER','Select first the issues!');
 define('SELECTIONNER_PAYS','Select a country');
 define('SELECTIONNER_TEXTURE','Select a texture');
+define('SPECIFIER_NUMEROS_BIBLIOTHEQUE','Please list the issues of your collection<br />that you can photograph the edges of.');
 define('SOUS_TEXTURE', 'Detailed texture');
 define('SOUS_TEXTURE_ETAGERE', 'Detailed shelf texture');
 define('STATISTIQUES_AUTEURS_INTRO_1','Type the names of your afvorite authors, then click on the "Add" button in order to see if you\'ve got all of his or her stories.');
@@ -342,4 +352,5 @@ define('VALIDER_NOTATIONS','Submit the scorings');
 define('VERIFICATION_UTILISATEUR','Checking username...');
 define('VIDER_LISTE','Empty my issues list');
 define('VILLE','City');
+define('VOTRE_ADRESSE_EMAIL','Your e-mail address');
 ?>

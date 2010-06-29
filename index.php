@@ -507,6 +507,87 @@ $menu=	array(COLLECTION=>
                                         <?php
 
                                     break;
+
+                                    case 'participer':
+                                        require_once('Edge.class.php');
+                                        echo INTRO_PARTICIPER_BIBLIOTHEQUE_1;
+                                        ?><br /><br /><?php
+                                        $pourcentage_visible=Edge::getPourcentageVisible();
+                                        if ($pourcentage_visible==100) {
+                                            echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_IMPOSSIBLE;
+                                        }
+                                        else {
+                                            $cryptinstall="captcha/cryptographp.fct.php";
+                                            include $cryptinstall;
+                                            if (isset($_POST['code'])) {
+                                                if (chk_crypt($_POST['code'])) {
+                                                    ?>
+                                                    <?=MERCI_CONTRIBUTION?><br /><?=EMAIL_ENVOYE;?>
+                                                    <?php
+                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide pour la bibliothèque',
+                                                         $_POST['texte_participation'],'From: '.$_POST['email']);
+                                                }
+                                                else {
+                                                    ?>
+                                                    <font style="color: red"><?=ERREUR_CAPTCHA?></font><br /><br />
+                                                    <?php
+                                                }
+                                            }
+                                            if (!isset($_POST['code']) || !chk_crypt($_POST['code'])) {
+                                                echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1
+                                                    .'<span style="font-weight: bold">'.$pourcentage_visible.'</span>'
+                                                    .INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2;
+                                                ?><br /><br /><?php
+                                                echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3;
+                                                ?><br /><?php
+                                                echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4;
+                                                ?>
+                                                <br /><br />
+                                                <form action="?session_id=<?=session_id()?>&amp;action=bibliotheque&amp;onglet=participer" method="post">
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <?=VOTRE_ADRESSE_EMAIL?> :
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="email" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <?=SPECIFIER_NUMEROS_BIBLIOTHEQUE?> :
+                                                            </td>
+                                                            <td>
+                                                                <textarea cols="40" rows="10" name="texte_participation"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <?=RECOPIER_CODE_SUIVANT?>
+                                                            </td>
+                                                            <td style="background-color:gray">
+                                                                <?php dsp_crypt(0, 1); ?>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <?=ICI?> :
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="code" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td>
+                                                                <input type="submit" class="valider" value="<?=VALIDER?>" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </form>
+                                                <?php
+                                            }
+                                        }
                                 }
                             break;
 
@@ -880,8 +961,8 @@ $menu=	array(COLLECTION=>
                                             if ($id_user==1)
                                                 $d->requete($requete);
                                             else {
-                                                mail('perel.bruno@wanadoo.fr','Ajout de bouquinerie',$requete);
-                                                echo EMAIL_ENVOYE;
+                                                mail('admin@ducksmanager.net','Ajout de bouquinerie',$requete);
+                                                echo EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE;
                                             }
                                             echo MERCI_CONTRIBUTION;
                                             ?>
