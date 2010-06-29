@@ -3,23 +3,25 @@ class SPG extends Edge {
 	var $pays='fr';
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
-                                        array('debut'=>81, 'fin'=>149));
-        static $largeur_defaut=20;
-        static $hauteur_defaut=219.7;
-        
-        function SPG($numero) {
-            $this->numero=$numero;
-            if ($this->numero<=88) {
-                $this->largeur=20*Edge::$grossissement;
-                $this->hauteur=255*Edge::$grossissement;
-            }
-            else {
-                $this->largeur=13*Edge::$grossissement;
-                $this->hauteur=275*Edge::$grossissement;
-            }
-            $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
-            if ($this->image===false)
-                xdebug_break ();
+                                    array('debut'=>59, 'fin'=>80, 'sauf'=>array(62,63,66,67,68,72,75,77)),
+                                    array('debut'=>81, 'fin'=>155));
+    var $en_cours=array();
+    static $largeur_defaut=20;
+    static $hauteur_defaut=219.7;
+
+    function SPG($numero) {
+        $this->numero=$numero;
+        if ($this->numero<=88) {
+            $this->largeur=20*Edge::$grossissement;
+            $this->hauteur=255*Edge::$grossissement;
+        }
+        else {
+            $this->largeur=13*Edge::$grossissement;
+            $this->hauteur=275*Edge::$grossissement;
+        }
+        $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
+        if ($this->image===false)
+            xdebug_break ();
 	}
 	function dessiner() {
 		if ($this->numero<=57) {
@@ -35,12 +37,19 @@ class SPG extends Edge {
 			$this->textes[]=$texte_numero;
 		}
 		elseif ($this->numero<=88) {
+            switch($this->numero) {
+                case 59 : case 60:
+                    $image_texte='edges/fr/SPG.'.$this->numero.'.Texte.png';
+                break;
+                default:
+                    $image_texte='edges/fr/Texte_SPG 2.png';
+            }
             list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefilledrectangle($this->image,0,0,$this->largeur, $this->hauteur,$fond);
 			$blanc=imagecolorallocate($this->image,255,255,255);
 			$noir=imagecolorallocate($this->image,0,0,0);
-			$icone=imagecreatefrompng('edges/fr/Texte_SPG 2.png');
+			$icone=imagecreatefrompng($image_texte);
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -48,7 +57,7 @@ class SPG extends Edge {
 		    # set the transparency settings for the picture after adding the transparency
 		    imagesavealpha($icone,true);
 		    imagealphablending($icone, true);
-			list($width, $height) = getimagesize('edges/fr/Texte_SPG 2.png');
+			list($width, $height) = getimagesize($image_texte);
 			$nouvelle_largeur=$this->largeur/1.5;
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
             imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
@@ -66,8 +75,10 @@ class SPG extends Edge {
 			$nouvelle_hauteur=($this->largeur)*($height/$width);
 			imagecopyresampled ($this->image, $icone, 0, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
 			imagefill($this->image, $this->largeur-1, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2+1, $fond);
+            $texte_numero_blanc=array(70,73,76,array('debut'=>79, 'fin'=>88));
+            $intervalle_numeros_blancs=new IntervalleValidite($texte_numero_blanc);
             $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
-                                        7*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+                                        7*Edge::$grossissement,90,$intervalle_numeros_blancs->estValide($this->numero) ? $blanc : $noir,'ArialBlack.ttf');
             
 			$texte_numero->pos_x=$this->largeur*1/5;
 			$texte_numero->angle=0;
