@@ -42,29 +42,29 @@ class Util {
 
     static function getBrowser() {
 
-        if ((ereg("Nav", getenv("HTTP_USER_AGENT"))) || (ereg("Gold", getenv(
+        if ((preg_match("#Nav#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Gold#", getenv(
         "HTTP_USER_AGENT"))) ||
-        (ereg("X11", getenv("HTTP_USER_AGENT"))) || (ereg("Mozilla", getenv(
+        (preg_match("#X11#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Mozilla#", getenv(
         "HTTP_USER_AGENT"))) ||
-        (ereg("Netscape", getenv("HTTP_USER_AGENT")))
-        AND (!ereg("MSIE", getenv("HTTP_USER_AGENT"))) AND (!ereg("Konqueror", getenv(
+        (preg_match("#Netscape#", getenv("HTTP_USER_AGENT")))
+        AND (!preg_match("#MSIE#", getenv("HTTP_USER_AGENT"))) AND (!preg_match("#Konqueror#", getenv(
         "HTTP_USER_AGENT"))))
           $navigateur = "Netscape";
-        elseif (ereg("Opera", getenv("HTTP_USER_AGENT")))
+        elseif (preg_match("#Opera#", getenv("HTTP_USER_AGENT")))
           $navigateur = "Opera";
-        elseif (ereg("MSIE", getenv("HTTP_USER_AGENT")))
+        elseif (preg_match("#MSIE#", getenv("HTTP_USER_AGENT")))
           $navigateur = "MSIE";
-        elseif (ereg("Lynx", getenv("HTTP_USER_AGENT")))
+        elseif (preg_match("#Lynx#", getenv("HTTP_USER_AGENT")))
           $navigateur = "Lynx";
-        elseif (ereg("WebTV", getenv("HTTP_USER_AGENT")))
+        elseif (preg_match("#WebTV#", getenv("HTTP_USER_AGENT")))
           $navigateur = "WebTV";
-        elseif (ereg("Konqueror", getenv("HTTP_USER_AGENT")))
+        elseif (preg_match("#Konqueror#", getenv("HTTP_USER_AGENT")))
           $navigateur = "Konqueror";
-        elseif ((eregi("bot", getenv("HTTP_USER_AGENT"))) || (ereg("Google", getenv(
+        elseif ((preg_match("#bot#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Google#", getenv(
         "HTTP_USER_AGENT"))) ||
-        (ereg("Slurp", getenv("HTTP_USER_AGENT"))) || (ereg("Scooter", getenv(
+        (preg_match("#Slurp#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Scooter#", getenv(
         "HTTP_USER_AGENT"))) ||
-        (eregi("Spider", getenv("HTTP_USER_AGENT"))) || (eregi("Infoseek", getenv(
+        (preg_match("#Spider#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Infoseek#", getenv(
         "HTTP_USER_AGENT"))))
           $navigateur = "Bot";
         else

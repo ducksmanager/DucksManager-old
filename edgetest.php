@@ -30,7 +30,7 @@ $hauteur=$_POST['hauteur'];
         if ($width<Etagere::$largeur)
             Etagere::$largeur=$width;
         echo Edge::getEtagereHTML();
-        list($html, $pourcentage_visible)=Edge::getHTML(true);
+        list($html, $pourcentage_visible)=Edge::getPourcentageVisible(true);
         echo $html;
         echo Edge::getEtagereHTML(false);
         ?>

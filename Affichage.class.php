@@ -5,7 +5,7 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 class Affichage {
 
-	function onglets($onglet_courant,$tab_onglets,$argument,$prefixe) {
+	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe) {
 
 		$cpt=0;
 		$nb_onglets=count($tab_onglets);
