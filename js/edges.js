@@ -113,7 +113,7 @@ function fermer(element) {
     });
 }
 
-function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2, new_grossissement) {
+function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2, new_grossissement, regen) {
     var section=$('bibliotheque');
     grossissement=new_grossissement;
     largeur_section=section.clientWidth;
@@ -122,7 +122,7 @@ function charger_bibliotheque(texture1, sous_texture1, texture2, sous_texture2, 
     new Ajax.Request('edgetest.php', {
         method: 'post',
         parameters:'largeur='+largeur_section+'&hauteur='+hauteur_section+'&texture1='+texture1+'&sous_texture1='+sous_texture1
-                  +'&texture2='+texture2+'&sous_texture2='+sous_texture2+'&grossissement='+grossissement,
+                  +'&texture2='+texture2+'&sous_texture2='+sous_texture2+'&grossissement='+grossissement+'&regen='+regen,
         onSuccess:function(transport) {
             $('bibliotheque').update(transport.responseText);
             $('bibliotheque').setStyle({'width':$('largeur_etagere').readAttribute('name')+'px',

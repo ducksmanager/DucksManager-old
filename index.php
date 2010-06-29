@@ -168,7 +168,8 @@ $menu=	array(COLLECTION=>
                 $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
                 $resultat_grossissement=$d->requete_select($requete_grossissement);
                 $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
-                echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\');';
+                $regen=isset($_GET['regen']) ? 1 : 0;
+                echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\','.$regen.');';
             }
             elseif ($_GET['onglet']=='options') {
                 echo 'initTextures();';

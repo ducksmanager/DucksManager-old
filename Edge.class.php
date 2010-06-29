@@ -17,20 +17,20 @@ class Edge {
     static $largeur_numeros_precedents=0;
     
 	function Edge($pays=null,$magazine=null,$numero=null) {
-            if (is_null($pays))
-                return;
-            $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
-            if (file_exists('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php')) {
-                require_once('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php');
-                $this->o=new $this->magazine($this->numero);
-                $intervalle_validite=new IntervalleValidite($this->o->intervalles_validite);
-                if (!$intervalle_validite->estValide($this->numero))
-                    $this->est_visible=false;
-            }
-            else {
-                $this->o=clone $this;
+        if (is_null($pays))
+            return;
+        $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
+        if (file_exists('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php')) {
+            require_once('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php');
+            $this->o=new $this->magazine($this->numero);
+            $intervalle_validite=new IntervalleValidite($this->o->intervalles_validite);
+            if (!$intervalle_validite->estValide($this->numero))
                 $this->est_visible=false;
-            }
+        }
+        else {
+            $this->o=clone $this;
+            $this->est_visible=false;
+        }
 	}
 
     static function getEtagereHTML($br=true) {
@@ -40,41 +40,51 @@ class Edge {
             $code.= '<br />';
         return $code;
     }
-        function getImgHTML() {
-            $code='';
-            if (Edge::$largeur_numeros_precedents + $this->o->largeur > Etagere::$largeur) {
-                $code.=Edge::getEtagereHTML();
-                Edge::$largeur_numeros_precedents=0;
-            }
-            if ($this->o->hauteur > Etagere::$hauteur_max_etage)
-                Etagere::$hauteur_max_etage = $this->o->hauteur ;
-            $code.= '<img class="tranche" '
-                  .'name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'" '
-                  .'width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" />';
-            Edge::$largeur_numeros_precedents+=$this->o->largeur;
-            return $code;
+    function getImgHTML($regen=false) {
+        $code='';
+        if (Edge::$largeur_numeros_precedents + $this->o->largeur > Etagere::$largeur) {
+            $code.=Edge::getEtagereHTML();
+            Edge::$largeur_numeros_precedents=0;
         }
+        if ($this->o->hauteur > Etagere::$hauteur_max_etage)
+            Etagere::$hauteur_max_etage = $this->o->hauteur ;
+        $code.= '<img class="tranche" ';
+        if ($regen) {
+            $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'" ';
+        }
+        else {
+            $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png" ';
+        }
+        $code.='width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" />';
+        Edge::$largeur_numeros_precedents+=$this->o->largeur;
+        return $code;
+    }
 
-        function dessiner_tranche() {
-            $intervalle_validite=new IntervalleValidite($this->intervalles_validite);
-            if ($intervalle_validite->estValide($this->numero))
-                $this->image=$this->dessiner();
-            else
-                $this->image=$this->dessiner_defaut();
-            foreach($this->textes as $texte) {
-                imagettftext($this->image,$texte->taille,$texte->angle,$texte->pos_x,$texte->pos_y,$texte->couleur,$texte->police,$texte->texte);
-            }
+    function dessiner_tranche($regen=false) {
+        $intervalle_validite=new IntervalleValidite($this->intervalles_validite);
+        if ($intervalle_validite->estValide($this->numero)) {
+            $this->image=$this->dessiner();
             $this->dessiner_contour();
-            imageantialias($this->image, true);
-            imagepng($this->image);
         }
+        else
+            $this->image=$this->dessiner_defaut();
+        foreach($this->textes as $texte) {
+            imagettftext($this->image,$texte->taille,$texte->angle,$texte->pos_x,$texte->pos_y,$texte->couleur,$texte->police,$texte->texte);
+        }
+        imageantialias($this->image, true);
+        if (!is_dir('edges/'.$this->pays)) {
+            mkdir('edges/'.$this->pays);
+            mkdir('edges/'.$this->pays.'/gen');
+        }
+        imagepng($this->image,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png');
+        imagepng($this->image);
+    }
 
 	function dessiner_defaut() {
             $this->image=imagecreatetruecolor($this->largeur,$this->hauteur);
             $blanc=imagecolorallocate($this->image,255,255,255);
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
-            imagerectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
             imagettftext($this->image,$this->largeur/3,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
 			 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
             imageantialias($this->image, true);
@@ -113,11 +123,11 @@ class Edge {
 
     function dessiner_contour() {
         $noir=imagecolorallocate($this->image, 0, 0, 0);
-        for ($i=0;$i<.1*Edge::$grossissement;$i++)
+        for ($i=0;$i<.15*Edge::$grossissement;$i++)
             imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
     }
 
-    static function getPourcentageVisible($get_html=false) {
+    static function getPourcentageVisible($get_html=false, $regen=false) {
         include_once('Database.class.php');
         @session_start();
         $d=new Database();
@@ -132,7 +142,7 @@ class Edge {
                 $total_numeros+=count($numeros);
 				foreach($numeros as $numero) {
                     if ($get_html) {
-                        list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true);
+                        list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true, $regen);
                         $texte_final.=$texte;
                     }
                     else
@@ -155,12 +165,13 @@ if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) 
         header('Content-type: image/png');
     $e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero']);
     $o=$e->o;
-    $o->dessiner_tranche();
+    $regen=isset($_GET['regen']);
+    $o->dessiner_tranche($regen);
 }
 /*
  * Table bibliotheque_options
 */
-if (isset($_POST['get_texture'])) {
+elseif (isset($_POST['get_texture'])) {
     include_once('Database.class.php');
     $d=new Database();
     if (!$d) {
@@ -185,7 +196,7 @@ if (isset($_POST['get_texture'])) {
     }
 }
 
-if (isset($_POST['get_sous_texture'])) {
+elseif (isset($_POST['get_sous_texture'])) {
     include_once('Database.class.php');
     $d=new Database();
     if (!$d) {
@@ -212,10 +223,10 @@ if (isset($_POST['get_sous_texture'])) {
     }
 }
 
-function getEstVisible($pays,$magazine,$numero, $get_html=false) {
+function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
     $e=new Edge($pays, $magazine, $numero);
     if ($get_html)
-        return array($e->getImgHTML(),$e->est_visible);
+        return array($e->getImgHTML($regen),$e->est_visible);
     else
         return $e->est_visible;
 }

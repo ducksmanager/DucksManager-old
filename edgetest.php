@@ -26,11 +26,12 @@ $hauteur=$_POST['hauteur'];
         Etagere::$sous_texture1=$_POST['sous_texture1'];
         Etagere::$texture2=$_POST['texture2'];
         Etagere::$sous_texture2=$_POST['sous_texture2'];
+        $regen=$_POST['regen']==1;
         list($width, $height, $type, $attr)=getimagesize('edges/textures/'.Etagere::$texture1.'/'.Etagere::$sous_texture1.'.jpg');
         if ($width<Etagere::$largeur)
             Etagere::$largeur=$width;
         echo Edge::getEtagereHTML();
-        list($html, $pourcentage_visible)=Edge::getPourcentageVisible(true);
+        list($html, $pourcentage_visible)=Edge::getPourcentageVisible(true,$regen);
         echo $html;
         echo Edge::getEtagereHTML(false);
         ?>
