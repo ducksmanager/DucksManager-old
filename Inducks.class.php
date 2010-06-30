@@ -136,6 +136,14 @@ elseif (isset($_POST['get_numeros'])) {
 	Inducks::get_numeros($_POST['pays'],$_POST['magazine']);
 }
 elseif (isset($_POST['get_cover'])) {
+    include_once('Database.class.php');
+    $d=new Database();
+    $requete_couverture_stockee='SELECT URL FROM couvertures WHERE Pays LIKE \''.$_POST['pays'].'\' AND Magazine LIKE \''.$_POST['magazine'].'\' AND Numéro LIKE \''.$_POST['numero'].'\'';
+    $resultat_couverture_stockee=$d->requete_select($requete_couverture_stockee);
+    if (count($resultat_couverture_stockee)!=0) {
+        echo $resultat_couverture_stockee[0]['URL'];
+        exit(0);
+    }
     $nb_plus=7-strlen($_POST['numero'])-strlen($_POST['magazine']);
     $regex_image='#<td><img src="([^"]+)"><tr><td[^>]+><small>[^<]+<a href=\'http://outducks.org\'>outducks.org</a>#is';
     $adresse_numero='http://coa.inducks.org/issue.php?c='.$_POST['pays'].'%2F'.$_POST['magazine'];
@@ -149,11 +157,28 @@ elseif (isset($_POST['get_cover'])) {
             $buffer.= fgets($handle, 4096);
         }
         fclose($handle);
-
+        if (strpos($buffer, 'Issue not found')!==false) {
+            $adresse_numero='http://coa.inducks.org/issue.php?c='.$_POST['pays'].'%2F'.$_POST['magazine'];
+            for ($i=0;$i<$nb_plus+1;$i++)
+                $adresse_numero.='+';
+            $adresse_numero.=$_POST['numero'];
+            $handle = @fopen($adresse_numero, "r");
+            if ($handle) {
+                $buffer="";
+                while (!feof($handle)) {
+                    $buffer.= fgets($handle, 4096);
+                }
+                fclose($handle);
+            }
+        }
 		if (preg_match($regex_image,$buffer,$code_image)==0)
-            echo 'images/cover_not_found.png';
+            $url='images/cover_not_found.png';
         else
-            echo $code_image[1];
+            $url=$code_image[1];
+        $requete_ajout_couverture='INSERT INTO couvertures(Pays,Magazine,Numéro,URL) '
+                                 .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
+        $d->requete($requete_ajout_couverture);
+        echo $url;
     }
     else {
         echo ERREUR_CONNEXION_INDUCKS;
