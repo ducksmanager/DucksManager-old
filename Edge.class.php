@@ -30,6 +30,8 @@ class Edge {
         else {
             $this->o=clone $this;
             $this->est_visible=false;
+            $this->largeur*=Edge::$grossissement;
+            $this->hauteur*=Edge::$grossissement;
         }
 	}
 
@@ -50,7 +52,7 @@ class Edge {
             Etagere::$hauteur_max_etage = $this->o->hauteur ;
         $code.= '<img class="tranche" ';
         if ($regen) {
-            $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'" ';
+            $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'&amp;grossissement='.Edge::$grossissement.'" ';
         }
         else {
             $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png" ';
@@ -62,12 +64,11 @@ class Edge {
 
     function dessiner_tranche($regen=false) {
         $intervalle_validite=new IntervalleValidite($this->intervalles_validite);
-        if ($intervalle_validite->estValide($this->numero)) {
+        if ($intervalle_validite->estValide($this->numero))
             $this->image=$this->dessiner();
-            $this->dessiner_contour();
-        }
         else
             $this->image=$this->dessiner_defaut();
+        $this->dessiner_contour();
         foreach($this->textes as $texte) {
             imagettftext($this->image,$texte->taille,$texte->angle,$texte->pos_x,$texte->pos_y,$texte->couleur,$texte->police,$texte->texte);
         }
@@ -81,14 +82,14 @@ class Edge {
     }
 
 	function dessiner_defaut() {
-            $this->image=imagecreatetruecolor($this->largeur,$this->hauteur);
-            $blanc=imagecolorallocate($this->image,255,255,255);
-            $noir = imagecolorallocate($this->image, 0, 0, 0);
-            imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
-            imagettftext($this->image,$this->largeur/3,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
-			 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
-            imageantialias($this->image, true);
-            return $this->image;
+        $this->image=imagecreatetruecolor($this->largeur,$this->hauteur);
+        $blanc=imagecolorallocate($this->image,255,255,255);
+        $noir = imagecolorallocate($this->image, 0, 0, 0);
+        imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
+        imagettftext($this->image,$this->largeur/3,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
+         $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
+        imageantialias($this->image, true);
+        return $this->image;
 	}
 
     function getColorsFromDB($default_color=array(255,255,255),$parametre_autre=null) {
@@ -161,6 +162,8 @@ class Edge {
 
 }
 if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
+    if (isset($_GET['grossissement']))
+        Edge::$grossissement=$_GET['grossissement'];
     if (!isset($_GET['debug']))
         header('Content-type: image/png');
     $e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero']);
