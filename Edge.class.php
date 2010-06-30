@@ -189,8 +189,9 @@ elseif (isset($_POST['get_texture'])) {
             <option 
             <?php
             if ($f==$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']])
-                echo 'selected="selected"';?>
-            ><?=$f?></option>
+                echo 'selected="selected" ';?>
+            value="<?=$f?>"
+            ><?=constant('TEXTURE__'.strtoupper($f))?></option>
             <?php
         }
     }

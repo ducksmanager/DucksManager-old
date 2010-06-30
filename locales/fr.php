@@ -340,6 +340,7 @@ define('TEXTE_SELECTIONNER_NUMEROS2','Pour s&eacute;lectionner plusieurs num&eac
 define('TEXTE_SELECTIONNER_NUMEROS3','Une fois que vous avez termin&eacute; votre s&eacute;lection, <b>faites un clic droit</b> pour modifier les caract&eacute;ristiques de ces num&eacute;ros.');
 define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Texture de l\'&eacute;tag&egrave;re');
+define('TEXTURE__BOIS','Bois');
 define('TITRE','DucksManager : Gestion de votre collection de Mickey Parade, Picsou Magazine, Journal de Mickey,...');
 define('TOTAL','Total');
 define('UTILISATEUR_EXISTANT','Ce nom d\'utilisateur est d&eacute;j&agrave; utilis&eacute; !');

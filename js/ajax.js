@@ -435,7 +435,7 @@ function select_sous_texture (n) {
     var el_select=$('texture'+n);
     var myAjax = new Ajax.Request('Edge.class.php', {
            method: 'post',
-           parameters:'get_sous_texture=true&texture='+$('texture'+n).options[$('texture'+n).options.selectedIndex].text+'&n='+n,
+           parameters:'get_sous_texture=true&texture='+$('texture'+n).options[$('texture'+n).options.selectedIndex].value+'&n='+n,
            onSuccess:function(transport) {
                 $('sous_texture'+n).update(transport.responseText);
            }

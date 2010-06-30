@@ -341,6 +341,7 @@ define('TEXTE_SELECTIONNER_NUMEROS2','In order to select several issues, let the
 define('TEXTE_SELECTIONNER_NUMEROS3','Once your selection is done, <b>make a right click</b> in order to change the characteristics of these issues.');
 define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Shelf texture');
+define('TEXTURE__BOIS','Wood');
 define('TITRE','DucksManager : Your Ducks comics collection manager');
 define('TOTAL','Total');
 define('UTILISATEUR_EXISTANT','This username is already in use!');

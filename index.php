@@ -442,13 +442,13 @@ $menu=	array(COLLECTION=>
                                     break;
                                     case 'options':
                                         require_once('Edge.class.php');
+                                        $d=new Database();
+                                        if (!$d) {
+                                            echo PROBLEME_BD;
+                                            exit(-1);
+                                        }
+                                        $id_user=$d->user_to_id($_SESSION['user']);
                                         if (isset($_POST['texture1'])) {
-                                            $d=new Database();
-                                            if (!$d) {
-                                                echo PROBLEME_BD;
-                                                exit(-1);
-                                            }
-                                            $id_user=$d->user_to_id($_SESSION['user']);
                                             for ($i=1;$i<=2;$i++) {
                                                 $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\' WHERE id='.$id_user;
                                                 $d->requete($requete_update_texture);
