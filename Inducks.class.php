@@ -136,7 +136,7 @@ elseif (isset($_POST['get_numeros'])) {
 	Inducks::get_numeros($_POST['pays'],$_POST['magazine']);
 }
 elseif (isset($_POST['get_cover'])) {
-    $nb_plus=5-strlen($_POST['numero']);
+    $nb_plus=7-strlen($_POST['numero'])-strlen($_POST['magazine']);
     $regex_image='#<td><img src="([^"]+)"><tr><td[^>]+><small>[^<]+<a href=\'http://outducks.org\'>outducks.org</a>#is';
     $adresse_numero='http://coa.inducks.org/issue.php?c='.$_POST['pays'].'%2F'.$_POST['magazine'];
     for ($i=0;$i<$nb_plus;$i++)
