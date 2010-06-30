@@ -677,8 +677,17 @@ $menu=	array(COLLECTION=>
                                         <?php
                                         //echo '<table border="0" width="20%">';
                                         $onglets_magazines=$l->liste_magazines();
+                                        if (isset($_POST['magazine']))
+				                            $onglets_magazines[$_POST['pays'].'/'.$_POST['magazine']]=array($_POST['pays'].'/'.$_POST['magazine'],NOUVEAU_MAGAZINE);
                                         $onglets_magazines[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
-                                        //echo '<span id="onglets_magazines">';
+                                        if (!isset($_GET['onglet_magazine']))
+                                            $onglet_magazine=null;
+                                        else {
+                                            if (isset($_POST['magazine']))
+                                                $onglet_magazine=$_POST['pays'].'/'.$_POST['magazine'];
+                                            else
+                                                $onglet_magazine=$_GET['onglet_magazine'];
+                                        }
                                         Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
 
                                         if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {

@@ -79,24 +79,17 @@ class Inducks {
 		}
 		$regex_magazine='#<A HREF="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</A>&nbsp;#is';
 		$regex_pays='#; ([^:]+): publications</b></font>#is';
-		$liste_magazines=array();
 		preg_match($regex_pays,$buffer,$nom_pays_recup);
 		$nom_pays=preg_replace($regex_pays,'$1',$nom_pays_recup);
 		preg_match_all($regex_magazine,$buffer,$pays_recup);
 		$requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ';
 		$debut=true;
-		foreach($pays_recup[0] as $p) {
-			if (!$debut) $requete_noms_magazines.=',';
+		foreach($pays_recup[0] as $i=>$p) {
+			if ($i==0) $requete_noms_magazines.=',';
 			$requete_noms_magazines.='("'.$pays.'","'.preg_replace($regex_magazine,'$1',$p).'","'.str_replace('"','',utf8_decode(preg_replace($regex_magazine,'$2',$p))).'")';
-			$liste_magazines[preg_replace($regex_magazine,'$1',$p)]=preg_replace($regex_magazine,'$2',$p).' ('.$nom_pays[0].')';
-			$debut=false;
 		}
-		if ($_SESSION['lang']=='fr') {
-			$d = new Database();
-			$d->requete($requete_noms_magazines);
-		}
-		self::$noms_complets[$pays]=$liste_magazines;
-		return $liste_magazines;
+        $d = new Database();
+        $d->requete($requete_noms_magazines);
 	}
 
 	function get_magazines($pays) {

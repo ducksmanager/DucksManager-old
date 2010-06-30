@@ -36,7 +36,7 @@ class Affichage {
 		}
         ?></ul><br /><?php
 	}
-	function afficher_numeros($liste,$pays,$magazine,$numeros) {
+	static function afficher_numeros($liste,$pays,$magazine,$numeros) {
 
 		$etats=array('manque'=>ETAT_MANQUANTS,
                              'mauvais'=>ETAT_MAUVAIS,
@@ -47,7 +47,7 @@ class Affichage {
 		$cpt=0;
 		//print_r($liste->collection[$pays][$magazine]);
 		?>
-        <span id="pays" style="display:none"><?=$pays?></span>';
+        <span id="pays" style="display:none"><?=$pays?></span>
 		<span id="magazine" style="display:none"><?=$magazine?></span>
         <?php
 		$d=new Database();
@@ -98,8 +98,7 @@ class Affichage {
 		//echo '<pre>';print_r($liste);echo '</pre>';
 		foreach($numeros as $numero) {
 			?>
-            <div class="num_
-            <?php
+            <div class="num_<?php
 			$possede=false;
 			list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
 			if (''!=$etat) {
@@ -146,7 +145,7 @@ class Affichage {
 			$cpt++;
 		}
 	}
-	function afficher_etiquettes() {
+	static function afficher_etiquettes() {
         ?>
 		<ol>
             <li>
