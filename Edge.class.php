@@ -51,7 +51,8 @@ class Edge {
         if ($this->o->hauteur > Etagere::$hauteur_max_etage)
             Etagere::$hauteur_max_etage = $this->o->hauteur ;
         $code.= '<img class="tranche" ';
-        if ($regen) {
+        $fichier_existe=file_exists('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png');
+        if (!file_exists('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png') || $regen) {
             $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'&amp;grossissement='.Edge::$grossissement.'" ';
         }
         else {
