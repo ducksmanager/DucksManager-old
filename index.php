@@ -457,8 +457,8 @@ $menu=	array(COLLECTION=>
                                             }
                                             /*if (!is_numeric($_POST['grossissement']))
                                                 $_POST['grossissement']='taille_reelle';*/
-                                            $requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
-                                            $d->requete($requete_update_grossissement);
+                                            /*$requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
+                                            $d->requete($requete_update_grossissement);*/
                                         }
                                         ?><form method="post" action="?action=bibliotheque&amp;onglet=options">
                                             <span style="text-decoration:underline"><?=TEXTURE?> : </span><br />
@@ -481,6 +481,7 @@ $menu=	array(COLLECTION=>
                                                 <option id="vide"><?=SELECTIONNER_TEXTURE?></option>
                                             </select>
                                             <br /><br />
+                                            <?php /*
                                             <span style="text-decoration:underline"><?=TAILLE_TRANCHES?> : </span><br />
                                             <select style="width:300px;" id="grossissement" name="grossissement">
                                             <?php
@@ -490,7 +491,7 @@ $menu=	array(COLLECTION=>
                                                 $grossissement=Edge::$grossissement;
                                             else
                                                 $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
-                                            $options_grossissement=array(1,1.5,2/*,TAILLE_REELLE*/);
+                                            $options_grossissement=array(1,1.5,2);
                                             foreach($options_grossissement as $option) {
                                                 ?><option <?php
                                                 if ($option==$grossissement || (!is_numeric($option) && $grossissement==='taille_reelle')) {
@@ -503,6 +504,7 @@ $menu=	array(COLLECTION=>
                                             ?>
                                             </select>
                                             <br /><br />
+                                            <?php */?>
                                             <input type="submit" class="valider" value="<?=VALIDER?>" />
                                         </form>
                                         <?php
