@@ -99,6 +99,8 @@ class Edge {
         $requete_couleurs='SELECT CouleurR, CouleurG, CouleurB FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
         if (!is_null($parametre_autre))
             $requete_couleurs.=' AND Autre LIKE \''.$parametre_autre.'\'';
+        else
+            $requete_couleurs.=' AND Autre IS NULL';
         $resultat=$d->requete_select($requete_couleurs);
         if (count($resultat)==0)
             return $default_color;
