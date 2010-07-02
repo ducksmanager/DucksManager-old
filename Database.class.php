@@ -123,6 +123,16 @@ class Database {
 		echo '</table>';
 	}*/
 
+    function get_nom_complet_magazine($pays,$magazine) {
+        $requete_nom_magazine='SELECT NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND NomAbrege LIKE \''.$magazine.'\'';
+        $resultat_nom_magazine=$this->requete_select($requete_nom_magazine);
+        if (count($resultat_nom_magazine)==0) {
+            Inducks::get_noms_complets_magazines($pays);
+            $resultat_nom_magazine=$this->requete_select($requete_nom_magazine);
+        }
+        return $resultat_nom_magazine[0]['NomComplet'];
+    }
+
 	function liste_etats() {
 		$debut=true;
 		foreach(self::$etats as $etat_court=>$infos_etat) {
