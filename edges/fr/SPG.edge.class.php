@@ -3,7 +3,7 @@ class SPG extends Edge {
 	var $pays='fr';
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
-                                    array('debut'=>59, 'fin'=>80, 'sauf'=>array(62,63,66,67,68,72,75,77)),
+                                    array('debut'=>59, 'fin'=>80, 'sauf'=>array(62,63,66,67,68,75,77)),
                                     array('debut'=>81, 'fin'=>155));
     var $en_cours=array();
     static $largeur_defaut=20;
@@ -44,9 +44,21 @@ class SPG extends Edge {
                 default:
                     $image_texte='edges/fr/Texte_SPG 2.png';
             }
-            list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
-            $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
-            imagefilledrectangle($this->image,0,0,$this->largeur, $this->hauteur,$fond);
+            if ($this->numero==72) {
+                $couleur1=$this->getColorsFromDB(array(0,0,0),'Couleur 1');
+                $couleur2=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
+                $couleurs_inter=getMidColors($couleur1, $couleur2, $this->hauteur);
+                foreach($couleurs_inter as $i=>$couleur) {
+                    list($rouge,$vert,$bleu)=$couleur;
+                    $couleur_allouee=imagecolorallocate($this->image, $rouge, $vert, $bleu);
+                    imageline($this->image, 0, $i, $this->largeur, $i, $couleur_allouee);
+                }
+            }
+            else {
+                list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
+                $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
+                imagefill($this->image,0,0,$fond);
+            }
 			$blanc=imagecolorallocate($this->image,255,255,255);
 			$noir=imagecolorallocate($this->image,0,0,0);
 			$icone=imagecreatefrompng($image_texte);
@@ -61,7 +73,7 @@ class SPG extends Edge {
 			$nouvelle_largeur=$this->largeur/1.5;
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
             imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
-		    imagefill($this->image, 11.75*Edge::$grossissement, 40.25*Edge::$grossissement, $fond);
+		    //imagefill($this->image, 11.75*Edge::$grossissement, 40.25*Edge::$grossissement, $fond);
 		    $icone=imagecreatefrompng('edges/fr/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
@@ -74,7 +86,7 @@ class SPG extends Edge {
 			list($width, $height) = getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
 			$nouvelle_hauteur=($this->largeur)*($height/$width);
 			imagecopyresampled ($this->image, $icone, 0, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-			imagefill($this->image, $this->largeur-1, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2+1, $fond);
+			//imagefill($this->image, $this->largeur-1, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2+1, $fond);
             $texte_numero_blanc=array(70,73,76,array('debut'=>79, 'fin'=>88));
             $intervalle_numeros_blancs=new IntervalleValidite($texte_numero_blanc);
             $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
@@ -87,18 +99,15 @@ class SPG extends Edge {
 		}
 		else {
             $epaisseur_bordure=.25*Edge::$grossissement;
-            $contenu_couleur='';
+            $noir = imagecolorallocate($this->image, 0, 0, 0);
+            $blanc = imagecolorallocate($this->image, 255,255,255);
             if ($this->numero<=141)
                 list($rouge,$vert,$bleu)=array(223,51,9);
             else {
                 list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             }
-            $noir = imagecolorallocate($this->image, 0, 0, 0);
-            $blanc = imagecolorallocate($this->image, 255,255,255);
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
-            imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
-            imagefilledrectangle($this->image, $epaisseur_bordure, $epaisseur_bordure, $this->largeur-$epaisseur_bordure, $this->hauteur-$epaisseur_bordure, $fond);
-
+            imagefill($this->image, 0, 0, $fond);
             $icone=imagecreatefrompng('edges/fr/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
@@ -148,4 +157,19 @@ class SPG extends Edge {
 		return $this->image;
 	}
 
+}
+
+function getMidColors($rgb1, $rgb2, $nb) {
+    $rgb_mid=array();
+    for ($j = 1; $j <= $nb; $j++) {
+        $rgb_mid[$j]=array();
+        for ($i = 0; $i < 3; $i++) {
+            if ($rgb1[$i] < $rgb2[$i]) {
+                $rgb_mid[$j][]= round(((max($rgb1[$i], $rgb2[$i]) - min($rgb1[$i], $rgb2[$i])) / ($nb + 1)) * $j + min($rgb1[$i], $rgb2[$i]));
+            } else {
+                $rgb_mid[$j][]= round(max($rgb1[$i], $rgb2[$i]) - ((max($rgb1[$i], $rgb2[$i]) - min($rgb1[$i], $rgb2[$i])) / ($nb + 1)) * $j);
+            }
+        }
+    }
+    return $rgb_mid;
 }
