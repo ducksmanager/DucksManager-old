@@ -4,7 +4,7 @@ class SPG extends Edge {
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
                                     array('debut'=>59, 'fin'=>80, 'sauf'=>array(62,63,66,67,68,75,77)),
-                                    array('debut'=>81, 'fin'=>155));
+                                    array('debut'=>81, 'fin'=>155, 'sauf'=>array(154)));
     var $en_cours=array();
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -99,7 +99,7 @@ class SPG extends Edge {
             $epaisseur_bordure=.25*Edge::$grossissement;
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             $blanc = imagecolorallocate($this->image, 255,255,255);
-            if ($this->numero<=141)
+            if ($this->numero<=142)
                 list($rouge,$vert,$bleu)=array(223,51,9);
             else {
                 list($rouge,$vert,$bleu)=$this->getColorsFromDB();
