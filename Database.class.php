@@ -95,6 +95,15 @@ class Database {
 		return (mysql_num_rows($requete_resultat)!=0);
 	}
 
+    function user_is_beta() {
+        if (isset($_SESSION['user']) &&!($action=='logout')) {
+            $requete_beta_user='SELECT BetaUser FROM users WHERE username LIKE \''.$_SESSION['user'].'\'';
+            $resultat_beta=$this->requete_select($requete_beta_user);
+            return $resultat_beta[0]['BetaUser']==1;
+        }
+        return false;
+    }
+
 	function nouveau_user($user,$pass) {
 		date_default_timezone_set('Europe/Paris');
 		$requete='INSERT INTO users(username,password,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.date('Y-m-d').'\')';

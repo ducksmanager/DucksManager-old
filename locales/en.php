@@ -39,6 +39,7 @@ define('AUTRES','Other');
 define('AVEC_ACQUISITION','with the purchase date');
 define('AVEC_ETAT','with the condition');
 define('BASE_DONNEES','DucksManager database');
+define('BETA', 'Beta');
 define('BIBLIOTHEQUE','View your collection like if you\'re in front of it!');
 define('BIBLIOTHEQUE_COURT','My bookcase');
 define('BIBLIOTHEQUE_OPTIONS','Allows you to set up options for the display of your bookcase');

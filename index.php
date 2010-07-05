@@ -15,58 +15,6 @@ require_once('Affichage.class.php');
 require_once('Inducks.class.php');
 require_once('Util.class.php');
 
-$menu=	array(COLLECTION=>
-        array("new"=>
-                array("private"=>"never",
-                        "link"=>true,
-                        "text"=>NOUVELLE_COLLECTION),
-                "open"=>
-                array("private"=>"never",
-                        "link"=>true,
-                        "coa_related"=>true,
-                        "text"=>OUVRIR_COLLECTION),
-                "bibliotheque"=>
-                array("private"=>"always",
-                        "link"=>true,
-                        "coa_related"=>true,
-                        "text"=>BIBLIOTHEQUE_COURT),
-                "gerer"=>
-                array("private"=>"always",
-                        "link"=>true,
-                        "coa_related"=>true,
-                        "text"=>GERER_COLLECTION),
-                "stats"=>
-                array("private"=>"always",
-                        "link"=>true,
-                        "coa_related"=>true,
-                        "text"=>STATISTIQUES_COLLECTION),
-                "agrandir"=>
-                array("private"=>"always",
-                        "link"=>true,
-                        "coa_related"=>true,
-                        "text"=>AGRANDIR_COLLECTION),
-                "print"=>
-                array("private"=>"always",
-                        "link"=>true,
-                        "text"=>IMPRIMER_COLLECTION),
-                "logout"=>
-                array("private"=>"always",
-                        "link"=>true,
-                        "text"=>DECONNEXION))
-        ,
-        COLLECTION_INDUCKS=>
-        array("import"=>
-                array("private"=>"no",
-                        "link"=>true,
-                        "coa_related"=>true,
-                        "text"=>IMPORTER_INDUCKS)/*,
-				      "export"=>
-					array("private"=>"no",
-						  "link"=>false,
-						  "text"=>EXPORTER_INDUCKS*/
-        )
-        )
-;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -273,63 +221,32 @@ $menu=	array(COLLECTION=>
                                 <td valign="top" style="padding:5px;">
                                     <b><a href="?"><?=ACCUEIL?></a></b><br /><br />
                                     <?php
-                                    foreach($menu as $item=>$infos) {
+                                    $beta_user=$d->user_is_beta();
+                                    foreach($menus as $i=>$menu) {
                                         ?>
-                                        <span style="font-weight: bold; text-decoration: underline;"><?=$item?></span><br />
+                                        <span style="font-weight: bold; text-decoration: underline;"><?=$menu->nom?></span><br />
                                         <?php
-                                        foreach($infos as $sous_item=>$infos_sous_item) {
-                                            if ($infos_sous_item['private']=='no') {
-                                                if (!$infos_sous_item['link']) {
-                                                    ?>
-                                                    <del><?=$infos_sous_item['text']?></del><br />';
-                                                    <?php
+                                        foreach($menu->items as $j=>$item) {
+                                            if ($item->est_prive=='no'
+                                            || ($item->est_prive=='always' && isset($_SESSION['user']) &&!($action=='logout'))
+                                            || ($item->est_prive=='never'  &&!(isset($_SESSION['user']) &&!($action=='logout')))) {
+                                                if ($item->beta && !$beta_user)
                                                     continue;
-                                                }
                                                 ?>
-                                                <a href="?action=<?=$sous_item?>"><?=$infos_sous_item['text']?></a><br>
+                                                <a href="?action=<?=$item->nom?>"><?=$item->texte?>
                                                 <?php
-                                            }
-                                            else {
-                                                if (isset($_SESSION['user']) &&!($action=='logout')) {
-                                                    if (!$infos_sous_item['link']) {
-                                                        ?>
-                                                        <del><?=$infos_sous_item['text']?></del><br />
-                                                        <?php
-                                                        continue;
-                                                    }
-                                                    if ($infos_sous_item['private']=='always'){
-                                                        ?>
-                                                        <a href="?action=<?=$sous_item?>"><?=$infos_sous_item['text']?></a><br>
-                                                        <?php
-                                                    }
-                                                }
-                                                else if ($infos_sous_item['private']=='never'){
-                                                    if (!$infos_sous_item['link']) {
-                                                        ?>
-                                                        <del><?=$infos_sous_item['text']?></del><br />
-                                                        <?php
-                                                        continue;
-                                                    }
-                                                    ?>
-                                                    <a href="?action=<?=$sous_item?>"><?=$infos_sous_item['text']?></a><br>
+                                                if ($item->beta && $beta_user) {
+                                                    ?><span class="beta"><?=BETA?></span>
                                                     <?php
-                                                }
+                                                }?>
+                                                </a><br>
+                                                <?php
                                             }
                                         }
                                         ?>
                                         <br />
                                         <?php
                                     }
-                                    /*if (isset($_SESSION['user']) &&!($action=='logout')){
-				echo '&nbsp;<a href="?action=gerer">G&eacute;rer ma collection</a><br>'
-					.'&nbsp;Sauvegarder ma collection<br>'
-					.'&nbsp;Imprimer ma collection<br>'
-					.'&nbsp;<a class="important" href="?action=logout">D&eacute;connexion</a><br>';
-			}
-			else {
-				echo '&nbsp;Nouvelle collection<br>'
-					.'&nbsp;<a href="?action=open">Ouvrir ma collection</a><br>';
-			}*/
                                     ?>
                                     <br/>
                                 </td>
@@ -347,9 +264,9 @@ $menu=	array(COLLECTION=>
 
                         <?php
                         echo $texte_debut;
-                        foreach($menu as $item=>$infos) {
-                            foreach($infos as $sous_item=>$infos_sous_item) {
-                                if ($sous_item==$action) {
+                        foreach($menus as $i=>$menu) {
+                            foreach($menu as $j=>$item) {
+                                if ($item->nom==$action) {
                                     /*if (isset($infos_sous_item['coa_related'])) {
                                         require_once('Util.class.php');
                                         $contenu_page=Util::get_page('http://coa.inducks.org/maccount.php');
@@ -362,7 +279,7 @@ $menu=	array(COLLECTION=>
                                             <?php
                                         }
                                     }*/
-                                    if ($infos_sous_item['private']=='always' && !isset($_SESSION['user'])) {
+                                    if ($item->est_prive=='always' && !isset($_SESSION['user'])) {
                                         echo IDENTIFICATION_OBLIGATOIRE.'<br />';
                                         echo COMMENT_S_IDENTIFIER;
                                         $action='aucune';
@@ -372,11 +289,6 @@ $menu=	array(COLLECTION=>
                         }
                         switch($action) {
                             case 'import':
-                            /*if (isset($_SESSION['user'])) {
-			echo IMPORT_IMPOSSIBLE_SI_CONNECTE1.'<br />';
-			echo IMPORT_IMPOSSIBLE_SI_CONNECTE2;
-			break;
-		}*/
                                 if (!isset($_POST['user'])) {
                                     afficher_form_inducks();
                                 }
