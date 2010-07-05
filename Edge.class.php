@@ -164,7 +164,26 @@ class Edge {
     }
 
 }
-if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
+if (isset($_POST['get_visible'])) {
+    include_once('Database.class.php');
+    include_once ('locales/lang.php');
+    $d=new Database();
+    if (!$d) {
+        echo PROBLEME_BD;
+        exit(-1);
+    }
+    $nom_complet_magazine=$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+    ?>
+    <div class="titre_magazine"><?=utf8_encode($nom_complet_magazine)?></div><br />
+    <div class=""numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
+    <?php
+    if (!getEstVisible($_POST['pays'], $_POST['magazine'], $_POST['numero'])) {
+        ?>
+        <?=TRANCHE_NON_DISPONIBLE1?><br /><?=TRANCHE_NON_DISPONIBLE2?><a class="lien_participer" target="_blank" href="?action=bibliotheque&onglet=participer"><?=ICI?></a><?=TRANCHE_NON_DISPONIBLE3?>
+        <?php
+    }
+}
+elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
     if (isset($_GET['grossissement']))
         Edge::$grossissement=$_GET['grossissement'];
     if (!isset($_GET['debug']))
@@ -236,4 +255,9 @@ function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
         return array($e->getImgHTML($regen),$e->est_visible);
     else
         return $e->est_visible;
+}
+
+function imagecreatefrompng_getimagesize($chemin) {
+    $image=imagecreatefrompng($chemin);
+    return array($image,imagesx($image),imagesy($image));
 }

@@ -24,8 +24,8 @@ class SPGP extends Edge {
         $titre=new Texte(mb_strtoupper('Super Picsou Geant','UTF-8'),$this->largeur*1.5/5,$this->largeur/2,
                          6.2*Edge::$grossissement,-90,$noir,'ArialBlack.ttf');
         $this->textes[]=$titre;
-        
-        $icone=imagecreatefrompng('edges/fr/SPGP.signature_disney.png');
+
+        list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/SPGP.signature_disney.png');
         imagealphablending($icone, false);
         # set the transparent color
         $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -34,7 +34,6 @@ class SPGP extends Edge {
         imagesavealpha($icone,true);
         imagealphablending($icone, true);
 
-        list($width, $height) = getimagesize('edges/fr/SPGP.signature_disney.png');
         $nouvelle_largeur=$this->largeur/1.5;
         $nouvelle_hauteur=$nouvelle_largeur*($height/$width);
         imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->hauteur-3*$this->largeur, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);

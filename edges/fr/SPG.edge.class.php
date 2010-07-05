@@ -61,7 +61,7 @@ class SPG extends Edge {
             }
 			$blanc=imagecolorallocate($this->image,255,255,255);
 			$noir=imagecolorallocate($this->image,0,0,0);
-			$icone=imagecreatefrompng($image_texte);
+            list($icone,$width,$height)=imagecreatefrompng_getimagesize($image_texte);
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -69,12 +69,11 @@ class SPG extends Edge {
 		    # set the transparency settings for the picture after adding the transparency
 		    imagesavealpha($icone,true);
 		    imagealphablending($icone, true);
-			list($width, $height) = getimagesize($image_texte);
 			$nouvelle_largeur=$this->largeur/1.5;
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
             imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
-		    //imagefill($this->image, 11.75*Edge::$grossissement, 40.25*Edge::$grossissement, $fond);
-		    $icone=imagecreatefrompng('edges/fr/SPG.'.$this->numero.'.icone.png');
+
+            list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -83,10 +82,9 @@ class SPG extends Edge {
 		    imagesavealpha($icone,true);
 		    imagealphablending($icone, true);
 
-			list($width, $height) = getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
 			$nouvelle_hauteur=($this->largeur)*($height/$width);
 			imagecopyresampled ($this->image, $icone, 0, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-			//imagefill($this->image, $this->largeur-1, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2+1, $fond);
+
             $texte_numero_blanc=array(70,73,76,array('debut'=>79, 'fin'=>88));
             $intervalle_numeros_blancs=new IntervalleValidite($texte_numero_blanc);
             $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
@@ -108,7 +106,7 @@ class SPG extends Edge {
             }
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image, 0, 0, $fond);
-            $icone=imagecreatefrompng('edges/fr/SPG.'.$this->numero.'.icone.png');
+            list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -117,7 +115,6 @@ class SPG extends Edge {
 		    imagesavealpha($icone,true);
 		    imagealphablending($icone, true);
 		    
-			list($width, $height) = getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
 			$nouvelle_hauteur=($this->largeur-$epaisseur_bordure)*($height/$width);
 			if ($this->numero<100)
 				imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
@@ -127,19 +124,18 @@ class SPG extends Edge {
                 else
                     imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-3.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
             }
-            
-			$icone=imagecreatefrompng('edges/fr/Texte_SPG.png');
-			imagealphablending($icone, false);
+
+            list($texte,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Texte_SPG.png');
+			imagealphablending($texte, false);
 		    # set the transparent color
-		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
-		    imagefill($icone, 0, 0, $transparent);
+		    $transparent = imagecolorallocatealpha($texte, 0, 0, 0, 127);
+		    imagefill($texte, 0, 0, $transparent);
 		    # set the transparency settings for the picture after adding the transparency
-		    imagesavealpha($icone,true);
-		    imagealphablending($icone, true);
-			list($width, $height) = getimagesize('edges/fr/Texte_SPG.png');
+		    imagesavealpha($texte,true);
+		    imagealphablending($texte, true);
 			$nouvelle_largeur=$this->largeur/1.5;
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
-            imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+            imagecopyresampled ($this->image, $texte, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 			if ($this->numero == 111) {
                 $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*2.2,
                                         6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');

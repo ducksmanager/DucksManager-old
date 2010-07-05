@@ -13,6 +13,8 @@ var hauteur_etage;
 var grossissement;
 var nb_etageres;
 var nb_etageres_terminees;
+var bulle=null;
+var element_bulle=null;
 
 function ouvrir(element) {
     if (action_en_cours)
@@ -22,31 +24,10 @@ function ouvrir(element) {
         fermer(element);
         return;
     }
+    $('infobulle').remove();
+    bulle=null;
     action_en_cours=true;
-    var infos=new Array();
-    if (element.src.indexOf('/gen/')==-1) {
-        var infos_source=element.src.substring(element.src.indexOf('?'),element.src.length);
-        var reg=new RegExp("&", "g");
-        var tab_infos_source=infos_source.split(reg);
-        reg=new RegExp("=", "g");
-        for (i in tab_infos_source) {
-            if (isNaN(i))
-                break;
-            var info_courante=tab_infos_source[i].split(reg);
-            if (info_courante[0][0]=='?')
-                info_courante[0]=info_courante[0].substring(1,info_courante[0].length);
-            infos[info_courante[0]]=info_courante[1];
-        }
-        infos['magazine']=infos['magazine'].toLowerCase();
-    }
-    else {
-        var infos_source=element.src.substring(element.src.indexOf('/edges/')+'/edges/'.length,element.src.length);
-        infos['pays']=infos_source.substring(0,infos_source.indexOf('/'));
-        var magazine_et_numero=infos_source.substring(infos_source.lastIndexOf('/')+1,infos_source.length);
-        infos['magazine']=magazine_et_numero.substring(0,magazine_et_numero.indexOf('.'));
-        infos['numero']=magazine_et_numero.substring(magazine_et_numero.indexOf('.')+1,magazine_et_numero.lastIndexOf('.'));
-        
-    }
+    var infos=getInfosNumero(element);
     largeur_image=element.width;
     hauteur_image=element.height;
     couverture=new Image();
@@ -66,6 +47,7 @@ function ouvrir(element) {
                 .update(new Element('img',{'src':'loading.gif'}));
             $('bibliotheque').insert(current_animation);
         }});
+    couverture_ouverte=true;
     new Ajax.Request('Inducks.class.php', {
         method: 'post',
         parameters:'get_cover=true&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
@@ -89,7 +71,6 @@ function ouvrir(element) {
                     duration: 1
                 });
                 action_en_cours=false;
-                couverture_ouverte=true;
             });
         }
     });
@@ -179,7 +160,65 @@ function init_observers_tranches() {
             ouvrir(Event.element(event));
           }
     );
-    return;
+    $$('.tranche').invoke(
+        'observe',
+        'mouseover',
+        function(event) {
+            if (action_en_cours)
+                return;
+            ouvrirInfoBulle(Event.element(event));
+        }
+    );
+}
+
+function ouvrirInfoBulle(element) {
+    var infos=getInfosNumero(element);
+    var pos_left=element.offsetLeft+300 >= $('body').offsetWidth ? $('body').offsetWidth - 310 : element.offsetLeft;
+    if (bulle == null) {
+        bulle=new Element('div',{'id':'infobulle'})
+            .addClassName('bulle')
+            .setStyle({'top':element.offsetTop+'px', 'left':pos_left+'px'});
+        $('body').insert(bulle);
+    }
+    else {
+        $(bulle).setStyle({'top':element.offsetTop+'px', 'left':pos_left+'px'});
+    }
+    new Ajax.Request('Edge.class.php', {
+        method: 'post',
+        parameters:'get_visible=true&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
+        onSuccess:function(transport) {
+            $(bulle).update(transport.responseText);
+        }
+    });
+
+}
+
+function getInfosNumero (element) {
+    var infos=new Array();
+    var infos_source;
+    if (element.src.indexOf('/gen/')==-1) {
+        infos_source=element.src.substring(element.src.indexOf('?'),element.src.length);
+        var reg=new RegExp("&", "g");
+        var tab_infos_source=infos_source.split(reg);
+        reg=new RegExp("=", "g");
+        for (i in tab_infos_source) {
+            if (isNaN(i))
+                break;
+            var info_courante=tab_infos_source[i].split(reg);
+            if (info_courante[0][0]=='?')
+                info_courante[0]=info_courante[0].substring(1,info_courante[0].length);
+            infos[info_courante[0]]=info_courante[1];
+        }
+        infos['magazine']=infos['magazine'].toLowerCase();
+    }
+    else {
+        infos_source=element.src.substring(element.src.indexOf('/edges/')+'/edges/'.length,element.src.length);
+        infos['pays']=infos_source.substring(0,infos_source.indexOf('/'));
+        var magazine_et_numero=infos_source.substring(infos_source.lastIndexOf('/')+1,infos_source.length);
+        infos['magazine']=magazine_et_numero.substring(0,magazine_et_numero.indexOf('.'));
+        infos['numero']=magazine_et_numero.substring(magazine_et_numero.indexOf('.')+1,magazine_et_numero.lastIndexOf('.'));
+    }
+    return infos;
 }
 
 function getScreenCenterY() {
