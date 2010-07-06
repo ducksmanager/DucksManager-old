@@ -14,7 +14,7 @@ var grossissement;
 var nb_etageres;
 var nb_etageres_terminees;
 var bulle=null;
-var element_bulle=null;
+var numero_bulle=null;
 
 function ouvrir(element) {
     if (action_en_cours)
@@ -27,7 +27,7 @@ function ouvrir(element) {
     $('infobulle').remove();
     bulle=null;
     action_en_cours=true;
-    var infos=getInfosNumero(element);
+    var infos=getInfosNumero(element.src);
     largeur_image=element.width;
     hauteur_image=element.height;
     couverture=new Image();
@@ -172,7 +172,7 @@ function init_observers_tranches() {
 }
 
 function ouvrirInfoBulle(element) {
-    var infos=getInfosNumero(element);
+    numero_bulle=getInfosNumero(element.src);
     var pos_left=element.offsetLeft+300 >= $('body').offsetWidth ? $('body').offsetWidth - 310 : element.offsetLeft;
     if (bulle == null) {
         bulle=new Element('div',{'id':'infobulle'})
@@ -181,23 +181,28 @@ function ouvrirInfoBulle(element) {
         $('body').insert(bulle);
     }
     else {
-        $(bulle).setStyle({'top':element.offsetTop+'px', 'left':pos_left+'px'});
+        $(bulle).setStyle({'top':element.offsetTop+'px', 'left':pos_left+'px'})
+                .update();
     }
     new Ajax.Request('Edge.class.php', {
         method: 'post',
-        parameters:'get_visible=true&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
+        parameters:'get_visible=true&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
-            $(bulle).update(transport.responseText);
+            if (numerosIdentiques(numero_bulle, getInfosNumero(transport.request.body)))
+                $(bulle).update(transport.responseText);
         }
     });
 
 }
 
-function getInfosNumero (element) {
+function getInfosNumero (texte) {
     var infos=new Array();
     var infos_source;
-    if (element.src.indexOf('/gen/')==-1) {
-        infos_source=element.src.substring(element.src.indexOf('?'),element.src.length);
+    if (texte.indexOf('/gen/')==-1) {
+        if (texte.indexOf('?') == -1)
+            infos_source=texte.substring(texte.indexOf('&')+1,texte.length);
+        else
+            infos_source=texte.substring(texte.indexOf('?')+1,texte.length);
         var reg=new RegExp("&", "g");
         var tab_infos_source=infos_source.split(reg);
         reg=new RegExp("=", "g");
@@ -205,20 +210,25 @@ function getInfosNumero (element) {
             if (isNaN(i))
                 break;
             var info_courante=tab_infos_source[i].split(reg);
-            if (info_courante[0][0]=='?')
-                info_courante[0]=info_courante[0].substring(1,info_courante[0].length);
-            infos[info_courante[0]]=info_courante[1];
+            if (info_courante[0] != '_')
+                infos[info_courante[0]]=info_courante[1];
         }
-        infos['magazine']=infos['magazine'].toLowerCase();
     }
     else {
-        infos_source=element.src.substring(element.src.indexOf('/edges/')+'/edges/'.length,element.src.length);
+        infos_source=texte.substring(texte.indexOf('/edges/')+'/edges/'.length,texte.length);
         infos['pays']=infos_source.substring(0,infos_source.indexOf('/'));
         var magazine_et_numero=infos_source.substring(infos_source.lastIndexOf('/')+1,infos_source.length);
         infos['magazine']=magazine_et_numero.substring(0,magazine_et_numero.indexOf('.'));
         infos['numero']=magazine_et_numero.substring(magazine_et_numero.indexOf('.')+1,magazine_et_numero.lastIndexOf('.'));
     }
+    infos['magazine']=infos['magazine'].toLowerCase();
     return infos;
+}
+
+function numerosIdentiques(numero1, numero2) {
+    return numero1['pays'] == numero2['pays']
+        && numero1['magazine'] == numero2['magazine']
+        && numero1['numero'] == numero2['numero'];
 }
 
 function getScreenCenterY() {
