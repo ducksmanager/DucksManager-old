@@ -261,3 +261,14 @@ function imagecreatefrompng_getimagesize($chemin) {
     $image=imagecreatefrompng($chemin);
     return array($image,imagesx($image),imagesy($image));
 }
+
+function imagepalettetotruecolor(&$img) {
+    if (!imageistruecolor($img))
+    {
+        $w = imagesx($img);
+        $h = imagesy($img);
+        $img1 = imagecreatetruecolor($w,$h);
+        imagecopy($img1,$img,0,0,0,0,$w,$h);
+        $img = $img1;
+    }
+}

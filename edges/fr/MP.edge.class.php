@@ -226,15 +226,3 @@ class MP extends Edge {
     }
 
 }
-
-function imagepalettetotruecolor(&$img)
-    {
-        if (!imageistruecolor($img))
-        {
-            $w = imagesx($img);
-            $h = imagesy($img);
-            $img1 = imagecreatetruecolor($w,$h);
-            imagecopy($img1,$img,0,0,0,0,$w,$h);
-            $img = $img1;
-        }
-    }
