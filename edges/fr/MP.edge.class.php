@@ -10,7 +10,7 @@ class MP extends Edge {
                                     226,228,
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
-                                    265,266,267,268,270);
+                                    265,266,267,268,270,278,279);
     var $en_cours=array(21,29,32,33,34,36,42,43,44,53);
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -77,7 +77,8 @@ class MP extends Edge {
             list($sous_image,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.'.$this->numero.'.dessin.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $sous_image, .5*Edge::$grossissement, $hauteur_logo, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-            imagefilledrectangle($this->image, .5*Edge::$grossissement, $hauteur_logo+$nouvelle_hauteur, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $blanc);
+            $couleur_bas_image=imagecolorat($sous_image, $width/2, $height-1);
+            imagefilledrectangle($this->image, .5*Edge::$grossissement, $hauteur_logo+$nouvelle_hauteur, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $couleur_bas_image);
             imagearc($this->image, $this->largeur/2, $this->hauteur-$this->largeur*2/3, $this->largeur*2/3, $this->largeur*2/3, 0,180,$gris);
             imagearc($this->image, $this->largeur/2, $this->hauteur-$this->largeur*2/3, $this->largeur*2/3, $this->largeur*2/3, 180,360,$gris);
 
