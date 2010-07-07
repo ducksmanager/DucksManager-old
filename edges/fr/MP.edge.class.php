@@ -10,7 +10,7 @@ class MP extends Edge {
                                     226,228,
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
-                                    265,266,267,268,270,278,279);
+                                    265,266,267,268,270,275,278,279);
     var $en_cours=array(21,29,32,33,34,36,42,43,44,53);
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -209,15 +209,9 @@ class MP extends Edge {
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image,0,0,$fond);
 
-            for ($i=0;$i<strlen($this->numero);$i++) {
-                list($texte_numero,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.MPG.numero.'.$this->numero[$i].'.png');
-                $nouvelle_hauteur=($this->largeur)*($height/$width);
-                imagecopyresampled ($this->image, $texte_numero, $i*($this->largeur/strlen($this->numero)), $this->hauteur-$nouvelle_hauteur/2, 0, 0, $this->largeur/strlen($this->numero), $nouvelle_hauteur/strlen($this->numero), $width, $height);
-            }
-            imagetruecolortopalette($this->image, false, 255);
-            imagecolorset($this->image, imagecolorclosest($this->image,0,0,0), $rouge_texte,$vert_texte,$bleu_texte);
-
-            imagepalettetotruecolor($this->image);
+            $texte_numero=new Texte($this->numero,$this->largeur/40,$this->hauteur-5.5*Edge::$grossissement,
+                                    7*Edge::$grossissement,0,$couleur_texte,'Monem Bold.ttf');
+            $texte_numero->dessiner($this->image);
 
             list($titre,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Titre MPG.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
