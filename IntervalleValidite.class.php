@@ -19,5 +19,20 @@ class IntervalleValidite {
         }
         return false;
     }
+
+    function getListeNumeros() {
+        $liste=array();
+        foreach($this->intervalles as $item) {
+            if (!is_array($item))
+                $liste[]=$item;
+            else {
+                for($i=$item['debut'];$i<=$item['fin'];$i++) {
+                    if (!array_key_exists('sauf', $item) || !in_array($i,$item['sauf']))
+                        $liste[]=$i;
+                }
+            }
+        }
+        return $liste;
+    }
 }
 ?>

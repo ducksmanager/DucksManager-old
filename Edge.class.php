@@ -163,6 +163,10 @@ class Edge {
             return $pourcentage_visible;
     }
 
+    function getChemin() {
+        return 'edges/'.$this->pays.'/elements';
+    }
+
 }
 if (isset($_POST['get_visible'])) {
     include_once('Database.class.php');
@@ -246,6 +250,27 @@ elseif (isset($_POST['get_sous_texture'])) {
                 <?=$nom_sous_texture?>
             </option><?php
         }
+    }
+}
+elseif (isset($_GET['regen'])) {
+    $pays=$_GET['pays'];
+    $magazine=$_GET['magazine'];
+    if (isset($_GET['debut'])) {
+        $numeros=array('debut'=>$_GET['debut'], 'fin'=>$_GET['fin']);
+    }
+    include_once('edges/'.$pays.'/'.$magazine.'.edge.class.php');
+    $o=new $magazine(0);
+    $iv=new IntervalleValidite($o->intervalles_validite);
+    if (isset($_GET['debut'])) {
+        $liste_numeros=array();
+        for ($i=$_GET['debut'];$i<=$_GET['fin'];$i++)
+            if ($iv->estValide($i))
+                $liste_numeros[]=$i;
+    }
+    else
+        $liste_numeros=$iv->getListeNumeros();
+    foreach($liste_numeros as $numero) {
+        echo '<img src="Edge.class.php?grossissement=1.5&regen=true&pays='.$pays.'&magazine='.$magazine.'&numero='.$numero.'" />';
     }
 }
 

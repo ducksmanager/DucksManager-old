@@ -39,10 +39,10 @@ class SPG extends Edge {
 		elseif ($this->numero<=88) {
             switch($this->numero) {
                 case 59 : case 60:
-                    $image_texte='edges/fr/SPG.'.$this->numero.'.Texte.png';
+                    $image_texte=$this->getChemin().'/SPG.'.$this->numero.'.Texte.png';
                 break;
                 default:
-                    $image_texte='edges/fr/Texte_SPG 2.png';
+                    $image_texte=$this->getChemin().'/Texte_SPG 2.png';
             }
             if ($this->numero==72) {
                 $couleur1=$this->getColorsFromDB(array(0,0,0),'Couleur 1');
@@ -73,7 +73,7 @@ class SPG extends Edge {
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
             imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 
-            list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
+            list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -106,7 +106,7 @@ class SPG extends Edge {
             }
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image, 0, 0, $fond);
-            list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/SPG.'.$this->numero.'.icone.png');
+            list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -125,7 +125,7 @@ class SPG extends Edge {
                     imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-3.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
             }
 
-            list($texte,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Texte_SPG.png');
+            list($texte,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Texte_SPG.png');
 			imagealphablending($texte, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($texte, 0, 0, 0, 127);

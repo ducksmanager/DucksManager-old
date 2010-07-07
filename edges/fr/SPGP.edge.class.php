@@ -25,7 +25,7 @@ class SPGP extends Edge {
                          6.2*Edge::$grossissement,-90,$noir,'ArialBlack.ttf');
         $this->textes[]=$titre;
 
-        list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/SPGP.signature_disney.png');
+        list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPGP.signature_disney.png');
         imagealphablending($icone, false);
         # set the transparent color
         $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);

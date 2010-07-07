@@ -62,7 +62,7 @@ class JM extends Edge {
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB($blanc, 'Texte');
 
             imagefill($this->image, 0, 0, $fond);
-            list($texte,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/JM.'.$this->numero.'.Texte1.png');
+            list($texte,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/JM.'.$this->numero.'.Texte1.png');
 
             imagealphablending($texte, false);
 		    $transparent = imagecolorallocatealpha($texte, 0, 0, 0, 127);

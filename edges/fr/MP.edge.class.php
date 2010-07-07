@@ -68,13 +68,13 @@ class MP extends Edge {
             $blanc = imagecolorallocate($this->image, 255,255,255);
             $noir = imagecolorallocate($this->image, 0,0,0);
             $gris = imagecolorallocate($this->image, 192,192,192);
-            
-            list($logo,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/logo MP.png');
+
+            list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP.png');
             $hauteur_logo=($this->largeur-Edge::$grossissement)*($height/$width);
 
             imagecopyresampled ($this->image, $logo, .5*Edge::$grossissement, 0, 0, 0, $this->largeur, $hauteur_logo, $width, $height);
 
-            list($sous_image,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.'.$this->numero.'.dessin.png');
+            list($sous_image,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.dessin.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $sous_image, .5*Edge::$grossissement, $hauteur_logo, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
             $couleur_bas_image=imagecolorat($sous_image, $width/2, $height-1);
@@ -84,36 +84,36 @@ class MP extends Edge {
 
             $numero_dans_serie=$this->numero-86 - 12*floor(($this->numero-86)/12);
             if ($numero_dans_serie >= 10) {
-                list($numero1,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.numero.1.png');
+                list($numero1,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.numero.1.png');
                 $nouvelle_hauteur=($this->largeur/5)*($height/$width)*3/5;
 
-                list($numero2,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.numero.'.($numero_dans_serie-10).'.png');
+                list($numero2,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.numero.'.($numero_dans_serie-10).'.png');
                 $nouvelle_hauteur=($this->largeur/5)*($height/$width)*3/5;
 
                 imagecopyresampled ($this->image, $numero, $this->largeur*5/14, $this->hauteur-$this->largeur*4/5, 0, 0, $this->largeur/5, $nouvelle_hauteur, $width, $height);
                 imagecopyresampled ($this->image, $numero2, $this->largeur*6/14, $this->hauteur-$this->largeur*4/5, 0, 0, $this->largeur/5, $nouvelle_hauteur, $width, $height);
             }
             else {
-                list($numero,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.numero.'.$numero_dans_serie.'.png');
+                list($numero,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.numero.'.$numero_dans_serie.'.png');
                 $nouvelle_hauteur=($this->largeur/5)*($height/$width);
 
                 imagecopyresampled ($this->image, $numero, $this->largeur*5.5/14, $this->hauteur-$this->largeur*4/5, 0, 0, $this->largeur/5, $nouvelle_hauteur, $width, $height);
             }
-            
+
         }
         elseif ($this->numero >=140 && $this->numero <= 191) {
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
             $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
-            imagefill($this->image,0,0,$fond);           
-            
-            list($tranche,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Titre MP2.png');
+            imagefill($this->image,0,0,$fond);
+
+            list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP2.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur/3, $this->largeur/8+$this->largeur*2/3-Edge::$grossissement/2, $this->hauteur/3+$nouvelle_hauteur*2/3-Edge::$grossissement/3,$couleur_texte);
             imagecopyresampled ($this->image, $tranche, $this->largeur/8, $this->hauteur/3, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
 
-            list($texte_numero,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.texte_numero.140-191.png');
+            list($texte_numero,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.texte_numero.140-191.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur-10*Edge::$grossissement, $this->largeur/8+$this->largeur*2/3-Edge::$grossissement/2, $this->hauteur-10*Edge::$grossissement+$nouvelle_hauteur*2/3-Edge::$grossissement/2,$couleur_texte);
 
@@ -121,7 +121,7 @@ class MP extends Edge {
 
             $hauteur_precedents=14*Edge::$grossissement;
             for ($i=0;$i<strlen($this->numero);$i++) {
-                list($numero,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.numero.140-191.'.$this->numero[$i].'.png');
+                list($numero,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.numero.140-191.'.$this->numero[$i].'.png');
                 $nouvelle_hauteur=($this->largeur)*($height/$width);
                 imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur-$hauteur_precedents, $this->largeur/8+$this->largeur*2/3-Edge::$grossissement/2, $this->hauteur-$hauteur_precedents+$nouvelle_hauteur*2/3-Edge::$grossissement/2,$couleur_texte);
 
@@ -133,12 +133,12 @@ class MP extends Edge {
             imagecolorset($this->image, imagecolorclosest($this->image,0,0,0), $rouge,$vert,$bleu);
 
             imagepalettetotruecolor($this->image);
-            list($tete,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.tete.png');
+            list($tete,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.tete.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $tete, 0, $this->largeur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
         }
         elseif ($this->numero >= 205 && $this->numero<=216) {
-            list($tranche,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.'.$this->numero.'.tranche.png');
+            list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.tranche.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $tranche, 0, 0, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
         }
@@ -148,10 +148,10 @@ class MP extends Edge {
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image,0,0,$fond);
             if ($this->numero == 227 ||$this->numero == 230) {
-                list($logo,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Titre MP 217-234_rouge.png');
+                list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP 217-234_rouge.png');
             }
             else {
-                list($logo,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Titre MP 217-234.png');
+                list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP 217-234.png');
             }
             $hauteur_logo=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $logo, 0, 0, 0, 0, $this->largeur, $hauteur_logo, $width, $height);
@@ -177,7 +177,7 @@ class MP extends Edge {
                     $pos_texte_central=$this->hauteur*2/3;
                 break;
                 default:
-                    list($tranche,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.'.$this->numero.'.tranche.png');
+                    list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.tranche.png');
                     $nouvelle_hauteur=($this->largeur)*($height/$width);
                     imagecopyresampled ($this->image, $tranche, 0, $hauteur_logo, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
                 break;
@@ -194,11 +194,11 @@ class MP extends Edge {
             $fond=imagecolorallocate($this->image,255,208,18);
             imagefill($this->image,0,0,$fond);
 
-            list($tranche,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.'.$this->numero.'.tranche.png');
+            list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.tranche.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $tranche, 0, $this->largeur, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
 
-            list($titre,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Titre MP 236-253.png');
+            list($titre,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP 236-253.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $titre, 0, $this->hauteur-$this->largeur-$nouvelle_hauteur, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
         }
@@ -213,11 +213,11 @@ class MP extends Edge {
                                     7*Edge::$grossissement,0,$couleur_texte,'Monem Bold.ttf');
             $texte_numero->dessiner($this->image);
 
-            list($titre,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/Titre MPG.png');
+            list($titre,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MPG.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $titre, $this->largeur/8, $this->largeur/2, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
 
-            list($icone,$width,$height)=imagecreatefrompng_getimagesize('edges/fr/MP.'.$this->numero.'.icone.png');
+            list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.icone.png');
 			$nouvelle_hauteur=($this->largeur)*($height/$width);
 			imagecopyresampled ($this->image, $icone, 0, $this->hauteur-1.4*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
 
