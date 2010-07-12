@@ -4,7 +4,7 @@ class SPG extends Edge {
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
                                     array('debut'=>59, 'fin'=>80, 'sauf'=>array(62,63,66,67,68,75,77)),
-                                    array('debut'=>81, 'fin'=>155, 'sauf'=>array(154)));
+                                    array('debut'=>81, 'fin'=>158));
     var $en_cours=array();
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -104,6 +104,13 @@ class SPG extends Edge {
             else {
                 list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             }
+            list($rouge_texte,$vert_texte,$bleu_texte)=$couleur_texte=$this->getColorsFromDB(array(255,255,255), 'Texte');
+            $couleur_texte=imagecolorallocate($this->image, $rouge_texte,$vert_texte,$bleu_texte);
+            if ($couleur_texte == $blanc)
+                $image_texte_spg='Texte_SPG.png';
+            else
+                $image_texte_spg='Texte_SPG_'.$this->numero.'.png';
+
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image, 0, 0, $fond);
             list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPG.'.$this->numero.'.icone.png');
@@ -121,11 +128,14 @@ class SPG extends Edge {
 			else {
                 if ($this->numero==111)
                     imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-1.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                elseif ($this->numero >= 149) {
+                    imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-3*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                }
                 else
                     imagecopyresampled ($this->image, $icone, $epaisseur_bordure, $this->hauteur-3.5*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
             }
 
-            list($texte,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Texte_SPG.png');
+            list($texte,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/'.$image_texte_spg);
 			imagealphablending($texte, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($texte, 0, 0, 0, 127);
@@ -138,11 +148,11 @@ class SPG extends Edge {
             imagecopyresampled ($this->image, $texte, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 			if ($this->numero == 111) {
                 $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*2.2,
-                                        6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+                                        6*Edge::$grossissement,90,$couleur_texte,'ArialBlack.ttf');
             }
             else {
                 $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
-                                        6*Edge::$grossissement,90,$blanc,'ArialBlack.ttf');
+                                        6*Edge::$grossissement,90,$couleur_texte,'ArialBlack.ttf');
             }
 			if ($this->numero < 100) {
 				$texte_numero->pos_x=$this->largeur*.3/10;
