@@ -70,6 +70,9 @@ class Util {
         else
           $navigateur = "Autre";
         return $navigateur;
+    }
 
+    static function isLocalHost() {
+        return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
     }
 }

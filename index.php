@@ -196,6 +196,7 @@ require_once('Util.class.php');
                 <td>
                 </td>
                 <td valign="middle" align="right" style="background-color:rgb(200, 137, 100);height: 79px; width: 98px;">
+                    <?php if (!(Util::isLocalHost())) { ?>
                     <script type="text/javascript" src="jw/swfobject.js"></script>
                     <object id="player" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" name="player" width="79" height="98">
                         <param name="movie" value="jw/player.swf" />
@@ -211,6 +212,7 @@ require_once('Util.class.php');
                             <p><a href="http://get.adobe.com/flashplayer"><?=TELECHARGER_FLASH?></a> <?=POUR_VOIR_LA_VIDEO?>.</p>
                         </object>
                     </object>
+                    <?php } ?>
                 </td>
             </tr>
             <tr style="height:3px;background-color:black;"><td colspan="5"></td></tr>
