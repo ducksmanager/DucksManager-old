@@ -2,7 +2,8 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>324));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>324),
+                                    array('debut'=>458, 'fin'=>461));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -15,6 +16,13 @@ class PM extends Edge {
         elseif ($this->numero <=324) {
             $this->largeur=7*Edge::$grossissement;
             $this->hauteur=285*Edge::$grossissement;
+        }
+        elseif ($this->numero <=372) {
+
+        }
+        else {
+            $this->largeur=6*Edge::$grossissement;
+            $this->hauteur=283*Edge::$grossissement;
         }
         /*
         else {
@@ -176,6 +184,60 @@ class PM extends Edge {
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $blanc);
             $this->agrafer();
+        }
+        elseif ($this->numero <=372) {
+
+        }
+        else {
+            include_once($this->getChemin().'/../classes/PM.titres.php');
+            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
+            $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
+            $blanc=imagecolorallocate($image2, 255, 255, 255);
+            list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
+            $couleur1=imagecolorallocate($this->image, $rouge, $vert, $bleu);
+            imagefill($image2,0,0,$couleur1);
+            list($rouge2,$vert2,$bleu2)=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
+            $couleur2=imagecolorallocate($this->image, $rouge2, $vert2, $bleu2);
+            imagefilledrectangle($image2, 0, 0, 9*$this->largeur, $this->largeur, $couleur2);
+            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
+            $couleur_texte=imagecolorallocate($this->image, $rouge_texte, $vert_texte, $bleu_texte);
+            list($rouge_texte_num,$vert_texte_num,$bleu_texte_num)=$this->getColorsFromDB(array(255,255,255),'Texte numéro');
+            $couleur_texte_num=imagecolorallocate($this->image, $rouge_texte_num,$vert_texte_num,$bleu_texte_num);
+            
+            $post=new MyFonts('ortizlopez/ol-london/ollondon-black',  
+                              rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
+                              rgb2hex($rouge, $vert, $bleu),
+                              600,
+                              constant('PM_'.$this->numero));
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*0.9*($width/$height);
+            imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.7, $width, $height);
+
+            $texte_numero='';
+            for($i=0;$i<strlen($this->numero);$i++)
+                $texte_numero.=$this->numero[$i].' ';
+            $post=new MyFonts('storm/zeppelin/53-bold-italic',
+                              rgb2hex($rouge_texte_num,$vert_texte_num,$bleu_texte_num),
+                              rgb2hex($rouge2,$vert2,$bleu2),
+                              85,
+                              $texte_numero);
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*($width/$height);
+            imagecopyresampled ($image2, $texte, 25*Edge::$grossissement, $this->largeur*0.05, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.9, $width, $height);
+
+            $this->image=imagerotate($image2, 90, $blanc);
+
+            list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo PM.png');
+            $nouvelle_hauteur=$this->largeur*($height/$width);
+            imagefilledrectangle($this->image, 0, 0, $this->largeur, $nouvelle_hauteur, $couleur2);
+            imagecopyresampled ($this->image, $logo, 0, 0, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+
+            list($tete,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Tete PM.png');
+            $nouvelle_hauteur=$this->largeur*($height/$width);
+            imagecopyresampled ($this->image, $tete, 0, $this->hauteur-$nouvelle_hauteur-$this->largeur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
         }
         return $this->image;
     }

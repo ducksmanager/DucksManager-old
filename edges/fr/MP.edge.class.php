@@ -101,37 +101,45 @@ class MP extends Edge {
 
         }
         elseif ($this->numero >=140 && $this->numero <= 191) {
+            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
+            $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
             $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
-            $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
-            imagefill($this->image,0,0,$fond);
+            $fond=imagecolorallocate($image2,$rouge,$vert,$bleu);
+            $blanc=imagecolorallocate($image2,255,255,255);
+            imagefill($image2,0,0,$fond);
 
             list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP2.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur/3, $this->largeur/8+$this->largeur*2/3-Edge::$grossissement/2, $this->hauteur/3+$nouvelle_hauteur*2/3-Edge::$grossissement/3,$couleur_texte);
             imagecopyresampled ($this->image, $tranche, $this->largeur/8, $this->hauteur/3, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
 
+            $post=new MyFonts('itc/franklin-gothic/franklin-got-cmp-demi-italic',
+                              rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
+                              rgb2hex($rouge, $vert, $bleu),
+                              260,
+                              'N%C2%B0 '.$this->numero.'                     MICKEY PARADE');
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*0.9*($width/$height);
+            imagecopyresampled ($image2, $texte, 2*Edge::$grossissement, $this->largeur*0.2, 0, 0, $nouvelle_largeur*1.3, $this->largeur*0.7, $width, $height/2);
+
+            $this->image=imagerotate($image2, 90, $blanc);
+
+            /*
             list($texte_numero,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.texte_numero.140-191.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur-10*Edge::$grossissement, $this->largeur/8+$this->largeur*2/3-Edge::$grossissement/2, $this->hauteur-10*Edge::$grossissement+$nouvelle_hauteur*2/3-Edge::$grossissement/2,$couleur_texte);
+            imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur-10*Edge::$grossissement, $this->largeur/8+$this->largeur-Edge::$grossissement/2, $this->hauteur-10*Edge::$grossissement+$nouvelle_hauteur-Edge::$grossissement/2,$couleur_texte);
 
-            imagecopyresampled ($this->image, $texte_numero, $this->largeur/8, $this->hauteur-10*Edge::$grossissement, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
-
-            $hauteur_precedents=14*Edge::$grossissement;
-            for ($i=0;$i<strlen($this->numero);$i++) {
-                list($numero,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.numero.140-191.'.$this->numero[$i].'.png');
-                $nouvelle_hauteur=($this->largeur)*($height/$width);
-                imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur-$hauteur_precedents, $this->largeur/8+$this->largeur*2/3-Edge::$grossissement/2, $this->hauteur-$hauteur_precedents+$nouvelle_hauteur*2/3-Edge::$grossissement/2,$couleur_texte);
-
-                imagecopyresampled ($this->image, $numero, $this->largeur/8, $this->hauteur-$hauteur_precedents, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
-                $hauteur_precedents+=$this->largeur*2/5;
-            }
+            imagecopyresampled ($this->image, $texte_numero, $this->largeur/8, $this->hauteur-10*Edge::$grossissement, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
 
             imagetruecolortopalette($this->image, false, 255);
             imagecolorset($this->image, imagecolorclosest($this->image,0,0,0), $rouge,$vert,$bleu);
 
             imagepalettetotruecolor($this->image);
+            */
             list($tete,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.tete.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $tete, 0, $this->largeur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
