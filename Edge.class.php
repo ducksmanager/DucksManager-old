@@ -287,6 +287,11 @@ function imagecreatefrompng_getimagesize($chemin) {
     return array($image,imagesx($image),imagesy($image));
 }
 
+function imagecreatefromgif_getimagesize($chemin) {
+    $image=imagecreatefromgif($chemin);
+    return array($image,imagesx($image),imagesy($image));
+}
+
 function imagepalettetotruecolor(&$img) {
     if (!imageistruecolor($img))
     {
@@ -297,3 +302,21 @@ function imagepalettetotruecolor(&$img) {
         $img = $img1;
     }
 }
+
+function rgb2hex($r,$g,$b) {
+    $hex = "";
+    $rgb=array($r,$g,$b);
+    for ($i = 0; $i < 3; $i++) {
+        if (($rgb[$i] > 255) || ($rgb[$i] < 0)) {
+            echo "Error : input must be between 0 and 255";
+            return 0;
+        }
+        $tmp = dechex($rgb[$i]);
+        if (strlen($tmp) < 2)
+            $hex .= "0" . $tmp;
+        else
+            $hex .= $tmp;
+    }
+    return $hex;
+}
+?>
