@@ -12,7 +12,7 @@ class MyFonts extends Post {
             'size'=>'18',
             'w'=>$width,
             'src'=>'custom',
-            'text'=>$text,
+            'text'=>urlencode(utf8_encode($text)),
             'fg'=>$color,
             'bg'=>$color_bg,
             'goodies'=>'ot.liga',

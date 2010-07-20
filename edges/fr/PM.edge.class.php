@@ -3,7 +3,7 @@ class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
     var $intervalles_validite=array(array('debut'=>1, 'fin'=>372),
-                                    array('debut'=>420, 'fin'=>434, 'sauf'=>array(426,429)),
+                                    array('debut'=>420, 'fin'=>434, 'sauf'=>array(429)),
                                     array('debut'=>458, 'fin'=>462));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
@@ -190,18 +190,18 @@ class PM extends Edge {
             list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
             switch ($this->numero) {
                 case 426 :
-                    $couleur1=$this->getColorsFromDB(array(0,0,0),'Dégradé 1');
-                    $couleur2=$this->getColorsFromDB(array(255,255,255),'Dégradé 2');
+                    $couleur1=$this->getColorsFromDB(array(0,0,0),'Dégradé 2');
+                    $couleur2=$this->getColorsFromDB(array(255,255,255),'Dégradé 1');
 
                     list($width,$height)=getimagesize($this->getChemin().'/logo PM.png');
                     $largeur_logo=$this->largeur*($height/$width);
-                    $largeur_degrade=$this->hauteur-$largeur_logo-9*$this->largeur;
+                    $largeur_degrade=$this->hauteur-$largeur_logo;
 
                     include_once('classes/util.php');
                     $couleurs_inter=getMidColors($couleur1, $couleur2, $largeur_degrade);
                     foreach($couleurs_inter as $i=>$couleur) {
-                        list($rouge,$vert,$bleu)=$couleur;
-                        $couleur_allouee=imagecolorallocate($image2, $rouge, $vert, $bleu);
+                        list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+                        $couleur_allouee=imagecolorallocate($image2, $rouge_inter,$vert_inter,$bleu_inter);
                         imageline($image2, $i+$largeur_logo, 0, $i+$largeur_logo, $this->largeur, $couleur_allouee);
                     }
                 break;

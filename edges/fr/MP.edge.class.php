@@ -120,7 +120,7 @@ class MP extends Edge {
                               rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                               rgb2hex($rouge, $vert, $bleu),
                               260,
-                              'N%C2%B0 '.$this->numero.'                     MICKEY PARADE');
+                              'N° '.$this->numero.'                     MICKEY PARADE');
             $chemin_image=$post->chemin_image;
             list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
             $nouvelle_largeur=$this->largeur*0.9*($width/$height);
