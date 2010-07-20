@@ -22,19 +22,14 @@ class JMA extends Edge {
 							 8*Edge::$grossissement,0,$couleur_texte,'Boton Bold.ttf');
         $titre->dessiner($image_texte);
         $image_texte=imagerotate($image_texte, 90, $couleur_texte);
-        list($width,$height)=array(imagesx($image_texte),imagesy($image_texte));
-		$nouvelle_hauteur=($this->largeur)*($height/$width)*3/4;
-        imagecopyresampled ($this->image, $image_texte, 0, $this->hauteur/4, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-
+        $this->placer_image($image_texte, 'haut', array(0,$this->hauteur/4), 1, 0.75);
 
         $image_numero=imagecreatetruecolor(2.5*$this->largeur,$this->largeur);
         $numero=new Texte('N°'.$this->numero,0,8*Edge::$grossissement,
 							 8*Edge::$grossissement,0,$couleur_texte,'Boton Bold.ttf');
         $numero->dessiner($image_numero);
         $image_numero=imagerotate($image_numero, 90, $couleur_texte);
-        list($width,$height)=array(imagesx($image_numero),imagesy($image_numero));
-		$nouvelle_hauteur=($this->largeur)*($height/$width)*3/4;
-        imagecopyresampled ($this->image, $image_numero, 0, $this->largeur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+        $this->placer_image($image_numero, 'haut', array(0,$this->largeur/2), 1, 0.75);
 
         return $this->image;
     }

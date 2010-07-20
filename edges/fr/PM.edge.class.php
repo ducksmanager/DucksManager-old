@@ -2,8 +2,9 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>324),
-                                    array('debut'=>458, 'fin'=>461));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>372),
+                                    array('debut'=>420, 'fin'=>434, 'sauf'=>array(426,429)),
+                                    array('debut'=>458, 'fin'=>462));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -18,7 +19,8 @@ class PM extends Edge {
             $this->hauteur=285*Edge::$grossissement;
         }
         elseif ($this->numero <=372) {
-
+            $this->largeur=8*Edge::$grossissement;
+            $this->hauteur=282*Edge::$grossissement;
         }
         else {
             $this->largeur=6*Edge::$grossissement;
@@ -66,15 +68,11 @@ class PM extends Edge {
                 break;
 
                 case 88:
-                    list($degrade,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/PM.88.degrade.png');
-                    $nouvelle_hauteur=$this->largeur*($height/$width);
-                    imagecopyresampled ($this->image, $degrade, 0, $separation_haut_bas, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                    $this->placer_image('PM.88.degrade.png', 'haut', array(0,$separation_haut_bas));
                 break;
 
                 case 104:
-                    list($dessin,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/PM.104.dessin.png');
-                    $nouvelle_hauteur=$this->largeur*($height/$width);
-                    imagecopyresampled ($this->image, $dessin, 0, $separation_haut_bas+18*Edge::$grossissement, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                    $this->placer_image('PM.104.dessin.png', 'haut', array(0,$separation_haut_bas+18*Edge::$grossissement));
                 break;
 
                 case 125:
@@ -118,9 +116,8 @@ class PM extends Edge {
                     imagefilledrectangle($this->image, 0, $this->hauteur/3, $this->largeur, $this->hauteur/3 + 20*Edge::$grossissement, $blanc);
                     imagefilledrectangle($this->image,0,$this->hauteur/3, $this->largeur, $this->hauteur/3 + 0.5*Edge::$grossissement, $noir);
                     imagefilledrectangle($this->image,0,$this->hauteur/3 + 20*Edge::$grossissement, $this->largeur, $this->hauteur/3 + 20.5*Edge::$grossissement, $noir);
-                    list($dessin,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/PM.155.dessin.png');
-                    $nouvelle_hauteur=$this->largeur*($height/$width);
-                    imagecopyresampled ($this->image, $dessin, 0, $this->hauteur-$nouvelle_hauteur-20*Edge::$grossissement, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                     
+                    $this->placer_image('PM.155.dessin.png', 'bas', array(0,20*Edge::$grossissement));
                 break;
 
                 case 158:
@@ -133,14 +130,14 @@ class PM extends Edge {
                     imagefill($dessin, 0, 0, $transparent);
                     imagefill($dessin, $width-1, 0, $transparent);
                     $nouvelle_hauteur=$this->largeur*($height/$width);
-                    imagecopyresampled ($this->image, $dessin, 0, $this->hauteur-$nouvelle_hauteur, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+                    $this->placer_image($dessin, 'bas');
                     if ($this->numero == 180) {
                        list($dessin,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/PM.180.bulle.png');
                         $transparent = imagecolorallocatealpha($dessin, 0, 0, 0, 127);
                         imagefill($dessin, 0, 0, $transparent);
                         imagefill($dessin, $width-1, 0, $transparent);
                         $nouvelle_hauteur=$this->largeur*($height/$width);
-                        imagecopyresampled ($this->image, $dessin, 0, 45.5*Edge::$grossissement, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
+                        $this->placer_image($dessin, 'haut', array(0,45.5*Edge::$grossissement), 0.667, 0.667);
                     }
                 break;
 
@@ -154,7 +151,6 @@ class PM extends Edge {
                     $rose_fonce=imagecolorallocate($this->image, 179, 102, 107);
                     imagefilledrectangle($this->image, 0, $this->hauteur*2/3, $this->largeur, $this->hauteur, $rose_clair);
                     imagefilledrectangle($this->image, 0, $this->hauteur*2/3, $this->largeur, $this->hauteur*2/3+0.5*Edge::$grossissement, $rose_fonce);
-
                 break;
             }
             if ($this->numero == 119)
@@ -165,9 +161,9 @@ class PM extends Edge {
             $ecriture_vers_haut=$this->numero<33 || $this->numero == 165;
             if (!$ecriture_vers_haut)
                 $titre=imagerotate ($titre, 180, $transparent);
-            $nouvelle_hauteur=($this->largeur*3/4)*($height/$width);
-            imagecopyresampled ($this->image, $titre, $this->largeur/5, ($ecriture_vers_haut ? 10 : 5)*Edge::$grossissement, 0, 0, $this->largeur*3/4, $nouvelle_hauteur, $width, $height);
-            $texte_numero=new Texte($this->numero,$ecriture_vers_haut ? $this->largeur*8/10 : $this->largeur/3, $ecriture_vers_haut ? 10*Edge::$grossissement : $nouvelle_hauteur + 5*Edge::$grossissement,
+            $hauteur_sous_image=0.75*$this->largeur*($height/$width);
+            $this->placer_image($titre, 'haut', array($this->largeur/5, ($ecriture_vers_haut ? 10 : 5)*Edge::$grossissement), 0.75, 0.75);
+            $texte_numero=new Texte($this->numero,$ecriture_vers_haut ? $this->largeur*8/10 : $this->largeur/3, $ecriture_vers_haut ? 10*Edge::$grossissement : $hauteur_sous_image + 5*Edge::$grossissement,
 									3.5*Edge::$grossissement,$ecriture_vers_haut ? 90 : -90,$this->numero == 119 ? $blanc : $noir,'ArialBlack.ttf');
 			$texte_numero->dessiner($this->image);
 
@@ -179,14 +175,11 @@ class PM extends Edge {
                 }
             }
         }
-        elseif ($this->numero <=324) {
+        elseif ($this->numero <=372) {
             $blanc = imagecolorallocate($this->image, 255, 255, 255);
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $blanc);
             $this->agrafer();
-        }
-        elseif ($this->numero <=372) {
-
         }
         else {
             include_once($this->getChemin().'/../classes/PM.titres.php');
@@ -195,8 +188,28 @@ class PM extends Edge {
             $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
             $blanc=imagecolorallocate($image2, 255, 255, 255);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
-            $couleur1=imagecolorallocate($this->image, $rouge, $vert, $bleu);
-            imagefill($image2,0,0,$couleur1);
+            switch ($this->numero) {
+                case 426 :
+                    $couleur1=$this->getColorsFromDB(array(0,0,0),'Dégradé 1');
+                    $couleur2=$this->getColorsFromDB(array(255,255,255),'Dégradé 2');
+
+                    list($width,$height)=getimagesize($this->getChemin().'/logo PM.png');
+                    $largeur_logo=$this->largeur*($height/$width);
+                    $largeur_degrade=$this->hauteur-$largeur_logo-9*$this->largeur;
+
+                    include_once('classes/util.php');
+                    $couleurs_inter=getMidColors($couleur1, $couleur2, $largeur_degrade);
+                    foreach($couleurs_inter as $i=>$couleur) {
+                        list($rouge,$vert,$bleu)=$couleur;
+                        $couleur_allouee=imagecolorallocate($image2, $rouge, $vert, $bleu);
+                        imageline($image2, $i+$largeur_logo, 0, $i+$largeur_logo, $this->largeur, $couleur_allouee);
+                    }
+                break;
+                default :
+                    $couleur1=imagecolorallocate($this->image, $rouge, $vert, $bleu);
+                    imagefill($image2,0,0,$couleur1);
+                break;
+            }
             list($rouge2,$vert2,$bleu2)=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
             $couleur2=imagecolorallocate($this->image, $rouge2, $vert2, $bleu2);
             imagefilledrectangle($image2, 0, 0, 9*$this->largeur, $this->largeur, $couleur2);
@@ -204,16 +217,6 @@ class PM extends Edge {
             $couleur_texte=imagecolorallocate($this->image, $rouge_texte, $vert_texte, $bleu_texte);
             list($rouge_texte_num,$vert_texte_num,$bleu_texte_num)=$this->getColorsFromDB(array(255,255,255),'Texte numéro');
             $couleur_texte_num=imagecolorallocate($this->image, $rouge_texte_num,$vert_texte_num,$bleu_texte_num);
-            
-            $post=new MyFonts('ortizlopez/ol-london/ollondon-black',  
-                              rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
-                              rgb2hex($rouge, $vert, $bleu),
-                              600,
-                              constant('PM_'.$this->numero));
-            $chemin_image=$post->chemin_image;
-            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
-            $nouvelle_largeur=$this->largeur*0.9*($width/$height);
-            imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.7, $width, $height);
 
             $texte_numero='';
             for($i=0;$i<strlen($this->numero);$i++)
@@ -228,16 +231,31 @@ class PM extends Edge {
             $nouvelle_largeur=$this->largeur*($width/$height);
             imagecopyresampled ($image2, $texte, 25*Edge::$grossissement, $this->largeur*0.05, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.9, $width, $height);
 
+            if (defined('PM_'.$this->numero)) {
+                $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
+                                  rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
+                                  rgb2hex($rouge, $vert, $bleu),
+                                  600,
+                                  constant('PM_'.$this->numero));
+                $chemin_image=$post->chemin_image;
+                list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+                $nouvelle_largeur=$this->largeur*0.9*($width/$height);
+                imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.7, $width, $height);
+            }
+
             $this->image=imagerotate($image2, 90, $blanc);
 
             list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo PM.png');
-            $nouvelle_hauteur=$this->largeur*($height/$width);
-            imagefilledrectangle($this->image, 0, 0, $this->largeur, $nouvelle_hauteur, $couleur2);
-            imagecopyresampled ($this->image, $logo, 0, 0, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            $hauteur_logo=$this->largeur*($height/$width);
+            imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur2);
+            $this->placer_image('logo PM.png');
 
-            list($tete,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Tete PM.png');
-            $nouvelle_hauteur=$this->largeur*($height/$width);
-            imagecopyresampled ($this->image, $tete, 0, $this->hauteur-$nouvelle_hauteur-$this->largeur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            
+            if (!defined('PM_'.$this->numero)) {
+                $this->placer_image('PM.'.$this->numero.'.dessin.png','haut',array(0,$hauteur_logo));
+            }
+            $this->placer_image('Tete PM.png', 'bas', array(0,$this->largeur/2));
+            
         }
         return $this->image;
     }

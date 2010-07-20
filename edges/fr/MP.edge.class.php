@@ -140,29 +140,26 @@ class MP extends Edge {
 
             imagepalettetotruecolor($this->image);
             */
-            list($tete,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.tete.png');
-            $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagecopyresampled ($this->image, $tete, 0, $this->largeur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            $this->placer_image('MP.tete.png', 'haut', array(0,$this->largeur/2));
         }
         elseif ($this->numero >= 205 && $this->numero<=216) {
-            list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.tranche.png');
-            $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagecopyresampled ($this->image, $tranche, 0, 0, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            $this->placer_image('MP.'.$this->numero.'.tranche.png');
         }
         elseif ($this->numero >= 217 && $this->numero<=235) {
             $blanc=imagecolorallocate($this->image, 255, 255, 255);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image,0,0,$fond);
-            if ($this->numero == 227 ||$this->numero == 230) {
-                list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP 217-234_rouge.png');
-            }
-            else {
-                list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP 217-234.png');
-            }
-            $hauteur_logo=($this->largeur)*($height/$width);
-            imagecopyresampled ($this->image, $logo, 0, 0, 0, 0, $this->largeur, $hauteur_logo, $width, $height);
 
+            $chemin_image='Titre MP 217-234'
+                         .(($this->numero == 227 ||$this->numero == 230 )?'_rouge':'')
+                         .'.png';
+            $logo=$this->placer_image($chemin_image);
+
+            $width=imagesx($logo);
+            $height=imagesy($logo);
+            $hauteur_logo=$this->largeur*($height/$width);
+            
             if ($this->numero <= 228)
                 $texte=$this->numero;
             else
@@ -201,13 +198,9 @@ class MP extends Edge {
             $fond=imagecolorallocate($this->image,255,208,18);
             imagefill($this->image,0,0,$fond);
 
-            list($tranche,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.tranche.png');
-            $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagecopyresampled ($this->image, $tranche, 0, $this->largeur, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-
-            list($titre,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MP 236-253.png');
-            $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagecopyresampled ($this->image, $titre, 0, $this->hauteur-$this->largeur-$nouvelle_hauteur, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            $this->placer_image('MP.'.$this->numero.'.tranche.png','haut',array(0,$this->largeur));
+            
+            $this->placer_image('Titre MP 236-253.png','bas',array(0,$this->largeur));
         }
         elseif ($this->numero >=265) {
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte numéro');
@@ -220,13 +213,11 @@ class MP extends Edge {
                                     7*Edge::$grossissement,0,$couleur_texte,'Monem Bold.ttf');
             $texte_numero->dessiner($this->image);
 
-            list($titre,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/Titre MPG.png');
-            $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagecopyresampled ($this->image, $titre, $this->largeur/8, $this->largeur/2, 0, 0, $this->largeur*2/3, $nouvelle_hauteur*2/3, $width, $height);
+            $this->placer_image('Titre MPG.png', 'haut', array($this->largeur/8, $this->largeur/2), 0.667, 0.667);
 
-            list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.icone.png');
-			$nouvelle_hauteur=($this->largeur)*($height/$width);
-			imagecopyresampled ($this->image, $icone, 0, $this->hauteur-1.4*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
+            list($width,$height)= getimagesize($this->getChemin().'/MP.'.$this->numero.'.icone.png');
+            $hauteur_icone=$this->largeur*($height/$width);
+            $this->placer_image('MP.'.$this->numero.'.icone.png', 'bas', array(0, -$hauteur_icone/2+1.4*$this->largeur));
 
         }
         return $this->image;

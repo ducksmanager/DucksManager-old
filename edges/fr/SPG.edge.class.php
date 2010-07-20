@@ -45,6 +45,7 @@ class SPG extends Edge {
                     $image_texte=$this->getChemin().'/Texte_SPG 2.png';
             }
             if ($this->numero==72) {
+                include_once('classes/util.php');
                 $couleur1=$this->getColorsFromDB(array(0,0,0),'Couleur 1');
                 $couleur2=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
                 $couleurs_inter=getMidColors($couleur1, $couleur2, $this->hauteur);
@@ -73,7 +74,7 @@ class SPG extends Edge {
 			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
             imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 
-            list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPG.'.$this->numero.'.icone.png');
+            $icone=imagecreatefrompng($this->getChemin().'/SPG.'.$this->numero.'.icone.png');
             imagealphablending($icone, false);
 		    # set the transparent color
 		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
@@ -81,10 +82,11 @@ class SPG extends Edge {
 		    # set the transparency settings for the picture after adding the transparency
 		    imagesavealpha($icone,true);
 		    imagealphablending($icone, true);
-
-			$nouvelle_hauteur=($this->largeur)*($height/$width);
-			imagecopyresampled ($this->image, $icone, 0, $this->hauteur-2.1*$this->largeur-$nouvelle_hauteur/2, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-
+            $width=imagesx($icone);
+            $height=imagesy($icone);
+            $hauteur_icone=$this->largeur*($height/$width);
+            $this->placer_image($icone, 'bas', array(0,2.1*$this->largeur-$hauteur_icone/2));
+			
             $texte_numero_blanc=array(70,73,76,array('debut'=>79, 'fin'=>88));
             $intervalle_numeros_blancs=new IntervalleValidite($texte_numero_blanc);
             $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
@@ -163,19 +165,4 @@ class SPG extends Edge {
 		return $this->image;
 	}
 
-}
-
-function getMidColors($rgb1, $rgb2, $nb) {
-    $rgb_mid=array();
-    for ($j = 1; $j <= $nb; $j++) {
-        $rgb_mid[$j]=array();
-        for ($i = 0; $i < 3; $i++) {
-            if ($rgb1[$i] < $rgb2[$i]) {
-                $rgb_mid[$j][]= round(((max($rgb1[$i], $rgb2[$i]) - min($rgb1[$i], $rgb2[$i])) / ($nb + 1)) * $j + min($rgb1[$i], $rgb2[$i]));
-            } else {
-                $rgb_mid[$j][]= round(max($rgb1[$i], $rgb2[$i]) - ((max($rgb1[$i], $rgb2[$i]) - min($rgb1[$i], $rgb2[$i])) / ($nb + 1)) * $j);
-            }
-        }
-    }
-    return $rgb_mid;
 }

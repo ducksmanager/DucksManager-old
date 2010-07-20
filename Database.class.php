@@ -96,7 +96,7 @@ class Database {
 	}
 
     function user_is_beta() {
-        if (isset($_SESSION['user']) &&!($action=='logout')) {
+        if (isset($_SESSION['user'])) {
             $requete_beta_user='SELECT BetaUser FROM users WHERE username LIKE \''.$_SESSION['user'].'\'';
             $resultat_beta=$this->requete_select($requete_beta_user);
             return $resultat_beta[0]['BetaUser']==1;

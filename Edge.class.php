@@ -125,6 +125,24 @@ class Edge {
         }
     }
 
+    function placer_image($sous_image, $position='haut', $decalage=array(0,0), $compression_largeur=1, $compression_hauteur=1) {
+        if (is_string($sous_image)) {
+            $extension_image=strtolower(substr($sous_image, strrpos($sous_image, '.')+1,strlen($sous_image)-strrpos($sous_image, '.')-1));
+            $fonction_creation_image='imagecreatefrom'.$extension_image.'_getimagesize';
+            list($sous_image,$width,$height)=call_user_func($fonction_creation_image,$this->getChemin().'/'.$sous_image);
+        }
+        else {
+            $width=imagesx($sous_image);
+            $height=imagesy($sous_image);
+        }
+        $hauteur_sous_image=$this->largeur*($height/$width);
+        if ($position=='bas') {
+            $decalage[1]=$this->hauteur-$hauteur_sous_image-$decalage[1];
+        }
+        imagecopyresampled ($this->image, $sous_image, $decalage[0], $decalage[1], 0, 0, $this->largeur*$compression_largeur, $hauteur_sous_image*$compression_hauteur, $width, $height);
+        return $sous_image;
+    }
+
     function dessiner_contour() {
         $noir=imagecolorallocate($this->image, 0, 0, 0);
         for ($i=0;$i<.15*Edge::$grossissement;$i++)
@@ -269,9 +287,9 @@ elseif (isset($_GET['regen'])) {
     }
     else
         $liste_numeros=$iv->getListeNumeros();
-    foreach($liste_numeros as $numero) {
-        echo '<img src="Edge.class.php?grossissement=1.5&regen=true&pays='.$pays.'&magazine='.$magazine.'&numero='.$numero.'" />';
-    }
+    foreach($liste_numeros as $numero) {?>
+        <img src="Edge.class.php?grossissement=1.5&regen=true&pays=<?=$pays?>&magazine=<?=$magazine?>&numero=<?=$numero?>" />
+    <?php }
 }
 
 function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
