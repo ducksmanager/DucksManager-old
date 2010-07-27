@@ -4,13 +4,14 @@ class MP extends Edge {
     var $magazine='MP';
     var $intervalles_validite=array(array('debut'=>1,'fin'=>2),
                                     array('debut'=>9,'fin'=>10),13,15,48,49,55,57,60,61,63,
-                                    array('debut'=>66,'fin'=>69),73,74,75,76,77,79,80,81,88,89,91,92,95,113,124,
+                                    array('debut'=>66,'fin'=>69),73,74,75,76,77,79,80,81,88,89,91,92,93,94,95,97,100,102,103,113,124,
                                     142,147,149,152,154,160,162,164,171,176,181,182,191,
                                     array('debut'=>205, 'fin'=>216),
                                     226,228,
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
                                     265,266,267,268,270,275,276,278,279,280);
+    var $en_cours=array(105,108,109,110,111,115,116,117,120,121,122,123,127,128);
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
 
@@ -76,10 +77,10 @@ class MP extends Edge {
             list($sous_image,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.dessin.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $sous_image, .5*Edge::$grossissement, $hauteur_logo, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-            $couleur_bas_image=imagecolorat($sous_image, $width/2, $height-1);
-            imagefilledrectangle($this->image, .5*Edge::$grossissement, $hauteur_logo+$nouvelle_hauteur, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $couleur_bas_image);
-            imagearc($this->image, $this->largeur/2, $this->hauteur-$this->largeur*2/3, $this->largeur*2/3, $this->largeur*2/3, 0,180,$gris);
-            imagearc($this->image, $this->largeur/2, $this->hauteur-$this->largeur*2/3, $this->largeur*2/3, $this->largeur*2/3, 180,360,$gris);
+            /*$couleur_bas_image=imagecolorat($sous_image, $width/2, $height-1);
+            //imagefilledrectangle($this->image, .5*Edge::$grossissement, $hauteur_logo+$nouvelle_hauteur, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $couleur_bas_image);
+            //imagearc($this->image, $this->largeur/2, $this->hauteur-$this->largeur*2/3, $this->largeur*2/3, $this->largeur*2/3, 0,180,$gris);
+            //imagearc($this->image, $this->largeur/2, $this->hauteur-$this->largeur*2/3, $this->largeur*2/3, $this->largeur*2/3, 180,360,$gris);
 
             $numero_dans_serie=$this->numero-86 - 12*floor(($this->numero-86)/12);
             if ($numero_dans_serie >= 10) {
@@ -97,7 +98,7 @@ class MP extends Edge {
                 $nouvelle_hauteur=($this->largeur/5)*($height/$width);
 
                 imagecopyresampled ($this->image, $numero, $this->largeur*5.5/14, $this->hauteur-$this->largeur*4/5, 0, 0, $this->largeur/5, $nouvelle_hauteur, $width, $height);
-            }
+            }*/
 
         }
         elseif ($this->numero >=140 && $this->numero <= 191) {
