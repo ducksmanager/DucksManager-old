@@ -2,10 +2,10 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>372),
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>379),
                                     array('debut'=>420, 'fin'=>437, 'sauf'=>array(429,436)),
                                     array('debut'=>458, 'fin'=>462));
-    var $en_cours=array(array('debut'=>373,'fin'=>449,'sauf'=>array(381,382,383,386,438,441,442,443,445)));
+    var $en_cours=array(array('debut'=>380,'fin'=>449,'sauf'=>array(381,382,383,386,438,441,442,443,445)));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -240,7 +240,7 @@ class PM extends Edge {
                                   constant('PM_'.$this->numero));
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
-                $nouvelle_largeur=$this->largeur*0.9*($width/$height);
+                $nouvelle_largeur=$this->largeur*0.8*($width/$height);
                 imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.7, $width, $height);
             }
 
