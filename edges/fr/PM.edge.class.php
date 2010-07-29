@@ -3,8 +3,9 @@ class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
     var $intervalles_validite=array(array('debut'=>1, 'fin'=>372),
-                                    array('debut'=>420, 'fin'=>434, 'sauf'=>array(429)),
+                                    array('debut'=>420, 'fin'=>437, 'sauf'=>array(429,436)),
                                     array('debut'=>458, 'fin'=>462));
+    var $en_cours=array(array('debut'=>373,'fin'=>449,'sauf'=>array(381,382,383,386,438,441,442,443,445)));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
