@@ -5,11 +5,11 @@ class MyFonts extends Post {
     var $chemin_image;
     static $regex_source_image='#src="([^"]+)"#is';
 
-    function MyFonts($font,$color,$color_bg, $width, $text) {
+    function MyFonts($font,$color,$color_bg, $width, $text,$precision=18) {
         $data = array(
             'seed'=>'43',
             'dock'=>'false',
-            'size'=>'18',
+            'size'=>$precision,
             'w'=>$width,
             'src'=>'custom',
             'text'=>urlencode(utf8_encode($text)),

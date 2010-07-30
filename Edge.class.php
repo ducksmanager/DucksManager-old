@@ -100,7 +100,7 @@ class Edge {
         if (!is_null($parametre_autre))
             $requete_couleurs.=' AND Autre LIKE \''.$parametre_autre.'\'';
         else
-            $requete_couleurs.=' AND Autre IS NULL';
+            $requete_couleurs.=' AND (Autre IS NULL || Autre LIKE \'\')';
         $resultat=$d->requete_select($requete_couleurs);
         if (count($resultat)==0)
             return $default_color;
