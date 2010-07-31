@@ -76,7 +76,7 @@ class Liste {
 		$tab=array();
 		foreach($this->collection as $pays=>$numeros_pays) {
 			foreach($numeros_pays as $magazine=>$numeros) {
-				$tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,$d->get_nom_complet_magazine($pays, $magazine));
+				$tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,utf8_encode($d->get_nom_complet_magazine($pays, $magazine)));
 			}
 		}
 		return $tab;
