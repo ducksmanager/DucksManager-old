@@ -90,9 +90,9 @@ require_once('Util.class.php');
     <body id="body" style="margin:0" onload="
     <?php
     switch($action) {
-        case 'import':
+        case 'inducks':
             if (isset($_POST['user'])) {
-                echo 'appel('.appel().');';
+                echo 'appel('.Inducks::appel().');';
             }
             else echo 'defiler_log(\'DucksManager\');';
             break;
@@ -267,7 +267,7 @@ require_once('Util.class.php');
                         <?php
                         echo $texte_debut;
                         foreach($menus as $i=>$menu) {
-                            foreach($menu as $j=>$item) {
+                            foreach($menu->items as $j=>$item) {
                                 if ($item->nom==$action) {
                                     /*if (isset($infos_sous_item['coa_related'])) {
                                         require_once('Util.class.php');
@@ -287,12 +287,12 @@ require_once('Util.class.php');
                                         $action='aucune';
                                     }
                                 }
-                            }
                         }
-                        switch($action) {
-                            case 'import':
+     
+                            }                   switch($action) {
+                            case 'inducks':
                                 if (!isset($_POST['user'])) {
-                                    afficher_form_inducks();
+                                    Inducks::afficher_form_inducks();
                                 }
                                 else echo IMPORTATION_EN_COURS;
                                 break;
@@ -629,6 +629,16 @@ require_once('Util.class.php');
                                         }
                                         else {
                                             ?>
+
+                                            <OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
+                                                <PARAM NAME=movie VALUE="dm.swf">
+                                                <PARAM NAME=play VALUE=false>
+                                                <PARAM NAME=loop VALUE=false>
+                                                <PARAM NAME=wmode VALUE=transparent>
+                                                <PARAM NAME=quality VALUE=low>
+                                                <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">
+                                                </EMBED>
+                                            </OBJECT>
                                             <table width="100%">
                                             <tr><td>
                                             <?php
@@ -702,6 +712,24 @@ require_once('Util.class.php');
                                 <?php
                                 $liste_exemple=new Liste();
                                 $liste_exemple->ListeExemple();
+
+                                $rep = "Listes/";
+                                global $types_listes;
+                                $types_listes=array();
+                                $dir = opendir($rep);
+                                $prefixe='Liste.';
+                                $suffixe='.class.php';
+                                while ($f = @readdir($dir)) {
+                                    if (strpos($f,'Debug')!==false)
+                                        continue;
+                                    if(is_file($rep.$f)) {
+                                        if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
+                                            array_push($types_listes,substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe)));
+                                            require_once($rep.$f);
+                                        }
+                                    }
+                                }
+                                
                                 foreach($types_listes as $type) {
                                     if ($type=='Series') continue;
                                     $objet =new $type();
@@ -1004,51 +1032,6 @@ require_once('Util.class.php');
                                 break;
                         }
                         fin_de_page();
-
-                        function afficher_form_inducks() {
-                            echo ENTREZ_IDENTIFIANTS_INDUCKS;
-                            ?>
-                            <br /><br />
-                            <?php
-                            if (!isset($_SESSION['user'])) {
-                                ?><span style="color:red"><?=ATTENTION_MOT_DE_PASSE_INDUCKS?></span><br /><?php
-                            }
-                            ?>
-                            <form method="post" action="index.php?action=import">
-                                <table border="0">
-                                    <tr>
-                                        <td><?=UTILISATEUR_INDUCKS?> :</td>
-                                        <td><input type="text" name="user" />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <?=MOT_DE_PASSE_INDUCKS?> :
-                                        </td>
-                                        <td>
-                                            <input type="password" name="pass" />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="center" colspan="2">
-                                            <input type="submit" value="<?=CONNEXION?>"/>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </form>
-                            <?php
-                        }
-
-                        function appel() {
-                            $user_pcent=rawurlencode($_POST['user']);
-                            $user_urled=urlencode($_POST['user']);
-                            $pass_pcent=rawurlencode($_POST['pass']);
-                            $pass_urled=urlencode($_POST['pass']);
-                            $data = urlencode('login='.$user_pcent.'&pass='.$pass_pcent.'&redirect=collection.php');
-
-                            $fd = fsockopen( gethostbyname('coa.inducks.org'), 80 );
-                            return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\',\''.$user_pcent.'\',\''.$user_urled.'\',\''.$pass_pcent.'\',\''.$pass_urled.'\',\''.$data.'\',\'POST\',\'http://coa.inducks.org/collection.php\',\'coa-preferred-language=4\',\'coa.inducks.org\'';
-                        }
 
                         function fin_de_page() {
                             ?>

@@ -198,6 +198,9 @@ define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1','Currently, you 
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2','% of your collection in the DucksManager bookcase. You prabably have got rare or recent magazines.');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3','Why not participate ? This way, you will have a more complete view of your collection in your DucksManager bookcase, and it will also benefit some other users of DucksManager having the same magazines !');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4','Participating to the project is quite simple. Just fill the following form to propose your help to the webmaster of DucksManager.');
+define('INTRO_SYNCHRO_INDUCKS_1',' is a website gathering the information about the thousands of Disney stories which are published worldwide.');
+define('INTRO_SYNCHRO_INDUCKS_2','This website, like DucksManager, allows you to manage your Disney issues collection.');
+define('INTRO_SYNCHRO_INDUCKS_3','If you have got an Inducks account, you can synchronize it with your DucksManager account with a few clicks.');
 define('L10N_INTROUVABLE','Localisation not found for ');
 define('LANCER_CALCUL','Launch the statistics calculation');
 define('LANCER_CALCUL_MANUELLEMENT','You can launch the calculation manually, but be warned that it can take several minutes.');
@@ -335,6 +338,7 @@ define('SUPPRIMER','Remove');
 define('SUPPRIMER_ACQUISITION','Remove this purchase');
 define('SUPPRIMER_COMPTE','Delete my DucksManager account');
 define('SUR','of');
+define('SYNCHRONISATION_COMPTES','Synchronizing DucksManager and Inducks');
 define('TELECHARGER_FLASH','Get Flash');
 define('TERMINE','Done.');
 define('TEXTE_SELECTIONNER_NUMEROS1','Select in the list hereunder the issues</b> that you have added to your real collection.');
@@ -358,4 +362,5 @@ define('VERIFICATION_UTILISATEUR','Checking username...');
 define('VIDER_LISTE','Empty my issues list');
 define('VILLE','City');
 define('VOTRE_ADRESSE_EMAIL','Your e-mail address');
+define('VOUS_POSSEDEZ_UN_COMPTE_INDUCKS','Got an Inducks account ?');
 ?>

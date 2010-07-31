@@ -1,21 +1,4 @@
 <?php
-$rep = "Listes/";
-global $types_listes;
-$types_listes=array();
-$dir = opendir($rep);
-$prefixe='Liste.';
-$suffixe='.class.php';
-while ($f = readdir($dir)) {
-    if (strpos($f,'Debug')!==false)
-        continue;
-    if(is_file($rep.$f)) {
-        if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
-            array_push($types_listes,substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe)));
-            require_once($rep.$f);
-        }
-    }
-}
-require_once($rep.'Liste.Classique.class.php');
 
 function types_listes() {
 	global $types_listes;
@@ -341,9 +324,10 @@ class Liste {
 		$noms_magazines=array();
 		foreach($this->collection as $pays=>$numeros_pays) {
 			if (!array_key_exists($pays,$noms_magazines))
-				$noms_magazines[$pays]=Inducks::get_noms_complets_magazines($pays);
+				$noms_magazines[$pays]=array();
 			foreach($numeros_pays as $magazine=>$numeros) {
-				$magazine_affiche=false;
+				$noms_magazines[$pays][$magazine]=Inducks::get_nom_complet_magazine($pays, $magazine);
+                $magazine_affiche=false;
 				foreach($numeros as $numero) {
 					if (array_key_exists($pays,$other_list->collection)
 					&& array_key_exists($magazine,$other_list->collection[$pays])
@@ -364,8 +348,9 @@ class Liste {
 		}
 		foreach($other_list->collection as $pays=>$numeros_pays) {
 			if (!array_key_exists($pays,$noms_magazines))
-				$noms_magazines[$pays]=Inducks::get_noms_complets_magazines($pays);
+				$noms_magazines[$pays]=array();
 			foreach($numeros_pays as $magazine=>$numeros) {
+				$noms_magazines[$pays][$magazine]=Inducks::get_nom_complet_magazine($pays, $magazine);
 				$magazine_affiche=false;
 				foreach($numeros as $numero) {
 					if (array_key_exists($pays,$this->collection)
@@ -400,7 +385,7 @@ class Liste {
 			echo '</li>';
 			echo '<li>'.$numeros_communs.' '.NUMEROS_COMMUNS.'</li>';
 			echo '</ul>';
-			return $numeros_a_ajouter!=0 && $numeros_a_supprimer!=0;
+			return !($numeros_a_ajouter==0 && $numeros_a_supprimer==0);
 		}
 		else echo OPERATIONS_EXCECUTEES;
 	}

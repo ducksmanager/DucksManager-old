@@ -36,7 +36,7 @@ $menus=array(
                    new Item('logout', 'always', DECONNEXION)
             )),
     new Menu(COLLECTION_INDUCKS,
-             array(new Item('import', 'no', IMPORTER_INDUCKS)/*
+             array(new Item('inducks', 'no', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS)/*
                    new Item('export', 'no', EXPORTER_INDUCKS)*/
 
 )));

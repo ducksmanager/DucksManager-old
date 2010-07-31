@@ -510,7 +510,6 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		if (false!=($numeros=Inducks::get_numeros($pays,$magazine))) {
-			Affichage::afficher_etiquettes();
 			Affichage::afficher_numeros($l,$pays,$magazine,$numeros);
 
 		}

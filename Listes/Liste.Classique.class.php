@@ -3,7 +3,6 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 include_once ('locales/lang.php');
-require_once('Inducks.class.php');
 require_once('Format_liste.php');
 class Classique extends Format_liste {
 	function Classique() {
@@ -13,6 +12,7 @@ class Classique extends Format_liste {
 	}
 
 	function afficher($liste) {
+            require_once('Inducks.class.php');
 		foreach($liste as $pays=>$numeros_pays) {
 			$liste_magazines=Inducks::get_noms_complets_magazines($pays);
 			foreach($numeros_pays as $magazine=>$numeros) {

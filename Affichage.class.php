@@ -56,15 +56,7 @@ class Affichage {
 			exit(-1);
 		}
 		$id_user=$d->user_to_id($_SESSION['user']);
-		$requete_nom_complet_magazine='SELECT NomComplet FROM magazines WHERE (PaysAbrege LIKE "'.$pays.'" AND NomAbrege LIKE "'.$magazine.'")';
-		$requete_nom_complet_magazine_resultat=$d->requete_select($requete_nom_complet_magazine);
-		if (!array_key_exists(0,$requete_nom_complet_magazine_resultat)) {
-            $liste_magazines=Inducks::get_noms_complets_magazines($pays);
-            $nom_complet=($liste_magazines[$magazine]);
-
-        }
-        else
-            $nom_complet=utf8_encode($requete_nom_complet_magazine_resultat[0]['NomComplet']);
+        $nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
         ?>
 		<br />
 		<table border="0" width="100%">
@@ -144,21 +136,6 @@ class Affichage {
             <?php
 			$cpt++;
 		}
-	}
-	static function afficher_etiquettes() {
-        ?>
-		<ol>
-            <li>
-                <?=TEXTE_SELECTIONNER_NUMEROS1?><br />
-				<?=TEXTE_SELECTIONNER_NUMEROS2?>
-            </li>
-            <br />
-            <li>
-                <?=TEXTE_SELECTIONNER_NUMEROS3?>
-            </li>
-        </ol>
-        <br />
-        <?php
 	}
 
 	static function afficher_acquisitions($afficher_non_specifiee) {

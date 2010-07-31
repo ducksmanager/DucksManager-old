@@ -197,6 +197,9 @@ define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1','Actuellement, v
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2','% de magazines que vous pouvez visualiser dans la biblioth&egrave;que. Vous poss&eacute;dez probablement des magazines rares ou r&eacute;cents.');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3','Alors pourquoi ne pas participer ? Vous aurez une vue plus compl&egrave;te de votre collection, et vous en ferez profiter d\'autres utilisateurs de DucksManager poss&eacute;dant les m&ecirc;mes magazines que vous!');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4','Pour participer, c\'est tr&egrave;s simple ! Remplissez le petit formulaire ci-dessous pour proposer au webmaster de DucksManager votre aide.');
+define('INTRO_SYNCHRO_INDUCKS_1',' est un site Internet recensant les milliers d\'histoires Disney publi&eacute;es dans le monde entier.');
+define('INTRO_SYNCHRO_INDUCKS_2','Tout comme DucksManager, Inducks vous permet de g&eacute;rer votre collection de magazines Disney.');
+define('INTRO_SYNCHRO_INDUCKS_3','Si vous poss&eacute;dez un compte Inducks, vous pouvez le synchroniser avec votre compte DucksManager en quelques clics.');
 define('LANCER_CALCUL','Lancer le calcul des statistiques');
 define('LANCER_CALCUL_MANUELLEMENT','Vous pouvez lancer les statistiques manuellement, mais le calcul peut prendre plusieurs minutes.');
 define('LANCER_CALCUL_SUGGESTIONS','Lancer le calcul des suggestions');
@@ -334,6 +337,7 @@ define('SUPPRIMER','Supprimer');
 define('SUPPRIMER_ACQUISITION','Supprimer cette acquisition');
 define('SUPPRIMER_COMPTE','Supprimer mon compte DucksManager');
 define('SUR','sur');
+define('SYNCHRONISATION_COMPTES','Synchronisation de DucksManager et d\'Inducks');
 define('TELECHARGER_FLASH','T&eacute;l&eacute;chargez Flash');
 define('TERMINE','Termin&eacute;.');
 define('TEXTE_SELECTIONNER_NUMEROS1','<b>S&eacute;lectionnez dans la liste ci-dessous les num&eacute;ros</b> que vous avez ajout&eacute; ou retir&eacute; de votre collection.');
@@ -357,4 +361,5 @@ define('VERIFICATION_UTILISATEUR','V&eacute;rification utilisateur...');
 define('VIDER_LISTE','Vider ma liste de num&eacute;ros');
 define('VILLE','Ville');
 define('VOTRE_ADRESSE_EMAIL','Votre adresse e-mail');
+define('VOUS_POSSEDEZ_UN_COMPTE_INDUCKS','Vous poss&eacute;dez un compte Inducks ?');
 ?>

@@ -60,6 +60,19 @@ class Inducks {
 		return $liste_pays_courte;
 	}
 
+    static function get_nom_complet_magazine($pays,$magazine) {
+        include_once('Database.class.php');
+        $d=new Database();
+        $requete_nom_complet_magazine='SELECT NomComplet FROM magazines WHERE (PaysAbrege LIKE "'.$pays.'" AND NomAbrege LIKE "'.$magazine.'")';
+		$resultat_nom_complet_magazine=$d->requete_select($requete_nom_complet_magazine);
+		if (!array_key_exists(0,$resultat_nom_complet_magazine)) {
+            $liste_magazines=Inducks::get_noms_complets_magazines($pays);
+            return $liste_magazines[$magazine];
+        }
+        else
+            return utf8_encode($resultat_nom_complet_magazine[0]['NomComplet']);
+    }
+
 	static function get_noms_complets_magazines($pays) {
 		global $codes_inducks;
 		if (!is_array(self::$noms_complets))
@@ -118,6 +131,54 @@ class Inducks {
 			echo '<option id="'.$id.'">'.$magazine;
 		}
 	}
+
+    static function afficher_form_inducks() {
+        ?>
+        <h2><?=SYNCHRONISATION_COMPTES?></h2>
+        <a href="http://www.coa.inducks.org">Inducks</a> <?=INTRO_SYNCHRO_INDUCKS_1?><br />
+        <?=INTRO_SYNCHRO_INDUCKS_2?><br />
+        <?=INTRO_SYNCHRO_INDUCKS_3?><br />
+        <br />
+        <?=ENTREZ_IDENTIFIANTS_INDUCKS?>.<br /><br />
+        <?php
+        if (!isset($_SESSION['user'])) {
+            ?><span style="color:red"><?=ATTENTION_MOT_DE_PASSE_INDUCKS?></span><br /><?php
+        }
+        ?>
+        <form method="post" action="index.php?action=inducks">
+            <table border="0">
+                <tr>
+                    <td><?=UTILISATEUR_INDUCKS?> :</td>
+                    <td><input type="text" name="user" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <?=MOT_DE_PASSE_INDUCKS?> :
+                    </td>
+                    <td>
+                        <input type="password" name="pass" />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" colspan="2">
+                        <input type="submit" value="<?=CONNEXION?>"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <?php
+    }
+
+    static function appel() {
+        $user_pcent=rawurlencode($_POST['user']);
+        $user_urled=urlencode($_POST['user']);
+        $pass_pcent=rawurlencode($_POST['pass']);
+        $pass_urled=urlencode($_POST['pass']);
+        $data = urlencode('login='.$user_pcent.'&pass='.$pass_pcent.'&redirect=collection.php');
+
+        return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\',\''.$user_pcent.'\',\''.$user_urled.'\',\''.$pass_pcent.'\',\''.$pass_urled.'\',\''.$data.'\',\'POST\',\'http://coa.inducks.org/collection.php\',\'coa-preferred-language=4\',\'coa.inducks.org\'';
+    }
 }
 if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();
