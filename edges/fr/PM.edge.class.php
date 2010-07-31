@@ -2,10 +2,10 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>379),
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>388, 'sauf'=>array(381,382,383,386)),
                                     array('debut'=>420, 'fin'=>437, 'sauf'=>array(429,436)),
                                     array('debut'=>458, 'fin'=>462));
-    var $en_cours=array(array('debut'=>380,'fin'=>449,'sauf'=>array(381,382,383,386,438,441,442,443,445)));
+    var $en_cours=array(array('debut'=>389,'fin'=>449,'sauf'=>array(438,441,442,443,445)));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -236,7 +236,7 @@ class PM extends Edge {
                 $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
                                   rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                                   rgb2hex($rouge, $vert, $bleu),
-                                  600,
+                                  700,
                                   constant('PM_'.$this->numero));
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
