@@ -148,11 +148,11 @@ function init_observers_gerer_numeros() {
 }
 
 
-function appel(user,pass,user_pcent,user_urled,pass_pcent,pass_urled,data,type,url,cookie,host) {
+function appel(user,pass,user_urled,pass_urled,data,type,url,cookie,host) {
 	user_inducks=user;
 	pass_inducks=pass;
 	l10n_action('defiler_log','connexion_inducks');
-	var myAjax = new Ajax.Request('appel.php', {
+	new Ajax.Request('appel.php', {
 		   method: 'post',
 		   parameters:'data='+data+'&type='+type+'&url='+url+'&cookie='+cookie+'&host='+host,
 		   onSuccess:function(transport,json) {
@@ -167,16 +167,16 @@ function appel(user,pass,user_pcent,user_urled,pass_pcent,pass_urled,data,type,u
 		         }
 		         else  {
 		        	l10n_action('defiler_log','connexion_reussie');
-		        	 var myAjax2 = new Ajax.Request('appel.php', {
+		        	 new Ajax.Request('appel.php', {
 		      		   method: 'post',
 		      		   parameters:'data=&type=GET&url='+url+'&cookie='+cookie+'&cookie2=coa-login='+user_urled+'%3A'+pass_urled+'&host='+host,
 		      		   onSuccess:function(transport,json) {
 			        	 l10n_action('defiler_log','recuperation_liste');
 			        	 url='rawOutput';
-			        	 var myAjax3 = new Ajax.Request('appel.php', {
+			        	 new Ajax.Request('appel.php', {
 				      		   method: 'post',
 				      		   parameters:'ecrire=true&data=rawOutput&type=GET&url='+url+'&cookie='+cookie+'&cookie2=coa-login='+user_urled+'%3A'+pass_urled+'&host='+host,
-				      		   onSuccess:function(transport,json) {	
+				      		   onSuccess:function(transport,json) {
 			        		 		if (transport.responseText.indexOf(".txt")!=-1) {
 			        		 			fic_liste_tmp=transport.responseText;
 			        		 			l10n_action('defiler_log','succes');
@@ -624,8 +624,6 @@ function l10n_action(fonction,index,param) {
 				if (transport.responseText.indexOf('~')!=-1) {
 					transport.responseText=transport.responseText.split('~');
 				}
-				if (fonction=='affiche')
-					return transport.responseText;
 
 				if (typeof transport.responseText=='string') {
 					if (fonction=='remplirSpan')

@@ -171,13 +171,11 @@ class Inducks {
     }
 
     static function appel() {
-        $user_pcent=rawurlencode($_POST['user']);
         $user_urled=urlencode($_POST['user']);
-        $pass_pcent=rawurlencode($_POST['pass']);
         $pass_urled=urlencode($_POST['pass']);
         $data = urlencode('login='.$user_pcent.'&pass='.$pass_pcent.'&redirect=collection.php');
 
-        return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\',\''.$user_pcent.'\',\''.$user_urled.'\',\''.$pass_pcent.'\',\''.$pass_urled.'\',\''.$data.'\',\'POST\',\'http://coa.inducks.org/collection.php\',\'coa-preferred-language=4\',\'coa.inducks.org\'';
+        return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\',\''.$user_urled.'\',\''.$pass_urled.'\',\''.$data.'\',\'POST\',\'http://coa.inducks.org/collection.php\',\'coa-preferred-language=4\',\'coa.inducks.org\'';
     }
 }
 if (isset($_POST['get_pays'])) {
