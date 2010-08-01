@@ -61,6 +61,8 @@ define('PM_437','50 coffres à casser!');
 define('PM_439','La flamme olympique!');
 define('PM_440','Le canard le plus pauvre de Donaldville!');
 define('PM_441','Les 7 cités de Cibola');
+define('PM_442','Le dernier voyage du capt\'ain Duck');
+define('PM_443','Le radin dépensier !');
 define('PM_444','Pour 100$ de moins...');
 define('PM_445','Course dans les mers du Sud!');
 define('PM_446','Bingo Bogo!');
