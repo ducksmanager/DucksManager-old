@@ -2,7 +2,7 @@
 class ALPM extends Edge {
     var $pays='fr';
     var $magazine='ALPM';
-    var $intervalles_validite=array('B 1','B 25','B 27','B 49','B 57');
+    var $intervalles_validite=array('B  1','B 25','B 27','B 49','B 57');
 
     var $en_cours=array();
     static $largeur_defaut=18;
@@ -21,10 +21,7 @@ class ALPM extends Edge {
             break;
         
             case 'B':
-                if ($this->numero_serie<=24) {
-
-                }
-                elseif ($this->numero_serie<=27) {
+                if ($this->numero_serie<=27) {
                     $this->largeur=18*Edge::$grossissement;
                     $this->hauteur=282*Edge::$grossissement;
                 }
@@ -46,10 +43,7 @@ class ALPM extends Edge {
             break;
 
             case 'B':
-                if ($this->numero_serie <= 24) {
-
-                }
-                elseif ($this->numero_serie<=27) {
+               if ($this->numero_serie<=27) {
                     include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
 
                     $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
