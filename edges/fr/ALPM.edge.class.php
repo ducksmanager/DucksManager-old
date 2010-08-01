@@ -2,7 +2,7 @@
 class ALPM extends Edge {
     var $pays='fr';
     var $magazine='ALPM';
-    var $intervalles_validite=array('B 25','B 27','B 49','B 57');
+    var $intervalles_validite=array('B 1','B 25','B 27','B 49','B 57');
 
     var $en_cours=array();
     static $largeur_defaut=18;
