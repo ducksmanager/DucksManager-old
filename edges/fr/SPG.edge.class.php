@@ -3,7 +3,7 @@ class SPG extends Edge {
 	var $pays='fr';
 	var $magazine='SPG';
 	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
-                                    array('debut'=>59, 'fin'=>80, 'sauf'=>array(63,66,67,68,75,77)),
+                                    array('debut'=>59, 'fin'=>80, 'sauf'=>array(63,68)),
                                     array('debut'=>81, 'fin'=>158));
     var $en_cours=array();
     static $largeur_defaut=20;
@@ -87,7 +87,7 @@ class SPG extends Edge {
             $hauteur_icone=$this->largeur*($height/$width);
             $this->placer_image($icone, 'bas', array(0,2.1*$this->largeur-$hauteur_icone/2));
 			
-            $texte_numero_blanc=array(70,73,76,77,array('debut'=>79, 'fin'=>88));
+            $texte_numero_blanc=array(70,73,75,76,77,array('debut'=>79, 'fin'=>88));
             $intervalle_numeros_blancs=new IntervalleValidite($texte_numero_blanc);
             $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
                                         7*Edge::$grossissement,90,$intervalle_numeros_blancs->estValide($this->numero) ? $blanc : $noir,'ArialBlack.ttf');

@@ -2,10 +2,10 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>388, 'sauf'=>array(383)),
-                                    array('debut'=>420, 'fin'=>437, 'sauf'=>array(429,436)),
-                                    array('debut'=>451, 'fin'=>462,'sauf'=>array(452)));
-    var $en_cours=array(array('debut'=>389,'fin'=>457,'sauf'=>array(438,441)));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>388),
+                                    array('debut'=>420, 'fin'=>438, 'sauf'=>array(436)),441,
+                                    array('debut'=>451, 'fin'=>462));
+    var $en_cours=array(array('debut'=>389,'fin'=>450));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -248,16 +248,17 @@ class PM extends Edge {
 
             list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo PM.png');
             $hauteur_logo=$this->largeur*($height/$width);
-            imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur2);
-            if (in_array($this->numero, array(454,455,456,457))) {
-                imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->largeur*3, $couleur2);
-                $this->placer_image('logo PM.png','haut',array(0,$this->largeur*3.5));
+            if ($this->numero > 392) {
+                if (in_array($this->numero, array(393,394,395,454,455,456,457))) {
+                    imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->largeur*3, $couleur2);
+                    $this->placer_image('logo PM.png','haut',array(0,$this->largeur*3.5));
+                }
+                else {
+                    imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur2);
+                    $this->placer_image('logo PM.png');
+                }
             }
-            else {
-                $this->placer_image('logo PM.png');
-            }
-            
-            if (!defined('PM_'.$this->numero)) {
+            if (!defined('PM_'.$this->numero) || $this->numero == 441) {
                 $this->placer_image('PM.'.$this->numero.'.dessin.png','haut',array(0,$hauteur_logo));
             }
             $this->placer_image('Tete PM.png', 'bas', array(0,$this->largeur/2));
