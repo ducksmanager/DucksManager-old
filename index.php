@@ -15,13 +15,18 @@ require_once('Affichage.class.php');
 require_once('Inducks.class.php');
 require_once('Util.class.php');
 
+$action=isset($_GET['action'])?$_GET['action']:null;
+if (is_null(constant('TITRE_PAGE_'.strtoupper($action))))
+    $titre=constant('TITRE_PAGE_ACCUEIL');
+else    
+    $titre=constant('TITRE_PAGE_'.strtoupper($action));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
     <head>
         <meta content="text/html; charset=ISO-8859-1"
               http-equiv="content-type">
-        <title><?php echo TITRE;?></title>
+        <title><?php echo TITRE.' - '.$titre;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
               <style type="text/css" media="all">@import "fix-ie.css";</style>
@@ -32,25 +37,28 @@ require_once('Util.class.php');
         <link rel="stylesheet" type="text/css" href="bibliotheque.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
-        <!-- Piwik -->
-        <script type="text/javascript">
-        var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.ducksmanager.net/piwik/" : "http://www.ducksmanager.net/piwik/");
-        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-        </script>
-        <script type="text/javascript">
-        try {
-        var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
-        piwikTracker.trackPageView();
-        piwikTracker.enableLinkTracking();
-        } catch( err ) {}
-        </script>
-        <!-- End Piwik Tag -->
+        <?php include_once('_priv/Database.priv.class.php');
+        if (!isLocalHost()) {?>
+            <!-- Piwik -->
+            <script type="text/javascript">
+            var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.ducksmanager.net/piwik/" : "http://www.ducksmanager.net/piwik/");
+            document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+            </script>
+            <script type="text/javascript">
+            try {
+            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+            piwikTracker.trackPageView();
+            piwikTracker.enableLinkTracking();
+            } catch( err ) {}
+            </script>
+            <!-- End Piwik Tag -->
         <?php
+        }
         new JS('prototype.js');
         new JS('js/scriptaculous/src/scriptaculous.js');
         new JS('js/my_scriptaculous.js');
         new JS('js/ajax.js');
-        if (isset($_GET['action'])) {
+        if (!is_null($action)) {
             new JS('js/sel_num.js');
             if ($_GET['action']=='gerer')
                 new JS('js/menu_contextuel.js');
@@ -64,7 +72,6 @@ require_once('Util.class.php');
     </head>
 
     <?php
-    $action=isset($_GET['action'])?$_GET['action']:null;
     $texte_debut='';
     $d=new Database();
     if ($action=='open'&& isset($_POST['user'])) {
@@ -100,27 +107,29 @@ require_once('Util.class.php');
             echo 'defiler_log(\'DucksManager\');';
             break;
         case 'bibliotheque':
-            if ((!isset($_GET['onglet']) || $_GET['onglet']=='affichage') && Util::getBrowser()!=='MSIE') {
-                $d=new Database();
-                if (!$d) {
-                    exit(-1);
+            if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
+                if (Util::getBrowser()!=='MSIE') {
+                    $d=new Database();
+                    if (!$d) {
+                        exit(-1);
+                    }
+                    $id_user=$d->user_to_id($_SESSION['user']);
+                    $textures=array();
+                    for ($i=1;$i<=2;$i++) {
+                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                        $resultat_textures=$d->requete_select($requete_textures);
+                        $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
+                        $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
+                    }
+                    $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
+                    $resultat_grossissement=$d->requete_select($requete_grossissement);
+                    $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
+                    $regen=isset($_GET['regen']) ? 1 : 0;
+                    echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\','.$regen.');';
                 }
-                $id_user=$d->user_to_id($_SESSION['user']);
-                $textures=array();
-                for ($i=1;$i<=2;$i++) {
-                    $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
-                    $resultat_textures=$d->requete_select($requete_textures);
-                    $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
-                    $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
+                elseif ($_GET['onglet']=='options') {
+                    echo 'initTextures();';
                 }
-                $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
-                $resultat_grossissement=$d->requete_select($requete_grossissement);
-                $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
-                $regen=isset($_GET['regen']) ? 1 : 0;
-                echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\','.$regen.');';
-            }
-            elseif ($_GET['onglet']=='options') {
-                echo 'initTextures();';
             }
         break;
         case 'gerer':
@@ -330,7 +339,8 @@ require_once('Util.class.php');
                                 $onglets=array(
                                         BIBLIOTHEQUE_COURT=>array('affichage',BIBLIOTHEQUE),
                                         BIBLIOTHEQUE_OPTIONS_COURT=>array('options',BIBLIOTHEQUE_OPTIONS),
-                                        BIBLIOTHEQUE_PARTICIPER_COURT=>array('participer',BIBLIOTHEQUE_PARTICIPER));
+                                        BIBLIOTHEQUE_PARTICIPER_COURT=>array('participer',BIBLIOTHEQUE_PARTICIPER),
+                                        BIBLIOTHEQUE_CONTRIBUTEURS_COURT=>array('contributeurs',BIBLIOTHEQUE_CONTRIBUTEURS));
                                 if (!isset($_GET['onglet']))
                                     $onglet='affichage';
                                 else
@@ -446,7 +456,7 @@ require_once('Util.class.php');
                                                 }
                                                 else {
                                                     ?>
-                                                    <font style="color: red"><?=ERREUR_CAPTCHA?></font><br /><br />
+                                                    <span style="color: red"><?=ERREUR_CAPTCHA?></span><br /><br />
                                                     <?php
                                                 }
                                             }
@@ -505,6 +515,29 @@ require_once('Util.class.php');
                                                 <?php
                                             }
                                         }
+                                        break;
+                                        
+                                        case 'contributeurs':
+                                            $requete_contributeurs='SELECT Nom, Texte FROM bibliotheque_contributeurs';
+                                            $d=new Database();
+                                            if (!$d) {
+                                                echo PROBLEME_BD;
+                                                exit(-1);
+                                            }
+                                            $contributeurs=$d->requete_select($requete_contributeurs);
+                                            ?>
+                                                <div style="border:1px solid white">
+                                                    <h2 style="text-align:center"><?=INTRO_CONTRIBUTEURS_BIBLIOTHEQUE?></h2>
+                                            <?php
+                                            foreach($contributeurs as $contributeur) {
+                                                ?>
+                                                    <span style="font-size:18px;line-height:20px;"><?=$contributeur['Nom']?></span> <?=$contributeur['Texte']?><br />
+                                                <?php
+                                            }
+                                            ?>
+                                                </div>
+                                            <?php
+                                        break;
                                 }
                             break;
 
@@ -628,29 +661,24 @@ require_once('Util.class.php');
                                             <?php
                                         }
                                         else {
-                                            ?>
-
-                                            <OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
-                                                <PARAM NAME=movie VALUE="dm.swf">
-                                                <PARAM NAME=play VALUE=false>
-                                                <PARAM NAME=loop VALUE=false>
-                                                <PARAM NAME=wmode VALUE=transparent>
-                                                <PARAM NAME=quality VALUE=low>
-                                                <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">
-                                                </EMBED>
-                                            </OBJECT>
-                                            <table width="100%">
-                                            <tr><td>
-                                            <?php
                                             if (isset($onglet_magazine) && isset($pays)) {
-                                                ?>
+                                            ?>
+                                                <OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
+                                                    <PARAM NAME=movie VALUE="dm.swf">
+                                                    <PARAM NAME=play VALUE=false>
+                                                    <PARAM NAME=loop VALUE=false>
+                                                    <PARAM NAME=wmode VALUE=transparent>
+                                                    <PARAM NAME=quality VALUE=low>
+                                                    <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">
+                                                    </EMBED>
+                                                </OBJECT>
+                                                <table width="100%">
+                                                <tr><td>
                                                 <span id="liste_numeros"><?=CHARGEMENT.'...'?></span>
                                                 </td><td>
-                                                <?php
-                                            }
-                                            ?>
                                             </td></tr></table>
                                             <?php
+                                            }
                                         }
                                         break;
                                     case 'acquisitions':

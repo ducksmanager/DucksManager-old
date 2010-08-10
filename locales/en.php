@@ -347,7 +347,15 @@ define('TEXTE_SELECTIONNER_NUMEROS3','Once your selection is done, <b>make a rig
 define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Shelf texture');
 define('TEXTURE__BOIS','Wood');
-define('TITRE','DucksManager : Your Ducks comics collection manager');
+define('TITRE','DucksManager : Your Disney comics collection manager');
+define('TITRE_PAGE_ACCUEIL','Welcome !');
+define('TITRE_PAGE_AGRANDIR','Expand your collection');
+define('TITRE_PAGE_BIBLIOTHEQUE','Your bookcase');
+define('TITRE_PAGE_GERER','Collection management');
+define('TITRE_PAGE_INDUCKS','Connection to Inducks');
+define('TITRE_PAGE_OPEN','Login to the DucksManager account');
+define('TITRE_PAGE_PRINT_NOW','List printing');
+define('TITRE_PAGE_STATISTIQUES','Statistics');
 define('TOTAL','Total');
 define('TRANCHE_NON_DISPONIBLE1','This edge is not viewable as we don\'t have any photography of it...');
 define('TRANCHE_NON_DISPONIBLE2','You can photograph this edge ?<br />Click ');
