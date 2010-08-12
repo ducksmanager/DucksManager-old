@@ -40,7 +40,7 @@ define('AVEC_ACQUISITION','avec la date d\'acquisition');
 define('AVEC_ETAT','avec l\'&eacute;tat');
 define('BASE_DONNEES','Base de donn&eacute;es DucksManager');
 define('BETA', 'Beta');
-define('BIBLIOTHEQUE','Visionnage de votre collection comme si vous &eacute;tiez devant!');
+define('BIBLIOTHEQUE','Visionnez votre collection comme si vous &eacute;tiez devant!');
 define('BIBLIOTHEQUE_CONTRIBUTEURS','Une liste de ceux qui ont particip&eacute; &agrave; la cr&eacute;ation de la biblioth&egrave;que!');
 define('BIBLIOTHEQUE_CONTRIBUTEURS_COURT','Contributeurs');
 define('BIBLIOTHEQUE_COURT','Ma biblioth&egrave;que');
