@@ -189,7 +189,7 @@ define('INTRO_ACQUISITIONS1','On this page you can create, modify or delete your
 define('INTRO_ACQUISITIONS2','Type a purchase date, you\'ll then be able to associate a description and to link with it the issues you purchased on this date');
 define('INTRO_BOUQUINERIES','This page allows you to easily find second-hand bookshops which often propose Disney magazines, in your city.');
 define('INTRO_COMPLETER_SERIES','This page helps you to determine which issues you can buy in priority in order to complete your issues series.');
-define('INTRO_CONTRIBUTEURS_BIBLIOTHEQUE', 'DucksManager Bookcase couldn\' have existed without the help and the devotion of : ');
+define('INTRO_CONTRIBUTEURS_BIBLIOTHEQUE', 'DucksManager Bookcase couldn\'t have existed without the help and the devotion of : ');
 define('INTRO_IMPRESSION_COLLECTION1','It\'s not so easy to print a list of issues!');
 define('INTRO_IMPRESSION_COLLECTION2','With DucksManager, you\'ve got all the choices ! From <b>the most classical</b> lists which are also quite bulky too, to the most ingenious ones, having <b>a minimal size</b>, it\'s your choice!');
 define('INTRO_IMPRESSION_COLLECTION3','You can view below the details on the list formats DucksManager can use to print your list : ');
