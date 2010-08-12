@@ -18,7 +18,7 @@ define('PM_388','Fracture temporelle pour Donald!');
 define('PM_389','La vie extraordinaire de Donald Duck!');
 define('PM_390','Rencontre avec les Cracs-Badaboums');
 define('PM_391','Le secret du Hondorica');
-define('PM_392','Donald et l\'heure de l\or');
+define('PM_392','Donald et l\'heure de l\'or');
 define('PM_393','Picsou et le trésor des Templiers');
 define('PM_394','Donald et la rivière de la terreur!');
 define('PM_395','Picsou fête Noël à Disneyland!');
