@@ -2,15 +2,15 @@
 include_once('Texte.class.php');
 include_once('IntervalleValidite.class.php');
 class Edge {
-	var $pays;
-	var $magazine;
-	var $numero;
-	var $textes=array();
-	var $largeur=20;
-	var $hauteur=200;
+    var $pays;
+    var $magazine;
+    var $numero;
+    var $textes=array();
+    var $largeur=20;
+    var $hauteur=200;
     var $image;
     var $o;
-	var $est_visible=true;
+    var $est_visible=true;
     var $intervalles_validite=array();
     var $en_cours=array();
     static $grossissement=10;
@@ -169,7 +169,8 @@ class Edge {
             $total_numeros_visibles=0;
             foreach($l->collection as $pays=>$magazines) {
                 foreach($magazines as $magazine=>$numeros) {
-                    sort($numeros);
+                    if ($get_html === true)
+                        sort($numeros);
                     $total_numeros+=count($numeros);
                     foreach($numeros as $numero) {
                         if ($get_html) {
@@ -297,7 +298,7 @@ elseif (isset($_GET['regen'])) {
     if (isset($_GET['debut'])) {
         $liste_numeros=array();
         for ($i=$_GET['debut'];$i<=$_GET['fin'];$i++)
-            if ($iv->estValide($i))
+            //if ($iv->estValide($i))
                 $liste_numeros[]=$i;
     }
     else

@@ -138,6 +138,10 @@ class Database {
         if (count($resultat_nom_magazine)==0) {
             Inducks::get_noms_complets_magazines($pays);
             $resultat_nom_magazine=$this->requete_select($requete_nom_magazine);
+            if (count($resultat_nom_magazine) == 0) {
+                $requete_nom_magazine='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.$magazine.'","'.$magazine.'")';
+                $this->requete($requete_nom_magazine);
+            }
         }
         return $resultat_nom_magazine[0]['NomComplet'];
     }
