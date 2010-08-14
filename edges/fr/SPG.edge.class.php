@@ -1,10 +1,8 @@
 <?php
 class SPG extends Edge {
-	var $pays='fr';
-	var $magazine='SPG';
-	var $intervalles_validite=array(array('debut'=>1,  'fin'=>57),
-                                    array('debut'=>59, 'fin'=>80, 'sauf'=>array(63,68)),
-                                    array('debut'=>81, 'fin'=>158));
+    var $pays='fr';
+    var $magazine='SPG';
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>158,'sauf'=>array(58,68)));
     var $en_cours=array();
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -38,7 +36,7 @@ class SPG extends Edge {
 		}
 		elseif ($this->numero<=88) {
             switch($this->numero) {
-                case 59 : case 60: case 62:
+                case 59 : case 60: case 62: case 63:
                     $image_texte=$this->getChemin().'/SPG.'.$this->numero.'.Texte.png';
                 break;
                 default:
@@ -64,14 +62,14 @@ class SPG extends Edge {
 			$noir=imagecolorallocate($this->image,0,0,0);
             list($icone,$width,$height)=imagecreatefrompng_getimagesize($image_texte);
             imagealphablending($icone, false);
-		    # set the transparent color
-		    $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
-		    imagefill($icone, 0, 0, $transparent);
-		    # set the transparency settings for the picture after adding the transparency
-		    imagesavealpha($icone,true);
-		    imagealphablending($icone, true);
-			$nouvelle_largeur=$this->largeur/1.5;
-			$nouvelle_hauteur=$nouvelle_largeur*($height/$width);
+            # set the transparent color
+            $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
+            imagefill($icone, 0, 0, $transparent);
+            # set the transparency settings for the picture after adding the transparency
+            imagesavealpha($icone,true);
+            imagealphablending($icone, true);
+            $nouvelle_largeur=$this->largeur/1.5;
+            $nouvelle_hauteur=$nouvelle_largeur*($height/$width);
             imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->largeur/2, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 
             $icone=imagecreatefrompng($this->getChemin().'/SPG.'.$this->numero.'.icone.png');

@@ -2,10 +2,7 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>394,'sauf'=>array(389)),
-                                    array('debut'=>420, 'fin'=>438, 'sauf'=>array(436)),441,
-                                    array('debut'=>451, 'fin'=>462));
-    var $en_cours=array(array('debut'=>389,'fin'=>450));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>462,'sauf'=>array(389,403,436)));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -190,7 +187,7 @@ class PM extends Edge {
             $blanc=imagecolorallocate($image2, 255, 255, 255);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
             switch ($this->numero) {
-                case 426 :
+                case 404 : case 415 : case 426 :
                     $couleur1=$this->getColorsFromDB(array(0,0,0),'Dégradé 2');
                     $couleur2=$this->getColorsFromDB(array(255,255,255),'Dégradé 1');
 
@@ -225,7 +222,7 @@ class PM extends Edge {
             $post=new MyFonts('storm/zeppelin/53-bold-italic',
                               rgb2hex($rouge_texte_num,$vert_texte_num,$bleu_texte_num),
                               rgb2hex($rouge2,$vert2,$bleu2),
-                              85,
+                              800,
                               $texte_numero);
             $chemin_image=$post->chemin_image;
             list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
@@ -236,12 +233,12 @@ class PM extends Edge {
                 $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
                                   rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                                   rgb2hex($rouge, $vert, $bleu),
-                                  700,
+                                  7000,
                                   constant('PM_'.$this->numero));
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
                 $nouvelle_largeur=$this->largeur*0.8*($width/$height);
-                imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.7, $width, $height);
+                imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.6, $this->largeur*0.6, $width, $height);
             }
 
             $this->image=imagerotate($image2, 90, $blanc);
@@ -249,7 +246,11 @@ class PM extends Edge {
             list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo PM.png');
             $hauteur_logo=$this->largeur*($height/$width);
             if ($this->numero > 392) {
-                if (in_array($this->numero, array(393,394,395,454,455,456,457))) {
+                if ($this->numero==393) {
+                    imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->largeur*3, $couleur_texte);
+                    $this->placer_image('logo PM.png','haut',array(0,$this->largeur*3.5));
+                }
+                elseif (in_array($this->numero, array(394,395,454,455,456,457))) {
                     imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->largeur*3, $couleur2);
                     $this->placer_image('logo PM.png','haut',array(0,$this->largeur*3.5));
                 }
@@ -258,9 +259,13 @@ class PM extends Edge {
                     $this->placer_image('logo PM.png');
                 }
             }
+            else
+                $this->placer_image('logo PM.png');
             if (!defined('PM_'.$this->numero) || $this->numero == 441) {
                 $this->placer_image('PM.'.$this->numero.'.dessin.png','haut',array(0,$hauteur_logo));
             }
+            if (file_exists('PM.'.$this->numero.'.detail.png'))
+                $this->placer_image ('PM.'.$this->numero.'.detail.png');
             $this->placer_image('Tete PM.png', 'bas', array(0,$this->largeur/2));
             
         }
