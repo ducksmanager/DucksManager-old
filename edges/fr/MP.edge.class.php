@@ -5,7 +5,7 @@ class MP extends Edge {
     var $intervalles_validite=array(array('debut'=>1,'fin'=>2),
                                     array('debut'=>9,'fin'=>10),13,15,array('debut'=>42,'fin'=>44),48,49,55,57,60,61,63,
                                     array('debut'=>66,'fin'=>69),73,74,75,76,77,79,80,81,83,
-                                    89,array('debut'=>91,'fin'=>95),97,100,102,103,105,array('debut'=>108,'fin'=>111),array('debut'=>116,'fin'=>124, 'sauf'=>array(119)),127,128,array('debut'=>131,'fin'=>134),
+                                    87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>122, 'sauf'=>array(117)),125,126,array('debut'=>129,'fin'=>132),
                                     142,147,149,152,154,160,162,164,171,176,181,182,191,
                                     array('debut'=>205, 'fin'=>216),
                                     array('debut'=>217,'fin'=>218),
@@ -18,11 +18,11 @@ class MP extends Edge {
 
     function MP($numero) {
         $this->numero=$numero;
-        if($this->numero <=86) {
+        if($this->numero <=84) {
             $this->largeur=14*Edge::$grossissement;
             $this->hauteur=186*Edge::$grossissement;
         }
-        elseif ($this->numero <= 134) {
+        elseif ($this->numero <= 132) {
             $this->largeur=11.5*Edge::$grossissement;
             $this->hauteur=186*Edge::$grossissement;
         }
@@ -43,7 +43,7 @@ class MP extends Edge {
             xdebug_break ();
     }
     function dessiner() {
-        if ($this->numero <= 86) {
+        if ($this->numero <= 84) {
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
 
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
@@ -65,12 +65,12 @@ class MP extends Edge {
                                  $couleur_texte);
             imagerectangle($this->image, 0, 0, $this->largeur-1, $this->hauteur-1, $noir);
         }
-        elseif ($this->numero <=134) {
+        elseif ($this->numero <=132) {
             $blanc = imagecolorallocate($this->image, 255,255,255);
             $noir = imagecolorallocate($this->image, 0,0,0);
             $gris = imagecolorallocate($this->image, 192,192,192);
 
-            if ($this->numero <= 122)
+            if ($this->numero <= 120)
                 list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP.png');
             else
                 list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP 1990.png');
