@@ -149,36 +149,51 @@ class Edge {
             imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
     }
 
-    static function getPourcentageVisible($get_html=false, $regen=false) {
+    static function getPourcentageVisible($get_html=false, $regen=false, $user_unique=true) {
         include_once('Database.class.php');
         @session_start();
         $d=new Database();
-        $id_user=$d->user_to_id($_SESSION['user']);
-        $l=$d->toList($id_user);
-        $texte_final='';
-        $total_numeros=0;
-        $total_numeros_visibles=0;
-        foreach($l->collection as $pays=>$magazines) {
-            foreach($magazines as $magazine=>$numeros) {
-				sort($numeros);
-                $total_numeros+=count($numeros);
-				foreach($numeros as $numero) {
-                    if ($get_html) {
-                        list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true, $regen);
-                        $texte_final.=$texte;
+        if ($user_unique===true)
+            $ids_users=array($d->user_to_id($_SESSION['user']));
+        else {
+            $pourcentages_visible=array();
+            $requete_users='SELECT ID, username FROM users';
+            $resultat_users=$d->requete_select($requete_users);
+            foreach($resultat_users as $user)
+                $ids_users[$user['username']]=$user['ID'];
+        }
+        foreach($ids_users as $username=>$id_user) {
+            $l=$d->toList($id_user);
+            $texte_final='';
+            $total_numeros=0;
+            $total_numeros_visibles=0;
+            foreach($l->collection as $pays=>$magazines) {
+                foreach($magazines as $magazine=>$numeros) {
+                    sort($numeros);
+                    $total_numeros+=count($numeros);
+                    foreach($numeros as $numero) {
+                        if ($get_html) {
+                            list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true, $regen);
+                            $texte_final.=$texte;
+                        }
+                        else
+                            $est_visible=getEstVisible($pays, $magazine, $numero[0]);
+                        if ($est_visible===true)
+                            $total_numeros_visibles++;
                     }
-                    else
-                        $est_visible=getEstVisible($pays, $magazine, $numero[0]);
-                    if ($est_visible===true)
-                        $total_numeros_visibles++;
                 }
             }
+            $pourcentage_visible=$total_numeros==0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
+            if ($user_unique===true) {
+                if ($get_html)
+                    return array($texte_final, $pourcentage_visible);
+                else
+                    return $pourcentage_visible;
+            }
+            elseif ($total_numeros>0)
+                $pourcentages_visible[' '.$username]=$pourcentage_visible;
         }
-        $pourcentage_visible=intval(100*$total_numeros_visibles/$total_numeros);
-        if ($get_html)
-            return array($texte_final, $pourcentage_visible);
-        else
-            return $pourcentage_visible;
+        return $pourcentages_visible;
     }
 
     function getChemin() {
@@ -290,6 +305,103 @@ elseif (isset($_GET['regen'])) {
     foreach($liste_numeros as $numero) {?>
         <img src="Edge.class.php?grossissement=1.5&regen=true&pays=<?=$pays?>&magazine=<?=$magazine?>&numero=<?=$numero?>" />
     <?php }
+}
+elseif (isset($_GET['dispo_tranches'])) {
+    $data=Edge::getPourcentageVisible(false, false, false);
+    asort($data);
+    $usernames=array_keys($data);
+    sort($data);
+    $somme=0;
+    foreach($data as $pct)
+        $somme+=$pct;
+    $moyenne=$somme/count($data);
+    $data_moyenne=array();
+    for($i=0;$i<count($data);$i++)
+        $data_moyenne[]=$moyenne;
+
+    include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
+
+    $chart = new open_flash_chart();
+    $chart->set_title( new title( 'Disponibilite des tranches' ) );
+
+    //
+    // Make our area chart:
+    //
+    $area = new area();
+    // set the circle line width:
+    $area->set_width( 2 );
+    $area->set_default_dot_style( new hollow_dot() );
+    $area->set_colour( '#838A96' );
+    $area->set_fill_colour( '#E01B49' );
+    $area->set_fill_alpha( 0.4 );
+    $area->set_values( $data );
+    $t=new tooltip( "Utilisateur #x_label<br>#val#" );
+
+    // add the area object to the chart:
+    $chart->add_element( $area );
+    
+    $line_dot = new line();
+    $line_dot->set_values($data_moyenne);
+    $chart->add_element( $line_dot );
+
+    $y_axis = new y_axis();
+    $y_axis->set_range( 0, 100, 10 );
+    $y_axis->labels = null;
+    $y_axis->set_offset( false );
+
+    $chart->add_y_axis( $y_axis );
+
+    $x_labels = new x_axis_labels();
+    $x_labels->set_vertical();
+    $x_labels->set_colour( '#A2ACBA' );
+    $x_labels->set_labels($usernames);
+    
+    $x = new x_axis();
+    $x->set_colour( '#A2ACBA' );
+    $x->set_grid_colour( '#D7E4A3' );
+    $x->set_offset( false );
+    $x->set_labels( $x_labels );
+    
+    $chart->set_x_axis( $x );
+
+    $chart->set_tooltip( $t );
+    ?>
+        <html>
+            <head>
+            <link rel="stylesheet" type="text/css" href="style.css">
+            <!--[if IE]>
+                    <style type="text/css" media="all">@import "fix-ie.css";</style>
+            <![endif]-->
+            <script type="text/javascript" src="js/json/json2.js"></script>
+            <script type="text/javascript" src="js/swfobject.js"></script>
+            <script type="text/javascript">
+            swfobject.embedSWF("open-flash-chart.swf", "my_chart", "<?=(25*count($usernames))?>", "380", "9.0.0");
+            </script>
+
+            <script type="text/javascript">
+
+            function open_flash_chart_data()
+            {
+                return JSON.stringify(data);
+            }
+
+            function findSWF(movieName) {
+              if (navigator.appName.indexOf("Microsoft")!= -1) {
+                return window[movieName];
+              } else {
+                return document[movieName];
+              }
+            }
+
+            var data = <?php echo $chart->toPrettyString(); ?>;
+
+            </script>
+            </head>
+            <body>
+                <div id="my_chart"></div>
+            </body>
+        </html>
+        <?php
 }
 
 function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
