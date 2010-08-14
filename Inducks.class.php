@@ -90,19 +90,16 @@ class Inducks {
 		else {
 			echo ERREUR_CONNEXION_INDUCKS;
 		}
-		$regex_magazine='#<A HREF="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</A>&nbsp;#is';
-		$regex_pays='#; ([^:]+): publications</b></font>#is';
+		$regex_magazine='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
+		$regex_pays='#"">([^:]+): publications</h1>#is';
 		preg_match($regex_pays,$buffer,$nom_pays_recup);
 		$nom_pays=preg_replace($regex_pays,'$1',$nom_pays_recup);
 		preg_match_all($regex_magazine,$buffer,$pays_recup);
-		$requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ';
-		$debut=true;
+		$d = new Database();
 		foreach($pays_recup[0] as $i=>$p) {
-			if ($i==0) $requete_noms_magazines.=',';
-			$requete_noms_magazines.='("'.$pays.'","'.preg_replace($regex_magazine,'$1',$p).'","'.str_replace('"','',utf8_decode(preg_replace($regex_magazine,'$2',$p))).'")';
+                    $requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.preg_replace($regex_magazine,'$1',$p).'","'.str_replace('"','',utf8_decode(preg_replace($regex_magazine,'$2',$p))).'")';
+                    $d->requete($requete_noms_magazines);
 		}
-        $d = new Database();
-        $d->requete($requete_noms_magazines);
 	}
 
 	function get_magazines($pays) {
@@ -119,7 +116,7 @@ class Inducks {
 			echo ERREUR_CONNEXION_INDUCKS;
 			return false;
 		}
-		$regex_magazines='#<A HREF="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</A>&nbsp;#is';
+		$regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
 		preg_match_all($regex_magazines,$buffer,$liste_magazines);
 		$liste_magazines_courte=array();
 		foreach($liste_magazines[0] as $magazine) {
@@ -171,11 +168,14 @@ class Inducks {
     }
 
     static function appel() {
+        //$user_pcent=rawurlencode($_POST['user']);
+        //$pass_pcent=rawurlencode($_POST['pass']);
         $user_urled=urlencode($_POST['user']);
         $pass_urled=urlencode($_POST['pass']);
         $data = urlencode('login='.$user_pcent.'&pass='.$pass_pcent.'&redirect=collection.php');
 
         return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\',\''.$user_urled.'\',\''.$pass_urled.'\',\''.$data.'\',\'POST\',\'http://coa.inducks.org/collection.php\',\'coa-preferred-language=4\',\'coa.inducks.org\'';
+        //return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\'';
     }
 }
 if (isset($_POST['get_pays'])) {
