@@ -16,10 +16,10 @@ require_once('Inducks.class.php');
 require_once('Util.class.php');
 
 $action=isset($_GET['action'])?$_GET['action']:null;
-if (is_null(constant('TITRE_PAGE_'.strtoupper($action))))
-    $titre=constant('TITRE_PAGE_ACCUEIL');
-else    
+if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
+else
+    $titre=constant('TITRE_PAGE_ACCUEIL');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -663,7 +663,7 @@ else
                                         else {
                                             if (isset($onglet_magazine) && isset($pays)) {
                                             ?>
-                                                <OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
+                                                <br /><br /><OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
                                                     <PARAM NAME=movie VALUE="dm.swf">
                                                     <PARAM NAME=play VALUE=false>
                                                     <PARAM NAME=loop VALUE=false>
