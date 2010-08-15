@@ -73,13 +73,14 @@ class Liste {
 
 	function liste_magazines() {
         $d=new Database();
-		$tab=array();
-		foreach($this->collection as $pays=>$numeros_pays) {
-			foreach($numeros_pays as $magazine=>$numeros) {
-				$tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,utf8_encode($d->get_nom_complet_magazine($pays, $magazine)));
-			}
-		}
-		return $tab;
+            $tab=array();
+            foreach($this->collection as $pays=>$numeros_pays) {
+                    foreach($numeros_pays as $magazine=>$numeros) {
+                        list($nom_complet_pays,$nom_complet_magazine)=$d->get_nom_complet_magazine($pays, $magazine);
+                        $tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,utf8_encode($nom_complet_magazine));
+                    }
+            }
+            return $tab;
 	}
 
 	function statistiques($onglet) {
@@ -182,9 +183,9 @@ class Liste {
 			$auteurs=array('Don+Rosa');//,'Don+Rosa','Romano+Scarpa','Al+Taliaferro','Bruce+Hamilton','Massimo+De+Vita','Tony+Strobl');
 			foreach($auteurs as $auteur) {
 				$adresse_auteur='http://coa.inducks.org/comp2.php?code=&keyw=&keywt=i&exactpg=&pg1=&pg2=&bro2=&bro3=&kind=0&rowsperpage=0&columnsperpage=0&hero=&xapp=&univ=&xa2=&creat='.$auteur.'&creat2=&plot=&plot2=&writ=&writ2=&art=&art2=&ink=&ink2=&pub1=&pub2=&part=&ser=&xref=&mref=&xrefd=&repabb=&repabbc=al&imgmode=0&vdesc2=on&vdesc=en&vfr=on&sort1=auto';
-				$regex_code_histoire='#<A HREF="story.php\?c=[^"]+"><font courier>([^<]+)</font></A>#';
-				$regex_histoire_code_personnages='#<tr[^>]+>.<td[^>]+><[^>]+><[^>]+><br>.<A[^>]+><[^>]+>([^<]+)</font></A> </td>.<td>[ ]*(?:<[^>]+>)?(<A [^<]+</A>[, ]*)*[^<]*(?:</small>)?(?:(?:(?:<i>)?[^<]*(?:<span[^<]*</span>[ ]*)*[^<]*</i>)?<br>)?.(?:.<i>(?:[^<]*)</i>)?(?:<br>.)?</td>.<td>(?:[^<]*<br>.)?<small>(?:[^<]*<br>)*[^<]*</small></td>.<td>(?:[^<]*<A [^>]+>(?:(?:<span [^>]+>)?[^<]*(?:</span>[ ]*)?)*</A>[()?*, ]*)+(?:<font [^<]+</font>)?[^<]*(?:<br>.)?(?:<font[^<]*</font><br>.)?</td>.<td>(([^<]*(<A [^<]*</A>[, ]*)*(?:<br>.?)?[^<]*)*)</td><td>(?:(?:[^<]*(?:<(?:A|i)[^<]*</(?:A|i)>)+[.()0-9a-zA-Z, ]*)*<br>.?)*#is';
-				$regex_numero='#<A HREF="issue.php\?c=[^"]*">([^<]*)</A>#';
+				$regex_code_histoire='#<a href="story.php\?c=[^"]+"><font courier>([^<]+)</font></a>#';
+				$regex_histoire_code_personnages='#<tr[^>]+>.<td[^>]+><[^>]+><[^>]+><br>.<A[^>]+><[^>]+>([^<]+)</font></a> </td>.<td>[ ]*(?:<[^>]+>)?(<A [^<]+</a>[, ]*)*[^<]*(?:</small>)?(?:(?:(?:<i>)?[^<]*(?:<span[^<]*</span>[ ]*)*[^<]*</i>)?<br>)?.(?:.<i>(?:[^<]*)</i>)?(?:<br>.)?</td>.<td>(?:[^<]*<br>.)?<small>(?:[^<]*<br>)*[^<]*</small></td>.<td>(?:[^<]*<A [^>]+>(?:(?:<span [^>]+>)?[^<]*(?:</span>[ ]*)?)*</a>[()?*, ]*)+(?:<font [^<]+</font>)?[^<]*(?:<br>.)?(?:<font[^<]*</font><br>.)?</td>.<td>(([^<]*(<A [^<]*</a>[, ]*)*(?:<br>.?)?[^<]*)*)</td><td>(?:(?:[^<]*(?:<(?:A|i)[^<]*</(?:A|i)>)+[.()0-9a-zA-Z, ]*)*<br>.?)*#is';
+				$regex_numero='#<a href="issue.php\?c=[^"]*">([^<]*)</a>#';
 
 
 				list($nb_codes,$nb,$buffer,$codes,$histoirse)=liste_histoires($adresse_auteur,$regex_code_histoire,$regex_histoire_code_personnages);

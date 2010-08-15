@@ -68,7 +68,7 @@ foreach($counts as $pays=>$magazines) {
 		echo ERREUR_CONNEXION_INDUCKS;
 	}
 	foreach($magazines as $magazine=>$cpt) {
-		$regex_nb_numeros='#<li><A HREF="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</A>&nbsp;<i>\(([^ ]+) num#';
+		$regex_nb_numeros='#<li><a HREF="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</a>&nbsp;<i>\(([^ ]+) num#';
 		preg_match($regex_nb_numeros,$buffer,$nb);
 
 		array_push($possede_pct,round(100*($cpt/$nb[1])));

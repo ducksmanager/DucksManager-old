@@ -6,11 +6,11 @@ require_once ('Util.class.php');
 $debut=microtime(true);
 global $regex_code_histoire;
 $regex_code_histoire='#<td valign=center bgcolor=\#cbdced><[^>]+><[^>]+><br>[^<]*'
-					 .'<A HREF="story.php\?c=[^"]+"><font courier>([^<]+)</font></A>#is'; 
+					 .'<a href="story.php\?c=[^"]+"><font courier>([^<]+)</font></a>#is';
 global $regex_histoire_code_personnages;
 $regex_histoire_code_personnages='#<tr[^>]+>[^<]*<td valign=center bgcolor=\#cbdced><[^>]+><[^>]+><br>[^<]*<A[^>]+><[^>]+>([^<]+)<\/font><\/A> <\/td>[^<]*<td>[ ]*(?:<[^>]+>)?(<A [^<]+<\/A>[, ]*)*[^<]*(?:<\/small>)?(?:(?:(?:<i>)?[^<]*(?:<span[^<]*<\/span>[ ]*)*[^<]*<\/i>)?<br>)?.(?:[^<]*<i>[^<]*<\/i>)?(?:<br>)?[^<]*(?:<img[^>]*>)?<\/td>[^<]*<td>(?:[^<]*<br>.)?[^<]*(?:<br>)?[^<]*<small>(?:[^<]*<br>)*[^<]*<\/small><\/td>[^<]*<td>(?:[^<]*<A [^>]+>(?:(?:<span [^>]+>)?[^<]*(?:<\/span>[ ]*)?)*<\/A>[()?*, ]*)+(?:<font [^<]+<\/font>)?[^<]*(?:<br>.)?(?:<font[^<]*<\/font><br>.)?<\/td>[^<]*<td>(([^<]*(<A [^<]*<\/A>[, ]*)*(?:<br>.?)?[^<]*)*)<\/td><td>(?:(?:[^<]*(?:<(?:A|i)[^<]*<\/(?:A|i)>)+[.()0-9a-zA-Z, ]*)*<br>.?)*#is';
 global $regex_numero;
-$regex_numero='#<A HREF="issue.php\?c=([^/]+)/[^"]*">([^ ]+)[ ]*([^<]+)</A>#';
+$regex_numero='#<a href="issue.php\?c=([^/]+)/[^"]*">([^ ]+)[ ]*([^<]+)</a>#';
 
 global $notations_tous_users;
 $notations_tous_users=array();

@@ -135,15 +135,20 @@ class Database {
     function get_nom_complet_magazine($pays,$magazine) {
         $requete_nom_magazine='SELECT NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND NomAbrege LIKE \''.$magazine.'\'';
         $resultat_nom_magazine=$this->requete_select($requete_nom_magazine);
-        if (count($resultat_nom_magazine)==0) {
+        $requete_nom_pays='SELECT NomComplet FROM pays WHERE NomAbrege LIKE \''.$pays.'\'';
+        $resultat_nom_pays=$this->requete_select($requete_nom_pays);
+        if (count($resultat_nom_magazine)==0 || count($resultat_nom_pays)==0) {
             Inducks::get_noms_complets_magazines($pays);
             $resultat_nom_magazine=$this->requete_select($requete_nom_magazine);
-            if (count($resultat_nom_magazine) == 0) {
+            $resultat_nom_pays=$this->requete_select($requete_nom_pays);
+            if (count($resultat_nom_magazine)==0 || count($resultat_nom_pays)==0) {
                 $requete_nom_magazine='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.$magazine.'","'.$magazine.'")';
                 $this->requete($requete_nom_magazine);
+                $requete_nom_pays='INSERT INTO pays(NomAbrege,NomComplet) VALUES ("'.$pays.'","'.$pays.'")';
+                $this->requete($requete_nom_pays);
             }
         }
-        return $resultat_nom_magazine[0]['NomComplet'];
+        return array($resultat_nom_pays[0]['NomComplet'],$resultat_nom_magazine[0]['NomComplet']);
     }
 
 	function liste_etats() {

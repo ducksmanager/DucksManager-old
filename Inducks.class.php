@@ -96,6 +96,8 @@ class Inducks {
 		$nom_pays=preg_replace($regex_pays,'$1',$nom_pays_recup);
 		preg_match_all($regex_magazine,$buffer,$pays_recup);
 		$d = new Database();
+                $requete_nom_pays='INSERT INTO pays(NomAbrege, NomComplet) VALUES ("'.$pays.'", "'.utf8_decode($nom_pays[0]).'")';
+                $d->requete($requete_nom_pays);
 		foreach($pays_recup[0] as $i=>$p) {
                     $requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.preg_replace($regex_magazine,'$1',$p).'","'.str_replace('"','',utf8_decode(preg_replace($regex_magazine,'$2',$p))).'")';
                     $d->requete($requete_noms_magazines);

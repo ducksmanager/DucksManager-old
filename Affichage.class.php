@@ -56,7 +56,7 @@ class Affichage {
 			exit(-1);
 		}
 		$id_user=$d->user_to_id($_SESSION['user']);
-        $nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
+                list($pays,$nom_complet)=$d->get_nom_complet_magazine($pays, $magazine);
         ?>
 		<br />
 		<table border="0" width="100%">

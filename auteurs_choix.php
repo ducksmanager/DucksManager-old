@@ -9,7 +9,7 @@ if (isset($_POST['value'])) {
 		$url='http://coa.inducks.org/legend-creator.php?start='.$premiere_lettre.'&sortby=&filter=';
 	else
 		$url='http://coa.inducks.org/legend-creator.php?start=1&sortby=&filter=';
-	$regex_auteur='#<A HREF="creator\.php\?c=([^"]+)">([^<]+)</A><td>[^<]*<td>[^<]*<td>[^<]*<td>([^<]*)<tr>#is';
+	$regex_auteur='#<a href="creator\.php\?c=([^"]+)">([^<]+)</a><td>[^<]*<td>[^<]*<td>[^<]*<td>([^<]*)<tr>#is';
 	$page=Util::get_page($url);
 	preg_match_all($regex_auteur,$page,$auteurs);   
 	$i=0;  
