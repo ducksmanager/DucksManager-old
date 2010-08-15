@@ -21,7 +21,7 @@ else {
 	echo 'Erreur de connexion &agrave; Inducks!';
 	return false;
 }
-$regex_pays='#<A HREF="publication\.php\?c='.$_GET['pays'].'/([^"]+)">([^<]+)</A>&nbsp;#is';
+$regex_pays='#<a href="publication\.php\?c='.$_GET['pays'].'/([^"]+)">([^<]+)</a>&nbsp;#is';
 $liste=array();
 preg_match_all($regex_pays,$buffer,$liste_pays);
 foreach ($liste_pays[0] as $pays) {
