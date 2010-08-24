@@ -16,14 +16,15 @@ class MyFonts extends Post {
             'fg'=>$color,
             'bg'=>$color_bg,
             'goodies'=>'ot.liga',
-            'i[0]'=>$font.',,720,144'
+            urlencode('i[0]')=>urlencode($font.',,720,144')
         );
 
         // send a request to example.com (referer = jonasjohn.de)
         $this->p=new Post(
             "http://new.myfonts.com/ajax-server/testdrive.xml",
             "http://www.jonasjohn.de/",
-            $data
+            $data,
+            'GET'
         );
 
         $code_image=$this->p->content;
