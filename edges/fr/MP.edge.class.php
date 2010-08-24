@@ -12,7 +12,7 @@ class MP extends Edge {
                                     array('debut'=>224,'fin'=>228, 'sauf'=>array(225)),
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
-                                    265,266,267,268,270,275,276,278,279,280,288,291,295,296,array('debut'=>298,'fin'=>304),306,array('debut'=>309,'fin'=>314,'sauf'=>array(311)));
+                                    265,266,267,268,270,273,275,276,278,279,280,288,291,292,295,296,array('debut'=>298,'fin'=>304),306,array('debut'=>308,'fin'=>314),317);
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
 
@@ -188,6 +188,7 @@ class MP extends Edge {
             $this->placer_image('Titre MP 236-253.png','bas',array(0,$this->largeur));
         }
         elseif ($this->numero >=265) {
+            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
             if (in_array($this->numero, array(300,303,304))) {
                 $this->placer_image('MP.'.$this->numero.'.tranche.png');
                 return $this->image;
@@ -204,7 +205,6 @@ class MP extends Edge {
                 $this->placer_image('Titre MPG.png', 'haut', array($this->largeur/8, $this->largeur/2), 0.667, 0.667);
             }
             else {
-                include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
                 $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
                 $blanc=imagecolorallocate($image2, 255, 255, 255);
                 
@@ -238,14 +238,21 @@ class MP extends Edge {
                 }
                 $this->image=imagerotate($image2, 90, $blanc);
             }
+            
             list($width,$height)= getimagesize($this->getChemin().'/MP.'.$this->numero.'.icone.png');
             $hauteur_icone=$this->largeur*($height/$width);
             $this->placer_image('MP.'.$this->numero.'.icone.png', 'bas', array(0, -$hauteur_icone/2+1.4*$this->largeur));
 
-            $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
-            $texte_numero=new Texte($this->numero,$this->largeur*0.12,$this->hauteur-5.5*Edge::$grossissement,
-                                    6*Edge::$grossissement,0,$couleur_texte,'Monem Bold.ttf');
-            $texte_numero->dessiner($this->image);
+            $post=new MyFonts('fontfont/zwo/bold-lf-sc',
+                          rgb2hex($rouge_texte,$vert_texte,$bleu_texte),
+                          rgb2hex($rouge,$vert,$bleu),
+                          225,
+                          $this->numero);
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*($width/$height);
+            imagecopyresampled ($this->image, $texte, $this->largeur*0.05, $this->hauteur-0.8*$this->largeur, 0, 0, $nouvelle_largeur - $this->largeur*0.1, $this->largeur/2, $width, $height/2);
+            //$this->placer_image($texte,'bas');
             
         }
         return $this->image;
