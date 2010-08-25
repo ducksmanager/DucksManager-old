@@ -2,7 +2,7 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>463,'sauf'=>array(389,403,436)));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>463,'sauf'=>array(389,403)));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -227,18 +227,18 @@ class PM extends Edge {
             $chemin_image=$post->chemin_image;
             list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
             $nouvelle_largeur=$this->largeur*($width/$height);
-            imagecopyresampled ($image2, $texte, 25*Edge::$grossissement, $this->largeur*0.05, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.9, $width, $height);
+            imagecopyresampled ($image2, $texte, 25*Edge::$grossissement, $this->largeur*0.05, 0, 0, $nouvelle_largeur*1.4, $this->largeur*1.8, $width, $height);
 
             if (defined('PM_'.$this->numero)) {
                 $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
                                   rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                                   rgb2hex($rouge, $vert, $bleu),
-                                  7000,
+                                  3000,
                                   constant('PM_'.$this->numero));
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
                 $nouvelle_largeur=$this->largeur*0.8*($width/$height);
-                imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.6, $this->largeur*0.6, $width, $height);
+                imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*1.4, $this->largeur*0.7, $width, $height*0.5);
             }
 
             $this->image=imagerotate($image2, 90, $blanc);
@@ -255,7 +255,10 @@ class PM extends Edge {
                     $this->placer_image('logo PM.png','haut',array(0,$this->largeur*3.5));
                 }
                 else {
-                    imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur2);
+                    if ($this->numero >= 449)
+                        imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur_texte);
+                    else
+                        imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur2);
                     $this->placer_image('logo PM.png');
                 }
             }
