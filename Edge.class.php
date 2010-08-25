@@ -210,7 +210,7 @@ if (isset($_POST['get_visible'])) {
         echo PROBLEME_BD;
         exit(-1);
     }
-    $nom_complet_magazine=$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+    list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
     ?>
     <div class="titre_magazine"><?=utf8_encode($nom_complet_magazine)?></div><br />
     <div class=""numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
