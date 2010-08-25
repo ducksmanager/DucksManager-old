@@ -11,29 +11,29 @@ class Inducks {
 		$url='http://coa.inducks.org/creator.php?c='.$nom_auteur_abrege;
 		$page=Util::get_page($url);
 		preg_match($regex_auteur,$page,$auteur);
-		return $auteur[1];
+		return $auteur[1];  
 	}
 
 	static function get_numeros($pays,$magazine) {
-		$regex_magazine='#<a href=issue.php\?c='.$pays.'%2f'.$magazine.'[+]*([^>]*)>([^<]*)</a>#is';
-		$url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
-		$handle = @fopen($url, "r");
-		if ($handle) {
-			$buffer="";
-		   	while (!feof($handle)) {
-		     	$buffer.= fgets($handle, 4096);
-		   	}
-		   	fclose($handle);
-		}
-		else {
-			echo ERREUR_CONNEXION_INDUCKS;
-			return false;
-		}
-		preg_match_all($regex_magazine,$buffer,$numeros);
-		foreach ($numeros as $indice=>$numero) {
-			$numeros[$indice]=preg_replace($regex_magazine,'$1',$numero);
-		}
-		return $numeros[0];
+            $regex_magazine='#<a href=issue.php\?c='.$pays.'%2F'.$magazine.'[+]*([^>]*)>([^<]*)</a>#is';
+            $url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
+            $handle = @fopen($url, "r");
+            if ($handle) {
+                $buffer="";
+                while (!feof($handle)) {
+                    $buffer.= fgets($handle, 4096);
+                }
+                fclose($handle);
+            }
+            else {
+                echo ERREUR_CONNEXION_INDUCKS;
+                return false;
+            }
+            preg_match_all($regex_magazine,$buffer,$numeros);
+            foreach ($numeros as $indice=>$numero) {
+                $numeros[$indice]=preg_replace($regex_magazine,'$1',$numero);
+            }
+            return $numeros[0];
 	}
 
 	function get_pays() {
@@ -64,8 +64,8 @@ class Inducks {
         include_once('Database.class.php');
         $d=new Database();
         $requete_nom_complet_magazine='SELECT NomComplet FROM magazines WHERE (PaysAbrege LIKE "'.$pays.'" AND NomAbrege LIKE "'.$magazine.'")';
-		$resultat_nom_complet_magazine=$d->requete_select($requete_nom_complet_magazine);
-		if (!array_key_exists(0,$resultat_nom_complet_magazine)) {
+        $resultat_nom_complet_magazine=$d->requete_select($requete_nom_complet_magazine);
+        if (!array_key_exists(0,$resultat_nom_complet_magazine)) {
             $liste_magazines=Inducks::get_noms_complets_magazines($pays);
             return $liste_magazines[$magazine];
         }
@@ -81,11 +81,11 @@ class Inducks {
 		$adresse_pays='http://coa.inducks.org/country.php?c='.$pays.'&lg='.$codes_inducks[$_SESSION['lang']];
 		$handle = @fopen($adresse_pays, "r");
 		if ($handle) {
-			$buffer="";
-		   	while (!feof($handle)) {
-		     	$buffer.= fgets($handle, 4096);
-		   	}
-		   	fclose($handle);
+                    $buffer="";
+                    while (!feof($handle)) {
+                        $buffer.= fgets($handle, 4096);
+                    }
+                    fclose($handle);
 		}
 		else {
 			echo ERREUR_CONNEXION_INDUCKS;
@@ -104,31 +104,36 @@ class Inducks {
 		}
 	}
 
+        static function get_liste_magazines($pays) {
+            $url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
+            $handle = @fopen($url, "r");
+            if ($handle) {
+                    $buffer="";
+                    while (!feof($handle)) {
+                    $buffer.= fgets($handle, 4096);
+                    }
+                    fclose($handle);
+            }
+            else {
+                    echo ERREUR_CONNEXION_INDUCKS;
+                    return false;
+            }
+            $regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
+            preg_match_all($regex_magazines,$buffer,$liste_magazines);
+            $liste_magazines_courte=array();
+            foreach($liste_magazines[0] as $magazine) {
+                    $liste_magazines_courte[preg_replace($regex_magazines,'$1',$magazine)]=preg_replace($regex_magazines,'$2',$magazine);//, "��������������������������", "aaaaaaooooooeeeeciiiiuuuun");;
+            }
+            array_multisort($liste_magazines_courte,SORT_STRING);
+            //sort($liste_pays_courte);
+            return $liste_magazines_courte;
+        }
+
 	function get_magazines($pays) {
-		$url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
-		$handle = @fopen($url, "r");
-		if ($handle) {
-			$buffer="";
-		   	while (!feof($handle)) {
-		     	$buffer.= fgets($handle, 4096);
-		   	}
-		   	fclose($handle);
-		}
-		else {
-			echo ERREUR_CONNEXION_INDUCKS;
-			return false;
-		}
-		$regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
-		preg_match_all($regex_magazines,$buffer,$liste_magazines);
-		$liste_magazines_courte=array();
-		foreach($liste_magazines[0] as $magazine) {
-			$liste_magazines_courte[preg_replace($regex_magazines,'$1',$magazine)]=preg_replace($regex_magazines,'$2',$magazine);//, "��������������������������", "aaaaaaooooooeeeeciiiiuuuun");;
-		}
-		array_multisort($liste_magazines_courte,SORT_STRING);
-		//sort($liste_pays_courte);
-		foreach($liste_magazines_courte as $id=>$magazine) {
-			echo '<option id="'.$id.'">'.$magazine;
-		}
+            $liste=Inducks::get_liste_magazines($pays);
+            foreach($liste as $id=>$magazine) {
+                echo '<option id="'.$id.'">'.$magazine;
+            }
 	}
 
     static function afficher_form_inducks() {
@@ -170,8 +175,8 @@ class Inducks {
     }
 
     static function appel() {
-        //$user_pcent=rawurlencode($_POST['user']);
-        //$pass_pcent=rawurlencode($_POST['pass']);
+        $user_pcent=rawurlencode($_POST['user']);
+        $pass_pcent=rawurlencode($_POST['pass']);
         $user_urled=urlencode($_POST['user']);
         $pass_urled=urlencode($_POST['pass']);
         $data = urlencode('login='.$user_pcent.'&pass='.$pass_pcent.'&redirect=collection.php');
@@ -206,7 +211,7 @@ elseif (isset($_POST['get_cover'])) {
         exit(0);
     }
     $nb_plus=7-strlen($_POST['numero'])-strlen($_POST['magazine']);
-    $regex_image='#<td><img src="([^"]+)"><tr><td[^>]+><small>[^<]+<a href=\'http://outducks.org\'>outducks.org</a>#is';
+    $regex_image='#<img src="([^"]+)"><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
     $adresse_numero='http://coa.inducks.org/issue.php?c='.$_POST['pays'].'%2F'.$_POST['magazine'];
     for ($i=0;$i<$nb_plus;$i++)
         $adresse_numero.='+';
