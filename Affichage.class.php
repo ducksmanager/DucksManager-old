@@ -5,34 +5,38 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 class Affichage {
 
-	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe) {
-
-		$cpt=0;
-		$nb_onglets=count($tab_onglets);
-		$largeur_tab=intval(100/$nb_onglets);
-        ?><ul class="tabnav"><?php
-		foreach($tab_onglets as $nom_onglet=>$infos_lien) {
-            $contenu_lien_onglet=$nom_onglet;
-            ?><li class="<?php
-            if ($infos_lien[1]==AJOUTER_MAGAZINE)
-               echo 'nouveau ';
-            if ($infos_lien[0]==$onglet_courant)
-               echo 'active ';
-            ?>"><a title="<?=$infos_lien[1]?>" href="<?=$prefixe?>&amp;<?=$argument?>=<?=$infos_lien[0]?>">
-            <?php
-            $pos_slash=strpos($nom_onglet,'/');
-            if ($pos_slash!==false) {
-                $pays=substr($nom_onglet,0,$pos_slash);
-                $magazine=substr($nom_onglet,$pos_slash+1, strlen($nom_onglet));
-                ?>
-                <img src="images/flags/<?=$pays?>.png" alt="<?=$pays?>" /><span><?=$magazine?></span>
+	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$drapeaux=false) {
+            $cpt=0;
+            $nb_onglets=count($tab_onglets);
+            $largeur_tab=intval(100/$nb_onglets);
+            ?><ul class="tabnav"><?php
+            foreach($tab_onglets as $nom_onglet=>$infos_lien) {
+                $pays=$drapeaux ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
+                $contenu_lien_onglet=$nom_onglet;
+                ?><li class="<?php
+                if ($infos_lien[1]==AJOUTER_MAGAZINE)
+                   echo 'nouveau ';
+                if ($infos_lien[0]==$onglet_courant)
+                   echo 'active ';
+                $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : '');
+                $lien=empty($prefixe)?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
+                $onmouseover=empty($prefixe) && $infos_lien[0]!='new' ?'montrer_magazines(\''.$pays.'\')':'';
+                ?>"><a title="<?=$infos_lien[1]?>"
+                       name="<?=$nom?>"
+                       onmouseover="<?=$onmouseover?>"
+                       href="<?=$lien?>">
                 <?php
-            }
-            else
-                echo $contenu_lien_onglet;
-            ?>
-                </a></li>
-            <?php
+                if ($drapeaux && $infos_lien[0]!='new') {
+                    ?>
+                    <img src="images/flags/<?=$pays?>.png" alt="<?=$pays?>" /><span><?=$infos_lien[1]?></span>
+                    <?php
+                }
+                else {
+                    echo $contenu_lien_onglet;
+                }
+                ?>
+                    </a></li>
+                <?php
 		}
         ?></ul><br /><?php
 	}
@@ -56,7 +60,7 @@ class Affichage {
 			exit(-1);
 		}
 		$id_user=$d->user_to_id($_SESSION['user']);
-                list($pays,$nom_complet)=$d->get_nom_complet_magazine($pays, $magazine);
+                list($pays_complet,$nom_complet)=$d->get_nom_complet_magazine($pays, $magazine);
         ?>
 		<br />
 		<table border="0" width="100%">
