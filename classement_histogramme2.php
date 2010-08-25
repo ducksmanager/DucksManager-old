@@ -54,8 +54,7 @@ foreach($l->collection as $pays=>$numeros_pays) {
 }
 $j=0;
 foreach($counts as $pays=>$magazines) {
-	$liste_magazines=Inducks::get_noms_complets_magazines($pays);
-	$adresse_publications_pays='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays	;
+	$adresse_publications_pays='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
 	$handle = @fopen($adresse_publications_pays, "r");
 	if ($handle) {
 		$buffer="";
@@ -68,18 +67,19 @@ foreach($counts as $pays=>$magazines) {
 		echo ERREUR_CONNEXION_INDUCKS;
 	}
 	foreach($magazines as $magazine=>$cpt) {
-		$regex_nb_numeros='#<li><a HREF="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</a>&nbsp;<i>\(([^ ]+) num#';
-		preg_match($regex_nb_numeros,$buffer,$nb);
+            $nom_complet_magazine=Inducks::get_nom_complet_magazine($pays, $magazine);
+            $regex_nb_numeros='#<li><a href="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</a>&nbsp;<i>\(([^ ]+)#';
+            preg_match($regex_nb_numeros,$buffer,$nb);
 
-		array_push($possede_pct,round(100*($cpt/$nb[1])));
-		array_push($total_pct,100-round(100*($cpt/$nb[1])));
+            array_push($possede_pct,round(100*($cpt/$nb[1])));
+            array_push($total_pct,100-round(100*($cpt/$nb[1])));
 
-		array_push($possede,$cpt);
-		array_push($total,$nb[1]);
+            array_push($possede,$cpt);
+            array_push($total,$nb[1]);
 
-		array_push($noms_magazines_courts,utf8_encode($magazine));
-		$noms_magazines[$j]=$liste_magazines[$magazine];
-		$j++;
+            array_push($noms_magazines_courts,utf8_encode($magazine));
+            $noms_magazines[$j]=$nom_complet_magazine;
+            $j++;
 	}
 }
 $title = new title(utf8_encode(POSSESSION_NUMEROS));

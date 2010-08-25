@@ -32,15 +32,15 @@ $valeurs_magazines=array();
 $cles_magazines=array();
 $nb_magazines_autres=0;
 foreach($counts as $pays=>$magazines) {
-	$liste_magazines=Inducks::get_noms_complets_magazines($pays);
 	foreach($magazines as $magazine=>$cpt) {
+	$nom_complet_magazine=Inducks::get_nom_complet_magazine($pays, $magazine);
 		if ($cpt/$total<0.01) {
 			$autres+=$cpt;
 			$nb_magazines_autres++;
 		}
 		else {
 			$valeur=new pie_value($cpt,$magazine);
-			$valeur->set_tooltip($liste_magazines[$magazine]
+			$valeur->set_tooltip($nom_complet_magazine
                                             .utf8_encode('<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.intval(100*$cpt/$total).'%)');
 			array_push($valeurs_magazines,$valeur);
 			//$cpt_magazines[$liste_magazines[$magazine].' ('.$cpt.')']=$cpt;
@@ -50,8 +50,8 @@ foreach($counts as $pays=>$magazines) {
 }
 if ($autres!=0) {
 	$valeur_autres=new pie_value($autres,AUTRES);
-	$valeur_autres->set_tooltip(utf8_encode(AUTRES).' ('.$nb_magazines_autres.' '.MAGAZINES__LOWERCASE.')'
-                                    .'<br>'.NUMEROS_POSSEDES.' : '.$autres.' ('.intval(100*$autres/$total).'%)');
+	$valeur_autres->set_tooltip(utf8_encode(AUTRES.' ('.$nb_magazines_autres.' '.MAGAZINES__LOWERCASE.')'
+                                    .'<br>'.NUMEROS_POSSEDES.' : '.$autres.' ('.intval(100*$autres/$total).'%)'));
 	array_push($valeurs_magazines,$valeur_autres);
 }
 $title=new title(PART_MAGAZINES_COLLECTION);
