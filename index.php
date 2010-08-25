@@ -624,21 +624,33 @@ else
                                         ?>
                                         <?=POSSESSION_MAGAZINES_1?><br /><?=POSSESSION_MAGAZINES_2?><br />
                                         <?php
-                                        //echo '<table border="0" width="20%">';
                                         $onglets_magazines=$l->liste_magazines();
-                                        if (isset($_POST['magazine']))
-				                            $onglets_magazines[$_POST['pays'].'/'.$_POST['magazine']]=array($_POST['pays'].'/'.$_POST['magazine'],NOUVEAU_MAGAZINE);
-                                        $onglets_magazines[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
-                                        if (!isset($_GET['onglet_magazine']))
-                                            $onglet_magazine=null;
-                                        else {
-                                            if (isset($_POST['magazine']))
-                                                $onglet_magazine=$_POST['pays'].'/'.$_POST['magazine'];
-                                            else
-                                                $onglet_magazine=$_GET['onglet_magazine'];
-                                        }
-                                        Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
 
+                                        $onglets_pays=$l->liste_pays();
+                                        if (isset($_POST['magazine'])) {
+                                            $onglets_pays[$_POST['pays']]=array($_POST['pays'],NOUVEAU_PAYS);
+                                            $onglets_magazines[$_POST['pays'].'/'.$_POST['magazine']]=array($_POST['pays'].'/'.$_POST['magazine'],NOUVEAU_MAGAZINE);
+                                        }
+                                        else {
+                                            $onglets_pays[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
+                                        }
+                                        if (!isset($_GET['onglet_magazine'])) {
+                                            $onglet_pays=null;
+                                            $onglet_magazine=null;
+                                        }
+                                        else {
+                                            if (isset($_POST['magazine'])) {
+                                                $onglet_pays=$_POST['pays'];
+                                                $onglet_magazine=$_POST['pays'].'/'.$_POST['magazine'];
+                                            }
+                                            else {
+                                                $onglet_pays='!';
+                                                $onglet_magazine=$_GET['onglet_magazine'];
+                                            }
+                                        }
+                                        Affichage::onglets($onglet_pays,$onglets_pays,'','',true);
+                                        Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
+                                        
                                         if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {
                                             echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
                                             ?>
