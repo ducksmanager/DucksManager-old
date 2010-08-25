@@ -32,7 +32,10 @@ class Affichage {
                     <?php
                 }
                 else {
-                    echo $contenu_lien_onglet;
+                    if ($argument=='onglet_magazine')
+                        echo substr ($contenu_lien_onglet, strpos ($contenu_lien_onglet, '/')+1,strlen($contenu_lien_onglet));
+                    else
+                        echo $contenu_lien_onglet;
                 }
                 ?>
                     </a></li>
