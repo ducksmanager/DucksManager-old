@@ -8,15 +8,14 @@ class MP extends Edge {
                                     87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
                                     array('debut'=>140,'fin'=>192),
+                                    array('debut'=>193,'fin'=>204),
                                     array('debut'=>205,'fin'=>216),
-                                    array('debut'=>217,'fin'=>218),
-                                    array('debut'=>224,'fin'=>228, 'sauf'=>array(225)),
+                                    array('debut'=>217,'fin'=>228),
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
                                     265,266,267,268,270,273,275,276,278,279,280,288,291,292,295,296,array('debut'=>298,'fin'=>304),306,array('debut'=>308,'fin'=>314),317);
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
-
     function MP($numero) {
         $this->numero=$numero;
         if($this->numero <=84) {
@@ -135,24 +134,58 @@ class MP extends Edge {
 
             $this->image=imagerotate($image2, 90, $blanc);
 
-            /*
-            list($texte_numero,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.texte_numero.140-191.png');
-            $nouvelle_hauteur=($this->largeur)*($height/$width);
-            imagefilledrectangle($this->image,$this->largeur/8, $this->hauteur-10*Edge::$grossissement, $this->largeur/8+$this->largeur-Edge::$grossissement/2, $this->hauteur-10*Edge::$grossissement+$nouvelle_hauteur-Edge::$grossissement/2,$couleur_texte);
-
-            imagecopyresampled ($this->image, $texte_numero, $this->largeur/8, $this->hauteur-10*Edge::$grossissement, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-
-            imagetruecolortopalette($this->image, false, 255);
-            imagecolorset($this->image, imagecolorclosest($this->image,0,0,0), $rouge,$vert,$bleu);
-
-            imagepalettetotruecolor($this->image);
-            */
             $this->placer_image('MP.tete.png', 'haut', array(0,$this->largeur/2));
         }
-        elseif ($this->numero >= 205 && $this->numero<=216) {
+        elseif ($this->numero <= 204) {
+            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+
+            $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
+            $blanc=imagecolorallocate($image2, 255, 255, 255);
+
+            list($rouge,$vert,$bleu)=$this->getColorsFromDB();
+            $fond=imagecolorallocate($image2,$rouge,$vert,$bleu);
+            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
+            $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
+            imagefill($image2,0,0,$fond);
+
+            $lettres='MICKEYPARADE';
+            $post=new MyFonts('ef-typeshop/koblenz/bold',
+                          rgb2hex($rouge_texte,$vert_texte,$bleu_texte),
+                          rgb2hex($rouge,$vert,$bleu),
+                          1500,
+                          'MICKEY         PARADE       .');
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*($width/$height);
+            imagecopyresampled ($image2, $texte, $this->hauteur*0.3, $this->largeur*0.28, 0, 0, $nouvelle_largeur, $this->largeur*0.5, $width, $height/2);
+
+
+            $this->image=imagerotate($image2, 90, $blanc);
+            $blanc=imagecolorallocate($this->image, 255, 255, 255);
+            for ($i=0.57;$i>=0.51;$i-=0.015)
+                imagefilledrectangle($this->image, 0, $this->hauteur*$i, $this->largeur, $this->hauteur*$i-$this->largeur*0.05, $blanc);
+            $texte_numero=new Texte($this->numero,$this->largeur*0.7,$this->hauteur-$this->largeur*0.8,
+                                    5.5*Edge::$grossissement,90,$blanc,'Kabel Demi.ttf');
+            $texte_numero->dessiner($this->image);
+
+            $lettre_serie=new Texte($lettres[$this->numero-193],-1,$this->largeur,
+                                    8.5*Edge::$grossissement,0,$blanc,'Kabel Demi.ttf');
+            $lettre_serie->dessiner_centre($this->image);
+
+            imagefilledarc($this->image, $this->largeur/2, $this->largeur*1.9, $this->largeur*0.9, $this->largeur*0.9, 0, 360, $couleur_texte, IMG_ARC_PIE);
+            //imagefilledellipse($this->image, , , $couleur_texte);
+            $texte_numero_serie=new Texte($this->numero-192,-1,$this->largeur*2.2,
+                                    7*Edge::$grossissement,0,$fond,'Kabel Demi.ttf');
+            if ($this->numero-192 < 10)
+                $texte_numero_serie->dessiner_centre($this->image);
+            else {
+                $texte_numero_serie->dessiner_centre($this->image,array(0.9,1),array($rouge_texte,$vert_texte,$bleu_texte));
+            }
+        }
+        elseif ($this->numero<=216) {
             $this->placer_image('MP.'.$this->numero.'.tranche.png');
         }
-        elseif ($this->numero >= 217 && $this->numero<=235) {
+        elseif ($this->numero<=235) {
             $blanc=imagecolorallocate($this->image, 255, 255, 255);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
@@ -176,7 +209,7 @@ class MP extends Edge {
 
             $texte_numero=new Texte($texte,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
                                     5.5*Edge::$grossissement,90,$couleur_texte,'Kabel Demi.ttf');
-			$texte_numero->dessiner($this->image);
+            $texte_numero->dessiner($this->image);
             switch ($this->numero) {
                 case 230:
                     $texte_central=html_entity_decode ("SP&Eacute;CIAL MYST&Egrave;RE",ENT_NOQUOTES,'utf-8');
@@ -202,7 +235,7 @@ class MP extends Edge {
                 $texte->dessiner($this->image);
             }
         }
-        elseif ($this->numero >=236 && $this->numero <= 253) {
+        elseif ($this->numero <= 253) {
             $fond=imagecolorallocate($this->image,255,208,18);
             imagefill($this->image,0,0,$fond);
 
@@ -210,7 +243,7 @@ class MP extends Edge {
             
             $this->placer_image('Titre MP 236-253.png','bas',array(0,$this->largeur));
         }
-        elseif ($this->numero >=265) {
+        else {
             include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
             if (in_array($this->numero, array(300,303,304))) {
                 $this->placer_image('MP.'.$this->numero.'.tranche.png');
