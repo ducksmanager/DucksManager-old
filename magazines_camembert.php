@@ -50,6 +50,7 @@ foreach($counts as $pays=>$magazines) {
 }
 if ($autres!=0) {
 	$valeur_autres=new pie_value($autres,AUTRES);
+        $valeur_autres->set_colour('#84359');
 	$valeur_autres->set_tooltip(utf8_encode(AUTRES.' ('.$nb_magazines_autres.' '.MAGAZINES__LOWERCASE.')'
                                     .'<br>'.NUMEROS_POSSEDES.' : '.$autres.' ('.intval(100*$autres/$total).'%)'));
 	array_push($valeurs_magazines,$valeur_autres);
