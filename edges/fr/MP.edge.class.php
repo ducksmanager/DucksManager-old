@@ -5,9 +5,10 @@ class MP extends Edge {
     var $intervalles_validite=array(array('debut'=>1,'fin'=>2),
                                     array('debut'=>9,'fin'=>10),13,15,array('debut'=>42,'fin'=>44),48,49,55,57,60,61,63,
                                     array('debut'=>66,'fin'=>69),73,74,75,76,77,79,80,81,83,
-                                    87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>122, 'sauf'=>array(117)),125,126,array('debut'=>129,'fin'=>132),
-                                    142,147,149,152,154,160,162,164,171,176,181,182,191,
-                                    array('debut'=>205, 'fin'=>216),
+                                    87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
+                                    array('debut'=>133,'fin'=>139),
+                                    array('debut'=>140,'fin'=>153),154,160,162,164,171,176,181,182,191,
+                                    array('debut'=>205,'fin'=>216),
                                     array('debut'=>217,'fin'=>218),
                                     array('debut'=>224,'fin'=>228, 'sauf'=>array(225)),
                                     array('debut'=>229,'fin'=>234),
@@ -22,7 +23,7 @@ class MP extends Edge {
             $this->largeur=14*Edge::$grossissement;
             $this->hauteur=186*Edge::$grossissement;
         }
-        elseif ($this->numero <= 132) {
+        elseif ($this->numero <= 139) {
             $this->largeur=11.5*Edge::$grossissement;
             $this->hauteur=186*Edge::$grossissement;
         }
@@ -84,11 +85,33 @@ class MP extends Edge {
 
 
         }
-        elseif ($this->numero >=140 && $this->numero <= 191) {
+        elseif ($this->numero <= 139) {
+            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
+            $blanc=imagecolorallocate($image2,255,255,255);
+            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
+            $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
+            list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(0,0,0));
+            $fond=imagecolorallocate($image2,$rouge,$vert,$bleu);
+            imagefill($image2, 0, 0, $fond);
+            $post=new MyFonts('urw/nimbus-sans/l-black-condensed-italic',
+                              rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
+                              rgb2hex($rouge, $vert, $bleu),
+                              4500,
+                              'N° '.$this->numero.'                                                     MICKEY PARADE    .');
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*0.9*($width/$height);
+            imagecopyresampled ($image2, $texte, 2*Edge::$grossissement, $this->largeur*0.25, 0, 0, $nouvelle_largeur*1.3, $this->largeur*0.6, $width, $height/2);
+
+            $this->image=imagerotate($image2, 90, $blanc);
+            
+        }
+        elseif ($this->numero <= 191) {
             include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
             $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
             $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
-            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
+            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
             $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
             $fond=imagecolorallocate($image2,$rouge,$vert,$bleu);
@@ -103,8 +126,8 @@ class MP extends Edge {
             $post=new MyFonts('itc/franklin-gothic/franklin-got-cmp-demi-italic',
                               rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                               rgb2hex($rouge, $vert, $bleu),
-                              260,
-                              'N° '.$this->numero.'                     MICKEY PARADE');
+                              2200,
+                              'N° '.$this->numero.'                           MICKEY PARADE    .');
             $chemin_image=$post->chemin_image;
             list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
             $nouvelle_largeur=$this->largeur*0.9*($width/$height);
