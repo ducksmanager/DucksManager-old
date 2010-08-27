@@ -230,11 +230,16 @@ class PM extends Edge {
             imagecopyresampled ($image2, $texte, 25*Edge::$grossissement, $this->largeur*0.05, 0, 0, $nouvelle_largeur*1.4, $this->largeur*1.8, $width, $height);
 
             if (defined('PM_'.$this->numero)) {
+                $texte=constant('PM_'.$this->numero);
+                $longueur_texte=strlen($texte);
+                for ($i=$longueur_texte;$i<100;$i++)
+                    $texte.=' ';
+                $texte.='.';
                 $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
                                   rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                                   rgb2hex($rouge, $vert, $bleu),
-                                  3000,
-                                  constant('PM_'.$this->numero));
+                                  4000,
+                                  $texte);
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
                 $nouvelle_largeur=$this->largeur*0.8*($width/$height);
