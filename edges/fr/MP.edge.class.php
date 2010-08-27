@@ -7,7 +7,7 @@ class MP extends Edge {
                                     array('debut'=>66,'fin'=>69),73,74,75,76,77,79,80,81,83,
                                     87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
-                                    array('debut'=>140,'fin'=>153),154,160,162,164,171,176,181,182,191,
+                                    array('debut'=>140,'fin'=>192),
                                     array('debut'=>205,'fin'=>216),
                                     array('debut'=>217,'fin'=>218),
                                     array('debut'=>224,'fin'=>228, 'sauf'=>array(225)),
@@ -107,7 +107,7 @@ class MP extends Edge {
             $this->image=imagerotate($image2, 90, $blanc);
             
         }
-        elseif ($this->numero <= 191) {
+        elseif ($this->numero <= 192) {
             include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
             $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
             $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
