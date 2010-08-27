@@ -213,7 +213,7 @@ if (isset($_POST['get_visible'])) {
     list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
     ?>
     <div class="titre_magazine"><?=utf8_encode($nom_complet_magazine)?></div><br />
-    <div class=""numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
+    <div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
     <?php
     if (!getEstVisible($_POST['pays'], $_POST['magazine'], $_POST['numero'])) {
         ?>
@@ -287,6 +287,9 @@ elseif (isset($_POST['get_sous_texture'])) {
     }
 }
 elseif (isset($_GET['regen'])) {
+    ?>
+            <html><head><style type="text/css">img {margin-left:-4px;}</style></head><body>
+    <?php
     $pays=$_GET['pays'];
     $magazine=$_GET['magazine'];
     if (isset($_GET['debut'])) {
@@ -306,6 +309,7 @@ elseif (isset($_GET['regen'])) {
     foreach($liste_numeros as $numero) {?>
         <img src="Edge.class.php?grossissement=1.5&regen=true&pays=<?=$pays?>&magazine=<?=$magazine?>&numero=<?=$numero?>" />
     <?php }
+    ?></body></html><?php
 }
 elseif (isset($_GET['dispo_tranches'])) {
     $data=Edge::getPourcentageVisible(false, false, false);
