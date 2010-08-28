@@ -3,8 +3,8 @@ class MP extends Edge {
     var $pays='fr';
     var $magazine='MP';
     var $intervalles_validite=array(array('debut'=>1,'fin'=>2),
-                                    array('debut'=>9,'fin'=>10),13,15,array('debut'=>42,'fin'=>44),48,49,55,57,60,61,63,
-                                    array('debut'=>66,'fin'=>69),73,74,75,76,77,79,80,81,83,
+                                    array('debut'=>9,'fin'=>10),13,15,19,31,array('debut'=>42,'fin'=>44),48,49,52,55,57,60,61,63,
+                                    array('debut'=>66,'fin'=>69),71,73,74,75,76,77,79,80,81,83,
                                     87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
                                     array('debut'=>140,'fin'=>192),
@@ -13,7 +13,7 @@ class MP extends Edge {
                                     array('debut'=>217,'fin'=>228),
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
-                                    265,266,267,268,270,273,275,276,278,279,280,288,291,292,295,296,array('debut'=>298,'fin'=>304),306,array('debut'=>308,'fin'=>314),317);
+                                    265,266,267,268,270,273,275,276,278,279,280,286,288,290,291,292,array('debut'=>295,'fin'=>317));
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
     function MP($numero) {
@@ -259,6 +259,16 @@ class MP extends Edge {
                 imagefill($this->image,0,0,$fond);
 
                 $this->placer_image('Titre MPG.png', 'haut', array($this->largeur/8, $this->largeur/2), 0.667, 0.667);
+                $post=new MyFonts('fontfont/zwo/bold-lf-sc',
+                      rgb2hex($rouge_texte,$vert_texte,$bleu_texte),
+                      rgb2hex($rouge,$vert,$bleu),
+                      225,
+                      $this->numero);
+                $chemin_image=$post->chemin_image;
+                list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+                $nouvelle_largeur=$this->largeur*($width/$height);
+                imagecopyresampled ($this->image, $texte, $this->largeur*0.05, $this->hauteur-0.8*$this->largeur, 0, 0, $nouvelle_largeur - $this->largeur*0.1, $this->largeur/2, $width, $height/2);
+
             }
             else {
                 $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
@@ -278,7 +288,19 @@ class MP extends Edge {
                     $chemin_image=$post->chemin_image;
                     list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
                     $nouvelle_largeur=$this->largeur*($width/$height);
-                    imagecopyresampled ($image2, $texte, $this->hauteur*0.6, $this->largeur*0.28, 0, 0, $nouvelle_largeur*0.4, $this->largeur*0.4, $width, $height);
+                    imagecopyresampled ($image2, $texte, $this->hauteur*0.6, $this->largeur*0.28, 0, 0, $nouvelle_largeur*0.8, $this->largeur*0.4, $width, $height/2);
+
+                    $this->image=imagerotate($image2, 90, $blanc);
+                    $post=new MyFonts('fontfont/zwo/bold-lf-sc',
+                          rgb2hex($rouge_texte,$vert_texte,$bleu_texte),
+                          rgb2hex($rouge,$vert,$bleu),
+                          225,
+                          $this->numero);
+                    $chemin_image=$post->chemin_image;
+                    list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+                    $nouvelle_largeur=$this->largeur*($width/$height);
+                    imagecopyresampled ($this->image, $texte, $this->largeur*0.05, $this->hauteur-0.8*$this->largeur, 0, 0, $nouvelle_largeur - $this->largeur*0.1, $this->largeur/2, $width, $height/2);
+
                 }
                 else {
                     $post=new MyFonts('bitstream/humanist-777/black',
@@ -291,25 +313,24 @@ class MP extends Edge {
                     $nouvelle_largeur=$this->largeur*($width/$height);
                     imagecopyresampled ($image2, $texte, $this->hauteur*0.58, $this->largeur*0.2, 0, 0, $nouvelle_largeur, $this->largeur*0.5, $width, $height/2);
 
+                    $this->image=imagerotate($image2, 90, $blanc);
+
+                    $post=new MyFonts('bitstream/humanist-777/black',
+                          rgb2hex($rouge_texte,$vert_texte,$bleu_texte),
+                          rgb2hex($rouge,$vert,$bleu),
+                          275,
+                          $this->numero.'   .');
+                    $chemin_image=$post->chemin_image;
+                    list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+                    $nouvelle_largeur=$this->largeur*($width/$height);
+                    imagecopyresampled ($this->image, $texte, $this->largeur*0.05, $this->hauteur-0.8*$this->largeur, 0, 0, $nouvelle_largeur, $this->largeur/2, $width, $height/2);
                 }
-                $this->image=imagerotate($image2, 90, $blanc);
             }
             
             list($width,$height)= getimagesize($this->getChemin().'/MP.'.$this->numero.'.icone.png');
             $hauteur_icone=$this->largeur*($height/$width);
             $this->placer_image('MP.'.$this->numero.'.icone.png', 'bas', array(0, -$hauteur_icone/2+1.4*$this->largeur));
 
-            $post=new MyFonts('fontfont/zwo/bold-lf-sc',
-                          rgb2hex($rouge_texte,$vert_texte,$bleu_texte),
-                          rgb2hex($rouge,$vert,$bleu),
-                          225,
-                          $this->numero);
-            $chemin_image=$post->chemin_image;
-            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
-            $nouvelle_largeur=$this->largeur*($width/$height);
-            imagecopyresampled ($this->image, $texte, $this->largeur*0.05, $this->hauteur-0.8*$this->largeur, 0, 0, $nouvelle_largeur - $this->largeur*0.1, $this->largeur/2, $width, $height/2);
-            //$this->placer_image($texte,'bas');
-            
         }
         return $this->image;
     }
