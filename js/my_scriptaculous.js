@@ -29,6 +29,7 @@ function init_autocompleter_auteurs() {
         'auteurs_choix.php',
         {
             method: 'post',
+            indicator:'loading_auteurs',
             paramName: 'value',
             afterUpdateElement: ac_return
 		});

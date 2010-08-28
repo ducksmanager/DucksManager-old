@@ -70,7 +70,16 @@ class Liste {
 		return $nouvelle_liste;
 	}
 
-
+        function liste_pays() {
+            $d=new Database();
+            $tab=array();
+            foreach(array_keys($this->collection) as $pays) {
+                $requete_nom_complet_pays='SELECT NomComplet FROM pays WHERE NomAbrege LIKE \''.$pays.'\'';
+                $resultat_nom_complet_pays=$d->requete_select($requete_nom_complet_pays);
+                $tab[utf8_encode($resultat_nom_complet_pays[0]['NomComplet'])]=array($pays,utf8_encode($resultat_nom_complet_pays[0]['NomComplet']));
+            }
+            return $tab;
+	}
 	function liste_magazines() {
         $d=new Database();
             $tab=array();
@@ -97,7 +106,7 @@ class Liste {
                                CLASSEMENT=>array('classement',CLASSEMENT_COURT),
                                ETATS_NUMEROS=>array('etats',ETATS_NUMEROS_COURT),
                                AUTEURS=>array('auteurs',AUTEURS_COURT));
-		Affichage::onglets($onglet,$onglets,'onglet','?action=stats',-1);
+		Affichage::onglets($onglet,$onglets,'onglet','?action=stats');
 
 		if (count($counts)==0) {
 			echo AUCUN_NUMERO_POSSEDE_1.'<a href="?action=gerer&onglet=ajout_suppr">'.ICI.'</a> '
@@ -141,10 +150,11 @@ class Liste {
 				?>
 				<!-- <u>Note : </u>Seuls les histoires publi&eacute;es en France seront compt&eacute;es dans les statistiques.<br /> -->
 		        <form method="post" action="?action=stats&onglet=auteurs">
-			        <input type="text" name="auteur_cherche" id="auteur_cherche" value="" />
+			        <input type="text" name="auteur_cherche" id="auteur_cherche" value="" size="40"/>
 			        <div class="update" id="liste_auteurs"></div>
 			        <input type="hidden" id="auteur_nom" name="auteur_nom" />
 			        <input type="hidden" id="auteur_id" name="auteur_id" />
+                                <img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none"/>
 			        <input type="submit" value="Ajouter" />
 				</form>
 				<div id="auteurs_ajoutes">
@@ -484,6 +494,8 @@ elseif(isset($_POST['sous_liste'])) {
 elseif(isset($_GET['liste_exemple'])) {
 	$l=new Liste();
 	$l->ListeExemple();
+        if (file_exists('Listes/Liste.'.$_GET['type_liste'].'.class.php'))
+            include_once('Listes/Liste.'.$_GET['type_liste'].'.class.php');
 	$objet =new $_GET['type_liste']();
         ?>
         <html>

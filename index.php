@@ -897,10 +897,11 @@ else
                                                 <?=STATISTIQUES_AUTEURS_INTRO_2?>
                         <br /><br />
                         <form method="post" action="?action=agrandir&amp;onglet=auteurs_favoris&amp;onglet_auteur=preferences">
-                            <input type="text" name="auteur_cherche" id="auteur_cherche" value="" />
+                            <input type="text" name="auteur_cherche" id="auteur_cherche" value="" size="40"/>
                             <div class="update" id="liste_auteurs"></div>
                             <input type="hidden" id="auteur_nom" name="auteur_nom" />
                             <input type="hidden" id="auteur_id" name="auteur_id" />
+                            <img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none" />
                             <input type="submit" value="Ajouter" />
                         </form>
                         <div id="auteurs_ajoutes">

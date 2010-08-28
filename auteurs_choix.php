@@ -23,8 +23,6 @@ if (isset($_POST['value'])) {
 			echo '<li class="contact">'//<div class="image"><img width="32" src="images/'.$nom_auteur.'-mini.jpg"/></div>'
 				.'<div class="nom"><span>'.$nom_auteur.'</span><span style="display:none" title="'.$id_auteur.'"</div>
 				</li>';
-			if (++$i >= 10)
-				die('<li>...</li></ul>');
 		}		
 	}
 	echo '</ul>';
