@@ -67,7 +67,7 @@ foreach($auteurs as $auteur) {
 		$adresse_nom_auteur=str_replace(' ','+',$adresse_nom_auteur);
 		echo $adresse_nom_auteur;
 		$page=Util::get_page($adresse_nom_auteur);
-		$regex_nom_auteur='#<font size=\+3><b><img[^>]+>[^&]*&nbsp; ([^<]+)</b></font>#is';
+		$regex_nom_auteur='#<img class="transparent" src="img/coafoot.png" width="50" height="37" alt="">([^<]+)</h1>#is';
 		preg_match($regex_nom_auteur,$page,$nom_auteur);
 		$nom_auteur=$nom_auteur[1];
 	}
