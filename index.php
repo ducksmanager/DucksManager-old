@@ -57,6 +57,7 @@ else
         new JS('prototype.js');
         new JS('js/scriptaculous/src/scriptaculous.js');
         new JS('js/my_scriptaculous.js');
+        new JS('js/l10n.js');
         new JS('js/ajax.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
@@ -145,6 +146,7 @@ else
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
+                    echo 'montrer_magazines(\''.$pays.'\');';
                 }
                 if (isset($magazine)) {
                     echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
@@ -644,7 +646,7 @@ else
                                                 $onglet_magazine=$_POST['pays'].'/'.$_POST['magazine'];
                                             }
                                             else {
-                                                $onglet_pays='!';
+                                                $onglet_pays=substr($_GET['onglet_magazine'],0,  strpos($_GET['onglet_magazine'], '/'));
                                                 $onglet_magazine=$_GET['onglet_magazine'];
                                             }
                                         }
@@ -965,36 +967,7 @@ else
                                         }
                                         ?>
                                         <h2><?=LISTE_BOUQUINERIES?></h2>
-                                        <?php
-                                        $requete_bouquineries='SELECT Nom, Adresse, CodePostal, Ville, Pays,ID_Utilisateur, Commentaire, username FROM bouquineries '
-                                                .'INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
-                                                .'ORDER BY Pays, CodePostal, Ville';
-                                        $resultat_bouquineries=$d->requete_select($requete_bouquineries);
-                                        $pays='';
-                                        $departement='';
-                                        $ville='';
-                                        foreach($resultat_bouquineries as $bouquinerie) {
-                                            $departement_courant=substr($bouquinerie['CodePostal'],0,2);
-                                            if ($pays!=$bouquinerie['Pays']) {
-                                                ?><h3><?=$bouquinerie['Pays']?></h3><?php
-                                            }
-                                            if ($departement!=$departement_courant) {
-                                                ?><h4><?=DEPARTEMENT.$departement_courant?></h4><?php
-                                            }
-                                            if ($ville!=$bouquinerie['Ville']) {
-                                                ?><h5><?=$bouquinerie['Ville']?></h5><?php
-                                            }
-                                            ?>
-                                            <div style="cursor:help" title="<?=$bouquinerie['Commentaire']?>">
-                                            <b><?=$bouquinerie['Nom']?></b> :
-                                               <?=$bouquinerie['Adresse']?>,<?=$bouquinerie['CodePostal']?> <?=$bouquinerie['Ville']?>
-                                                    <i>(<?=PROPOSE_PAR.$bouquinerie['username']?>)</i></div><br />
-                                            <?php
-                                            $pays=$bouquinerie['Pays'];
-                                            $departement=$departement_courant;
-                                            $ville=$bouquinerie['Ville'];
-                                        }
-                                        ?>
+                                        <iframe src="bouquineries.php" width="70%" height="700px"></iframe>
                                         <br /><br />
                                         <?php
                                         $id_user=$d->user_to_id($_SESSION['user']);
@@ -1005,7 +978,7 @@ else
                                         <?=PRIX_HONNETES?>
                                         <br /><br />
                                         <form method="post" action="?action=agrandir&amp;onglet=bouquineries">
-                                            <table border="0">';
+                                            <table border="0">
                                                 <tr><td><?=NOM_BOUQUINERIE?> :</td><td><input maxlength="25" size="26" name="nom" type="text" /></td></tr>
                                                 <tr><td><?=ADRESSE?> :</td><td><textarea cols="20" name="adresse"></textarea></td></tr>
                                                 <tr><td><?=CODE_POSTAL?> :</td><td><input maxlength="11" name="cp" type="text" size="5" maxlength="5"/></td></tr>

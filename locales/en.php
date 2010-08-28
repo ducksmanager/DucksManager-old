@@ -248,6 +248,7 @@ define('NON_CONNECTE','Not connected');
 define('NON_NUMERIQUES','Not in numeral form');
 define('NOUVEAU','New!');
 define('NOUVEAU_MAGAZINE','New magazine');
+define('NOUVEAU_PAYS','New country');
 define('NOUVEL_ACHAT','New purchase date');
 define('NOUVELLE_ACQUISITION_SAUVEGARDER','Save the new purchase');
 define('NOUVELLE_COLLECTION','New collection (Sign up)');
@@ -326,6 +327,7 @@ define('SELECTIONNER_NOUVELLE_DATE_ACQUISITION','Select "New purchase date" from
 define('SELECTIONNER_NUMEROS_A_MARQUER','Select first the issues!');
 define('SELECTIONNER_PAYS','Select a country');
 define('SELECTIONNER_TEXTURE','Select a texture');
+define('SIGNALE_PAR','Reported by ');
 define('SPECIFIER_NUMEROS_BIBLIOTHEQUE','Please list the issues of your collection<br />that you can photograph the edges of.');
 define('SOUS_TEXTURE', 'Detailed texture');
 define('SOUS_TEXTURE_ETAGERE', 'Detailed shelf texture');

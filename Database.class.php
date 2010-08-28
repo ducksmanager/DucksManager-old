@@ -151,6 +151,20 @@ class Database {
         return array($resultat_nom_pays[0]['NomComplet'],$resultat_nom_magazine[0]['NomComplet']);
     }
 
+    function get_nom_complet_pays($pays) {
+        $requete_nom_pays='SELECT NomComplet FROM pays WHERE NomAbrege LIKE \''.$pays.'\'';
+        $resultat_nom_pays=$this->requete_select($requete_nom_pays);
+        if (count($resultat_nom_pays)==0) {
+            Inducks::get_pays($pays);
+             $resultat_nom_pays=$this->requete_select($requete_nom_pays);
+            if (count($resultat_nom_pays)==0) {
+                $requete_nom_pays='INSERT INTO pays(NomAbrege,NomComplet) VALUES ("'.$pays.'","'.$pays.'")';
+                $this->requete($requete_nom_pays);
+            }
+        }
+        return $resultat_nom_pays[0]['NomComplet'];
+    }
+
 	function liste_etats() {
 		$debut=true;
 		foreach(self::$etats as $etat_court=>$infos_etat) {
@@ -519,9 +533,8 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		if (false!=($numeros=Inducks::get_numeros($pays,$magazine))) {
-			Affichage::afficher_numeros($l,$pays,$magazine,$numeros);
-
-		}
+                    Affichage::afficher_numeros($l,$pays,$magazine,$numeros);
+                }
 		else
 			echo AUCUN_NUMERO_IMPORTE_1.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
 	}
@@ -575,6 +588,25 @@ if (isset($_POST['database'])) {
 		$d->requete('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege LIKE \''.$_POST['nom_auteur'].'\'');
 	}
+        elseif (isset($_POST['liste_bouquineries'])) {
+            $requete_bouquineries='SELECT Nom, AdresseGoogle, Commentaire, username AS Utilisateur FROM bouquineries '
+                                 .'INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
+                                 .'ORDER BY Pays, CodePostal, Ville';
+            $resultat_bouquineries=$d->requete_select($requete_bouquineries);
+            foreach($resultat_bouquineries as &$bouquinerie) {
+                $i=0;
+                while (array_key_exists($i, $bouquinerie)) {
+                    unset ($bouquinerie[$i]);
+                    $i++;
+                }
+                $bouquinerie['Commentaire'].='<br /><br />'.SIGNALE_PAR.$bouquinerie['Utilisateur'];
+                foreach(array_keys($bouquinerie) as $champ)
+                    $bouquinerie[$champ]=utf8_encode($bouquinerie[$champ]);
+
+            }
+            $json=json_encode($resultat_bouquineries);
+            echo header("X-JSON: " . $json);
+        }
 	else { // Vérification de l'utilisateur
 		if ($d->user_exists($_POST['user']))
 			echo UTILISATEUR_EXISTANT;

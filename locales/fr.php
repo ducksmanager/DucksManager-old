@@ -246,6 +246,7 @@ define('NON_CONNECTE','Non connect&eacute;(e)');
 define('NON_NUMERIQUES','Non-num&eacute;raux');
 define('NOUVEAU','Nouveau!');
 define('NOUVEAU_MAGAZINE','Nouveau magazine');
+define('NOUVEAU_PAYS','Nouveau pays');
 define('NOUVEL_ACHAT','Nouvel achat');
 define('NOUVELLE_ACQUISITION_SAUVEGARDER','Sauvegarder la nouvelle acquisition');
 define('NOUVELLE_COLLECTION','Nouvelle collection (Inscription)');
@@ -309,7 +310,7 @@ define('PROPOSER_MAGAZINES_POSSEDES','Me proposer uniquement des magazines appar
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Voulez-vous ex&eacute;cuter ces op&eacute;rations ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
-define('RECHERCHER_BOUQUINERIES','Chercher des bouquineries');
+define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Rechercher des bouquineries pr&egrave;s de chez vous');
 define('RECUPERATION_LISTE','R&eacute;cup&eacute;ration liste...');
 define('RECUPERATION_NUMEROS','R&eacute;cup&eacute;ration...');
@@ -325,6 +326,7 @@ define('SELECTIONNER_NOUVELLE_DATE_ACQUISITION','S&eacute;lectionnez "Nouvelle d
 define('SELECTIONNER_NUMEROS_A_MARQUER','Sélectionnez d\'abord les numéros à marquer !');
 define('SELECTIONNER_PAYS','S&eacute;lectionnez un pays');
 define('SELECTIONNER_TEXTURE','Selectionnez une texture');
+define('SIGNALE_PAR','Signal&eacute; par ');
 define('SOUS_TEXTURE', 'Sous-texture');
 define('SOUS_TEXTURE_ETAGERE', 'Sous-texture de l\'&eacute;tag&egrave;re');
 define('SPECIFIER_NUMEROS_BIBLIOTHEQUE','Sp&eacute;cifiez les num&eacute;ros de votre collection<br />dont vous souhaitez photographier les tranches');
