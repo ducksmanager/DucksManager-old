@@ -2,7 +2,7 @@
 class ALPM extends Edge {
     var $pays='fr';
     var $magazine='ALPM';
-    var $intervalles_validite=array('B  1','B 16','B 19','B 25','B 27','B 49','B 54','B 57');
+    var $intervalles_validite=array('B  1','B 16','B 19','B 25','B 27','B 40','B 42','B 49','B 54','B 57');
 
     var $en_cours=array();
     static $largeur_defaut=18;
@@ -23,11 +23,11 @@ class ALPM extends Edge {
             case 'B':
                 if ($this->numero_serie<=27) {
                     $this->largeur=18*Edge::$grossissement;
-                    $this->hauteur=282*Edge::$grossissement;
+                    $this->hauteur=260*Edge::$grossissement;
                 }
                 elseif ($this->numero_serie <= 57) {
                     $this->largeur=18*Edge::$grossissement;
-                    $this->hauteur=280*Edge::$grossissement;
+                    $this->hauteur=273*Edge::$grossissement;
                 }
             break;
         }
@@ -44,7 +44,7 @@ class ALPM extends Edge {
 
             case 'B':
                if ($this->numero_serie<=27) {
-                    include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+                    include_once($this->getChemin().'/../../MyFonts.Post.class.php');
 
                     $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
                     $blanc=imagecolorallocate($image2, 255, 255, 255);
@@ -56,7 +56,7 @@ class ALPM extends Edge {
 
                             $largeur_degrade=$this->hauteur;
 
-                            include_once('classes/util.php');
+                            include_once('/../../util.php');
                             $couleurs_inter=getMidColors($couleur1, $couleur2, $largeur_degrade);
                             foreach($couleurs_inter as $i=>$couleur) {
                                 list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;

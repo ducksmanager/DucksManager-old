@@ -21,7 +21,7 @@ class MPO extends Edge {
 
     function dessiner() {
 
-        include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+        include_once($this->getChemin().'/../../MyFonts.Post.class.php');
         if ($this->numero<=12) {// La série termine peut-être + tôt
 
         }

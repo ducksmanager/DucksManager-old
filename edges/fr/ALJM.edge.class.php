@@ -21,7 +21,7 @@ class ALJM extends Edge {
     }
 
     function dessiner() {
-        include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+        include_once($this->getChemin().'/../../MyFonts.Post.class.php');
 
         $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
         $blanc=imagecolorallocate($image2, 255, 255, 255);

@@ -43,7 +43,7 @@ class SPG extends Edge {
                     $image_texte=$this->getChemin().'/Texte_SPG 2.png';
             }
             if ($this->numero==72) {
-                include_once('classes/util.php');
+                include_once('/../../util.php');
                 $couleur1=$this->getColorsFromDB(array(0,0,0),'Couleur 1');
                 $couleur2=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
                 $couleurs_inter=getMidColors($couleur1, $couleur2, $this->hauteur);

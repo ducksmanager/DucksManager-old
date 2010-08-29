@@ -181,7 +181,7 @@ class PM extends Edge {
         }
         else {
             include_once($this->getChemin().'/../classes/PM.titres.php');
-            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            include_once($this->getChemin().'/../../MyFonts.Post.class.php');
             $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
             $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
             $blanc=imagecolorallocate($image2, 255, 255, 255);
@@ -195,7 +195,7 @@ class PM extends Edge {
                     $largeur_logo=$this->largeur*($height/$width);
                     $largeur_degrade=$this->hauteur-$largeur_logo;
 
-                    include_once('classes/util.php');
+                    include_once('/../../util.php');
                     $couleurs_inter=getMidColors($couleur1, $couleur2, $largeur_degrade);
                     foreach($couleurs_inter as $i=>$couleur) {
                         list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;

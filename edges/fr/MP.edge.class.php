@@ -13,7 +13,7 @@ class MP extends Edge {
                                     array('debut'=>217,'fin'=>228),
                                     array('debut'=>229,'fin'=>234),
                                     237,247,
-                                    265,266,267,268,270,273,275,276,278,279,280,286,288,290,291,292,array('debut'=>295,'fin'=>317));
+                                    array('debut'=>265,'fin'=>271),273,275,276,278,279,280,286,288,290,291,292,array('debut'=>295,'fin'=>317));
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
     function MP($numero) {
@@ -85,7 +85,7 @@ class MP extends Edge {
 
         }
         elseif ($this->numero <= 139) {
-            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            include_once($this->getChemin().'/../../MyFonts.Post.class.php');
             $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
             $blanc=imagecolorallocate($image2,255,255,255);
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
@@ -107,7 +107,7 @@ class MP extends Edge {
             
         }
         elseif ($this->numero <= 192) {
-            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            include_once($this->getChemin().'/../../MyFonts.Post.class.php');
             $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
             $this->image=imagecreatetruecolor($this->hauteur, $this->hauteur);
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
@@ -137,7 +137,7 @@ class MP extends Edge {
             $this->placer_image('MP.tete.png', 'haut', array(0,$this->largeur/2));
         }
         elseif ($this->numero <= 204) {
-            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            include_once($this->getChemin().'/../../MyFonts.Post.class.php');
 
             $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
             $blanc=imagecolorallocate($image2, 255, 255, 255);
@@ -244,7 +244,7 @@ class MP extends Edge {
             $this->placer_image('Titre MP 236-253.png','bas',array(0,$this->largeur));
         }
         else {
-            include_once($this->getChemin().'/../classes/MyFonts.Post.class.php');
+            include_once($this->getChemin().'/../../MyFonts.Post.class.php');
             if (in_array($this->numero, array(300,303,304))) {
                 $this->placer_image('MP.'.$this->numero.'.tranche.png');
                 return $this->image;
