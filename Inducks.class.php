@@ -37,27 +37,31 @@ class Inducks {
 	}
 
 	function get_pays() {
-		$url='http://coa.inducks.org/legend-country.php?xch=1&lg=4';
-		$handle = @fopen($url, "r");
-		if ($handle) {
-			$buffer="";
-		   	while (!feof($handle)) {
-		     	$buffer.= fgets($handle, 4096);
-		   	}
-		   	fclose($handle);
-		}
-		else {
-			echo ERREUR_CONNEXION_INDUCKS;
-			return false;
-		}
-		$regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
-		preg_match_all($regex_pays,$buffer,$liste_pays);
-		$liste_pays_courte=array();
-		foreach($liste_pays[0] as $pays) {
-			$liste_pays_courte[preg_replace($regex_pays,'$1',$pays)]=preg_replace($regex_pays,'$2',$pays);
-		}
-		array_multisort($liste_pays_courte,SORT_STRING);
-		return $liste_pays_courte;
+            $url='http://coa.inducks.org/legend-country.php?xch=1&lg=4';
+            $handle = @fopen($url, "r");
+            if ($handle) {
+                    $buffer="";
+                    while (!feof($handle)) {
+                    $buffer.= fgets($handle, 4096);
+                    }
+                    fclose($handle);
+            }
+            else {
+                    echo ERREUR_CONNEXION_INDUCKS;
+                    return false;
+            }
+            $regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
+            preg_match_all($regex_pays,$buffer,$liste_pays);
+            $liste_pays_courte=array();
+            foreach($liste_pays[0] as $pays) {
+                $nom_pays_court=preg_replace($regex_pays,'$1',$pays);
+                $nom_pays=preg_replace($regex_pays,'$2',$pays);
+                $liste_pays_courte[$nom_pays_court]=$nom_pays;
+                $requete_nom_pays='INSERT INTO pays(NomAbrege, NomComplet) VALUES ("'.$nom_pays_court.'", "'.utf8_decode($nom_pays).'")';
+                $d->requete($requete_nom_pays);
+            }
+            array_multisort($liste_pays_courte,SORT_STRING);
+            return $liste_pays_courte;
 	}
 
     static function get_nom_complet_magazine($pays,$magazine) {
@@ -239,11 +243,12 @@ elseif (isset($_POST['get_cover'])) {
         }
 		if (preg_match($regex_image,$buffer,$code_image)==0)
             $url='images/cover_not_found.png';
-        else
+        else {
             $url=$code_image[1];
-        $requete_ajout_couverture='INSERT INTO couvertures(Pays,Magazine,Numéro,URL) '
-                                 .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
-        $d->requete($requete_ajout_couverture);
+            $requete_ajout_couverture='INSERT INTO couvertures(Pays,Magazine,Numéro,URL) '
+                                     .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
+            $d->requete($requete_ajout_couverture);
+        }
         echo $url;
     }
     else {
