@@ -14,6 +14,7 @@ class Edge {
     var $intervalles_validite=array();
     var $en_cours=array();
     static $grossissement=10;
+    static $grossissement_affichage=1.5;
     static $largeur_numeros_precedents=0;
     
 	function Edge($pays=null,$magazine=null,$numero=null) {
@@ -78,7 +79,12 @@ class Edge {
             mkdir('edges/'.$this->pays);
             mkdir('edges/'.$this->pays.'/gen');
         }
-        imagepng($this->image,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png');
+        $reduction=Edge::$grossissement/Edge::$grossissement_affichage;
+        $largeur_image_finale=intval($this->largeur/$reduction);
+        $hauteur_image_finale=intval($this->hauteur/$reduction);
+        $image2=imagecreatetruecolor($largeur_image_finale, $hauteur_image_finale);
+        imagecopyresampled($image2, $this->image, 0, 0, 0, 0, $largeur_image_finale, $hauteur_image_finale, $this->largeur, $this->hauteur);
+        imagepng($image2,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.str_replace(' ','',$this->numero).'.png');
         imagepng($this->image);
     }
 
@@ -215,7 +221,7 @@ if (isset($_POST['get_visible'])) {
     <div class="titre_magazine"><?=utf8_encode($nom_complet_magazine)?></div><br />
     <div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
     <?php
-    if (!getEstVisible($_POST['pays'], $_POST['magazine'], $_POST['numero'])) {
+    if (!getEstVisible($_POST['pays'], strtoupper($_POST['magazine']), $_POST['numero'])) {
         ?>
         <?=TRANCHE_NON_DISPONIBLE1?><br /><?=TRANCHE_NON_DISPONIBLE2?><a class="lien_participer" target="_blank" href="?action=bibliotheque&onglet=participer"><?=ICI?></a><?=TRANCHE_NON_DISPONIBLE3?>
         <?php
@@ -347,6 +353,7 @@ elseif (isset($_GET['dispo_tranches'])) {
     
     $line_dot = new line();
     $line_dot->set_values($data_moyenne);
+    $line_dot->set_tooltip( $t );
     $chart->add_element( $line_dot );
 
     $y_axis = new y_axis();
@@ -369,7 +376,6 @@ elseif (isset($_GET['dispo_tranches'])) {
     
     $chart->set_x_axis( $x );
 
-    $chart->set_tooltip( $t );
     ?>
         <html>
             <head>
