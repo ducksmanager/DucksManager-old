@@ -41,6 +41,7 @@ else
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
+                var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
             var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.ducksmanager.net/piwik/" : "http://www.ducksmanager.net/piwik/");
             document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
             </script>
