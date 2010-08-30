@@ -50,7 +50,7 @@ function ouvrir(element) {
     couverture_ouverte=true;
     new Ajax.Request('Inducks.class.php', {
         method: 'post',
-        parameters:'get_cover=true&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
+        parameters:'get_cover=true&debug='+debug+'&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
         onSuccess:function(transport) {
             couverture.src=transport.responseText;
             current_couv=new Element('img', {'id':'couv','src':couverture.src,'height':hauteur_image})
@@ -186,7 +186,7 @@ function ouvrirInfoBulle(element) {
     }
     new Ajax.Request('Edge.class.php', {
         method: 'post',
-        parameters:'get_visible=true&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
+        parameters:'get_visible=true&debug='+debug+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
             if (numerosIdentiques(numero_bulle, getInfosNumero(transport.request.body)))
                 $(bulle).update(transport.responseText);
