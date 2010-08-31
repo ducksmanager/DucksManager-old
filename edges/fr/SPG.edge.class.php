@@ -2,7 +2,7 @@
 class SPG extends Edge {
     var $pays='fr';
     var $magazine='SPG';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>158,'sauf'=>array(58,68)));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>158,'sauf'=>array(68)));
     var $en_cours=array();
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -43,7 +43,7 @@ class SPG extends Edge {
                     $image_texte=$this->getChemin().'/Texte_SPG 2.png';
             }
             if ($this->numero==72) {
-                include_once('/../../util.php');
+                include_once($this->getChemin().'/../../util.php');
                 $couleur1=$this->getColorsFromDB(array(0,0,0),'Couleur 1');
                 $couleur2=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
                 $couleurs_inter=getMidColors($couleur1, $couleur2, $this->hauteur);
