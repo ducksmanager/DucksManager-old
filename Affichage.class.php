@@ -14,12 +14,15 @@ class Affichage {
                 $pays=$drapeaux ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
                 $contenu_lien_onglet=$nom_onglet;
                 ?><li class="<?php
-                if ($infos_lien[1]==AJOUTER_MAGAZINE)
+                if ($infos_lien[1]==AJOUTER_MAGAZINE) {
                    echo 'nouveau ';
+                   $lien='?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new';
+                }
+                else
+                    $lien=empty($prefixe)?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
                 if ($infos_lien[0]==$onglet_courant)
                    echo 'active ';
                 $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : '');
-                $lien=empty($prefixe)?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
                 $onmouseover=empty($prefixe) && $infos_lien[0]!='new' ?'montrer_magazines(\''.$pays.'\')':'';
                 ?>"><a title="<?=$infos_lien[1]?>"
                        name="<?=$nom?>"
@@ -43,7 +46,7 @@ class Affichage {
 		}
         ?></ul><br /><?php
 	}
-	static function afficher_numeros($liste,$pays,$magazine,$numeros) {
+	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
 
 		$etats=array('manque'=>ETAT_MANQUANTS,
                              'mauvais'=>ETAT_MAUVAIS,
@@ -69,7 +72,7 @@ class Affichage {
 		<table border="0" width="100%">
             <tr>
                 <td rowspan="2">
-                    <span style="font-size:15pt;font-weight:bold;"><?=$nom_complet?></span>
+                    <span style="font-size:15pt;font-weight:bold;"><?=utf8_encode($nom_complet)?></span>
                 </td>
                 <td align="right">
                     <table>
@@ -95,53 +98,53 @@ class Affichage {
 		</table>
         <?php
 		//echo '<pre>';print_r($liste);echo '</pre>';
-		foreach($numeros as $numero) {
+		foreach($numeros as $i=>$numero) {
 			?>
-            <div class="num_<?php
-			$possede=false;
-			list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
-			if (''!=$etat) {
-				$possede=true;
-				$noms_etats=array();
-				foreach(Database::$etats as $etat_court=>$infos_etat) {
-					if ($etat==$infos_etat[0]) {
-						$etat_class=$etat_court;
-						$etat_nom_complet=$infos_etat[0];
-						break;
-					}
-				}
-				echo 'possede';
-			}
-			else
-				echo 'manque';
-			?>" id="n<?=($cpt)?>" title="<?=$numero?>">n&deg;<?=$numero?>
-            <?php
-			if ($possede) {
-                if (!isset($etat_class)) {
-                    ?><span class="num_indefini"></span><?php
-                }
-				else {
-                    ?><span class="num_<?=$etat_class?>"><?=ETAT?> <?=$etat_class?></span><?php
-                }
-				if ($id_acq!=-1 && $id_acq!=-2) {
-                    $requete_date_achat='SELECT Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
-                    $resultat_date=$d->requete_select($requete_date_achat);
-                    if (count($resultat_date)>0) {
-                        $regex_date='#([^-]+)-([^-]+)-(.+)#is';
-                        $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-                        if (!is_null($date) && !empty($date)) {
-                            ?>&nbsp;<?=ACHETE_LE?> <?=$date?><?php
+                <div class="num_<?php
+                    $possede=false;
+                    list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
+                    if (''!=$etat) {
+                        $possede=true;
+                        $noms_etats=array();
+                        foreach(Database::$etats as $etat_court=>$infos_etat) {
+                            if ($etat==$infos_etat[0]) {
+                                $etat_class=$etat_court;
+                                $etat_nom_complet=$infos_etat[0];
+                                break;
+                            }
+                        }
+                            echo 'possede';
+                    }
+                    else
+                        echo 'manque';
+                    ?>" id="n<?=($cpt)?>" title="<?=$numero?>">n&deg;<?=$numero?>
+                    &nbsp;<span class="soustitre"><?=$sous_titres[$i]?></span><?php
+                    if ($possede) {
+                        if (!isset($etat_class)) {
+                            ?><span class="num_indefini"></span><?php
+                        }
+                        else {
+                            ?><span class="num_<?=$etat_class?>"><?=ETAT?> <?=$etat_class?></span><?php
+                        }
+                        if ($id_acq!=-1 && $id_acq!=-2) {
+                            $requete_date_achat='SELECT Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
+                            $resultat_date=$d->requete_select($requete_date_achat);
+                            if (count($resultat_date)>0) {
+                                $regex_date='#([^-]+)-([^-]+)-(.+)#is';
+                                $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+                                if (!is_null($date) && !empty($date)) {
+                                    ?>&nbsp;<?=ACHETE_LE?> <?=$date?><?php
+                                }
+                            }
                         }
                     }
-				}
-			}
-			if ($av) {
-				?><img height="16px" src="images/av.png" alt="AV"/><?php
-            }
-            ?>
-			</div>
-            <?php
-			$cpt++;
+                    if ($av) {
+                        ?><img height="16px" src="images/av.png" alt="AV"/><?php
+                    }
+                    ?>
+                    </div>
+                    <?php
+                    $cpt++;
 		}
 	}
 

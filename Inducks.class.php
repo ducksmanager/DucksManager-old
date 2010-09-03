@@ -15,7 +15,7 @@ class Inducks {
 	}
 
 	static function get_numeros($pays,$magazine) {
-            $regex_magazine='#<a href=issue.php\?c='.$pays.'%2F'.$magazine.'[+]*([^>]*)>([^<]*)</a>#is';
+            $regex_magazine='#<a href=issue.php\?c='.$pays.'%2F'.$magazine.'[+]*([^>]*)>[^<]*</a>([^<]*)#is';
             $url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
             $handle = @fopen($url, "r");
             if ($handle) {
@@ -30,10 +30,7 @@ class Inducks {
                 return false;
             }
             preg_match_all($regex_magazine,$buffer,$numeros);
-            foreach ($numeros as $indice=>$numero) {
-                $numeros[$indice]=preg_replace($regex_magazine,'$1',$numero);
-            }
-            return $numeros[0];
+            return array($numeros[1],$numeros[2]);
 	}
 
 	function get_pays() {

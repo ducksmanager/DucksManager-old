@@ -489,8 +489,9 @@ if (isset($_POST['database'])) {
 		$l=$d->toList($id_user);
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
-		if (false!=($numeros=Inducks::get_numeros($pays,$magazine))) {
-                    Affichage::afficher_numeros($l,$pays,$magazine,$numeros);
+		list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+                if ($numeros!=false) {
+                    Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
                 }
 		else
 			echo AUCUN_NUMERO_IMPORTE_1.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
