@@ -296,25 +296,51 @@ else
                             case 'inducks':
                                 if (isset($_POST['rawData'])) {
                                     if (isset($_POST['valider_importer'])) {
-                                        if ($_POST['valider_importer']=='Oui') {
-                                            echo IMPORT_DANS_NOUVEAU_COMPTE;
-                                            formulaire_inscription();
+                                        if (isset($_SESSION['user'])) {
+                                            $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
+                                            $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
+                                            $l=new Liste($_POST['rawData']);
+                                            $l->lire();
+                                            $l->synchro_to_database($d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);
                                         }
                                         else {
-                                            header('index.php');
+                                            if ($_POST['valider_importer']=='Oui') {
+                                                echo IMPORT_DANS_NOUVEAU_COMPTE;
+                                                formulaire_inscription();
+                                            }
+                                            else {
+                                                header('index.php');
+                                            }
                                         }
+                                        
                                     }
                                     else {
                                         $rawdata_valide=(Inducks::liste_numeros_valide($_POST['rawData']));
                                         if ($rawdata_valide) {
-                                            $succes=Liste::import($_POST['rawData']);
-                                            if ($succes) {
-                                                ?><br /><br /><?=QUESTION_IMPORTER_INDUCKS?>
-                                                <br />
+                                            list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
+                                            if ($est_succes) {
+                                                ?><br /><br />
                                                 <form method="post" action="?action=inducks">
                                                     <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
+                                                <?php
+                                                if (isset($_SESSION['user'])) {
+                                                    ?><?=QUESTION_EXECUTER_OPS_INDUCKS?><br />
+                                                    <?php
+                                                    if ($ajouts > 0) {
+                                                        ?><input type="checkbox" checked="checked" name="ajouter_numeros" /><?=AJOUTER_NUMEROS_INDUCKS?><br /><?php
+                                                    }
+                                                    if ($suppressions > 0) {
+                                                        ?><input type="checkbox" name="supprimer_numeros" /><?=SUPPRIMER_NUMEROS_NON_INDUCKS?><br /><?php
+                                                    }?>
+                                                    <input type="submit" name="valider_importer" value="<?=VALIDER?>" />&nbsp;
+
+                                                    <?php
+                                                }
+                                                else {
+                                                    ?><?=QUESTION_IMPORTER_INDUCKS?><br />
                                                     <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
                                                     <input type="submit" name="valider_importer" value="<?=NON?>" />
+                                                <?php }?>
                                                 </form>
                                                 <?php
                                             }

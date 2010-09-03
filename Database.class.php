@@ -114,7 +114,7 @@ class Database {
             return true;
     }
 
-    function get_nom_complet_magazine($pays,$magazine) {
+    function get_nom_complet_magazine($pays,$magazine,$encode=false) {
         $requete_nom_magazine='SELECT NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND NomAbrege LIKE \''.$magazine.'\'';
         $resultat_nom_magazine=$this->requete_select($requete_nom_magazine);
         $requete_nom_pays='SELECT NomComplet FROM pays WHERE NomAbrege LIKE \''.$pays.'\'';
@@ -130,7 +130,8 @@ class Database {
                 $this->requete($requete_nom_pays);
             }
         }
-        return array($resultat_nom_pays[0]['NomComplet'],$resultat_nom_magazine[0]['NomComplet']);
+        return array($encode?utf8_encode($resultat_nom_pays[0]['NomComplet']):$resultat_nom_pays[0]['NomComplet'],
+                     $encode?utf8_encode($resultat_nom_magazine[0]['NomComplet']):$resultat_nom_magazine[0]['NomComplet']);
     }
 
     function get_nom_complet_pays($pays) {
@@ -325,11 +326,7 @@ class Database {
 		//echo '<pre>';print_r($l);echo '</pre>';
 		return $l;
 	}
-
-	function ajouter_numero($requete) {
-		mysql_query($requete);
-	}
-
+        
 	function ajouter_auteur($id,$nom) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_auteur_existe='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE NomAuteurAbrege LIKE \''.$id.'\' AND DateStat LIKE \'0000-00-00\' AND ID_User='.$id_user;
@@ -457,14 +454,6 @@ if (isset($_POST['database'])) {
 				$_SESSION['user']=$_POST['user'];
 			}
 		}
-	}
-	else if (isset($_POST['from_file'])) { // Import avec un utilisateur existant
-		$id_user=$d->user_to_id($_SESSION['user']);
-
-		$fichier=$_POST['from_file'];
-		$l=new Liste($fichier);
-		$l->lire();
-		$l->synchro_to_database($d,$id_user,$l);
 	}
 
 	else if (isset($_POST['update'])) {

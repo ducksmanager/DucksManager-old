@@ -110,3 +110,14 @@ function supprimer_auteur (nom_auteur) {
 		}
 	});
 }
+
+function montrer_magazines(pays) {
+    $$('[name="magazine"]')
+        .each(function(element) {
+            if (element.href.indexOf(pays+'/') == -1)
+                element.up().setStyle({'display':'none'});
+            else
+                element.up().setStyle({'display':'block'});
+        }
+    );
+}

@@ -25,6 +25,16 @@ class Liste {
 		$this->lire();
 	}
 
+        function ajouter($pays,$magazine,$numero) {
+            if (!array_key_exists($pays, $this->collection))
+                $this->collection[$pays]=array();
+            if (!array_key_exists($magazine,$this->collection[$pays]))
+                $this->collection[$pays][$magazine]=array();
+            if (in_array($numero, $this->collection[$pays][$magazine]))
+                return;
+            $this->collection[$pays][$magazine][]=$numero;
+        }
+
 	function ListeExemple() {
 		$numeros_mp=array(array(2,'Excellent',false,-1),array(273,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));
 		$numeros_mad=array(array(6,'Indéfini',false,-1),array(16,'Bon',false,-1));
@@ -81,7 +91,7 @@ class Liste {
             return $tab;
 	}
 	function liste_magazines() {
-        $d=new Database();
+            $d=new Database();
             $tab=array();
             foreach($this->collection as $pays=>$numeros_pays) {
                     foreach($numeros_pays as $magazine=>$numeros) {
@@ -258,7 +268,7 @@ class Liste {
                         //	$num_final.='0';
                         $num_final.=$numero;
                         $requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$num_final.'\',\'Indéfini\',-1,0,'.$id_user.')';
-                        $d->ajouter_numero($requete);
+                        $d->requete($requete);
                         $cpt++;
                     }
                 }
@@ -266,11 +276,30 @@ class Liste {
             return $cpt;
 	}
 
-	function synchro_to_database($d,$id_user,$nouvelle_liste) {
-		$l_ducksmanager=$d->toList($id_user);
-		$l_ducksmanager->compareWith($nouvelle_liste,$id_user);
-
+        function remove_from_database($d,$id_user) {
+            $cpt=0;
+            foreach($this->collection as $pays=>$numeros_pays) {
+                if ($pays=='country')
+                    continue;
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    foreach($numeros as $numero) {
+                        $num_final='';
+                        $num_final.=$numero;
+                        $requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numéro LIKE \''.$num_final.'\')';
+                        $d->requete($requete);
+                        $cpt++;
+                    }
+                }
+            }
+            return $cpt;
 	}
+
+	function synchro_to_database($d,$ajouter_numeros=true,$supprimer_numeros=false) {
+            $id_user=$d->user_to_id($_SESSION['user']);
+            $l_ducksmanager=$d->toList($id_user);
+            $l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
+	}
+        
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
 
 		$liste_origine=$this->collection[$pays][$magazine];
@@ -329,77 +358,84 @@ class Liste {
             }
 	}
 
-	function compareWith($other_list,$id_user) {
-		$numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
-		$texte_a_ajouter=$texte_a_supprimer='';
-		if (!($id_user===false)) $d=new Database();
-		$noms_magazines=array();
-		foreach($this->collection as $pays=>$numeros_pays) {
-			if (!array_key_exists($pays,$noms_magazines))
-				$noms_magazines[$pays]=array();
-			foreach($numeros_pays as $magazine=>$numeros) {
-				$noms_magazines[$pays][$magazine]=Inducks::get_nom_complet_magazine($pays, $magazine);
-                $magazine_affiche=false;
-				foreach($numeros as $numero) {
-					if (array_key_exists($pays,$other_list->collection)
-					&& array_key_exists($magazine,$other_list->collection[$pays])
-					&& in_array($numero[0],$other_list->collection[$pays][$magazine]))
-						$numeros_communs++;
-					else {
-						if (!($id_user===false)) {
-							$requete_supprimer='DELETE FROM numeros WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.$id_user.' AND Numéro LIKE \''.$numero[0].'\'';
-							$d->requete($requete_supprimer);
-						}
-						if (!$magazine_affiche) $texte_a_supprimer.='<br /><u>'.$noms_magazines[$pays][$magazine].' :</u> ';
-						$magazine_affiche=true;
-						$texte_a_supprimer.=$numero[0].' ';
-						$numeros_a_supprimer++;
-					}
-				}
-			}
-		}
-		foreach($other_list->collection as $pays=>$numeros_pays) {
-			if (!array_key_exists($pays,$noms_magazines))
-				$noms_magazines[$pays]=array();
-			foreach($numeros_pays as $magazine=>$numeros) {
-				$noms_magazines[$pays][$magazine]=Inducks::get_nom_complet_magazine($pays, $magazine);
-				$magazine_affiche=false;
-				foreach($numeros as $numero) {
-					if (array_key_exists($pays,$this->collection)
-					&& array_key_exists($magazine,$this->collection[$pays])) {
-						$trouve=false;
-						$numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
-						for ($i=0;$i<$numeros_possedes_magazine;$i++)
-							if ($numero==$this->collection[$pays][$magazine][$i][0])
-								$trouve=true;
-						if (!$trouve) {
-							if (!$magazine_affiche) $texte_a_ajouter.='<br /><u>'.$noms_magazines[$pays][$magazine].' :</u> ';
-							$magazine_affiche=true;
-							$texte_a_ajouter.=$numero.' ';
-							if (!($id_user===false)) {
-								$requete_ajouter='INSERT INTO numeros VALUES(\''.$pays.'\',\''.$magazine.'\','
-												  .'\''.$numero.'\',\'Indéfini\',-1,0,'.$id_user.')';
-								$d->requete($requete_ajouter);
-							}
-							$numeros_a_ajouter++;
-						}
-					}
-				}
-			}
-		}
-		if ($id_user===false) {
-			echo '<ul>';
-			echo '<li>'.$numeros_a_ajouter.' '.NUMEROS_A_AJOUTER;
-			echo $texte_a_ajouter;
-			echo '</li>';
-			echo '<li>'.$numeros_a_supprimer.' '.NUMEROS_A_SUPPRIMER;
-			echo $texte_a_supprimer;
-			echo '</li>';
-			echo '<li>'.$numeros_communs.' '.NUMEROS_COMMUNS.'</li>';
-			echo '</ul>';
-			return !($numeros_a_ajouter==0 && $numeros_a_supprimer==0);
-		}
-		else echo OPERATIONS_EXCECUTEES;
+	function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {
+           $d=new Database();
+           if ($ajouter_numeros || $supprimer_numeros) {
+                $id_user=$d->user_to_id($_SESSION['user']);
+           }
+            $numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
+
+            $noms_magazines=array();
+            $liste_a_supprimer=new Liste();
+
+            foreach($this->collection as $pays=>$numeros_pays) {
+                if (!array_key_exists($pays,$noms_magazines))
+                    $noms_magazines[$pays]=array();
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    $noms_magazines[$pays][$magazine]=$d->get_nom_complet_magazine($pays, $magazine,true);
+                    $magazine_affiche=false;
+                    sort($numeros);
+                    foreach($numeros as $numero) {
+                        if (array_key_exists($pays, $other_list->collection)
+                         && array_key_exists($magazine, $other_list->collection[$pays])
+                         && in_array($numero[0], $other_list->collection[$pays][$magazine]))
+                            $numeros_communs++;
+                        else {
+                            $liste_a_supprimer->ajouter($pays, $magazine, $numero[0]);
+                            $magazine_affiche = true;
+                            $numeros_a_supprimer++;
+                         }
+                    }
+                }
+            }
+            if (supprimer_numeros)
+                $liste_a_supprimer->remove_from_database ($d, $id_user);
+            $liste_a_ajouter=new Liste();
+            foreach($other_list->collection as $pays=>$numeros_pays) {
+                if (!array_key_exists($pays,$noms_magazines))
+                    $noms_magazines[$pays]=array();
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    if ($pays=='country')
+                        continue;
+                    list($nom_complet_pays,$noms_magazines[$pays][$magazine])=$d->get_nom_complet_magazine($pays, $magazine,true);
+                    $magazine_affiche=false;
+                    foreach($numeros as $numero) {
+                        $trouve=false;
+                        if (array_key_exists($pays,$this->collection)
+                        && array_key_exists($magazine,$this->collection[$pays])) {
+                            $numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
+                            for ($i=0;$i<$numeros_possedes_magazine;$i++)
+                                if ($numero==$this->collection[$pays][$magazine][$i][0])
+                                    $trouve=true;
+                        }
+                        if (!$trouve) {
+                            $liste_a_ajouter->ajouter($pays, $magazine, $numero);
+                            $magazine_affiche=true;
+                            $numeros_a_ajouter++;
+                        }
+                    }
+                }
+            }
+            if ($ajouter_numeros)
+                $liste_a_ajouter->add_to_database ($d, $id_user);
+            if (!$ajouter_numeros && !$supprimer_numeros) {
+                ?>
+                <ul>
+                    <li><?=$numeros_a_ajouter?> <?=NUMEROS_A_AJOUTER?>
+                        <?=$liste_a_ajouter->afficher('Classique')?>
+                    </li><br />
+                    <li><?=$numeros_a_supprimer?> <?=NUMEROS_A_SUPPRIMER?>
+                        <?=$liste_a_supprimer->afficher('Classique')?>
+                    </li><br />
+                    <li><?=$numeros_communs?> <?=NUMEROS_COMMUNS?>
+                    </li>
+                </ul>
+                <?php
+                return array($numeros_a_ajouter, $numeros_a_supprimer);
+            }
+            else {
+                echo OPERATIONS_EXECUTEES.' <br />';
+            }
 	}
 
 	function afficher($type) {
@@ -440,30 +476,24 @@ class Liste {
             $l=new Liste($liste_texte);
             if ($l->collection == array()) {
                 echo AUCUN_NUMERO_INDUCKS;
-                return false;
+                return array(false,0,0);
             }
             else {
                 if (isset($_SESSION['user'])) {
-                    echo IMPORT_UTILISATEUR_EXISTANT1 . '<br />';
-                    echo '<ul>';
-                    echo '<li>' . IMPORT_UTILISATEUR_EXISTANT2_1 . '</li>';
-                    echo '<li>' . IMPORT_UTILISATEUR_EXISTANT2_2 . '</li>';
-                    echo '<li>' . IMPORT_UTILISATEUR_EXISTANT2_3 . '</li>';
-                    echo '</ul><br />';
                     $d = new Database();
                     $id_user = $d->user_to_id($_SESSION['user']);
                     $l_ducksmanager = $d->toList($id_user);
-                    $operations_a_effectuer = $l_ducksmanager->compareWith($l, false);
-                    if (!$operations_a_effectuer) {
+                    list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
+                    if ($ajouts==0 && $suppressions==0) {
                         echo LISTES_IDENTIQUES;
-                        return;
+                        return array(true,0,0);
                     }
                 }
                 else {
                     echo RESULTAT_NUMEROS_INDUCKS;
                     $l->afficher('Classique');
                 }
-                return true;
+                return array(true,$ajouts, $suppressions);
             }
         }
 }
