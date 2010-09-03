@@ -18,10 +18,10 @@ class Liste {
 	var $very_max_centaines=1;
 	var $database;
 
-	function Liste($fichier=false) {
-		if (!$fichier)
-		return;
-		$this->nom_fichier=$fichier;
+	function Liste($texte=false) {
+		if (!$texte)
+                    return;
+		$this->texte=$texte;
 		$this->lire();
 	}
 
@@ -247,21 +247,23 @@ class Liste {
 	}
 
 	function add_to_database($d,$id_user) {
-		$cpt=0;
-		foreach($this->collection as $pays=>$numeros_pays) {
-			foreach($numeros_pays as $magazine=>$numeros) {
-				foreach($numeros as $numero) {
-					$num_final='';
-					//for($i=0;$i<6-strlen($numero);$i++)
-					//	$num_final.='0';
-					$num_final.=$numero;
-					$requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$num_final.'\',\'Indéfini\',-1,0,'.$id_user.')';
-					$d->ajouter_numero($requete);
-					$cpt++;
-				}
-			}
-		}
-		return $cpt;
+            $cpt=0;
+            foreach($this->collection as $pays=>$numeros_pays) {
+                if ($pays=='country')
+                    continue;
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    foreach($numeros as $numero) {
+                        $num_final='';
+                        //for($i=0;$i<6-strlen($numero);$i++)
+                        //	$num_final.='0';
+                        $num_final.=$numero;
+                        $requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$num_final.'\',\'Indéfini\',-1,0,'.$id_user.')';
+                        $d->ajouter_numero($requete);
+                        $cpt++;
+                    }
+                }
+            }
+            return $cpt;
 	}
 
 	function synchro_to_database($d,$id_user,$nouvelle_liste) {
@@ -300,32 +302,31 @@ class Liste {
 	}
 
 	function lire() {
-		$inF = fopen($this->nom_fichier,"r");
-		if ($inF) {
-			$debut=true;$this->collection=array();
-			while (!feof($inF)) {
-				$buffer = fgets($inF, 4096);
-				$little_array=explode('^',$buffer);
-				$country=$little_array[0];
-				$regex='#^([^ ]*)[ ]+(.*)$#';
-				preg_match($regex,$little_array[1],$magazine_numero);
-				$magazine=$magazine_numero[1];
-				$numero=$magazine_numero[2];
-				if (!array_key_exists($country,$this->collection)) {
-					$arr_temp=array($magazine=>array(0=>$numero));
-					$this->collection[$country]=$arr_temp;
-				}
-				else {
-					if (!array_key_exists($magazine,$this->collection[$country])) {
-						$this->collection[$country][$magazine]=array($numero);
-					}
-					else
-						if (!array_push($this->collection[$country][$magazine],$numero))
-							echo '<b>'.$magazine.$numero.'</b>';
-				}
-			}
-			fclose($inF);
-		}
+            $lignes=explode("\r\n",$this->texte);
+            foreach($lignes as $ligne) {
+                $infos_ligne=explode('^',$ligne);
+                if (count($infos_ligne)>=3) {
+                    $country=$infos_ligne[0];
+                    if ($country=='cou')
+                        xdebug_break();
+                    $regex='#^([^ ]*)[ ]+(.*)$#';
+                    preg_match($regex,$infos_ligne[1],$magazine_numero);
+                    $magazine=$magazine_numero[1];
+                    $numero=$magazine_numero[2];
+                    if (!array_key_exists($country,$this->collection)) {
+                            $arr_temp=array($magazine=>array(0=>$numero));
+                            $this->collection[$country]=$arr_temp;
+                    }
+                    else {
+                            if (!array_key_exists($magazine,$this->collection[$country])) {
+                                    $this->collection[$country][$magazine]=array($numero);
+                            }
+                            else
+                                    if (!array_push($this->collection[$country][$magazine],$numero))
+                                            echo '<b>'.$magazine.$numero.'</b>';
+                    }
+                }
+            }
 	}
 
 	function compareWith($other_list,$id_user) {
@@ -402,8 +403,12 @@ class Liste {
 	}
 
 	function afficher($type) {
-		$o=new $type();
-		$o->afficher($this->collection);
+            if (@require_once('Listes/Liste.'.$type.'.class.php')) {
+                $o=new $type();
+                $o->afficher($this->collection);
+            }
+            else
+                echo ERREUR_TYPE_LISTE_INVALIDE;
 	}
 
 	function est_possede($pays,$magazine,$numero) {
@@ -430,43 +435,40 @@ class Liste {
 		}
 		return array('','','');
 	}
-}
-if (isset($_POST['liste'])) {
-	if (isset($_POST['import'])) {
 
-		$l=new Liste($_POST['liste']);
-		if ($l->collection==array())
-			echo AUCUN_NUMERO_INDUCKS;
-		else {
-			if (isset($_SESSION['user'])) {
-				echo IMPORT_UTILISATEUR_EXISTANT1.'<br />';
-				echo '<ul>';
-				echo '<li>'.IMPORT_UTILISATEUR_EXISTANT2_1.'</li>';
-				echo '<li>'.IMPORT_UTILISATEUR_EXISTANT2_2.'</li>';
-				echo '<li>'.IMPORT_UTILISATEUR_EXISTANT2_3.'</li>';
-				echo '</ul><br />';
-				$d=new Database();
-				$id_user=$d->user_to_id($_SESSION['user']);
-				$l_ducksmanager=$d->toList($id_user);
-				$operations_a_effectuer=$l_ducksmanager->compareWith($l,false);
-				if (!$operations_a_effectuer) {
-					echo LISTES_IDENTIQUES;
-					return;
-				}
-			}
-			else {
-				echo RESULTAT_NUMEROS_INDUCKS;
-			}
-
-		  	echo '<br />'.QUESTION_EXECUTER_OPS_INDUCKS
-		  		.'<button onclick="importer(true,'.(isset($_SESSION['user'])?'true':'false').')">'
-		  		.OUI.'</button> '
-		  		.'<button onclick="importer(false,'.(isset($_SESSION['user'])?'true':'false').')">'
-		  		.NON.'</button><br />';
-		}
-	}
+        static function import($liste_texte) {
+            $l=new Liste($liste_texte);
+            if ($l->collection == array()) {
+                echo AUCUN_NUMERO_INDUCKS;
+                return false;
+            }
+            else {
+                if (isset($_SESSION['user'])) {
+                    echo IMPORT_UTILISATEUR_EXISTANT1 . '<br />';
+                    echo '<ul>';
+                    echo '<li>' . IMPORT_UTILISATEUR_EXISTANT2_1 . '</li>';
+                    echo '<li>' . IMPORT_UTILISATEUR_EXISTANT2_2 . '</li>';
+                    echo '<li>' . IMPORT_UTILISATEUR_EXISTANT2_3 . '</li>';
+                    echo '</ul><br />';
+                    $d = new Database();
+                    $id_user = $d->user_to_id($_SESSION['user']);
+                    $l_ducksmanager = $d->toList($id_user);
+                    $operations_a_effectuer = $l_ducksmanager->compareWith($l, false);
+                    if (!$operations_a_effectuer) {
+                        echo LISTES_IDENTIQUES;
+                        return;
+                    }
+                }
+                else {
+                    echo RESULTAT_NUMEROS_INDUCKS;
+                    $l->afficher('Classique');
+                }
+                return true;
+            }
+        }
 }
-elseif (isset($_POST['types_liste'])) {
+
+if (isset($_POST['types_liste'])) {
 	types_listes();
 }
 elseif(isset($_POST['sous_liste'])) {
@@ -512,24 +514,6 @@ elseif(isset($_GET['liste_exemple'])) {
         <?php
 }
 
-/*
- echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
- <html><head><title>DucksManager 3</title></head><body>';
- $l=new Liste("collection.txt");
- $d=new Database();
- if (!$d) {
- echo 'Probl&egrave;me avec la base de donn&eacute;es !';
- exit(-1);
- }
- $d->liste_numeros('SELECT * FROM users');
- $d->liste_acquisitions('SELECT * FROM achats');
- //$l->add_to_database($d);
- if (isset($_GET['type']))
- $l->afficher($_GET['type']);
- else
- $l->afficher('DMtable');
- echo '</body></html>';*/
-
 function startswith($hay, $needle) { // From http://sunfox.org/blog/2007/03/21/startswith-et-endswith-en-php/
 	return $needle === $hay or strpos($hay, $needle) === 0;
 }
@@ -537,22 +521,4 @@ function startswith($hay, $needle) { // From http://sunfox.org/blog/2007/03/21/s
 function endswith($hay, $needle) {
 	return $needle === $hay or strpos(strrev($hay), strrev($needle)) === 0;
 }
-
-/*function liste_histoires($adresse_auteur,$regex_code_histoire,$regex_histoire_code_personnages) {
- $nb_codes=$nb=0;$buffer="";$codes=array();$histoires=array();
- $handle = @fopen($adresse_auteur, "r");
- if ($handle) {
- $buffer="";
- while (!feof($handle)) {
- $buffer.= fgets($handle, 4096);
- }
- fclose($handle);
- $nb_codes=preg_match_all($regex_code_histoire,$buffer,$codes);
- $nb=preg_match_all($regex_histoire_code_personnages,$buffer,$histoires,PREG_PATTERN_ORDER);
- }
- else {
- echo 'Erreur de connexion &agrave; Inducks!';
- }
- return array($nb_codes,$nb,$buffer,$codes,$histoires);
- }*/
 ?>

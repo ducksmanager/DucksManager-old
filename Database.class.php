@@ -27,73 +27,73 @@ Database::$etats_fr=array(	   'mauvais'=>array('Mauvais','#FF0000'),
                                                     'bon'=>array('Bon','#2CA77B'),
                                                     'indefini'=>array('Indéfini','#808080'));
 class Database {
-	public static $etats;
-	public static $etats_fr;
-	var $server;
-	var $database;
-	var $user;
-	var $password;
+    public static $etats;
+    public static $etats_fr;
+    var $server;
+    var $database;
+    var $user;
+    var $password;
 
 
-	function Database() {
-		require_once('_priv/Database.priv.class.php');
-		return DatabasePriv::connect();
+    function Database() {
+            require_once('_priv/Database.priv.class.php');
+            return DatabasePriv::connect();
 
-	}
+    }
 
-	function connect($user,$password) {
-		$this->user=$user;
-		$this->password=$password;
-	}
+    function connect($user,$password) {
+            $this->user=$user;
+            $this->password=$password;
+    }
 
-	function requete_select($requete) {
-		$requete_resultat=mysql_query($requete);
-		$arr=array();
-		while($arr_tmp=mysql_fetch_array($requete_resultat))
-			array_push($arr,$arr_tmp);
-		return $arr;
-	}
+    function requete_select($requete) {
+            $requete_resultat=mysql_query($requete);
+            $arr=array();
+            while($arr_tmp=mysql_fetch_array($requete_resultat))
+                    array_push($arr,$arr_tmp);
+            return $arr;
+    }
 
-	function requete($requete) {
-		$requete_resultat=mysql_query($requete);
-	}
+    function requete($requete) {
+            $requete_resultat=mysql_query($requete);
+    }
 
-	function liste_numeros($requete) {
-		$requete_resultat=mysql_query($requete);
-		while ($infos=mysql_fetch_array($requete_resultat)) {
-			echo '!';
-		}
-	}
+    function liste_numeros($requete) {
+            $requete_resultat=mysql_query($requete);
+            while ($infos=mysql_fetch_array($requete_resultat)) {
+                    echo '!';
+            }
+    }
 
-	function user_to_id($user) {
-		if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
-			$user=$_COOKIE['user'];
-		}
-		$requete='SELECT ID FROM users WHERE username LIKE \''.$user.'\'';
-		$d=new Database();
-		$resultat=$d->requete_select($requete);
-		foreach ($resultat as $infos) {
-			return $infos['ID'];
-		}
-	}
+    function user_to_id($user) {
+            if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
+                    $user=$_COOKIE['user'];
+            }
+            $requete='SELECT ID FROM users WHERE username LIKE \''.$user.'\'';
+            $d=new Database();
+            $resultat=$d->requete_select($requete);
+            foreach ($resultat as $infos) {
+                    return $infos['ID'];
+            }
+    }
 
-	function user_connects($user,$pass) {
-		if (!$this->user_exists($user)) {
-			//echo 'Ce nom d\'utilisateur n\'existe pas !';
-			return false;
-		}
-		else {
-			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(\''.$pass.'\')';
-			$requete_resultat=mysql_query($requete);
-			return (mysql_num_rows($requete_resultat)!=0);
-		}
-	}
+    function user_connects($user,$pass) {
+            if (!$this->user_exists($user)) {
+                    //echo 'Ce nom d\'utilisateur n\'existe pas !';
+                    return false;
+            }
+            else {
+                    $requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(\''.$pass.'\')';
+                    $requete_resultat=mysql_query($requete);
+                    return (mysql_num_rows($requete_resultat)!=0);
+            }
+    }
 
-	function user_exists($user) {
-		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
-		$requete_resultat=mysql_query($requete);
-		return (mysql_num_rows($requete_resultat)!=0);
-	}
+    function user_exists($user) {
+            $requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
+            $requete_resultat=mysql_query($requete);
+            return (mysql_num_rows($requete_resultat)!=0);
+    }
 
     function user_is_beta() {
         if (isset($_SESSION['user'])) {
@@ -104,33 +104,15 @@ class Database {
         return false;
     }
 
-	function nouveau_user($user,$pass) {
-		date_default_timezone_set('Europe/Paris');
-		$requete='INSERT INTO users(username,password,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.date('Y-m-d').'\')';
-		echo $requete;
-		if (false===mysql_query($requete)) {
-			echo ERREUR_EXECUTION_REQUETE;
-			return false;
-		}
-		return true;
-	}
-	/*
-	function liste_acquisitions($requete) {
-		$requete_resultat=mysql_query($requete);
-		$cpt=0;
-		echo '<table border="1">';
-		while ($infos=mysql_fetch_array($requete_resultat)) {
-			echo '<tr style="color:#'.$infos['Style_couleur'].';"><td>'.$infos['Date'].'</td><td>';
-			$requete_numeros_acquisition='SELECT * FROM numeros WHERE (ID_Acquisition='.$infos['ID'].') ORDER BY Pays,Magazine,Numéro,Etat';
-			$requete_numeros_acquisition_resultat=mysql_query($requete_numeros_acquisition);
-			while($infos_numeros=mysql_fetch_array($requete_numeros_acquisition_resultat)) {
-				echo '<u>'.$infos_numeros['Magazine'].'</u> '.$infos_numeros['Numéro'].'<br />';
-			}
-			echo '</td></tr>';
-			$cpt++;
-		}
-		echo '</table>';
-	}*/
+    function nouveau_user($user,$pass) {
+            date_default_timezone_set('Europe/Paris');
+            $requete='INSERT INTO users(username,password,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.date('Y-m-d').'\')';
+            if (false===mysql_query($requete)) {
+                echo ERREUR_EXECUTION_REQUETE;
+                return false;
+            }
+            return true;
+    }
 
     function get_nom_complet_magazine($pays,$magazine) {
         $requete_nom_magazine='SELECT NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND NomAbrege LIKE \''.$magazine.'\'';
@@ -474,20 +456,6 @@ if (isset($_POST['database'])) {
 			else {
 				$_SESSION['user']=$_POST['user'];
 			}
-		}
-		else if (isset($_POST['inscription'])) {// Inscription
-			if ($d->nouveau_user($_POST['user'],$_POST['pass'])) {
-				$_SESSION['user']=$_POST['user'];
-				echo $_SESSION['user'];
-				echo 'OK';
-			}
-		}
-		else if (isset($_POST['from_file'])) {
-			$fichier=$_POST['from_file'];
-			$l=new Liste($fichier);
-			$l->lire();
-			$cpt=$l->add_to_database($d,$d->user_to_id($_SESSION['user']));
-			echo 'OK.'.$cpt.' '.NUMEROS_IMPORTES;
 		}
 	}
 	else if (isset($_POST['from_file'])) { // Import avec un utilisateur existant

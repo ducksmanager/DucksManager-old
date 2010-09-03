@@ -147,58 +147,6 @@ function init_observers_gerer_numeros() {
     
 }
 
-
-function appel(user,pass,user_urled,pass_urled,data,type,url,cookie,host) {
-	user_inducks=user;
-	pass_inducks=pass;
-	l10n_action('defiler_log','connexion_inducks');
-	new Ajax.Request('appel.php', {
-		   method: 'post',
-		   parameters:'data='+data+'&type='+type+'&url='+url+'&cookie='+cookie+'&host='+host,
-		   onSuccess:function(transport,json) {
-		    	var texte_reponse=transport.responseText;
-	         	if (texte_reponse.indexOf("<td><input type='password'")!=-1) { // Problème d'identification
-		        	l10n_action('defiler_log','identifiants_incorrects');
-		         	var formulaire='<form method="post" action="index.php?action=import">';
-		         	formulaire+='<table border="0"><tr><td>Nom d\'utilisateur Inducks:</td><td><input type="text" name="user" /></td></tr>';
-	 				formulaire+='<tr><td>Mot de passe Inducks:</td><td><input type="password" name="pass" /></td></tr>';
-	 				formulaire+='<tr><td align="center" colspan="2"><input type="submit" value="Connexion"/></td></tr></table></form>';
-		         	$("contenu").update(formulaire);
-		         }
-		         else  {
-		        	l10n_action('defiler_log','connexion_reussie');
-		        	 new Ajax.Request('appel.php', {
-		      		   method: 'post',
-		      		   parameters:'data=&type=GET&url='+url+'&cookie='+cookie+'&cookie2=coa-login='+user_urled+'%3A'+pass_urled+'&host='+host,
-		      		   onSuccess:function(transport,json) {
-			        	 l10n_action('defiler_log','recuperation_liste');
-			        	 url='rawOutput';
-			        	 new Ajax.Request('appel.php', {
-				      		   method: 'post',
-				      		   parameters:'ecrire=true&data=rawOutput&type=GET&url='+url+'&cookie='+cookie+'&cookie2=coa-login='+user_urled+'%3A'+pass_urled+'&host='+host,
-				      		   onSuccess:function(transport,json) {
-			        		 		if (transport.responseText.indexOf(".txt")!=-1) {
-			        		 			fic_liste_tmp=transport.responseText;
-			        		 			l10n_action('defiler_log','succes');
-			        		 			l10n_action('defiler_log','analyse_liste');
-			        		 			var myAjax4 = new Ajax.Request('Liste.class.php', {
-			        		 				method: 'post',
-			        		 				parameters:'liste='+transport.responseText+'&import=true',
-			        		 				onSuccess:function(transport,json) {
-			        		 					$('contenu').update(transport.responseText);
-			        		 					l10n_action('defiler_log','ok');
-			        		 				}
-			        		 			});
-			        		 		}
-			        			 }
-			        		 });
-			        	 }
-			         });
-		         }
-		   }
-	});
-}
-
 function defiler_log (texte) {
 	if (log_is_empty) {
 		var span1=new Element('span',{'id':'log1'});
@@ -212,71 +160,6 @@ function defiler_log (texte) {
 		$('log1').update($('log2').innerHTML);
 	$('log2').update(texte);
 	log_is_empty=false;
-}
-
-function importer(accept,utilisateur_existant) {
-	if (utilisateur_existant) {
-		if (accept)
-			importer_numeros(true);
-		else
-			window.location.replace("index.php?action=gerer");
-	}
-	else {
-		if (accept) {
-			var texte=new Element('span').update('DucksManager va maintenant procéder à l\'importation de vos numéros.<br />' +
-					  'Pour cela, renseignez les champs ci-dessous.');
-			//var table='<table><tr><td colspan="2"><span id="use_same_text" onclick="griser(this)"><input id"use_same" type="checkbox" /></span></td></tr></table>';
-			var table=new Element('table');
-			var tr1=new Element('tr');
-			var td1=new Element('td',{'colspan':'2'});
-			var checkbox_use_same=new Element('input',{'id':'use_same','type':'checkbox','onclick':'griser(this)'}); 
-			var use_same_span=new Element('span',{'id':'use_same_text','onclick':'griser(this)'}).insert(' Utiliser les mêmes identifiants que pour mon compte Inducks');
-			use_same_span.setStyle({'cursor':'default'});
-			td1.insert(checkbox_use_same).insert(use_same_span);
-			tr1.insert(td1);
-			var tr2=new Element('tr');
-			var td2_1=new Element('td');
-			var user_text=new Element('span',{'id':'user_text'}).update('Nom d\'utilisateur : ');
-			td2_1.insert(user_text);
-			var td2_2=new Element('td');
-			var user=new Element('input',{'id':'user','type':'text'}); 
-			td2_2.insert(user);
-			tr2.insert(td2_1).insert(td2_2);
-			var tr3=new Element('tr');
-			var td3_1=new Element('td');
-			var pass_text=new Element('span',{'id':'pass_text'}).update('Mot de passe (au moins 6 caractères): ');
-			td3_1.insert(pass_text);
-			var td3_2=new Element('td');
-			var pass=new Element('input',{'id':'pass','type':'password'});
-			td3_2.insert(pass);
-			tr3.insert(td3_1).insert(td3_2);
-			var tr4=new Element('tr');
-			var td4_1=new Element('td');
-			var pass_text2=new Element('span',{'id':'pass_text2'}).update('Mot de passe (confirmation) : ');
-			td4_1.insert(pass_text2);
-			var td4_2=new Element('td');
-			var pass2=new Element('input',{'id':'pass2','type':'password'});
-			td4_2.insert(pass2);
-			tr4.insert(td4_1).insert(td4_2);
-			var tr5=new Element('tr');
-			var td5=new Element('td',{'colspan':'2'});
-			var valider=new Element('input',{'type':'submit','value':'Inscription'}).addClassName('valider');
-			valider.observe('click',function() {
-				verif_valider_inscription(user,pass,pass2,true);
-			});
-			
-			td5.insert(valider);
-			tr5.insert(td5);
-			table.insert(tr1).insert(tr2).insert(tr3).insert(tr4).insert(tr5);
-			//$('contenu').update(texte);
-			$('contenu').update();
-			$('contenu').appendChild(table);
-			$('contenu').show();
-			// update(table);
-			
-		}
-		else window.location.replace("index.php?action=gerer");
-	}
 }
 
 function griser(caller) {
@@ -322,70 +205,6 @@ function griser(caller) {
 		$('pass').value='';
 		$('pass2').value='';
 	}
-}
-function verif_valider_inscription(user,pass,pass2,importation) {
-	var valeur_user=user.value;
-	if (pass.value.length<6) {
-		l10n_action('alert','mot_de_passe_6_char_erreur');
-		pass.value='';
-		pass2.value='';
-		return;
-	}
-	if (pass.value!=pass2.value) {
-		l10n_action('alert','mots_de_passe_differents');
-		pass.value='';
-		pass2.value='';
-		return;
-	}
-	else {
-		var myAjax = new Ajax.Request('Database.class.php', {
-		   method: 'post',
-		   parameters:'database=true&user='+user.value,
-		   onSuccess:function(transport,json) {
-				defiler_log(transport.responseText);
-				if (transport.responseText.indexOf('valide')!=-1) {
-					l10n_action('defiler_log','inscription_en_cours');
-					var myAjax2 = new Ajax.Request('Database.class.php', {
-					   	method: 'post',
-					   	parameters:'database=true&inscription=true&user='+user.value+'&pass='+pass.value,
-					   	onSuccess:function(transport,json) {
-					   		if (transport.responseText.indexOf("Erreur")==-1) {
-					   			l10n_action('defiler_log','inscription_reussie');
-					   			$('light').src="vert.png";
-					   			$('texte_connecte').update('Connecté(e) en tant que<br />'+valeur_user);
-					   			if (importation) {
-					   				importer_numeros(false);
-					   			}
-					   			else
-					   				window.location.replace("index.php?action=gerer");
-					   		}
-					   		else
-					   			l10n_action('defiler_log',transport.responseText);
-					   	}
-					});
-				}
-		   }
-		});
-	}
-}
-
-function importer_numeros(utilisateur_existant) {
-	l10n_action('defiler_log','importation_numeros');
-        var myAjax3 = new Ajax.Request('Database.class.php', {
-        method: 'post',
-        parameters:'database=true&from_file='+fic_liste_tmp
-                          +(utilisateur_existant?'':('&user='+user.value+'&pass='+pass.value)),
-        onSuccess:function(transport,json) {
-            if (transport.responseText.indexOf('OK.')!=-1)
-                    setTimeout(function() {window.location.replace("index.php?action=gerer");},2000);
-            else {
-                if (utilisateur_existant)
-                        $('contenu').update(transport.responseText);
-                else
-                        l10n_action('defiler_log',transport.responseText);
-            }
-        }
-	});
 }
 
 function connexion(user,pass) {

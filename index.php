@@ -80,10 +80,7 @@ else
         if (!$d->user_connects($_POST['user'],$_POST['pass']))
             $texte_debut.= 'Identifiants invalides!<br /><br />';
         else {
-            setCookie('user',$_POST['user'],time()+3600);
-            setCookie('pass',sha1($_POST['pass']),time()+3600);
-            $_SESSION['user']=$_POST['user'];
-            header('Location: index.php?action=gerer');
+            creer_id_session($_POST['user'],$_POST['pass']);
         }
     }
     else {
@@ -99,12 +96,6 @@ else
     <body id="body" style="margin:0" onload="
     <?php
     switch($action) {
-        case 'inducks':
-            if (isset($_POST['user'])) {
-                echo 'appel('.Inducks::appel().');';
-            }
-            else echo 'defiler_log(\'DucksManager\');';
-            break;
         case 'open':
             echo 'defiler_log(\'DucksManager\');';
             break;
@@ -299,32 +290,78 @@ else
                                         $action='aucune';
                                     }
                                 }
-                        }
-     
-                            }                   switch($action) {
+                            }
+                        }                   
+                        switch($action) {
                             case 'inducks':
-                                if (!isset($_POST['user'])) {
-                                    Inducks::afficher_form_inducks();
+                                if (isset($_POST['rawData'])) {
+                                    if (isset($_POST['valider_importer'])) {
+                                        if ($_POST['valider_importer']=='Oui') {
+                                            echo IMPORT_DANS_NOUVEAU_COMPTE;
+                                            formulaire_inscription();
+                                        }
+                                        else {
+                                            header('index.php');
+                                        }
+                                    }
+                                    else {
+                                        $rawdata_valide=(Inducks::liste_numeros_valide($_POST['rawData']));
+                                        if ($rawdata_valide) {
+                                            $succes=Liste::import($_POST['rawData']);
+                                            if ($succes) {
+                                                ?><br /><br /><?=QUESTION_IMPORTER_INDUCKS?>
+                                                <br />
+                                                <form method="post" action="?action=inducks">
+                                                    <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
+                                                    <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
+                                                    <input type="submit" name="valider_importer" value="<?=NON?>" />
+                                                </form>
+                                                <?php
+                                            }
+                                        }
+                                        else {
+                                            echo ERREUR_RAWDATA_INVALIDE;
+                                        }
+                                    }
                                 }
-                                else echo IMPORTATION_EN_COURS;
-                                break;
-                            case 'new':
-                                ?>
-                                <table><tr><td colspan="2"></td></tr>
-                                    <tr><td><span id="user_text"><?=NOM_UTILISATEUR?> : </span></td><td><input id="user" type="text">&nbsp;</td></tr>
-                                    <tr><td><span id="pass_text"><?=MOT_DE_PASSE_6_CHAR?> : </span></td><td><input id="pass" type="password">&nbsp;</td></tr>
-                                    <tr><td><span id="pass_text2"><?=MOT_DE_PASSE_CONF?> : </span></td><td><input id="pass2" type="password">&nbsp;</td></tr>
-                                    <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" onclick="verif_valider_inscription($('user'),$('pass'),$('pass2'),false)"></td></tr></table>
+                                if (!isset($_POST['rawData']) || isset($rawdata_valide) && !$rawdata_valide) {
+                                    ?><table border="0" style="width:90%;height:70%" cellspacing="5">
+                                        <tr>
+                                            <td>
+                                                <iframe src="http://coa.inducks.org/collection.php" style="width:100%;height:400px"></iframe>
+                                            </td>
+                                            <td>
+                                                <h2><?=INSTRUCTIONS_IMPORT_INDUCKS_TITRE?></h2>
+                                                <ul>
+                                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_1?></li>
+                                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_2?></li>
+                                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_3?></li>
+                                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_4?></li>
+                                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_5?></li>
+                                                </ul><br />
+                                                <form method="post" action="?action=inducks">
+                                                    <textarea name="rawData" rows="10" cols="40"></textarea>
+                                                    <br />
+                                                    <input type="submit" value="<?=IMPORTER?>" />
+                                                </form>
+                                            </td>
+                                         </tr>
+                                    </table>
                                 <?php
+                                }
+                            break;
+                            case 'new':
+                                formulaire_inscription();
                                 break;
                             case 'open':
                                 if (!isset($_SESSION['user'])) {
                                     ?>
                                     <?=IDENTIFIEZ_VOUS?><br /><br />
                                     <form method="post" action="index.php?action=open">
-                                    <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
-                                    <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
-                                    <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
+                                        <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
+                                        <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
+                                        <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
+                                    
                                     <?php
                                 }
                                 break;
@@ -1097,5 +1134,53 @@ else
 </body>
 </html>
     <?php
+}
+
+function formulaire_inscription() {
+    $d=new Database();
+    if (isset($_POST['user'])) {
+        if (strlen($_POST['pass']) <6) {
+            $erreur=MOT_DE_PASSE_6_CHAR_ERREUR;
+        }
+        elseif ($_POST['pass'] != $_POST['pass2']) {
+            $erreur=MOTS_DE_PASSE_DIFFERENTS;
+        }
+        else {
+            if ($d->user_exists($_POST['user']))
+                $erreur=UTILISATEUR_EXISTANT;
+        }
+        if ($erreur) {
+            ?><span style="color:red"><?=$erreur?></span><?php
+        }
+    }
+    if (!isset($_POST['user']) || isset($erreur)) {
+        ?>
+        <form method="post" action="index.php?action=new">
+        <?php
+        if (isset($_POST['rawData'])) {
+            ?><input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" /><?php
+        }?>
+        <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text">&nbsp;</td></tr>
+            <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input name="pass" type="password" /></td></tr>
+            <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input name="pass2" type="password" /></td></tr>
+            <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" /></td></tr></table>
+        </form>
+        <?php
+    }
+    else {
+        $d->nouveau_user($_POST['user'], $_POST['pass']);
+        if (isset($_POST['rawData'])) {
+            $l = new Liste($_POST['rawData']);
+            $l->add_to_database($d, $d->user_to_id($_POST['user']));
+        }
+        creer_id_session($_POST['user'], $_POST['pass']);
+    }
+}
+
+function creer_id_session($user,$pass) {
+    setCookie('user',$user,time()+3600);
+    setCookie('pass',sha1($pass),time()+3600);
+    $_SESSION['user']=$user;
+    header('Location: index.php?action=gerer');
 }
 ?>

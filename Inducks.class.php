@@ -37,6 +37,8 @@ class Inducks {
 	}
 
 	function get_pays() {
+            include_once('Database.class.php');
+            $d=new Database();
             $url='http://coa.inducks.org/legend-country.php?xch=1&lg=4';
             $handle = @fopen($url, "r");
             if ($handle) {
@@ -77,116 +79,76 @@ class Inducks {
             return utf8_encode($resultat_nom_complet_magazine[0]['NomComplet']);
     }
 
-	static function get_noms_complets_magazines($pays) {
-		global $codes_inducks;
-		if (!is_array(self::$noms_complets))
-			self::$noms_complets=array('?'=>'?');
-		if (array_key_exists($pays,self::$noms_complets)) return self::$noms_complets[$pays];
-		$adresse_pays='http://coa.inducks.org/country.php?c='.$pays.'&lg='.$codes_inducks[$_SESSION['lang']];
-		$handle = @fopen($adresse_pays, "r");
-		if ($handle) {
-                    $buffer="";
-                    while (!feof($handle)) {
-                        $buffer.= fgets($handle, 4096);
-                    }
-                    fclose($handle);
-		}
-		else {
-			echo ERREUR_CONNEXION_INDUCKS;
-		}
-		$regex_magazine='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
-		$regex_pays='#"">([^:]+): publications</h1>#is';
-		preg_match($regex_pays,$buffer,$nom_pays_recup);
-		$nom_pays=preg_replace($regex_pays,'$1',$nom_pays_recup);
-		preg_match_all($regex_magazine,$buffer,$pays_recup);
-		$d = new Database();
-                $requete_nom_pays='INSERT INTO pays(NomAbrege, NomComplet) VALUES ("'.$pays.'", "'.utf8_decode($nom_pays[0]).'")';
-                $d->requete($requete_nom_pays);
-		foreach($pays_recup[0] as $i=>$p) {
-                    $requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.preg_replace($regex_magazine,'$1',$p).'","'.str_replace('"','',utf8_decode(preg_replace($regex_magazine,'$2',$p))).'")';
-                    $d->requete($requete_noms_magazines);
-		}
-	}
-
-        static function get_liste_magazines($pays) {
-            $url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
-            $handle = @fopen($url, "r");
+    static function get_noms_complets_magazines($pays) {
+            global $codes_inducks;
+            if (!is_array(self::$noms_complets))
+                    self::$noms_complets=array('?'=>'?');
+            if (array_key_exists($pays,self::$noms_complets)) return self::$noms_complets[$pays];
+            $adresse_pays='http://coa.inducks.org/country.php?c='.$pays.'&lg='.$codes_inducks[$_SESSION['lang']];
+            $handle = @fopen($adresse_pays, "r");
             if ($handle) {
-                    $buffer="";
-                    while (!feof($handle)) {
+                $buffer="";
+                while (!feof($handle)) {
                     $buffer.= fgets($handle, 4096);
-                    }
-                    fclose($handle);
+                }
+                fclose($handle);
             }
             else {
                     echo ERREUR_CONNEXION_INDUCKS;
-                    return false;
             }
-            $regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
-            preg_match_all($regex_magazines,$buffer,$liste_magazines);
-            $liste_magazines_courte=array();
-            foreach($liste_magazines[0] as $magazine) {
-                    $liste_magazines_courte[preg_replace($regex_magazines,'$1',$magazine)]=preg_replace($regex_magazines,'$2',$magazine);//, "��������������������������", "aaaaaaooooooeeeeciiiiuuuun");;
+            $regex_magazine='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
+            $regex_pays='#"">([^:]+): publications</h1>#is';
+            preg_match($regex_pays,$buffer,$nom_pays_recup);
+            $nom_pays=preg_replace($regex_pays,'$1',$nom_pays_recup);
+            preg_match_all($regex_magazine,$buffer,$pays_recup);
+            $d = new Database();
+            $requete_nom_pays='INSERT INTO pays(NomAbrege, NomComplet) VALUES ("'.$pays.'", "'.utf8_decode($nom_pays[0]).'")';
+            $d->requete($requete_nom_pays);
+            foreach($pays_recup[0] as $i=>$p) {
+                $requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.preg_replace($regex_magazine,'$1',$p).'","'.str_replace('"','',utf8_decode(preg_replace($regex_magazine,'$2',$p))).'")';
+                $d->requete($requete_noms_magazines);
             }
-            array_multisort($liste_magazines_courte,SORT_STRING);
-            //sort($liste_pays_courte);
-            return $liste_magazines_courte;
-        }
-
-	function get_magazines($pays) {
-            $liste=Inducks::get_liste_magazines($pays);
-            foreach($liste as $id=>$magazine) {
-                echo '<option id="'.$id.'">'.$magazine;
-            }
-	}
-
-    static function afficher_form_inducks() {
-        ?>
-        <h2><?=SYNCHRONISATION_COMPTES?></h2>
-        <a href="http://www.coa.inducks.org">Inducks</a> <?=INTRO_SYNCHRO_INDUCKS_1?><br />
-        <?=INTRO_SYNCHRO_INDUCKS_2?><br />
-        <?=INTRO_SYNCHRO_INDUCKS_3?><br />
-        <br />
-        <?=ENTREZ_IDENTIFIANTS_INDUCKS?>.<br /><br />
-        <?php
-        if (!isset($_SESSION['user'])) {
-            ?><span style="color:red"><?=ATTENTION_MOT_DE_PASSE_INDUCKS?></span><br /><?php
-        }
-        ?>
-        <form method="post" action="index.php?action=inducks">
-            <table border="0">
-                <tr>
-                    <td><?=UTILISATEUR_INDUCKS?> :</td>
-                    <td><input type="text" name="user" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <?=MOT_DE_PASSE_INDUCKS?> :
-                    </td>
-                    <td>
-                        <input type="password" name="pass" />
-                    </td>
-                </tr>
-                <tr>
-                    <td align="center" colspan="2">
-                        <input type="submit" value="<?=CONNEXION?>"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
-        <?php
     }
 
-    static function appel() {
-        $user_pcent=rawurlencode($_POST['user']);
-        $pass_pcent=rawurlencode($_POST['pass']);
-        $user_urled=urlencode($_POST['user']);
-        $pass_urled=urlencode($_POST['pass']);
-        $data = urlencode('login='.$user_pcent.'&pass='.$pass_pcent.'&redirect=collection.php');
+    static function get_liste_magazines($pays) {
+        $url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
+        $handle = @fopen($url, "r");
+        if ($handle) {
+                $buffer="";
+                while (!feof($handle)) {
+                $buffer.= fgets($handle, 4096);
+                }
+                fclose($handle);
+        }
+        else {
+                echo ERREUR_CONNEXION_INDUCKS;
+                return false;
+        }
+        $regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
+        preg_match_all($regex_magazines,$buffer,$liste_magazines);
+        $liste_magazines_courte=array();
+        foreach($liste_magazines[0] as $magazine) {
+                $liste_magazines_courte[preg_replace($regex_magazines,'$1',$magazine)]=preg_replace($regex_magazines,'$2',$magazine);//, "��������������������������", "aaaaaaooooooeeeeciiiiuuuun");;
+        }
+        array_multisort($liste_magazines_courte,SORT_STRING);
+        //sort($liste_pays_courte);
+        return $liste_magazines_courte;
+    }
 
-        return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\',\''.$user_urled.'\',\''.$pass_urled.'\',\''.$data.'\',\'POST\',\'http://coa.inducks.org/collection.php\',\'coa-preferred-language=4\',\'coa.inducks.org\'';
-        //return '\''.$_POST['user'].'\',\''.$_POST['pass'].'\'';
+    function get_magazines($pays) {
+        $liste=Inducks::get_liste_magazines($pays);
+        foreach($liste as $id=>$magazine) {
+            echo '<option id="'.$id.'">'.$magazine;
+        }
+    }
+
+    static function liste_numeros_valide($texte) {
+        if (isset($_GET['lang'])) {
+            $_SESSION['lang']=$_GET['lang'];
+        }
+        include_once ('locales/lang.php');
+        $regex_retrieve_numeros='#country\^entrycode\^collectiontype\^comment#is';
+        return preg_match($regex_retrieve_numeros,$texte,$liste)>0;
     }
 }
 if (isset($_POST['get_pays'])) {
