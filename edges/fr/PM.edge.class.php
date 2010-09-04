@@ -195,7 +195,7 @@ class PM extends Edge {
                     $largeur_logo=$this->largeur*($height/$width);
                     $largeur_degrade=$this->hauteur-$largeur_logo;
 
-                    include_once('/../../util.php');
+                    include_once($this->getChemin().'/../../util.php');
                     $couleurs_inter=getMidColors($couleur1, $couleur2, $largeur_degrade);
                     foreach($couleurs_inter as $i=>$couleur) {
                         list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;

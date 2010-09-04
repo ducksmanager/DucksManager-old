@@ -56,7 +56,7 @@ class ALPM extends Edge {
 
                             $largeur_degrade=$this->hauteur;
 
-                            include_once('/../../util.php');
+                            include_once($this->getChemin().'/../../util.php');
                             $couleurs_inter=getMidColors($couleur1, $couleur2, $largeur_degrade);
                             foreach($couleurs_inter as $i=>$couleur) {
                                 list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
@@ -93,6 +93,9 @@ class ALPM extends Edge {
                     $fond=imagecolorallocate($this->image, $rouge, $vert, $bleu);
                     imagefill($this->image, 0, 0, $fond);
                     $this->placer_image('Logo ALPBM.png');
+                    list($rouge_logo,$vert_logo,$bleu_logo)=$this->getColorsFromDB(array(255,255,255),'Logo');
+                    $fond_logo=imagecolorallocate($this->image, $rouge_logo, $vert_logo, $bleu_logo);
+                    imagefill($this->image, $this->largeur*0.66, $this->largeur, $fond_logo);
                     $this->placer_image('ALPMB.icone.'.$this->numero_serie.'.png', 'bas');
                 }
             break;
