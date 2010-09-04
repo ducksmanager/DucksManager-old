@@ -2,7 +2,7 @@
 class PMHS extends Edge {
     var $pays='fr';
     var $magazine='PMHS';
-    var $intervalles_validite=array('B  2','C  6','C  7','C  8','C  9','C 10','C 11');
+    var $intervalles_validite=array('B  2','C  1','C  2','C  4','C  5','C  6','C  7','C  8','C  9','C 10','C 11');
 
     static $largeur_defaut=15;
     static $hauteur_defaut=278;
@@ -37,7 +37,10 @@ class PMHS extends Edge {
                 }
                 else {
                     $texte='Les T';
-                    $auteur='D   I   S   N   E   Y';
+                    if ($this->serie == 'C' && $this->numero_serie==1)
+                        $auteur='D O N  R O S A';
+                    else
+                        $auteur='D   I   S   N   E   Y';
                     $police_auteur='Compacta Bold.ttf';
                     $couleur_texte_auteur=imagecolorallocate($this->image, 230,216,117);
                 }
