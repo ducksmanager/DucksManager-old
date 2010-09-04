@@ -23,10 +23,23 @@ class Affichage {
                 if ($infos_lien[0]==$onglet_courant)
                    echo 'active ';
                 $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : '');
-                $onmouseover=empty($prefixe) && $infos_lien[0]!='new' ?'montrer_magazines(\''.$pays.'\')':'';
-                ?>"><a title="<?=$infos_lien[1]?>"
+                if (empty($prefixe)) {
+                    $onmouseout='';
+                    if ($infos_lien[0]!='new')
+                        $onmouseover='montrer_magazines(\''.$pays.'\')';
+                    else
+                        $onmouseover='';
+                }
+                else {
+                    if (strpos($prefixe,'ajout_suppr')) {
+                        $onmouseover='montrer_nom_magazine(this)';
+                        $onmouseout='cacher_nom_magazine()';
+                    }
+                }
+                ?>"><a id="<?=$infos_lien[1]?>"
                        name="<?=$nom?>"
                        onmouseover="<?=$onmouseover?>"
+                       onmouseout="<?=$onmouseout?>"
                        href="<?=$lien?>">
                 <?php
                 if ($drapeaux && $infos_lien[0]!='new') {

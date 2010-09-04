@@ -687,6 +687,33 @@ else
 
                                         break;
                                     case 'ajout_suppr':
+                                        /*if (isset($_POST['supprimer_doublons'])) {
+                                            
+                                        }
+
+                                        $d=new Database();
+                                        $id_user=$d->user_to_id($_SESSION['user']);
+
+                                        $requete_doublons='SELECT Pays,Magazine,Numéro FROM numeros '
+                                                         .'GROUP BY Pays, Magazine, Numéro, Id_Utilisateur '
+                                                         .'HAVING COUNT(*) > 1 AND  Id_Utilisateur ='.$id_user.' '
+                                                         .'ORDER BY Id_Utilisateur, Pays, Magazine, Numéro';
+                                        echo $requete_doublons;$resultat_doublons=$d->requete_select($requete_doublons);
+                                        if (count($resultat_doublons)>0) {
+                                            ?><h3><?=AVERTISSEMENT?></h3><?php
+                                            echo AVERTISSEMENT_DOUBLONS_1.' '.count($resultat_doublons).' '.AVERTISSEMENT_DOUBLONS_2;
+                                            $liste_doublons=new Liste();
+                                            foreach($resultat_doublons as $doublon) {
+                                                $liste_doublons->ajouter($doublon['Pays'], $doublon['Magazine'], $doublon['Numéro']);
+                                            }
+                                            $liste_doublons->afficher('Classique');
+                                            echo AVERTISSEMENT_DOUBLONS_3;
+                                            ?><form action="">
+                                                <input type="hidden" name="action" value="gerer" />
+                                                <input type="hidden" name="supprimer_doublons" value="true" />
+                                                <input type="submit" value="<?=SUPPRIMER_DOUBLONS?>" />
+                                            </form><br /><br /><hr /><?php
+                                        }*/
                                         ?>
                                         <?=POSSESSION_MAGAZINES_1?><br /><?=POSSESSION_MAGAZINES_2?><br />
                                         <?php
@@ -716,7 +743,9 @@ else
                                         }
                                         Affichage::onglets($onglet_pays,$onglets_pays,'','',true);
                                         Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
-                                        
+                                        ?><span id="nom_magazine_courant" style="visibility:hidden;border:1px solid white;display:table;color:#666666;margin-top:-15px;background-color:#C88964">&nbsp;
+                                        </span><br /><?php
+
                                         if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {
                                             echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
                                             ?>
