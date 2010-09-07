@@ -82,5 +82,6 @@ define('PM_459','1880-1882 Le roi du Mississippi');
 define('PM_460','1882 Buck Picsou des Badlands');
 define('PM_461','1883 Le cow-boy capitaine du Cutty Sark');
 define('PM_463','1885 Le Nouveau Maître du manoir McPicsou');
+define('PM_464','1887-1889 La Terreur du Transvaal');
 
 ?>

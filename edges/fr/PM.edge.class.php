@@ -2,7 +2,7 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>463,'sauf'=>array(389,403)));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>464,'sauf'=>array(389,403)));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -238,7 +238,7 @@ class PM extends Edge {
                 $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
                                   rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                                   rgb2hex($rouge, $vert, $bleu),
-                                  4000,
+                                  4200,
                                   $texte);
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
