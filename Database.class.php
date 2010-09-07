@@ -494,7 +494,7 @@ if (isset($_POST['database'])) {
                     Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
                 }
 		else
-			echo AUCUN_NUMERO_IMPORTE_1.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
+			echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
 	}
 	else if (isset($_POST['acquisition'])) {
 		//print_r($_SESSION);
