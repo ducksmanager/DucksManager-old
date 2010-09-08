@@ -2,7 +2,7 @@
 class PMHS extends Edge {
     var $pays='fr';
     var $magazine='PMHS';
-    var $intervalles_validite=array('B  2','C  1','C  2','C  4','C  5','C  6','C  7','C  8','C  9','C 10','C 11');
+    var $intervalles_validite=array('B  1','B  2','C  1','C  2','C  4','C  5','C  6','C  7','C  8','C  9','C 10','C 11');
 
     static $largeur_defaut=15;
     static $hauteur_defaut=278;
@@ -26,6 +26,10 @@ class PMHS extends Edge {
 
     function dessiner() {
 
+        if ($this->serie == 'B' && $this->numero_serie == 1) {
+            $this->placer_image('PMHS.B1.tranche.png');
+            return $this->image;
+        }
         include_once($this->getChemin().'/../../MyFonts.Post.class.php');
         switch($this->serie) {
             case 'B': case 'C':
