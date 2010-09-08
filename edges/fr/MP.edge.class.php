@@ -3,7 +3,7 @@ class MP extends Edge {
     var $pays='fr';
     var $magazine='MP';
     var $intervalles_validite=array(array('debut'=>1,'fin'=>2),
-                                    array('debut'=>9,'fin'=>10),13,15,19,31,array('debut'=>42,'fin'=>44),48,49,52,55,57,60,61,63,
+                                    array('debut'=>9,'fin'=>10),13,15,19,31,array('debut'=>42,'fin'=>44),array('debut'=>46,'fin'=>49),52,54,55,57,60,61,62,64,
                                     array('debut'=>66,'fin'=>69),71,73,74,75,76,77,79,80,81,83,
                                     87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
