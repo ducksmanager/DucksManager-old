@@ -27,8 +27,8 @@ class SPG extends Edge {
 			$noir = imagecolorallocate($this->image, 0, 0, 0);
 			imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
 			imagefilledrectangle($this->image, .5*Edge::$grossissement, .5*Edge::$grossissement, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $blanc);
-			$titre=new Texte(mb_strtoupper('Super Picsou Geant','UTF-8'),$this->largeur*1.5/5,$this->largeur/2,
-							 6.2*Edge::$grossissement,-90,$noir,'ArialBlack.ttf');
+			$titre=new Texte('SUPER PICSOU G&#201;ANT',$this->largeur*1.5/5,$this->largeur/2,
+					 6.2*Edge::$grossissement,-90,$noir,'ArialBlack.ttf');
 			$this->textes[]=$titre;
 			$texte_numero=new Texte($this->numero,$this->numero < 10 ?$this->largeur*1.7/5 : $this->largeur*1/5,$this->hauteur-$this->largeur/2,
 									7*Edge::$grossissement,0,$noir,'ArialBlack.ttf');
