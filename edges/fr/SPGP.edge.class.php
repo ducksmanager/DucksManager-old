@@ -2,7 +2,7 @@
 class SPGP extends Edge {
 	var $pays='fr';
 	var $magazine='SPGP';
-	var $intervalles_validite=array(array('debut'=>65,  'fin'=>132));
+	var $intervalles_validite=array(65,70,73,77,81,85,88,90,93,97,100,102,105,108,111,113,117,120,123,125,129,132);
         static $largeur_defaut=20;
         static $hauteur_defaut=255;
         
