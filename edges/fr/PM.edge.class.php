@@ -260,7 +260,7 @@ class PM extends Edge {
                     $this->placer_image('logo PM.png','haut',array(0,$this->largeur*3.5));
                 }
                 else {
-                    if ($this->numero >= 449)
+                    if ($this->numero == 449 || $this->numero == 450)
                         imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur_texte);
                     else
                         imagefilledrectangle($this->image, 0, 0, $this->largeur, $hauteur_logo, $couleur2);
