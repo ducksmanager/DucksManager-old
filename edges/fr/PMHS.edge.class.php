@@ -2,7 +2,7 @@
 class PMHS extends Edge {
     var $pays='fr';
     var $magazine='PMHS';
-    var $intervalles_validite=array('B  1','B  2','C  1','C  2','C  4','C  5','C  6','C  7','C  8','C  9','C 10','C 11');
+    var $intervalles_validite=array('B  1','B  2','B  3','C  1','C  2','C  3','C  4','C  5','C  6','C  7','C  8','C  9','C 10','C 11');
 
     static $largeur_defaut=15;
     static $hauteur_defaut=278;
@@ -37,7 +37,8 @@ class PMHS extends Edge {
                     $texte='La Jeunesse de Picsou';
                     $auteur='D O N  R O S A';
                     $police_auteur='Compacta Bold Italic.ttf';
-                    $couleur_texte_auteur=imagecolorallocate($this->image, 197,111,24);
+                    list($rouge_auteur,$vert_auteur,$bleu_auteur)=$this->getColorsFromDB(array(255,255,255),'Texte auteur');
+                    $couleur_texte_auteur=imagecolorallocate($this->image, $rouge_auteur,$vert_auteur,$bleu_auteur);
                 }
                 else {
                     $texte='Les T';
