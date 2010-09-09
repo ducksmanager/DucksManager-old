@@ -15,7 +15,6 @@ define('PM_385','Picsou et la bibliothèque perdue d\'Alexandrie');
 define('PM_386','Picsou et le maître des canards');
 define('PM_387','44 gags de Donald Duck');
 define('PM_388','Fracture temporelle pour Donald!');
-define('PM_389','La vie extraordinaire de Donald Duck!');
 define('PM_390','Rencontre avec les Cracs-Badaboums');
 define('PM_391','Le secret du Hondorica');
 define('PM_392','Donald et l\'heure de l\'or');
