@@ -11,8 +11,8 @@ class MP extends Edge {
                                     array('debut'=>193,'fin'=>204),
                                     array('debut'=>205,'fin'=>216),
                                     array('debut'=>217,'fin'=>228),
-                                    array('debut'=>229,'fin'=>234),
-                                    237,247,
+                                    array('debut'=>229,'fin'=>235),
+                                    array('debut'=>236,'fin'=>253),
                                     array('debut'=>265,'fin'=>271),273,275,276,278,279,280,283,285,286,288,290,291,292,293,array('debut'=>295,'fin'=>317));
     var $en_cours=array(256,258,260,261,262,282,289,294);
     static $largeur_defaut=20;
@@ -32,7 +32,7 @@ class MP extends Edge {
             $this->hauteur=210*Edge::$grossissement;
         }
         elseif($this->numero<=253) {
-            $this->largeur=10*Edge::$grossissement;
+            $this->largeur=11*Edge::$grossissement;
             $this->hauteur=210*Edge::$grossissement;
         }
         else {
@@ -192,7 +192,7 @@ class MP extends Edge {
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
             imagefill($this->image,0,0,$fond);
 
-            $chemin_image='Titre MP 217-234'
+            $chemin_image='Titre MP 217-235'
                          .(($this->numero == 227 ||$this->numero == 230 )?'_rouge':'')
                          .'.png';
             $logo=$this->placer_image($chemin_image);
@@ -240,9 +240,12 @@ class MP extends Edge {
             $fond=imagecolorallocate($this->image,255,208,18);
             imagefill($this->image,0,0,$fond);
 
-            $this->placer_image('MP.'.$this->numero.'.tranche.png','haut',array(0,$this->largeur));
+            $this->placer_image('MP.'.$this->numero.'.haut.png','bas',array(0,$this->hauteur-$this->largeur*1.5));
+            $this->placer_image('MP.Planete2000.haut.png','haut',array(0,$this->largeur*1.5));
+            $this->placer_image('MP.'.$this->numero.'.dessin.png','haut',array(0,$this->largeur*2.5));
+            $this->placer_image('MP.'.$this->numero.'.bas.png','bas');
             
-            $this->placer_image('Titre MP 236-253.png','bas',array(0,$this->largeur));
+            $this->placer_image('MP.Planete2000.titre.png','bas',array(0,$this->largeur));
         }
         else {
             include_once($this->getChemin().'/../../MyFonts.Post.class.php');
