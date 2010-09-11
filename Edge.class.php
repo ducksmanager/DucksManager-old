@@ -105,7 +105,10 @@ class Edge {
         $hauteur_image_finale=intval($this->hauteur/$reduction);
         $image2=imagecreatetruecolor($largeur_image_finale, $hauteur_image_finale);
         imagecopyresampled($image2, $this->image, 0, 0, 0, 0, $largeur_image_finale, $hauteur_image_finale, $this->largeur, $this->hauteur);
-        imagepng($image2,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.str_replace(' ','',$this->numero).'.png');
+        
+        $numero_clean=str_replace(' ','',$this->numero);
+        $numero_clean=str_replace('+','',$numero_clean);
+        imagepng($image2,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png');
         imagedestroy($image2);
         imagepng($this->image);
         imagedestroy($this->image);
