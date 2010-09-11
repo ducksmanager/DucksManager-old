@@ -45,6 +45,7 @@ class Edge {
     }
     function getImgHTML($regen=false) {
         $code='';
+        $numero_clean=str_replace('+','',$this->numero);
         if (Edge::$largeur_numeros_precedents + $this->o->largeur > Etagere::$largeur) {
             $code.=Edge::getEtagereHTML();
             Edge::$largeur_numeros_precedents=0;
@@ -52,25 +53,45 @@ class Edge {
         if ($this->o->hauteur > Etagere::$hauteur_max_etage)
             Etagere::$hauteur_max_etage = $this->o->hauteur ;
         $code.= '<img class="tranche" ';
-        $fichier_existe=file_exists('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png');
-        if (!file_exists('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png') || $regen) {
+        $image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png';
+        $fichier_existe=file_exists($image);
+        if ($fichier_existe && !$regen) {
+            if (getEstVisible($this->pays, $this->magazine, $numero_clean)===true) {
+                $image=imagecreatefrompng('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png');
+                $gris_251=imagecolorallocate($image, 251,251,251);
+                $gris_250=imagecolorallocate($image, 250,250,250);
+                $gris_249=imagecolorallocate($image, 249,249,249);
+                $e=new Edge($this->pays,$this->magazine,$this->numero);
+                $e=$e->o;
+                if (imagecolorat($image, $e->largeur/2, $e->largeur/2) == $gris_249
+                 || imagecolorat($image, $e->largeur/2, $e->largeur/2) == $gris_250
+                 || imagecolorat($image, $e->largeur/2, $e->largeur/2) == $gris_251) {
+                     $fichier_existe=false;
+                }
+                else
+                    $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png" ';
+            }
+            else
+                $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png" ';
+            
+        }
+        if (!$fichier_existe || $regen) {
             $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'&amp;grossissement='.Edge::$grossissement.'" ';
         }
-        else {
-            $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png" ';
-        }
         $code.='width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" />';
+        
         Edge::$largeur_numeros_precedents+=$this->o->largeur;
         return $code;
     }
 
     function dessiner_tranche($regen=false) {
         $intervalle_validite=new IntervalleValidite($this->intervalles_validite);
-        if ($intervalle_validite->estValide($this->numero))
+        if ($intervalle_validite->estValide($this->numero)) {
             $this->image=$this->dessiner();
+            $this->dessiner_contour();
+        }
         else
             $this->image=$this->dessiner_defaut();
-        $this->dessiner_contour();
         foreach($this->textes as $texte) {
             imagettftext($this->image,$texte->taille,$texte->angle,$texte->pos_x,$texte->pos_y,$texte->couleur,$texte->police,$texte->texte);
         }
@@ -85,17 +106,22 @@ class Edge {
         $image2=imagecreatetruecolor($largeur_image_finale, $hauteur_image_finale);
         imagecopyresampled($image2, $this->image, 0, 0, 0, 0, $largeur_image_finale, $hauteur_image_finale, $this->largeur, $this->hauteur);
         imagepng($image2,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.str_replace(' ','',$this->numero).'.png');
+        imagedestroy($image2);
         imagepng($this->image);
+        imagedestroy($this->image);
     }
 
-	function dessiner_defaut() {
+    function dessiner_defaut() {
         $this->image=imagecreatetruecolor($this->largeur,$this->hauteur);
         $blanc=imagecolorallocate($this->image,255,255,255);
         $noir = imagecolorallocate($this->image, 0, 0, 0);
         imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
         imagettftext($this->image,$this->largeur/3,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
          $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
+        $this->dessiner_contour();
+        $gris_250=imagecolorallocate($this->image, 250,250,250);
         imageantialias($this->image, true);
+        imagefilledrectangle($this->image, $this->largeur/4,$this->largeur/4, $this->largeur*3/4,$this->largeur*3/4,$gris_250);
         return $this->image;
 	}
 
@@ -298,6 +324,7 @@ elseif (isset($_GET['regen'])) {
     <?php
     $pays=$_GET['pays'];
     $magazine=$_GET['magazine'];
+    $grossissement=isset($_GET['grossissement'])?$_GET['grossissement']:Edge::$grossissement;
     if (isset($_GET['debut'])) {
         $numeros=array('debut'=>$_GET['debut'], 'fin'=>$_GET['fin']);
     }
@@ -313,7 +340,7 @@ elseif (isset($_GET['regen'])) {
     else
         $liste_numeros=$iv->getListeNumeros();
     foreach($liste_numeros as $numero) {?>
-        <img src="Edge.class.php?grossissement=1.5&regen=true&pays=<?=$pays?>&magazine=<?=$magazine?>&numero=<?=$numero?>" />
+        <img src="Edge.class.php?grossissement=<?=$grossissement?>&regen=true&pays=<?=$pays?>&magazine=<?=$magazine?>&numero=<?=$numero?>" />
     <?php }
     ?></body></html><?php
 }
