@@ -2,7 +2,7 @@
 class PMHS extends Edge {
     var $pays='fr';
     var $magazine='PMHS';
-    var $intervalles_validite=array('B  1','B  2','B  3','C  1','C  2','C  3','C  4','C  5','C  6','C  7','C  8','C  9','C 10','C 11');
+    var $intervalles_validite=array('B1','B2','B3','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','C11');
 
     static $largeur_defaut=15;
     static $hauteur_defaut=278;

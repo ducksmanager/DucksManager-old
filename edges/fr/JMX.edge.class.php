@@ -2,7 +2,7 @@
 class JMX extends Edge {
     var $pays='fr';
     var $magazine='JMX';
-    var $intervalles_validite=array(1);
+    var $intervalles_validite=array('B1');
     static $largeur_defaut=13;
     static $hauteur_defaut=275;
 

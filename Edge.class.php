@@ -21,6 +21,7 @@ class Edge {
         if (is_null($pays))
             return;
         $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
+        $this->numero=str_replace(' ','',str_replace('+','',$this->numero));
         if (file_exists('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php')) {
             require_once('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php');
             $this->o=new $this->magazine($this->numero);
@@ -106,8 +107,7 @@ class Edge {
         $image2=imagecreatetruecolor($largeur_image_finale, $hauteur_image_finale);
         imagecopyresampled($image2, $this->image, 0, 0, 0, 0, $largeur_image_finale, $hauteur_image_finale, $this->largeur, $this->hauteur);
         
-        $numero_clean=str_replace(' ','',$this->numero);
-        $numero_clean=str_replace('+','',$numero_clean);
+        $numero_clean=str_replace(' ','',str_replace('+','',$this->numero));
         imagepng($image2,'edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png');
         imagedestroy($image2);
         imagepng($this->image);
