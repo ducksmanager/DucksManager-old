@@ -13,8 +13,9 @@ class MP extends Edge {
                                     array('debut'=>217,'fin'=>228),
                                     array('debut'=>229,'fin'=>235),
                                     array('debut'=>236,'fin'=>253),
+                                    array('debut'=>255,'fin'=>256),258,259,260,262,
                                     array('debut'=>265,'fin'=>271),273,275,276,278,279,280,281,283,284,285,286,288,array('debut'=>290,'fin'=>317));
-    var $en_cours=array(256,258,260,261,262,282,289,294);
+    
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
     function MP($numero) {
@@ -33,6 +34,10 @@ class MP extends Edge {
         }
         elseif($this->numero<=253) {
             $this->largeur=11*Edge::$grossissement;
+            $this->hauteur=210*Edge::$grossissement;
+        }
+        elseif($this->numero<=263) {
+            $this->largeur=10*Edge::$grossissement;
             $this->hauteur=210*Edge::$grossissement;
         }
         else {
@@ -247,6 +252,20 @@ class MP extends Edge {
             
             $this->placer_image('MP.Planete2000.titre.png','bas',array(0,$this->largeur));
         }
+        elseif ($this->numero <= 263) {
+            $couleur_fond=imagecolorallocate($this->image, 239, 165, 32);
+            imagefill($this->image,0,0,$couleur_fond);
+            $this->placer_image('MP.255-263.Fond_haut.png');
+            foreach(str_split($this->numero) as $i=>$chiffre) {
+                $this->placer_image('MP.255-263.Chiffre.'.$chiffre.'.png','haut',array(0,$this->largeur*(.5+0.6*(2-$i))));
+            }
+            $this->placer_image('motif MP 254-263.png','haut',array(0,2.5*$this->largeur));
+            $this->placer_image('logo MP 254-263.png','haut',array(0,3*$this->largeur));
+            $dessin=$this->placer_image('MP.'.$this->numero.'.Dessin.png','haut',array(0,6.2*$this->largeur));
+            $hauteur_sous_image=$this->largeur*(imagesy($dessin)/imagesx($dessin));
+            $this->placer_image('MP.255-263.Fond_bas.png','bas');
+            $this->placer_image('MP.'.$this->numero.'.Texte.png','bas');
+        }
         else {
             include_once($this->getChemin().'/../../MyFonts.Post.class.php');
             if (in_array($this->numero, array(300,303,304))) {
@@ -339,4 +358,8 @@ class MP extends Edge {
         return $this->image;
     }
 
+}
+    function __toString($val)
+{
+        return ($val);
 }
