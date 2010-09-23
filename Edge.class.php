@@ -490,4 +490,32 @@ function rgb2hex($r,$g,$b) {
     }
     return $hex;
 }
+
+
+function remplacerCouleur(&$im,$r_old,$g_old,$b_old,$r,$g,$b) {
+    $width = imagesx($im);
+    $height = imagesy($im);
+    $cloneH = 0;
+    $oldhex = rgb2hex($r_old,$g_old,$b_old);
+    $hex = rgb2hex($r,$g,$b);
+    $color = imagecolorallocate($im, hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 6)));
+    for ($cloneH = 0; $cloneH < $height; $cloneH++) {
+        for ($x = 0; $x < $width; $x++) {
+            if (colormatch($im, $x, $cloneH, $oldhex))
+               imagesetpixel($im, $x, $cloneH, $color);
+       }
+   }
+}
+
+function colormatch($image, $x, $y, $hex) {
+    $rgb = imagecolorat($image, $x, $y);
+    $r = ($rgb >> 16) & 0xFF;
+    $g = ($rgb >> 8) & 0xFF;
+    $b = $rgb & 0xFF;
+
+    $r2 = hexdec(substr($hex, 0, 2));
+    $g2 = hexdec(substr($hex, 2, 2));
+    $b2 = hexdec(substr($hex, 4, 6));
+    return $r == $r2 && $b == $b2 && $g == $g2;
+}
 ?>
