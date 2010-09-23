@@ -42,7 +42,7 @@ class SPG extends Edge {
                 default:
                     $image_texte=$this->getChemin().'/Texte_SPG 2.png';
             }
-            if ($this->numero==72) {
+            if (in_array($this->numero,array(69,71,72))) {
                 include_once($this->getChemin().'/../../util.php');
                 $couleur1=$this->getColorsFromDB(array(0,0,0),'Couleur 1');
                 $couleur2=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
