@@ -8,7 +8,11 @@ class SPGP extends Edge {
         
         function SPGP($numero) {
             $this->numero=$numero;
-            $this->largeur=20*Edge::$grossissement;
+               
+            if ($this->numero <= 73)
+                $this->largeur=16*Edge::$grossissement;
+            else
+                $this->largeur=20*Edge::$grossissement;
             $this->hauteur=255*Edge::$grossissement;
             
             $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
@@ -16,29 +20,58 @@ class SPGP extends Edge {
                 xdebug_break ();
 	}
 	function dessiner() {
-        $jaune=imagecolorallocate($this->image,255,214,0);
-        $blanc=imagecolorallocate($this->image,255,255,255);
-        $noir = imagecolorallocate($this->image, 0, 0, 0);
-        imagefilledrectangle($this->image, 0, 0, $this->largeur, $this->hauteur, $noir);
-        imagefilledrectangle($this->image, .5*Edge::$grossissement, .5*Edge::$grossissement, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $this->numero==93?$jaune:$blanc);
-        $titre=new Texte('SUPER PICSOU G&#201;ANT',$this->largeur*1.5/5,$this->largeur/2,
-                         6.2*Edge::$grossissement,-90,$noir,'ArialBlack.ttf');
-        $this->textes[]=$titre;
+            switch($this->numero) {
+                case 65:
+                    include_once($this->getChemin().'/../../MyFonts.Post.class.php');
+                    $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
+                    $blanc=imagecolorallocate($image2,255,255,255);
+                    list($rouge, $vert, $bleu)=array(0,0,91);
+                    $fond=imagecolorallocate($image2,$rouge, $vert, $bleu);
+                    list($rouge_texte, $vert_texte, $bleu_texte)=array(255,199,28);
+                    imagefill($image2,0,0,$fond);
+                    $post=new MyFonts('larabie/coolvetica/bold',
+                                  rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
+                                  rgb2hex($rouge, $vert, $bleu),
+                                  1400,
+                                  'SUPER PICSOU G&Eacute;ANT   .');
+                    $chemin_image=$post->chemin_image;
+                    list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+                    $nouvelle_largeur=$this->largeur*($width/$height);
+                    imagecopyresampled ($image2, $texte, $this->largeur*0.5, $this->largeur*0.35, 0, 0, $nouvelle_largeur*0.6*1.05, $this->largeur*0.51*0.6, $width, $height*0.51);
 
-        list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPGP.signature_disney.png');
-        imagealphablending($icone, false);
-        # set the transparent color
-        $transparent = imagecolorallocatealpha($icone, 0, 0, 0, 127);
-        imagefill($icone, 0, 0, $transparent);
-        # set the transparency settings for the picture after adding the transparency
-        imagesavealpha($icone,true);
-        imagealphablending($icone, true);
+                    $this->image=imagerotate($image2, -90, $blanc);
+                break;
 
-        $nouvelle_largeur=$this->largeur/1.5;
-        $nouvelle_hauteur=$nouvelle_largeur*($height/$width);
-        imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->hauteur-3*$this->largeur, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+            default:
+                switch($this->numero) {
+                    case 70 : case 93:
+                        $fond=imagecolorallocate($this->image,255,214,0);
+                    break;
+                    case 73:
+                        $fond=imagecolorallocate($this->image,248,225,199);
+                    break;
+                    default:
+                        $fond=imagecolorallocate($this->image,255,255,255);
+                }
+                $rouge=imagecolorallocate($this->image,255,0,0);
+                $noir = imagecolorallocate($this->image, 0, 0, 0);
+                imagefill($this->image,0,0,$fond);
+                $titre=new Texte('SUPER PICSOU G&#201;ANT',$this->largeur*1.5/5,$this->numero <= 73 ? $this->largeur*0.5 : $this->largeur * 0.8,
+                                 5.7*Edge::$grossissement,-90,$this->numero == 70 ? $rouge : $noir,'ArialBlack.ttf');
+                $titre->dessiner($this->image);
 
-		return $this->image;
-	}
-
+                if ($this->numero == 70) {
+                    $this->placer_image('SPGP.Numéro.2.png','haut',array(0,$this->hauteur*0.57));
+                    list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPGP.signature_disney_rouge.png');
+                }
+                else
+                    list($icone,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/SPGP.signature_disney.png');
+                
+                $nouvelle_largeur=$this->largeur/1.5;
+                $nouvelle_hauteur=$nouvelle_largeur*($height/$width);
+                imagecopyresampled ($this->image, $icone, $this->largeur/6, $this->hauteur-3*$this->largeur, 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+            break;
+        }
+	return $this->image;
+     }
 }
