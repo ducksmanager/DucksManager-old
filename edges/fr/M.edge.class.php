@@ -2,7 +2,7 @@
 class M extends Edge {
     var $pays='fr';
     var $magazine='M';
-    var $intervalles_validite=array(6,27,29,31,33,35);
+    var $intervalles_validite=array(6,27,29,31,33,35,70,71);
     static $largeur_defaut=9;
     static $hauteur_defaut=207;
 
@@ -28,8 +28,13 @@ class M extends Edge {
         
         list($coeur,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/M.coeur.png');
         imagefill($coeur,$width/2,$height/2,$couleur2);
-        $this->placer_image($coeur,'bas');
         $this->placer_image($coeur,'haut',array(0,$this->largeur/3));
+        if ($this->numero == 71) {// Différente couleur pour le coeur du bas
+            list($rouge3,$vert3,$bleu3)=$this->getColorsFromDB(array(255,255,255),'Couleur 3');
+            $couleur3=imagecolorallocate($this->image, $rouge3,$vert3,$bleu3);
+            imagefill($coeur,$width/2,$height/2,$couleur3);
+        }
+        $this->placer_image($coeur,'bas');
         $chiffres=imagecreatetruecolor($this->largeur, $this->largeur);
         $fond_chiffres=imagecolorallocate($chiffres, $rouge, $vert, $bleu);
         imagefill($chiffres, 0, 0, $fond_chiffres);
