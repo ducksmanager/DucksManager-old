@@ -66,7 +66,16 @@ class PM extends Edge {
                 break;
 
                 case 88:
-                    $this->placer_image('PM.88.degrade.png', 'haut', array(0,$separation_haut_bas));
+                    $couleur1_rgb=$this->getColorsFromDB(array(255,255,255),'Haut');
+                    $couleur2_rgb=$this->getColorsFromDB(array(255,255,255),'Bas');
+
+                    include_once($this->getChemin().'/../../util.php');
+                    $couleurs_inter=getMidColors($couleur1_rgb, $couleur2_rgb, $this->largeur*0.8);
+                    foreach($couleurs_inter as $i=>$couleur) {
+                        list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+                        $couleur_allouee=imagecolorallocate($this->image, $rouge_inter,$vert_inter,$bleu_inter);
+                        imageline($this->image, 0, $i+$this->largeur*11, $this->largeur, $i+$this->largeur*11, $couleur_allouee);
+                    }
                 break;
 
                 case 104:
@@ -163,7 +172,7 @@ class PM extends Edge {
             $this->placer_image($titre, 'haut', array($this->largeur/5, ($ecriture_vers_haut ? 10 : 5)*Edge::$grossissement), 0.75, 0.75);
             $texte_numero=new Texte($this->numero,$ecriture_vers_haut ? $this->largeur*8/10 : $this->largeur/3, $ecriture_vers_haut ? 10*Edge::$grossissement : $hauteur_sous_image + 5*Edge::$grossissement,
 									3.5*Edge::$grossissement,$ecriture_vers_haut ? 90 : -90,$this->numero == 119 ? $blanc : $noir,'ArialBlack.ttf');
-			$texte_numero->dessiner($this->image);
+            $texte_numero->dessiner($this->image);
 
             if ($this->numero <= 86) {
                 if ($this->numero == 49) {  }
@@ -238,7 +247,7 @@ class PM extends Edge {
                 $post=new MyFonts('ortizlopez/ol-london/ollondon-black',
                                   rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                                   rgb2hex($rouge, $vert, $bleu),
-                                  4200,
+                                  4900,
                                   $texte);
                 $chemin_image=$post->chemin_image;
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
