@@ -16,8 +16,9 @@ class Edge {
     static $grossissement=10;
     static $grossissement_affichage=1.5;
     static $largeur_numeros_precedents=0;
+    static $d;
     
-	function Edge($pays=null,$magazine=null,$numero=null) {
+    function Edge($pays=null,$magazine=null,$numero=null) {
         if (is_null($pays))
             return;
         $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
@@ -35,7 +36,7 @@ class Edge {
             $this->largeur*=Edge::$grossissement;
             $this->hauteur*=Edge::$grossissement;
         }
-	}
+    }
 
     static function getEtagereHTML($br=true) {
         $code= '<div class="etagere" style="width:'.Etagere::$largeur.';'
@@ -129,24 +130,20 @@ class Edge {
 	}
 
     function getColorsFromDB($default_color=array(255,255,255),$parametre_autre=null) {
-        include_once('Database.class.php');
-        $d=new Database();
         $requete_couleurs='SELECT CouleurR, CouleurG, CouleurB FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
         if (!is_null($parametre_autre))
             $requete_couleurs.=' AND Autre LIKE \''.$parametre_autre.'\'';
         else
             $requete_couleurs.=' AND (Autre IS NULL || Autre LIKE \'\')';
-        $resultat=$d->requete_select($requete_couleurs);
+        $resultat=Edge::$d->requete_select($requete_couleurs);
         if (count($resultat)==0)
             return $default_color;
         return array($resultat[0]['CouleurR'], $resultat[0]['CouleurG'], $resultat[0]['CouleurB']);
     }
 
     function getDataFromDB($default_text='') {
-        include_once('Database.class.php');
-        $d=new Database();
         $requete_couleurs='SELECT Autre FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
-        $resultat=$d->requete_select($requete_couleurs);
+        $resultat=Edge::$d->requete_select($requete_couleurs);
         if (count($resultat)==0)
             return $default_text;
         return $resultat[0]['Autre'];
@@ -187,18 +184,17 @@ class Edge {
     static function getPourcentageVisible($get_html=false, $regen=false, $user_unique=true) {
         include_once('Database.class.php');
         @session_start();
-        $d=new Database();
         if ($user_unique===true)
-            $ids_users=array($d->user_to_id($_SESSION['user']));
+            $ids_users=array(Edge::$d->user_to_id($_SESSION['user']));
         else {
             $pourcentages_visible=array();
             $requete_users='SELECT ID, username FROM users';
-            $resultat_users=$d->requete_select($requete_users);
+            $resultat_users=Edge::$d->requete_select($requete_users);
             foreach($resultat_users as $user)
                 $ids_users[$user['username']]=$user['ID'];
         }
         foreach($ids_users as $username=>$id_user) {
-            $l=$d->toList($id_user);
+            $l=Edge::$d->toList($id_user);
             $texte_final='';
             $total_numeros=0;
             $total_numeros_visibles=0;
@@ -237,15 +233,15 @@ class Edge {
     }
 
 }
+include_once('Database.class.php');
+Edge::$d=new Database();
+if (!Edge::$d) {
+    echo PROBLEME_BD;
+    exit(-1);
+}
 if (isset($_POST['get_visible'])) {
-    include_once('Database.class.php');
     include_once ('locales/lang.php');
-    $d=new Database();
-    if (!$d) {
-        echo PROBLEME_BD;
-        exit(-1);
-    }
-    list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+    list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=Edge::$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
     ?>
     <div class="titre_magazine"><?=utf8_encode($nom_complet_magazine)?></div><br />
     <div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
@@ -270,15 +266,9 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
  * Table bibliotheque_options
 */
 elseif (isset($_POST['get_texture'])) {
-    include_once('Database.class.php');
-    $d=new Database();
-    if (!$d) {
-        echo PROBLEME_BD;
-        exit(-1);
-    }
-    $id_user=$d->user_to_id($_SESSION['user']);
+    $id_user=Edge::$d->user_to_id($_SESSION['user']);
     $requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
-    $resultat_texture=$d->requete_select($requete_texture);
+    $resultat_texture=Edge::$d->requete_select($requete_texture);
 	$rep = "edges/textures";
     $dir = opendir($rep);
     while ($f = readdir($dir)) {
@@ -296,15 +286,9 @@ elseif (isset($_POST['get_texture'])) {
 }
 
 elseif (isset($_POST['get_sous_texture'])) {
-    include_once('Database.class.php');
-    $d=new Database();
-    if (!$d) {
-        echo PROBLEME_BD;
-        exit(-1);
-    }
-    $id_user=$d->user_to_id($_SESSION['user']);
+    $id_user=Edge::$d->user_to_id($_SESSION['user']);
     $requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
-    $resultat_texture=$d->requete_select($requete_texture);
+    $resultat_texture=Edge::$d->requete_select($requete_texture);
 
 	$rep = 'edges/textures/'.$_POST['texture'].'/miniatures';
     $dir = opendir($rep);
@@ -493,6 +477,8 @@ function rgb2hex($r,$g,$b) {
 
 
 function remplacerCouleur(&$im,$r_old,$g_old,$b_old,$r,$g,$b) {
+    if ($r_old===$r && $g_old===$g && $b_old===$b)
+        return;
     $width = imagesx($im);
     $height = imagesy($im);
     $cloneH = 0;
