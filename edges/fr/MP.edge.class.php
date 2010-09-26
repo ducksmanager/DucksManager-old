@@ -2,9 +2,8 @@
 class MP extends Edge {
     var $pays='fr';
     var $magazine='MP';
-    var $intervalles_validite=array(array('debut'=>1,'fin'=>2),
-                                    array('debut'=>9,'fin'=>10),13,15,19,31,array('debut'=>42,'fin'=>44),array('debut'=>46,'fin'=>49),52,54,55,57,60,61,62,64,
-                                    array('debut'=>66,'fin'=>69),71,73,74,75,76,77,79,80,81,83,
+    var $intervalles_validite=array(array('debut'=>1,'fin'=>21,'sauf'=>array(14)),array('debut'=>25,'fin'=>63,'sauf'=>array(41)),
+                                    array('debut'=>66,'fin'=>84,'sauf'=>array(72)),
                                     87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
                                     array('debut'=>140,'fin'=>192),
@@ -50,26 +49,29 @@ class MP extends Edge {
     }
     function dessiner() {
         if ($this->numero <= 84) {
+            include_once($this->getChemin().'/../../MyFonts.Post.class.php');
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();
+            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
+            $image2=imagecreatetruecolor($this->hauteur, $this->largeur);
+            $blanc=imagecolorallocate($image2,255,255,255);
 
             $fond=imagecolorallocate($this->image,$rouge,$vert,$bleu);
+            $couleur_texte=imagecolorallocate($this->image,$rouge_texte, $vert_texte, $bleu_texte);
             $noir=imagecolorallocate($this->image,0,0,0);
-            imagefilledrectangle($this->image, .5*Edge::$grossissement, .5*Edge::$grossissement, $this->largeur-.5*Edge::$grossissement, $this->hauteur-.5*Edge::$grossissement, $fond);
-            $sous_image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
-            $fond2=imagecolorallocate($sous_image,$rouge,$vert,$bleu);
-            $noir2=imagecolorallocate($sous_image,0,0,0);
-            imagefilledrectangle($sous_image, 0, 0, $this->largeur, $this->hauteur, $fond2);
-            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
-            $couleur_texte=imagecolorallocate($this->image,$rouge_texte,$vert_texte,$bleu_texte);
-            $r=imagettftext($sous_image,5*Edge::$grossissement,-90, $this->largeur/5, 0, $couleur_texte,'edges/Square721.ttf',strtoupper('Mickey'));
-            imagettftext($sous_image,5*Edge::$grossissement,-90, $this->largeur/5, $r[3] + 4*Edge::$grossissement, $couleur_texte,'edges/Square721.ttf',strtoupper('Parade'));
-            imagecopyresampled ($this->image, $sous_image, $this->largeur*0.7/5, $this->hauteur*1.2/5, 0, 0, $this->largeur, $this->hauteur*4.7/5, $this->largeur, $this->hauteur);
-            $cote_carre=1*Edge::$grossissement;
-
-            imagefilledrectangle($this->image, $this->largeur*2.2/5, $this->hauteur/2 - 13*Edge::$grossissement,
-                                               $this->largeur*2.2/5 +$cote_carre, $this->hauteur/2 - 13*Edge::$grossissement + $cote_carre,
-                                 $couleur_texte);
-            imagerectangle($this->image, 0, 0, $this->largeur-1, $this->hauteur-1, $noir);
+            
+            imagefill($image2,0,0, $fond);
+            $im=imagecreatefrompng($this->getChemin().'/MP.Titre.Premiers.png');
+            $post=new MyFonts('itfmecanorma/eurostile/extended-bold',
+                              rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
+                              rgb2hex($rouge, $vert, $bleu),
+                              1650,
+                              'MICKEY  PARADE      .');
+            $chemin_image=$post->chemin_image;
+            list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+            $nouvelle_largeur=$this->largeur*($width/$height);
+            imagecopyresampled ($image2, $texte, $this->largeur*3.2, $this->largeur*0.25, 0, 0, $nouvelle_largeur*0.85, $this->largeur*0.45, $width, $height/2);
+            imagefilledrectangle($image2, $this->largeur*6.08, $this->largeur*0.42, $this->largeur*6.18, $this->largeur*0.52, $couleur_texte);
+            $this->image=imagerotate($image2, -90, $blanc);
         }
         elseif ($this->numero <=132) {
             $blanc = imagecolorallocate($this->image, 255,255,255);
