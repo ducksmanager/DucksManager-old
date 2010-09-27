@@ -20,6 +20,8 @@ class DMspiral extends Format_liste {
                     foreach($numeros as $numero_et_etat) {
                         if (!$premier)
                             $chaine.=',';
+                        if (is_string($numero_et_etat) || count($numero_et_etat) <2)
+                                continue;
                         $numero=$numero_et_etat[0];
                         $etat=$numero_et_etat[1];
                         $chaine.=$magazine.'!'.
