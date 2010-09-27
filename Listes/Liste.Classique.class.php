@@ -12,24 +12,26 @@ class Classique extends Format_liste {
 	}
 
 	function afficher($liste) {
-            require_once('Inducks.class.php');
-		foreach($liste as $pays=>$numeros_pays) {
-			$liste_magazines=Inducks::get_noms_complets_magazines($pays);
-			foreach($numeros_pays as $magazine=>$numeros) {
-				echo '<u>'.$liste_magazines[$magazine].'</u>';
-				$debut=true;
-				sort($numeros);
-				foreach($numeros as $numero) {
-					if (!$debut) echo ',';
-					if (is_array($numero))
-						echo ' '.$numero[0];
-					else
-						echo ' '.$numero;
-					$debut=false;
-				}
-				echo '<br />';
-			}
-		}
+            require_once('Database.class.php');
+            $d=new Database();
+            foreach($liste as $pays=>$numeros_pays) {
+                ?><br /><b><i><?=utf8_encode($d->get_nom_complet_pays($pays))?></i></b><br /><?php
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    list($nom_pays_complet,$nom_magazine_complet)=$d->get_nom_complet_magazine($pays, $magazine);
+                    ?><u><?=utf8_encode($nom_magazine_complet)?></u><?php
+                    $debut=true;
+                    sort($numeros);
+                    foreach($numeros as $numero) {
+                        if (!$debut) echo ',';
+                        if (is_array($numero))
+                                echo ' '.$numero[0];
+                        else
+                                echo ' '.$numero;
+                        $debut=false;
+                    }
+                    ?><br /><?php
+                }
+            }
 	}
 }
 ?>
