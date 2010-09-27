@@ -15,31 +15,39 @@ class DMtable extends Format_liste {
 	function afficher($liste) {
 		$max_centaines=0;
 		$max_diz_et_unites=1;
-		echo '<table rules="all" style="border:1;color: gray; font:11px/15px verdana,arial,sans-serif;">';
-		echo '<tr><td></td>';
-		for ($i=1;$i<=50;$i++)
-			echo '<td>'.$i.'</td>';
-                echo '<td rowspan="2">'.TOTAL.'</td>';
-		echo '</tr>';
-		echo '<tr><td />';
-		for ($i=51;$i<=100;$i++)
-			echo '<td>'.$i.'</td>';
-		echo '</tr>';
+		?><table rules="all" style="border:1;color: gray; font:11px/15px verdana,arial,sans-serif;">
+                    <tr>
+                        <td></td><?php
+		for ($i=1;$i<=50;$i++) {?>
+                        <td><?=$i?></td>
+                <?php }?>
+                        <td rowspan="2">
+                            <?=TOTAL?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td><?php
+		for ($i=51;$i<=100;$i++) {?>
+                        <td><?=$i?></td>
+		<?php }?>
+                    </tr><?php
+                global $centaines_utilisees;
+                $centaines_utilisees=array();
+                ksort($liste);
 		foreach($liste as $pays=>$numeros_pays) {
+                    ksort($numeros_pays);
 			foreach($numeros_pays as $magazine=>$numeros) {
 				$total_magazine=0;
 				$liste_numeros=array();
 				$liste_non_numeriques=array();
-                                global $centaines_utilisees;
-                                $centaines_utilisees=array();
 				foreach($numeros as $numero_et_etat) {
 					$total_magazine++;
 					$numero=$numero_et_etat[0];
-					if (false!=(array_search($numero,$liste_numeros)))
+					if (false!=(array_key_exists($numero,$liste_numeros)))
 						$liste_numeros[$numero]++;
 					else
 						$liste_numeros[$numero]=1;
-					if (!is_numeric($numero)) {
+					if (!is_numeric($numero) && $numero!='-') {
 						array_push($liste_non_numeriques,$numero);
 						continue;
 					}
@@ -56,17 +64,18 @@ class DMtable extends Format_liste {
 						$max_diz_et_unites=$diz_et_unites;
 				}
                                 ?>
-				<tr><td rowspan="2" valign="middle" align="center">
-                                    <img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
-                                    <br />
-                                    <?=$magazine?>
-                                    <br />
-                                </td>
+				<tr>
+                                    <td rowspan="2" valign="middle" align="center">
+                                        <img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
+                                        <br />
+                                        <?=$magazine?>
+                                        <br />
+                                    </td>
                                 <?php
 				$array_values_number=array_count_values($liste_numeros);
 
 				for($i=1;$i<=50;$i++) {
-                                    echo '<td>';
+                                    ?><td><?php
                                     for ($j=0;$j<=$max_centaines;$j++) {
                                         if (!array_key_exists($j*100+$i,$liste_numeros))
                                             continue;
@@ -74,11 +83,11 @@ class DMtable extends Format_liste {
                                             echo number_to_letter($j);
                                         }
                                     }
-                                    echo '</td>';
+                                    ?></td><?php
 				}
-                                echo '<td rowspan="2">'.$total_magazine.'</td></tr><tr>';
+                                ?><td rowspan="2"><?=$total_magazine?></td></tr><tr><?php
                                 for($i=51;$i<=100;$i++) {
-                                    echo '<td>';
+                                    ?><td><?php
                                     for ($j=0;$j<=$max_centaines;$j++) {
                                         if (!array_key_exists($j*100+$i,$liste_numeros))
                                             continue;
@@ -86,14 +95,17 @@ class DMtable extends Format_liste {
                                                 echo number_to_letter($j);
                                         }
                                     }
-                                    echo '</td>';
+                                    ?></td><?php
                                 }
 				/*else {
 					echo '<td>'.$total_magazine.'</td></tr><tr>';
 				}*/
-				echo '</tr>';
+				?></tr><?php
 				if (count($liste_non_numeriques)>0) {
-					echo '<tr><td></td><td colspan="51">'.NON_NUMERIQUES.' : ';
+					?><tr>
+                                            <td></td>
+                                            <td colspan="51">
+                                                <?=NON_NUMERIQUES?> : <?php
 					$debut=true;
 					foreach($liste_non_numeriques as $numero) {
 						if (!$debut)
@@ -101,24 +113,62 @@ class DMtable extends Format_liste {
 						echo $numero;
 						$debut=false;
 					}
-					echo '</td></tr>';
+					?>
+                                            </td>
+                                        </tr><?php
 				}
 
 			}
 		}
 
-		echo '</table>';
+		?></table>
+                <table style="width:100%">
+                    <tr>
+                        <td><?php
                 if (count($centaines_utilisees)>0) {
-                    echo '<table style="color:gray;font:11px/15px verdana,arial,sans-serif"><tr><td colspan="2" align="center"><u>'.LEGENDE_NUMEROS.'</u></td></tr><tr><td>';
+                            ?><table style="color:gray;font:11px/15px verdana,arial,sans-serif">
+                                <tr>
+                                    <td colspan="2" align="center">
+                                        <u><?=LEGENDE_NUMEROS?></u>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align:top"><?php
                     for ($i=0;$i<=$max_centaines;$i++) {
-                        if (!array_key_exists($i, $centaines_utilisees))
-                            continue;
-                        if ($i==intval($max_centaines/2)+1) echo '</td><td>';
-                        echo number_to_letter($i);
-                        echo ':'.($i*100+1).'-&gt;'.(($i+1)*100).'<br />';
+                        if ($i==intval($max_centaines/2)+1) {
+                                    ?></td><td style="vertical-align:top"><?php
+                        }
+                        ?><?=number_to_letter($i)?>:<?=($i*100+1)?>-&gt;<?=(($i+1)*100)?><br /><?php
                     }
-                    echo '</td></tr></table>';
+                                    ?></td></tr></table><?php
                 }
+                ?>
+                        </td><?php
+                include_once('Database.class.php');
+                $d=new Database();
+                $nb_magazines=0;
+                foreach($liste as $pays=>$numeros_pays)
+                    $nb_magazines+=count($numeros_pays);
+
+                if ($nb_magazines > 1) {
+                    ?>
+                        <td align="right" style="vertical-align: top">
+                            <table style="color:gray;font:11px/15px verdana,arial,sans-serif"><?php
+                    foreach($liste as $pays=>$numeros_pays) {
+                            foreach($numeros_pays as $magazine=>$numeros) {
+                                list($nom_pays_complet,$nom_magazine_complet)=$d->get_nom_complet_magazine($pays, $magazine,true);
+                                ?><tr>
+                                    <td><?=$magazine?></td>
+                                    <td><?=$nom_magazine_complet?></td>
+                                </tr><?php
+                            }
+                    }?>
+                            </table>
+                        </td>
+                <?php }?>
+                    </tr>
+                </table>
+                <?php
 	}
 }
 function number_to_letter($number) {
