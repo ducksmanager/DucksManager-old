@@ -123,7 +123,7 @@ class MPNT extends Edge {
             $this->image=imagerotate($image2, 90, $blanc);
         switch($this->numero) {
             case 856 :
-                $position_etoile=$this->hauteur*0.43;
+                $position_etoile=$this->hauteur*0.51;
             break;
             default:
                 $position_etoile=$this->hauteur*0.57;

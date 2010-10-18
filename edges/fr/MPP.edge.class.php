@@ -2,7 +2,7 @@
 class MPP extends Edge {
     var $pays='fr';
     var $magazine='MPP';
-    var $intervalles_validite=array(723,735,756,786,807,824,838,856,886,990,1016,1055,1111,1121,1134,1154,1166,1174,1182,1190,1199,1208,1217,1225,1234,1243,1251,1260,1267,1275,1284,1293,1301,1310,1319,1327,1336,1345,1355,1363,1372,1381,1389,1398,1407,1415,1424,1433);
+    var $intervalles_validite=array(723,735,756,786,807,824,838,856,886,990,1016,1055,1111,1121,1134,1144,1154,1166,1174,1182,1190,1199,1208,1217,1225,1234,1243,1251,1260,1267,1275,1284,1293,1301,1310,1319,1327,1336,1345,1355,1363,1372,1381,1389,1398,1407,1415,1424,1433);
 
     static $largeur_defaut=15;
     static $hauteur_defaut=186;
@@ -15,7 +15,7 @@ class MPP extends Edge {
             case 824: case 856: case 886 :
                 $this->largeur=13*Edge::$grossissement;
             break;
-            case 838:
+            case 838: case 1144:
                 $this->largeur=14*Edge::$grossissement;
             default:
                 $this->largeur=15*Edge::$grossissement;
@@ -58,7 +58,7 @@ class MPP extends Edge {
             case 807: case 824 :
                 $dst_y=$this->largeur*0.2;
             break;
-            case 838 : case 856:
+            case 838 : case 856: case 1144:
                 $dst_y=$this->largeur*0.42;
             break;
             default:
@@ -120,15 +120,17 @@ class MPP extends Edge {
         $nouvelle_largeur=$this->largeur*($width/$height);
         imagecopyresampled ($image2, $texte_r, $pos_r, $dst_y + $this->largeur*0.055, 0, 0, $nouvelle_largeur*0.3, $this->largeur*0.26, $width*0.5, $height*0.5);
 
-        if (in_array($this->numero,array(856)) || $this->numero >=1166) {
+        if (in_array($this->numero,array(856))) {
+            $this->image=imagerotate($image2, -90, $blanc);
+            $position_etoile=$this->hauteur*0.51;
+        }
+        elseif($this->numero >=1166) {
             $this->image=imagerotate($image2, -90, $blanc);
             $position_etoile=$this->hauteur*0.43;
         }
         else {
             $this->image=imagerotate($image2, 90, $blanc);
             switch($this->numero) {
-                case 856 :
-                break;
                 case 1055: case 1111: case 1121:
                     $position_etoile=$this->hauteur*0.55;
                 break;
