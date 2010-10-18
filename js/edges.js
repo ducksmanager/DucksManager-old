@@ -24,7 +24,8 @@ function ouvrir(element) {
         fermer(element);
         return;
     }
-    $('infobulle').remove();
+    if ($('infobulle'))
+        $('infobulle').remove();
     bulle=null;
     action_en_cours=true;
     var infos=getInfosNumero(element.src);
@@ -189,7 +190,8 @@ function ouvrirInfoBulle(element) {
         parameters:'get_visible=true&debug='+debug+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
             if (numerosIdentiques(numero_bulle, getInfosNumero(transport.request.body)))
-                $(bulle).update(transport.responseText);
+                if ($(bulle))
+                    $(bulle).update(transport.responseText);
         }
     });
 
