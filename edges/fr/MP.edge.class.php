@@ -13,7 +13,8 @@ class MP extends Edge {
                                     array('debut'=>229,'fin'=>235),
                                     array('debut'=>236,'fin'=>253),
                                     array('debut'=>255,'fin'=>256),258,259,260,262,
-                                    array('debut'=>265,'fin'=>271),273,275,276,278,279,280,281,283,284,285,286,288,array('debut'=>290,'fin'=>318));
+                                    array('debut'=>265,'fin'=>271),
+                                    array('debut'=>273,'fin'=>281),array('debut'=>283,'fin'=>288),array('debut'=>290,'fin'=>318));
     
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -35,7 +36,7 @@ class MP extends Edge {
             $this->largeur=11*Edge::$grossissement;
             $this->hauteur=210*Edge::$grossissement;
         }
-        elseif($this->numero<=263) {
+        elseif($this->numero<=264) {
             $this->largeur=10*Edge::$grossissement;
             $this->hauteur=210*Edge::$grossissement;
         }
@@ -254,7 +255,7 @@ class MP extends Edge {
             
             $this->placer_image('MP.Planete2000.titre.png','bas',array(0,$this->largeur));
         }
-        elseif ($this->numero <= 263) {
+        elseif ($this->numero <= 264) {
             $couleur_fond=imagecolorallocate($this->image, 239, 165, 32);
             imagefill($this->image,0,0,$couleur_fond);
             $this->placer_image('MP.255-263.Fond_haut.png');

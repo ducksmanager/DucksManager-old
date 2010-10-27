@@ -2,7 +2,7 @@
 class SPG extends Edge {
     var $pays='fr';
     var $magazine='SPG';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>159,'sauf'=>array(68)));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>159));
     var $en_cours=array();
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
