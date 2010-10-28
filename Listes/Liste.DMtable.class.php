@@ -4,15 +4,17 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 include_once ('locales/lang.php');
+include_once ('Database.class.php');
+include_once ('Magazine.class.php');
 require_once('Format_liste.php');
 class DMtable extends Format_liste {
     static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
     static $max_centaines=0;
     static $max_diz_et_unites=1;
     function DMtable() {
-            $this->les_plus=array(DMTABLE_PLUS_1,DMTABLE_PLUS_2,DMTABLE_PLUS_3);
-            $this->les_moins=array(DMTABLE_MOINS_1,DMTABLE_MOINS_2);
-            $this->description=DMTABLE_DESCRIPTION;
+        $this->les_plus=array(DMTABLE_PLUS_1,DMTABLE_PLUS_2,DMTABLE_PLUS_3);
+        $this->les_moins=array(DMTABLE_MOINS_1,DMTABLE_MOINS_2);
+        $this->description=DMTABLE_DESCRIPTION;
     }
 
     function afficher($liste) {
@@ -38,80 +40,99 @@ class DMtable extends Format_liste {
             foreach($liste as $pays=>$numeros_pays) {
                 ksort($numeros_pays);
                     foreach($numeros_pays as $magazine=>$numeros) {
-                            $total_magazine=0;
-                            global $liste_numeros;global $liste_numeros_doubles;
-                            $liste_numeros=array();
-                            $liste_numeros_doubles=array();
-                            $liste_non_numeriques=array();
-                            foreach($numeros as $numero_et_etat) {
-                                $total_magazine++;
-                                $numero = $numero_et_etat[0];
-                                if (est_double($numero)) {
-                                    preg_match(DMtable::$regex_numero_double, $numero, $numero);
-                                    $premier_numero = $numero[1] . $numero[2];
-                                    $deuxieme_numero = $numero[1] . $numero[3];
-                                    ajouter_a_liste($premier_numero, true);
-                                    ajouter_a_liste($deuxieme_numero, true);
-                                }
-                                else {
-                                    if (!est_valide($numero)) {
-                                        array_push($liste_non_numeriques, $numero);
-                                        continue;
-                                    }
-                                    ajouter_a_liste($numero, false);
-                                }
+                       $requete_get_ne_parait_plus='SELECT NeParaitPlus FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND NomAbrege LIKE \''.$magazine.'\'';
+                       $resultat_get_ne_parait_plus=DM_Core::$d->requete_select($requete_get_ne_parait_plus);
+                       $ne_parait_plus=$resultat_get_ne_parait_plus[0]['NeParaitPlus']==1;
+                       $montrer_numeros_inexistants=false;
+                       if ($ne_parait_plus) {
+                            list($numeros_inducks,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+                            $numeros_centaines=array_map('get_nb_centaines',$numeros_inducks);
+                            $numero_centaines_min=min($numeros_centaines);
+                            $numero_centaines_max=max($numeros_centaines);
+                            $montrer_numeros_inexistants=$numero_centaines_min==$numero_centaines_max;
+                            foreach($numeros_inducks as $numero_inducks)
+                                if (!est_valide($numero_inducks))
+                                    $montrer_numeros_inexistants=false;
+                       }
+                       $total_magazine = 0;
+                       global $liste_numeros;
+                       global $liste_numeros_doubles;
+                       $liste_numeros = array();
+                       $liste_numeros_doubles = array();
+                       $liste_non_numeriques = array();
+                       foreach($numeros as $numero_et_etat) {
+                            $total_magazine++;
+                            $numero = $numero_et_etat[0];
+                            if (est_double($numero)) {
+                                preg_match(DMtable::$regex_numero_double, $numero, $numero);
+                                $premier_numero = $numero[1] . $numero[2];
+                                $deuxieme_numero = $numero[1] . $numero[3];
+                                ajouter_a_liste($premier_numero, true);
+                                ajouter_a_liste($deuxieme_numero, true);
                             }
-                            ?>
-                            <tr>
-                                <td rowspan="2" valign="middle" align="center">
-                                    <img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
-                                    <br />
-                                    <?=$magazine?>
-                                    <br />
-                                </td>
-                            <?php
+                            else {
+                                if (!est_valide($numero)) {
+                                    array_push($liste_non_numeriques, $numero);
+                                    continue;
+                                }
+                                ajouter_a_liste($numero, false);
+                            }
+                        }
+                        ?>
+                        <tr>
+                            <td rowspan="2" valign="middle" align="center">
+                                <img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
+                                <br />
+                                <?=$magazine?>
+                                <br />
+                            </td>
+                        <?php
 
-                            for($i=1;$i<=100;$i++) {
-                                ?><td><?php
-                                for ($j=0;$j<=DMtable::$max_centaines;$j++) {
-                                    if (array_key_exists($j*100+$i,$liste_numeros)) {
-                                        for ($k=0;$k<$liste_numeros[$j*100+$i];$k++) {
-                                            echo number_to_letter($j);
-                                            if (array_key_exists($j*100+$i, $liste_numeros_doubles)) {
-                                                if (array_key_exists($j*100+$i+1, $liste_numeros_doubles))
-                                                    echo '&gt;';
-                                                else
-                                                    echo '&lt;';
-                                            }
+                        for($i=1;$i<=100;$i++) {
+                            ?><td style="<?php 
+                            if ($montrer_numeros_inexistants && !in_array($numero_centaines_min*100+$i,$numeros_inducks)) {
+                                ?>background-color:gray;<?php
+                            }
+                            ?>"><?php
+                            for ($j=0;$j<=DMtable::$max_centaines;$j++) {
+                                if (array_key_exists($j*100+$i,$liste_numeros)) {
+                                    for ($k=0;$k<$liste_numeros[$j*100+$i];$k++) {
+                                        echo number_to_letter($j);
+                                        if (array_key_exists($j*100+$i, $liste_numeros_doubles)) {
+                                            if (array_key_exists($j*100+$i+1, $liste_numeros_doubles))
+                                                echo '&gt;';
+                                            else
+                                                echo '&lt;';
                                         }
                                     }
                                 }
-                                ?></td><?php
-                                if ($i==50) {
-                                    ?><td rowspan="2"><?=$total_magazine?></td></tr><tr><?php
-                                }
                             }
-                            
-                            /*else {
-                                    echo '<td>'.$total_magazine.'</td></tr><tr>';
-                            }*/
-                            ?></tr><?php
-                            if (count($liste_non_numeriques)>0) {
-                                    ?><tr>
-                                        <td></td>
-                                        <td colspan="51">
-                                            <?=NON_NUMERIQUES?> : <?php
-                                    $debut=true;
-                                    foreach($liste_non_numeriques as $numero) {
-                                            if (!$debut)
-                                                    echo ' ; ';
-                                            echo $numero;
-                                            $debut=false;
-                                    }
-                                    ?>
-                                        </td>
-                                    </tr><?php
+                            ?></td><?php
+                            if ($i==50) {
+                                ?><td rowspan="2"><?=$total_magazine.(($ne_parait_plus)?'!':'')?></td></tr><tr><?php
                             }
+                        }
+
+                        /*else {
+                                echo '<td>'.$total_magazine.'</td></tr><tr>';
+                        }*/
+                        ?></tr><?php
+                        if (count($liste_non_numeriques)>0) {
+                            ?><tr>
+                                <td></td>
+                                <td colspan="51">
+                                    <?=NON_NUMERIQUES?> : <?php
+                            $debut=true;
+                            foreach($liste_non_numeriques as $numero) {
+                                if (!$debut)
+                                        echo ' ; ';
+                                echo $numero;
+                                $debut=false;
+                            }
+                            ?>
+                                </td>
+                            </tr><?php
+                        }
 
                     }
             }
@@ -161,7 +182,7 @@ class DMtable extends Format_liste {
                 }?>
                         </table>
                     </td>
-            <?php }?>
+      <?php }?>
                 </tr>
             </table>
             <?php
@@ -191,7 +212,7 @@ function ajouter_a_liste($numero,$est_double=false) {
     else
         $liste_numeros[$numero]=1;
 
-    $centaine=intval($numero/100);
+    $centaine=get_nb_centaines($numero);
     $diz_et_unites=$numero-100*$centaine;
     if ($diz_et_unites == 0) {
         $diz_et_unites = 100;
@@ -208,5 +229,9 @@ function ajouter_a_liste($numero,$est_double=false) {
         else
             $liste_numeros_doubles[$numero]=1;
     }
+}
+
+function get_nb_centaines($numero) {
+    return intval($numero/100);
 }
 ?>
