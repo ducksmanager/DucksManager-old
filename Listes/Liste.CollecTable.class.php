@@ -109,7 +109,7 @@ class CollecTable extends Format_liste {
                             }
                             ?></td><?php
                             if ($i==50) {
-                                ?><td rowspan="2"><?=$total_magazine.(($ne_parait_plus)?'!':'')?></td></tr><tr><?php
+                                ?><td rowspan="2"><?=$total_magazine?></td></tr><tr><?php
                             }
                         }
 

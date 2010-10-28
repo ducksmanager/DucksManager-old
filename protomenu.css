@@ -36,7 +36,7 @@ div.menu input {
 	list-style-position: outside;
 }
 
-.sub_menu {
+.sous_menu {
 	/*background:transparent url(images/fleche_sous_menu.png) no-repeat scroll 100% 50%;*/
 }
 
@@ -107,12 +107,14 @@ div.menu input {
 }
 
 /* DESKTOP STYLES */
-
 .menu.desktop {
 	width: 24em;
 	background: #f9f8f7;
 	border: 1px solid #999;
 	padding: 0;
+}
+.menu.desktop.large {
+    width: 32em;
 }
 .menu.desktop ul, .menu.desktop li {
 	margin: 0;
@@ -137,6 +139,42 @@ div.menu input {
 	background: #aaa;
 	margin: 1px 1px 0 1px;
 	line-height: 1px !important;
+}
+
+.menu.desktop a.deplacer_avant {
+  background: #f9f8f7 url(images/deplacer_haut.png) 2px 50% no-repeat;
+}
+.menu.desktop a.deplacer_apres {
+  background: #f9f8f7 url(images/deplacer_bas.png) 2px 50% no-repeat;
+}
+.menu.desktop a.fusionner_les_deux {
+  background: #f9f8f7 url(images/fusionner.png) 2px 50% no-repeat;
+}
+
+.menu.desktop a.type_liste {
+  background: #f9f8f7 url(images/type_liste.png) 2px 50% no-repeat;
+}
+.menu.desktop a.extraire {
+  background: #f9f8f7 url(images/layers.png) 2px 50% no-repeat;
+}
+.menu.desktop a.fusionner_tout {
+  background: #f9f8f7 url(images/fusionner_tout.png) 2px 50% no-repeat;
+}
+.menu.desktop a.type_liste_global {
+  background: #f9f8f7 url(images/type_liste_global.png) 2px 50% no-repeat;
+}
+
+.menu.desktop a.classique {
+  background: #f9f8f7 url(images/list.png) 2px 50% no-repeat;
+}
+.menu.desktop a.nombre {
+  background: #f9f8f7 url(images/sum.png) 2px 50% no-repeat;
+}
+.menu.desktop a.collectable {
+  background: #f9f8f7 url(images/table.png) 2px 50% no-repeat;
+}
+.menu.desktop a.dmspiral {
+  background: #f9f8f7 url(images/spiral.png) 2px 50% no-repeat;
 }
 
 .menu.desktop a.new {
