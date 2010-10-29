@@ -171,7 +171,7 @@ class CollecTable extends Format_liste {
                 foreach($liste as $pays=>$numeros_pays) {
                     ksort($numeros_pays);
                     foreach($numeros_pays as $magazine=>$numeros) {
-                        list($nom_pays_complet,$nom_magazine_complet)=$d->get_nom_complet_magazine($pays, $magazine,true);
+                        list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine,true);
                         ?><tr>
                             <td><?=$magazine?></td>
                             <td><?=$nom_magazine_complet?></td>
