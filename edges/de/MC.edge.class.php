@@ -28,6 +28,7 @@ class MC extends Edge {
         $this->placer_image('MC.BAND.png','haut',array($this->largeur*0.05,$this->largeur*0.2),0.5,0.5);
         $this->placer_image('MC.Donald.png');
         $this->placer_image('MC.Logo.png','bas');
+        $this->placer_image('MC.signature_disney_noir.png','bas',array(0.09*$this->largeur,-1.5*$this->largeur),0.17,0.17);
         return $this->image;
     }
 }
