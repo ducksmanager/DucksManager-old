@@ -77,8 +77,10 @@ class MJ extends Edge {
                 $dst_x=$this->hauteur*0.74;
             elseif ($this->numero<=114)
                 $dst_x=$this->hauteur*0.76;
-            elseif ($this->numero<=141)
+            elseif ($this->numero<=126)
                 $dst_x=$this->hauteur*0.715;
+            elseif ($this->numero<=141)
+                $dst_x=$this->hauteur*0.72;
             else
                 $dst_x=$this->hauteur*0.83;
             $largeur=$this->numero<=87?$this->largeur*1.1:$this->largeur;
