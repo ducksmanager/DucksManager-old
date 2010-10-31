@@ -2,7 +2,7 @@
 class PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>464));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>466),'sauf'=>array(465));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
@@ -197,8 +197,8 @@ class PM extends Edge {
             list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
             switch ($this->numero) {
                 case 404 : case 415 : case 426 :
-                    $couleur1=$this->getColorsFromDB(array(0,0,0),'Dégradé 2');
-                    $couleur2=$this->getColorsFromDB(array(255,255,255),'Dégradé 1');
+                    $couleur1=$this->getColorsFromDB(array(0,0,0),'Degrade 2');
+                    $couleur2=$this->getColorsFromDB(array(255,255,255),'Degrade 1');
 
                     list($width,$height)=getimagesize($this->getChemin().'/logo PM.png');
                     $largeur_logo=$this->largeur*($height/$width);
@@ -219,10 +219,16 @@ class PM extends Edge {
             }
             list($rouge2,$vert2,$bleu2)=$this->getColorsFromDB(array(255,255,255),'Couleur 2');
             $couleur2=imagecolorallocate($this->image, $rouge2, $vert2, $bleu2);
-            imagefilledrectangle($image2, 0, 0, 9*$this->largeur, $this->largeur, $couleur2);
+            if ($this->numero!=466)
+                imagefilledrectangle($image2, 0, 0, 9*$this->largeur, $this->largeur, $couleur2);
+            else {
+                list($rouge3,$vert3,$bleu3)=$this->getColorsFromDB(array(255,255,255),'Haut');
+                $couleur3=imagecolorallocate($this->image, $rouge3, $vert3, $bleu3);
+                imagefilledrectangle($image2, 20.7*$this->largeur, 0, $this->hauteur, $this->largeur, $couleur3);
+            }
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte');
             $couleur_texte=imagecolorallocate($this->image, $rouge_texte, $vert_texte, $bleu_texte);
-            list($rouge_texte_num,$vert_texte_num,$bleu_texte_num)=$this->getColorsFromDB(array(255,255,255),'Texte numéro');
+            list($rouge_texte_num,$vert_texte_num,$bleu_texte_num)=$this->getColorsFromDB(array(255,255,255),'Texte numero');
             $couleur_texte_num=imagecolorallocate($this->image, $rouge_texte_num,$vert_texte_num,$bleu_texte_num);
 
             $texte_numero='';
@@ -230,7 +236,7 @@ class PM extends Edge {
                 $texte_numero.=$this->numero[$i].' ';
             $post=new MyFonts('storm/zeppelin/53-bold-italic',
                               rgb2hex($rouge_texte_num,$vert_texte_num,$bleu_texte_num),
-                              rgb2hex($rouge2,$vert2,$bleu2),
+                              $this->numero==466 ? rgb2hex($rouge,$vert,$bleu) : rgb2hex($rouge2, $vert2, $bleu2),
                               800,
                               $texte_numero);
             $chemin_image=$post->chemin_image;
@@ -253,6 +259,23 @@ class PM extends Edge {
                 list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
                 $nouvelle_largeur=$this->largeur*0.8*($width/$height);
                 imagecopyresampled ($image2, $texte, 10*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*1.4, $this->largeur*0.7, $width, $height*0.5);
+                
+                if ($this->numero==466) {
+                    $texte=constant('PM_'.$this->numero.'_2');
+                    $longueur_texte=strlen($texte);
+                    for ($i=$longueur_texte;$i<100;$i++)
+                        $texte.=' ';
+                    $texte.='.';
+                    $post->text=$texte;
+                    $post->color_bg=rgb2hex($rouge3, $vert3, $bleu3);
+                    $post->build();
+                    $chemin_image=$post->chemin_image;
+                    list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
+                    $nouvelle_largeur=$this->largeur*0.8*($width/$height);
+                    imagecopyresampled ($image2, $texte, 20.7*$this->largeur, $this->largeur*0.2, 0, 0, $nouvelle_largeur*0.7, $this->largeur*0.7, $width*0.5, $height*0.5);
+
+                }
+
             }
 
             $this->image=imagerotate($image2, 90, $blanc);
