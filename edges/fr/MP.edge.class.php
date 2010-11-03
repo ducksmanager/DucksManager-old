@@ -275,7 +275,7 @@ class MP extends Edge {
                 $this->placer_image('MP.'.$this->numero.'.tranche.png');
                 return $this->image;
             }
-            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte numéro');
+            list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(255,255,255),'Texte numero');
             if ($this->numero <= 295) {
                 if ($this->numero < 287)
                     list($rouge,$vert,$bleu)=$this->getColorsFromDB();

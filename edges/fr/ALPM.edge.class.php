@@ -51,8 +51,8 @@ class ALPM extends Edge {
                     list($rouge,$vert,$bleu)=$this->getColorsFromDB(array(255,255,255));
                     switch($this->numero_serie) {
                         case 16:
-                            $couleur1=$this->getColorsFromDB(array(0,0,0),'Dégradé 2');
-                            $couleur2=$this->getColorsFromDB(array(255,255,255),'Dégradé 1');
+                            $couleur1=$this->getColorsFromDB(array(0,0,0),'Degrade 2');
+                            $couleur2=$this->getColorsFromDB(array(255,255,255),'Degrade 1');
 
                             $largeur_degrade=$this->hauteur;
 

@@ -2,7 +2,7 @@
 class SPG extends Edge {
     var $pays='fr';
     var $magazine='SPG';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>159));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>160));
     var $en_cours=array();
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
@@ -90,12 +90,12 @@ class SPG extends Edge {
             $texte_numero=new Texte($this->numero,$this->largeur*7.5/10,$this->hauteur-$this->largeur*4/5,
                                         7*Edge::$grossissement,90,$intervalle_numeros_blancs->estValide($this->numero) ? $blanc : $noir,'ArialBlack.ttf');
             
-			$texte_numero->pos_x=$this->largeur*1/5;
-			$texte_numero->angle=0;
-			$texte_numero->dessiner($this->image);
+            $texte_numero->pos_x=$this->largeur*1/5;
+            $texte_numero->angle=0;
+            $texte_numero->dessiner($this->image);
 
-		}
-		else {
+        }
+        else {
             $epaisseur_bordure=.25*Edge::$grossissement;
             $noir = imagecolorallocate($this->image, 0, 0, 0);
             $blanc = imagecolorallocate($this->image, 255,255,255);

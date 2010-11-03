@@ -87,7 +87,7 @@ class MJ extends Edge {
             imagecopyresampled ($image2, $texte, $dst_x, $this->largeur*0.2, 0, 0, $nouvelle_largeur, $largeur, $width, $height*0.6);
 
             if ($this->numero==126) {
-                list($rouge_texte_numero,$vert_texte_numero,$bleu_texte_numero)=$this->getColorsFromDB(array(0,0,0),'Texte numéro');
+                list($rouge_texte_numero,$vert_texte_numero,$bleu_texte_numero)=$this->getColorsFromDB(array(0,0,0),'Texte numero');
                 $post->color=rgb2hex($rouge_texte_numero,$vert_texte_numero,$bleu_texte_numero);
             }
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
