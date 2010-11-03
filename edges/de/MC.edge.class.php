@@ -2,7 +2,7 @@
 class MC extends Edge {
     var $pays='de';
     var $magazine='MC';
-    var $intervalles_validite=array(77);
+    var $intervalles_validite=array('77A');
 
     static $largeur_defaut=27;
     static $hauteur_defaut=179;
