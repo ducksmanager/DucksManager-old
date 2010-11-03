@@ -82,5 +82,8 @@ define('PM_460','1882 Buck Picsou des Badlands');
 define('PM_461','1883 Le cow-boy capitaine du Cutty Sark');
 define('PM_463','1885 Le Nouveau Maître du manoir McPicsou');
 define('PM_464','1887-1889 La Terreur du Transvaal');
+define('PM_465','1890 Le Protecteur de Pizen Bluff');
+define('PM_466','1893-1896 Le rêveur');
+define('PM_466_2','du Never Never');
 
 ?>
