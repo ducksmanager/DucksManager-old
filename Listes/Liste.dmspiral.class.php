@@ -1,4 +1,6 @@
 <?php
+include_once('../Inducks.class.php');
+include_once('../DucksManager_Core.class.php');
 @session_start();
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
@@ -6,6 +8,7 @@ if (isset($_GET['lang'])) {
 require_once('Format_liste.php');
 class dmspiral extends Format_liste {
     static $titre='Liste en spirale';
+    static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
 	function dmspiral() {
             $this->description=DMSPIRAL_DESCRIPTION;
         }
@@ -80,24 +83,39 @@ function marquer_numero($image,$numero,$noir) {
     imagefill($image, $pos->x, $pos->y, $couleur);
 }
 
-if (isset($_GET['chaine'])) {
+if (isset($_GET['pays']) && isset($_GET['magazine'])) {
     if (!isset($_GET['debug']))
         header('Content-type: image/png');
+    $pays=$_GET['pays'];
+    $magazine=$_GET['magazine'];
+    
+    $numeros_doubles=array(/*1,115,300,499,150,151,198*/);
+    list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+    $numero_max=max($numeros);
+    foreach($numeros as $numero) {
+        $est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero, $numero)>0;
+        if ($est_numero_double) {
+            $premier_numero = $numero[1] . $numero[2];
+            $numeros_doubles[]=$premier_numero;
+        }
+    }
+    
+    list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+
     define('EPAISSEUR',30);
     define('MARGE',2);
     define('TAILLE_POLICE',EPAISSEUR/2);
-    define('HAUTEUR_CENTRALE',50);
+    define('HAUTEUR_CENTRALE',60);
     define('NUANCE_GRIS_FOND',255);
     define('COULEUR_R',0);define('COULEUR_G',0);define('COULEUR_B',255);
-    $numeros_doubles=array(1,115,300,499,150,151,198);
     
-    $titre='MICKEY PARADE';
-    $numero_max=601;
+    $titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
+    //$numero_max=601;
     define('NB_CENTAINES', intval($numero_max/100)+1);
     define('HAUT',MARGE+NB_CENTAINES*EPAISSEUR/2);
     define('GAUCHE',MARGE+NB_CENTAINES*EPAISSEUR/4);
 
-    $image=imagecreatetruecolor((48+NB_CENTAINES/2)*EPAISSEUR-10+MARGE+10, EPAISSEUR*NB_CENTAINES+HAUTEUR_CENTRALE+2+MARGE*2);
+    $image=imagecreatetruecolor(100+(48+NB_CENTAINES/2)*EPAISSEUR-10+MARGE+10, EPAISSEUR*NB_CENTAINES+HAUTEUR_CENTRALE+2+MARGE*2);
     imageantialias($image, true);
     $blanc=  imagecolorallocate($image, 255,255,255);
     $gris_clair=imagecolorallocate($image, NUANCE_GRIS_FOND,NUANCE_GRIS_FOND,NUANCE_GRIS_FOND);
@@ -108,15 +126,15 @@ if (isset($_GET['chaine'])) {
 
     /** CREATION DE LA GRILLE **/
 
-    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE, HAUT+EPAISSEUR*0.75, $noir, 'arial.ttf', 1);
+    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+EPAISSEUR/4, HAUT+EPAISSEUR*0.75, $noir, 'arial.ttf', 1);
     imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+47.3*EPAISSEUR, HAUT+EPAISSEUR*0.75, $noir, 'arial.ttf', 49);
-    imagettftext($image, TAILLE_POLICE*0.8, 0, GAUCHE+46.8*EPAISSEUR, HAUT-2+(EPAISSEUR*0.5+HAUTEUR_CENTRALE)/2, $noir, 'arial.ttf', 50);
+    imagettftext($image, TAILLE_POLICE*0.8, 0, GAUCHE+46.8*EPAISSEUR, TAILLE_POLICE*0.8/2+HAUT+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', 50);
     imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+47.3*EPAISSEUR, HAUT+2+HAUTEUR_CENTRALE-EPAISSEUR/2, $noir, 'arial.ttf', 51);
-    imagettftext($image, TAILLE_POLICE*0.8, 0, GAUCHE+EPAISSEUR*0.5, HAUT-2+(EPAISSEUR*0.5+HAUTEUR_CENTRALE)/2, $noir, 'arial.ttf', 100);
-    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE, HAUT+2+HAUTEUR_CENTRALE-EPAISSEUR/2, $noir, 'arial.ttf', 99);
+    imagettftext($image, TAILLE_POLICE*0.8, 0, GAUCHE+EPAISSEUR*0.5, TAILLE_POLICE*0.8/2+HAUT+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', 100);
+    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+EPAISSEUR/4, HAUT+2+HAUTEUR_CENTRALE-EPAISSEUR/2, $noir, 'arial.ttf', 99);
 
     imagearc($image, GAUCHE+EPAISSEUR/2, HAUT-1+EPAISSEUR/2, EPAISSEUR/2, 2+EPAISSEUR, 180, 270, $noir);
-    imageline($image, GAUCHE, HAUT-1+EPAISSEUR/2, GAUCHE+0.25*EPAISSEUR, HAUT-1+EPAISSEUR/2, $noir);
+    imageline($image, GAUCHE, HAUT-1+EPAISSEUR/2, GAUCHE+0.3*EPAISSEUR, HAUT-1+EPAISSEUR/2, $noir);
     imageline($image,GAUCHE+EPAISSEUR/2,HAUT-1,GAUCHE+47.5*EPAISSEUR,HAUT-1,$noir);
     for ($i=2;$i<=48;$i++) {
         $numero=$i;
@@ -124,7 +142,7 @@ if (isset($_GET['chaine'])) {
         $numero=100-$i;
         imagettftext($image, TAILLE_POLICE, 0, GAUCHE+($i-1.3)*EPAISSEUR, HAUT-2+HAUTEUR_CENTRALE, $noir, 'arial.ttf', $numero);
     }
-    imagettftext($image, TAILLE_POLICE, 0, GAUCHE+23.5*EPAISSEUR, HAUT+10+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', $titre);
+    imagettftext($image, TAILLE_POLICE, 0, GAUCHE+23.5*EPAISSEUR, TAILLE_POLICE/2+HAUT+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', $titre);
 
     imagearc($image, GAUCHE+47.5*EPAISSEUR, HAUT-2+EPAISSEUR/2, EPAISSEUR/2, EPAISSEUR, 270, 360, $noir);
     imagearc($image, GAUCHE+47.5*EPAISSEUR, HAUT-EPAISSEUR/2+HAUTEUR_CENTRALE, EPAISSEUR/2, EPAISSEUR, 0, 90, $noir);
@@ -228,20 +246,29 @@ if (isset($_GET['chaine'])) {
         }
     }
 
-
+    for ($i=0;$i<NB_CENTAINES;$i++) {
+        imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+NB_CENTAINES*EPAISSEUR/4+48*EPAISSEUR, HAUT+HAUTEUR_CENTRALE+($i+1)*EPAISSEUR/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
+        imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+NB_CENTAINES*EPAISSEUR/4+48*EPAISSEUR, HAUT-($i)*EPAISSEUR/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
+    }
+    
+    $requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
+    $resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
+    $i=0;
+    foreach($resultat_numeros_possedes as $numero) {
+        $a=intval($numero['Numero']);
+        if (0!=(intval($numero['Numero']))) {
+            $est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;
+            if ($est_numero_double) {
+                $premier_numero = $numero2[1] . $numero2[2];
+                marquer_numero ($image, $premier_numero, $noir);
+            }
+            else
+                marquer_numero ($image, $numero['Numero'], $noir);
+        }
+        //break;
+    }
     /** REMPLISSAGE **/
-
-    marquer_numero($image,1,$noir);
-    //marquer_numero($image,101,$noir);
-    marquer_numero($image,155,$noir);
-    marquer_numero($image,202,$noir);
-    marquer_numero($image,248,$noir);
-    marquer_numero($image,151,$noir);
-    //marquer_numero($image,450,$noir);
-    marquer_numero($image,252,$noir);
-    marquer_numero($image,254,$noir);
-    marquer_numero($image,300,$noir);
-
+    
     imagepng($image);
 
     
