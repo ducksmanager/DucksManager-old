@@ -2,7 +2,7 @@
 class MJ extends Edge {
     var $pays='fr';
     var $magazine='MJ';
-    var $intervalles_validite=array(9,59,79,81,87,106,107,109,111,114,120,122,126,141,142,143);
+    var $intervalles_validite=array(9,59,79,81,87,91,95,96,97,106,107,109,111,112,113,114,115,118,120,122,126,141,142,143);
 
     static $largeur_defaut=275;
     static $hauteur_defaut=6;
@@ -14,11 +14,11 @@ class MJ extends Edge {
             $this->hauteur=275*Edge::$grossissement;
             $this->largeur=5*Edge::$grossissement;
         }
-        elseif($this->numero >=79 && $this->numero <=114) {
+        elseif($this->numero >=79 && $this->numero <=117) {
             $this->hauteur=254*Edge::$grossissement;
             $this->largeur=6*Edge::$grossissement;
         }
-        elseif($this->numero >=120 && $this->numero <=143) {
+        elseif($this->numero >=118 && $this->numero <=143) {
             $this->hauteur=275*Edge::$grossissement;
             $this->largeur=7*Edge::$grossissement;
         }
@@ -52,7 +52,7 @@ class MJ extends Edge {
             $fond=imagecolorallocate($image2, $rouge, $vert, $bleu);
             imagefill($image2, 0, 0, $fond);
             list($rouge_texte,$vert_texte,$bleu_texte)=$this->getColorsFromDB(array(0,0,0),'Texte');
-            if ($this->numero<=114)
+            if (($this->numero>=106 && $this->numero<=114) || $this->numero<=87)
                 list($rouge_texte,$vert_texte,$bleu_texte)=array(255,255,255);
 
             $post=new MyFonts('agfa/futura/extra-bold',
