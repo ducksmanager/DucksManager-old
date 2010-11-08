@@ -13,8 +13,7 @@ class MP extends Edge {
                                     array('debut'=>229,'fin'=>235),
                                     array('debut'=>236,'fin'=>253),
                                     array('debut'=>255,'fin'=>256),258,259,260,262,
-                                    array('debut'=>265,'fin'=>271),
-                                    array('debut'=>273,'fin'=>288),array('debut'=>290,'fin'=>318));
+                                    array('debut'=>265,'fin'=>288),array('debut'=>290,'fin'=>318));
     
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
