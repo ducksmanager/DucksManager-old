@@ -2,7 +2,7 @@
 class JMX extends Edge {
     var $pays='fr';
     var $magazine='JMX';
-    var $intervalles_validite=array('B1');
+    var $intervalles_validite=array('B1','B2');
     static $largeur_defaut=13;
     static $hauteur_defaut=275;
 
@@ -24,6 +24,9 @@ class JMX extends Edge {
         $texte_numero=new Texte('Les tr&#233;sors du Journal de Mickey',$this->largeur*0.7,$this->hauteur-$this->largeur*0.8,
                                 6.5*Edge::$grossissement,90,$noir,'Block Berthold Regular.ttf');
         $texte_numero->dessiner($this->image);
+        if ($this->numero=='B2') {
+            $this->placer_image('JMX.Chiffre.2.png','haut',array(0,$this->hauteur*0.47));
+        }
         return $this->image;
     }
 
