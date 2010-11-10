@@ -2,8 +2,8 @@
 class AJM extends Edge {
     var $pays='fr';
     var $magazine='AJM';
-    var $intervalles_validite=array(65,68/*,82,83*/);
-    static $largeur_defaut=7;
+    var $intervalles_validite=array(65,68/*,82,83*/,85,86,87);
+    static $largeur_defaut=10;
     static $hauteur_defaut=254;
 
     function AJM ($numero) {
@@ -15,9 +15,23 @@ class AJM extends Edge {
             $this->largeur=10.5*Edge::$grossissement;
             $this->hauteur=238*Edge::$grossissement;
         }
-        else {
+        elseif($this->numero<=84){
             $this->largeur=7*Edge::$grossissement;
             $this->hauteur=254*Edge::$grossissement;
+        }
+        else {
+            $this->hauteur=271*Edge::$grossissement;
+            switch($this->numero) {
+                case 85:
+                    $this->largeur=18*Edge::$grossissement;
+                break;
+                case 86:
+                    $this->largeur=15*Edge::$grossissement;
+                break;
+                case 87:
+                    $this->largeur=12*Edge::$grossissement;
+                break;
+            }
         }
         $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
         if ($this->image===false)
@@ -71,7 +85,6 @@ class AJM extends Edge {
             list($width,$height)=array(imagesx($image_mickey),imagesy($image_mickey));
             imagecopyresampled ($this->image, $image_mickey, -$this->largeur*0.2, $this->largeur*2, 0, 0, $width*1.05, $height*0.85, $width, $height);
 
-            
             $post->text='19'.$this->numero.'   .';
             $post->width=200;
             $post->build();
@@ -83,13 +96,27 @@ class AJM extends Edge {
             
             
         }
-        else {
+        else if ($this->numero<=84) {
             $fond=imagecolorallocate($this->image, 213, 210, 164);
             imagefill($this->image, 0, 0, $fond);
             $noir=imagecolorallocate($this->image, 0, 0, 0);
             $texte_numero=new Texte('BANDES DESSINEES   JEUX   HUMOUR',$this->largeur*0.7,$this->hauteur,
                                     3.5*Edge::$grossissement,90,$noir,'ARIAL.TTF');
             $texte_numero->dessiner($this->image);
+        }
+        else {
+            $fond=imagecolorallocate($this->image,225,225,225);
+            imagefill($this->image,0,0,$fond);
+            $couleur_texte=imagecolorallocate($this->image, 215,0,0);
+            $texte=new Texte('ALMANACH DU JOURNAL DE MICKEY',$this->largeur*3/10,$this->hauteur*0.05,
+                            6*Edge::$grossissement,-90,$couleur_texte,'Swiss 721 Black BT.ttf');
+            $texte->dessiner($this->image);
+            $this->placer_image('AJM.85-87.Tete.png','haut',array(0,$this->hauteur*0.75+$this->largeur*0.25));
+            foreach(str_split('19'.$this->numero) as $i=>$chiffre) {
+                $texte=new Texte($chiffre,$this->largeur*3/10,$this->hauteur*(0.88+0.025*$i),
+                            6*Edge::$grossissement,0,$couleur_texte,'Swiss 721 Black BT.ttf');
+                $texte->dessiner($this->image);
+            }
         }
         return $this->image;
     }
