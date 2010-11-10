@@ -2,7 +2,7 @@
 class WDT extends Edge {
     var $pays='us';
     var $magazine='WDT';
-    var $intervalles_validite=array('2');
+    var $intervalles_validite=array('1','2');
     var $en_cours=array();
     static $largeur_defaut=9;
     static $hauteur_defaut=258;
@@ -31,11 +31,19 @@ class WDT extends Edge {
         $couleur_texte=imagecolorallocate($image2, 0, 0, 0);
         imagefill($image2, 0, 0, $fond);
         
+        switch($this->numero) {
+            case 1:
+                $sous_titre='         DISNEY COMICS: 75 YEARS OF INNOVATION';
+            break;
+            case 2:
+                $sous_titre='     UNCLE SCROOGE: A LITTLE SOMETHING SPECIAL';
+            break;
+        }
         $post=new MyFonts('agfa/itc-kabel/itc-book',
                           rgb2hex(0,0,0),
                           rgb2hex($rouge, $vert, $bleu),
                           4600,
-                          'WALT DISNEY TREASURES     UNCLE SCROOGE: A LITTLE SOMETHING SPECIAL     .',
+                          'WALT DISNEY TREASURES'.$sous_titre.'       .',
                           84);
         $chemin_image=$post->chemin_image;
         list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
