@@ -2,8 +2,8 @@
 class MP extends Edge {
     var $pays='fr';
     var $magazine='MP';
-    var $intervalles_validite=array(array('debut'=>1,'fin'=>21,'sauf'=>array(14)),array('debut'=>25,'fin'=>63,'sauf'=>array(41)),
-                                    array('debut'=>66,'fin'=>84,'sauf'=>array(72)),
+    var $intervalles_validite=array(array('debut'=>1,'fin'=>21,'sauf'=>array(14)),array('debut'=>25,'fin'=>64,'sauf'=>array(41)),
+                                    array('debut'=>66,'fin'=>84),
                                     87,array('debut'=>89,'fin'=>93),95,98,100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
                                     array('debut'=>140,'fin'=>192),
@@ -60,7 +60,6 @@ class MP extends Edge {
             $noir=imagecolorallocate($this->image,0,0,0);
             
             imagefill($image2,0,0, $fond);
-            $im=imagecreatefrompng($this->getChemin().'/MP.Titre.Premiers.png');
             $post=new MyFonts('itfmecanorma/eurostile/extended-bold',
                               rgb2hex($rouge_texte, $vert_texte, $bleu_texte),
                               rgb2hex($rouge, $vert, $bleu),
@@ -78,8 +77,12 @@ class MP extends Edge {
             $noir = imagecolorallocate($this->image, 0,0,0);
             $gris = imagecolorallocate($this->image, 192,192,192);
 
-            if ($this->numero <= 120)
-                list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP.png');
+            if ($this->numero <= 120) {
+                if ($this->numero==86)
+                    list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP_grand.png');
+                else
+                    list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP.png');
+            }
             else
                 list($logo,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/logo MP 1990.png');
             $hauteur_logo=($this->largeur-Edge::$grossissement)*($height/$width);
