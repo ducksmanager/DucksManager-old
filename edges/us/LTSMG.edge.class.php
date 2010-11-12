@@ -1,5 +1,5 @@
 <?php
-class LTSMG extends Edge {
+class us_LTSMG extends Edge {
     var $pays='us';
     var $magazine='LTSMG';
     var $intervalles_validite=array('1','2');

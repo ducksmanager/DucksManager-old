@@ -1,11 +1,12 @@
 <?php
-class MHC extends Edge {
+class fr_MHC extends Edge {
     var $pays='fr';
     var $magazine='MHC';
     var $intervalles_validite=array(1);
     static $largeur_defaut=14;
     static $hauteur_defaut=204;
-    function MHC($numero) {
+    
+    function fr_MHC($numero) {
         $this->numero=$numero;
 
         $this->largeur=14*Edge::$grossissement;

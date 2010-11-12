@@ -1,5 +1,5 @@
 <?php
-class ALPM extends Edge {
+class fr_ALPM extends Edge {
     var $pays='fr';
     var $magazine='ALPM';
     var $intervalles_validite=array('B1','B16','B19','B25','B27','B40','B42','B49','B54','B57');
@@ -11,7 +11,7 @@ class ALPM extends Edge {
     var $serie;
     var $numero_serie;
 
-    function ALPM($numero) {
+    function fr_ALPM($numero) {
         $this->numero=$numero;
         $this->serie=$numero[0];
         $this->numero_serie=substr($this->numero, strpos($this->numero, ' ')+1, strlen($this->numero));

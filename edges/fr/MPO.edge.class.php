@@ -1,5 +1,5 @@
 <?php
-class MPO extends Edge {
+class fr_MPO extends Edge {
     var $pays='fr';
     var $magazine='MPO';
     var $intervalles_validite=array(13,31,40,117);
@@ -7,7 +7,7 @@ class MPO extends Edge {
     static $largeur_defaut=10;
     static $hauteur_defaut=120;
 
-    function MPO ($numero) {
+    function fr_MPO ($numero) {
         $this->numero=$numero;
 
         if ($this->numero<=119) {

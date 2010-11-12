@@ -1,12 +1,12 @@
 <?php
-class JMM extends Edge {
+class fr_JMM extends Edge {
     var $pays='fr';
     var $magazine='JMM';
     var $intervalles_validite=array(array('debut'=>1 , 'fin'=>9));
     static $largeur_defaut=9.5;
     static $hauteur_defaut=214;
 
-    function JMM ($numero) {
+    function fr_JMM ($numero) {
         $this->numero=$numero;
         $this->hauteur=214*Edge::$grossissement;
         $this->largeur=8*Edge::$grossissement;

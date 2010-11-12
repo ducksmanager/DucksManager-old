@@ -1,5 +1,5 @@
 <?php
-class MPP extends Edge {
+class fr_MPP extends Edge {
     var $pays='fr';
     var $magazine='MPP';
     var $intervalles_validite=array(723,735,756,786,807,824,838,856,886,990,1016,1055,1111,1121,1134,1144,1154,1166,1174,1182,1190,1199,1208,1217,1225,1234,1243,1251,1260,1267,1275,1284,1293,1301,1310,1319,1327,1336,1345,1355,1363,1372,1381,1389,1398,1407,1415,1424,1433);
@@ -7,7 +7,7 @@ class MPP extends Edge {
     static $largeur_defaut=15;
     static $hauteur_defaut=186;
 
-    function MPP ($numero) {
+    function fr_MPP ($numero) {
         $this->numero=$numero;
 
         $this->hauteur=186*Edge::$grossissement;

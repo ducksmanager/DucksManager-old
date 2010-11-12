@@ -1,5 +1,5 @@
 <?php
-class US extends Edge {
+class us_US extends Edge {
     var $pays='us';
     var $magazine='US';
     var $intervalles_validite=array('339','342','359','365','382');
@@ -8,7 +8,7 @@ class US extends Edge {
     static $hauteur_defaut=258;
 
 
-    function US($numero) {
+    function us_US($numero) {
         $this->numero=$numero;
         $this->largeur=4*Edge::$grossissement;
         $this->hauteur=258*Edge::$grossissement;

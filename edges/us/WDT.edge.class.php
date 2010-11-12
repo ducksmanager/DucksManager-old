@@ -1,5 +1,5 @@
 <?php
-class WDT extends Edge {
+class us_WDT extends Edge {
     var $pays='us';
     var $magazine='WDT';
     var $intervalles_validite=array('1','2');
@@ -8,7 +8,7 @@ class WDT extends Edge {
     static $hauteur_defaut=258;
 
 
-    function WDT($numero) {
+    function us_WDT($numero) {
         $this->numero=$numero;
         $this->largeur=9*Edge::$grossissement;
         $this->hauteur=258*Edge::$grossissement;

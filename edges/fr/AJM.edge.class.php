@@ -1,12 +1,12 @@
 <?php
-class AJM extends Edge {
+class fr_AJM extends Edge {
     var $pays='fr';
     var $magazine='AJM';
     var $intervalles_validite=array(65,68,78,79,80,82,83,84,85,86,87);
     static $largeur_defaut=10;
     static $hauteur_defaut=254;
 
-    function AJM ($numero) {
+    function fr_AJM ($numero) {
         $this->numero=$numero;
         if ($this->numero<=64) {
             

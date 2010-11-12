@@ -1,5 +1,5 @@
 <?php
-class SPG extends Edge {
+class fr_SPG extends Edge {
     var $pays='fr';
     var $magazine='SPG';
     var $intervalles_validite=array(array('debut'=>1, 'fin'=>160));
@@ -7,7 +7,7 @@ class SPG extends Edge {
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
 
-    function SPG($numero) {
+    function fr_SPG($numero) {
         $this->numero=$numero;
         if ($this->numero<=88) {
             $this->largeur=20*Edge::$grossissement;

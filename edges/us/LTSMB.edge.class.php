@@ -1,5 +1,5 @@
 <?php
-class LTSMB extends Edge {
+class us_LTSMB extends Edge {
     var $pays='us';
     var $magazine='LTSMB';
     var $intervalles_validite=array('1','2');
@@ -8,7 +8,7 @@ class LTSMB extends Edge {
     static $hauteur_defaut=258;
 
 
-    function LTSMB($numero) {
+    function us_LTSMB($numero) {
         $this->numero=$numero;
         $this->largeur=17.2*Edge::$grossissement;
         $this->hauteur=277*Edge::$grossissement;

@@ -1,16 +1,16 @@
 <?php
-class ALJM extends Edge {
+class fr_ALJM extends Edge {
     var $pays='fr';
     var $magazine='ALJM';
-    var $intervalles_validite=array('100');
-    var $en_cours=array();
+    var $intervalles_validite=array(100);
+    var $en_cours=array(118,119,193,195);
     static $largeur_defaut=22;
     static $hauteur_defaut=282;
 
     var $serie;
     var $numero_serie;
 
-    function ALJM($numero) {
+    function fr_ALJM($numero) {
         $this->numero=$numero;
         $this->largeur=18*Edge::$grossissement;
         $this->hauteur=273*Edge::$grossissement;

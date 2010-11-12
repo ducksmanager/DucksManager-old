@@ -1,12 +1,12 @@
 <?php
-class DCV extends Edge {
+class fr_DCV extends Edge {
     var $pays='fr';
     var $magazine='DCV';
     var $intervalles_validite=array('16');
     static $largeur_defaut=9;
     static $hauteur_defaut=255;
 
-    function DCV ($numero) {
+    function fr_DCV ($numero) {
         $this->numero=$numero;
         $this->largeur=9*Edge::$grossissement;
         $this->hauteur=255*Edge::$grossissement;

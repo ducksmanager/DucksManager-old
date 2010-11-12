@@ -1,5 +1,5 @@
 <?php
-class PM extends Edge {
+class it_PM extends Edge {
     var $pays='it';
     var $magazine='PM';
     var $intervalles_validite=array(264);
@@ -7,7 +7,7 @@ class PM extends Edge {
     static $largeur_defaut=10;
     static $hauteur_defaut=209;
 
-    function PM ($numero) {
+    function it_PM ($numero) {
         $this->numero=$numero;
         $this->hauteur=209*Edge::$grossissement;
         $this->largeur=10*Edge::$grossissement;

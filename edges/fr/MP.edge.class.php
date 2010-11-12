@@ -1,5 +1,5 @@
 <?php
-class MP extends Edge {
+class fr_MP extends Edge {
     var $pays='fr';
     var $magazine='MP';
     var $intervalles_validite=array(array('debut'=>1,'fin'=>21,'sauf'=>array(14)),array('debut'=>25,'fin'=>64,'sauf'=>array(41)),
@@ -17,7 +17,7 @@ class MP extends Edge {
     
     static $largeur_defaut=20;
     static $hauteur_defaut=219.7;
-    function MP($numero) {
+    function fr_MP($numero) {
         $this->numero=$numero;
         if($this->numero <=84) {
             $this->largeur=14*Edge::$grossissement;

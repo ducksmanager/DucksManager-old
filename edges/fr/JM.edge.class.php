@@ -1,5 +1,5 @@
 <?php
-class JM extends Edge {
+class fr_JM extends Edge {
     var $pays='fr';
     var $magazine='JM';
     static $numeros_doubles=array('2411-12','2463-64','2479-80','2506-07','2515-16','2531-32','2558-59','2584-85','2610-11','2619-20','2636-37','2662-63','2671-72','2688-89','2715-16','2723-24','2767-68','2819-20','2828-29','2844-45','2871-72','2879-80','2896-97','2923-24','2932-33','2948-49','2975-76','2984-85');
@@ -7,10 +7,10 @@ class JM extends Edge {
     static $largeur_defaut=5;
     static $hauteur_defaut=275;
 
-    function JM ($numero) {
+    function fr_JM ($numero) {
         $this->numero=$numero;
         $this->largeur=5;
-        if (in_array($this->numero, JM::$numeros_doubles)) {
+        if (in_array($this->numero, fr_JM::$numeros_doubles)) {
             $this->hauteur=275;
             $this->largeur=6;
         }
@@ -53,7 +53,7 @@ class JM extends Edge {
             xdebug_break ();
     }
     function dessiner() {
-        if (in_array($this->numero,JM::$numeros_doubles)) {
+        if (in_array($this->numero,fr_JM::$numeros_doubles)) {
             $blanc = imagecolorallocate($this->image, 255, 255, 255);
             $noir = imagecolorallocate($this->image, 0,0,0);
             list($rouge,$vert,$bleu)=$this->getColorsFromDB();

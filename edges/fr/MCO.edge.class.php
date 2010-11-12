@@ -1,12 +1,12 @@
 <?php
-class MCO extends Edge {
+class fr_MCO extends Edge {
     var $pays='fr';
     var $magazine='MCO';
     var $intervalles_validite=array(1);
     static $largeur_defaut=7.5;
     static $hauteur_defaut=297;
 
-    function MCO ($numero) {
+    function fr_MCO ($numero) {
         $this->numero=$numero;
         $this->largeur=7.5*Edge::$grossissement;
         $this->hauteur=297*Edge::$grossissement;

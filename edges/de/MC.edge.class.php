@@ -1,5 +1,5 @@
 <?php
-class MC extends Edge {
+class de_MC extends Edge {
     var $pays='de';
     var $magazine='MC';
     var $intervalles_validite=array('77A');
@@ -7,7 +7,7 @@ class MC extends Edge {
     static $largeur_defaut=27;
     static $hauteur_defaut=179;
 
-    function MC ($numero) {
+    function de_MC ($numero) {
         $this->numero=$numero;
         $this->hauteur=179*Edge::$grossissement;
         $this->largeur=27*Edge::$grossissement;

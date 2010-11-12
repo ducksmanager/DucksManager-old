@@ -1,5 +1,5 @@
 <?php
-class MJ extends Edge {
+class fr_MJ extends Edge {
     var $pays='fr';
     var $magazine='MJ';
     var $intervalles_validite=array(9,59,79,81,87,91,95,96,97,106,107,109,111,112,113,114,115,118,120,122,126,141,142,143);
@@ -7,7 +7,7 @@ class MJ extends Edge {
     static $largeur_defaut=275;
     static $hauteur_defaut=6;
 
-    function MJ ($numero) {
+    function fr_MJ ($numero) {
         $this->numero=$numero;
 
         if (in_array($this->numero,array(9,59))) {

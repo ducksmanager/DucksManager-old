@@ -1,5 +1,5 @@
 <?php
-class TES extends Edge {
+class it_TES extends Edge {
     var $pays='it';
     var $magazine='TES';
     var $intervalles_validite=array(4);
@@ -7,7 +7,7 @@ class TES extends Edge {
     static $largeur_defaut=11.5;
     static $hauteur_defaut=239;
 
-    function TES ($numero) {
+    function it_TES ($numero) {
         $this->numero=$numero;
         $this->hauteur=239*Edge::$grossissement;
         $this->largeur=11.5*Edge::$grossissement;

@@ -1,12 +1,12 @@
 <?php
-class PM extends Edge {
+class fr_PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
     var $intervalles_validite=array(array('debut'=>1, 'fin'=>466));
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
-    function PM ($numero) {
+    function fr_PM ($numero) {
         $this->numero=$numero;
         if ($this->numero <=185) {
             $this->largeur=7*Edge::$grossissement;

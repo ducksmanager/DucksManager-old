@@ -1,5 +1,5 @@
 <?php
-class PMHS extends Edge {
+class fr_PMHS extends Edge {
     var $pays='fr';
     var $magazine='PMHS';
     var $intervalles_validite=array('B1','B2','B3','C1','C2','C3','C4','C5','C6','C7','C8','C9');
@@ -10,7 +10,7 @@ class PMHS extends Edge {
     var $serie;
     var $numero_serie;
 
-    function PMHS ($numero) {
+    function fr_PMHS ($numero) {
         $this->numero=$numero;
         $this->serie=$numero[0];
         $this->numero_serie=substr($this->numero, strrpos($this->numero, ' ')+1, strlen($this->numero));

@@ -1,5 +1,5 @@
 <?php
-class MPNT extends Edge {
+class fr_MPNT extends Edge {
     var $pays='fr';
     var $magazine='MPNT';
     var $intervalles_validite=array(723,735,756,786,807,824,838,856,886); // 886 = dernier MPNT
@@ -7,7 +7,7 @@ class MPNT extends Edge {
     static $largeur_defaut=15;
     static $hauteur_defaut=186;
 
-    function MPNT ($numero) {
+    function fr_MPNT ($numero) {
         $this->numero=$numero;
 
         switch($this->numero) {

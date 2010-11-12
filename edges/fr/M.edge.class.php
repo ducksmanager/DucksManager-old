@@ -1,12 +1,12 @@
 <?php
-class M extends Edge {
+class fr_M extends Edge {
     var $pays='fr';
     var $magazine='M';
     var $intervalles_validite=array(6,27,29,31,33,35,70,71);
     static $largeur_defaut=9;
     static $hauteur_defaut=207;
 
-    function M ($numero) {
+    function fr_M ($numero) {
         $this->numero=$numero;
         $this->largeur=9*Edge::$grossissement;
         $this->hauteur=207*Edge::$grossissement;
