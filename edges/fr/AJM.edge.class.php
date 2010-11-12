@@ -2,7 +2,7 @@
 class AJM extends Edge {
     var $pays='fr';
     var $magazine='AJM';
-    var $intervalles_validite=array(65,68/*,82,83*/,85,86,87);
+    var $intervalles_validite=array(65,68,78,79,80,82,83,84,85,86,87);
     static $largeur_defaut=10;
     static $hauteur_defaut=254;
 
@@ -16,8 +16,14 @@ class AJM extends Edge {
             $this->hauteur=238*Edge::$grossissement;
         }
         elseif($this->numero<=84){
-            $this->largeur=7*Edge::$grossissement;
-            $this->hauteur=254*Edge::$grossissement;
+            if ($this->numero==83) {
+                $this->largeur=8*Edge::$grossissement;
+                $this->hauteur=238*Edge::$grossissement;
+            }
+            else {
+                $this->largeur=9.5*Edge::$grossissement;
+                $this->hauteur=238*Edge::$grossissement;
+            }
         }
         else {
             $this->hauteur=271*Edge::$grossissement;
@@ -69,7 +75,9 @@ class AJM extends Edge {
             $texte_almanach=new Texte('ALMANACH',0,100,
                                 7*Edge::$grossissement,0,$ecriture_almanach,'Gill Sans Bold.ttf');
             $texte_almanach->dessiner($image_almanach);
+            imagepng($image_almanach, 'tmp.png');
             $image_almanach=imagerotate($image_almanach, 90, $fond_almanach);
+            
             list($width,$height)=array(imagesx($image_almanach),imagesy($image_almanach));
             imagecopyresampled ($this->image, $image_almanach, -$this->largeur*0.2, $this->hauteur-$this->largeur*9.5, 0, 0, $width*1.05, $height*0.85, $width, $height);
 
@@ -97,12 +105,79 @@ class AJM extends Edge {
             
         }
         else if ($this->numero<=84) {
-            $fond=imagecolorallocate($this->image, 213, 210, 164);
+            list($r,$g,$b)=$this->getColorsFromDB(array(255,255,255));
+            $fond=imagecolorallocate($this->image, $r,$g,$b);
             imagefill($this->image, 0, 0, $fond);
             $noir=imagecolorallocate($this->image, 0, 0, 0);
-            $texte_numero=new Texte('BANDES DESSINEES   JEUX   HUMOUR',$this->largeur*0.7,$this->hauteur,
-                                    3.5*Edge::$grossissement,90,$noir,'ARIAL.TTF');
-            $texte_numero->dessiner($this->image);
+            switch($this->numero) {
+                case '78':
+                    $texte_numero=new Texte('DE LA LECTURE     CONSEILS PRATIQUES     BRICOLAGES     JEUX...',$this->largeur*0.7,$this->hauteur-$this->largeur,
+                                            3.5*Edge::$grossissement,90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1978',$this->largeur*0.7,$this->hauteur*0.26,
+                                            3.5*Edge::$grossissement,90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('*',$this->largeur*0.3,0.405*$this->hauteur,
+                                            5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('*',$this->largeur*0.3,0.56*$this->hauteur,
+                                            5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('*',$this->largeur*0.3,0.805*$this->hauteur,
+                                            5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
+                    $texte_numero->dessiner($this->image);
+                break;
+                case '79':
+                    $texte_numero=new Texte('JEUX    BRICOLAGES    BANDES DESSINÉES',$this->largeur*0.3,$this->largeur*0.75,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1979',$this->largeur*0.3,$this->hauteur*0.74,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $this->placer_image('AJM.80.Etoile.png','haut',array(0,2.05*$this->largeur));
+                    $this->placer_image('AJM.80.Etoile.png','haut',array(0,5.85*$this->largeur));
+                break;
+                case '80':
+                    $texte_numero=new Texte('JEUX  BRICOLAGES  BANDES DESSINÉES',$this->largeur*0.3,$this->largeur*0.65,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1980',$this->largeur*0.3,$this->hauteur*0.75,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $this->placer_image('AJM.80.Etoile.png','haut',array(0,1.95*$this->largeur));
+                    $this->placer_image('AJM.80.Etoile.png','haut',array(0,5.35*$this->largeur));
+                break;
+                case '82':
+                    $texte_numero=new Texte('BANDES DESSINÉES     JEUX     HUMOUR',$this->largeur*0.3,$this->largeur*0.25,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('*',$this->largeur*0.3,5.9*$this->largeur,
+                                            5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('*',$this->largeur*0.3,7.85*$this->largeur,
+                                            5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1982',$this->largeur*0.3,$this->hauteur*0.74,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                break;
+                case '83':
+                    $texte_numero=new Texte('BANDES DESSINÉES.JEUX.HUMOUR',$this->largeur*0.2,$this->largeur*1.5,
+                                            4*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1983',$this->largeur*0.2,$this->hauteur*0.7,
+                                            4*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                break;
+                case '84':
+                    $texte_numero=new Texte('BANDES DESSINÉES. JEUX. HUMOUR',$this->largeur*0.3,$this->largeur*1.1,
+                                            4.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1984',$this->largeur*0.3,$this->hauteur*0.66,
+                                            4.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
+                    $texte_numero->dessiner($this->image);
+                break;
+            }
         }
         else {
             $fond=imagecolorallocate($this->image,225,225,225);
