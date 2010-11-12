@@ -149,6 +149,25 @@ function charger_tranche(element) {
             charger_tranche(suivant);
         }
     });
+    element.observe('error',function() {
+        var element2=this;
+        var suivant=element2.next();
+        if (suivant.className.indexOf('tranche')==-1) {
+            nb_etageres_terminees++;
+            $('pct_bibliotheque').setStyle({'width':parseInt(100*nb_etageres_terminees/nb_etageres)+'%'});
+            var tranche_suivante=suivant.next().next();
+            if (tranche_suivante.className.indexOf('tranche')==-1) {
+               init_observers_tranches();
+               l10n_action('remplirSpan','chargement_bibliotheque_termine');
+               $('barre_pct_bibliotheque').remove();
+            }
+            else
+                charger_tranche(tranche_suivante);
+        }
+        else {
+            charger_tranche(suivant);
+        }
+    });
     element.src=element.name;
     element.name='';
 }
@@ -182,7 +201,7 @@ function ouvrirInfoBulle(element) {
         $('body').insert(bulle);
     }
     else {
-        $(bulle).setStyle({'top':element.offsetTop+'px', 'left':pos_left+'px'})
+        $(bulle).setStyle({'top':(element.offsetTop-50)+'px', 'left':pos_left+'px'})
                 .update();
     }
     new Ajax.Request('Edge.class.php', {
