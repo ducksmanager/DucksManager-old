@@ -2,7 +2,7 @@
 class fr_MPP extends Edge {
     var $pays='fr';
     var $magazine='MPP';
-    var $intervalles_validite=array(723,735,756,786,807,824,838,856,886,990,1016,1055,1111,1121,1134,1144,1154,1166,1174,1182,1190,1199,1208,1217,1225,1234,1243,1251,1260,1267,1275,1284,1293,1301,1310,1319,1327,1336,1345,1355,1363,1372,1381,1389,1398,1407,1415,1424,1433);
+    var $intervalles_validite=array(723,735,756,786,807,824,847,838,856,873,886,977,990,1016,1042,1055,1111,1121,1134,1144,1154,1166,1174,1182,1190,1199,1208,1217,1225,1234,1243,1251,1260,1267,1275,1284,1293,1301,1310,1319,1327,1336,1345,1355,1363,1372,1381,1389,1398,1407,1415,1424,1433);
 
     static $largeur_defaut=15;
     static $hauteur_defaut=186;
@@ -12,7 +12,7 @@ class fr_MPP extends Edge {
 
         $this->hauteur=186*Edge::$grossissement;
         switch($this->numero) {
-            case 824: case 856: case 886 :
+            case 824: case 856: case 873: case 886 :
                 $this->largeur=13*Edge::$grossissement;
             break;
             case 838: case 1144:
@@ -55,10 +55,10 @@ class fr_MPP extends Edge {
         }
 
         switch($this->numero) {
-            case 807: case 824 :
+            case 807:
                 $dst_y=$this->largeur*0.2;
             break;
-            case 838 : case 856: case 1144:
+            case 824 : case 838 : case 856: case 873: case 1144:
                 $dst_y=$this->largeur*0.42;
             break;
             default:
@@ -82,7 +82,7 @@ class fr_MPP extends Edge {
             case 723: case 735 : case 756 :
                 $dst_x=$this->largeur*8.2;
             break;
-            case 856: case 1016 : case 1055: case 1111: case 1121:
+            case 824: case 856: case 873: case 1016 : case 1055: case 1111: case 1121:
                 $dst_x=$this->largeur*7.2;
             break;
             default:
@@ -120,7 +120,7 @@ class fr_MPP extends Edge {
         $nouvelle_largeur=$this->largeur*($width/$height);
         imagecopyresampled ($image2, $texte_r, $pos_r, $dst_y + $this->largeur*0.055, 0, 0, $nouvelle_largeur*0.3, $this->largeur*0.26, $width*0.5, $height*0.5);
 
-        if (in_array($this->numero,array(856))) {
+        if (in_array($this->numero,array(824,856,873))) {
             $this->image=imagerotate($image2, -90, $blanc);
             $position_etoile=$this->hauteur*0.51;
         }
@@ -138,11 +138,12 @@ class fr_MPP extends Edge {
                     $position_etoile=$this->hauteur*0.57;
             }
         }
-        if (file_exists($this->getChemin().'/MPP.'.$this->numero.'.Etoile.png'))
-            $this->placer_image('MPP.'.$this->numero.'.Etoile.png','bas',array(0,$position_etoile));
-        else
-            $this->placer_image('MPP.Generique.Etoile.png','bas',array(0,$position_etoile));
-
+        if (!in_array($this->numero,array(847,1042))) {
+            if (file_exists($this->getChemin().'/MPP.'.$this->numero.'.Etoile.png'))
+                $this->placer_image('MPP.'.$this->numero.'.Etoile.png','bas',array(0,$position_etoile));
+            else
+                $this->placer_image('MPP.Generique.Etoile.png','bas',array(0,$position_etoile));
+        }
         return $this->image;
     }
 }

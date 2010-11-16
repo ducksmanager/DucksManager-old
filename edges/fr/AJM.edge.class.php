@@ -7,6 +7,9 @@ class fr_AJM extends Edge {
     static $hauteur_defaut=254;
 
     function fr_AJM ($numero) {
+        
+        $this->largeur=self::$largeur_defaut*Edge::$grossissement;
+        $this->hauteur=self::$hauteur_defaut*Edge::$grossissement;
         $this->numero=$numero;
         if ($this->numero<=64) {
             

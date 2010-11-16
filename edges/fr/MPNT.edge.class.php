@@ -2,7 +2,7 @@
 class fr_MPNT extends Edge {
     var $pays='fr';
     var $magazine='MPNT';
-    var $intervalles_validite=array(723,735,756,786,807,824,838,856,886); // 886 = dernier MPNT
+    var $intervalles_validite=array(723,735,756,786,807,824,838,856,873,886); // 886 = dernier MPNT
 
     static $largeur_defaut=15;
     static $hauteur_defaut=186;
@@ -11,7 +11,7 @@ class fr_MPNT extends Edge {
         $this->numero=$numero;
 
         switch($this->numero) {
-            case 824: case 856: case 886 :
+            case 824: case 856: case 873: case 886 :
                 $this->largeur=13*Edge::$grossissement;
             break;
             case 838:
@@ -55,10 +55,10 @@ class fr_MPNT extends Edge {
         }
 
         switch($this->numero) {
-            case 807: case 824 :
+            case 807: 
                 $dst_y=$this->largeur*0.2;
             break;
-            case 856:
+            case 824 : case 856: case 873:
                 $dst_y=$this->largeur*0.42;
             break;
             default:
@@ -82,7 +82,7 @@ class fr_MPNT extends Edge {
             case 723: case 735 : case 756 :
                 $dst_x=$this->largeur*8.2;
             break;
-            case 856;
+            case 824: case 856 : case 873:
                 $dst_x=$this->largeur*7.2;
             break;
             default:
@@ -117,19 +117,20 @@ class fr_MPNT extends Edge {
         $nouvelle_largeur=$this->largeur*($width/$height);
         imagecopyresampled ($image2, $texte_r, $pos_r, $dst_y + $this->largeur*0.055, 0, 0, $nouvelle_largeur*0.3, $this->largeur*0.26, $width*0.5, $height*0.5);
 
-        if (in_array($this->numero,array(856)))
+        if (in_array($this->numero,array(824,856,873)))
             $this->image=imagerotate($image2, -90, $blanc);
         else
             $this->image=imagerotate($image2, 90, $blanc);
         switch($this->numero) {
-            case 856 :
+            case 824: case 856 : case 873:
                 $position_etoile=$this->hauteur*0.51;
             break;
             default:
                 $position_etoile=$this->hauteur*0.57;
 
         }
-        $this->placer_image('MPNT.'.$this->numero.'.Etoile.png','bas',array(0,$position_etoile));
+        if ($this->numero!=847)
+            $this->placer_image('MPNT.'.$this->numero.'.Etoile.png','bas',array(0,$position_etoile));
         
         return $this->image;
     }
