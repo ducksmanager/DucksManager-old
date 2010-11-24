@@ -29,7 +29,7 @@
     position:absolute;
     z-index:150;
     width:300px;
-    height:150px;
+    height:200px;
     overflow: auto;
     margin-top:-150px;
 }
@@ -45,4 +45,41 @@
 .lien_participer {
     color:blue;
     text-decoration: underline;
+}
+
+.lien_apercus {
+    background-color: white;
+    background-repeat: no-repeat;
+    color: red;
+    cursor: pointer;
+    margin-left: 1px;
+    padding-top: 25px;
+    position: absolute;
+    width: 60px;
+    z-index: 500;
+}
+
+#page_suivante {
+    background-image:url('images/fleche_droite.png');
+}
+
+#page_precedente {
+    background-image:url('images/fleche_gauche.png');
+}
+
+.page_invisible {
+    background-image:url('images/page_invisible_motif.jpg');
+}
+
+.page_arriere {
+    z-index:400;
+}
+
+.page_avant {
+    z-index:500;
+}
+
+.page_arriere img, .page_avant img {
+    height:100%;
+    width:100%;
 }
