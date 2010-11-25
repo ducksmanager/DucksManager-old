@@ -1,16 +1,52 @@
 .draggable_box {
 	border:1px solid red;
-	cursor:move;
 	padding:5px;
-	
+        background-color:white;
+        display: table;
+        position: relative;
+}
+
+.draggable_box.hover {
+    border: 5px dashed red;
+}
+
+.titre_magazine {
+    cursor:move;
+}
+
+/*div.widget {
+    border: 1px dashed #000;
+}
+div.widget div.corner {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: url(images/draggable-icon.gif) left top no-repeat;
+    cursor: pointer;
+}
+
+div.content {
+    margin: 10px auto 10px 20px;
+    padding: 10px;
+    height: 900px;
+    width: 600px;
+}*/
+
+.hover_espacement {
+    background-color:salmon;
+}
+
+.separation {
+    width:100%;
 }
 .box_options {
-	display: block;
+	display: none;
 	width: 100%;
 	top: 0px;
 	padding-left:2px;
 	text-align: right;
 }
+
 .options_text {
 	cursor:pointer;
 	background-color:black;
@@ -19,4 +55,31 @@
 }
 
 .options_text_selected {
+}
+
+#info {
+    position:fixed;
+    top:0%;
+    right:0;
+    border-left:1px dotted black;
+    width:20%;
+    height:100%;
+    padding:20px 6px 4px 6px;
+    z-index:100;
+    background-color:white;
+}
+
+.toggle_info {
+    right:0;
+    top:0;
+    position:fixed;
+    color:blue;
+    z-index:101;
+}
+
+.cache { display:none; }
+
+#info button {
+    right:6px;
+    position:absolute;
 }

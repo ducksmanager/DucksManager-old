@@ -14,7 +14,7 @@ var nouvel_achat_o;
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
-	var myAjax = new Ajax.Request('Database.class.php', {
+	new Ajax.Request('Database.class.php', {
 	   method: 'post',
 	   parameters:'database=true&liste_achats=true',
 	   onSuccess:function(transport,json) {
@@ -30,49 +30,40 @@ function init_observers_gerer_numeros() {
 	    		achat['selected']=false;
 	    		tab_achats[i]=achat;
 	    	}
-	    		
-	    	var arr_l10n=new Array(
-	    			'','conserver_etat_actuel','marquer_non_possede','marquer_possede',
-	    			'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
-	    			'','conserver_date_achat','desassocier_date_achat','associer_date_achat',
-	    			'','conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
-	    			'','enregistrer_changements');
-	    	l10n_action('remplirSpanIndex',arr_l10n);
-	    	
 			myMenuItems = [
 			  {
 			    separator: true
 			  },{
 			    className: 'non_marque', 
-			    groupName: 'etat',
+			    groupName: 'etat_conserver_etat_actuel',
 			    selected: true
 			  },{
 			    className: 'non_possede', 
-			    groupName: 'etat'
+			    groupName: 'etat_marquer_non_possede'
 			  },{
 			    className: 'possede',  
-			    groupName: 'etat'
+			    groupName: 'etat_marquer_possede'
 			  },{
 			    className: 'mauvais',  
-			    groupName: 'etat'
+			    groupName: 'etat_marquer_mauvais_etat'
 			  },{
 			    className: 'moyen',  
-			    groupName: 'etat'
+			    groupName: 'etat_marquer_etat_moyen'
 			  },{
 			    className: 'bon',  
-			    groupName: 'etat'
+			    groupName: 'etat_marquer_bon_etat'
 			  },{
 			    separator: true
 			  },{
-			    className: 'non_date',   
-			    groupName: 'achat',
+			    className: 'non_date',
+			    groupName: 'achat_conserver_date_achat',
 			    selected: true
 			  },{
-			    className: 'pas_date',   
-			    groupName: 'achat'
+			    className: 'pas_date',
+			    groupName: 'achat_desassocier_date_achat'
 			  },{
 			    className: 'date',
-			    groupName: 'achat',
+			    groupName: 'achat_associer_date_achat',
 			    subMenu : true
 			  }
 			];
@@ -81,38 +72,51 @@ function init_observers_gerer_numeros() {
 			    separator: true
 			  },{
 			    className: 'non_marque_a_vendre', 
-			    groupName: 'vente',
+			    groupName: 'vente_conserver_volonte_vente',
 			    selected: true
 			  },{
 			    className: 'a_vendre', 
-			    groupName: 'vente'
+			    groupName: 'vente_marquer_a_vendre'
 			  },{
 			    className: 'pas_a_vendre', 
-			    groupName: 'vente'
+			    groupName: 'vente_marquer_pas_a_vendre'
 			  },{
 			    separator: true
 			  },{
-			    className: 'save'
+			    className: 'save',
+                            groupName: 'save_enregistrer_changements'
 			  }];
 			myMenuItems=myMenuItems.concat(myMenuItems2);
 			
 			new Proto.Menu({
+                          type: 'gestion_numeros',
 			  selector: '#liste_numeros',
 			  className: 'menu desktop',
 			  menuItems: myMenuItems
 			});
+                        var arr_l10n=new Array(
+                                        'conserver_etat_actuel','marquer_non_possede','marquer_possede',
+                                        'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
+                                        'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
+                                        'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
+                                        'enregistrer_changements');
+                        l10n_action('remplirSpanName',arr_l10n);
 			$$('.num_manque','.num_possede').invoke(
 		        'observe',
 		        'mouseover',
 		        function(event) {
-		        	lighten(Event.element(event));
+		        	$$('.survole').each(function (element) {element.removeClassName('survole')});
+		        	var element=Event.element(event);
+                                if (element.tagName=='SPAN')
+                                    element=element.parentNode;
+                                lighten(element);
 		          }
 		    ); 
 		    $$('.num_manque','.num_possede').invoke(
 		        'observe',
 		        'mouseout',
 		        function(event) {
-		        	unlighten(Event.element(event));
+                                unlighten(Event.element(event));
 		          }
 		    ); 
 		    $$('.num_manque','.num_possede').invoke(
@@ -365,63 +369,6 @@ function afficher_numeros(pays,magazine) {
 		   }
 	});
 }
-
-function observe_options_clicks() {
-	$$('.options_text').each(function(element) {
-		element.observe('click',function() {
-			element.toggleClassName('options_text_selected');
-			var pays_et_magazine=element.id.substring(new String('options').length,element.id.length);
-			if (element.hasClassName('options_text_selected')) {
-				$('box_'+element.id).update('Type de la liste :<br />');
-				$('box_'+element.id).setStyle({'display':'block'});
-				var select=new Element('select',{'id':'select_type'+pays_et_magazine});
-				select.observe('change',function(element) {
-					var type_liste=null;
-					var id_select=null;
-					if (element.srcElement) {
-						type_liste=element.srcElement.options[element.srcElement.options.selectedIndex].innerHTML;
-						id_select=element.srcElement.id;
-					}
-					else {
-						if (element.originalTarget) {
-							type_liste=element.originalTarget.value;
-							id_select=element.originalTarget.id;
-						}
-					}
-					var reg=new RegExp("_", "g");
-					var pays_et_magazine=id_select.substring((new String('select_type')).length,id_select.length).split(reg);
-					var pays=pays_et_magazine[0];
-					var magazine=pays_et_magazine[1];
-					var myAjax = new Ajax.Request('Liste.class.php', {
-						   method: 'post',
-						   parameters:'sous_liste=true&type_liste='+type_liste+'&pays='+pays+'&magazine='+magazine,
-						   onSuccess:function(transport,json) {
-						    	$(pays+'_'+magazine).firstChild.update(transport.responseText);
-								var id_type_liste='type_liste'+pays+'_'+magazine;
-								$(id_type_liste).update(type_liste);
-						   }
-					});
-				});
-				for (var i=0;i<types_listes.length;i++) {
-					var item=new Element('option');
-					var id_type_liste='type_liste'+pays_et_magazine;
-					if (types_listes[i]==$(id_type_liste).innerHTML)
-						item.writeAttribute({'selected':'true'});
-					item.insert(types_listes[i]);
-					select.insert(item);
-				}
-				$('box_'+element.id).insert(select);
-			}
-			else {
-				//$('box_'+element.id).update('');
-				$('box_'+element.id).setStyle({'display':'none'});
-			}
-		});
-	});
-	
-}
-
-
 
 function afficher_form_open() {
 	var contenu='<form method="post" action="index.php?action=open">'

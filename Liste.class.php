@@ -1,15 +1,5 @@
 <?php
-
-function types_listes() {
-	global $types_listes;
-	$str='';
-	foreach($types_listes as $type) {
-		$str.=$type.';';
-	}
-	echo substr($str,0,strlen($str)-1);
-}
-
-require_once('Database.class.php');
+require_once('DucksManager_Core.class.php');
 require_once('Affichage.class.php');
 class Liste {
 	var $contenu;
@@ -17,7 +7,28 @@ class Liste {
 	var $collection=array();
 	var $very_max_centaines=1;
 	var $database;
+        static $types_listes=array();
 
+        static function set_types_listes() {
+            $rep = "Listes/";
+            $dir = opendir($rep);
+            $prefixe='Liste.';
+            $suffixe='.class.php';
+            while ($f = readdir($dir)) {
+                if (strpos($f,'Debug')!==false)
+                    continue;
+                if(is_file($rep.$f)) {
+                    if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
+                        $nom=substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe));
+                        
+                        include_once('Listes/Liste.'.$nom.'.class.php');
+                        $a=new ReflectionProperty($nom, 'titre');
+                        Liste::$types_listes[$nom]=$a->getValue();
+                    }
+                }
+            }
+            return Liste::$types_listes;
+        }
 	function Liste($texte=false) {
 		if (!$texte)
                     return;
@@ -37,7 +48,7 @@ class Liste {
 
 	function ListeExemple() {
 		$numeros_mp=array(array(2,'Excellent',false,-1),array(273,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));
-		$numeros_mad=array(array(6,'Indéfini',false,-1),array(16,'Bon',false,-1));
+		$numeros_mad=array(array(6,'Indefini',false,-1),array(16,'Bon',false,-1));
 		$this->collection=array('fr'=>(array('MP'=>$numeros_mp)), 'us'=>array('MAD'=>$numeros_mad));
 	}
 
@@ -49,10 +60,10 @@ class Liste {
 		foreach($liste_autre->collection as $pays=>$numeros_pays) {
 			foreach($numeros_pays as $magazine=>$numeros) {
 				foreach($numeros as $numero_etat_av_date) {
-					$numero=$numero_etat_av[0];
-					$etat=$numero_etat_av[1];
-					$av=$numero_etat_av[2];
-					$date=$numero_etat_av[3];
+                                    $numero=$numero_etat_av_date[0];
+					$etat=$numero_etat_av_date[1];
+					$av=$numero_etat_av_date[2];
+					$date=$numero_etat_av_date[3];
 					if (!array_key_exists($pays,$this->collection)) {
 						$arr_temp=array($magazine=>array(0=>array($numero,$etat,$av,$date)));
 						$this->collection[$pays]=$arr_temp;
@@ -62,7 +73,7 @@ class Liste {
 							$this->collection[$pays][$magazine]=array(0=>array($numero,$etat,$av,$date));
 						}
 						else
-							if (!array_push($this->collection[$pays][$magazine],$numero_etat_av,$date))
+							if (!array_push($this->collection[$pays][$magazine],array($numero,$etat,$av,$date)))
 								echo '<b>'.$magazine.$numero.'</b>';
 					}
 				}
@@ -74,29 +85,27 @@ class Liste {
 	function sous_liste($pays,$magazine=false) {
 		$nouvelle_liste=new Liste();
 		if (!$magazine)
-		$nouvelle_liste->collection=array($pays=>array($this->collection[$pays]));
+                    $nouvelle_liste->collection=array($pays=>array($this->collection[$pays]));
 		else
-		$nouvelle_liste->collection=array($pays=>array($magazine=>$this->collection[$pays][$magazine]));
+                    $nouvelle_liste->collection=array($pays=>array($magazine=>$this->collection[$pays][$magazine]));
 		return $nouvelle_liste;
 	}
 
         function liste_pays() {
-            $d=new Database();
             $tab=array();
             foreach(array_keys($this->collection) as $pays) {
-                $requete_nom_complet_pays='SELECT NomComplet FROM pays WHERE NomAbrege LIKE \''.$pays.'\'';
-                $resultat_nom_complet_pays=$d->requete_select($requete_nom_complet_pays);
-                $tab[utf8_encode($resultat_nom_complet_pays[0]['NomComplet'])]=array($pays,utf8_encode($resultat_nom_complet_pays[0]['NomComplet']));
+                $requete_nom_complet_pays='SELECT NomComplet FROM pays WHERE NomAbrege LIKE \''.$pays.'\' AND L10n LIKE \''.$_SESSION['lang'].'\'';
+                $resultat_nom_complet_pays=DM_Core::$d->requete_select($requete_nom_complet_pays);
+                $tab[$resultat_nom_complet_pays[0]['NomComplet']]=array($pays,$resultat_nom_complet_pays[0]['NomComplet']);
             }
             return $tab;
 	}
 	function liste_magazines() {
-            $d=new Database();
             $tab=array();
             foreach($this->collection as $pays=>$numeros_pays) {
                     foreach($numeros_pays as $magazine=>$numeros) {
-                        list($nom_complet_pays,$nom_complet_magazine)=$d->get_nom_complet_magazine($pays, $magazine);
-                        $tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,utf8_encode($nom_complet_magazine));
+                        list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+                        $tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,$nom_complet_magazine);
                     }
             }
             return $tab;
@@ -113,7 +122,7 @@ class Liste {
 			}
 		}
 		$onglets=array(MAGAZINES=>array('magazines',MAGAZINES_COURT),
-                               CLASSEMENT=>array('classement',CLASSEMENT_COURT),
+                               POSSESSIONS=>array('possessions',POSSESSIONS_COURT),
                                ETATS_NUMEROS=>array('etats',ETATS_NUMEROS_COURT),
                                AUTEURS=>array('auteurs',AUTEURS_COURT));
 		Affichage::onglets($onglet,$onglets,'onglet','?action=stats');
@@ -127,25 +136,38 @@ class Liste {
 			case 'magazines':
 				echo '<iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0px"></iframe>';
 			break;
-			case 'classement':
-				echo '<iframe id="iframe_graphique" src="classement_histogramme2.php" style="border:0px"></iframe>';
+			case 'possessions':
+			include_once('Chargement.class.php');	
+                            ?>
+                                
+                                <span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
+                                <div id="barre_pct_classement" style="border: 1px solid white; width: 200px;">
+                                    <div id="pct_classement" style="width: 0%; background-color: red;">&nbsp;</div>
+                                </div>
+                                Calcul <span id="message_classement">initialis&eacute;</span>
+                                <br /><br />
+                                <script type="text/javascript">
+                                    initProgressBar('classement','classement_histogramme2.php');
+                                </script>
+                                <div id="resultat_classement" style="border:0px"></div>
 
+                                
+                                <?php
 				break;
 			case 'etats':
 				echo '<iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe>';
 
 			break;
 			case 'auteurs':
-				$d=new Database();
-				$id_user=$d->user_to_id($_SESSION['user']);
+				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 				if (isset($_POST['auteur_nom'])) {
-					$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
+					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
 				}
 				$requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
-				$resultat_auteurs_surveilles=$d->requete_select($requete_auteurs_surveilles);
+				$resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
 				if (count($resultat_auteurs_surveilles)!=0) {
 					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat NOT LIKE \'0000-00-00\'';
-					$resultat_calcul_effectue=$d->requete_select($requete_calcul_effectue);
+					$resultat_calcul_effectue=DM_Core::$d->requete_select($requete_calcul_effectue);
 					if ($resultat_calcul_effectue[0]['cpt']==0) {
 						echo CALCULS_PAS_ENCORE_FAITS.'<br />';
 					}
@@ -171,7 +193,7 @@ class Liste {
 				<br /><br />
 				<?php
 				echo LISTE_AUTEURS_INTRO.'<br />';
-				$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,false);
+				DM_Core::$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,false);
 				?>
 				</div>
 				<br />
@@ -267,8 +289,8 @@ class Liste {
                         //for($i=0;$i<6-strlen($numero);$i++)
                         //	$num_final.='0';
                         $num_final.=$numero;
-                        $requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$num_final.'\',\'Indéfini\',-1,0,'.$id_user.')';
-                        $d->requete($requete);
+                        $requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$num_final.'\',\'Indefini\',-1,0,'.$id_user.')';
+                        DM_Core::$d->requete($requete);
                         $cpt++;
                     }
                 }
@@ -285,8 +307,8 @@ class Liste {
                     foreach($numeros as $numero) {
                         $num_final='';
                         $num_final.=$numero;
-                        $requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numéro LIKE \''.$num_final.'\')';
-                        $d->requete($requete);
+                        $requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numero LIKE \''.$num_final.'\')';
+                        DM_Core::$d->requete($requete);
                         $cpt++;
                     }
                 }
@@ -295,8 +317,8 @@ class Liste {
 	}
 
 	function synchro_to_database($d,$ajouter_numeros=true,$supprimer_numeros=false) {
-            $id_user=$d->user_to_id($_SESSION['user']);
-            $l_ducksmanager=$d->toList($id_user);
+            $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+            $l_ducksmanager=DM_Core::$d->toList($id_user);
             $l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
 	}
         
@@ -359,9 +381,8 @@ class Liste {
 	}
 
 	function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {
-           $d=new Database();
            if ($ajouter_numeros || $supprimer_numeros) {
-                $id_user=$d->user_to_id($_SESSION['user']);
+                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
            }
             $numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
 
@@ -372,7 +393,7 @@ class Liste {
                 if (!array_key_exists($pays,$noms_magazines))
                     $noms_magazines[$pays]=array();
                 foreach($numeros_pays as $magazine=>$numeros) {
-                    $noms_magazines[$pays][$magazine]=$d->get_nom_complet_magazine($pays, $magazine,true);
+                    $noms_magazines[$pays][$magazine]=DM_Core::$d->get_nom_complet_magazine($pays, $magazine,true);
                     $magazine_affiche=false;
                     sort($numeros);
                     foreach($numeros as $numero) {
@@ -389,7 +410,7 @@ class Liste {
                 }
             }
             if (supprimer_numeros)
-                $liste_a_supprimer->remove_from_database ($d, $id_user);
+                $liste_a_supprimer->remove_from_database (DM_Core::$d, $id_user);
             $liste_a_ajouter=new Liste();
             foreach($other_list->collection as $pays=>$numeros_pays) {
                 if (!array_key_exists($pays,$noms_magazines))
@@ -397,7 +418,7 @@ class Liste {
                 foreach($numeros_pays as $magazine=>$numeros) {
                     if ($pays=='country')
                         continue;
-                    list($nom_complet_pays,$noms_magazines[$pays][$magazine])=$d->get_nom_complet_magazine($pays, $magazine,true);
+                    list($nom_complet_pays,$noms_magazines[$pays][$magazine])=DM_Core::$d->get_nom_complet_magazine($pays, $magazine,true);
                     $magazine_affiche=false;
                     foreach($numeros as $numero) {
                         $trouve=false;
@@ -417,7 +438,7 @@ class Liste {
                 }
             }
             if ($ajouter_numeros)
-                $liste_a_ajouter->add_to_database ($d, $id_user);
+                $liste_a_ajouter->add_to_database (DM_Core::$d, $id_user);
             if (!$ajouter_numeros && !$supprimer_numeros) {
                 ?>
                 <ul>
@@ -471,6 +492,17 @@ class Liste {
 		}
 		return array('','','');
 	}
+        
+        function get_liste_auto($pays,$magazine) {
+            $nb_non_numeriques=0;
+            self::set_types_listes();
+            foreach($this->collection[$pays][$magazine] as $numero_et_etat) {
+                $numero = $numero_et_etat[0];
+                if (!(collectable::est_listable($numero)))
+                    $nb_non_numeriques++;
+            }
+            return 'dmspiral';
+        }
 
         static function import($liste_texte) {
             $l=new Liste($liste_texte);
@@ -480,9 +512,8 @@ class Liste {
             }
             else {
                 if (isset($_SESSION['user'])) {
-                    $d = new Database();
-                    $id_user = $d->user_to_id($_SESSION['user']);
-                    $l_ducksmanager = $d->toList($id_user);
+                    $id_user = DM_Core::$d->user_to_id($_SESSION['user']);
+                    $l_ducksmanager = DM_Core::$d->toList($id_user);
                     list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
                     if ($ajouts==0 && $suppressions==0) {
                         echo LISTES_IDENTIQUES;
@@ -498,26 +529,25 @@ class Liste {
         }
 }
 
-if (isset($_POST['types_liste'])) {
-	types_listes();
+if (isset($_POST['types_listes'])) {
+    header("X-JSON: " . json_encode(Liste::set_types_listes()));
 }
 elseif(isset($_POST['sous_liste'])) {
 	@session_start();
-	$pays=$_POST['pays'];
-	$magazine=$_POST['magazine'];
-	$type_liste=$_POST['type_liste'];
-	$d=new Database();
-	if (!$d) {
-		echo PROBLEME_BD;
-		exit(-1);
-	}
-	$id_user=$d->user_to_id($_SESSION['user']);
-	$l=$d->toList($id_user);
-	$sous_liste=$l->sous_liste($pays,$magazine);
-	if (isset($_GET['fusions'])) {
-		$fusions=explode(';',$_GET['fusions']);
+	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+	$l=DM_Core::$d->toList($id_user);
+        $type_liste=$_POST['type_liste'];
+	if (isset($_POST['pays'])) {
+            $pays=$_POST['pays'];
+            $magazine=$_POST['magazine'];
+            $sous_liste=$l->sous_liste($pays,$magazine);
+        }
+        else
+            $sous_liste=new Liste();
+	if (isset($_POST['fusions'])) {
+		$fusions=explode('-',$_POST['fusions']);
 		foreach($fusions as $fusion) {
-			$pays_et_magazine_fusion=explode(',',$fusion);
+			$pays_et_magazine_fusion=explode('_',$fusion);
 			$sous_liste->fusionnerAvec($l->sous_liste($pays_et_magazine_fusion[0],$pays_et_magazine_fusion[1]));
 		}
 	}
@@ -542,6 +572,30 @@ elseif(isset($_GET['liste_exemple'])) {
             </body>
         </html>
         <?php
+}
+elseif (isset($_POST['get_description'])) {
+     if (file_exists('Listes/Liste.'.$_POST['type_liste'].'.class.php'))
+        include_once('Listes/Liste.'.$_POST['type_liste'].'.class.php');
+    $a=new ReflectionProperty($_POST['type_liste'], 'titre');
+    $b=new $_POST['type_liste'];
+    header("X-JSON: " . json_encode(array('titre'=>$a->getValue(),'contenu'=>$b->description)));
+}
+elseif (isset($_POST['parametres'])) {
+    
+    $id_magazine=$_POST['id_magazine'];
+    $type_liste='dmspiral'; // A chercher dans la BD
+    if (file_exists('Listes/Liste.'.$type_liste.'.class.php'))
+        include_once('Listes/Liste.'.$type_liste.'.class.php');
+    $liste_courante=new $type_liste;
+    header("X-JSON: " . json_encode($liste_courante->getListeParametres()));
+}
+elseif (isset($_POST['update_lists'])) {
+    @session_start();
+    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+
+    $requete_modifier_parametre='UPDATE parametres_listes SET `Valeur`=\''.$_POST['valeur'].'\' '
+                               .'WHERE ID_Utilisateur='.$id_user.' AND Pays LIKE \''.$_POST['Pays'].' AND Magazine LIKE \''.$_POST['Magazine'].'\' AND Parametre LIKE \''.$_POST['Parametre'].'\'';
+    DM_Core::$d->requete($requete_modifier_parametre);
 }
 
 function startswith($hay, $needle) { // From http://sunfox.org/blog/2007/03/21/startswith-et-endswith-en-php/

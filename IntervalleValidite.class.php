@@ -5,6 +5,16 @@ class IntervalleValidite {
 
     function IntervalleValidite(array $intervalles=null) {
         $this->intervalles=$intervalles;
+        foreach($this->intervalles as &$intervalle) {
+            if (is_array($intervalle)) {
+                $intervalle['debut']=str_replace('+','',str_replace(' ','',$intervalle['debut']));
+                $intervalle['fin']=str_replace('+','',str_replace(' ','',$intervalle['fin']));
+                if (array_key_exists('sauf', $intervalle))
+                    $intervalle['sauf']=str_replace('+','',str_replace(' ','',$intervalle['sauf']));
+            }
+            else
+               $intervalle=str_replace('+','',str_replace(' ','',$intervalle));
+        }
     }
 
     function estValide($numero) {

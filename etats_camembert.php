@@ -7,20 +7,16 @@ include_once ('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once('Database.class.php');
 require_once('Inducks.class.php');
-$d=new Database();
-if (!$d) {
-	echo PROBLEME_BD;
-	exit(-1);
-}
-$id_user=$d->user_to_id($_SESSION['user']);
-$resultat=$d->requete_select('SELECT Count(Numéro) AS c FROM numeros WHERE ID_Utilisateur='.$id_user);
+
+$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user);
 $total=$resultat[0]['c'];
 $cpt_etats=array();
 $autres=0;
 $valeurs_magazines=array();
 $cles_magazines=array();
-foreach(Database::$etats_fr as $etat_court=>$infos_etat) {
-	$resultat=$d->requete_select('SELECT Count(Numéro) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat LIKE \''.$infos_etat[0].'\'');
+foreach(Database::$etats as $etat_court=>$infos_etat) {
+	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat LIKE \''.$etat_court.'\'');
 	$cpt=$resultat[0]['c'];
 	if ($cpt==0) continue;
 	if ($cpt/$total<0.01) {

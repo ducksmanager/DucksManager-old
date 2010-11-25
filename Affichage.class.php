@@ -19,27 +19,29 @@ class Affichage {
                    $lien='?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new';
                 }
                 else
-                    $lien=empty($prefixe)?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
+                    $lien=(empty($prefixe) || $prefixe=='?') ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
                 if ($infos_lien[0]==$onglet_courant)
                    echo 'active ';
-                $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : '');
-                if (empty($prefixe)) {
-                    $onmouseout='';
-                    if ($infos_lien[0]!='new')
+                $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : ($argument=='onglet_aide'?$infos_lien[0]:''));
+                switch($prefixe) {
+                    case '':
+                        $onmouseout='';
                         $onmouseover='montrer_magazines(\''.$pays.'\')';
-                    else
-                        $onmouseover='';
-                }
-                else {
-                    if (strpos($prefixe,'ajout_suppr')) {
-                        $onmouseover='montrer_nom_magazine(this)';
-                        $onmouseout='cacher_nom_magazine()';
-                    }
+                    break;
+                    case '?';
+                        $onclick='toggle_item_menu(this)';
+                    break;
+                    default:
+                        if (strpos($prefixe,'ajout_suppr')) {
+                            $onmouseover='montrer_nom_magazine(this)';
+                            $onmouseout='cacher_nom_magazine()';
+                        }
                 }
                 ?>"><a id="<?=$infos_lien[1]?>"
                        name="<?=$nom?>"
                        onmouseover="<?=$onmouseover?>"
                        onmouseout="<?=$onmouseout?>"
+                       <?=(isset($onclick)?'onclick="'.$onclick.'"':'')?>
                        href="<?=$lien?>">
                 <?php
                 if ($drapeaux && $infos_lien[0]!='new') {
@@ -73,19 +75,14 @@ class Affichage {
         <span id="pays" style="display:none"><?=$pays?></span>
 		<span id="magazine" style="display:none"><?=$magazine?></span>
         <?php
-		$d=new Database();
-		if (!$d) {
-			echo PROBLEME_BD;
-			exit(-1);
-		}
-		$id_user=$d->user_to_id($_SESSION['user']);
-                list($pays_complet,$nom_complet)=$d->get_nom_complet_magazine($pays, $magazine);
+		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+                list($pays_complet,$nom_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
         ?>
 		<br />
 		<table border="0" width="100%">
             <tr>
                 <td rowspan="2">
-                    <span style="font-size:15pt;font-weight:bold;"><?=utf8_encode($nom_complet)?></span>
+                    <span style="font-size:15pt;font-weight:bold;"><?=$nom_complet?></span>
                 </td>
                 <td align="right">
                     <table>
@@ -116,11 +113,11 @@ class Affichage {
                 <div class="num_<?php
                     $possede=false;
                     list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
-                    if (''!=$etat) {
+                    if (!empty($etat)) {
                         $possede=true;
                         $noms_etats=array();
                         foreach(Database::$etats as $etat_court=>$infos_etat) {
-                            if ($etat==$infos_etat[0]) {
+                            if ($etat==$etat_court) {
                                 $etat_class=$etat_court;
                                 $etat_nom_complet=$infos_etat[0];
                                 break;
@@ -131,78 +128,43 @@ class Affichage {
                     else
                         echo 'manque';
                     ?>" id="n<?=($cpt)?>" title="<?=$numero?>">n&deg;<?=$numero?>
-                    &nbsp;<span class="soustitre"><?=$sous_titres[$i]?></span><?php
-                    if ($possede) {
-                        if (!isset($etat_class)) {
-                            ?><span class="num_indefini"></span><?php
-                        }
-                        else {
-                            ?><span class="num_<?=$etat_class?>"><?=ETAT?> <?=$etat_class?></span><?php
-                        }
-                        if ($id_acq!=-1 && $id_acq!=-2) {
-                            $requete_date_achat='SELECT Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
-                            $resultat_date=$d->requete_select($requete_date_achat);
-                            if (count($resultat_date)>0) {
-                                $regex_date='#([^-]+)-([^-]+)-(.+)#is';
-                                $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-                                if (!is_null($date) && !empty($date)) {
-                                    ?>&nbsp;<?=ACHETE_LE?> <?=$date?><?php
+                    &nbsp;<span class="soustitre"><?=$sous_titres[$i]?></span>
+                            <?php
+                            
+                            if ($possede) {
+                                ?><div class="bloc_details"><?php
+                                if (!isset($etat_class)) {
+                                    ?><div class="details_numero num_indefini detail_indefini" title="<?=get_constant('ETAT_INDEFINI')?>"><?php
                                 }
+                                else {
+                                    ?><div class="details_numero num_<?=$etat_class?> detail_<?=$etat_class?>" title="<?=get_constant('ETAT_'.$etat_class)?>"><?php
+                                }
+                                ?></div>
+                                <div class="details_numero detail_date"><?php
+                                if ($id_acq!=-1 && $id_acq!=-2) {
+                                    $requete_date_achat='SELECT Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
+                                    $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
+                                    if (count($resultat_date)>0) {
+                                        $regex_date='#([^-]+)-([^-]+)-(.+)#is';
+                                        $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+                                        if (!is_null($date) && !empty($date)) {
+                                            ?><img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/><?php
+                                        }
+                                    }
+                                }
+                                ?></div><div class="details_numero detail_a_vendre"><?php
+                                if ($av) {
+                                    ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
+                                }
+                                ?></div>
+                             </div><?php
                             }
-                        }
-                    }
-                    if ($av) {
-                        ?><img height="16px" src="images/av.png" alt="AV"/><?php
-                    }
-                    ?>
+                        ?>
+                        </div>
                     </div>
                     <?php
                     $cpt++;
 		}
-	}
-
-	static function afficher_acquisitions($afficher_non_specifiee) {
-
-		$d=new Database();
-		if (!$d) {
-			echo PROBLEME_BD;
-			exit(-1);
-		}
-		$id_user=$d->user_to_id($_SESSION['user']);
-		$requete_acquisition='SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
-		$liste_acquisitions=$d->requete_select($requete_acquisition);
-		if (count($liste_acquisitions)==0) {
-			?>
-            <?=AUCUNE_DATE_ACQUISITION?><br />
-			<?=SELECTIONNER_NOUVELLE_DATE_ACQUISITION?><br /><?php
-		}
-        ?>
-		<select onchange="deselect_old(this)" multiple="multiple" id="date_acquisition">
-            <?php
-            if ($afficher_non_specifiee) {
-                ?><option onmouseup="effacer_infos_acquisition()">[<?=DATE_NON_SPECIFIEE?>]</option><?php
-            }
-            if (count($liste_acquisitions)==0) {
-                ?><option>[<?=AUCUNE_ACQUISITION?>]</option><?php
-            }
-            foreach($liste_acquisitions as $acquisition) {
-                ?>
-                <option label="<?=$acquisition['ID_Acquisition']?>"<?php
-                if (!$afficher_non_specifiee) {
-                    ?> onmouseup="modifier_acquisition(this.label, this.value)"<?php
-                }
-                else {
-                    ?> onmouseup="effacer_infos_acquisition()"<?php
-                }
-                ?>
-                >[<?=$acquisition['Date']?>] <?=$acquisition['Description']?></option><?php
-            }
-            ?>
-            <option onmouseup="changer_date_acquisition(this,<?=($afficher_non_specifiee?'true':'false')?>)"><?=NOUVELLE_DATE_ACHAT?>...</option>
-		</select>
-       &nbsp;
-       <span id="infos_liste_acquisition"></span>
-       <?php
 	}
 }
 ?>

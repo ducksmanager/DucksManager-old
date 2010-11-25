@@ -6,16 +6,15 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once ('Database.class.php');
-$d=new Database();
-$id_user=$d->user_to_id($_SESSION['user']);
+$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $requete_date_dernier_calcul='SELECT MAX(DateStat) AS dernier_calcul FROM auteurs_pseudos WHERE ID_User='.$id_user;
-$resultat_date_dernier_calcul=$d->requete_select($requete_date_dernier_calcul);
+$resultat_date_dernier_calcul=DM_Core::$d->requete_select($requete_date_dernier_calcul);
 $date_dernier_calcul=$resultat_date_dernier_calcul[0]['dernier_calcul'];
 if ($date_dernier_calcul=='0000-00-00')
 	exit(0);
 $requete_auteurs='SELECT NomAuteur, NbNonPossedesFrance, NbNonPossedesEtranger, NbPossedes FROM auteurs_pseudos '
 				.'WHERE ID_User='.$id_user.' AND DateStat LIKE \''.$date_dernier_calcul.'\'';
-$resultat_auteurs=$d->requete_select($requete_auteurs);
+$resultat_auteurs=DM_Core::$d->requete_select($requete_auteurs);
 $non_poss_etr=array();$non_poss_etr_pct=array();
 $non_poss_fr=array();$non_poss_fr_pct=array();
 $poss=array();$poss_pct=array();

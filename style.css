@@ -34,16 +34,16 @@ a.important:HOVER {
 	width:100%;
 	background:black;
 	cursor:default;
-	height:24px;
-	padding-top:8px;
+	height:16px;
+	padding-top:4px;
 }
 
 .num_possede {
 	width:100%;
 	background:rgb(200, 137, 100);
 	cursor:default;
-	height:24px;
-	padding-top:8px;
+	height:16px;
+	padding-top:4px;
 }
 
 .num_checked {
@@ -67,7 +67,7 @@ a.important:HOVER {
 	width:100%;
 	background:url('checkedbox.png') no-repeat right center #2CA77B;
 	cursor:default;
-	height:24px;
+	height:16px;
 }
 
 .num_excellent {
@@ -78,7 +78,14 @@ a.important:HOVER {
 	width:100%;
 	background-color:#808080;
 	cursor:default;
-	height:24px;
+	height:16px;
+}
+
+.survole {
+    opacity:0.7;
+    filter : alpha(opacity=70);
+    -moz-opacity : 0.7;
+
 }
 
 .colorselector_manque {
@@ -144,4 +151,30 @@ a.important:HOVER {
     font-size:smaller;
     color:blue;
     vertical-align:super;
+}
+
+.soustitre {
+    color:gray;
+}
+
+.details_numero {
+    float:right;
+    height:16px;
+    margin-right:5px;
+    width:16px;
+}
+
+.bloc_details {
+    padding-right:20px;
+    margin-top:-2px;
+    display:inline;
+    float:right;
+}
+
+.num_checked .bloc_details {
+    padding-right:21px;
+}
+
+.icone_detail {
+    width:16px;
 }

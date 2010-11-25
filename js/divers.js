@@ -114,10 +114,22 @@ function supprimer_auteur (nom_auteur) {
 function montrer_magazines(pays) {
     $$('[name="magazine"]')
         .each(function(element) {
-            if (element.href.indexOf(pays+'/') == -1)
-                element.up().setStyle({'display':'none'});
-            else
-                element.up().setStyle({'display':'block'});
+            if (element.href) {
+                if (element.href.indexOf(pays+'/') == -1)
+                    element.up().setStyle({'display':'none'});
+                else
+                    element.up().setStyle({'display':'block'});
+            }
         }
     );
+}
+
+function montrer_nom_magazine(element) {
+    $('nom_magazine_courant').update(element.readAttribute('id'))
+                             .setStyle({'marginLeft':(element.offsetLeft - 5)+'px',
+                                        'visibility':'visible'});
+}
+
+function cacher_nom_magazine() {
+    $('nom_magazine_courant').setStyle({'visibility':'hidden'});
 }

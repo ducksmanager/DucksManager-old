@@ -3,8 +3,7 @@ class Post {
     var $header;
     var $content;
     
-    function Post($url, $referer, $_data) {
-
+    function Post($url, $referer, $_data,$type='POST',$cookie='',$easyget=true) {
         // convert variables array to string:
         $data = array();
         while(list($n,$v) = each($_data)){
@@ -13,6 +12,12 @@ class Post {
         $data = implode('&', $data);
         // format --> test1=a&test2=b etc.
 
+        if ($type=='GET' && $easyget===true) {
+            $url=$url.'?'.$data;
+            
+            $this->content = Util::get_page($url);
+            return;
+        }
         // parse the given URL
         $url = parse_url($url);
         if ($url['scheme'] != 'http') {
@@ -27,14 +32,15 @@ class Post {
         $fp = fsockopen($host, 80);
 
         // send the request headers:
-        fputs($fp, "POST $path HTTP/1.1\r\n");
+        fputs($fp, "$type $path HTTP/1.1\r\n");
         fputs($fp, "Host: $host\r\n");
-        fputs($fp, "Referer: $referer\r\n");
         fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+        fputs($fp, "Cookie: $cookie\r\n");
+        fputs($fp, "Referer: http://coa.inducks.org\r\n");
         fputs($fp, "Content-length: ". strlen($data) ."\r\n");
-        fputs($fp, "Connection: close\r\n\r\n");
+        fputs($fp, "Connection: keep-alive\r\n\r\n");
         fputs($fp, $data);
-
+        
         $result = '';
         while(!feof($fp)) {
             // receive the results of the request

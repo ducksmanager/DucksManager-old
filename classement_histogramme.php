@@ -3,6 +3,7 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 include_once ('locales/lang.php');
+include_once('Util.class.php');
 require_once('FirePHPCore/FirePHP.class.php');
 
 $GLOBALS['firephp'] = FirePHP::getInstance(true);
@@ -18,28 +19,11 @@ require_once('artichow/BarPlot.class.php');
 require_once('Database.class.php');
 require_once('Inducks.class.php');
 
-
-$d=new Database();
-if (!$d) {
-	echo PROBLEME_BD;
-	exit(-1);
-}
 $_SESSION['user']='nonoox';
 $_SESSION['lang']='fr';
-$id_user=$d->user_to_id($_SESSION['user']);
-$url='http://coa.inducks.org/legend-country.php?xch=1&lg='.$codes_inducks[$_SESSION['lang']];
-$handle = @fopen($url, "r");
-if ($handle) {
-	$buffer="";
-   	while (!feof($handle)) {
-     	$buffer.= fgets($handle, 4096);
-   	}
-   	fclose($handle);
-}
-else {
-	echo ERREUR_CONNEXION_INDUCKS;
-	return false;
-}
+$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+$url='http://coa.inducks.org/legend-country.php?xch=1&lg='.Lang::$codes_inducks[$_SESSION['lang']];
+$buffer=Util::get_page($url);
 $regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
 $liste_pays=array();
 preg_match_all($regex_pays,$buffer,$liste_pays);
@@ -51,7 +35,7 @@ $total=array();
 $noms_magazines=array();
 $noms_magazines_courts=array();
 
-$l=$d->toList($id_user);
+$l=DM_Core::$d->toList($id_user);
 $counts=array();
 foreach($l->collection as $pays=>$numeros_pays) {
 	$counts[$pays]=array();
@@ -62,17 +46,8 @@ foreach($l->collection as $pays=>$numeros_pays) {
 foreach($counts as $pays=>$magazines) {
 	$liste_magazines=Inducks::get_noms_complets_magazines($pays);
 	$adresse_publications_pays='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays	;
-	$handle = @fopen($adresse_publications_pays, "r");
-	if ($handle) {
-		$buffer="";
-		while (!feof($handle)) {
-			$buffer.= fgets($handle, 4096);
-		}
-		fclose($handle);
-	}
-	else {
-		echo ERREUR_CONNEXION_INDUCKS;
-	}
+	$buffer=Util::get_page($url);
+        
 	foreach($magazines as $magazine=>$cpt) {
 		$regex_nb_numeros='#<li><a href="publication.php\?c='.$pays.'/'.$magazine.'">[^<]+</a>&nbsp;<i>\(([^ ]+) num#';
 		preg_match($regex_nb_numeros,$buffer,$nb);

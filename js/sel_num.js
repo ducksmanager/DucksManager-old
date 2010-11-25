@@ -242,13 +242,13 @@ function pre_select(element) {
 
 function lighten (element) { 
 	if (!now_selecting) {
-		element.setOpacity(0.7);
+		element.addClassName('survole');
 	}
 }
 
 function unlighten (element) {
 	if (!now_selecting) {
-		element.setOpacity(1);
+		element.removeClassName('survole');
 	}
 }
 

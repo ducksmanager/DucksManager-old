@@ -1,6 +1,7 @@
 <?php
 include_once('Texte.class.php');
 include_once('IntervalleValidite.class.php');
+include_once('DucksManager_Core.class.php');
 class Edge {
     var $pays;
     var $magazine;
@@ -25,7 +26,14 @@ class Edge {
         $this->numero=str_replace(' ','',str_replace('+','',$this->numero));
         if (file_exists('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php')) {
             require_once('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php');
-            $this->o=new $this->magazine($this->numero);
+            $nom_classe=$this->pays.'_'.$this->magazine;
+            $this->o=new $nom_classe($this->numero);
+            if ($this->o->largeur==$this->largeur && $this->o->hauteur==$this->hauteur) {
+                list($largeur_defaut,$hauteur_defaut)=$this->o->getLargeurHauteurDefaut();
+                $this->o->largeur=$largeur_defaut;
+                $this->o->hauteur=$hauteur_defaut;
+                
+            }
             $intervalle_validite=new IntervalleValidite($this->o->intervalles_validite);
             if (!$intervalle_validite->estValide($this->numero))
                 $this->est_visible=false;
@@ -38,6 +46,10 @@ class Edge {
         }
     }
 
+    function getLargeurHauteurDefaut() {
+        return array($this->largeur,$this->hauteur);
+    }
+    
     static function getEtagereHTML($br=true) {
         $code= '<div class="etagere" style="width:'.Etagere::$largeur.';'
                                           .'background-image: url(\'edges/textures/'.Etagere::$texture2.'/'.Etagere::$sous_texture2.'.jpg\')">&nbsp;</div>';
@@ -130,20 +142,20 @@ class Edge {
 	}
 
     function getColorsFromDB($default_color=array(255,255,255),$parametre_autre=null) {
-        $requete_couleurs='SELECT CouleurR, CouleurG, CouleurB FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
+        $requete_couleurs='SELECT CouleurR, CouleurG, CouleurB FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numero LIKE \''.$this->numero.'\'';
         if (!is_null($parametre_autre))
             $requete_couleurs.=' AND Autre LIKE \''.$parametre_autre.'\'';
         else
             $requete_couleurs.=' AND (Autre IS NULL || Autre LIKE \'\')';
-        $resultat=Edge::$d->requete_select($requete_couleurs);
+        $resultat=DM_Core::$d->requete_select($requete_couleurs);
         if (count($resultat)==0)
             return $default_color;
         return array($resultat[0]['CouleurR'], $resultat[0]['CouleurG'], $resultat[0]['CouleurB']);
     }
 
     function getDataFromDB($default_text='') {
-        $requete_couleurs='SELECT Autre FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numéro LIKE \''.$this->numero.'\'';
-        $resultat=Edge::$d->requete_select($requete_couleurs);
+        $requete_couleurs='SELECT Autre FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numero LIKE \''.$this->numero.'\'';
+        $resultat=DM_Core::$d->requete_select($requete_couleurs);
         if (count($resultat)==0)
             return $default_text;
         return $resultat[0]['Autre'];
@@ -151,17 +163,22 @@ class Edge {
 
     function agrafer() {
         $noir=imagecolorallocate($this->image, 0, 0, 0);
-        for ($i=-.25*Edge::$grossissement;$i<.25*Edge::$grossissement;$i++) {
-            imageline($this->image, $this->largeur/2 - $i, $this->hauteur/5, $this->largeur/2 - $i, $this->hauteur/4, $noir);
-            imageline($this->image, $this->largeur/2 - $i, $this->hauteur*4/5, $this->largeur/2 - $i, $this->hauteur*4/5 - ($this->hauteur/4 - $this->hauteur/5), $noir);
-        }
+        imagefilledrectangle($this->image, $this->largeur/2 -.25*Edge::$grossissement, $this->hauteur/5, $this->largeur/2 +.25*Edge::$grossissement, $this->hauteur/4, $noir);
+        imagefilledrectangle($this->image, $this->largeur/2 -.25*Edge::$grossissement, $this->hauteur*4/5, $this->largeur/2 +.25*Edge::$grossissement, $this->hauteur*4/5 - ($this->hauteur/4 - $this->hauteur/5), $noir);
+    }
+    
+    function agrafer_detail($y1,$y2,$taille) {
+        $noir=imagecolorallocate($this->image, 0, 0, 0);
+        imagefilledrectangle($this->image, $this->largeur/2 -.25*Edge::$grossissement, $y1, $this->largeur/2 +.25*Edge::$grossissement, $y1+$taille, $noir);
+        imagefilledrectangle($this->image, $this->largeur/2 -.25*Edge::$grossissement, $y2, $this->largeur/2 +.25*Edge::$grossissement, $y2+$taille, $noir);
     }
 
     function placer_image($sous_image, $position='haut', $decalage=array(0,0), $compression_largeur=1, $compression_hauteur=1) {
         if (is_string($sous_image)) {
             $extension_image=strtolower(substr($sous_image, strrpos($sous_image, '.')+1,strlen($sous_image)-strrpos($sous_image, '.')-1));
             $fonction_creation_image='imagecreatefrom'.$extension_image.'_getimagesize';
-            list($sous_image,$width,$height)=call_user_func($fonction_creation_image,$this->getChemin().'/'.$sous_image);
+            $chemin_reel=(strpos($sous_image, 'images_myfonts')!==false) ? $sous_image : $this->getChemin().'/'.$sous_image;
+            list($sous_image,$width,$height)=call_user_func($fonction_creation_image,$chemin_reel);
         }
         else {
             $width=imagesx($sous_image);
@@ -185,16 +202,16 @@ class Edge {
         include_once('Database.class.php');
         @session_start();
         if ($user_unique===true)
-            $ids_users=array(Edge::$d->user_to_id($_SESSION['user']));
+            $ids_users=array(DM_Core::$d->user_to_id($_SESSION['user']));
         else {
             $pourcentages_visible=array();
             $requete_users='SELECT ID, username FROM users';
-            $resultat_users=Edge::$d->requete_select($requete_users);
+            $resultat_users=DM_Core::$d->requete_select($requete_users);
             foreach($resultat_users as $user)
                 $ids_users[$user['username']]=$user['ID'];
         }
         foreach($ids_users as $username=>$id_user) {
-            $l=Edge::$d->toList($id_user);
+            $l=DM_Core::$d->toList($id_user);
             $texte_final='';
             $total_numeros=0;
             $total_numeros_visibles=0;
@@ -233,17 +250,12 @@ class Edge {
     }
 
 }
-include_once('Database.class.php');
-Edge::$d=new Database();
-if (!Edge::$d) {
-    echo PROBLEME_BD;
-    exit(-1);
-}
+DM_Core::$d->requete('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
     include_once ('locales/lang.php');
-    list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=Edge::$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+    list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=DM_Core::$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
     ?>
-    <div class="titre_magazine"><?=utf8_encode($nom_complet_magazine)?></div><br />
+    <div class="titre_magazine"><?=$nom_complet_magazine?></div><br />
     <div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
     <?php
     if (!getEstVisible($_POST['pays'], strtoupper($_POST['magazine']), $_POST['numero'])) {
@@ -251,6 +263,9 @@ if (isset($_POST['get_visible'])) {
         <?=TRANCHE_NON_DISPONIBLE1?><br /><?=TRANCHE_NON_DISPONIBLE2?><a class="lien_participer" target="_blank" href="?action=bibliotheque&onglet=participer"><?=ICI?></a><?=TRANCHE_NON_DISPONIBLE3?>
         <?php
     }
+    ?>
+        <div style="position:absolute;width:100%;text-align:center;border-top:1px solid black;bottom:10px"><?=DECOUVRIR_COUVERTURE?></div>
+    <?php
 }
 elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
     if (isset($_GET['grossissement']))
@@ -266,9 +281,9 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
  * Table bibliotheque_options
 */
 elseif (isset($_POST['get_texture'])) {
-    $id_user=Edge::$d->user_to_id($_SESSION['user']);
+    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
     $requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
-    $resultat_texture=Edge::$d->requete_select($requete_texture);
+    $resultat_texture=DM_Core::$d->requete_select($requete_texture);
 	$rep = "edges/textures";
     $dir = opendir($rep);
     while ($f = readdir($dir)) {
@@ -286,11 +301,11 @@ elseif (isset($_POST['get_texture'])) {
 }
 
 elseif (isset($_POST['get_sous_texture'])) {
-    $id_user=Edge::$d->user_to_id($_SESSION['user']);
+    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
     $requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
-    $resultat_texture=Edge::$d->requete_select($requete_texture);
+    $resultat_texture=DM_Core::$d->requete_select($requete_texture);
 
-	$rep = 'edges/textures/'.$_POST['texture'].'/miniatures';
+    $rep = 'edges/textures/'.$_POST['texture'].'/miniatures';
     $dir = opendir($rep);
     while ($f = readdir($dir)) {
         if( $f!=='.' && $f!=='..') {
@@ -316,7 +331,8 @@ elseif (isset($_GET['regen'])) {
         $numeros=array('debut'=>$_GET['debut'], 'fin'=>$_GET['fin']);
     }
     include_once('edges/'.$pays.'/'.$magazine.'.edge.class.php');
-    $o=new $magazine(0);
+    $nom_classe=$pays.'_'.$magazine;
+    $o=new $nom_classe(0);
     $iv=new IntervalleValidite($o->intervalles_validite);
     if (isset($_GET['debut'])) {
         $liste_numeros=array();

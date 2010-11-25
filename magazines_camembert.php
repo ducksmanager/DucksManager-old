@@ -7,14 +7,9 @@ include_once('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once('Database.class.php');
 require_once('Inducks.class.php');
-$d=new Database();
 @session_start();
-if (!$d) {
-	echo PROBLEME_BD;
-	exit(-1);
-}
-$id_user=$d->user_to_id($_SESSION['user']);
-$l=$d->toList($id_user);
+$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+$l=DM_Core::$d->toList($id_user);
 $counts=array();
 $total=0;
 foreach($l->collection as $pays=>$numeros_pays) {
@@ -33,7 +28,7 @@ $cles_magazines=array();
 $nb_magazines_autres=0;
 foreach($counts as $pays=>$magazines) {
 	foreach($magazines as $magazine=>$cpt) {
-	$nom_complet_magazine=Inducks::get_nom_complet_magazine($pays, $magazine);
+	list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
 		if ($cpt/$total<0.01) {
 			$autres+=$cpt;
 			$nb_magazines_autres++;

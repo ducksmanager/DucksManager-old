@@ -1,26 +1,22 @@
 <?php
 require_once('Database.class.php');
 require_once('Liste.class.php'); 
+require_once('Util.class.php'); 
 $debut=microtime(true);
 $pays='fr';
-$d=new Database();
-if (!$d) {
-	echo 'Probl&egrave;me avec la base de donn&eacute;es !';
-	exit(-1);
-}
 $requete_avancement_stats='SELECT Auteur,Page FROM traitement_stats';
-$requete_avancement_stats_resultat=$d->requete_select($requete_avancement_stats);
+$requete_avancement_stats_resultat=DM_Core::$d->requete_select($requete_avancement_stats);
 $auteur_en_cours=$requete_avancement_stats_resultat[0]['Auteur'];
 $page_en_cours=$requete_avancement_stats_resultat[0]['Page'];
 echo $auteur_en_cours.' '.$page_en_cours; 
 /*$requete='SELECT MAX(ID) FROM users';
-$max_resultat=$d->requete_select($requete);
+$max_resultat=DM_Core::$d->requete_select($requete);
 $max=$max_resultat[0][0];
 for($i=1;$i<$max;$i++) {
 	$l=new Liste();
-	$d->toList($i);
+	DM_Core::$d->toList($i);
 }*/
-$resultats=$d->requete_select('SELECT NomAuteur,ID_user FROM auteurs_pseudos');
+$resultats=DM_Core::$d->requete_select('SELECT NomAuteur,ID_user FROM auteurs_pseudos');
 $auteurs_demandes=array();
 foreach($resultats as $auteur) {
 	if (array_key_exists($auteur['NomAuteur'],$auteurs_demandes)) {
@@ -43,7 +39,7 @@ foreach($auteurs_demandes as $auteur=>$users) {
 		echo 'Reprise des stats pour l\'auteur '.$auteur_en_cours.'<br />';
 	}
 	$requete_nb_histoires='SELECT NbHistoires_tmp FROM traitement_stats WHERE Auteur LIKE \''.$auteur.'\'';
-	$resultat_requete_nb_histoires=$d->requete_select($requete_nb_histoires);
+	$resultat_requete_nb_histoires=DM_Core::$d->requete_select($requete_nb_histoires);
 	$total_histoires=$resultat_requete_nb_histoires[0]['NbHistoiresTmp'];
 	echo $total_histoires;
 	$nom_auteur=$auteur;
@@ -57,7 +53,7 @@ foreach($auteurs_demandes as $auteur=>$users) {
    	echo '<br /><u>'.$auteur.'</u> : <br />'; 
    	echo 'Page 1 : '.$nb.'/'.$nb_codes.' total<br />';
    	$requete_maj_avancement='UPDATE traitement_stats SET Auteur=\''.$auteur.'\',Page=0';
-   	$d->requete($requete_maj_avancement);
+   	DM_Core::$d->requete($requete_maj_avancement);
    	if ($page_en_cours==-1||$page_en_cours==0||$auteur_en_cours!=$auteur)
    		$page=1;
    	else {
@@ -93,7 +89,7 @@ foreach($auteurs_demandes as $auteur=>$users) {
 		   			foreach($users as $id=>$user) {
 		   				$cpt_user=$user['cpt'];
 		   				$id_user=$user['user'];
-		   				$l=$d->toList($id_user);
+		   				$l=DM_Core::$d->toList($id_user);
 			   			//$l->afficher('debug'); 
 			   			if ($l->est_possede($pays,$magazine,$numero)) {
 			   				$possession[$id_user]=true;
@@ -120,9 +116,9 @@ foreach($auteurs_demandes as $auteur=>$users) {
 		echo (($fin-$debut)).' secondes écoulées !<br />';
 		if ($fin-$debut>=25) {
 			$requete_maj_avancement='UPDATE traitement_stats SET Auteur=\''.$auteur.'\',Page='.$page;
-   			$d->requete($requete_maj_avancement); 
+   			DM_Core::$d->requete($requete_maj_avancement); 
    			$requete_maj_nb_histoires='UPDATE traitement_stats SET NbHistoires_tmp='.$total_histoires;
-   			$d->requete($requete_maj_nb_histoires);
+   			DM_Core::$d->requete($requete_maj_nb_histoires);
    			echo 'stop !!'.(($fin-$debut)).' secondes écoulées !<br />';
    			echo 'Auteur en cours : '.$auteur.', page en cours : '.$page;
 			exit(0);
@@ -135,23 +131,18 @@ foreach($auteurs_demandes as $auteur=>$users) {
 	
 }
 $requete_maj_avancement='UPDATE traitement_stats SET Auteur=\'Aucun\',Page=-1';
-$d->requete($requete_maj_avancement);
+DM_Core::$d->requete($requete_maj_avancement);
 
 function liste_histoires($adresse_auteur,$regex_code_histoire,$regex_histoire_code_personnages) {
 	$nb_codes=$nb=0;$buffer="";$codes=array();$histoires=array();
-	$handle = @fopen($adresse_auteur, "r");
-	if ($handle) {
-		$buffer="";
-	   	while (!feof($handle)) {
-	     	$buffer.= fgets($handle, 4096);
-	   	}
-	   	fclose($handle);
-	   	$nb_codes=preg_match_all($regex_code_histoire,$buffer,$codes);
-	   	$nb=preg_match_all($regex_histoire_code_personnages,$buffer,$histoires,PREG_PATTERN_ORDER);
-	}
-	else {
+	$buffer=Util::get_page($adresse_auteur);
+	if ($buffer == ERREUR_CONNEXION_INDUCKS) {
 		echo 'Erreur de connexion &agrave; Inducks!';
 		echo $adresse_auteur;
+        }
+        else {
+            $nb_codes=preg_match_all($regex_code_histoire,$buffer,$codes);
+            $nb=preg_match_all($regex_histoire_code_personnages,$buffer,$histoires,PREG_PATTERN_ORDER);
 	}
 	echo '<pre>';print_r($codes);echo '</pre>';
 	return array($nb_codes,$nb,$buffer,$codes,$histoires);

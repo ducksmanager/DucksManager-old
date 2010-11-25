@@ -1,13 +1,6 @@
-<?php
-header('Content-Type: text/html; charset=utf-8');
-error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED );
-@session_start();
-if (isset($_GET['lang'])) {
-    $_SESSION['lang']=$_GET['lang'];
-}
-include_once ('locales/lang.php');
-error_reporting(E_ERROR);
-ini_set('session.lifetime', 0);
+<?php header('Content-Type: text/html; charset=utf-8');
+require_once('maintenance.php');
+require_once('DucksManager_Core.class.php');
 require_once('Liste.class.php');
 require_once('JS.class.php');
 require_once('Menu.class.php');
@@ -24,8 +17,12 @@ else
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
     <head>
-        <meta content="text/html; charset=ISO-8859-1"
-              http-equiv="content-type">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <?php
+            if (isset($_GET['debug']) || (!is_null($action) && $action=='bibliotheque')) {
+                ?><meta http-equiv="Pragma" content="no-cache" /><?php
+            }
+        ?>
         <title><?php echo TITRE.' - '.$titre;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
@@ -41,7 +38,6 @@ else
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
-                var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
             var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.ducksmanager.net/piwik/" : "http://www.ducksmanager.net/piwik/");
             document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
             </script>
@@ -54,7 +50,10 @@ else
             </script>
             <!-- End Piwik Tag -->
         <?php
-        }
+        }?>
+        <script type="text/javascript">
+            var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
+        </script><?php
         new JS('prototype.js');
         new JS('js/scriptaculous/src/scriptaculous.js');
         new JS('js/my_scriptaculous.js');
@@ -62,22 +61,37 @@ else
         new JS('js/ajax.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
-            if ($_GET['action']=='gerer')
-                new JS('js/menu_contextuel.js');
+            switch($_GET['action']) {
+                case 'gerer':
+                    new JS('js/menu_contextuel.js');
+                break;  
+                case 'bibliotheque':
+                    new JS('js/edges.js');
+                break; 
+                case 'stats':
+                    switch($_GET['onglet']) {
+                        case 'possessions':
+                            new JS('js/chargement.js');
+                            new JS('js/classement_histogramme.js');
+                            ?>
+                            <script type="text/javascript" src="js/json/json2.js"></script>
+                            <script type="text/javascript" src="js/swfobject.js"></script>
+                            <?php
+                        break;
+                    }
+                break;
+            }
             new JS('js/selection_menu.js');
             new JS('js/bouquineries.js');
             new JS('js/divers.js');
-            if ($_GET['action']=='bibliotheque')
-                new JS('js/edges.js');
         }
         ?>
     </head>
 
     <?php
     $texte_debut='';
-    $d=new Database();
     if ($action=='open'&& isset($_POST['user'])) {
-        if (!$d->user_connects($_POST['user'],$_POST['pass']))
+        if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass']))
             $texte_debut.= 'Identifiants invalides!<br /><br />';
         else {
             creer_id_session($_POST['user'],$_POST['pass']);
@@ -85,7 +99,7 @@ else
     }
     else {
         if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
-            if (!$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
+            if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
                 $_SESSION['user']=$_COOKIE['user'];
                 setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies à jour à chaque rafraichissement
                 setCookie('pass',sha1($_COOKIE['pass']),time()+3600);
@@ -102,27 +116,23 @@ else
         case 'bibliotheque':
             if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
                 if (Util::getBrowser()!=='MSIE') {
-                    $d=new Database();
-                    if (!$d) {
-                        exit(-1);
-                    }
-                    $id_user=$d->user_to_id($_SESSION['user']);
+                    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                     $textures=array();
                     for ($i=1;$i<=2;$i++) {
                         $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
-                        $resultat_textures=$d->requete_select($requete_textures);
+                        $resultat_textures=DM_Core::$d->requete_select($requete_textures);
                         $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
                         $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
                     }
                     $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
-                    $resultat_grossissement=$d->requete_select($requete_grossissement);
+                    $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
                     $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
                     $regen=isset($_GET['regen']) ? 1 : 0;
                     echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\','.$regen.');';
                 }
-                elseif ($_GET['onglet']=='options') {
-                    echo 'initTextures();';
-                }
+            }
+            elseif (isset($_GET['onglet']) && $_GET['onglet']=='options') {
+                echo 'initTextures();';
             }
         break;
         case 'gerer':
@@ -200,21 +210,21 @@ else
                 </td>
                 <td valign="middle" align="right" style="background-color:rgb(200, 137, 100);height: 79px; width: 98px;">
                     <?php if (!(Util::isLocalHost())) { ?>
-                    <script type="text/javascript" src="jw/swfobject.js"></script>
-                    <object id="player" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" name="player" width="79" height="98">
-                        <param name="movie" value="jw/player.swf" />
-                        <param name="allowfullscreen" value="false" />
-                        <param name="allowscriptaccess" value="always" />
-                        <param name="flashvars" value="file=../morph/morph.swf.flv&amp;controlbar=none&amp;autostart=true&amp;image=morph/rfl.jpg" />
-                        <object type="application/x-shockwave-flash" data="jw/player.swf" width="79" height="98">
+                        <script type="text/javascript" src="jw/swfobject.js"></script>
+                        <object id="player" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" name="player" width="79" height="98">
                             <param name="movie" value="jw/player.swf" />
-                            <param name="allowfullscreen" value="true" />
-
+                            <param name="allowfullscreen" value="false" />
                             <param name="allowscriptaccess" value="always" />
-                            <param name="flashvars" value="file=../morph/morph.swf.flv&amp;autostart=true&amp;controlbar=none&amp;image=morph/rfl.jpg" />
-                            <p><a href="http://get.adobe.com/flashplayer"><?=TELECHARGER_FLASH?></a> <?=POUR_VOIR_LA_VIDEO?>.</p>
+                            <param name="flashvars" value="file=../morph/morph.swf.flv&amp;controlbar=none&amp;autostart=true&amp;image=morph/rfl.jpg" />
+                            <object type="application/x-shockwave-flash" data="jw/player.swf" width="79" height="98">
+                                <param name="movie" value="jw/player.swf" />
+                                <param name="allowfullscreen" value="true" />
+
+                                <param name="allowscriptaccess" value="always" />
+                                <param name="flashvars" value="file=../morph/morph.swf.flv&amp;autostart=true&amp;controlbar=none&amp;image=morph/rfl.jpg" />
+                                <p><a href="http://get.adobe.com/flashplayer"><?=TELECHARGER_FLASH?></a> <?=POUR_VOIR_LA_VIDEO?>.</p>
+                            </object>
                         </object>
-                    </object>
                     <?php } ?>
                 </td>
             </tr>
@@ -226,7 +236,7 @@ else
                                 <td valign="top" style="padding:5px;">
                                     <b><a href="?"><?=ACCUEIL?></a></b><br /><br />
                                     <?php
-                                    $beta_user=$d->user_is_beta();
+                                    $beta_user=DM_Core::$d->user_is_beta();
                                     foreach($menus as $i=>$menu) {
                                         ?>
                                         <span style="font-weight: bold; text-decoration: underline;"><?=$menu->nom?></span><br />
@@ -301,7 +311,7 @@ else
                                             $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
                                             $l=new Liste($_POST['rawData']);
                                             $l->lire();
-                                            $l->synchro_to_database($d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);
+                                            $l->synchro_to_database(DM_Core::$d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);
                                         }
                                         else {
                                             if ($_POST['valider_importer']=='Oui') {
@@ -432,23 +442,18 @@ else
                                     break;
                                     case 'options':
                                         require_once('Edge.class.php');
-                                        $d=new Database();
-                                        if (!$d) {
-                                            echo PROBLEME_BD;
-                                            exit(-1);
-                                        }
-                                        $id_user=$d->user_to_id($_SESSION['user']);
+                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                         if (isset($_POST['texture1'])) {
                                             for ($i=1;$i<=2;$i++) {
                                                 $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\' WHERE id='.$id_user;
-                                                $d->requete($requete_update_texture);
+                                                DM_Core::$d->requete($requete_update_texture);
                                                 $requete_update_sous_texture='UPDATE users SET Bibliotheque_Sous_Texture'.$i.'=\''.$_POST['sous_texture'.$i].'\' WHERE id='.$id_user;
-                                                $d->requete($requete_update_sous_texture);
+                                                DM_Core::$d->requete($requete_update_sous_texture);
                                             }
                                             /*if (!is_numeric($_POST['grossissement']))
                                                 $_POST['grossissement']='taille_reelle';*/
                                             /*$requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
-                                            $d->requete($requete_update_grossissement);*/
+                                            DM_Core::$d->requete($requete_update_grossissement);*/
                                         }
                                         ?><form method="post" action="?action=bibliotheque&amp;onglet=options">
                                             <span style="text-decoration:underline"><?=TEXTURE?> : </span><br />
@@ -476,7 +481,7 @@ else
                                             <select style="width:300px;" id="grossissement" name="grossissement">
                                             <?php
                                             $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE id='.$id_user;
-                                            $resultat_grossissement=$d->requete_select($requete_grossissement);
+                                            $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
                                             if (count($resultat_grossissement)==0)
                                                 $grossissement=Edge::$grossissement;
                                             else
@@ -585,12 +590,7 @@ else
                                         
                                         case 'contributeurs':
                                             $requete_contributeurs='SELECT Nom, Texte FROM bibliotheque_contributeurs';
-                                            $d=new Database();
-                                            if (!$d) {
-                                                echo PROBLEME_BD;
-                                                exit(-1);
-                                            }
-                                            $contributeurs=$d->requete_select($requete_contributeurs);
+                                            $contributeurs=DM_Core::$d->requete_select($requete_contributeurs);
                                             ?>
                                                 <div style="border:1px solid white">
                                                     <h2 style="text-align:center"><?=INTRO_CONTRIBUTEURS_BIBLIOTHEQUE?></h2>
@@ -608,19 +608,13 @@ else
                             break;
 
                             case 'gerer':
-                                $d=new Database();
-                                if (!$d) {
-                                    echo PROBLEME_BD;
-                                    exit(-1);
-                                }
-                                $id_user=$d->user_to_id($_SESSION['user']);
-                                $l=$d->toList($id_user);
+                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+                                $l=DM_Core::$d->toList($id_user);
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php
                                 $onglets=array(
                                         GESTION_NUMEROS_COURT=>array('ajout_suppr',GESTION_NUMEROS),
-                                        GESTION_ACQUISITIONS_COURT=>array('acquisitions',GESTION_ACQUISITIONS),
                                         GESTION_COMPTE_COURT=>array('compte',GESTION_COMPTE));
                                 if (!isset($_GET['onglet']))
                                     $onglet='ajout_suppr';
@@ -631,20 +625,26 @@ else
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
                                             echo MODIFICATIONS_OK.'<br />';
-                                            if ($_POST['partage']=='on')
-                                                $d->requete('UPDATE users SET AccepterPartage=1 WHERE ID='.$id_user);
-                                            else
-                                                $d->requete('UPDATE users SET AccepterPartage=0 WHERE ID='.$id_user);
+                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.($_POST['partage']=='on'?'1':'0').', AfficherVideo='.($_POST['video']=='on'?'1':'0').' '
+                                                       .'WHERE ID='.$id_user);
                                         }
-                                        $resultat_partage=$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
+                                        $resultat_partage=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
                                         ?>
                                         <form action="?action=gerer&amp;onglet=options" method="post">
-                                        <br /><input type="checkbox" name="partage"
+                                        <br />
+                                        <input type="checkbox" name="partage"
                                         <?php
                                         if ($resultat_partage[0]['AccepterPartage']==1) {?>
                                             checked="checked"
                                         <?php } ?>
                                          /><?=ACTIVER_PARTAGE?><br />
+                                        <input type="checkbox" name="video"
+                                        <?php
+                                        if (DM_Core::$d->user_afficher_video()) {?>
+                                            checked="checked"
+                                        <?php } ?>
+                                         /><?=AFFICHER_VIDEO?><br />
+                                        <br />
                                         <input name="submit_options" class="valider" type="submit" value="<?=VALIDER?>" /></form>
                                         <br /><br /><br />
                                         <?php
@@ -654,15 +654,15 @@ else
                                                 switch ($action) {
                                                     case 'vider':
                                                         $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-                                                        $d->requete($requete);
+                                                        DM_Core::$d->requete($requete);
                                                         echo NUMEROS_SUPPRIMES.'.<br />';
                                                         break;
                                                     case 'supprimer':
                                                         $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-                                                        $d->requete($requete);
+                                                        DM_Core::$d->requete($requete);
                                                         echo NUMEROS_SUPPRIMES.'<br />';
                                                         $requete_compte='DELETE FROM users WHERE ID='.$id_user;
-                                                        $d->requete($requete_compte);
+                                                        DM_Core::$d->requete($requete_compte);
                                                         session_destroy();
                                                         echo COMPTE_SUPPRIME_DECONNECTE.'<br />';
                                                         break;
@@ -690,21 +690,19 @@ else
                                         /*if (isset($_POST['supprimer_doublons'])) {
                                             
                                         }
+                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
-                                        $d=new Database();
-                                        $id_user=$d->user_to_id($_SESSION['user']);
-
-                                        $requete_doublons='SELECT Pays,Magazine,Numéro FROM numeros '
-                                                         .'GROUP BY Pays, Magazine, Numéro, Id_Utilisateur '
+                                        $requete_doublons='SELECT Pays,Magazine,Numero FROM numeros '
+                                                         .'GROUP BY Pays, Magazine, Numero, Id_Utilisateur '
                                                          .'HAVING COUNT(*) > 1 AND  Id_Utilisateur ='.$id_user.' '
-                                                         .'ORDER BY Id_Utilisateur, Pays, Magazine, Numéro';
-                                        echo $requete_doublons;$resultat_doublons=$d->requete_select($requete_doublons);
+                                                         .'ORDER BY Id_Utilisateur, Pays, Magazine, Numero';
+                                        echo $requete_doublons;$resultat_doublons=DM_Core::$d->requete_select($requete_doublons);
                                         if (count($resultat_doublons)>0) {
                                             ?><h3><?=AVERTISSEMENT?></h3><?php
                                             echo AVERTISSEMENT_DOUBLONS_1.' '.count($resultat_doublons).' '.AVERTISSEMENT_DOUBLONS_2;
                                             $liste_doublons=new Liste();
                                             foreach($resultat_doublons as $doublon) {
-                                                $liste_doublons->ajouter($doublon['Pays'], $doublon['Magazine'], $doublon['Numéro']);
+                                                $liste_doublons->ajouter($doublon['Pays'], $doublon['Magazine'], $doublon['Numero']);
                                             }
                                             $liste_doublons->afficher('Classique');
                                             echo AVERTISSEMENT_DOUBLONS_3;
@@ -717,6 +715,7 @@ else
                                         ?>
                                         <?=POSSESSION_MAGAZINES_1?><br /><?=POSSESSION_MAGAZINES_2?><br />
                                         <?php
+
                                         $onglets_magazines=$l->liste_magazines();
 
                                         $onglets_pays=$l->liste_pays();
@@ -770,15 +769,22 @@ else
                                         else {
                                             if (isset($onglet_magazine) && isset($pays)) {
                                             ?>
-                                                <br /><br /><OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
-                                                    <PARAM NAME=movie VALUE="dm.swf">
-                                                    <PARAM NAME=play VALUE=false>
-                                                    <PARAM NAME=loop VALUE=false>
-                                                    <PARAM NAME=wmode VALUE=transparent>
-                                                    <PARAM NAME=quality VALUE=low>
-                                                    <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash">
-                                                    </EMBED>
-                                                </OBJECT>
+                                                <?php if (isset($_GET['afficher_video']) && $_GET['afficher_video']==0) {
+                                                    $requete_cacher_video='UPDATE users SET AfficherVideo=0 WHERE ID='.$id_user;
+                                                    DM_Core::$d->requete($requete_cacher_video);
+                                                }
+                                                if (DM_Core::$d->user_afficher_video()) { ?>
+                                                    <br /><br />
+                                                    <div style="width:742px"><div style="float: right;"><a href="<?=$_SERVER['REQUEST_URI']?>&amp;afficher_video=0"><?=CACHER_VIDEO?></a></div></div>
+                                                    <OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
+                                                        <PARAM NAME=movie VALUE="dm.swf">
+                                                        <PARAM NAME=play VALUE=false>
+                                                        <PARAM NAME=loop VALUE=false>
+                                                        <PARAM NAME=wmode VALUE=transparent>
+                                                        <PARAM NAME=quality VALUE=low>
+                                                        <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" />
+                                                    </OBJECT>
+                                                <?php } ?>
                                                 <table width="100%">
                                                 <tr><td>
                                                 <span id="liste_numeros"><?=CHARGEMENT.'...'?></span>
@@ -788,40 +794,15 @@ else
                                             }
                                         }
                                         break;
-                                    case 'acquisitions':
-                                        ?>
-                                        <?=INTRO_ACQUISITIONS1?><br />
-                                        <?=INTRO_ACQUISITIONS2?><br /><br />
-                                        <table border="0" cellspacing="2px">
-                                            <tr>
-                                                <td>
-                                                    <span id="liste_acquisitions">
-                                                    <?php
-                                                    Affichage::afficher_acquisitions(false);
-                                                    ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span id="nouvelle_acquisition"></span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <?php
-                                        break;
                                 }
 
                                 break;
                             case 'stats':
-                                $d=new Database();
-                                if (!$d) {
-                                    echo PROBLEME_BD;
-                                    exit(-1);
-                                }
                                 ?>
                                 <h2><?=STATISTIQUES_COLLECTION?></h2><br />
                                 <?php
-                                $id_user=$d->user_to_id($_SESSION['user']);
-                                $l=$d->toList($id_user);
+                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+                                $l=DM_Core::$d->toList($id_user);
                                 if (!isset($_GET['onglet']))
                                     $onglet='magazines';
                                 else
@@ -830,6 +811,11 @@ else
                                 break;
 
                             case 'print':
+                                if ($_SESSION['user']!='nonoox') {
+                                    ?><img width="300" src="images/travaux.png" /><br />
+                                    <?=TRAVAUX_SECTION?>
+                                    <?php break;
+                                }
                                 ?>
                                 <span style="font-weight: bold; text-decoration: underline;"><?=IMPRESSION_COLLECTION?> : </span><br /><br />
                                 <?=INTRO_IMPRESSION_COLLECTION1?><br />
@@ -906,17 +892,12 @@ else
                                 break;
 
                             case 'agrandir':
-                                $d=new Database();
-                                if (!$d) {
-                                    echo PROBLEME_BD;
-                                    exit(-1);
-                                }
-                                $id_user=$d->user_to_id($_SESSION['user']);
-                                $l=$d->toList($id_user);
+                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+                                $l=DM_Core::$d->toList($id_user);
 
                                 $onglets=array(ACHAT_VENTE_NUMEROS=>array('achat_vente',CONTACT_UTILISATEURS),
                                                AUTEURS_FAVORIS=>array('auteurs_favoris',AUTEURS_FAVORIS_TEXTE),
-                                               COMPLETER_SERIES=>array('completer_series',COMPLETER_SERIES_TEXTE),
+                                               //COMPLETER_SERIES=>array('completer_series',COMPLETER_SERIES_TEXTE),
                                                RECHERCHER_BOUQUINERIES=>array('bouquineries',RECHERCHER_BOUQUINERIES_TEXTE));
                                 if (!isset($_GET['onglet']))
                                     $onglet='achat_vente';
@@ -928,14 +909,14 @@ else
                                         ?>
                                         <?=INTRO_ACHAT_VENTE?><br />
                                         <?php
-                                        $accepte=$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
+                                        $accepte=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
                                         if ($accepte[0]['AccepterPartage']==0) {
                                             echo COMMENT_PARTAGER_COLLECTION;
                                             ?>
                                             <i><a href="?action=gerer&amp;onglet=options"><?=PAGE_OPTIONS?></a></i>
                                             <?php
                                         }
-                                        $d->liste_numeros_externes_dispos($id_user);
+                                        DM_Core::$d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':
                                         $onglets_auteurs=array(RESULTATS_SUGGESTIONS_MAGS=>array('resultats',SUGGESTIONS_ACHATS),
@@ -948,10 +929,9 @@ else
                                         echo PRESENTATION_AUTEURS_FAVORIS;
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
-                                                $d=new Database();
-                                                $id_user=$d->user_to_id($_SESSION['user']);
+                                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                                 $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
-                                                $resultat_auteurs_surveilles=$d->requete_select($requete_auteurs_surveilles);
+                                                $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                                 ?>
                                                 <br /><br />
                                                 <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?><br />
@@ -975,13 +955,12 @@ else
                                                 ?>
                                                 <br /><br />
                                                 <?php
-                                                $d->liste_suggestions_magazines();
+                                                DM_Core::$d->liste_suggestions_magazines();
                                                 break;
                                             case 'preferences':
-                                                $d=new Database();
-                                                $id_user=$d->user_to_id($_SESSION['user']);
+                                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                                 if (isset($_POST['auteur_nom'])) {
-                                                    $d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
+                                                    DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
                                                 }
                                                 ?>
                                                 <br /><br />
@@ -1005,10 +984,10 @@ else
                                                         $recommandations_liste_mags=($_POST['proposer_magazines_possedes']==='on'?1:0);
                                                         $requete_update_recommandations_liste_mags='UPDATE users SET RecommandationsListeMags='.$recommandations_liste_mags.' '
                                                                 .'WHERE ID='.$id_user;
-                                                        $d->requete($requete_update_recommandations_liste_mags);
+                                                        DM_Core::$d->requete($requete_update_recommandations_liste_mags);
                                                     }
                                                     $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
-                                                    $resultat_auteurs_surveilles=$d->requete_select($requete_auteurs_surveilles);
+                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                                     foreach($resultat_auteurs_surveilles as $auteur) {
                                                         $i=0;
                                                         while ($_POST['auteur'.$i]) {
@@ -1019,14 +998,14 @@ else
                                                                     $requete_notation='UPDATE auteurs_pseudos SET Notation='.$notation.' '
                                                                             .'WHERE DateStat LIKE \'0000-00-00\' AND NomAuteurAbrege LIKE \''.$_POST['auteur'.$i].'\' '
                                                                             .'AND ID_user='.$id_user;
-                                                                    $d->requete($requete_notation);
+                                                                    DM_Core::$d->requete($requete_notation);
                                                                 }
                                                             }
                                                             $i++;
                                                         }
                                                     }
-                                                    $resultat_auteurs_surveilles=$d->requete_select($requete_auteurs_surveilles);
-                                                    $d->liste_auteurs_surveilles($resultat_auteurs_surveilles,true);
+                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+                                                    DM_Core::$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,true);
                                                     ?>
                                                 </div><?php
                                                 break;
@@ -1037,19 +1016,13 @@ else
                                         break;
                                     case 'bouquineries':
                                         echo INTRO_BOUQUINERIES.'<br />';
-                                        $d=new Database();
-                                        if (!$d) {
-                                            echo PROBLEME_BD;
-                                            exit(-1);
-                                        }
-
                                         if (isset($_POST['ajouter'])) {
                                             $requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.$id_user.')';
                                             ?>
                                             <span style="color:red">
                                             <?php
                                             if ($id_user==1)
-                                                $d->requete($requete);
+                                                DM_Core::$d->requete($requete);
                                             else {
                                                 mail('admin@ducksmanager.net','Ajout de bouquinerie',$requete);
                                                 echo EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE;
@@ -1064,7 +1037,7 @@ else
                                         <iframe src="bouquineries.php" width="70%" height="700px"></iframe>
                                         <br /><br />
                                         <?php
-                                        $id_user=$d->user_to_id($_SESSION['user']);
+                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                         ?>
                                         <h2><?=PROPOSER_BOUQUINERIE?></h2>
                                         <?=PRESENTATION_BOUQUINERIE1?><br />
@@ -1098,42 +1071,75 @@ else
                             default:
                                 ?>
                                 <br /><br />
+                                <?php/*
                                 <?=PRESENTATION1?><br /><br />
-                                <?=PRESENTATION2?><br /><br /><br />
+                                <?=PRESENTATION2?><br /><br /><br /><?php */?>
                                 <table>
                                     <tr>
-                                        <td width="500"><img alt="demo 4" src="images/demo4.png" /></td>
-                                        <td valign="middle">
-                                            <b><?=PRESENTATION_GERER_TITRE?></b>
+                                        <td style="width:400px;border:1px solid gray;padding:10px">
+                                            <img alt="demo 2_1" src="demo2_1.png" />
+                                        </td>
+                                        <td style="background-color:gray;vertical-align:top;padding-left:10px;width:650px;">
+                                            <h3><?=PRESENTATION_GERER_TITRE?></h3>
                                             <br /><br />
                                             <?=PRESENTATION_GERER_1?>
                                             <br /><br />
                                             <?=PRESENTATION_GERER_2?>
                                             <br /><br />
-                                            <?=PRESENTATION_GERER_3?>
+                                            <?=PRESENTATION_GERER_3?><div style="height:30px"></div>
+                                            <div style="border:1px solid gray;padding:10px">
+                                                <img src="demo2_2.png" alt="demo2_2"/>
+                                            </div>
                                         </td>
                                     </tr>
+                                    <tr style="height:50px"></tr>
                                     <tr>
-                                        <td valign="middle">
-                                            <b><?=PRESENTATION_STATS_TITRE?></b>
+                                        <td style="background-color:gray;vertical-align:top;width:350px">
+                                            <h3><?=PRESENTATION_STATS_TITRE?></h3>
                                             <br /><br />
                                             <?=PRESENTATION_STATS_1?>
                                             <br /><br />
                                             <?=PRESENTATION_STATS_2?>
                                             <br /><br />
                                             <?=PRESENTATION_STATS_3?>
-                                            <br /><br /><br />
-                                            <span style="color:red"><?=NOUVEAU?></span><?=ANNONCE_AGRANDIR_COLLECTION1?>
-                                            <br /><br /><br /><br />
-                                            <div style="border:1px solid white;text-align:center;">
-                                                <?=PRESENTATION_GENERALE?>.<br />
-                                                <h3><?=BIENVENUE?></h3>
+                                            <br /><br />
+                                            <?=ANNONCE_AGRANDIR_COLLECTION1?>
+                                            <br />
+                                            <div style="height:35px"></div>
+                                            <div style="border:1px solid gray;padding:10px">
+                                                <img src="images/demo3.png" alt="demo3"/>
                                             </div>
                                         </td>
-                                        <td><img width="350" alt="demo 1-2-3" src="images/demo123.png" /></td>
+                                        <td style="vertical-align:top;width:600px;border:1px solid gray;padding:10px">
+                                            <img width="300" alt="demo 1" src="images/demo1.png" />&nbsp;
+                                            <img alt="demo 2" src="images/demo2.png" />
+                                        </td>
+                                    </tr>
+                                    <tr style="height:50px"></tr>
+                                    <tr>
+                                        <td style="vertical-align:top;width:550px;border:1px solid gray;padding:10px">
+                                            <img alt="demo b" width="550" src="demo_bibliotheque.png" />
+                                        </td>
+                                        <td style="background-color:gray;vertical-align:top;padding-left:10px;width:650px;">
+                                            <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
+                                            <br />  
+                                            <?=PRESENTATION_BIBLIOTHEQUE_1?>
+                                            <br /><br />
+                                            <?=PRESENTATION_BIBLIOTHEQUE_2?>
+                                            <br /><br />
+                                            <?=PRESENTATION_BIBLIOTHEQUE_3?><div style="height:30px"></div>
+                                            <div style="border:1px solid gray;padding:10px">
+                                                <img src="demo_bibliotheque2.png" alt="demo2_2"/>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </table>
                                 <br />
+                                
+                                <div style="border:1px solid white;text-align:center;">
+                                    <?=PRESENTATION_GENERALE?>.<br />
+                                    <h3><?=BIENVENUE?></h3>
+                                </div>
                                 <?=GRATUIT_AUCUNE_LIMITE?> <a href="?action=new"><?=INSCRIVEZ_VOUS?></a>
                                 <?php
                                 break;
@@ -1150,12 +1156,7 @@ else
             <tr style="height:20px">
                 <td align="center" style="padding-left:4px;width: 242px;">
                         <?php
-                        $d=new Database();
-                        if (!$d) {
-                            echo PROBLEME_BD;
-                            exit(-1);
-                        }
-                        $resultat_cpt_users=$d->requete_select('SELECT count(username) as cpt_users FROM users');
+                        $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
                         echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
                         ?>
                 </td>
@@ -1192,7 +1193,6 @@ else
 }
 
 function formulaire_inscription() {
-    $d=new Database();
     if (isset($_POST['user'])) {
         if (strlen($_POST['pass']) <6) {
             $erreur=MOT_DE_PASSE_6_CHAR_ERREUR;
@@ -1201,7 +1201,7 @@ function formulaire_inscription() {
             $erreur=MOTS_DE_PASSE_DIFFERENTS;
         }
         else {
-            if ($d->user_exists($_POST['user']))
+            if (DM_Core::$d->user_exists($_POST['user']))
                 $erreur=UTILISATEUR_EXISTANT;
         }
         if ($erreur) {
@@ -1223,10 +1223,10 @@ function formulaire_inscription() {
         <?php
     }
     else {
-        $d->nouveau_user($_POST['user'], $_POST['pass']);
+        DM_Core::$d->nouveau_user($_POST['user'], $_POST['pass']);
         if (isset($_POST['rawData'])) {
             $l = new Liste($_POST['rawData']);
-            $l->add_to_database($d, $d->user_to_id($_POST['user']));
+            $l->add_to_database(DM_Core::$d, DM_Core::$d->user_to_id($_POST['user']));
         }
         creer_id_session($_POST['user'], $_POST['pass']);
     }

@@ -1,29 +1,32 @@
 <?php
+require_once ('Database.class.php');
+
 class Util {
 	static $nom_fic;
 	static function get_page($url) {
-		$ch = curl_init($url);
+            if (extension_loaded('curl')) {
+                $ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_NOBODY, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt($ch, CURLOPT_ENCODING, "gzip");
 		$page = curl_exec($ch);
 		curl_close($ch);
 		return $page;
-	}
-	
-	static function init_pct($event) {
-		require_once ('Database.class.php');
-		$d=new Database();
-		$requete='INSERT INTO events (ID_Event,pct) VALUES('.$event.',0)';
-		$d->requete($requete);
-	}
-	
-	static function update_pct($event,$pct) {
-		require_once ('Database.class.php');
-		$d=new Database();
-		$requete='UPDATE events SET pct='.$pct.' WHERE ID_Event='.$event;
-		$d->requete($requete);
+            }
+            else {
+                $handle = @fopen($url, "r");
+                if ($handle) {
+                    $buffer="";
+                    while (!feof($handle)) {
+                        $buffer.= fgets($handle, 4096);
+                    }
+                    fclose($handle);
+                    return $buffer;
+                }
+                else return ERREUR_CONNEXION_INDUCKS;
+            }
 	}
 	
 	static function start_log($nom) {
@@ -75,4 +78,23 @@ class Util {
     static function isLocalHost() {
         return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
     }
+
+    static function magazinesSupprimesInducks() {
+        $requete_magazines='SELECT Pays, Magazine FROM numeros GROUP BY Pays, Magazine ORDER BY Pays, Magazine';
+        $resultat_magazines=DM_Core::$d->requete_select($requete_magazines);
+        $pays='';
+        $magazines_inducks=array();
+        foreach($resultat_magazines as $pays_magazine) {
+            if ($pays!==$pays_magazine['Pays']) {
+                $magazines_inducks=Inducks::get_liste_magazines($pays_magazine['Pays']);
+            }
+            if (!array_key_exists($pays_magazine['Magazine'], $magazines_inducks))
+                echo $pays_magazine['Pays'].'/'.$pays_magazine['Magazine'].' n\'existe plus<br />';
+            $pays=$pays_magazine['Pays'];
+        }
+    }
+}
+
+if (isset($_GET['magazines_supprimes'])) {
+    Util::magazinesSupprimesInducks();
 }

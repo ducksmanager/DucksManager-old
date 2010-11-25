@@ -113,6 +113,9 @@ div.menu input {
 	border: 1px solid #999;
 	padding: 0;
 }
+.menu.desktop.small {
+    width: 16em;
+}
 .menu.desktop.large {
     width: 32em;
 }
@@ -261,3 +264,17 @@ div.menu input {
 .supprimer_date {
 	background:url("images/supprimer.png") no-repeat scroll right center transparent;
 }*/
+        
+#sous_menu_parametres_liste input {
+    margin:0;
+    width: 35px;
+    text-align: center;
+    background-color: white;
+}
+
+.menu.desktop a.parametre.enabled:hover {
+    background-color: transparent;
+    color: #555555;
+    font-weight: normal;
+    cursor: default;
+}
