@@ -1,5 +1,6 @@
 <?php
 define('','');
+define('A','&agrave;');
 define('A_VENDRE');
 define('ACCUEIL','Accueil');
 define('ACHAT_ASSOCIER_DATE_ACHAT','Associer avec une date d\'achat');
@@ -97,6 +98,7 @@ define('CONNEXION_REUSSIE','Connexion r&eacute;ussie.');
 define('CONTACT_UTILISATEURS','Contacter d\'autres utilisateurs de DucksManager');
 define('CONTINUER_OUI_NON','Continuer ?');
 define('CREER_DATE_ACHAT','Cr&eacute;er une date d\'achat');
+define('DANS','dans');
 define('DATE','Date');
 define('DATE_INVALIDE','Date invalide !');
 define('DATE_QUESTION','A quelle date avez-vous effectué l\'achat ? (JJ/MM/AAAA)');
@@ -118,6 +120,8 @@ define('DEPLACER_AVANT','D&eacute;placer avant');
 define('DESCRIPTION','Description');
 define('DESCRIPTION_INVALIDE','Votre description doit faire moins de 30 caractères');
 define('DESCRIPTION_QUESTION','Entrez une courte description correspondant à cet achat');
+define('DETAILS_MAINTENANCE_1','Il sera &agrave; nouveau op&eacute;rationnel ');
+define('DETAILS_MAINTENANCE_2',' si tout se passe comme pr&eacute;vu !');
 define('DMSPIRAL_DESCRIPTION','Liste en spirale, particuli&egrave;rement utile pour les magazines avec peu de num&eacute;ros. Elle permet de bien rep&eacute;rer les suites de num&eacute;ros.');
 define('DMSPIRAL_MOINS_1','Prend beaucoup d\'espace pour les magazines &agrave; fr&eacute;quence &eacute;lev&eacute;e (Journal de Mickey,...)');
 define('DMSPIRAL_MOINS_2','Parfois laborieux pour rep&eacute;rer un num&eacute;ro ou l\'ajouter');
@@ -133,6 +137,7 @@ define('COLLECTABLE_PLUS_2','Les doublons peuvent &ecirc;tre repr&eacute;sent&ea
 define('COLLECTABLE_PLUS_3','La date d\'achat peut &ecirc;tre repr&eacute;sent&eacute;e');
 define('EMAIL_ENVOYE','Un e-mail vient d\'&ecirc;tre envoy&eacute; au webmaster.');
 define('EMAIL_ENVOYE_BOUQUINERIE','Si votre bouquinerie est valide, elle sera ajout&eacute;e sur le site tr&egrave;s prochainement.');
+define('EN_MAINTENANCE','En maintenance');
 define('ENTREZ_IDENTIFIANTS_INDUCKS','Merci d\'entrer vos identifiants de compte Inducks');
 define('ERREUR_CAPTCHA','Le code que vous avez entr&eacute; est invalide. Merci de r&eacute;essayer.');
 define('ERREUR_CONNEXION_INDUCKS','Erreur de connexion &agrave; Inducks!');
@@ -142,6 +147,7 @@ define('ERREUR_LECTURE_NUMEROS','Erreur lors de la lecture de la liste de num&ea
 define('ERREUR_RAWDATA_INVALIDE','Erreur lors de l\'analyse de la collection. S&eacute;lectionnez tout le texte de la page Inducks !');
 define('ERREUR_RECUPERATION_INDUCKS','Erreur lors de la r&eacute;cup&eacute;ration des num&eacute;ros depuis Inducks !');
 define('ERREUR_TYPE_LISTE_INVALIDE','Erreur : type de liste invalide');
+define('EST_EN_MAINTENANCE','DucksManager est en maintenance ...');
 define('ET','et');
 define('ETAT','Etat');
 define('ETAT_BON','En bon &eacute;tat');
@@ -237,6 +243,7 @@ define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4','Pour participer
 define('INTRO_SYNCHRO_INDUCKS_1',' est un site Internet recensant les milliers d\'histoires Disney publi&eacute;es dans le monde entier.');
 define('INTRO_SYNCHRO_INDUCKS_2','Tout comme DucksManager, Inducks vous permet de g&eacute;rer votre collection de magazines Disney.');
 define('INTRO_SYNCHRO_INDUCKS_3','Si vous poss&eacute;dez un compte Inducks, vous pouvez le synchroniser avec votre compte DucksManager en quelques clics.');
+define('L_ADMIN','L\'Admin.');
 define('L10N_INTROUVABLE','Traduction introuvable pour ');
 define('LANCER_CALCUL','Lancer le calcul des statistiques');
 define('LANCER_CALCUL_MANUELLEMENT','Vous pouvez lancer les statistiques manuellement, mais le calcul peut prendre plusieurs minutes.');
@@ -256,6 +263,7 @@ define('MAGAZINES__LOWERCASE','magazines');
 define('MAGAZINES_COURT','Ma collection de magazines');
 define('MAGAZINES_MULTIPLES','Magazines multiples');
 define('MAUVAIS','Mauvais');
+define('MERCI_COMPREHENSION','Merci de votre compr&eacute;hension.');
 define('MERCI_CONTRIBUTION','Merci pour votre contribution !');
 define('MISE_A_JOUR','Mise &agrave; jour...');
 define('MODIFIER_ACQUISITION','Modifier cette acquisition');

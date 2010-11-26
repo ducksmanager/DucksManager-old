@@ -1,5 +1,6 @@
 <?php header('Content-Type: text/html; charset=utf-8');
-require_once('maintenance.php');
+require_once('_priv/Admin.priv.class.php');
+require_once('travaux.php');
 require_once('DucksManager_Core.class.php');
 require_once('Liste.class.php');
 require_once('JS.class.php');
