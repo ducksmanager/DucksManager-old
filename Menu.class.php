@@ -28,7 +28,7 @@ $menus=array(
     new Menu(COLLECTION,
              array(new Item('new', 'never', NOUVELLE_COLLECTION),
                    new Item('open', 'never', OUVRIR_COLLECTION),
-                   new Item('bibliotheque', 'always', BIBLIOTHEQUE_COURT, true),
+                   new Item('bibliotheque', 'always', BIBLIOTHEQUE_COURT),
                    new Item('gerer', 'always', GERER_COLLECTION),
                    new Item('stats', 'always', STATISTIQUES_COLLECTION),
                    new Item('agrandir', 'always', AGRANDIR_COLLECTION),
