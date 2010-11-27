@@ -8,7 +8,7 @@ class us_LTSMG extends Edge {
     static $hauteur_defaut=258;
 
 
-    function LTSMG($numero) {
+    function us_LTSMG($numero) {
         $this->numero=$numero;
         switch($this->numero) {
             case '1':
