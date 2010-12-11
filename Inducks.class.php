@@ -191,7 +191,7 @@ elseif (isset($_POST['get_cover'])) {
     $resultat_couverture_stockee=DM_Core::$d->requete_select($requete_couverture_stockee);
     
     $page=Inducks::numero_to_page($_POST['pays'], $_POST['magazine'], $_POST['numero']);
-
+    
     if (count($resultat_couverture_stockee)!=0) {
         $url=$resultat_couverture_stockee[0]['URL'];
     }
@@ -253,7 +253,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
                                      'magazine_numero'=>$magazines[2][$i],
                                      'titre'=>$titre);
         }
-        usort($liste_magazines, 'trier_resultats_recherche');
+        //usort($liste_magazines, 'trier_resultats_recherche');
         $liste_magazines['direct']=true;
     }
     else {
@@ -270,7 +270,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
             $liste_magazines[]=array('code'=>urldecode($histoires[1][$i]),
                                      'titre'=>$titre);
         }
-        usort($liste_magazines, 'trier_resultats_recherche');
+        //usort($liste_magazines, 'trier_resultats_recherche');
         if (count($liste_magazines) > 10) {
             $liste_magazines=array_slice($liste_magazines, 0,10);
             $liste_magazines['limite']=true;
