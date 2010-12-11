@@ -219,4 +219,71 @@ elseif (isset($_POST['get_cover'])) {
     $resultats['cover']=$url;
     echo header("X-JSON: " . json_encode($resultats));
 }
+elseif (isset($_POST['get_magazines_histoire'])) {
+    $nom_histoire=$_POST['histoire'];
+    if (strpos($nom_histoire, 'code=') === 0) {
+        $url='https://coa.inducks.org/story.php?c='.urlencode(substr($nom_histoire, strlen('code_')));
+        $page_histoire=Util::get_page($url);
+    }
+    else {
+        $url='https://coa.inducks.org/simp.php?d2='.urlencode($nom_histoire).'&kind=n';
+        $page=Util::get_page($url);
+    }
+    if (strpos($nom_histoire, 'code=') !== 0) {
+        $regex_redirection='#<meta[^;]+;url=([^"]+)"></meta>#is';
+        preg_match($regex_redirection, $page,$url_redirect);
+        $url_redirect=$url_redirect[1];
+        $url2='https://coa.inducks.org/'.$url_redirect;
+        $page_histoire=Util::get_page($url2);
+        echo $page_histoire;
+    }
+    $regex_magazines='#<li><a href="issue\.php\?c=([^/]+)/([^\#"]+)[^"]*"(?:\#[^"]*")?>((?:(?:<span[^>]*>(?:[^<]+)</span>)?(?:[^<]*))*)#is';
+    $trouve=preg_match_all($regex_magazines, $page_histoire,$magazines) > 0;
+    /* 1 : Pays ; 2 : Magazine+Numéro ; 3 : Titre */
+    $liste_magazines=array();
+    if ($trouve) { // Nom d'histoire direct
+        for($i=0;$i<count($magazines[0]);$i++) {
+            $titre_a_nettoyer=$magazines[3][$i];
+            $regex_span='#<span[^>]+>([^<]*)</span>#is';
+            preg_match_all($regex_span, $titre_a_nettoyer,$spans);
+            for ($j=0;$j<count($spans[0]);$j++)
+                $titre_a_nettoyer=str_replace ($spans[0][$j], $spans[1][$j], $titre_a_nettoyer);
+            $titre=$titre_a_nettoyer;
+            $liste_magazines[]=array('pays'=>$magazines[1][$i],
+                                     'magazine_numero'=>$magazines[2][$i],
+                                     'titre'=>$titre);
+        }
+        usort($liste_magazines, 'trier_resultats_recherche');
+        $liste_magazines['direct']=true;
+    }
+    else {
+        $regex_histoire='#<a href="story\.php\?c=([^"]+)"><font[^>]+>[^<]+</font></a> </td>[^<]*<td>(?:<small>(?:<a[^>]*>[^<]*(?:<span[^>]+>[^<]*</span>)?[^<]*</a>,? ?)*</small><br>)?[^<]*<i>((?:(?:<span[^>]*>(?:[^<]+)</span>)?(?:[^<]*))*)</i>#is';
+        preg_match_all($regex_histoire, $page,$histoires);
+        $liste_magazines=array();
+        for($i=0;$i<count($histoires[0]);$i++) {
+            $titre_a_nettoyer=$histoires[2][$i];
+            $regex_span='#<span[^>]+>([^<]*)</span>#is';
+            preg_match_all($regex_span, $titre_a_nettoyer,$spans);
+            for ($j=0;$j<count($spans[0]);$j++)
+                $titre_a_nettoyer=str_replace ($spans[0][$j], $spans[1][$j], $titre_a_nettoyer);
+            $titre=$titre_a_nettoyer;
+            $liste_magazines[]=array('code'=>urldecode($histoires[1][$i]),
+                                     'titre'=>$titre);
+        }
+        usort($liste_magazines, 'trier_resultats_recherche');
+        if (count($liste_magazines) > 10) {
+            $liste_magazines=array_slice($liste_magazines, 0,10);
+            $liste_magazines['limite']=true;
+        }
+    }
+        
+    echo header("X-JSON: " . json_encode($liste_magazines));
+}
+
+function trier_resultats_recherche ($a,$b) {
+    if ($a['titre'] < $b['titre'])
+        return -1;
+    else
+        return $a['titre'] == $b['titre'] ? 0 : 1;
+}
 ?>

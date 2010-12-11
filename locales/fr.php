@@ -355,6 +355,7 @@ define('PROPOSER_MAGAZINES_POSSEDES','Me proposer uniquement des magazines appar
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Quelles op&eacute;rations souhaitez-vous ex&eacute;cuter ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
+define('RECHERCHER_BIBLIOTHEQUE','Rechercher une histoire dans la biblioth&egrave;que :');
 define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Rechercher des bouquineries pr&egrave;s de chez vous');
 define('RECOPIER_CODE_SUIVANT', 'Recopiez le code suivant');

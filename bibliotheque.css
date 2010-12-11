@@ -7,6 +7,36 @@
     padding-right:5px;
 }
 
+#recherche_bibliotheque {
+    position: absolute;
+    display: none;
+    z-index:700;
+    margin-top: -20px;
+    background-color:gray;
+}
+
+.resultat_recherche, .magazine_trouve, .histoire_trouvee {
+    width:304px;
+    height:20px;
+    background-color:white;
+    color:black;
+    padding-top:5px;
+    padding-left:34px;
+    border:1px solid black;
+}
+
+.resultat_recherche {
+    font-weight: bold;
+}
+
+.magazine_trouve, .histoire_trouvee {
+    cursor:pointer;
+}
+
+.fleche_position {
+    z-index:100;
+    position: absolute;
+}
 .etagere {
     margin-top:-3px;
     background-color:transparent;
