@@ -8,7 +8,7 @@ class Affichage {
 	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$drapeaux=false) {
             $cpt=0;
             $nb_onglets=count($tab_onglets);
-            $largeur_tab=intval(100/$nb_onglets);
+            $largeur_tab=intval(100/($nb_onglets==0 ? 1 : $nb_onglets));
             ?><ul class="tabnav"><?php
             foreach($tab_onglets as $nom_onglet=>$infos_lien) {
                 $pays=$drapeaux ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
