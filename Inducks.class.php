@@ -196,7 +196,7 @@ elseif (isset($_POST['get_cover'])) {
         $url=$resultat_couverture_stockee[0]['URL'];
     }
     else {
-        $regex_cover='#<img src="([^"]+)"><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
+        $regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&image=)([^"]+)"><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
         
         if (preg_match($regex_cover,$page,$code_image)==0)
             $url='images/cover_not_found.png';
@@ -207,8 +207,8 @@ elseif (isset($_POST['get_cover'])) {
             DM_Core::$d->requete($requete_ajout_couverture);
         }
     }
-    $regex_extrait='#<img border=0 src=\'(http://outducks.org/(?:(?:(?:(?:webusers/webusers/)|(?:renamed/'.$_POST['pays'].'/))[0-9A-Za-z]+/[0-9A-Za-z]+/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_[^p]+p([0-9]+)_001)|(?:'.$_POST['pays'].'/'.strtolower($_POST['magazine']).'/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_))[^\']+)\'>#isU';
-        
+    $regex_extrait='#<img border=0 src=\'(?:hr\.php\?image=)?(http://outducks.org/(?:(?:(?:(?:thumbnails2?/)?(?:webusers/(?:webusers/)?)|(?:renamed/'.$_POST['pays'].'/))[0-9A-Za-z]+/[0-9A-Za-z]+/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_[^p]+p([0-9]+)_001)|(?:'.$_POST['pays'].'/'.strtolower($_POST['magazine']).'/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_))[^\'&]+)(?:[^\']+)?\'>#is';
+    
     $resultats=array();
     if (preg_match_all($regex_extrait,$page,$codes_images)>0) {
         for($i=0;$i<count($codes_images[0]);$i++) {
