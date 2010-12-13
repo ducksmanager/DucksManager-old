@@ -2,54 +2,56 @@
 require_once ('Database.class.php');
 
 class Util {
-	static $nom_fic;
-	static function get_page($url) {
-            /*if (strpos($url, 'inducks')!==false) {
+    static $nom_fic;
+    static function get_page($url,$essai=0) {
+        if (extension_loaded('curl')) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_NOBODY, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_ENCODING, "gzip");
+            $page = curl_exec($ch);
+            curl_close($ch);
+            /*if (!$page && $essai ==0 && strpos($url, 'inducks')!==false) {
+                $essai++;
                 if (strpos($url, 'http://')!==false) {
                     $url=str_replace('http://', 'https://', $url);
                 }
                 else if (strpos($url, 'https://')===false) {
                     $url='https://'.$url;
                 }
+                $page=Util::get_page($url,$essai);
             }*/
-            if (extension_loaded('curl')) {
-                $ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_NOBODY, FALSE);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($ch, CURLOPT_ENCODING, "gzip");
-		$page = curl_exec($ch);
-		curl_close($ch);
-		return $page;
-            }
-            else {
-                $handle = @fopen($url, "r");
-                if ($handle) {
-                    $buffer="";
-                    while (!feof($handle)) {
-                        $buffer.= fgets($handle, 4096);
-                    }
-                    fclose($handle);
-                    return $buffer;
+            return $page;
+        }
+        else {
+            $handle = @fopen($url, "r");
+            if ($handle) {
+                $buffer="";
+                while (!feof($handle)) {
+                    $buffer.= fgets($handle, 4096);
                 }
-                else return ERREUR_CONNEXION_INDUCKS;
+                fclose($handle);
+                return $buffer;
             }
-	}
-	
-	static function start_log($nom) {
-		
-		ob_start();
-		self::$nom_fic=$nom.'.txt';
-	}
-	
-	static function stop_log() {
-		$handle = fopen(self::$nom_fic, 'a');
-		$tab_debug=ob_get_contents();
-		ob_end_clean();
-		fwrite($handle, $tab_debug);
-		fclose($handle);
-	}
+            else return ERREUR_CONNEXION_INDUCKS;
+        }
+    }
+
+    static function start_log($nom) {
+
+            ob_start();
+            self::$nom_fic=$nom.'.txt';
+    }
+
+    static function stop_log() {
+            $handle = fopen(self::$nom_fic, 'a');
+            $tab_debug=ob_get_contents();
+            ob_end_clean();
+            fwrite($handle, $tab_debug);
+            fclose($handle);
+    }
 
     static function getBrowser() {
 
@@ -100,6 +102,12 @@ class Util {
                 echo $pays_magazine['Pays'].'/'.$pays_magazine['Magazine'].' n\'existe plus<br />';
             $pays=$pays_magazine['Pays'];
         }
+    }
+    
+    static function supprimerAccents($str) {
+        return( strtr( $str,"¿¡¬√ƒ≈‡·‚„‰Â“”‘’÷ÿÚÛÙıˆ¯»… ÀËÈÍÎ«ÁÃÕŒœÏÌÓÔŸ⁄€‹˘˙˚¸ˇ—Ò",
+                            "AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn" ) );
+        
     }
 }
 

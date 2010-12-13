@@ -220,21 +220,24 @@ elseif (isset($_POST['get_cover'])) {
     echo header("X-JSON: " . json_encode($resultats));
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
-    $nom_histoire=$_POST['histoire'];
+    $nom_histoire=Util::supprimerAccents(utf8_decode($_POST['histoire']));
+    echo $nom_histoire."\n";
     if (strpos($nom_histoire, 'code=') === 0) {
-        $url='https://coa.inducks.org/story.php?c='.urlencode(substr($nom_histoire, strlen('code_')));
+        $url='http://coa.inducks.org/story.php?c='.urlencode(substr($nom_histoire, strlen('code_')));
         $page_histoire=Util::get_page($url);
     }
     else {
-        $url='https://coa.inducks.org/simp.php?d2='.urlencode($nom_histoire).'&kind=n';
+        $url='http://coa.inducks.org/simp.php?d2='.urlencode($nom_histoire).'&kind=n';
         $page=Util::get_page($url);
     }
+    echo $url."\n";
     if (strpos($nom_histoire, 'code=') !== 0) {
         $regex_redirection='#<meta[^;]+;url=([^"]+)"></meta>#is';
         preg_match($regex_redirection, $page,$url_redirect);
         $url_redirect=$url_redirect[1];
-        $url2='https://coa.inducks.org/'.$url_redirect;
+        $url2='http://coa.inducks.org/'.$url_redirect;
         $page_histoire=Util::get_page($url2);
+        echo $url_redirect."\n";
         echo $page_histoire;
     }
     $regex_magazines='#<li><a href="issue\.php\?c=([^/]+)/([^\#"]+)[^"]*"(?:\#[^"]*")?>((?:(?:<span[^>]*>(?:[^<]+)</span>)?(?:[^<]*))*)#is';
