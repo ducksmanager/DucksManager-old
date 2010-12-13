@@ -1212,7 +1212,7 @@ function formulaire_inscription() {
             if (DM_Core::$d->user_exists($_POST['user']))
                 $erreur=UTILISATEUR_EXISTANT;
         }
-        if ($erreur) {
+        if (isset($erreur)) {
             ?><span style="color:red"><?=$erreur?></span><?php
         }
     }

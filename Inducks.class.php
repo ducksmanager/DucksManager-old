@@ -28,7 +28,7 @@ class Inducks {
             return array($numeros[1],$numeros[2]);
 	}
 
-	function get_pays() {
+	static function get_pays() {
             $url='http://coa.inducks.org/legend-country.php?xch=1&lg='.Lang::$codes_inducks[$_SESSION['lang']];
             $page=Util::get_page($url);
             
@@ -109,7 +109,7 @@ class Inducks {
         return $liste_magazines_courte;
     }
 
-    function get_magazines($pays) {
+    static function get_magazines($pays) {
         $liste=Inducks::get_liste_magazines($pays);
         foreach($liste as $id=>$magazine) {
             echo '<option id="'.$id.'">'.$magazine;
