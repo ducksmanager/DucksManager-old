@@ -495,8 +495,10 @@ if (isset($_POST['database'])) {
                 if ($numeros!=false) {
                     Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
                 }
-		else
-			echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
+		else {
+                    echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
+                    @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
+                }
 	}
 	else if (isset($_POST['acquisition'])) {
 		//print_r($_SESSION);

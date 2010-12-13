@@ -62,7 +62,15 @@ class Affichage {
         ?></ul><br /><?php
 	}
 	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
-
+            $nb_possedes=0;
+            foreach($numeros as $i=>$numero) {
+                list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
+                if (!empty($etat))
+                    $nb_possedes++;
+            }
+            $nb_non_possedes=count($numeros)-$nb_possedes;
+                        
+                        
 		$etats=array('manque'=>ETAT_MANQUANTS,
                              'mauvais'=>ETAT_MAUVAIS,
                              'moyen'=>ETAT_MOYEN,
@@ -91,7 +99,7 @@ class Affichage {
                                 <input type="checkbox" id="sel_numeros_possede" checked="checked" onclick="changer_affichage('possede')"/>
                             </td>
                             <td>
-                                <?=AFFICHER_NUMEROS_POSSEDES?>
+                                <?=AFFICHER_NUMEROS_POSSEDES?> (<?=$nb_possedes?>)
                             </td>
                         </tr>
                         <tr>
@@ -99,7 +107,7 @@ class Affichage {
                                 <input type="checkbox" id="sel_numeros_manque" checked="checked" onclick="changer_affichage('manque')"/>
                             </td>
                             <td>
-                                <?=AFFICHER_NUMEROS_MANQUANTS?>
+                                <?=AFFICHER_NUMEROS_MANQUANTS?> (<?=$nb_non_possedes?>)
                             </td>
                         </tr>
                     </table>
@@ -123,7 +131,7 @@ class Affichage {
                                 break;
                             }
                         }
-                            echo 'possede';
+                        echo 'possede';
                     }
                     else
                         echo 'manque';

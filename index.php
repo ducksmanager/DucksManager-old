@@ -436,15 +436,13 @@ else
                                             </div>
                                             <span id="pcent_visible"></span>
                                             <span id="pourcentage_collection_visible"></span>
-                                            <?php if (DM_Core::$d->user_is_beta()) { ?>
-                                                <br />
-                                                <br />
-                                                <div id="recherche_bibliotheque">
-                                                    <?=RECHERCHER_BIBLIOTHEQUE?><br />
-                                                    <input type="text" style="width:300px" name="" />
-                                                    <button style="width: 30px;">OK</button>
-                                                </div>
-                                            <?php } ?>
+                                            <br />
+                                            <br />
+                                            <div id="recherche_bibliotheque">
+                                                <?=RECHERCHER_BIBLIOTHEQUE?><br />
+                                                <input type="text" style="width:300px" name="" />
+                                                <button style="width: 30px;">OK</button>
+                                            </div>
                                             <br /><br />
                                             <div id="bibliotheque" style="width:100%;height:100%"></div>
                                             <?php
@@ -1081,7 +1079,7 @@ else
                             default:
                                 ?>
                                 <br /><br />
-                                <?php/*
+                                <?php /*
                                 <?=PRESENTATION1?><br /><br />
                                 <?=PRESENTATION2?><br /><br /><br /><?php */?>
                                 <table>

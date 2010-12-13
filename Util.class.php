@@ -4,14 +4,14 @@ require_once ('Database.class.php');
 class Util {
 	static $nom_fic;
 	static function get_page($url) {
-            if (strpos($url, 'inducks')!==false) {
+            /*if (strpos($url, 'inducks')!==false) {
                 if (strpos($url, 'http://')!==false) {
                     $url=str_replace('http://', 'https://', $url);
                 }
                 else if (strpos($url, 'https://')===false) {
                     $url='https://'.$url;
                 }
-            }
+            }*/
             if (extension_loaded('curl')) {
                 $ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
