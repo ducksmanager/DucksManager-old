@@ -1162,19 +1162,21 @@ else
             </tr>
             <tr style="height:3px;background-color:black;"><td colspan="5"></td></tr>
             <tr style="height:20px">
-                <td align="center" style="padding-left:4px;width: 242px;">
+                <td align="center" style="vertical-align:top;padding-left:4px;width: 242px;">
                         <?php
                         $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
                         echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
                         ?>
                 </td>
                 <td colspan="2" align="center">
-                        <?=LICENCE_INDUCKS1?>
-                        <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
-                        <br />
-                        <?=LICENCE_INDUCKS3?>
+                    <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
+                    <br /><br />
+                    <?=LICENCE_INDUCKS1?>
+                    <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
+                    <br />
+                    <?=LICENCE_INDUCKS3?>
                 </td>
-                <td valign="bottom" align="right">
+                <td style="vertical-align:top;" align="right">
                         <?php
                         $rep = "locales/";
                         $dir = opendir($rep);
