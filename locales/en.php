@@ -316,6 +316,7 @@ define('PARAMETRAGE_COMPTE_COURT','My settings');
 define('PARAMETRES','Parameters');
 define('PARAMETRES_LISTE','List param&egrave;ters');
 define('PART_MAGAZINES_COLLECTION','Share of the magazines in your collection');
+define('PAYS','countries');
 define('PAYS_PUBLICATION','Country of publication');
 define('PHRASE_MAINTENANCE_INDUCKS1','The Internet website');
 define('PHRASE_MAINTENANCE_INDUCKS2','on which DucksManager is based, seems to be experiencing technical difficulties.');
@@ -323,8 +324,10 @@ define('PHRASE_MAINTENANCE_INDUCKS3','Some Web pages of DucksManager may not wor
 define('POSSESSIONS','Possessions');
 define('POSSESSIONS_COURT','My possessions');
 define('POSSESSION_HISTOIRES_AUTEURS','Possession of issues');
-define('POSSESSION_MAGAZINES_1','You\'ve got some issues for the following magazines.');
-define('POSSESSION_MAGAZINES_2','Click on one of them in order to edit its list!');
+define('POSSESSION_MAGAZINES_1','You have got');
+define('POSSESSION_MAGAZINES_2','Your collection is made up of');
+define('POSSESSION_MAGAZINES_3','different magazines from');
+define('POSSESSION_MAGAZINES_4','Click on one of the issues to edit its list!');
 define('POSSESSION_NUMEROS','Issues possession');
 define('POURCENTAGE_COLLECTION_VISIBLE','% of your collection can be viewed in the bookcase.');
 define('POUR_VOIR_LA_VIDEO','to see this video');
@@ -356,6 +359,7 @@ define('PROPOSER_MAGAZINES_POSSEDES','Only suggest issues whose magazines are in
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','This option allows to tell DucksManager that only the issues belonging to your magazines list can be suggested.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Do you wish to execute these operations ?');
 define('QUESTION_IMPORTER_INDUCKS','Do you wish to import them?');
+define('RECHERCHE_MAGAZINE','Don\'t find the magazine name of your issue ? Please type hereunder the title of one of its stories. DucksManager will list the magazines which contain this story.');
 define('RECHERCHER_BIBLIOTHEQUE','Find a story in the bookcase :');
 define('RECHERCHER_BOUQUINERIES','Search for second-hand bookshops');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Search for second-hand bookshops in your city');

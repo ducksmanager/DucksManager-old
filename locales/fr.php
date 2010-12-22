@@ -316,6 +316,7 @@ define('PARAMETRAGE_COMPTE_COURT','Mes options');
 define('PARAMETRES','Param&egrave;tres');
 define('PARAMETRES_LISTE','Param&egrave;tres de liste');
 define('PART_MAGAZINES_COLLECTION','Part des magazines dans la collection');
+define('PAYS','pays');
 define('PAYS_PUBLICATION','Pays de publication');
 define('PHRASE_MAINTENANCE_INDUCKS1','Le site Internet');
 define('PHRASE_MAINTENANCE_INDUCKS2','sur lequel se base DucksManager, semble être en maintenance');
@@ -323,8 +324,10 @@ define('PHRASE_MAINTENANCE_INDUCKS3','Certaines pages de DucksManager peuvent ne
 define('POSSESSIONS','Possessions');
 define('POSSESSIONS_COURT','Mes possessions');
 define('POSSESSION_HISTOIRES_AUTEURS','Possession des histoires d\'auteurs');
-define('POSSESSION_MAGAZINES_1','Vous poss&eacute;dez des num&eacute;ros pour les magazines suivants');
-define('POSSESSION_MAGAZINES_2','Cliquez sur l\'un d\'eux pour &eacute;diter sa liste !');
+define('POSSESSION_MAGAZINES_1','Vous poss&eacute;dez');
+define('POSSESSION_MAGAZINES_2','Votre collection est compos&eacute;e de');
+define('POSSESSION_MAGAZINES_3','magazines diff&eacute;rents issus de');
+define('POSSESSION_MAGAZINES_4','Cliquez sur l\'un de vos magazines pour &eacute;diter sa liste !');
 define('POSSESSION_NUMEROS','Possession des numéros');
 define('POURCENTAGE_COLLECTION_VISIBLE','% de votre collection est visible dans la biblioth&egrave;que.');
 define('POUR_VOIR_LA_VIDEO','pour voir cette vid&eacute;o');
@@ -356,6 +359,7 @@ define('PROPOSER_MAGAZINES_POSSEDES','Me proposer uniquement des magazines appar
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Quelles op&eacute;rations souhaitez-vous ex&eacute;cuter ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
+define('RECHERCHE_MAGAZINE','Vous ne connaissez pas le nom du magazine ? Entrez ci-dessous le titre d\'une de ses histoires. DucksManager vous proposera une liste de magazines contenant cette histoire.');
 define('RECHERCHER_BIBLIOTHEQUE','Rechercher une histoire dans la biblioth&egrave;que :');
 define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Rechercher des bouquineries pr&egrave;s de chez vous');

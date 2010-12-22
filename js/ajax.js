@@ -212,7 +212,7 @@ function griser(caller) {
 }
 
 function connexion(user,pass) {
-	var myAjax = new Ajax.Request('Database.class.php', {
+	new Ajax.Request('Database.class.php', {
 		   method: 'post',
 		   parameters:'database=true&user='+user+'&pass='+pass+'&connexion=true',
 		   onSuccess:function(transport,json) {
@@ -225,16 +225,16 @@ function connexion(user,pass) {
 }
 
 function initPays() {
-        if (!$('liste_pays')) return;
-	var myAjax = new Ajax.Request('Inducks.class.php', {
-		   method: 'post',
-		   parameters:'get_pays=true',
-		   onSuccess:function(transport,json) {
-		   		$('liste_pays').update(transport.responseText);
-		   		if ($('liste_magazines'))
-		   			select_magazine();
-		   }
-	});
+    if (!$('liste_pays')) return;
+    new Ajax.Request('Inducks.class.php', {
+           method: 'post',
+           parameters:'get_pays=true',
+           onSuccess:function(transport,json) {
+                $('liste_pays').update(transport.responseText);
+                if ($('liste_magazines'))
+                    select_magazine();
+           }
+    });
 }
 
 function initTextures() {
@@ -264,31 +264,40 @@ function select_sous_texture (n) {
            }
     });
 }
-function select_magazine() {
-	var el_select=$('liste_pays');
-	$('form_pays').value=el_select.options[el_select.options.selectedIndex].id;
-	if (el_select.options[0].id!='chargement_pays') {
-		var nom_pays=el_select.options[el_select.options.selectedIndex].text;
-		if (nom_pays==nom_pays_old)
-			return;
-		nom_pays_old=nom_pays;
-  		var id_pays=el_select.options[el_select.options.selectedIndex].id;
-  		pays_sel=id_pays;
-		var option_chargement=new Element('option',{'id':'chargement_magazines'})
-								.update("Chargement des magazines");
-		$('liste_magazines').update(option_chargement);
-		var myAjax = new Ajax.Request('Inducks.class.php', {
-		   method: 'post',
-		   parameters:'get_magazines=true&pays='+id_pays,
-		   onSuccess:function(transport,json) {
-		   		$('liste_magazines').update(transport.responseText);
-		   		if ($('liste_numeros'))
-		   			select_numero();
-		   		magazine_selected();
-		   	
-		   }
-		});
-	}
+function select_magazine(valeur_magazine) {
+    var el_select=$('liste_pays');
+    $('form_pays').value=el_select.options[el_select.options.selectedIndex].id;
+    if (el_select.options[0].id!='chargement_pays') {
+        var id_pays=el_select.options[el_select.options.selectedIndex].id;
+        pays_sel=id_pays;
+        var option_chargement=new Element('option',{'id':'chargement_magazines'})
+                                                        .update("Chargement des magazines");
+        $('liste_magazines').update(option_chargement);
+        new Ajax.Request('Inducks.class.php', {
+           method: 'post',
+           parameters:'get_magazines=true&pays='+id_pays,
+           onSuccess:function(transport) {
+                $('liste_magazines').update(transport.responseText);
+                if ($('liste_numeros'))
+                    select_numero();
+                if (typeof (valeur_magazine) != 'undefined') {
+                    var trouve=false;
+                    for (var i=valeur_magazine.length;i>=1;i--) {
+                        var val=valeur_magazine.substring(0, i);
+                        $$('#liste_magazines option').each(function (option) {
+                            if (option.readAttribute('id') == val) {
+                                $('liste_magazines').selectedIndex=option.index;
+                                trouve=true;
+                            }
+                        });
+                        if (trouve)
+                            break;
+                    }
+                }
+                magazine_selected();
+           }
+        });
+    }
 }
 
 function magazine_selected() {
@@ -310,7 +319,7 @@ function select_numero() {
 		var option_chargement=new Element('option',{'id':'chargement_numeros'})
 								.update("Chargement des num&eacute;ros");
 		$('liste_numeros').update(option_chargement);
-		var myAjax = new Ajax.Request('Inducks.class.php', {
+		new Ajax.Request('Inducks.class.php', {
 		   method: 'post',
 		   parameters:'get_numeros=true&pays='+id_pays+'&magazine='+id_magazine,
 		   onSuccess:function(transport,json) {

@@ -187,25 +187,17 @@ elseif (isset($_POST['get_numeros'])) {
 	Inducks::get_numeros($_POST['pays'],$_POST['magazine']);
 }
 elseif (isset($_POST['get_cover'])) {
-    $requete_couverture_stockee='SELECT URL FROM couvertures WHERE Pays LIKE \''.$_POST['pays'].'\' AND Magazine LIKE \''.$_POST['magazine'].'\' AND Numero LIKE \''.$_POST['numero'].'\'';
-    $resultat_couverture_stockee=DM_Core::$d->requete_select($requete_couverture_stockee);
-    
     $page=Inducks::numero_to_page($_POST['pays'], $_POST['magazine'], $_POST['numero']);
     
-    if (count($resultat_couverture_stockee)!=0) {
-        $url=$resultat_couverture_stockee[0]['URL'];
-    }
-    else {
-        $regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&image=)([^"]+)"><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
+    $regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&image=)([^"]+)"><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
         
-        if (preg_match($regex_cover,$page,$code_image)==0)
-            $url='images/cover_not_found.png';
-        else {
-            $url=$code_image[1];
-            $requete_ajout_couverture='INSERT INTO couvertures(Pays,Magazine,Numero,URL) '
-                                     .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
-            DM_Core::$d->requete($requete_ajout_couverture);
-        }
+    if (preg_match($regex_cover,$page,$code_image)==0)
+        $url='images/cover_not_found.png';
+    else {
+        $url=$code_image[1];
+        $requete_ajout_couverture='INSERT INTO couvertures(Pays,Magazine,Numero,URL) '
+                                 .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
+        DM_Core::$d->requete($requete_ajout_couverture);
     }
     $regex_extrait='#<img border=0 src=\'(?:hr\.php\?image=)?(http://outducks.org/(?:(?:(?:(?:thumbnails2?/)?(?:webusers/(?:webusers/)?)|(?:renamed/'.$_POST['pays'].'/))[0-9A-Za-z]+/[0-9A-Za-z]+/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_[^p]+p([0-9]+)_001)|(?:'.$_POST['pays'].'/'.strtolower($_POST['magazine']).'/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_))[^\'&]+)(?:[^\']+)?\'>#is';
     

@@ -15,6 +15,11 @@
     background-color:gray;
 }
 
+.magazine_trouve img {
+    margin-right: 5px;
+    margin-top: 2px;
+}
+
 .resultat_recherche, .magazine_trouve, .histoire_trouvee {
     width:304px;
     height:20px;

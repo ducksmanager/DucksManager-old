@@ -64,6 +64,7 @@ else
             new JS('js/sel_num.js');
             switch($_GET['action']) {
                 case 'gerer':
+                    new JS('js/edges.js');
                     new JS('js/menu_contextuel.js');
                 break;  
                 case 'bibliotheque':
@@ -108,8 +109,7 @@ else
         }
     }
     ?>
-    <body id="body" style="margin:0" onload="
-    <?php
+    <body id="body" style="margin:0" onload="<?php
     switch($action) {
         case 'open':
             echo 'defiler_log(\'DucksManager\');';
@@ -145,7 +145,7 @@ else
                         $pays=$_POST['pays'];
                         $magazine=$_POST['magazine'];
                     }
-                    echo 'initPays();';
+                    echo 'initPays();charger_recherche();';
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
@@ -177,8 +177,7 @@ else
             break;
         default:echo 'defiler_log(\'DucksManager\');';
     }
-    ?>
-    ">
+    ?>">
     <table
         style="text-align: left; color: white; background-color: rgb(61, 75, 95); width: 100%; height: 100%;border:0"
         cellpadding="0" cellspacing="0">
@@ -720,8 +719,22 @@ else
                                                 <input type="submit" value="<?=SUPPRIMER_DOUBLONS?>" />
                                             </form><br /><br /><hr /><?php
                                         }*/
+                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+                                        $l=DM_Core::$d->toList($id_user);
+                                        $nb_numeros=0;
+                                        $nb_magazines=$nb_pays=0;
+                                        foreach($l->collection as $pays=>$numeros_pays) {
+                                            $nb_pays++;
+                                            foreach(array_keys($numeros_pays) as $magazine) {
+                                                $nb_magazines++;
+                                                $nb_numeros+=count($numeros_pays[$magazine]);
+                                            }
+                                        }
                                         ?>
-                                        <?=POSSESSION_MAGAZINES_1?><br /><?=POSSESSION_MAGAZINES_2?><br />
+                                        <?=POSSESSION_MAGAZINES_1?> <?=$nb_numeros?> <?=NUMEROS?>. 
+                                        <?=POSSESSION_MAGAZINES_2?> <?=$nb_magazines?> <?=POSSESSION_MAGAZINES_3?> <?=$nb_pays?> <?=PAYS?>.
+                                        <br />
+                                        <?=POSSESSION_MAGAZINES_4?><br />
                                         <?php
 
                                         $onglets_magazines=$l->liste_magazines();
@@ -757,21 +770,37 @@ else
                                             echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
                                             ?>
                         <br /><br />
-                        <form method="post" action="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new">
-                            <input type="hidden" id="form_pays" name="pays" value="" />
-                            <input type="hidden" id="form_magazine" name="magazine" value="" />
-                            <input type="hidden" name="onglet_magazine" value="new" />
-                            <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
-                            <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                                <option id="chargement_pays"><?=CHARGEMENT?>...
-                            </select><br /><br />
-                            <span style="text-decoration:underline"><?=MAGAZINE?> : </span><br />
-                            <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
-                                <option id="vide"><?=SELECTIONNER_PAYS?>
-                            </select>
-                            <br /><br />
-                            <input type="submit" class="valider" value="<?=VALIDER?>" />
-                        </form><br /><br />
+                        <table style="border:0">
+                            <tr>
+                                <td style="width:400px">
+                                    <form method="post" action="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new">
+                                        <input type="hidden" id="form_pays" name="pays" value="" />
+                                        <input type="hidden" id="form_magazine" name="magazine" value="" />
+                                        <input type="hidden" name="onglet_magazine" value="new" />
+                                        <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
+                                        <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
+                                            <option id="chargement_pays"><?=CHARGEMENT?>...
+                                        </select><br /><br />
+                                        <span style="text-decoration:underline"><?=MAGAZINE?> : </span><br />
+                                        <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
+                                            <option id="vide"><?=SELECTIONNER_PAYS?>
+                                        </select>
+                                        <br /><br />
+                                        <input type="submit" class="valider" value="<?=VALIDER?>" />
+                                    </form>
+                                </td>
+                                <td style="vertical-align:top">
+                                    <br />
+                                    <?=RECHERCHE_MAGAZINE?>
+                                    
+                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
+                                        <input type="text" style="width:300px" name="" />
+                                        <button style="width: 30px;">OK</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <br /><br />
                                             <?php
                                         }
                                         else {
