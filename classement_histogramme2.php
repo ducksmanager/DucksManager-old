@@ -179,7 +179,8 @@ if (isset($_POST['id'])) {
         $retour['l10n_valeur_reelles']=AFFICHER_VALEURS_REELLES;
         $retour['l10n_pourcentages']=AFFICHER_POURCENTAGES;
         
-        header("X-JSON: " . json_encode($retour));
+        echo str_replace('\n','',json_encode($retour));
+        //header("X-JSON: " . str_replace('\n','',json_encode($retour)));
     }
 }
 ?>

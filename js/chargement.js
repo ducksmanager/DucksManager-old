@@ -35,16 +35,17 @@ function traitement_suivant(id,page) {
             infos_chargements[id][getIndexCourant(id)]=transport.headerJSON;
             var est_termine=MAJProgressBar(id);
             chargements[id]['element_courant']=getElementSuivant(id);
-            if (est_termine)
+            if (est_termine) {
                 new Ajax.Request(transport.request.url, {
                     method: 'post',
                     parameters : 'id='+id+'&fin=true&ids='+JSON.stringify(chargements[id])+'&infos='+JSON.stringify(infos_chargements[id]),
                     onSuccess : function(transport) {
-                        window['fin_traitement_'+transport.request.parameters.id](transport.headerJSON);
+                        window['fin_traitement_'+transport.request.parameters.id](transport.headerJSON,transport);
                         $('chargement_'+transport.request.parameters.id+'_termine').update();
                         $('message_'+transport.request.parameters.id).update('Termin&eacute;');
                     }
                 });
+            }
             else
                 traitement_suivant(id,transport.request.url);
         }
@@ -80,14 +81,15 @@ function getPctCourant(id_chargement) {
     return parseInt(100*((parseInt(i)+1)/(chargements[id_chargement].length)));
 }
 
-function fin_traitement_classement(headerJSON) {
-    data_1=(JSON.parse(headerJSON.data_1));
-    data_2=(JSON.parse(headerJSON.data_2));
+function fin_traitement_classement(headerJSON,transport) {
+    var texte=JSON.parse(transport.responseText);
+    data_1=(JSON.parse(texte.data_1));
+    data_2=(JSON.parse(texte.data_2));
     $('resultat_classement').update(new Element('div',{'id':'my_chart'}))
                             .insert(new Element('br'))
-                            .insert(new Element('a',{'href':'javascript:load_1()'}).update(headerJSON.l10n_valeur_reelles))
+                            .insert(new Element('a',{'href':'javascript:load_1()'}).update(texte.l10n_valeur_reelles))
                             .insert('&nbsp;&nbsp;-&nbsp;&nbsp;')
-                            .insert(new Element('a',{'href':'javascript:load_2()'}).update(headerJSON.l10n_pourcentages));
-    swfobject.embedSWF("open-flash-chart.swf", "my_chart", headerJSON.largeur_graphique, "380", "9.0.0");
+                            .insert(new Element('a',{'href':'javascript:load_2()'}).update(texte.l10n_pourcentages));
+    swfobject.embedSWF("open-flash-chart.swf", "my_chart", texte.largeur_graphique, "380", "9.0.0");
 
 }
