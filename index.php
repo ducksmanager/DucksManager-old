@@ -19,11 +19,7 @@ else
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <?php
-            if (isset($_GET['debug']) || (!is_null($action) && $action=='bibliotheque')) {
-                ?><meta http-equiv="Pragma" content="no-cache" /><?php
-            }
-        ?>
+        <meta http-equiv="Pragma" content="no-cache" />
         <title><?php echo TITRE.' - '.$titre;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
