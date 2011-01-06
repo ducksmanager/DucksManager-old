@@ -2,7 +2,7 @@
 class fr_ALPM extends Edge {
     var $pays='fr';
     var $magazine='ALPM';
-    var $intervalles_validite=array('B1','B16','B19','B25','B27','B40','B42','B49','B54','B57');
+    var $intervalles_validite=array('B1','B7','B8','B16','B19','B25','B27','B28','B34','B40','B42','B49','B54','B57');
 
     var $en_cours=array();
     static $largeur_defaut=18;
@@ -82,7 +82,7 @@ class fr_ALPM extends Edge {
                     list($texte,$width,$height)=imagecreatefromgif_getimagesize($chemin_image);
                     $nouvelle_largeur=$this->largeur*($width/$height)*0.8;
                     imagecopyresampled ($image2, $texte, $this->hauteur*0.2, $this->largeur*0.1, 0, 0, $nouvelle_largeur*2, $this->largeur*0.8, $width, $height*0.5);
-
+                    
                     $this->image=imagerotate($image2, 90, $blanc);
                     if ($this->numero_serie==25) {
                         $this->placer_image ('ALPMB.'.$this->numero_serie.'.detail.png');

@@ -2,7 +2,7 @@
 class fr_CB extends Edge {
     var $pays='fr';
     var $magazine='CB';
-    var $intervalles_validite=array('P111','P113','PN14');
+    var $intervalles_validite=array('CBP111','CBP113','CBPN14','CBPN16');
 
     static $largeur_defaut=20;
     static $hauteur_defaut=255;
@@ -52,6 +52,7 @@ class fr_CB extends Edge {
                         $nouvelle_largeur=$this->largeur*($width/$height);
                         imagecopyresampled ($image2, $texte, $this->largeur*0.65, $this->largeur*0.25, 0, 0, $nouvelle_largeur*1.25*1.05, $this->largeur*0.51*1.05, $width, $height*0.51);
                         $this->image=imagerotate($image2, -90, $blanc);
+                        
                         $blanc=imagecolorallocate($this->image,255,255,255);
                         $noir=imagecolorallocate($this->image,0,0,0);
                         $texte=imagecolorallocate($this->image, $rouge_texte,$vert_texte,$bleu_texte);
