@@ -24,14 +24,31 @@ class Inducks {
             return $magazine;
         }
         
-	static function get_numeros($pays,$magazine) {
+        static function get_vrais_magazine_numero($pays,$magazine,$numero) {
+            $vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
+            if ($vrai_magazine !=$magazine) {
+                $numero=substr($magazine, strlen($vrai_magazine)).$numero;
+                $magazine=$vrai_magazine;
+            }
+            return array($magazine,$numero);
+        }
+        
+	static function get_numeros($pays,$magazine,$get_url=false) {
             $magazine_depart=$magazine;
             $magazine=Inducks::get_vrai_magazine($pays,$magazine);
-            $regex_magazine='#<a href=issue.php\?c='.$pays.'%2F'.$magazine_depart.'[+]*([^>]*)>[^<]*</a>([^<\(\)]*)#is';
+            $regex_numero='#<a href=issue.php\?c='.$pays.'%2F'.$magazine_depart.'[+]*([^>]*)>[^<]*</a>([^<\(\)]*)#is';
+            $regex_url_numero='#<a href=(issue.php\?c='.$pays.'%2F'.$magazine_depart.'[+]*([^>]*))>[^<]*</a>#is';
             $url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
             $page=Util::get_page($url);
-            preg_match_all($regex_magazine,$page,$numeros);
-            return array($numeros[1],$numeros[2]);
+            if ($get_url===true) {
+                preg_match_all($regex_url_numero,$page,$numeros);
+                $numeros[2]=array_map('nettoyer_numero',$numeros[2]);
+                return array($numeros[1],$numeros[2]);
+            }
+            else {
+                preg_match_all($regex_numero,$page,$numeros);
+                return array($numeros[1],$numeros[2]);
+            }
 	}
         
         static function get_covers($pays,$magazine) {
@@ -152,39 +169,13 @@ class Inducks {
             $nb_numeros[$liste_magazines[1][$i]]=$liste_magazines[2][$i];
         return $nb_numeros;
     }
-    
-    static function numero_to_URL($pays,$magazine,$numero,$essai=0) {
-        $magazine=strtoupper($magazine);
-        $numero_str=str_split($numero);
-        if ($numero_str[0]>='A' && $numero_str[0]<='Z') {
-            $regex_sous_magazine='#([A-Z]+)#is';
-            preg_match($regex_sous_magazine, $numero, $resultat);
-            $sous_magazine=$resultat[1];
-            $longueur_sous_magazine=strlen($sous_magazine);
-            $magazine=$magazine.'+'.$sous_magazine;
-            $numero=substr($numero, $longueur_sous_magazine);
-        }
-        $nb_plus=6-strlen($numero)-strlen($magazine)+$essai;
-        
-        $adresse_numero='http://coa.inducks.org/issue.php?pg=1&c='.$pays.'%2F'.$magazine;
-            
-        for ($i=0;$i<$nb_plus;$i++)
-            $adresse_numero.='+';
-        $adresse_numero.=$numero;
-        return $adresse_numero;
-    }
-    
     static function numero_to_page($pays,$magazine,$numero) {
-        $page='Issue not found';
-        $i=0;
-        while (strpos($page, 'Issue not found')!==false) {
-            if ($i==3)
-                break;
-            $adresse_numero=Inducks::numero_to_URL($pays, $magazine, $numero,$i);
-            $page=Util::get_page($adresse_numero);
-            $i++;
-        }
-        return $page;
+        $magazine=strtoupper($magazine);
+        list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,true);
+        if (false!==($i=array_search($numero, $numeros)))
+            return Util::get_page('http://coa.inducks.org/'.$urls[$i]);
+        else
+            return ERREUR_CONNEXION_INDUCKS;
     }
 }
 if (isset($_POST['get_pays'])) {
@@ -300,5 +291,10 @@ function trier_resultats_recherche ($a,$b) {
         return -1;
     else
         return $a['titre'] == $b['titre'] ? 0 : 1;
+}
+        
+function nettoyer_numero($numero) {
+    $numero= str_replace("\n",'',str_replace('+','',$numero));
+    return $numero;
 }
 ?>
