@@ -1,4 +1,5 @@
 <?php header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-cache, must-revalidate");
 require_once('_priv/Admin.priv.class.php');
 require_once('travaux.php');
 require_once('DucksManager_Core.class.php');
