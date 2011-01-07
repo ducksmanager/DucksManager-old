@@ -24,6 +24,12 @@ class Edge {
             return;
         $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
         $this->numero=str_replace(' ','',str_replace('+','',$this->numero));
+        $vrai_magazine=Inducks::get_vrai_magazine($this->pays,$this->magazine);
+        if ($vrai_magazine !=$this->magazine) {
+            $vrai_numero=substr($this->magazine, strlen($vrai_magazine)).$this->numero;
+            $this->magazine=$vrai_magazine;
+            $this->numero=$vrai_numero;
+        }
         if (file_exists('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php')) {
             require_once('edges/'.$this->pays.'/'.$this->magazine.'.edge.class.php');
             $nom_classe=$this->pays.'_'.$this->magazine;

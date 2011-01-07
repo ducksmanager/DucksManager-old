@@ -16,17 +16,34 @@ class Inducks {
             return $auteur[1];  
 	}
 
-	static function get_numeros($pays,$magazine) {
+        static function get_vrai_magazine($pays,$magazine) {
             $requete_get_redirection='SELECT NomAbrege FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND RedirigeDepuis LIKE \''.$magazine.'\'';
             $resultat_get_redirection=DM_Core::$d->requete_select($requete_get_redirection);
             if (count($resultat_get_redirection) > 0)
-                $magazine=$resultat_get_redirection[0]['NomAbrege'];
-            $regex_magazine='#<a href=issue.php\?c='.$pays.'%2F'.$magazine.'[+]*([^>]*)>[^<]*</a>([^<\(\)]*)#is';
+                return $resultat_get_redirection[0]['NomAbrege'];
+            return $magazine;
+        }
+        
+	static function get_numeros($pays,$magazine) {
+            $magazine_depart=$magazine;
+            $magazine=Inducks::get_vrai_magazine($pays,$magazine);
+            $regex_magazine='#<a href=issue.php\?c='.$pays.'%2F'.$magazine_depart.'[+]*([^>]*)>[^<]*</a>([^<\(\)]*)#is';
             $url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
             $page=Util::get_page($url);
             preg_match_all($regex_magazine,$page,$numeros);
             return array($numeros[1],$numeros[2]);
 	}
+        
+        static function get_covers($pays,$magazine) {
+            $liste=array();
+            $page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c='.$pays.'/'.$magazine);
+            $regex_couverture='#<img border=0 src="([^"]+)"></a><br>\(?<a href=issue\.php[^>]+>(?:<span[^>]+>)?([^<]+)</a>\)?#is';
+            preg_match_all($regex_couverture,$page,$couvertures);
+            foreach($couvertures[0] as $i=>$couverture) {
+                $liste[$couvertures[2][$i]]=$couvertures[1][$i];
+            }
+            return $liste;
+        }
 
 	static function get_pays() {
             $url='http://coa.inducks.org/legend-country.php?xch=1&lg='.Lang::$codes_inducks[$_SESSION['lang']];
@@ -210,6 +227,9 @@ elseif (isset($_POST['get_cover'])) {
     }
     $resultats['cover']=$url;
     echo header("X-JSON: " . json_encode($resultats));
+}
+elseif (isset($_POST['get_covers'])) {
+    echo header("X-JSON: " . json_encode(Inducks::get_covers($_POST['pays'], $_POST['magazine'])));
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
     $nom_histoire=Util::supprimerAccents(utf8_decode($_POST['histoire']));
