@@ -62,6 +62,12 @@ class Edge {
     function getImgHTML($regen=false) {
         $code='';
         $numero_clean=str_replace('+','',$this->numero);
+        $requete_recherche_numero_reference='SELECT NumeroReference FROM tranches_doublons WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numero LIKE \''.$numero_clean.'\'';
+        $resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
+        if (count($resultat_numero_reference) ==0)
+            $numero_clean_reference=$numero_clean;
+        else
+            $numero_clean_reference=$resultat_numero_reference[0]['NumeroReference'];
         if (Edge::$largeur_numeros_precedents + $this->o->largeur > Etagere::$largeur) {
             $code.=Edge::getEtagereHTML();
             Edge::$largeur_numeros_precedents=0;
@@ -69,11 +75,11 @@ class Edge {
         if ($this->o->hauteur > Etagere::$hauteur_max_etage)
             Etagere::$hauteur_max_etage = $this->o->hauteur ;
         $code.= '<img class="tranche" ';
-        $image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png';
+        $image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean_reference.'.png';
         $fichier_existe=file_exists($image);
         if ($fichier_existe && !$regen) {
-            if (getEstVisible($this->pays, $this->magazine, $numero_clean)===true) {
-                $image=imagecreatefrompng('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png');
+            /*if (getEstVisible($this->pays, $this->magazine, $numero_clean)===true) {
+                $image=imagecreatefrompng('edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean_reference.'.png');
                 $gris_251=imagecolorallocate($image, 251,251,251);
                 $gris_250=imagecolorallocate($image, 250,250,250);
                 $gris_249=imagecolorallocate($image, 249,249,249);
@@ -87,14 +93,14 @@ class Edge {
                 else
                     $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png" ';
             }
-            else
-                $code.='name="edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean.'.png" ';
+            else*/
+                $code.='name="'.$this->pays.'/'.$this->magazine.'.'.$numero_clean_reference.'" ';
             
         }
-        if (!$fichier_existe || $regen) {
-            $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero.'&amp;grossissement='.Edge::$grossissement.'" ';
+        else {
+            $code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$numero_clean_reference.'&amp;grossissement='.Edge::$grossissement.'" ';
         }
-        $code.='width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" />';
+        $code.='width="'.$this->o->largeur.'" height="'.$this->o->hauteur.'" id="'.$this->pays.'/'.$this->magazine.'.'.$numero_clean.'"/>';
         
         Edge::$largeur_numeros_precedents+=$this->o->largeur;
         return $code;
