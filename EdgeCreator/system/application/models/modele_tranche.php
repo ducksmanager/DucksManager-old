@@ -653,10 +653,22 @@ class Fonction_executable extends Fonction {
         $champs=$propriete_champs->getValue();
         foreach(array_keys($champs) as $nom) {
             if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom==array())) {
-                echo  'Le champ '.$classe.'->'.$nom.' est ind&eacute;fini !<br />';
+                $this->erreur('Le champ "'.$nom.'" est indéfini !');
             }
         }
     }
+    
+    function erreur($erreur) {
+        imagefilledrectangle(Viewer::$image, 0, 0, Viewer::$largeur, Viewer::$hauteur, imagecolorallocate(Viewer::$image, 255, 255, 255));
+        $noir=imagecolorallocate(Viewer::$image,0,0,0);
+        $texte_erreur='Erreur etape '.Viewer::$etape_en_cours->num_etape.' (Fonction '.Viewer::$etape_en_cours->nom_fonction.') : '.$erreur;
+        imagettftext(Viewer::$image,z(4),90,
+                     Viewer::$largeur/4,Viewer::$hauteur,
+                     $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
+        imagepng(Viewer::$image);
+        exit();
+    }
+    
     static function getCheminElements() {
         return BASEPATH.'/../../edges/'.self::$pays.'/elements';
     }
@@ -719,10 +731,20 @@ class Dimensions extends Fonction_executable {
         parent::Fonction_executable($options,$creation);
         if (!$executer)
             return;
+        $this->verifier_erreurs();
         Viewer::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
         imageantialias(Viewer::$image, true);
         Viewer::$largeur=z($this->options->Dimension_x);
         Viewer::$hauteur=z($this->options->Dimension_y);
+    }
+    
+    function verifier_erreurs() {
+        if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
+            Viewer::$largeur=z(20);
+            Viewer::$hauteur=z(220);
+            Viewer::$image=imagecreatetruecolor(Viewer::$largeur, Viewer::$hauteur);
+            $this->erreur('Dimensions négatives');
+        }
     }
 }
 
@@ -736,10 +758,18 @@ class Remplir extends Fonction_executable {
             return;
         $this->options->Pos_x=z(self::toTemplatedString($this->options->Pos_x));
         $this->options->Pos_y=z(self::toTemplatedString($this->options->Pos_y));
+        $this->verifier_erreurs();
         list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
         $couleur=imagecolorallocate(Viewer::$image, $r,$g,$b);
         imagefill(Viewer::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
         //imageline(Viewer::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
+    }
+    
+    function verifier_erreurs() {
+        if ($this->options->Pos_x >= Viewer::$largeur || $this->options->Pos_y > Viewer::$hauteur
+         || $this->options->Pos_x < 0 || $this->options->Pos_y < 0) {
+            $this->erreur('Point de remplissage hors de l\'image');
+        }
     }
 }
 

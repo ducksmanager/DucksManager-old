@@ -10,6 +10,8 @@ class Viewer extends Controller {
     static $zoom;
     static $etapes_actives=array();
     
+    static $etape_en_cours;
+    
     function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$random=null,$debug=false) {
         self::$zoom=$zoom;
         $this->load->library('session');
@@ -60,9 +62,12 @@ class Viewer extends Controller {
         $num_ordres=$this->Modele_tranche->get_ordres($pays,$magazine,$numero);
         //print_r($ordres);
         $dimensions=array();
+        self::$etape_en_cours=new stdClass();
         foreach($num_ordres as $num_ordre) {
             if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives)) {
                 $ordres[$num_ordre]=$this->Modele_tranche->get_fonctions($pays,$magazine,$num_ordre,$numero);
+                self::$etape_en_cours->num_etape=$num_ordre;
+                self::$etape_en_cours->nom_fonction=$ordres[$num_ordre][0]->Nom_fonction;
                 foreach($ordres[$num_ordre] as $i=>$fonction) {
                     if (est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin)) {
                         $options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,$fonction->Nom_fonction,$numero);
