@@ -36,7 +36,7 @@ class EdgeCreator extends Controller {
         }
 
         $numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
-        $liste_fonctions=array('Dimensions','Remplir','Agrafer','TexteTTF','TexteMyFonts','Image','Polygone','Degrade','Rectangle','Arc_cercle');
+        $liste_fonctions=array('Dimensions','Remplir','Agrafer','TexteTTF','TexteMyFonts','Image','Polygone','Degrade','DegradeTrancheAgrafee','Rectangle','Arc_cercle');
         sort($liste_fonctions);
         $data = array(
                 'title' => 'EdgeCreator',

@@ -1043,6 +1043,31 @@ class Degrade extends Fonction_executable {
     }
 }
 
+class DegradeTrancheAgrafee extends Fonction_executable {
+    static $champs=array('Couleur'=>'couleur');
+    static $valeurs_nouveau=array('Couleur'=>'D01721');
+    static $valeurs_defaut=array();
+    function DegradeTrancheAgrafee($options,$executer=true,$creation=false) {
+        parent::Fonction_executable($options,$creation);
+        if (!$executer)
+            return;
+        $coef_degrade=1.75;
+        list($r1,$g1,$b1)=$this->getRGB(null, null, null, $this->options->Couleur);
+        list($r2,$g2,$b2)=array(round($r1/$coef_degrade),round($g1/$coef_degrade),round($b1/$coef_degrade));
+        $couleur1=array($r1,$g1,$b1);
+        $couleur2=array($r2,$g2,$b2);
+        $milieu=round(Viewer::$largeur/2);
+        $couleurs_inter=Degrade::getMidColors($couleur1, $couleur2, $milieu);
+        imageline(Viewer::$image, $milieu, 0, $milieu, Viewer::$hauteur, imagecolorallocate(Viewer::$image, $r1,$g1,$b1));
+        foreach($couleurs_inter as $i=>$couleur) {
+            list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
+            $couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
+            imageline(Viewer::$image, $milieu+$i, 0, $milieu+$i, Viewer::$hauteur, $couleur_allouee);
+            imageline(Viewer::$image, $milieu-$i, 0, $milieu-$i, Viewer::$hauteur, $couleur_allouee);
+        }
+    }
+}
+
 class Rectangle extends Fonction_executable {
     static $champs=array('Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste');
     static $valeurs_nouveau=array('Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non');
