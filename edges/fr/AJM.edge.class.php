@@ -2,7 +2,7 @@
 class fr_AJM extends Edge {
     var $pays='fr';
     var $magazine='AJM';
-    var $intervalles_validite=array(65,68,78,79,80,82,83,84,85,86,87);
+    var $intervalles_validite=array(65,66,68,78,79,80,82,83,84,85,86,87);
     static $largeur_defaut=10;
     static $hauteur_defaut=254;
 
@@ -154,14 +154,14 @@ class fr_AJM extends Edge {
                     $texte_numero=new Texte('BANDES DESSINÉES     JEUX     HUMOUR',$this->largeur*0.3,$this->largeur*0.25,
                                             3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
                     $texte_numero->dessiner($this->image);
+                    $texte_numero=new Texte('ALMANACH MICKEY 1982',$this->largeur*0.3,$this->hauteur*0.74,
+                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
                     $texte_numero=new Texte('*',$this->largeur*0.3,5.9*$this->largeur,
                                             5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
                     $texte_numero->dessiner($this->image);
                     $texte_numero=new Texte('*',$this->largeur*0.3,7.85*$this->largeur,
                                             5.5*Edge::$grossissement,0,$noir,'Gill Sans Bold.ttf');
                     $texte_numero->dessiner($this->image);
-                    $texte_numero=new Texte('ALMANACH MICKEY 1982',$this->largeur*0.3,$this->hauteur*0.74,
-                                            3.5*Edge::$grossissement,-90,$noir,'ARIAL.TTF');
                     $texte_numero->dessiner($this->image);
                 break;
                 case '83':
