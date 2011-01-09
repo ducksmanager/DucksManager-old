@@ -2,9 +2,8 @@
 class fr_MP extends Edge {
     var $pays='fr';
     var $magazine='MP';
-    var $intervalles_validite=array(array('debut'=>1,'fin'=>21,'sauf'=>array(14)),array('debut'=>25,'fin'=>64,'sauf'=>array(41)),
-                                    array('debut'=>66,'fin'=>84),
-                                    array('debut'=>85,'fin'=>98),100,101,103,array('debut'=>106,'fin'=>109),array('debut'=>114,'fin'=>123, 'sauf'=>array(117)),array('debut'=>125,'fin'=>132),
+    var $intervalles_validite=array(array('debut'=>1,'fin'=>22,'sauf'=>array(14)),array('debut'=>24,'fin'=>84),
+                                    array('debut'=>85,'fin'=>98),100,101,103,array('debut'=>106,'fin'=>123),array('debut'=>125,'fin'=>132),
                                     array('debut'=>133,'fin'=>139),
                                     array('debut'=>140,'fin'=>192),
                                     array('debut'=>193,'fin'=>204),
@@ -92,8 +91,6 @@ class fr_MP extends Edge {
             list($sous_image,$width,$height)=imagecreatefrompng_getimagesize($this->getChemin().'/MP.'.$this->numero.'.dessin.png');
             $nouvelle_hauteur=($this->largeur)*($height/$width);
             imagecopyresampled ($this->image, $sous_image, .5*Edge::$grossissement, $hauteur_logo, 0, 0, $this->largeur, $nouvelle_hauteur, $width, $height);
-
-
         }
         elseif ($this->numero <= 139) {
             include_once($this->getChemin().'/../../MyFonts.Post.class.php');
