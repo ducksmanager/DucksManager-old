@@ -53,9 +53,9 @@ foreach ($poss as $index=>$val_poss) {
 	$tmp = new bar_stack_value(intval($val_poss),'#FF8000');
 	$tmp2 = new bar_stack_value(intval($val_non_poss_fr),'#04B404');
 	$tmp3 = new bar_stack_value(intval($val_non_poss_etr),'#C12346');
-	$tmp->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_POSSEDEES.' : '.$val_poss.'<br>'.TOTAL.' : '.$totaux[$index]));
-	$tmp2->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_PAYS.' : '.$val_non_poss_fr.'<br>'.TOTAL.' : '.$totaux[$index]));
-	$tmp3->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_ETRANGER.' : '.$val_non_poss_etr.'<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp->set_tooltip($auteurs[$index].'<br>'.utf8_encode(HISTOIRES_POSSEDEES.' : '.$val_poss.'<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp2->set_tooltip($auteurs[$index].'<br>'.utf8_encode(HISTOIRES_NON_POSSEDEES_PAYS.' : '.$val_non_poss_fr.'<br>'.TOTAL.' : '.$totaux[$index]));
+	$tmp3->set_tooltip($auteurs[$index].'<br>'.utf8_encode(HISTOIRES_NON_POSSEDEES_ETRANGER.' : '.$val_non_poss_etr.'<br>'.TOTAL.' : '.$totaux[$index]));
 
 	$bar_stack->append_stack(array($tmp,$tmp2,$tmp3));
 }
