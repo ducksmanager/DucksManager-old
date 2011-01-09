@@ -295,6 +295,15 @@
             });
         }
         
+        function sv_doublons(pays,magazine) {
+            new Ajax.Request('<?=site_url('sv_doublons')?>/index/'+pays+'/'+magazine, {
+                method: 'post',
+                onSuccess:function(transport) {
+                    $('sv_doublons_texte').insert(transport.responseText);
+                }
+            });
+        }
+        
         function reload_gen() {
             var index_debut=$('first_issue').selectedIndex;
             var index_fin=$('last_issue').selectedIndex;
@@ -319,17 +328,12 @@
         
         function toggle(ev) {
             var element=Event.element(ev);
-            var noms_classes=new Array();
-            noms_classes['visu_gen']=new Array('visu','gen');
-            for (var nom_classe in noms_classes) {
-                if (element.hasClassName(nom_classe)) {
-                    $$('.toggleable.'+nom_classe).invoke('removeClassName','actif');
-                    for (var j in noms_classes[nom_classe]) {
-                        if (element.hasClassName(noms_classes[nom_classe][j]))
-                            $$('#'+noms_classes[nom_classe][j]+', .'+noms_classes[nom_classe][j]).invoke('addClassName','actif');
-                    }
-                }
-            }
+            var classe_active=element.name;
+            element.up('.toggleable_links').select('.toggleable').each (function(element) {
+                element.removeClassName('actif');
+            });
+            $$('[name="'+classe_active+'"]').invoke('addClassName','actif');
+            
         }
     
         function parametrage_etape(num_etape,nom_fonction,numero_debut,numero_fin) {

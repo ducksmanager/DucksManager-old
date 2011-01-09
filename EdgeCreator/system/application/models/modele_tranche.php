@@ -116,6 +116,54 @@ class Modele_tranche extends Model {
         return $f->options;
     }
 
+    function sv_doublons($pays,$magazine) {
+        $requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+        $this->db->query($requete_suppression_existants);
+        $numeros_disponibles=$this->get_numeros_disponibles($pays, $magazine);
+        unset ($numeros_disponibles['Aucun']);
+        $etape=-1;
+        $requete_get_etape_max='SELECT MAX(Ordre) AS max FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+        $resultat_get_etape_max=$this->db->query($requete_get_etape_max)->result();
+        for($etape=-1;$etape<=$resultat_get_etape_max[0]->max;$etape++) {
+            $requete_get_options='SELECT Numero_debut, Numero_fin, Option_nom, Option_valeur FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape;
+            $resultat_get_options=$this->db->query($requete_get_options)->result();
+            foreach($resultat_get_options as $option) {
+                foreach(array_keys($numeros_disponibles) as $numero) {
+                    $intervalle=$this->getIntervalleShort($this->getIntervalle($option->Numero_debut, $option->Numero_fin));
+                    if (est_dans_intervalle($numero,$intervalle)) {
+                        if (is_string($numeros_disponibles[$numero]))
+                            $numeros_disponibles[$numero]=array();
+                        $a=$numeros_disponibles[$numero];
+                        if (!array_key_exists($etape,$numeros_disponibles[$numero]))
+                            $numeros_disponibles[$numero][$etape]=array();
+                        $numeros_disponibles[$numero][$etape][is_null($option->Option_nom)?'null':$option->Option_nom]=is_null($option->Option_valeur)?'null':$option->Option_valeur;
+                    }
+                }
+            }
+        }
+        $groupes_numeros=array();
+        foreach(array_keys($numeros_disponibles) as $numero) {
+            $numeros_disponibles[$numero]=serialize($numeros_disponibles[$numero]);
+        }
+        foreach($numeros_disponibles as $numero=>$etapes_serialized) {
+            if (!array_key_exists($etapes_serialized, $groupes_numeros))
+                $groupes_numeros[$etapes_serialized]=array();
+            $groupes_numeros[$etapes_serialized][]=$numero;
+        }
+        foreach($groupes_numeros as $groupe) {
+            if (count($groupe) > 1) {
+                $numero_reference=$groupe[0];
+                for ($i=1;$i<count($groupe);$i++) {
+                    $numero=$groupe[$i];
+                    $requete='INSERT INTO tranches_doublons(Pays,Magazine,Numero,NumeroReference) '
+                            .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.$numero_reference.'\')';
+                    $this->db->query($requete);
+                }
+            }
+        }
+        echo '<pre>';print_r($groupes_numeros);echo '</pre>';
+    }
+    
     function get_numeros_disponibles($pays,$magazine) {
         $numeros_affiches=array('Aucun'=>'Aucun');
 
