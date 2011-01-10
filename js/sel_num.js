@@ -7,9 +7,9 @@ var element_opacity_temp=1;
 var liste;
 var text_couleur=null;
 var l10n_acquisitions=new Array('modifier_acquisition','supprimer_acquisition','description',
-								'date_invalide','date_invalide','suppression_acquisition_confirmation',
-								'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
-								'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer');
+                                'date_invalide','date_invalide','suppression_acquisition_confirmation',
+                                'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
+                                'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer');
 
 function disableselect(e){
 return false
@@ -29,8 +29,7 @@ function start_selection(sel) {
 		$('liste_numeros').onmousedown=disableselect
 		$('liste_numeros').onclick=reEnable
 	}
-	var m=$('menu_contextuel');
-	m.hide();
+	$('menu_contextuel').hide();
 	debut_selection=parseInt(sel.id.substring(1,sel.id.length+1));
 	now_selecting=true;
 }
@@ -73,7 +72,6 @@ function stop_selection(sel) {
 
 function effacer_infos_acquisition() {
 	$('nouvelle_acquisition').update();
-	
 }
 
 function changer_affichage(type_numeros) {
@@ -229,7 +227,6 @@ function pre_select(element) {
 		var fin_selection=selection_courante;
 		if (debut_selection==-1) return;
 		if (debut_selection>selection_courante) {
-			var tmp=selection_courante;
 			fin_selection=debut_selection;
 			debut_selection_temp=selection_courante;
 		}

@@ -21,6 +21,7 @@ else
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Cache-Control" CONTENT="no-store" />
         <title><?php echo TITRE.' - '.$titre;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
@@ -230,37 +231,41 @@ else
                 <td style="height: 441px; vertical-align: top; width: 242px; background-color: rgb(200, 137, 100);">
                     <table style="height:100%; width:100%" cellspacing="0"><tbody>
                             <tr>
-                                <td valign="top" style="padding:5px;">
-                                    <b><a href="?"><?=ACCUEIL?></a></b><br /><br />
-                                    <?php
-                                    $beta_user=DM_Core::$d->user_is_beta();
-                                    foreach($menus as $i=>$menu) {
-                                        ?>
-                                        <span style="font-weight: bold; text-decoration: underline;"><?=$menu->nom?></span><br />
+                                <td id="colonne_gauche" valign="top" style="padding:5px;">
+                                    <div>
+                                        <b><a href="?"><?=ACCUEIL?></a></b><br /><br />
                                         <?php
-                                        foreach($menu->items as $j=>$item) {
-                                            if ($item->est_prive=='no'
-                                            || ($item->est_prive=='always' && isset($_SESSION['user']) &&!($action=='logout'))
-                                            || ($item->est_prive=='never'  &&!(isset($_SESSION['user']) &&!($action=='logout')))) {
-                                                if ($item->beta && !$beta_user)
-                                                    continue;
-                                                ?>
-                                                <a href="?action=<?=$item->nom?>"><?=$item->texte?>
-                                                <?php
-                                                if ($item->beta && $beta_user) {
-                                                    ?><span class="beta"><?=BETA?></span>
+                                        $beta_user=DM_Core::$d->user_is_beta();
+                                        foreach($menus as $i=>$menu) {
+                                            ?>
+                                            <span style="font-weight: bold; text-decoration: underline;"><?=$menu->nom?></span><br />
+                                            <?php
+                                            foreach($menu->items as $j=>$item) {
+                                                if ($item->est_prive=='no'
+                                                || ($item->est_prive=='always' && isset($_SESSION['user']) &&!($action=='logout'))
+                                                || ($item->est_prive=='never'  &&!(isset($_SESSION['user']) &&!($action=='logout')))) {
+                                                    if ($item->beta && !$beta_user)
+                                                        continue;
+                                                    ?>
+                                                    <a href="?action=<?=$item->nom?>"><?=$item->texte?>
                                                     <?php
-                                                }?>
-                                                </a><br>
-                                                <?php
+                                                    if ($item->beta && $beta_user) {
+                                                        ?><span class="beta"><?=BETA?></span>
+                                                        <?php
+                                                    }?>
+                                                    </a><br>
+                                                    <?php
+                                                }
                                             }
+                                            ?>
+                                            <br />
+                                            <?php
                                         }
                                         ?>
-                                        <br />
-                                        <?php
-                                    }
-                                    ?>
-                                    <br/>
+                                        <br/>
+                                    </div>
+                                    <div id="couverture_preview">
+                                    </div>
                                 </td>
                             </tr></tbody>
                     </table>

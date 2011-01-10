@@ -137,8 +137,7 @@ class Affichage {
                     }
                     else
                         echo 'manque';
-                    ?>" id="n<?=($cpt)?>" title="<?=$numero?>">n&deg;<?=$numero?>
-                    &nbsp;<span class="soustitre"><?=$sous_titres[$i]?></span>
+                    ?>" id="n<?=($cpt)?>" title="<?=$numero?>"><img class="preview" src="images/icones/view.png" /><span class="num">n&deg;<?=$numero?>&nbsp;<span class="soustitre"><?=$sous_titres[$i]?></span></span>
                             <?php
                             
                             if ($possede) {

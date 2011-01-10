@@ -29,10 +29,16 @@ a.important:HOVER {
 	text-decoration:underline;
 	font-weight: bold;
 }
+/*
+.num_manque, .num_possede {
+    background-image: url('images/icones/view.png');
+    background-position: left center;
+    background-repeat:no-repeat;
+}*/
 
 .num_manque {
 	width:100%;
-	background:black;
+	background-color:black;
 	cursor:default;
 	height:16px;
 	padding-top:4px;
@@ -40,7 +46,7 @@ a.important:HOVER {
 
 .num_possede {
 	width:100%;
-	background:rgb(200, 137, 100);
+	background-color:rgb(200, 137, 100);
 	cursor:default;
 	height:16px;
 	padding-top:4px;
@@ -151,6 +157,16 @@ a.important:HOVER {
     font-size:smaller;
     color:blue;
     vertical-align:super;
+}
+
+.preview {
+    float:left;
+    margin-top: -2px;
+    cursor:pointer;
+}
+
+.num {
+    margin-left:15px;
 }
 
 .soustitre {

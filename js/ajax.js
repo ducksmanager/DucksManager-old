@@ -1,3 +1,5 @@
+var couvertures;
+
 var nom_pays_old="";
 var nom_magazine_old="";
 var fic_liste_tmp=null;
@@ -17,7 +19,7 @@ function init_observers_gerer_numeros() {
 	new Ajax.Request('Database.class.php', {
 	   method: 'post',
 	   parameters:'database=true&liste_achats=true',
-	   onSuccess:function(transport,json) {
+	   onSuccess:function(transport) {
 	    	var reg=new RegExp("_", "g");
 	    	var achats=transport.responseText.split(reg);
 	    	for (var i=0;i<achats.length-1;i++) {
@@ -101,14 +103,14 @@ function init_observers_gerer_numeros() {
                                         'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
                                         'enregistrer_changements');
                         l10n_action('remplirSpanName',arr_l10n);
-			$$('.num_manque','.num_possede').invoke(
+                    $$('.num_manque','.num_possede').invoke(
 		        'observe',
 		        'mouseover',
 		        function(event) {
-		        	$$('.survole').each(function (element) {element.removeClassName('survole')});
+		        	$$('.survole').invoke('removeClassName','survole');
 		        	var element=Event.element(event);
-                                if (element.tagName=='SPAN')
-                                    element=element.parentNode;
+                                if (!(element.tagName=='DIV'))
+                                    element=element.up('div');
                                 lighten(element);
 		          }
 		    ); 
@@ -132,8 +134,8 @@ function init_observers_gerer_numeros() {
 		        'observe',
 		        'mousedown',
 		        function(event) {
-		        	if (event.isLeftClick())
-		        		start_selection(Event.element(event));
+                            if (event.isLeftClick())
+                                start_selection(Event.element(event));
 		          }
 		    );
 		    $$('.num_manque','.num_possede').invoke(
@@ -143,9 +145,35 @@ function init_observers_gerer_numeros() {
 		        	pre_select(Event.element(event));
 		          }
 		    );  
+                        
+                    $$('.preview').invoke('observe','click',function(event) {
+                        var element=Event.element(event);
+                        element.writeAttribute({'src':'loading.gif'});
+                        var pays=$('pays').innerHTML;
+                        var magazine=$('magazine').innerHTML;
+                        var numero=element.up('div').title;
+                        new Ajax.Request('Inducks.class.php', {
+                            method: 'post',
+                            parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
+                            onSuccess:function(transport) {
+                                if (transport.headerJSON==null) {
+                                    $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
+                                    return;
+                                }
+                                largeur_image=$('colonne_gauche').scrollWidth;
+                                var fin_menu_gauche=$('colonne_gauche').down('div').cumulativeOffset()['top']+$('colonne_gauche').down('div').scrollHeight;
+                                $('couverture_preview').setStyle({'paddingTop':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top']-fin_menu_gauche)+'px'});
+                                $('couverture_preview').update(new Element('img',{'src':transport.headerJSON['cover']}).setStyle({'width':'100%'}));
+                                element.writeAttribute({'src':'images/icones/view.png'});
+                            },
+                            onError:function() {
+                                $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
+                            }
+                        });
+                    });
+                         
 		    var image_checked= new Image;
-		
-			image_checked.src = "checkedbox.png";
+                    image_checked.src = "checkedbox.png";
 	   }
 	});
     
@@ -368,14 +396,14 @@ function afficher_numeros(pays,magazine) {
             }
         }
 	l10n_action('defiler_log','recuperation_numeros');
-	var myAjax = new Ajax.Request('Database.class.php', {
-		   method: 'post',
-		   parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
-		   onSuccess:function(transport,json) {
-		    	$('liste_numeros').update(transport.responseText);
-		    	l10n_action('defiler_log','termine');
+	new Ajax.Request('Database.class.php', {
+           method: 'post',
+           parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
+           onSuccess:function(transport) {
+                $('liste_numeros').update(transport.responseText);
+                l10n_action('defiler_log','termine');
                 init_observers_gerer_numeros();
-		   }
+           }
 	});
 }
 
