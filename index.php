@@ -22,6 +22,7 @@ else
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Cache-Control" CONTENT="no-store" />
+        <meta http-equiv="Expires" content="0" />
         <title><?php echo TITRE.' - '.$titre;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
