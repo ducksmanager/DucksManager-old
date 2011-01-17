@@ -13,7 +13,7 @@ class fr_CB extends Edge {
         $this->largeur=20*Edge::$grossissement;
 
         $arr=str_split($this->numero);
-        if ($arr[0]=='P' && $arr[1]=='N') {
+        if ($arr[0]=='P' && isset($arr[1]) && $arr[1]=='N') {
             $this->hauteur=253*Edge::$grossissement;
             $this->largeur=38*Edge::$grossissement;
         }
