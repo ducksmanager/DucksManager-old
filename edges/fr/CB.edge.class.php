@@ -2,7 +2,7 @@
 class fr_CB extends Edge {
     var $pays='fr';
     var $magazine='CB';
-    var $intervalles_validite=array('P111','P113','PN14','PN16');
+    var $intervalles_validite=array('P81','P111','P113','PN14','PN16','PN18');
 
     static $largeur_defaut=20;
     static $hauteur_defaut=255;
