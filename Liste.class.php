@@ -553,7 +553,8 @@ class Liste {
             }
         }
 }
-
+if (isset($_POST['parametres']))
+    $_POST['parametres'] = str_replace('\"', '"', $_POST['parametres']);
 if (isset($_POST['types_listes'])) {
     header("X-JSON: " . json_encode(Liste::set_types_listes()));
 }
@@ -646,7 +647,6 @@ elseif (isset($_POST['get_description'])) {
 }
 elseif (isset($_POST['update_list'])) {
     @session_start();
-    $_POST['parametres'] = str_replace('\"', '"', $_POST['parametres']);
     $parametres=json_decode($_POST['parametres']);
     list($pays,$magazine)=explode('_',$_POST['pays_magazine']);
     $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
