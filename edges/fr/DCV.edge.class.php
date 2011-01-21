@@ -2,15 +2,21 @@
 class fr_DCV extends Edge {
     var $pays='fr';
     var $magazine='DCV';
-    var $intervalles_validite=array(array('debut'=>'16','fin'=>'19'));
+    var $intervalles_validite=array(array('debut'=>'1','fin'=>'19'));
     static $largeur_defaut=9;
     static $hauteur_defaut=255;
 
     function fr_DCV ($numero) {
         $this->numero=$numero;
-        $this->largeur=9*Edge::$grossissement;
-        $this->hauteur=255*Edge::$grossissement;
-
+        if ($this->numero <=15) {
+            $this->largeur=5*Edge::$grossissement;
+            $this->hauteur=255*Edge::$grossissement;
+        }
+        else {
+            $this->largeur=9*Edge::$grossissement;
+            $this->hauteur=298*Edge::$grossissement;
+        }
+        
         $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
         if ($this->image===false)
             xdebug_break ();
