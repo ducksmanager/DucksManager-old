@@ -126,7 +126,7 @@ div.menu input {
 .menu.desktop li.separator {
 	height: 1px;
 }
-.menu.desktop a {
+.menu.desktop a, .types_listes a {
 	color: #555;
 	padding: 3px 0 3px 25px;
 	margin: 0;
@@ -166,18 +166,17 @@ div.menu input {
 .menu.desktop a.type_liste_global {
   background: #f9f8f7 url(images/type_liste_global.png) 2px 50% no-repeat;
 }
-
-.menu.desktop a.classique {
-  background: #f9f8f7 url(images/list.png) 2px 50% no-repeat;
+a.classique {
+  background: #ffffff url(images/list.png) 2px 50% no-repeat;
 }
-.menu.desktop a.nombre {
-  background: #f9f8f7 url(images/sum.png) 2px 50% no-repeat;
+a.nombre {
+  background: #ffffff url(images/sum.png) 2px 50% no-repeat;
 }
-.menu.desktop a.collectable {
-  background: #f9f8f7 url(images/table.png) 2px 50% no-repeat;
+a.collectable {
+  background: #ffffff url(images/table.png) 2px 50% no-repeat;
 }
-.menu.desktop a.dmspiral {
-  background: #f9f8f7 url(images/spiral.png) 2px 50% no-repeat;
+a.dmspiral {
+  background: #ffffff url(images/spiral.png) 2px 50% no-repeat;
 }
 
 .menu.desktop a.new {

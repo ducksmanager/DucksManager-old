@@ -133,7 +133,7 @@ else
                 }
             }
             elseif (isset($_GET['onglet']) && $_GET['onglet']=='options') {
-                echo 'initTextures();';
+                echo 'initTextures();init_ordre_magazines()';
             }
         break;
         case 'gerer':
@@ -155,10 +155,6 @@ else
                     echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
                 }
             }
-            break;
-        case 'print_now':
-            echo 'implement_drags();';
-            echo 'observe_options_clicks();';
             break;
         case 'stats':
             if (isset($_GET['onglet']) && $_GET['onglet']=='auteurs') {
@@ -248,8 +244,13 @@ else
                                                 || ($item->est_prive=='never'  &&!(isset($_SESSION['user']) &&!($action=='logout')))) {
                                                     if ($item->beta && !$beta_user)
                                                         continue;
-                                                    ?>
-                                                    <a href="?action=<?=$item->nom?>"><?=$item->texte?>
+                                                    if ($item->nom == 'print') { ?>
+                                                        <a href="print.php" target="_blank"><?php
+                                                    }
+                                                    else {?>
+                                                        <a href="?action=<?=$item->nom?>"><?php
+                                                    }?>
+                                                    <?=$item->texte?>
                                                     <?php
                                                     if ($item->beta && $beta_user) {
                                                         ?><span class="beta"><?=BETA?></span>
@@ -461,6 +462,17 @@ else
                                                 $requete_update_sous_texture='UPDATE users SET Bibliotheque_Sous_Texture'.$i.'=\''.$_POST['sous_texture'.$i].'\' WHERE id='.$id_user;
                                                 DM_Core::$d->requete($requete_update_sous_texture);
                                             }
+                                            $requete_suppr_ordres='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
+                                            DM_Core::$d->requete($requete_suppr_ordres);
+                                            foreach($_POST as $index=>$valeur) {
+                                                if (strpos($index, 'magazine_')!==false) {
+                                                    list($pays,$magazine)=explode('_',  substr($index, strlen('magazine_')));
+                                                    $requete_ajout_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
+                                                                        .'VALUES (\''.$pays.'\',\''.$magazine.'\','.$valeur.','.$id_user.')';
+                                                    DM_Core::$d->requete($requete_ajout_ordre);
+                                                    
+                                                }
+                                            }
                                             /*if (!is_numeric($_POST['grossissement']))
                                                 $_POST['grossissement']='taille_reelle';*/
                                             /*$requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
@@ -486,7 +498,35 @@ else
                                             <select style="width:300px;" id="sous_texture2" name="sous_texture2">
                                                 <option id="vide"><?=SELECTIONNER_TEXTURE?></option>
                                             </select>
-                                            <br /><br />
+                                            <br /><br /><br />
+                                            <span style="text-decoration:underline"><?=ORDRE_MAGAZINES?> : </span><br />
+                                            <?=EXPLICATION_ORDRE_MAGAZINES?><br /><br />
+                                            <?php
+                                            DM_Core::$d->maintenance_ordre_magazines($id_user);?>
+                                            <div id="liste_magazines">
+                                                <?php
+                                                $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
+                                                $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+                                                foreach($resultat_ordre_magazines as $magazine) {
+                                                    $nom_pays=$magazine['Pays'];
+                                                    $nom_magazine=$magazine['Magazine'];
+                                                    $num_ordre=$magazine['Ordre'];
+                                                    list($pays_complet,$magazine_complet)=DM_Core::$d->get_nom_complet_magazine($nom_pays,$nom_magazine)
+                                                    ?>
+                                                    <div style="margin-top:10px;height:40px;" class="magazine_deplacable" id="<?=$nom_pays?>_<?=$nom_magazine?>">
+                                                        <div class="handle" style="float:left;text-align:center;border:1px solid white;width:40px">
+                                                            <img alt="<?=$nom_pays?>" src="images/flags/<?=$nom_pays?>.png" />
+                                                            <br /><?=$nom_magazine?>
+                                                        </div>
+                                                        <div style="float:left;margin-left: 5px;margin-top: 7px;">
+                                                            <?=$magazine_complet?> (<?=$pays_complet?>)
+                                                        </div>
+                                                        <input type="hidden" name="magazine_<?=$nom_pays?>_<?=$nom_magazine?>" value="<?=$num_ordre?>" />
+                                                    </div>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </div>
                                             <?php /*
                                             <span style="text-decoration:underline"><?=TAILLE_TRANCHES?> : </span><br />
                                             <select style="width:300px;" id="grossissement" name="grossissement">
@@ -511,6 +551,7 @@ else
                                             </select>
                                             <br /><br />
                                             <?php */?>
+                                            <br />
                                             <input type="submit" class="valider" value="<?=VALIDER?>" />
                                         </form>
                                         <?php
@@ -852,7 +893,7 @@ else
                                 break;
 
                             case 'print':
-                                if ($_SESSION['user']!='nonoox') {
+                                if (false) {//$_SESSION['user']!='nonoox' && $_SESSION['user']!='brunoperel') {
                                     ?><img width="300" src="images/travaux.png" /><br />
                                     <?=TRAVAUX_SECTION?>
                                     <?php break;

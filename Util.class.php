@@ -107,7 +107,21 @@ class Util {
     static function supprimerAccents($str) {
         return( strtr( $str,"ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ",
                             "AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn" ) );
-        
+    }
+    
+    static function lire_depuis_fichier($nom_fichier) {
+        $inF = fopen($nom_fichier,"r");
+        $str='';
+        while (!feof($inF)) {
+            $str.=fgets($inF, 4096)."<br>";
+        } 
+        return $str;
+    }
+    
+    static function ecrire_dans_fichier($nom_fichier,$str) {
+        $inF = fopen($nom_fichier,"w");
+        fputs($inF,$str); 
+        fclose($inF);
     }
 }
 

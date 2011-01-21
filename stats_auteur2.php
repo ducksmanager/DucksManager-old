@@ -1,6 +1,5 @@
 <?php
 @session_start();
-
 require_once ('Database.class.php');
 require_once ('Util.class.php');
 $debut = microtime(true);
@@ -17,7 +16,7 @@ $notations_tous_users = array();
 
 $auteurs = array();
 $requete_auteurs = 'SELECT DISTINCT NomAuteurAbrege FROM auteurs_pseudos '
-    . 'WHERE DateStat LIKE \'0000-00-00\'';
+                   .'WHERE DateStat LIKE \'0000-00-00\'';
 $resultat_auteurs = DM_Core::$d->requete_select($requete_auteurs);
 foreach ($resultat_auteurs as $auteur)
     array_push($auteurs, $auteur['NomAuteurAbrege']);
@@ -25,9 +24,9 @@ foreach ($resultat_auteurs as $auteur)
 foreach ($auteurs as $auteur) {
     if (empty($auteur))
         continue;
-    echo $auteur . '<br />';
 
     if (isset($_POST['id_user'])) {
+        echo $auteur . '<br />';
         $requete_auteurs = 'SELECT ID_User FROM auteurs_pseudos '
             . 'WHERE ID_User=' . $_POST['id_user'] . ' AND NomAuteurAbrege LIKE \'' . $auteur . '\' AND DateStat LIKE \'0000-00-00\'';
         $resultat_auteurs = DM_Core::$d->requete_select($requete_auteurs);

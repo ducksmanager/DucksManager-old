@@ -10,6 +10,7 @@ var l10n=new Array('date_question','date_invalide','description_question','selec
     'description','description_invalide','acquisition_existante','mise_a_jour');
 var protos=new Array();
 var l10n_items;
+var parametres_bd=new Object();
 
 if (Object.isUndefined(Proto)) {
     var Proto = { };
@@ -475,17 +476,25 @@ Proto.Menu = Class.create({
                 new Ajax.Request('Liste.class.php', {
                     method: 'post',
                     parameters:'parametres=true&id_magazine='+id_magazine_selectionne,
-                    onSuccess:function(transport,json) {
+                    onSuccess:function(transport) {
                         var parametres_ul=$$('#sous_menu_parametres_liste ul')[0];
+                        var id_magazine=transport.request.parameters.id_magazine;
                         parametres_ul.update();
+                        var parametres=new Object();
+                        parametres_bd[id_magazine]=JSON.parse($(id_magazine).down('.contenu_liste').down().src.split('&')[2].split('=')[1].replace(new RegExp(/\|/g),'"'));
+                        
+                        $('contenu_boite_selectionnee').update();
+                        toggle_item_menu($$('[name="parametres"]')[0]);
+                        toggle_item_menu($$('[name="boite_selectionnee"]')[0]);
                         for(var i in transport.headerJSON) {
                             parametres[i]=new Object();
                             parametres[i].nom=i;
-                            parametres[i].min=transport.headerJSON[i]['min'];
-                            parametres[i].max=transport.headerJSON[i]['max'];
-                            parametres[i].valeur_defaut=transport.headerJSON[i]['valeur_defaut'];
-                            parametres[i].valeur=transport.headerJSON[i]['valeur'];
-                                
+                            parametres[i].min=parseInt(transport.headerJSON[i]['min']);
+                            parametres[i].max=parseInt(transport.headerJSON[i]['max']);
+                            parametres[i].valeur_defaut=parseInt(transport.headerJSON[i]['valeur_defaut']);
+                            parametres[i].valeur=parseInt(parametres_bd[id_magazine][i].valeur);
+                            var bouton_moins=new Element('button',{'name':parametres[i].nom,'class':'moins'}).update('-');
+                            var bouton_plus=new Element('button',{'name':parametres[i].nom,'class':'plus'}).update('+');
                             parametres_ul.insert(new Element('li').update(Object.extend(
                                 new Element('a', {
                                     href: 'javascript:return false;',
@@ -499,38 +508,33 @@ Proto.Menu = Class.create({
                                 action_onmouseover(protos['magazine'], e);
                             })
                             .update(parametres[i].nom)))
-                            .insert(new Element('button',{
-                                'name':parametres[i].nom
-                                }).update('-').observe('click', function (e) {
-                                var nom_parametre=Event.element(e).readAttribute('name');
-                                var input=Event.element(e).next();
-                                if (parseInt(parametres[nom_parametre].min)<parseInt(input.value)) {
-                                    $(input).writeAttribute({
-                                        'value':parseInt(input.value)-1
-                                        });
-                                    parametres[nom_parametre].value=parseInt(input.value)-1;
-                                    setTimeout('update_lists()',1000);
-                                }
-                            }))
+                            .insert(bouton_moins)
                             .insert(new Element('input',{
                                 'name':parametres[i].nom,
                                 'type':'text',
                                 'value':parametres[i].valeur,
-                                'disabled':'disabled'
+                                'readonly':'readonly'
                             }))
-                            .insert(new Element('button',{
-                                'name':parametres[i].nom
-                                }).update('+').observe('click', function (e) {
+                            .insert(bouton_plus);
+                            var slider=$('contenu_general').down('table').clone(true);
+                            slider.down('td').update(parametres[i].nom);
+                            slider.down('.details_parametre').writeAttribute({'id':parametres[i].nom});
+                            slider.down('.valeur_courante').setValue(parametres[i].valeur);
+                            slider.down('.min').setValue(parametres[i].min);
+                            slider.down('.max').setValue(parametres[i].max);
+                            $('contenu_boite_selectionnee').insert(slider);
+                            creer_slider(slider);
+                            
+                            [bouton_moins,bouton_plus].invoke('observe','click',function(e) {
+                                var est_plus=Event.element(e).hasClassName('plus');
                                 var nom_parametre=Event.element(e).readAttribute('name');
-                                var input=Event.element(e).previous();
-                                if (parseInt(parametres[nom_parametre].max)>parseInt(input.value)) {
-                                    $(input).writeAttribute({
-                                        'value':parseInt(input.value)+1
-                                        });
-                                    parametres[nom_parametre].value=parseInt(input.value)+1;
-                                    setTimeout('update_lists()',1000);
+                                var input=Event.element(e).next();
+                                if ((!est_plus && parseInt(parametres[nom_parametre].min)<parseInt(input.value)) || (est_plus && parseInt(parametres[nom_parametre].max)>parseInt(input.value))) {
+                                    parametres[nom_parametre].valeur= parseInt(parametres[nom_parametre].valeur)+(est_plus ? 1 : -1);
+                                    Event.element(e).up().down('input').writeAttribute({'value':parametres[nom_parametre].valeur});
+                                    update_list(id_magazine,$(id_magazine).down('.contenu_liste').title,JSON.stringify(parametres));
                                 }
-                            }));
+                            });
                         }
                     }
                 });
@@ -613,26 +617,8 @@ function action_onmouseover(proto,e) {
         }
     }
     else if (target.hasClassName('type_liste')) {
-        $('titre_info').update(l10n_divers['chargement']+'...');
-        $('contenu_info').update();
-        $$('.tabnav li').each(function(element) {
-            $(element).removeClassName('active')
-            });
-        $$('[name=index_aide]')[0].parentNode.addClassName('active');
         var type_liste=elementToTypeListe(target);
-        description_liste_en_cours=type_liste;
-        new Ajax.Request('Liste.class.php', {
-            method: 'post',
-            parameters:'get_description=true'
-            +'&type_liste='+type_liste,
-            onSuccess:function(transport) {
-                if (description_liste_en_cours!=transport.request.parameters.type_liste)
-                    return;
-                var resultat=transport.headerJSON;
-                $('titre_info').update(resultat.titre);
-                $('contenu_info').update(resultat.contenu);
-            }
-        });
+        afficher_infos_type_liste(type_liste);
     }
 }
 
@@ -888,13 +874,55 @@ function elementToTypeListe(element) {
     return null;
 }
 
-function update_lists() {
+function afficher_infos_type_liste(type_liste) {
+    $('contenu_index_aide').update($('titre_index_aide').update(l10n_divers['chargement']+'...'));
+    //toggle_item_menu($$('[name="index_aide"]')[0]);
+    description_liste_en_cours=type_liste;
     new Ajax.Request('Liste.class.php', {
         method: 'post',
-        parameters:'update_list=true'
-        +'&parametres='+parametres.toJSON(),
+        parameters:'get_description=true&type_liste='+type_liste,
         onSuccess:function(transport) {
-           
+            if (description_liste_en_cours!=transport.request.parameters.type_liste)
+                return;
+            var resultat=transport.headerJSON;
+            $('titre_index_aide').update(resultat.titre);
+            $('contenu_index_aide').insert(resultat.contenu);
         }
     });
+}
+
+function changer_position_liste(pays_magazine,pays_magazine_precedent,pays_magazine_suivant,position_liste) {
+    new Ajax.Request('Liste.class.php', {
+        method: 'post',
+        parameters:'changer_position_liste=true&pays_magazine='+pays_magazine+'&precedent='+pays_magazine_precedent+'&suivant='+pays_magazine_suivant+'&nouvelle_position='+position_liste,
+        onSuccess:function() {
+            
+        }
+    });
+}
+
+function update_list(magazine_selectionne,type_liste,parametres) {
+    new Ajax.Request('Liste.class.php', {
+        method: 'post',
+        parameters:'update_list=true&pays_magazine='+magazine_selectionne+'&type_liste='+type_liste+'&parametres='+parametres,
+        onSuccess:function(transport) {
+           $(magazine_selectionne).down('.contenu_liste').update(transport.responseText);
+           fin_update();
+        }
+    });
+}
+
+function update_parametres_generaux(parametres) {
+    new Ajax.Request('Liste.class.php', {
+        method: 'post',
+        parameters:'update_parametres_generaux=true&parametres='+parametres,
+        onSuccess:function() {
+           fin_update();
+        }
+    });
+}
+
+function fin_update() {
+    afficher_termine();
+    setTimeout(afficher_vide,1000);
 }

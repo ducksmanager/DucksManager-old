@@ -32,7 +32,7 @@ $menus=array(
                    new Item('gerer', 'always', GERER_COLLECTION),
                    new Item('stats', 'always', STATISTIQUES_COLLECTION),
                    new Item('agrandir', 'always', AGRANDIR_COLLECTION),
-                   new Item('print', 'always', IMPRIMER_COLLECTION),
+                   new Item('print', 'always', IMPRIMER_COLLECTION,true),
                    new Item('logout', 'always', DECONNEXION)
             )),
     new Menu(COLLECTION_INDUCKS,

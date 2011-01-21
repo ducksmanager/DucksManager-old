@@ -12,6 +12,7 @@ class Edge {
     var $image;
     var $o;
     var $est_visible=true;
+    var $magazine_est_inexistant=false;
     var $intervalles_validite=array();
     var $en_cours=array();
     static $grossissement=10;
@@ -20,6 +21,7 @@ class Edge {
     static $d;
     
     function Edge($pays=null,$magazine=null,$numero=null) {
+        $this->magazine_est_inexistant=false;
         if (is_null($pays))
             return;
         $this->pays=$pays;$this->magazine=$magazine;$this->numero=$numero;
@@ -45,6 +47,7 @@ class Edge {
             $this->est_visible=false;
             $this->largeur*=Edge::$grossissement;
             $this->hauteur*=Edge::$grossissement;
+            $this->magazine_est_inexistant=true;
         }
     }
 
@@ -223,21 +226,25 @@ class Edge {
             $texte_final='';
             $total_numeros=0;
             $total_numeros_visibles=0;
-            foreach($l->collection as $pays=>$magazines) {
-                foreach($magazines as $magazine=>$numeros) {
-                    if ($get_html === true)
-                        sort($numeros);
-                    $total_numeros+=count($numeros);
-                    foreach($numeros as $numero) {
-                        if ($get_html) {
-                            list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true, $regen);
-                            $texte_final.=$texte;
-                        }
-                        else
-                            $est_visible=getEstVisible($pays, $magazine, $numero[0]);
-                        if ($est_visible===true)
-                            $total_numeros_visibles++;
+            DM_Core::$d->maintenance_ordre_magazines($id_user);
+            $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
+            $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+            foreach($resultat_ordre_magazines as $ordre) {
+                $pays=$ordre['Pays'];
+                $magazine=$ordre['Magazine'];
+                $numeros=$l->collection[$pays][$magazine];
+                if ($get_html === true)
+                    sort($numeros);
+                $total_numeros+=count($numeros);
+                foreach($numeros as $numero) {
+                    if ($get_html) {
+                        list($texte,$est_visible)=getEstVisible($pays, $magazine, $numero[0],true, $regen);
+                        $texte_final.=$texte;
                     }
+                    else
+                        $est_visible=getEstVisible($pays, $magazine, $numero[0]);
+                    if ($est_visible===true)
+                        $total_numeros_visibles++;
                 }
             }
             $pourcentage_visible=$total_numeros==0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
@@ -327,6 +334,75 @@ elseif (isset($_POST['get_sous_texture'])) {
             </option><?php
         }
     }
+}
+elseif (isset($_POST['num_gen'])) {
+    include_once('Util.class.php');
+    $grossissement=1;
+    $grossissement_images=1.5;
+    $largeur=$_POST['largeur']*$grossissement;
+    $hauteur=$_POST['hauteur']*$grossissement;
+    $hauteur_etagere=15;
+    $hauteur_restante_etagere=15;
+    $dimensions_etagere=array('largeur'=>$largeur,'hauteur'=>$hauteur_etagere);
+    $html=Util::lire_depuis_fichier('edges/_tmp/'.$_POST['num_gen'].'.html');
+    @unlink('edges/_tmp/'.$_POST['num_gen'].'.html');
+    $regex_etagere='#<div class="etagere" style="width:[^;]+;background-image: url\(\'([^\']+)\'\)">&nbsp;</div>#is';
+    $regex_numero='#name="([^"]+)"#is';
+    preg_match($regex_etagere, $html, $code_etagere);
+    list($code_etagere,$chemin_image_etagere)=$code_etagere;
+    
+    $image_etagere=imagecreatefromjpeg($chemin_image_etagere);
+    $dimensions_image_etagere=array('largeur'=>imagesx($image_etagere),'hauteur'=>imagesy($image_etagere));
+    imagecopyresampled($image_etagere, $image_etagere, 0, 0, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_image_etagere['largeur'], $dimensions_etagere['hauteur']);
+    $image_etagere2 = imagecreatetruecolor($dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
+    imagecopy($image_etagere2, $image_etagere, 0, 0, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
+    $image_etagere=$image_etagere2;
+    /*foreach(array_keys($dimensions_etagere) as $dimension) {
+        if ($dimensions_etagere[$dimension] > $dimensions_image_etagere[$dimension])
+            // Dupliquer l'image
+    }*/
+    
+    $im=imagecreatetruecolor($largeur, $hauteur);
+    imagecopyresampled($im, $image_etagere, 0, 0, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
+    
+    $contenus_etageres=explode($code_etagere, $html);
+    $decalage_y=0;
+    foreach($contenus_etageres as $contenu_etagere) {
+        if (empty($contenu_etagere))
+            continue;
+        $hauteur_max=0;
+        $images_numeros=array();
+        preg_match_all($regex_numero, $contenu_etagere, $numeros);
+        if (count($numeros[1])==0)
+            continue;
+        foreach($numeros[1] as $numero) {
+            $grossissement2=1;
+            list($pays,$magazine_numero)=explode('/',str_replace('<br>','',$numero));
+            list($magazine,$numero)=explode('.',$magazine_numero);
+            $e=new Edge($pays,$magazine,$numero);
+            if (!getEstVisible($pays, $magazine, $numero) && !$e->magazine_est_inexistant) {
+                $grossissement2=$grossissement_images;
+            }
+            $image_numero=@imagecreatefrompng('edges/'.$pays.'/gen/'.$magazine_numero.'.png');
+            $image_numero2=imagecreatetruecolor(imagesx($image_numero)*$grossissement*$grossissement2, imagesy($image_numero)*$grossissement*$grossissement2);
+            imagecopyresized($image_numero2, $image_numero, 0, 0, 0, 0, $e->o->largeur*$grossissement*$grossissement2, $e->o->hauteur*$grossissement*$grossissement2, $e->o->largeur, $e->o->hauteur);
+            $images_numeros[]=$image_numero2;
+        }
+        $hauteurs=array_map('get_hauteur', $images_numeros);
+        $hauteur_max=max($hauteurs);
+        $decalage_x=0;
+        foreach($images_numeros as $image_numero) {
+            $decalage_numero_y=$decalage_y+$hauteur_max+$dimensions_etagere['hauteur']+$hauteur_restante_etagere-imagesy($image_numero);
+            imagecopyresampled($im, $image_numero, $decalage_x, $decalage_numero_y, 0, 0, imagesx($image_numero), imagesy($image_numero), imagesx($image_numero), imagesy($image_numero));
+            $decalage_x+=imagesx($image_numero);
+        }
+        
+        $decalage_y+=$hauteur_max+$dimensions_etagere['hauteur']+$hauteur_restante_etagere;
+        imagecopyresampled($im, $image_etagere, 0, $decalage_y, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
+    }
+    //imagecopyresampled($im, $image_etagere, 0, $hauteur-$dimensions_etagere['hauteur'], 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
+    
+    imagepng($im,'edges/_tmp/'.$_POST['num_gen'].'.png');
 }
 elseif (isset($_GET['regen'])) {
     ?>
@@ -527,5 +603,9 @@ function colormatch($image, $x, $y, $hex) {
     $g2 = hexdec(substr($hex, 2, 2));
     $b2 = hexdec(substr($hex, 4, 6));
     return $r == $r2 && $b == $b2 && $g == $g2;
+}
+
+function get_hauteur($image) {
+    return imagesy($image);
 }
 ?>

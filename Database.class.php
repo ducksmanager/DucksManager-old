@@ -105,6 +105,38 @@ class Database {
             }
             return true;
     }
+    
+    function maintenance_ordre_magazines($id_user) {
+        $requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
+        $resultat_get_max_ordre=DM_Core::$d->requete_select($requete_get_max_ordre);
+        $max=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
+        $cpt=0;                 
+        $l=DM_Core::$d->toList($id_user);
+        foreach($l->collection as $pays=>$magazines) {
+            foreach(array_keys($magazines) as $magazine) {
+                $requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
+                $resultat_verif_ordre_existe=DM_Core::$d->requete_select($requete_verif_ordre_existe);
+                $ordre_existe=count($resultat_verif_ordre_existe) > 0;
+                if (!$ordre_existe) {
+                    $requete_set_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
+                                      .'VALUES (\''.$pays.'\',\''.$magazine.'\','.($max+1).','.$id_user.')';
+                    DM_Core::$d->requete($requete_set_ordre);
+                    $max++;
+                }
+                $cpt++;
+            }
+        }
+        $requete_liste_ordres='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
+        $resultat_liste_ordres=DM_Core::$d->requete_select($requete_liste_ordres);
+        foreach($resultat_liste_ordres as $ordre) {
+            $pays=$ordre['Pays'];
+            $magazine=$ordre['Magazine'];
+            if (!array_key_exists($pays, $l->collection) || !array_key_exists($magazine, $l->collection[$pays])) {
+                $requete_suppr_ordre='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' AND Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+                DM_Core::$d->requete($requete_suppr_ordre);
+            }
+        }
+    }
 
     function get_nom_complet_magazine($pays,$magazine,$encode=false) {
         $requete_nom_magazine='SELECT NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND (NomAbrege LIKE \''.$magazine.'\' OR RedirigeDepuis LIKE \''.$magazine.'\')';

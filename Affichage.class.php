@@ -24,7 +24,7 @@ class Affichage {
                     $lien=(empty($prefixe) || $prefixe=='?') ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
                 if ($infos_lien[0]==$onglet_courant)
                    echo 'active ';
-                $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : ($argument=='onglet_aide'?$infos_lien[0]:''));
+                $nom=empty($prefixe)? $pays : ($argument=='onglet_magazine' ?'magazine' : (in_array($argument,array('onglet_aide','onglet_type_param')) ?$infos_lien[0]:''));
                 switch($prefixe) {
                     case '':
                         $onmouseout='';

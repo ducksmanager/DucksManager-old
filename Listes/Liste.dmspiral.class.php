@@ -1,6 +1,4 @@
 <?php
-include_once('../Inducks.class.php');
-include_once('../DucksManager_Core.class.php');
 @session_start();
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
@@ -8,274 +6,280 @@ if (isset($_GET['lang'])) {
 require_once('Format_liste.php');
 class dmspiral extends Format_liste {
     static $titre='Liste en spirale';
-    static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
-	function dmspiral() {
-            $this->description=DMSPIRAL_DESCRIPTION;
+    
+    function dmspiral() {
+        $this->description='';//DMSPIRAL_DESCRIPTION;
+        $this->ajouter_parametres(array(
+            'epaisseur'=>new Parametre_min_max('Epaisseur des cases',10,25,30,15),
+            'marge'=>new Parametre_min_max('Marge',0,5,2,2),
+            'hauteur_centrale'=>new Parametre_min_max('Hauteur centrale',25,60,40,40),
+            'nuance_gris_fond'=>new Parametre_min_max('Nuance de gris du fond',100,255,255,255),
+            'couleur_r'=>new Parametre_min_max('Remplissage - rouge',0,255,0,0),
+            'couleur_g'=>new Parametre_min_max('Remplissage - vert',0,255,0,0),
+            'couleur_b'=>new Parametre_min_max('Remplissage - bleu',0,255,255,255)));
+        
+        $this->ajouter_parametres(array(
+            'taille_police'=>new Parametre_fixe($this->p('epaisseur')/4)));
+    }
+    
+    static function est_listable($numero) {
+        return is_numeric($numero) || preg_match(Format_liste::$regex_numero_double, $numero, $numero)>0;
+    }
+    
+    function afficher($liste) {
+
+        foreach($liste as $pays=>$numeros_pays) {
+            foreach(array_keys($numeros_pays) as $magazine) {
+                ?><img alt="dmspiral" src="Listes/Liste.dmspiral.class.php?pays=<?=$pays?>&magazine=<?=$magazine?>&amp;parametres=<?=str_replace('"','|',json_encode($this->parametres))?>" /><?php
+            }
         }
-        function afficher($liste) {
-            
-            foreach($liste as $pays=>$numeros_pays) {
-                foreach($numeros_pays as $magazine=>$numeros) {
-                    $chaine='';
-                    $premier=true;
-                    foreach($numeros as $numero_et_etat) {
-                        if (!$premier)
-                            $chaine.=',';
-                        if (is_string($numero_et_etat) || count($numero_et_etat) <2)
-                                continue;
-                        $numero=$numero_et_etat[0];
-                        $etat=$numero_et_etat[1];
-                        $chaine.=$magazine.'!'.
-                                 $numero.'!'.
-                                 $etat.'!'.
-                                 '2005-00-00'.'!'.
-                                 'a';
-                        $premier=false;
+    }
+    
+    function generer($pays,$magazine) {
+        if (!isset($_GET['debug']))
+            header('Content-type: image/png');
+    
+        $numeros_doubles=array();
+        list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+        $this->ajouter_parametres(array('numero_max'=>max($numeros)));
+        $this->ajouter_parametres(array('nb_centaines'=>intval($this->p('numero_max')/100)+1));
+        $this->ajouter_parametres(array(
+            'haut'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/2,
+            'gauche'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/4));
+        $a=$this->p('nb_centaines')*$this->p('epaisseur')/2;
+        foreach($numeros as $numero) {
+            $est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero, $numero)>0;
+            if ($est_numero_double) {
+                $premier_numero = $numero[1] . $numero[2];
+                $numeros_doubles[]=$premier_numero;
+            }
+        }
+
+        list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+
+        $titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
+        
+        $image=imagecreatetruecolor(100+(48+$this->p('nb_centaines')/2)*$this->p('epaisseur')-10+$this->p('marge')+10, $this->p('epaisseur')*$this->p('nb_centaines')+$this->p('hauteur_centrale')+2+$this->p('marge')*2);
+        imageantialias($image, true);
+        $blanc=  imagecolorallocate($image, 255,255,255);
+        $gris_clair=imagecolorallocate($image, $this->p('nuance_gris_fond'),$this->p('nuance_gris_fond'),$this->p('nuance_gris_fond'));
+        imagefill($image, 0,0, $gris_clair);
+
+        $noir=  imagecolorallocate($image, 0,0,0);
+        $blanc=  imagecolorallocate($image, 255,255,255);
+
+        /** CREATION DE LA GRILLE **/
+
+        imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('epaisseur')/4, $this->p('haut')+$this->p('epaisseur')*0.75, $noir, 'arial.ttf', 1);
+        imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+47.3*$this->p('epaisseur'), $this->p('haut')+$this->p('epaisseur')*0.75, $noir, 'arial.ttf', 49);
+        imagettftext($image, $this->p('taille_police')*0.8, 0, $this->p('gauche')+46.8*$this->p('epaisseur'), $this->p('taille_police')*0.8/2+$this->p('haut')+$this->p('hauteur_centrale')/2, $noir, 'arial.ttf', 50);
+        imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+47.3*$this->p('epaisseur'), $this->p('haut')+2+$this->p('hauteur_centrale')-$this->p('epaisseur')/2, $noir, 'arial.ttf', 51);
+        imagettftext($image, $this->p('taille_police')*0.8, 0, $this->p('gauche')+$this->p('epaisseur')*0.5, $this->p('taille_police')*0.8/2+$this->p('haut')+$this->p('hauteur_centrale')/2, $noir, 'arial.ttf', 100);
+        imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('epaisseur')/4, $this->p('haut')+2+$this->p('hauteur_centrale')-$this->p('epaisseur')/2, $noir, 'arial.ttf', 99);
+
+        imagearc($image, $this->p('gauche')+$this->p('epaisseur')/2, $this->p('haut')-1+$this->p('epaisseur')/2, $this->p('epaisseur')/2, 2+$this->p('epaisseur'), 180, 270, $noir);
+        imageline($image, $this->p('gauche'), $this->p('haut')-1+$this->p('epaisseur')/2, $this->p('gauche')+0.3*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/2, $noir);
+        imageline($image,$this->p('gauche')+$this->p('epaisseur')/2,$this->p('haut')-1,$this->p('gauche')+47.5*$this->p('epaisseur'),$this->p('haut')-1,$noir);
+        for ($i=2;$i<=48;$i++) {
+            $numero=$i;
+            imagettftext($image, $this->p('taille_police'), 0, $this->p('gauche')+($i-1.3)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('epaisseur')*0.5, $noir, 'arial.ttf', $numero);
+            $numero=100-$i;
+            imagettftext($image, $this->p('taille_police'), 0, $this->p('gauche')+($i-1.3)*$this->p('epaisseur'), $this->p('haut')-2+$this->p('hauteur_centrale'), $noir, 'arial.ttf', $numero);
+        }
+        imagettftext($image, $this->p('taille_police'), 0, $this->p('gauche')+23.5*$this->p('epaisseur'), $this->p('taille_police')/2+$this->p('haut')+$this->p('hauteur_centrale')/2, $noir, 'arial.ttf', $titre);
+
+        imagearc($image, $this->p('gauche')+47.5*$this->p('epaisseur'), $this->p('haut')-2+$this->p('epaisseur')/2, $this->p('epaisseur')/2, $this->p('epaisseur'), 270, 360, $noir);
+        imagearc($image, $this->p('gauche')+47.5*$this->p('epaisseur'), $this->p('haut')-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $this->p('epaisseur')/2, $this->p('epaisseur'), 0, 90, $noir);
+
+        imageline($image,$this->p('gauche')+47.5*$this->p('epaisseur'),$this->p('haut')-1+$this->p('hauteur_centrale'),$this->p('gauche')+$this->p('epaisseur')/2,$this->p('haut')-1+$this->p('hauteur_centrale'),$noir);
+
+        imageline($image, $this->p('gauche')+47.75*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/2, $this->p('gauche')+47.75*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $noir);
+
+        imagearc($image, $this->p('gauche')+$this->p('epaisseur')/2, $this->p('haut')-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $this->p('epaisseur'), $this->p('epaisseur'), 90, 180, $noir);
+        imageline($image, $this->p('gauche'), $this->p('haut')-1+$this->p('epaisseur')/2, $this->p('gauche'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $noir);
+
+        for ($centaine=0;$centaine<$this->p('nb_centaines');$centaine++) {
+
+            imagearc($image, $this->p('gauche')+$this->p('epaisseur')/2, $this->p('haut')-.5, $this->p('epaisseur')+$centaine*$this->p('epaisseur')/2, $this->p('epaisseur')*($centaine+1), 180, 270, $noir);    
+            imageline($image, $this->p('gauche')-$centaine*$this->p('epaisseur')/4, $this->p('haut')-1, $this->p('gauche')-$centaine*$this->p('epaisseur')/4, $this->p('haut')+$this->p('epaisseur')/2, $noir);
+
+            imageline($image,$this->p('gauche')+$this->p('epaisseur')/2,$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2,$this->p('gauche')+47.5*$this->p('epaisseur'),$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2,$noir);
+
+            for ($i=1;$i<49;$i++) {
+                imageline($image, $this->p('gauche')+($i-0.5)*$this->p('epaisseur'),$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2, $this->p('gauche')+($i-0.5)*$this->p('epaisseur'),$this->p('haut')-$centaine*$this->p('epaisseur')/2, $noir);
+                imageline($image, $this->p('gauche')+($i-0.5)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+1)*$this->p('epaisseur')/2, $this->p('gauche')+($i-0.5)*$this->p('epaisseur'),$this->p('haut')-1+$this->p('hauteur_centrale')+$centaine*$this->p('epaisseur')/2, $noir);
+            }
+
+            imageline($image,$this->p('gauche')+$this->p('epaisseur')/2,$this->p('haut')+$this->p('hauteur_centrale')+($centaine+1)*$this->p('epaisseur')/2,$this->p('gauche')+47.5*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+1)*$this->p('epaisseur')/2,$noir);
+
+            imagearc($image, $this->p('gauche')+47.5*$this->p('epaisseur'), $this->p('haut'), $this->p('epaisseur')+$centaine*$this->p('epaisseur')/2, $this->p('epaisseur')*($centaine+1), 270, 360, $noir);
+            imagearc($image, $this->p('gauche')+47.5*$this->p('epaisseur'), $this->p('haut')+$this->p('hauteur_centrale'), $this->p('epaisseur')+$centaine*$this->p('epaisseur')/2, $this->p('epaisseur')*($centaine+1), 0, 90, $noir);
+
+            imageline($image, $this->p('gauche')+(47.75+($centaine+1)/4)*$this->p('epaisseur'), $this->p('haut')-1, $this->p('gauche')+(47.75+($centaine+1)/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale'), $noir);
+            imageline($image, $this->p('gauche')+(47.75+$centaine/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/2, $this->p('gauche')+(47.75+($centaine+1)/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/2, $noir);
+            imageline($image, $this->p('gauche')+(47.75+$centaine/4)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $this->p('gauche')+(47.75+($centaine+1)/4)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $noir);
+
+            imagearc($image, $this->p('gauche')+$this->p('epaisseur')/2, $this->p('haut')+$this->p('hauteur_centrale'), $this->p('epaisseur')+($centaine+1)*$this->p('epaisseur')/2, $this->p('epaisseur')*($centaine+1), 90, 180, $noir);
+
+            imageline($image, $this->p('gauche')-(($centaine+1)*0.25)*$this->p('epaisseur'), $this->p('haut')+$this->p('epaisseur')/2, $this->p('gauche')-(($centaine+1)*0.25)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale'), $noir);
+            imageline($image, $this->p('gauche')-(($centaine+1)*0.25)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/2, $this->p('gauche')-($centaine*0.25)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/2, $noir);
+            imageline($image, $this->p('gauche')-(($centaine+1)*0.25)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $this->p('gauche')-($centaine*0.25)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $noir);
+        }
+        foreach($numeros_doubles as $numero_double) {
+            $centaine=intval($numero_double/100);
+            $diz_unites=$numero_double-100*$centaine;
+            switch($diz_unites) {
+                case 0:
+                    imagefilledrectangle($image, $this->p('gauche')+0.3*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4, $this->p('haut')-1+$this->p('epaisseur')/4, 
+                                                 $this->p('gauche')+0.7*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4, $this->p('haut')-1+$this->p('epaisseur')/4+$this->p('hauteur_centrale')/2,
+                                                 $gris_clair);
+
+                break;
+                case 1:
+                    imagefilledrectangle($image, $this->p('gauche')+.5*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
+                                                 $this->p('gauche')+$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
+                                                 $gris_clair);
+
+                break;
+                case 48:
+                    imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
+                                                 $this->p('gauche')+($diz_unites-.5)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
+                                                 $gris_clair);
+                break;
+                case 49:
+                    imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4, 
+                                                 $this->p('gauche')+(47.95+($centaine)/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4+$this->p('hauteur_centrale')/2,
+                                                 $gris_clair);
+
+                break;
+                case 50:
+                    imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'), 
+                                                 $this->p('gauche')+(47.95+($centaine)/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur')/2+$this->p('epaisseur')/4,
+                                                 $gris_clair);
+
+                break;
+                case 51:
+                    imagefilledrectangle($image, $this->p('gauche')+(99-$diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
+                                                 $this->p('gauche')+(99-$diz_unites-.5)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
+                                                 $gris_clair);
+                break;
+                case 98:
+                    imagefilledrectangle($image, $this->p('gauche')+(99-$diz_unites-0.5)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
+                                                 $this->p('gauche')+(99-$diz_unites)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
+                                                 $gris_clair);
+                break;
+                case 99:
+                    imagefilledrectangle($image, $this->p('gauche')+0.3*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4,$this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'), 
+                                                 $this->p('gauche')+0.7*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4,$this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur')/2+$this->p('epaisseur')/4,
+                                                 $gris_clair);
+
+                break;
+                default:
+                    if ($diz_unites<49) {
+                        imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
+                                                     $this->p('gauche')+($diz_unites)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
+                                                     $gris_clair);
                     }
-                    ?><img alt="dmspiral" src="Listes/Liste.dmspiral.class.php?chaine=<?=$chaine?>&amp;mag=<?=$magazine?>" /><?php
+                    else {
+                        $diz_unites=99-$diz_unites;
+                        imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
+                                                     $this->p('gauche')+($diz_unites)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
+                                                     $gris_clair);
+
+                    }
+            }
+        }
+
+        for ($i=0;$i<$this->p('nb_centaines');$i++) {
+            imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')+$this->p('hauteur_centrale')+($i+1)*$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
+            imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')-($i)*$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
+        }
+
+        $requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
+        $resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
+        $i=0;
+        foreach($resultat_numeros_possedes as $numero) {
+            $a=intval($numero['Numero']);
+            if (0!=(intval($numero['Numero']))) {
+                $est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;
+                if ($est_numero_double) {
+                    $premier_numero = $numero2[1] . $numero2[2];
+                    $this->marquer_numero ($image, $premier_numero, $noir);
                 }
+                else
+                    $this->marquer_numero ($image, $numero['Numero'], $noir);
             }
+            //break;
         }
-}
+        /** REMPLISSAGE **/
 
-function marquer_numero($image,$numero,$noir) {
-    $centaine=intval($numero/100);
-    $diz_unites=$numero-100*$centaine;
-    $pos=new stdClass();
-    switch($diz_unites) {
-        case 0:            
-            $pos->x=GAUCHE+(0.12-$centaine/4)*EPAISSEUR;
-            $pos->y=HAUT-1+HAUTEUR_CENTRALE-EPAISSEUR;
-        break;
-        case 1:
-            $pos->x=GAUCHE+EPAISSEUR*($diz_unites-1)+EPAISSEUR/4;
-            $pos->y=HAUT-($centaine+1)*EPAISSEUR/2+EPAISSEUR/3;
-        break;
-        case 49:                
-            $pos->x=GAUCHE+EPAISSEUR*($diz_unites-1)-EPAISSEUR/4;
-            $pos->y=HAUT-($centaine+1)*EPAISSEUR/2+EPAISSEUR/3;
-        break;
-        case 50:
-            $pos->x=GAUCHE+(47.87+$centaine/4)*EPAISSEUR;
-            $pos->y=HAUT-1+HAUTEUR_CENTRALE-EPAISSEUR;
-        break;
-        case 51:
-            $pos->x=GAUCHE+EPAISSEUR*(50-($diz_unites-50)-1)-EPAISSEUR/4;
-            $pos->y=HAUT+HAUTEUR_CENTRALE+($centaine+1)*EPAISSEUR/2-EPAISSEUR/3;
-        break;
-        case 99:
-            $pos->x=GAUCHE+EPAISSEUR*(50-($diz_unites-50)-1)+EPAISSEUR/4;
-            $pos->y=HAUT+HAUTEUR_CENTRALE+($centaine+1)*EPAISSEUR/2-EPAISSEUR/3;
-        break;
+        imagepng($image);
 
-        default:
-            if ($diz_unites<50) {
-                $pos->x=GAUCHE+EPAISSEUR*($diz_unites-1);
-                $pos->y=HAUT-($centaine+1)*EPAISSEUR/2+EPAISSEUR/4;
-            }
-            else {
-                $pos->x=GAUCHE+EPAISSEUR*(50-($diz_unites-50)-1);
-                $pos->y=HAUT+HAUTEUR_CENTRALE+($centaine)*EPAISSEUR/2+EPAISSEUR/4;
-            }
-        break;
-    }
-    $couleur=imagecolorallocate($image, COULEUR_R, COULEUR_G, COULEUR_B);
-    imagefill($image, $pos->x, $pos->y, $couleur);
-}
 
-if (isset($_GET['pays']) && isset($_GET['magazine'])) {
-    if (!isset($_GET['debug']))
-        header('Content-type: image/png');
-    $pays=$_GET['pays'];
-    $magazine=$_GET['magazine'];
-    
-    $numeros_doubles=array(/*1,115,300,499,150,151,198*/);
-    list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
-    $numero_max=max($numeros);
-    foreach($numeros as $numero) {
-        $est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero, $numero)>0;
-        if ($est_numero_double) {
-            $premier_numero = $numero[1] . $numero[2];
-            $numeros_doubles[]=$premier_numero;
+        /** AFFICHAGE DES CENTAINES **/
+        for($i=0;$i<=$this->p('nb_centaines');$i++) {
+            $pos=new stdClass();
+            $pos->x=$this->p('gauche')+(47.87+$this->p('nb_centaines')/4)*$this->p('epaisseur');
         }
     }
     
-    list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
-
-    define('EPAISSEUR',30);
-    define('MARGE',2);
-    define('TAILLE_POLICE',EPAISSEUR/2);
-    define('HAUTEUR_CENTRALE',60);
-    define('NUANCE_GRIS_FOND',255);
-    define('COULEUR_R',0);define('COULEUR_G',0);define('COULEUR_B',255);
-    
-    $titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
-    //$numero_max=601;
-    define('NB_CENTAINES', intval($numero_max/100)+1);
-    define('HAUT',MARGE+NB_CENTAINES*EPAISSEUR/2);
-    define('GAUCHE',MARGE+NB_CENTAINES*EPAISSEUR/4);
-
-    $image=imagecreatetruecolor(100+(48+NB_CENTAINES/2)*EPAISSEUR-10+MARGE+10, EPAISSEUR*NB_CENTAINES+HAUTEUR_CENTRALE+2+MARGE*2);
-    imageantialias($image, true);
-    $blanc=  imagecolorallocate($image, 255,255,255);
-    $gris_clair=imagecolorallocate($image, NUANCE_GRIS_FOND,NUANCE_GRIS_FOND,NUANCE_GRIS_FOND);
-    imagefill($image, 0,0, $gris_clair);
-
-    $noir=  imagecolorallocate($image, 0,0,0);
-    $blanc=  imagecolorallocate($image, 255,255,255);
-
-    /** CREATION DE LA GRILLE **/
-
-    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+EPAISSEUR/4, HAUT+EPAISSEUR*0.75, $noir, 'arial.ttf', 1);
-    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+47.3*EPAISSEUR, HAUT+EPAISSEUR*0.75, $noir, 'arial.ttf', 49);
-    imagettftext($image, TAILLE_POLICE*0.8, 0, GAUCHE+46.8*EPAISSEUR, TAILLE_POLICE*0.8/2+HAUT+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', 50);
-    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+47.3*EPAISSEUR, HAUT+2+HAUTEUR_CENTRALE-EPAISSEUR/2, $noir, 'arial.ttf', 51);
-    imagettftext($image, TAILLE_POLICE*0.8, 0, GAUCHE+EPAISSEUR*0.5, TAILLE_POLICE*0.8/2+HAUT+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', 100);
-    imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+EPAISSEUR/4, HAUT+2+HAUTEUR_CENTRALE-EPAISSEUR/2, $noir, 'arial.ttf', 99);
-
-    imagearc($image, GAUCHE+EPAISSEUR/2, HAUT-1+EPAISSEUR/2, EPAISSEUR/2, 2+EPAISSEUR, 180, 270, $noir);
-    imageline($image, GAUCHE, HAUT-1+EPAISSEUR/2, GAUCHE+0.3*EPAISSEUR, HAUT-1+EPAISSEUR/2, $noir);
-    imageline($image,GAUCHE+EPAISSEUR/2,HAUT-1,GAUCHE+47.5*EPAISSEUR,HAUT-1,$noir);
-    for ($i=2;$i<=48;$i++) {
-        $numero=$i;
-        imagettftext($image, TAILLE_POLICE, 0, GAUCHE+($i-1.3)*EPAISSEUR, HAUT+1+EPAISSEUR*0.5, $noir, 'arial.ttf', $numero);
-        $numero=100-$i;
-        imagettftext($image, TAILLE_POLICE, 0, GAUCHE+($i-1.3)*EPAISSEUR, HAUT-2+HAUTEUR_CENTRALE, $noir, 'arial.ttf', $numero);
-    }
-    imagettftext($image, TAILLE_POLICE, 0, GAUCHE+23.5*EPAISSEUR, TAILLE_POLICE/2+HAUT+HAUTEUR_CENTRALE/2, $noir, 'arial.ttf', $titre);
-
-    imagearc($image, GAUCHE+47.5*EPAISSEUR, HAUT-2+EPAISSEUR/2, EPAISSEUR/2, EPAISSEUR, 270, 360, $noir);
-    imagearc($image, GAUCHE+47.5*EPAISSEUR, HAUT-EPAISSEUR/2+HAUTEUR_CENTRALE, EPAISSEUR/2, EPAISSEUR, 0, 90, $noir);
-
-    imageline($image,GAUCHE+47.5*EPAISSEUR,HAUT-1+HAUTEUR_CENTRALE,GAUCHE+EPAISSEUR/2,HAUT-1+HAUTEUR_CENTRALE,$noir);
-
-    imageline($image, GAUCHE+47.75*EPAISSEUR, HAUT-1+EPAISSEUR/2, GAUCHE+47.75*EPAISSEUR, HAUT+1-EPAISSEUR/2+HAUTEUR_CENTRALE, $noir);
-
-    imagearc($image, GAUCHE+EPAISSEUR/2, HAUT-EPAISSEUR/2+HAUTEUR_CENTRALE, EPAISSEUR, EPAISSEUR, 90, 180, $noir);
-    imageline($image, GAUCHE, HAUT-1+EPAISSEUR/2, GAUCHE, HAUT+1-EPAISSEUR/2+HAUTEUR_CENTRALE, $noir);
-
-    for ($centaine=0;$centaine<NB_CENTAINES;$centaine++) {
-
-        imagearc($image, GAUCHE+EPAISSEUR/2, HAUT-.5, EPAISSEUR+$centaine*EPAISSEUR/2, EPAISSEUR*($centaine+1), 180, 270, $noir);    
-        imageline($image, GAUCHE-$centaine*EPAISSEUR/4, HAUT-1, GAUCHE-$centaine*EPAISSEUR/4, HAUT+EPAISSEUR/2, $noir);
-
-        imageline($image,GAUCHE+EPAISSEUR/2,HAUT-($centaine+1)*EPAISSEUR/2,GAUCHE+47.5*EPAISSEUR,HAUT-($centaine+1)*EPAISSEUR/2,$noir);
-
-        for ($i=1;$i<49;$i++) {
-            imageline($image, GAUCHE+($i-0.5)*EPAISSEUR,HAUT-($centaine+1)*EPAISSEUR/2, GAUCHE+($i-0.5)*EPAISSEUR,HAUT-$centaine*EPAISSEUR/2, $noir);
-            imageline($image, GAUCHE+($i-0.5)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+1)*EPAISSEUR/2, GAUCHE+($i-0.5)*EPAISSEUR,HAUT-1+HAUTEUR_CENTRALE+$centaine*EPAISSEUR/2, $noir);
-        }
-
-        imageline($image,GAUCHE+EPAISSEUR/2,HAUT+HAUTEUR_CENTRALE+($centaine+1)*EPAISSEUR/2,GAUCHE+47.5*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+1)*EPAISSEUR/2,$noir);
-
-        imagearc($image, GAUCHE+47.5*EPAISSEUR, HAUT, EPAISSEUR+$centaine*EPAISSEUR/2, EPAISSEUR*($centaine+1), 270, 360, $noir);
-        imagearc($image, GAUCHE+47.5*EPAISSEUR, HAUT+HAUTEUR_CENTRALE, EPAISSEUR+$centaine*EPAISSEUR/2, EPAISSEUR*($centaine+1), 0, 90, $noir);
-
-        imageline($image, GAUCHE+(47.75+($centaine+1)/4)*EPAISSEUR, HAUT-1, GAUCHE+(47.75+($centaine+1)/4)*EPAISSEUR, HAUT+1+HAUTEUR_CENTRALE, $noir);
-        imageline($image, GAUCHE+(47.75+$centaine/4)*EPAISSEUR, HAUT-1+EPAISSEUR/2, GAUCHE+(47.75+($centaine+1)/4)*EPAISSEUR, HAUT-1+EPAISSEUR/2, $noir);
-        imageline($image, GAUCHE+(47.75+$centaine/4)*EPAISSEUR, HAUT+1-EPAISSEUR/2+HAUTEUR_CENTRALE, GAUCHE+(47.75+($centaine+1)/4)*EPAISSEUR, HAUT+1-EPAISSEUR/2+HAUTEUR_CENTRALE, $noir);
-
-        imagearc($image, GAUCHE+EPAISSEUR/2, HAUT+HAUTEUR_CENTRALE, EPAISSEUR+($centaine+1)*EPAISSEUR/2, EPAISSEUR*($centaine+1), 90, 180, $noir);
-
-        imageline($image, GAUCHE-(($centaine+1)*0.25)*EPAISSEUR, HAUT+EPAISSEUR/2, GAUCHE-(($centaine+1)*0.25)*EPAISSEUR, HAUT+1+HAUTEUR_CENTRALE, $noir);
-        imageline($image, GAUCHE-(($centaine+1)*0.25)*EPAISSEUR, HAUT-1+EPAISSEUR/2, GAUCHE-($centaine*0.25)*EPAISSEUR, HAUT-1+EPAISSEUR/2, $noir);
-        imageline($image, GAUCHE-(($centaine+1)*0.25)*EPAISSEUR, HAUT+1-EPAISSEUR/2+HAUTEUR_CENTRALE, GAUCHE-($centaine*0.25)*EPAISSEUR, HAUT+1-EPAISSEUR/2+HAUTEUR_CENTRALE, $noir);
-    }
-    foreach($numeros_doubles as $numero_double) {
-        $centaine=intval($numero_double/100);
-        $diz_unites=$numero_double-100*$centaine;
+    function marquer_numero($image,$numero,$noir) {
+        $centaine=intval($numero/100);
+        $diz_unites=$numero-100*$centaine;
+        $pos=new stdClass();
         switch($diz_unites) {
-            case 0:
-                imagefilledrectangle($image, GAUCHE+0.3*EPAISSEUR/4-($centaine+1)*EPAISSEUR/4, HAUT-1+EPAISSEUR/4, 
-                                             GAUCHE+0.7*EPAISSEUR/4-($centaine+1)*EPAISSEUR/4, HAUT-1+EPAISSEUR/4+HAUTEUR_CENTRALE/2,
-                                             $gris_clair);
-                
+            case 0:            
+                $pos->x=$this->p('gauche')+(0.12-$centaine/4)*$this->p('epaisseur');
+                $pos->y=$this->p('haut')-1+$this->p('hauteur_centrale')-$this->p('epaisseur');
             break;
             case 1:
-                imagefilledrectangle($image, GAUCHE+.5*EPAISSEUR,HAUT-($centaine+0.75)*EPAISSEUR/2, 
-                                             GAUCHE+EPAISSEUR,HAUT-($centaine+0.25)*EPAISSEUR/2,
-                                             $gris_clair);
-                
+                $pos->x=$this->p('gauche')+$this->p('epaisseur')*($diz_unites-1)+$this->p('epaisseur')/4;
+                $pos->y=$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2+$this->p('epaisseur')/3;
             break;
-            case 48:
-                imagefilledrectangle($image, GAUCHE+($diz_unites-1)*EPAISSEUR,HAUT-($centaine+0.75)*EPAISSEUR/2, 
-                                             GAUCHE+($diz_unites-.5)*EPAISSEUR,HAUT-($centaine+0.25)*EPAISSEUR/2,
-                                             $gris_clair);
-            break;
-            case 49:
-                imagefilledrectangle($image, GAUCHE+(47.8+$centaine/4)*EPAISSEUR, HAUT-1+EPAISSEUR/4, 
-                                             GAUCHE+(47.95+($centaine)/4)*EPAISSEUR, HAUT-1+EPAISSEUR/4+HAUTEUR_CENTRALE/2,
-                                             $gris_clair);
-
+            case 49:                
+                $pos->x=$this->p('gauche')+$this->p('epaisseur')*($diz_unites-1)-$this->p('epaisseur')/4;
+                $pos->y=$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2+$this->p('epaisseur')/3;
             break;
             case 50:
-                imagefilledrectangle($image, GAUCHE+(47.8+$centaine/4)*EPAISSEUR, HAUT+1+HAUTEUR_CENTRALE-EPAISSEUR, 
-                                             GAUCHE+(47.95+($centaine)/4)*EPAISSEUR, HAUT+1+HAUTEUR_CENTRALE-EPAISSEUR/2+EPAISSEUR/4,
-                                             $gris_clair);
-
+                $pos->x=$this->p('gauche')+(47.87+$centaine/4)*$this->p('epaisseur');
+                $pos->y=$this->p('haut')-1+$this->p('hauteur_centrale')-$this->p('epaisseur');
             break;
             case 51:
-                imagefilledrectangle($image, GAUCHE+(99-$diz_unites-1)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+0.75)*EPAISSEUR/2, 
-                                             GAUCHE+(99-$diz_unites-.5)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+0.25)*EPAISSEUR/2,
-                                             $gris_clair);
-            break;
-            case 98:
-                imagefilledrectangle($image, GAUCHE+(99-$diz_unites-0.5)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+0.75)*EPAISSEUR/2, 
-                                             GAUCHE+(99-$diz_unites)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+0.25)*EPAISSEUR/2,
-                                             $gris_clair);
+                $pos->x=$this->p('gauche')+$this->p('epaisseur')*(50-($diz_unites-50)-1)-$this->p('epaisseur')/4;
+                $pos->y=$this->p('haut')+$this->p('hauteur_centrale')+($centaine+1)*$this->p('epaisseur')/2-$this->p('epaisseur')/3;
             break;
             case 99:
-                imagefilledrectangle($image, GAUCHE+0.3*EPAISSEUR/4-($centaine+1)*EPAISSEUR/4,HAUT+1+HAUTEUR_CENTRALE-EPAISSEUR, 
-                                             GAUCHE+0.7*EPAISSEUR/4-($centaine+1)*EPAISSEUR/4,HAUT+1+HAUTEUR_CENTRALE-EPAISSEUR/2+EPAISSEUR/4,
-                                             $gris_clair);
-            
+                $pos->x=$this->p('gauche')+$this->p('epaisseur')*(50-($diz_unites-50)-1)+$this->p('epaisseur')/4;
+                $pos->y=$this->p('haut')+$this->p('hauteur_centrale')+($centaine+1)*$this->p('epaisseur')/2-$this->p('epaisseur')/3;
             break;
+
             default:
-                if ($diz_unites<49) {
-                    imagefilledrectangle($image, GAUCHE+($diz_unites-1)*EPAISSEUR,HAUT-($centaine+0.75)*EPAISSEUR/2, 
-                                                 GAUCHE+($diz_unites)*EPAISSEUR,HAUT-($centaine+0.25)*EPAISSEUR/2,
-                                                 $gris_clair);
+                if ($diz_unites<50) {
+                    $pos->x=$this->p('gauche')+$this->p('epaisseur')*($diz_unites-1);
+                    $pos->y=$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2+$this->p('epaisseur')/4;
                 }
                 else {
-                    $diz_unites=99-$diz_unites;
-                    imagefilledrectangle($image, GAUCHE+($diz_unites-1)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+0.75)*EPAISSEUR/2, 
-                                                 GAUCHE+($diz_unites)*EPAISSEUR,HAUT+HAUTEUR_CENTRALE+($centaine+0.25)*EPAISSEUR/2,
-                                                 $gris_clair);
-                    
+                    $pos->x=$this->p('gauche')+$this->p('epaisseur')*(50-($diz_unites-50)-1);
+                    $pos->y=$this->p('haut')+$this->p('hauteur_centrale')+($centaine)*$this->p('epaisseur')/2+$this->p('epaisseur')/4;
                 }
+            break;
         }
+        $couleur=imagecolorallocate($image, $this->p('couleur_r'), $this->p('couleur_g'), $this->p('couleur_b'));
+        imagefill($image, $pos->x, $pos->y, $couleur);
     }
+}
 
-    for ($i=0;$i<NB_CENTAINES;$i++) {
-        imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+NB_CENTAINES*EPAISSEUR/4+48*EPAISSEUR, HAUT+HAUTEUR_CENTRALE+($i+1)*EPAISSEUR/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
-        imagettftext($image, TAILLE_POLICE*0.55, 0, GAUCHE+NB_CENTAINES*EPAISSEUR/4+48*EPAISSEUR, HAUT-($i)*EPAISSEUR/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
-    }
-    
-    $requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
-    $resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
-    $i=0;
-    foreach($resultat_numeros_possedes as $numero) {
-        $a=intval($numero['Numero']);
-        if (0!=(intval($numero['Numero']))) {
-            $est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;
-            if ($est_numero_double) {
-                $premier_numero = $numero2[1] . $numero2[2];
-                marquer_numero ($image, $premier_numero, $noir);
-            }
-            else
-                marquer_numero ($image, $numero['Numero'], $noir);
-        }
-        //break;
-    }
-    /** REMPLISSAGE **/
-    
-    imagepng($image);
 
-    
-    /** AFFICHAGE DES CENTAINES **/
-    for($i=0;$i<=NB_CENTAINES;$i++) {
-        $pos=new stdClass();
-        $pos->x=GAUCHE+(47.87+NB_CENTAINES/4)*EPAISSEUR;
+
+if (isset($_GET['pays']) && isset($_GET['magazine'])) {
+    include_once('../Inducks.class.php');
+    $dmspiral=new dmspiral();
+    if (isset($_GET['parametres'])) {
+        $parametres=json_decode(str_replace('|','"',$_GET['parametres']));
+        foreach($parametres as $nom_parametre=>$parametre)
+            $dmspiral->parametres->$nom_parametre=$parametre;
     }
+    $dmspiral->generer($_GET['pays'], $_GET['magazine']);
+    
 }
 ?>

@@ -118,3 +118,7 @@
     height:100%;
     width:100%;
 }
+
+.magazine_deplacable .handle {
+    cursor:move;
+}

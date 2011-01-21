@@ -10,14 +10,14 @@ $possessions=array();
 foreach($possessions_init as $indice=>$possession) {
 	list($id,$numero,$etat,$date,$couleur)=$array_temp=explode('!',$possessions_init[$indice]);
         $possessions[]=array('ID'=>$id,
-                             'Numéro'=>$numero,
+                             'Numero'=>$numero,
                              'Etat'=>$etat,
                              'Date d\'acquisition'=>$date,
                              'Couleur'=>$couleur); // Les indices du tableau correspondent aux numéros
 }
 $max_centaines=1;
 foreach($possessions as $numero) {
-	$numero=$numero['Numéro'];
+	$numero=$numero['Numero'];
 	if (intval($numero/100)>$max_centaines)
 		$max_centaines=intval($numero/100);
 }
@@ -71,7 +71,7 @@ $max=$numero;
 	}
 	foreach($possessions as $numero) {
 		$etat=$numero['Etat'];
-		$numero=$numero['Numéro'];
+		$numero=$numero['Numero'];
 		/*if (isset($_GET['dbg'])) {
 			
 			if (array_key_exists($numero,$possessions)) 
