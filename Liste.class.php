@@ -646,6 +646,7 @@ elseif (isset($_POST['get_description'])) {
 }
 elseif (isset($_POST['update_list'])) {
     @session_start();
+    $_POST['parametres'] = str_replace('\"', '"', $_POST['parametres']);
     $parametres=json_decode($_POST['parametres']);
     list($pays,$magazine)=explode('_',$_POST['pays_magazine']);
     $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
