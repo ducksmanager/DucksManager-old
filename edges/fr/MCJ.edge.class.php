@@ -2,7 +2,7 @@
 class fr_MCJ extends Edge {
     var $pays='fr';
     var $magazine='MCJ';
-    var $intervalles_validite=array(2,3);
+    var $intervalles_validite=array(1,2,3);
 
     static $largeur_defaut=18.5;
     static $hauteur_defaut=188;
