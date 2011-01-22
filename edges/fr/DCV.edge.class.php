@@ -9,12 +9,12 @@ class fr_DCV extends Edge {
     function fr_DCV ($numero) {
         $this->numero=$numero;
         if ($this->numero <=15) {
-            $this->largeur=5*Edge::$grossissement;
-            $this->hauteur=255*Edge::$grossissement;
-        }
-        else {
             $this->largeur=9*Edge::$grossissement;
             $this->hauteur=298*Edge::$grossissement;
+        }
+        else {
+            $this->largeur=5*Edge::$grossissement;
+            $this->hauteur=255*Edge::$grossissement;
         }
         
         $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
