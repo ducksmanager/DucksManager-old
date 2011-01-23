@@ -2,7 +2,7 @@
 class fr_AJM extends Edge {
     var $pays='fr';
     var $magazine='AJM';
-    var $intervalles_validite=array(65,66,68,78,79,80,82,83,84,85,86,87);
+    var $intervalles_validite=array(61,65,66,68,78,79,80,82,83,84,85,86,87);
     static $largeur_defaut=10;
     static $hauteur_defaut=254;
 
