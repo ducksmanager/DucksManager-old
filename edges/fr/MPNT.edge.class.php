@@ -2,7 +2,7 @@
 class fr_MPNT extends Edge {
     var $pays='fr';
     var $magazine='MPNT';
-    var $intervalles_validite=array(723,735,756,786,807,824,838,856,873,886); // 886 = dernier MPNT
+    var $intervalles_validite=array(723,735,756,772,786,807,824,838,856,873,886); // 886 = dernier MPNT
 
     static $largeur_defaut=15;
     static $hauteur_defaut=186;
