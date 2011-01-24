@@ -2,7 +2,7 @@
 class fr_MCO extends Edge {
     var $pays='fr';
     var $magazine='MCO';
-    var $intervalles_validite=array(1);
+    var $intervalles_validite=array('debut'=>1,'fin'=>4);
     static $largeur_defaut=7.5;
     static $hauteur_defaut=297;
 
