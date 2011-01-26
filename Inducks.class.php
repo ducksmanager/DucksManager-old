@@ -197,7 +197,7 @@ elseif (isset($_POST['get_numeros'])) {
 elseif (isset($_POST['get_cover'])) {
     $page=Inducks::numero_to_page($_POST['pays'], $_POST['magazine'], $_POST['numero']);
     
-    $regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&image=)([^"]+)"><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
+    $regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&(?:amp;)?image=)([^"]+)" alt="HR" /><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
         
     if (preg_match($regex_cover,$page,$code_image)==0)
         $url='images/cover_not_found.png';
