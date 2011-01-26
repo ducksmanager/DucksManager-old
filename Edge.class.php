@@ -414,9 +414,14 @@ elseif (isset($_GET['regen'])) {
     if (isset($_GET['debut'])) {
         $numeros=array('debut'=>$_GET['debut'], 'fin'=>$_GET['fin']);
     }
-    include_once('edges/'.$pays.'/'.$magazine.'.edge.class.php');
-    $nom_classe=$pays.'_'.$magazine;
-    $o=new $nom_classe(0);
+        $nom_classe=$pays.'_'.$magazine;
+    if (file_exists('edges/'.$pays.'/'.$magazine.'.edge.class.php')) {
+        include_once('edges/'.$pays.'/'.$magazine.'.edge.class.php');
+        $o=new $nom_classe(0);
+    }
+    else {
+        $o=new Edge($pays,$magazine,0);
+    }
     $iv=new IntervalleValidite($o->intervalles_validite);
     if (isset($_GET['debut'])) {
         $liste_numeros=array();
