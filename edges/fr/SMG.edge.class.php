@@ -2,7 +2,7 @@
 class fr_SMG extends Edge {
     var $pays='fr';
     var $magazine='SMG';
-    var $intervalles_validite=array(1408,1430,1623,1667,1727,1771);
+    var $intervalles_validite=array(1408,1430,1623,1667,1719,1727,1771);
 
     static $largeur_defaut=10;
     static $hauteur_defaut=292;
