@@ -68,6 +68,21 @@ else
                     new JS('js/menu_contextuel.js');
                 break;  
                 case 'bibliotheque':
+                    $textures=array();
+                    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+                    for ($i=1;$i<=2;$i++) {
+                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                        $resultat_textures=DM_Core::$d->requete_select($requete_textures);
+                        $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
+                        $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
+                    }
+                    ?>
+                    <script type="text/javascript">
+                        var texture1='<?=$textures[0]?>';
+                        var sous_texture1='<?=$textures[1]?>';
+                        var texture2='<?=$textures[2]?>';
+                        var sous_texture2='<?=$textures[3]?>';
+                    </script><?php
                     new JS('js/edges.js');
                 break; 
                 case 'stats':
@@ -117,19 +132,11 @@ else
         case 'bibliotheque':
             if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
                 if (Util::getBrowser()!=='MSIE') {
-                    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-                    $textures=array();
-                    for ($i=1;$i<=2;$i++) {
-                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
-                        $resultat_textures=DM_Core::$d->requete_select($requete_textures);
-                        $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
-                        $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
-                    }
                     $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
                     $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
                     $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
                     $regen=isset($_GET['regen']) ? 1 : 0;
-                    echo 'charger_bibliotheque(\''.$textures[0].'\',\''.$textures[1].'\', \''.$textures[2].'\',\''.$textures[3].'\', \''.$grossissement.'\','.$regen.');';
+                    echo 'charger_bibliotheque(\''.$grossissement.'\','.$regen.');';
                 }
             }
             elseif (isset($_GET['onglet']) && $_GET['onglet']=='options') {

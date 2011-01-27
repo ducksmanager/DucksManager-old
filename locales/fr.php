@@ -60,6 +60,7 @@ define('BIBLIOTHEQUE_OPTIONS','D&eacute;finissez les options d\'affichage de vot
 define('BIBLIOTHEQUE_OPTIONS_COURT','Options de la biblioth&egrave;que');
 define('BIBLIOTHEQUE_PARTICIPER','Aidez-nous &agrave; afficher de belles biblioth&egrave;ques pour tous les utilisateurs !');
 define('BIBLIOTHEQUE_PARTICIPER_COURT','Participer au projet !');
+define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Sauvegarder l\'image de cette biblioth&egrave;que');
 define('BIENVENUE','Bienvenue sur DucksManager !');
 define('BOITE_SELECTIONNEE','Boite s&eacute;lectionn&eacute;e');
 define('BON','Bon');
