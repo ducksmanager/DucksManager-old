@@ -406,12 +406,14 @@ elseif (isset($_POST['num_gen'])) {
 }
 elseif (isset($_POST['generer_image'])) {
     error_reporting(E_ALL);
-    $nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.rand().'.jpeg';
+    $nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.jpg';
     $images=array('texture1','sous_texture1','texture2','sous_texture2');
     $variables=array('largeur','texture1','sous_texture1','texture2','sous_texture2');
     foreach($variables as $variable)
         ${$variable}=$_POST[$variable];
+    
     $largeur=intval($largeur)-20;
+
     $image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
     $image_texture2=imagecreatefromjpeg('edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg');
     $pos=json_decode(str_replace('\"','"',$_POST['pos']));
@@ -432,7 +434,6 @@ elseif (isset($_POST['generer_image'])) {
     $min_y=$pos_sup_gauche[1];
     $hauteur=$max_y-$min_y+16;
     $im=imagecreatetruecolor($largeur, $hauteur);
-    
     for ($i=0;$i<$largeur;$i+=imagesx($image_texture1))
         for ($j=0;$j<$hauteur;$j+=imagesy($image_texture1))
             imagecopy ($im, $image_texture1, $i, $j, 0, 0, imagesx($image_texture1), imagesy($image_texture1));
