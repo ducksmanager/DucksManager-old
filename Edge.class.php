@@ -405,14 +405,16 @@ elseif (isset($_POST['num_gen'])) {
     imagepng($im,'edges/_tmp/'.$_POST['num_gen'].'.png');
 }
 elseif (isset($_POST['generer_image'])) {
+    error_reporting(E_ALL);
+    $nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.rand().'.jpeg';
     $images=array('texture1','sous_texture1','texture2','sous_texture2');
     $variables=array('largeur','texture1','sous_texture1','texture2','sous_texture2');
     foreach($variables as $variable)
         ${$variable}=$_POST[$variable];
-    $largeur-=20;
+    $largeur=intval($largeur)-20;
     $image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
     $image_texture2=imagecreatefromjpeg('edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg');
-    $pos=json_decode($_POST['pos']);
+    $pos=json_decode(str_replace('\"','"',$_POST['pos']));
     foreach($pos as $type_element=>$pos_elements) {
         foreach($pos_elements as $i=>$pos_element) {
             $pos->$type_element->$i=explode('-',$pos->$type_element->$i);
@@ -435,10 +437,12 @@ elseif (isset($_POST['generer_image'])) {
         for ($j=0;$j<$hauteur;$j+=imagesy($image_texture1))
             imagecopy ($im, $image_texture1, $i, $j, 0, 0, imagesx($image_texture1), imagesy($image_texture1));
     
+    imagedestroy($image_texture1);
     foreach($pos->etageres->etageres as $i=>$pos_etagere) {
         $pos_etagere_courante=explode(',',$pos_etagere);
         imagecopyresampled($im, $image_texture2, 0, $pos_etagere_courante[1]-$pos_sup_gauche[1], 0, 0, $largeur, 16, imagesx($image_texture2), 16);
     }
+    imagedestroy($image_texture2);
     
     foreach($pos->tranches as $src_tranche=>$pos) {
         $image_tranche=imagecreatefrompng(preg_replace('#\?.*#is', '', $src_tranche));
@@ -446,9 +450,9 @@ elseif (isset($_POST['generer_image'])) {
             $pos_courante=explode(',',$pos_tranche);
             imagecopyresampled($im, $image_tranche, $pos_courante[0]-$pos_sup_gauche[0], $pos_courante[1]-$pos_sup_gauche[1], 0, 0, $pos_courante[2], $pos_courante[3], imagesx($image_tranche), imagesy($image_tranche));   
         }
+        imagedestroy($image_tranche);
     }
-    $nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.rand().'.png';
-    imagepng($im,$nom_fichier);
+    imagejpeg($im,$nom_fichier);
     echo '<a style="float:left;border-bottom:1px dashed white" target="_blank" href="'.$nom_fichier.'">'.BIBLIOTHEQUE_SAUVEGARDER_IMAGE.'</a>';
     
 }
