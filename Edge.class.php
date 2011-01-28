@@ -143,7 +143,7 @@ class Edge {
         $blanc=imagecolorallocate($this->image,255,255,255);
         $noir = imagecolorallocate($this->image, 0, 0, 0);
         imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
-        imagettftext($this->image,$this->largeur/3,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
+        imagettftext($this->image,$this->largeur/3.5,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
          $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
         $this->dessiner_contour();
         $gris_250=imagecolorallocate($this->image, 250,250,250);
