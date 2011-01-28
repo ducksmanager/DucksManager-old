@@ -2,7 +2,7 @@
 class fr_ALMP extends Edge {
     var $pays='fr';
     var $magazine='ALMP';
-    var $intervalles_validite=array('A3','A4','A5','A9','A10','A11','A15','A16','A17','A21','A27','A30','A34','C1','C2','C3','C5','C6','C7','C34','C35','C38','C46','C47','C48');
+    var $intervalles_validite=array('A3','A4','A5','A9','A10','A11','A15','A16','A17','A21','A27','A30','A34','C1','C2','C3','C5','C6','C7','C20','C34','C35','C38','C46','C47','C48');
     static $largeur_defaut=35;
     static $hauteur_defaut=200;
 
