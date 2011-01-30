@@ -1,6 +1,7 @@
 <?php
 require_once('DucksManager_Core.class.php');
 require_once('Affichage.class.php');
+require_once('Inducks.class.php');
 class Liste {
 	var $contenu;
 	var $nom_fichier;
@@ -476,7 +477,7 @@ class Liste {
 		if (array_key_exists($pays,$this->collection)) {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
 				foreach($this->collection[$pays][$magazine] as $id=>$numero_liste) {
-					if ($numero_liste[0]==$numero) {
+					if (nettoyer_numero($numero_liste[0])==$numero) {
 						return true;
 					}
 				}
@@ -488,7 +489,7 @@ class Liste {
 		if (array_key_exists($pays,$this->collection)) {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
 				foreach($this->collection[$pays][$magazine] as $id=>$numero_liste) {
-					if ($numero_liste[0]==$numero) {
+					if (nettoyer_numero($numero_liste[0])==$numero) {
 						return array($numero_liste[1],$numero_liste[2],$numero_liste[3]);
 					}
 				}

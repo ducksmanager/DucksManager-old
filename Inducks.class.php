@@ -295,7 +295,7 @@ function trier_resultats_recherche ($a,$b) {
 }
         
 function nettoyer_numero($numero) {
-    $numero= str_replace("\n",'',preg_replace('#[+ ]+#is','',$numero));
+    $numero= str_replace("\n",'',preg_replace('#[+ ]+#is',' ',$numero));
     return $numero;
 }
 ?>
