@@ -47,6 +47,7 @@ class Inducks {
             }
             else {
                 preg_match_all($regex_numero,$page,$numeros);
+                $numeros[1]=array_map('nettoyer_numero',$numeros[1]);
                 return array($numeros[1],$numeros[2]);
             }
 	}
@@ -294,7 +295,7 @@ function trier_resultats_recherche ($a,$b) {
 }
         
 function nettoyer_numero($numero) {
-    $numero= str_replace("\n",'',str_replace('+','',$numero));
+    $numero= str_replace("\n",'',preg_replace('#[+]+#is',' ',$numero));
     return $numero;
 }
 ?>
