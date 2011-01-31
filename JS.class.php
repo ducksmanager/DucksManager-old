@@ -1,46 +1,54 @@
 <?php
+require_once('Util.class.php');
 if (isset($_POST['js']))
 	new JS($_POST['js']);
 class JS {
-	function JS($nom) {
-		/*if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'],'localhost')===false) {
-			echo '<script type="text/javascript" src="'.$nom.'"></script>';return;
-		}*/
-		if (strpos($nom,'scriptaculous')!==false || $nom=='prototype.js' || $nom=='js/scriptaculous/src/scriptaculous.js' ||isset($_GET['debug'])) {
-			echo '<script type="text/javascript" src="'.$nom.'"></script>';return;
-		}
-		$prefixe=substr($nom,0,strrpos($nom,'.'));
-		$creer_c=false;
-		if (file_exists($prefixe.'_c.js') && file_exists($prefixe.'_c.txt')) {
-			$inF = fopen($prefixe.'_c.txt',"r");
-			if ($inF) {
-				$date_modif= fgets($inF, 4096);
-				$stat = stat($nom);
-				if ($stat['mtime'] != $date_modif)
-					$creer_c=true;
-			}
-			else echo 'Erreur sur '.$prefixe.'_c.txt';
-		}
-		else $creer_c=true;
-		if ($creer_c) {
-			$inF = fopen($prefixe.'.js',"r");
-			if ($inF) {
-				$js='';
-				while (!feof($inF)) {
-					$js.= fgets($inF, 4096);
-				}
-				$js_c=JSMin::minify($js);
-				$inF = fopen($prefixe.'_c.js',"w");
-				fwrite($inF,$js_c);
-				fclose($inF);
-				$stat = stat($nom);
-				$inF = fopen($prefixe.'_c.txt',"w");
-				fwrite($inF,$stat['mtime']);
-			}
-			else echo 'Erreur sur '.$prefixe.'_c.js';
-		}
-  		echo '<script type="text/javascript" src="'.$prefixe.'_c.js"></script>';
-	}
+    function JS() {
+        $scripts=array();
+        $noms=func_get_args();
+        $balise_script_commencee=false;
+        foreach($noms as $nom) {
+            $prefixe=substr($nom,0,strrpos($nom,'.'));
+            if (strpos($nom,'scriptaculous')!==false || in_array($nom,array('prototype.js','js/json/json2.js','js/swfobject.js'))) {
+                ?><script type="text/javascript" src="<?=$nom?>"></script><?php
+                continue;
+            }
+            elseif (isset($_GET['debug'])) {
+                $scripts[]=str_replace('/','__',$prefixe);
+            }
+            $creer_c=false;
+            if (file_exists($prefixe.'_c.js') && file_exists($prefixe.'_c.txt')) {
+                $inF = fopen($prefixe.'_c.txt',"r");
+                if ($inF) {
+                    $date_modif= fgets($inF, 4096);
+                    $stat = stat($nom);
+                    if ($stat['mtime'] != $date_modif)
+                        $creer_c=true;
+                }
+                else echo 'Erreur sur '.$prefixe.'_c.txt';
+            }
+            else $creer_c=true;
+            if ($creer_c) {
+                $inF = fopen($prefixe.'.js',"r");
+                if ($inF) {
+                    $js='';
+                    while (!feof($inF)) {
+                            $js.= fgets($inF, 4096);
+                    }
+                    $js_c=JSMin::minify($js);
+                    $inF = fopen($prefixe.'_c.js',"w");
+                    fwrite($inF,$js_c);
+                    fclose($inF);
+                    $stat = stat($nom);
+                    $inF = fopen($prefixe.'_c.txt',"w");
+                    fwrite($inF,$stat['mtime']);
+                }
+                else echo 'Erreur sur '.$prefixe.'_c.js';
+            }
+            $scripts[]=str_replace('/','__',$prefixe.'_c');
+        }
+        ?><script type="text/javascript" src="JS.class.php?srcs=<?=implode(',',$scripts)?>"></script><?php
+    }
 }
 
 class JSMin {
@@ -286,4 +294,11 @@ class JSMin {
 
 // -- Exceptions ---------------------------------------------------------------
 class JSMinException extends Exception {}
+
+
+if (isset($_GET['srcs'])) {
+    foreach(explode(',',$_GET['srcs']) as $src) {
+        echo Util::lire_depuis_fichier(str_replace('__','/',$src).'.js')."\n\n\n";
+    }
+}
 ?>

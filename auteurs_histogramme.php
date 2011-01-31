@@ -23,10 +23,16 @@ $auteurs=array();
 foreach($resultat_auteurs as $auteur) {
 	$total=$auteur['NbNonPossedesEtranger']+$auteur['NbNonPossedesFrance']+$auteur['NbPossedes'];
 
-	array_push($non_poss_etr_pct,round(100*$auteur['NbNonPossedesEtranger']/$total));
-	array_push($non_poss_fr_pct,round(100*$auteur['NbNonPossedesFrance']/$total));
-	array_push($poss_pct,round(100*$auteur['NbPossedes']/$total));
-
+	if ($total==0) {
+            array_push($non_poss_etr_pct,0);
+            array_push($non_poss_fr_pct,0);
+            array_push($poss_pct,0);
+        }
+        else {
+            array_push($non_poss_etr_pct,round(100*$auteur['NbNonPossedesEtranger']/$total));
+            array_push($non_poss_fr_pct,round(100*$auteur['NbNonPossedesFrance']/$total));
+            array_push($poss_pct,round(100*$auteur['NbPossedes']/$total));
+        }
 	array_push($non_poss_etr,$auteur['NbNonPossedesEtranger']);
 	array_push($non_poss_fr,$auteur['NbNonPossedesFrance']);
 	array_push($poss,$auteur['NbPossedes']);

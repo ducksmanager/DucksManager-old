@@ -1,15 +1,46 @@
-<?php header('Content-Type: text/html; charset=utf-8');
+<?php header('Content-Type: text/html; charset=utf-8'); 
 require_once('DucksManager_Core.class.php');
-if (!isset($_SESSION['user'])) {
-    echo IDENTIFICATION_OBLIGATOIRE;
-    exit(0);
-}
 require_once('Liste.class.php');
 require_once('JS.class.php');
 require_once('Affichage.class.php');
-require_once('Listes/Format_liste.php');
+require_once('Listes/Format_liste.php');?>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>DucksManager : <?= IMPRESSION_COLLECTION ?></title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <!--[if IE]>
+              <style type="text/css" media="all">@import "fix-ie.css";</style>
+        <![endif]-->
+        <style type="text/css">
+            .draggable_box {
+                margin-bottom:<?=$parametres_generaux->parametres->espacement_boites->valeur?>px;
+                border-color:rgb(<?=$parametres_generaux->parametres->bordure_boites_r->valeur?>,<?=$parametres_generaux->parametres->bordure_boites_v->valeur?>,<?=$parametres_generaux->parametres->bordure_boites_b->valeur?>);
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="scriptaculous.css" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link rel="stylesheet" type="text/css" href="csstabs.css">
+        <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
+        <?php
+        new JS('prototype.js');
+        new JS('js/l10n.js');
+        new JS('js/json/json2.js');
+        new JS('js/menu_contextuel.js');
+        new JS('js/scriptaculous/src/scriptaculous.js');
+        new JS('js/my_scriptaculous.js');
+        new JS('js/ajax.js'); ?>
 
+    </head>
+    <body onload="implement_dragsanddrops()" id="body">
+<?php
+if (!isset($_SESSION['user'])) {
+    echo IDENTIFICATION_OBLIGATOIRE;
+    ?><br /><a href="?action=open"><?=CONNEXION_COMPTE?></a><?php
+    exit(0);
+}
 DM_Core::$d->requete_select('SELECT DISTINCT Pays,Magazine,Numero,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros WHERE (ID_Utilisateur=1) ORDER BY Pays, Magazine, Numero');
 
 $id_user = DM_Core::$d->user_to_id($_SESSION['user']);
@@ -41,36 +72,6 @@ else {
     }
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>DucksManager : <?= IMPRESSION_COLLECTION ?></title>
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <!--[if IE]>
-              <style type="text/css" media="all">@import "fix-ie.css";</style>
-        <![endif]-->
-        <style type="text/css">
-            .draggable_box {
-                margin-bottom:<?=$parametres_generaux->parametres->espacement_boites->valeur?>px;
-                border-color:rgb(<?=$parametres_generaux->parametres->bordure_boites_r->valeur?>,<?=$parametres_generaux->parametres->bordure_boites_v->valeur?>,<?=$parametres_generaux->parametres->bordure_boites_b->valeur?>);
-            }
-        </style>
-        <link rel="stylesheet" type="text/css" href="scriptaculous.css" />
-        <link rel="icon" type="image/png" href="favicon.png" />
-        <link rel="stylesheet" type="text/css" href="csstabs.css">
-        <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
-        <?php
-        new JS('prototype.js');
-        new JS('js/l10n.js');
-        new JS('js/json/json2.js');
-        new JS('js/menu_contextuel.js');
-        new JS('js/scriptaculous/src/scriptaculous.js');
-        new JS('js/my_scriptaculous.js');
-        new JS('js/ajax.js'); ?>
-
-    </head>
-    <body onload="implement_dragsanddrops()" id="body">
         <div style="text-align:center"><?=strtoupper(IMPRESSION_COLLECTION.' DucksManager')?></div>
         <hr />
         <div id="container">

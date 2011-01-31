@@ -4,10 +4,9 @@ require_once ('Database.class.php');
 require_once ('Util.class.php');
 $debut = microtime(true);
 global $regex_code_histoire;
-$regex_code_histoire = '#<td valign=center bgcolor=\#cbdced><[^>]+><[^>]+><br>[^<]*'
-    . '<a href="story.php\?c=[^"]+"><font courier>([^<]+)</font></a>#is';
+$regex_code_histoire = '#<td valign="[^"]*" bgcolor="\#cbdced"><[^>]+><[^>]+><br/>[^<]*<a href="story.php\?c=[^"]+"><font courier>([^<]+)</font></a>#is';
 global $regex_histoire_code_personnages;
-$regex_histoire_code_personnages = '#<tr[^>]+>[^<]*<td valign=center bgcolor=\#cbdced><[^>]+><[^>]+><br>[^<]*<A[^>]+><[^>]+>([^<]+)<\/font><\/A> <\/td>[^<]*<td>[ ]*(?:<[^>]+>)?(<A [^<]+<\/A>[, ]*)*[^<]*(?:<\/small>)?(?:(?:(?:<i>)?[^<]*(?:<span[^<]*<\/span>[ ]*)*[^<]*<\/i>)?<br>)?.(?:[^<]*<i>[^<]*<\/i>)?(?:<br>)?[^<]*(?:<img[^>]*>)?<\/td>[^<]*<td>(?:[^<]*<br>.)?[^<]*(?:<br>)?[^<]*<small>(?:[^<]*<br>)*[^<]*<\/small><\/td>[^<]*<td>(?:[^<]*<A [^>]+>(?:(?:<span [^>]+>)?[^<]*(?:<\/span>[ ]*)?)*<\/A>[()?*, ]*)+(?:<font [^<]+<\/font>)?[^<]*(?:<br>.)?(?:<font[^<]*<\/font><br>.)?<\/td>[^<]*<td>(([^<]*(<A [^<]*<\/A>[, ]*)*(?:<br>.?)?[^<]*)*)<\/td><td>(?:(?:[^<]*(?:<(?:A|i)[^<]*<\/(?:A|i)>)+[.()0-9a-zA-Z, ]*)*<br>.?)*#is';
+$regex_histoire_code_personnages = '#<tr[^>]+>[^<]*<td valign="[^"]*" bgcolor="\#cbdced"><[^>]+><[^>]+><br/>[^<]*<a[^>]+><[^>]+>([^<]+)<\/font><\/a> <\/td>[^<]*<td>[ ]*(?:<[^>]+>)?(<a [^<]+<\/a>[, ]*)*[^<]*(?:<\/small>)?(?:(?:(?:<i>)?[^<]*(?:<span[^<]*<\/span>[ ]*)*[^<]*<\/i>)?<br/>)?.(?:[^<]*<i>[^<]*<\/i>)?(?:<br/>)?[^<]*(?:<img[^>]*>)?<\/td>[^<]*<td>(?:[^<]*<br/>.)?[^<]*(?:<br/>)?[^<]*<small>(?:[^<]*<br/>)*[^<]*<\/small><\/td>[^<]*<td>(?:[^<]*<a [^>]+>(?:(?:<span [^>]+>)?[^<]*(?:<\/span>[ ]*)?)*<\/a>[()?*, ]*)+(?:<font [^<]+<\/font>)?[^<]*(?:<br/>.)?(?:<font[^<]*<\/font><br/>.)?<\/td>[^<]*<td>(([^<]*(<a [^<]*<\/a>[, ]*)*(?:<br/>.?)?[^<]*)*)<\/td><td>(?:(?:[^<]*(?:<(?:A|i)[^<]*<\/(?:A|i)>)+[.()0-9a-zA-Z, ]*)*<br/>.?)*#is';
 global $regex_numero;
 $regex_numero = '#<a href="issue.php\?c=([^/]+)/[^"]*">([^ ]+)[ ]*([^<]+)</a>#';
 
@@ -154,11 +153,11 @@ foreach ($notations_tous_users as $user => $notations_user) {
         list($pays, $magazine_numero) = explode('/', $notations_user2[$user][$i]['Numero']);
         list($magazine, $numero) = explode(' ', $magazine_numero);
         $notation = $notations_user2[$user][$i]['Score'];
-        $debut = true;
         $texte = '';
-        foreach ($notations_user2[$user][$i]['Auteurs'] as $auteur => $nb_histoires) {
-            $texte.= ( $debut ? '' : ',') . $auteur . '=' . $nb_histoires;
-            $debut = false;
+        if (isset($notations_user2[$user][$i]['Auteurs'])) {
+            foreach ($notations_user2[$user][$i]['Auteurs'] as $auteur => $nb_histoires) {
+                $texte.= ( $debut ? '' : ',') . $auteur . '=' . $nb_histoires;
+            }
         }
         $requete_ajout_recommandation = 'INSERT INTO numeros_recommandes(Pays,Magazine,Numero,Notation,ID_Utilisateur,Texte) '
             . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',\'' . $numero . '\',' . $notation . ',' . $user . ',\'' . $texte . '\')';

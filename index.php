@@ -24,6 +24,7 @@ else
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Cache-Control" CONTENT="no-store" />
         <meta http-equiv="Expires" content="0" />
+        <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
         <title><?php echo TITRE.' - '.$titre;?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
@@ -55,17 +56,12 @@ else
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script><?php
-        new JS('prototype.js');
-        new JS('js/scriptaculous/src/scriptaculous.js');
-        new JS('js/my_scriptaculous.js');
-        new JS('js/l10n.js');
-        new JS('js/ajax.js');
+        new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
             switch($_GET['action']) {
                 case 'gerer':
-                    new JS('js/edges.js');
-                    new JS('js/menu_contextuel.js');
+                    new JS('js/edges.js','js/menu_contextuel.js');
                 break;  
                 case 'bibliotheque':
                     $textures=array();
@@ -88,19 +84,12 @@ else
                 case 'stats':
                     switch($_GET['onglet']) {
                         case 'possessions':
-                            new JS('js/chargement.js');
-                            new JS('js/classement_histogramme.js');
-                            ?>
-                            <script type="text/javascript" src="js/json/json2.js"></script>
-                            <script type="text/javascript" src="js/swfobject.js"></script>
-                            <?php
+                            new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
                         break;
                     }
                 break;
             }
-            new JS('js/selection_menu.js');
-            new JS('js/bouquineries.js');
-            new JS('js/divers.js');
+            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js');
         }
         ?>
     </head>

@@ -95,6 +95,7 @@ define('COMPTE_SUPPRIME_DECONNECTE','Your account has also been deleted. You are
 define('CONFIRMER','Do you confirm ?');
 define('CONNECTE_EN_TANT_QUE','Logged in<br />as ');
 define('CONNEXION','Log in');
+define('CONNEXION_COMPTE','Log into my DucksManager account');
 define('CONNEXION_INDUCKS','Logging in on Inducks...');
 define('CONNEXION_REUSSIE','Connection OK.');
 define('CONTACT_UTILISATEURS','Contact other DucksManager users');
@@ -217,6 +218,7 @@ define('IMPRIMER_AIDE_4','Your display preferences are automatically saved.');
 define('IMPRIMER_AIDE_5','Everything\'s ready ? Click on "Print"!');
 define('INDEFINI','Undefined');
 define('INDEX_AIDE','Help index');
+define('INITIALISATION','Initialization');
 define('INSCRIPTION','Sign up');
 define('INSCRIPTION_EN_COURS','Signing up...');
 define('INSCRIPTION_REUSSIE','Successfully signed up!');

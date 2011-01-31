@@ -95,6 +95,7 @@ define('COMPTE_SUPPRIME_DECONNECTE','Votre compte a &eacute;galement &eacute;t&e
 define('CONFIRMER','Confirmer ?');
 define('CONNECTE_EN_TANT_QUE','Connect&eacute;(e)<br />en tant que ');
 define('CONNEXION','Connexion');
+define('CONNEXION_COMPTE','Connexion &agrave; mon compte DucksManager');
 define('CONNEXION_INDUCKS','Connexion &agrave; Inducks...');
 define('CONNEXION_REUSSIE','Connexion r&eacute;ussie.');
 define('CONTACT_UTILISATEURS','Contacter d\'autres utilisateurs de DucksManager');
@@ -217,6 +218,7 @@ define('IMPRIMER_AIDE_4','Vos pr&eacute;f&eacute;rences de positionnement seront
 define('IMPRIMER_AIDE_5','Lorsque tout sera pr&ecirc;t, vous pourrez cliquer sur le bouton "Imprimer", situ&eacute; en haut &agrave; gauche de cette page.');
 define('INDEFINI','Indéfini');
 define('INDEX_AIDE','Index de l\'aide');
+define('INITIALISATION','Initialisation');
 define('INSCRIPTION','Inscription');
 define('INSCRIPTION_EN_COURS','Inscription...');
 define('INSCRIPTION_REUSSIE','Inscription r&eacute;ussie!');
@@ -349,10 +351,10 @@ define('PRESENTATION_BOUQUINERIE1','Vous connaissez une bouquinerie sympa ? Fait
 define('PRESENTATION_GENERALE','Une gestion de collection compl&egrave;te, des statistiques personnalis&eacute;es, un &eacute;ventail d\'outils pour agrandir votre collection, et bien d\'autres choses...');
 define('PRESENTATION_GERER_1','Notre outil de s&eacute;lection de num&eacute;ros  permet de r&eacute;f&eacute;rencer votre collection de magazines Disney en toute simplicit&eacute;.');
 define('PRESENTATION_GERER_2','Envie de m&eacute;moriser les moindres d&eacute;tails de votre collection ? Avec DucksManager un clic droit suffit !');
-define('PRESENTATION_GERER_3','Vous pourrez ainsi sp&eacute;cifier l\'&eacute;tat de conservation de vos num&eacute;ros, leurs dates d\'acquisition, ou encore les proposer &agrave; la vente aupr&egrave;s des autres utilisateurs de DucksManager.');
+define('PRESENTATION_GERER_3','Vous pourrez ainsi sp&eacute;cifier l\'&eacute;tat de conservation de vos revues, leurs dates d\'acquisition, ou encore les proposer &agrave; la vente aupr&egrave;s des autres utilisateurs de DucksManager.');
 define('PRESENTATION_GERER_TITRE','S&eacute;lectionnez en quelques clics les num&eacute;ros que vous poss&eacute;dez !');
 define('PRESENTATION_STATS_1','Mises &agrave; jour quotidiennement pour prendre en compte tous vos changements, les statistiques de DucksManager vous informent sur les num&eacute;ros que vous poss&eacute;dez, et vous pr&eacute;cisent combien en acqu&eacute;rir pour compl&eacute;ter des s&eacute;ries.');
-define('PRESENTATION_STATS_2','Si vous avez sp&eacute;cifi&eacute; l\'&eacute;tat de chacun de vos num&eacute;ros, un graphique les r&eacute;sumera.');
+define('PRESENTATION_STATS_2','Si vous avez sp&eacute;cifi&eacute; l\'&eacute;tat de chacuns de vos revues, un graphique les r&eacute;sumera.');
 define('PRESENTATION_STATS_3','Vous aimez un sc&eacute;nariste ou un dessinateur en particulier ? DucksManager g&eacute;n&egrave;re pour vous un histogramme r&eacute;sumant la proportion des histoires que vous poss&eacute;dez de cet auteur.');
 define('PRESENTATION_STATS_TITRE','Des statistiques compl&egrave;tes et tous les outils pour agrandir votre collection !');
 define('PRIX_HONNETES','Nous comptons sur votre honn&ecirc;tet&eacute; concernant les prix si vous en mentionnez.');
