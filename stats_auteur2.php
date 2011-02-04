@@ -153,14 +153,14 @@ foreach ($notations_tous_users as $user => $notations_user) {
         list($pays, $magazine_numero) = explode('/', $notations_user2[$user][$i]['Numero']);
         list($magazine, $numero) = explode(' ', $magazine_numero);
         $notation = $notations_user2[$user][$i]['Score'];
-        $texte = '';
+        $texte = array();
         if (isset($notations_user2[$user][$i]['Auteurs'])) {
             foreach ($notations_user2[$user][$i]['Auteurs'] as $auteur => $nb_histoires) {
-                $texte.= ( $debut ? '' : ',') . $auteur . '=' . $nb_histoires;
+                $texte[]= $auteur.'='.$nb_histoires;
             }
         }
         $requete_ajout_recommandation = 'INSERT INTO numeros_recommandes(Pays,Magazine,Numero,Notation,ID_Utilisateur,Texte) '
-            . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',\'' . $numero . '\',' . $notation . ',' . $user . ',\'' . $texte . '\')';
+            . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',\'' . $numero . '\',' . $notation . ',' . $user . ',\'' . implode($texte,',') . '\')';
         DM_Core::$d->requete($requete_ajout_recommandation);
     }
 }
