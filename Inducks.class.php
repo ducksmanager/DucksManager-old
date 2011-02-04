@@ -9,7 +9,7 @@ class Inducks {
 	static $noms_complets;
 
 	static function get_auteur($nom_auteur_abrege) {
-            $regex_auteur='#<font size=\+3><b><img[^>]+>[^&]*&nbsp; ([^<]+)</b></font>#isu';
+            $regex_auteur='#<h1><img[^>]*>([^<]+)</h1>#isu';
             $url='http://coa.inducks.org/creator.php?c='.$nom_auteur_abrege;
             $page=Util::get_page($url);
             preg_match($regex_auteur,$page,$auteur);

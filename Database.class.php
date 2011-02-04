@@ -432,8 +432,9 @@ class Database {
 									.'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
 		$resultat_numeros_recommandes=DM_Core::$d->requete_select($requete_numeros_recommandes);
 		if (count($resultat_numeros_recommandes)!=0) {
-			echo INTRO_NUMEROS_RECOMMANDES.'<br />';
-			echo '<ul>';
+			echo INTRO_NUMEROS_RECOMMANDES;
+                        ?><br />
+			<ul><?php
 			$pays_parcourus=array();
 			$auteurs=array();
 
@@ -441,7 +442,7 @@ class Database {
 				$pays=$numero['Pays'];
 				if (!array_key_exists($pays,$pays_parcourus))
 					$pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
-				echo '<li>'.$pays_parcourus[$pays][$numero['Magazine']].' '.$numero['Numero'].'<br />';
+				?><li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br /><?php
 				$histoires=explode(',',$numero['Texte']);
 				$debut=true;
 				foreach ($histoires as $i=>$histoire) {
@@ -449,22 +450,28 @@ class Database {
 					if (!array_key_exists($auteur,$auteurs))
 						$auteurs[$auteur]=Inducks::get_auteur($auteur);
 					if (!$debut) {
-						if ($i==count($histoires)-1)
-							echo ' '.ET.' ';
-						else
-							echo ', ';
+						if ($i==count($histoires)-1) {
+                                                    ?> <?=ET?> <?php
+                                                }
+						else {
+                                                    ?>, <?php
+                                                }
 					}
-					if ($nb_histoires==1)
-						echo (1).' '.HISTOIRE;
-					else
-						echo $nb_histoires.' '.HISTOIRES;
-					echo ' '.DE.' '.$auteurs[$auteur];
+					if ($nb_histoires==1) {
+                                            ?>1 <?=HISTOIRE?><?php
+                                        }
+					else {
+                                            ?><?=$nb_histoires?> <?=HISTOIRES?><?php
+                                        }
+					?> <?=DE?> <?=$auteurs[$auteur]?><?php
 					$debut=false;
 				}
 			}
-			echo '</ul>';
+			?></ul><?php
 		}
-		else echo CALCULS_PAS_ENCORE_FAITS.'<br />';
+		else {
+                    ?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
+                }
 	}
 
 	function liste_auteurs_notes($auteurs_surveilles) {
