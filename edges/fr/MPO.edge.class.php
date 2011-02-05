@@ -2,7 +2,7 @@
 class fr_MPO extends Edge {
     var $pays='fr';
     var $magazine='MPO';
-    var $intervalles_validite=array(13,31,40,117);
+    var $intervalles_validite=array(13,19,20,31,40,117);
 
     static $largeur_defaut=10;
     static $hauteur_defaut=120;
@@ -13,6 +13,10 @@ class fr_MPO extends Edge {
         if ($this->numero<=119) {
             $this->hauteur=120*Edge::$grossissement; // Approximatif
             $this->largeur=10*Edge::$grossissement; // Approximatif
+        }
+        else {
+            $this->hauteur=160*Edge::$grossissement;
+            $this->largeur=8*Edge::$grossissement;
         }
         $this->image=imagecreatetruecolor(intval($this->largeur),intval($this->hauteur));
         if ($this->image===false)
