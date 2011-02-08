@@ -443,13 +443,13 @@ class Liste {
             if (!$ajouter_numeros && !$supprimer_numeros) {
                 ?>
                 <ul>
-                    <li><?=$numeros_a_ajouter?> <?=NUMEROS_A_AJOUTER?>
+                    <li style="margin-top:10px"><?=$numeros_a_ajouter?> <?=NUMEROS_A_AJOUTER?> :
                         <?=$liste_a_ajouter->afficher('Classique')?>
                     </li>
-                    <li><?=$numeros_a_supprimer?> <?=NUMEROS_A_SUPPRIMER?>
+                    <li style="margin-top:10px"><?=$numeros_a_supprimer?> <?=NUMEROS_A_SUPPRIMER?> :
                         <?=$liste_a_supprimer->afficher('Classique')?>
                     </li>
-                    <li><?=$numeros_communs?> <?=NUMEROS_COMMUNS?>
+                    <li style="margin-top:10px"><?=$numeros_communs?> <?=NUMEROS_COMMUNS?>
                     </li>
                 </ul>
                 <?php
@@ -461,6 +461,7 @@ class Liste {
 	}
 
 	function afficher($type,$parametres=null) {
+		$type=strtolower($type);
             if (@require_once('Listes/Liste.'.$type.'.class.php')) {
                 $o=new $type();
                 if (!is_null($parametres)) {

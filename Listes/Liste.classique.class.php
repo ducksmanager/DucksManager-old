@@ -15,14 +15,10 @@ class classique extends Format_liste {
 
 	function afficher($liste) {
             foreach($liste as $pays=>$numeros_pays) {
-                if (count($liste) > 1) {
-                    ?><br /><b><i><?=DM_Core::$d->get_nom_complet_pays($pays)?></i></b><br /><?php
-                }
+                ?><br /><b><i><?=DM_Core::$d->get_nom_complet_pays($pays)?></i></b><br /><?php
                 foreach($numeros_pays as $magazine=>$numeros) {
                     list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
-                    if (count($numeros_pays) > 1) {
-                        ?><u><?=$nom_magazine_complet?></u><?php
-                    }
+                    ?><u><?=$nom_magazine_complet?></u> <?php
                     $debut=true;
                     sort($numeros);
                     $texte=array();
