@@ -335,75 +335,6 @@ elseif (isset($_POST['get_sous_texture'])) {
         }
     }
 }
-elseif (isset($_POST['num_gen'])) {
-    include_once('Util.class.php');
-    $grossissement=1;
-    $grossissement_images=1.5;
-    $largeur=$_POST['largeur']*$grossissement;
-    $hauteur=$_POST['hauteur']*$grossissement;
-    $hauteur_etagere=15;
-    $hauteur_restante_etagere=15;
-    $dimensions_etagere=array('largeur'=>$largeur,'hauteur'=>$hauteur_etagere);
-    $html=Util::lire_depuis_fichier('edges/_tmp/'.$_POST['num_gen'].'.html');
-    @unlink('edges/_tmp/'.$_POST['num_gen'].'.html');
-    $regex_etagere='#<div class="etagere" style="width:[^;]+;background-image: url\(\'([^\']+)\'\)">&nbsp;</div>#is';
-    $regex_numero='#name="([^"]+)"#is';
-    preg_match($regex_etagere, $html, $code_etagere);
-    list($code_etagere,$chemin_image_etagere)=$code_etagere;
-    
-    $image_etagere=imagecreatefromjpeg($chemin_image_etagere);
-    $dimensions_image_etagere=array('largeur'=>imagesx($image_etagere),'hauteur'=>imagesy($image_etagere));
-    imagecopyresampled($image_etagere, $image_etagere, 0, 0, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_image_etagere['largeur'], $dimensions_etagere['hauteur']);
-    $image_etagere2 = imagecreatetruecolor($dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
-    imagecopy($image_etagere2, $image_etagere, 0, 0, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
-    $image_etagere=$image_etagere2;
-    /*foreach(array_keys($dimensions_etagere) as $dimension) {
-        if ($dimensions_etagere[$dimension] > $dimensions_image_etagere[$dimension])
-            // Dupliquer l'image
-    }*/
-    
-    $im=imagecreatetruecolor($largeur, $hauteur);
-    imagecopyresampled($im, $image_etagere, 0, 0, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
-    
-    $contenus_etageres=explode($code_etagere, $html);
-    $decalage_y=0;
-    foreach($contenus_etageres as $contenu_etagere) {
-        if (empty($contenu_etagere))
-            continue;
-        $hauteur_max=0;
-        $images_numeros=array();
-        preg_match_all($regex_numero, $contenu_etagere, $numeros);
-        if (count($numeros[1])==0)
-            continue;
-        foreach($numeros[1] as $numero) {
-            $grossissement2=1;
-            list($pays,$magazine_numero)=explode('/',str_replace('<br>','',$numero));
-            list($magazine,$numero)=explode('.',$magazine_numero);
-            $e=new Edge($pays,$magazine,$numero);
-            if (!getEstVisible($pays, $magazine, $numero) && !$e->magazine_est_inexistant) {
-                $grossissement2=$grossissement_images;
-            }
-            $image_numero=@imagecreatefrompng('edges/'.$pays.'/gen/'.$magazine_numero.'.png');
-            $image_numero2=imagecreatetruecolor(imagesx($image_numero)*$grossissement*$grossissement2, imagesy($image_numero)*$grossissement*$grossissement2);
-            imagecopyresized($image_numero2, $image_numero, 0, 0, 0, 0, $e->o->largeur*$grossissement*$grossissement2, $e->o->hauteur*$grossissement*$grossissement2, $e->o->largeur, $e->o->hauteur);
-            $images_numeros[]=$image_numero2;
-        }
-        $hauteurs=array_map('get_hauteur', $images_numeros);
-        $hauteur_max=max($hauteurs);
-        $decalage_x=0;
-        foreach($images_numeros as $image_numero) {
-            $decalage_numero_y=$decalage_y+$hauteur_max+$dimensions_etagere['hauteur']+$hauteur_restante_etagere-imagesy($image_numero);
-            imagecopyresampled($im, $image_numero, $decalage_x, $decalage_numero_y, 0, 0, imagesx($image_numero), imagesy($image_numero), imagesx($image_numero), imagesy($image_numero));
-            $decalage_x+=imagesx($image_numero);
-        }
-        
-        $decalage_y+=$hauteur_max+$dimensions_etagere['hauteur']+$hauteur_restante_etagere;
-        imagecopyresampled($im, $image_etagere, 0, $decalage_y, 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
-    }
-    //imagecopyresampled($im, $image_etagere, 0, $hauteur-$dimensions_etagere['hauteur'], 0, 0, $dimensions_etagere['largeur'], $dimensions_etagere['hauteur'], $dimensions_etagere['largeur'], $dimensions_etagere['hauteur']);
-    
-    imagepng($im,'edges/_tmp/'.$_POST['num_gen'].'.png');
-}
 elseif (isset($_POST['generer_image'])) {
     error_reporting(E_ALL);
     $nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.jpg';
@@ -412,6 +343,32 @@ elseif (isset($_POST['generer_image'])) {
     foreach($variables as $variable)
         ${$variable}=$_POST[$variable];
     
+    $largeur=intval($largeur)-20;
+
+    $image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
+    $image_texture2=imagecreatefromjpeg('edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg');
+    $pos=json_decode(str_replace('\"','"',$_POST['pos']));
+    
+    /*$xml='<xml>'."\n"
+        .'<texture1>'.'edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg'.'</texture1>'."\n"
+        .'<texture2>'.'edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg'.'</texture2>'."\n"
+        .'<largeur>'.$largeur.'</largeur>'."\n"
+        .jsonToXML($pos)
+        .'</xml>';*/
+    $contenu=implode("\n",array($texture1.'/'.$sous_texture1,$texture2.'/'.$sous_texture2,$largeur,str_replace('\"','"',$_POST['pos'])));
+    Util::ecrire_dans_fichier('edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.json', $contenu, false);
+    ?>
+    <a style="float:left;border-bottom:1px dashed white" target="_blank" href="javascript:void(0)" onclick="window.open('http://87.106.165.63/Merge.class.php?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>','Download')">
+    	<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
+    </a><?php
+}
+elseif (isset($_POST['generer_images_etageres'])) {
+	error_reporting(E_ALL);
+    $images=array('texture1','sous_texture1','texture2','sous_texture2');
+    $variables=array('largeur','texture1','sous_texture1','texture2','sous_texture2');
+    foreach($variables as $variable)
+        ${$variable}=$_POST[$variable];
+        
     $largeur=intval($largeur)-20;
 
     $image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
@@ -432,29 +389,43 @@ elseif (isset($_POST['generer_image'])) {
             $max_y=$pos_etagere_courante[1];
     }
     $min_y=$pos_sup_gauche[1];
-    $hauteur=$max_y-$min_y+16;
-    $im=imagecreatetruecolor($largeur, $hauteur);
-    for ($i=0;$i<$largeur;$i+=imagesx($image_texture1))
-        for ($j=0;$j<$hauteur;$j+=imagesy($image_texture1))
-            imagecopy ($im, $image_texture1, $i, $j, 0, 0, imagesx($image_texture1), imagesy($image_texture1));
     
-    imagedestroy($image_texture1);
-    foreach($pos->etageres->etageres as $i=>$pos_etagere) {
+    $id_premiere_tranche=0;
+    foreach($pos->etageres->etageres as $num_etagere=>$pos_etagere) {
         $pos_etagere_courante=explode(',',$pos_etagere);
-        imagecopyresampled($im, $image_texture2, 0, $pos_etagere_courante[1]-$pos_sup_gauche[1], 0, 0, $largeur, 16, imagesx($image_texture2), 16);
+        if (isset($pos->etageres->etageres[$num_etagere+1]))
+        	$pos_etagere_suivante=explode(',',$pos->etageres->etageres[$num_etagere+1]);
+        else
+        	$pos_etagere_suivante=explode(',',$pos->etageres->etageres[$num_etagere]);
+       	$hauteur=$pos_etagere_suivante[1]-$pos_etagere_courante[1];
+       	if ($hauteur ==0) // Cas de la dernière étagère, vide
+       		$hauteur=16;
+    	$im=imagecreatetruecolor($largeur, $hauteur);
+    	
+    	for ($i=0;$i<$largeur;$i+=imagesx($image_texture1))
+	    	for ($j=0;$j<$hauteur;$j+=imagesy($image_texture1))
+	        	imagecopy ($im, $image_texture1, $i, $j, 0, 0, imagesx($image_texture1), imagesy($image_texture1));
+            imagecopyresampled($im, $image_texture2, 0, 0, 0, 0, $largeur, 16, imagesx($image_texture2), 16);
+	    foreach($pos->tranches as $src_tranche=>$pos_tranches) {
+        	$image_tranche=imagecreatefrompng(preg_replace('#\?.*#is', '', $src_tranche));
+	        foreach($pos_tranches as $pos_tranche) {
+	            $pos_courante=explode(',',$pos_tranche);
+	            if ($pos_courante[1]-$pos_sup_gauche[1]+$pos_courante[3] > $pos_etagere_courante[1]+$hauteur) {
+	           		continue;
+	            }
+	            imagecopyresampled($im, $image_tranche, $pos_courante[0]-$pos_sup_gauche[0], $pos_courante[1]-$pos_etagere_courante[1], 0, 0, $pos_courante[2], $pos_courante[3], imagesx($image_tranche), imagesy($image_tranche));   
+	        }
+	        imagedestroy($image_tranche);
+	    }
+    	$nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'-'.$num_etagere.'.jpg';
+    	imagejpeg($im,$nom_fichier);
+    	imagedestroy($im);
     }
-    imagedestroy($image_texture2);
     
-    foreach($pos->tranches as $src_tranche=>$pos) {
-        $image_tranche=imagecreatefrompng(preg_replace('#\?.*#is', '', $src_tranche));
-        foreach($pos as $pos_tranche) {
-            $pos_courante=explode(',',$pos_tranche);
-            imagecopyresampled($im, $image_tranche, $pos_courante[0]-$pos_sup_gauche[0], $pos_courante[1]-$pos_sup_gauche[1], 0, 0, $pos_courante[2], $pos_courante[3], imagesx($image_tranche), imagesy($image_tranche));   
-        }
-        imagedestroy($image_tranche);
-    }
-    imagejpeg($im,$nom_fichier);
-    echo '<a style="float:left;border-bottom:1px dashed white" target="_blank" href="'.$nom_fichier.'">'.BIBLIOTHEQUE_SAUVEGARDER_IMAGE.'</a>';
+    ?><a style="float:left;border-bottom:1px dashed white" target="_blank" href="http://87.106.165.63/Merge.class.php?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>&nb=<?=count($pos->etageres->etageres)?>&largeur=<?=$largeur?>">
+    	<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
+    </a>
+   	<?php
     
 }
 elseif (isset($_GET['regen'])) {
