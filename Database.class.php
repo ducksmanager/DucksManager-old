@@ -96,9 +96,9 @@ class Database {
         return false;
     }
 
-    function nouveau_user($user,$pass) {
+    function nouveau_user($user,$email,$pass) {
             date_default_timezone_set('Europe/Paris');
-            $requete='INSERT INTO users(username,password,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.date('Y-m-d').'\')';
+            $requete='INSERT INTO users(username,password,EMail,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
             if (false===DM_Core::$d->requete($requete)) {
                 echo ERREUR_EXECUTION_REQUETE;
                 return false;
@@ -368,6 +368,20 @@ class Database {
             return $l;
 	}
         
+	function get_auteur($nom_abrege) {
+		$requete_auteur_existe='SELECT NomAuteurComplet FROM auteurs WHERE NomAuteurAbrege LIKE \''.$nom_abrege.'\'';
+		$resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
+		if (count($resultat_auteur_existe)>0) {
+			return $resultat_auteur_existe[0]['NomAuteurComplet'];
+		}
+		else {
+			$nom_auteur_complet=Inducks::get_auteur($nom_abrege);
+			$requete_ajout_auteur='INSERT INTO auteurs(NomAuteurAbrege,NomAuteurComplet) VALUES (\''.$nom_abrege.'\',\''.$nom_auteur_complet.'\')';
+			DM_Core::$d->requete($requete_ajout_auteur);
+			return $nom_auteur_complet;
+		}
+	}
+	
 	function ajouter_auteur($id,$nom) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_auteur_existe='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE NomAuteurAbrege LIKE \''.$id.'\' AND DateStat LIKE \'0000-00-00\' AND ID_User='.$id_user;
@@ -383,45 +397,49 @@ class Database {
 	}
 
 	function liste_auteurs_surveilles($auteurs_surveilles,$affiche_notation) {
-
+		
 		if (count($auteurs_surveilles)==0) {
-			echo AUCUN_AUTEUR_SURVEILLE.'<br />';
+			echo AUCUN_AUTEUR_SURVEILLE;
+			?><br /><?php
 		}
 		else {
-			if ($affiche_notation)
-				echo '<form method="post" action="?action=agrandir&onglet=auteurs_favoris&onglet_auteur=preferences">';
-			echo '<table style="width:100%">';
+			if ($affiche_notation) {
+				?><form method="post" action="?action=agrandir&onglet=auteurs_favoris&onglet_auteur=preferences"><?php
+			}
+			?><table style="width:100%"><?php
 			foreach($auteurs_surveilles as $num=>$auteur) {
-				echo '<tr><td>- '.$auteur['NomAuteur'].'</td>';
+				?><tr><td>- <?=$auteur['NomAuteur']?></td><?php
 				if ($affiche_notation) {
-					echo '<td id="pouces'.$num.'" onmouseout="vider_pouces()">';
+					?><td id="pouces<?=$num?>" onmouseout="vider_pouces()"><?php
 					for ($i=1;$i<=10;$i++) {
 						$orientation=$i<=5?'bas':'haut';
 						$pouce_rempli=$auteur['Notation']>=$i;
-						echo '<img id="pouce'.$num.'_'.$i.'" height="15" src="images/pouce_'.$orientation.($pouce_rempli?'':'_blanc').'.png" onclick="valider_note('.$num.')" onmouseover="hover('.$num.','.$i.')"/>';
+						?><img id="pouce<?=$num?>_<?=$i?>" height="15" src="images/pouce_<?=$orientation.($pouce_rempli?'':'_blanc')?>.png" onclick="valider_note(<?=$num?>)" onmouseover="hover(<?=$num?>,<?=$i?>)"/><?php
 					}
-					echo '<input type="hidden" value="'.$auteur['NomAuteurAbrege'].'" name="auteur'.$num.'" />';
-					echo '<input type="hidden" id="notation'.$num.'" name="notation'.$num.'" />';
-					echo '</td>';
-					echo '<td><input type="checkbox" '.($auteur['Notation']==-1?'checked="checked"':'')
-						.' id="aucune_note'.$num.'" onclick="set_aucunenote('.$num.')" name="aucune_note'.$num.'" />&nbsp;'
-						.AUCUNE_NOTE;
+					?><input type="hidden" value="<?=$auteur['NomAuteurAbrege']?>" name="auteur<?=$num?>" />
+					<input type="hidden" id="notation<?=$num?>" name="notation<?=$num?>" />
+					</td>
+					<td><input type="checkbox" <?=($auteur['Notation']==-1?'checked="checked"':'')?> id="aucune_note<?=$num?>" onclick="set_aucunenote(<?=$num?>)" name="aucune_note<?=$num?>" />&nbsp;<?=AUCUNE_NOTE?>
+					<?php
 				}
-				echo '<td><a href="javascript:void(0)" onclick="supprimer_auteur(\''.$auteur['NomAuteurAbrege'].'\')">'.SUPPRIMER.'</a></td>';
-				echo '</tr>';
+				?><td><a href="javascript:void(0)" onclick="supprimer_auteur('<?=$auteur['NomAuteurAbrege']?>')"><?=SUPPRIMER?></a></td>
+				</tr><?php
 			}
-			echo '</table>';
+			?></table><?php
 			if ($affiche_notation) {
 				$id_user=$this->user_to_id($_SESSION['user']);
 				$requete_get_recommandations_liste_mags='SELECT RecommandationsListeMags FROM users WHERE ID='.$id_user;
 				$resultat_get_recommandations_liste_mags=DM_Core::$d->requete_select($requete_get_recommandations_liste_mags);
 				$recommandations_liste_mags=$resultat_get_recommandations_liste_mags[0]['RecommandationsListeMags'];
-				echo EXPLICATION_NOTATION_AUTEURS1.'<br />'.EXPLICATION_NOTATION_AUTEURS2;
-				echo '<br /><br />';
-				echo '<input type="checkbox" '.($recommandations_liste_mags?'checked="checked" ':'')
-					.'name="proposer_magazines_possedes">&nbsp;'.PROPOSER_MAGAZINES_POSSEDES.'<br />'
-					.'<span style="font-size:12px">'.PROPOSER_MAGAZINES_POSSEDES_EXPLICATION.'</span>';
-				echo '<br /><br /><input type="submit" class="valider" value="'.VALIDER_NOTATIONS.'" /></form>';
+				echo EXPLICATION_NOTATION_AUTEURS1;
+				?><br /><?php 
+				echo EXPLICATION_NOTATION_AUTEURS2;
+				?><br /><br />
+				<input type="checkbox" <?=($recommandations_liste_mags?'checked="checked" ':'')?>
+					   name="proposer_magazines_possedes" />&nbsp;<?=PROPOSER_MAGAZINES_POSSEDES?><br />
+				<span style="font-size:12px"><?=PROPOSER_MAGAZINES_POSSEDES_EXPLICATION?></span>
+				<br /><br /><input type="submit" class="valider" value="<?=VALIDER_NOTATIONS?>" /></form>
+				<?php
 			}
 		}
 	}
@@ -432,8 +450,8 @@ class Database {
 									.'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
 		$resultat_numeros_recommandes=DM_Core::$d->requete_select($requete_numeros_recommandes);
 		if (count($resultat_numeros_recommandes)!=0) {
-			echo INTRO_NUMEROS_RECOMMANDES;
-                        ?><br />
+			echo INTRO_NUMEROS_RECOMMANDES;?>
+			<br />
 			<ul><?php
 			$pays_parcourus=array();
 			$auteurs=array();
@@ -448,21 +466,21 @@ class Database {
 				foreach ($histoires as $i=>$histoire) {
 					list($auteur,$nb_histoires)=explode('=',$histoire);
 					if (!array_key_exists($auteur,$auteurs))
-						$auteurs[$auteur]=Inducks::get_auteur($auteur);
+						$auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
 					if (!$debut) {
 						if ($i==count($histoires)-1) {
-                                                    ?> <?=ET?> <?php
-                                                }
+							?> <?=ET?> <?php
+                        }
 						else {
-                                                    ?>, <?php
-                                                }
+                        	?>, <?php
+                        }
 					}
 					if ($nb_histoires==1) {
-                                            ?>1 <?=HISTOIRE?><?php
-                                        }
+                    	?>1 <?=HISTOIRE?><?php
+                    }
 					else {
-                                            ?><?=$nb_histoires?> <?=HISTOIRES?><?php
-                                        }
+                    	?><?=$nb_histoires?> <?=HISTOIRES?><?php
+                    }
 					?> <?=DE?> <?=$auteurs[$auteur]?><?php
 					$debut=false;
 				}
@@ -470,8 +488,8 @@ class Database {
 			?></ul><?php
 		}
 		else {
-                    ?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
-                }
+        	?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
+        }
 	}
 
 	function liste_auteurs_notes($auteurs_surveilles) {
