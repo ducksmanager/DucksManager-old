@@ -2,7 +2,7 @@
 class fr_CDC extends Edge {
     var $pays='fr';
     var $magazine='CDC';
-    var $intervalles_validite=array('4');
+    var $intervalles_validite=array('4','7');
 
     static $largeur_defaut=8;
     static $hauteur_defaut=296;

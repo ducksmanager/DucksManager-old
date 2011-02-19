@@ -2,7 +2,7 @@
 class fr_CB extends Edge {
     var $pays='fr';
     var $magazine='CB';
-    var $intervalles_validite=array('P81','P111','P113','P132','PN14','PN16','PN18');
+    var $intervalles_validite=array('P81','P88','P111','P113','P117','P132','PN4','PN14','PN16','PN18','PN20');
 
     static $largeur_defaut=20;
     static $hauteur_defaut=255;
@@ -13,7 +13,7 @@ class fr_CB extends Edge {
         $this->largeur=20*Edge::$grossissement;
 
         $arr=str_split($this->numero);
-        if ($arr[0]=='P' && isset($arr[1]) && $arr[1]=='N') {
+        if ($arr[0]=='P' && isset($arr[1]) && $arr[1]=='N' && isset($arr[3])) {
             $this->hauteur=253*Edge::$grossissement;
             $this->largeur=38*Edge::$grossissement;
         }
