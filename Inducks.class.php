@@ -33,21 +33,22 @@ class Inducks {
             return array($magazine,$numero);
         }
         
-	static function get_numeros($pays,$magazine,$get_url=false) {
+	static function get_numeros($pays,$magazine,$get_url=false,$sans_espace=false) {
             $magazine_depart=$magazine;
             $magazine=Inducks::get_vrai_magazine($pays,$magazine);
             $regex_numero='#<a href=issue.php\?c='.$pays.'%2F'.$magazine_depart.'[+]*([^>]*)>[^<]*</a>([^<\(\)]*)#is';
             $regex_url_numero='#<a href=(issue.php\?c='.$pays.'%2F'.$magazine_depart.'[+]*([^>]*))>[^<]*</a>#is';
             $url='http://coa.inducks.org/publication.php?c='.$pays.'/'.$magazine;
             $page=Util::get_page($url);
+            $fonction_nettoyage=$sans_espace ? 'nettoyer_numero_sans_espace' : 'nettoyer_numero';
             if ($get_url===true) {
                 preg_match_all($regex_url_numero,$page,$numeros);
-                $numeros[2]=array_map('nettoyer_numero',$numeros[2]);
+                $numeros[2]=array_map($fonction_nettoyage,$numeros[2]);
                 return array($numeros[1],$numeros[2]);
             }
             else {
                 preg_match_all($regex_numero,$page,$numeros);
-                $numeros[1]=array_map('nettoyer_numero',$numeros[1]);
+                $numeros[1]=array_map($fonction_nettoyage,$numeros[1]);
                 return array($numeros[1],$numeros[2]);
             }
 	}
@@ -172,7 +173,7 @@ class Inducks {
     }
     static function numero_to_page($pays,$magazine,$numero) {
         $magazine=strtoupper($magazine);
-        list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,true);
+        list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,true,true);
         if (false!==($i=array_search($numero, $numeros)))
             return Util::get_page('http://coa.inducks.org/'.$urls[$i]);
         else
@@ -296,6 +297,11 @@ function trier_resultats_recherche ($a,$b) {
         
 function nettoyer_numero($numero) {
     $numero= str_replace("\n",'',preg_replace('#[+ ]+#is',' ',$numero));
+    return $numero;
+}
+        
+function nettoyer_numero_sans_espace($numero) {
+    $numero= str_replace("\n",'',preg_replace('#[+ ]+#is','',$numero));
     return $numero;
 }
 ?>
