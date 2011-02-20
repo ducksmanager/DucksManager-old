@@ -2,7 +2,7 @@
 class fr_AD extends Edge {
     var $pays='fr';
     var $magazine='AD';
-    var $intervalles_validite=array('D1');
+    var $intervalles_validite=array('D1','P1');
 
     static $largeur_defaut=8;
     static $hauteur_defaut=297;
