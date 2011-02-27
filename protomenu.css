@@ -277,3 +277,8 @@ a.dmspiral {
     font-weight: normal;
     cursor: default;
 }
+
+#sous_menu_achat_associer_date_achat {
+    max-height:500px;
+    overflow-y:auto;
+}
