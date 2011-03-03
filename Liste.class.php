@@ -113,6 +113,7 @@ class Liste {
 	}
 
 	function statistiques($onglet) {
+                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
 		$counts=array();
 		$total=0;
@@ -161,10 +162,16 @@ class Liste {
 			break;
 
                         case 'achats':
-				?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe><?php
+                            $requete_achat_existe='SELECT Count(Date) AS cpt FROM achats WHERE ID_User='.$id_user;
+                            $resultat_achat_existe=DM_Core::$d->requete_select($requete_achat_existe);
+                            if ($resultat_achat_existe[0]['cpt']==0) {
+                                echo AUCUNE_DATE_ACQUISITION;
+                            }
+                            else {
+                                ?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe><?php
+                            }
                         break;
 			case 'auteurs':
-				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 				if (isset($_POST['auteur_nom'])) {
 					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
 				}

@@ -46,7 +46,7 @@ foreach($resultat_liste_pays_magazines as $resultat_pays_magazine) {
     $noms_complets[$pays.'/'.$magazine]=implode(' - ',DM_Core::$d->get_nom_complet_magazine($pays,$magazine,true));
 }
 
-$requete_premier_mois='SELECT Date FROM achats WHERE ID_User='.$id_user.' ORDER BY Date LIMIT 1';
+$requete_premier_mois='SELECT Date FROM achats WHERE ID_User='.$id_user.' AND Date > \'2000-01-01\' ORDER BY Date LIMIT 1';
 $resultat_premier_mois=DM_Core::$d->requete_select($requete_premier_mois);
 $mois_courant=substr($resultat_premier_mois[0]['Date'], 0,7);
 $mois_affiche=date("M y", mktime(0, 0, 0, intval(substr($mois_courant, 5,2)), 1, substr($mois_courant, 0,4)));
