@@ -125,6 +125,7 @@ class Liste {
 		$onglets=array(MAGAZINES=>array('magazines',MAGAZINES_COURT),
                                POSSESSIONS=>array('possessions',POSSESSIONS_COURT),
                                ETATS_NUMEROS=>array('etats',ETATS_NUMEROS_COURT),
+                               ACHATS=>array('achats',ACHATS_COURT),
                                AUTEURS=>array('auteurs',AUTEURS_COURT));
 		Affichage::onglets($onglet,$onglets,'onglet','?action=stats');
 
@@ -135,7 +136,7 @@ class Liste {
 		}
 		switch($onglet) {
 			case 'magazines':
-				echo '<iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0px"></iframe>';
+				?><iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0px"></iframe><?php
 			break;
 			case 'possessions':
 			include_once('Chargement.class.php');	
@@ -156,9 +157,12 @@ class Liste {
                                 <?php
 				break;
 			case 'etats':
-				echo '<iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe>';
-
+				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe><?php
 			break;
+
+                        case 'achats':
+				?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe><?php
+                        break;
 			case 'auteurs':
 				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 				if (isset($_POST['auteur_nom'])) {
@@ -218,63 +222,6 @@ class Liste {
 				<?php
 				$pays='fr';
 
-			break;
-
-			echo '<td>&nbsp;</td><td><table width="100%" border="1" cellspacing="2px" style="border-collapse:collapse;"><tr><td>'.NOMBRE_HISTOIRES.'</td></tr>';
-			//foreach($counts as $pays=>$magazines) {
-			echo '<tr><td colspan="2" width="300px"><u>'.$pays.'</u></td></tr>';
-			$auteurs=array('Don+Rosa');//,'Don+Rosa','Romano+Scarpa','Al+Taliaferro','Bruce+Hamilton','Massimo+De+Vita','Tony+Strobl');
-			foreach($auteurs as $auteur) {
-				$adresse_auteur='http://coa.inducks.org/comp2.php?code=&keyw=&keywt=i&exactpg=&pg1=&pg2=&bro2=&bro3=&kind=0&rowsperpage=0&columnsperpage=0&hero=&xapp=&univ=&xa2=&creat='.$auteur.'&creat2=&plot=&plot2=&writ=&writ2=&art=&art2=&ink=&ink2=&pub1=&pub2=&part=&ser=&xref=&mref=&xrefd=&repabb=&repabbc=al&imgmode=0&vdesc2=on&vdesc=en&vfr=on&sort1=auto';
-				$regex_code_histoire='#<a href="story.php\?c=[^"]+"><font courier>([^<]+)</font></a>#';
-				$regex_histoire_code_personnages='#<tr[^>]+>.<td[^>]+><[^>]+><[^>]+><br>.<A[^>]+><[^>]+>([^<]+)</font></a> </td>.<td>[ ]*(?:<[^>]+>)?(<A [^<]+</a>[, ]*)*[^<]*(?:</small>)?(?:(?:(?:<i>)?[^<]*(?:<span[^<]*</span>[ ]*)*[^<]*</i>)?<br>)?.(?:.<i>(?:[^<]*)</i>)?(?:<br>.)?</td>.<td>(?:[^<]*<br>.)?<small>(?:[^<]*<br>)*[^<]*</small></td>.<td>(?:[^<]*<A [^>]+>(?:(?:<span [^>]+>)?[^<]*(?:</span>[ ]*)?)*</a>[()?*, ]*)+(?:<font [^<]+</font>)?[^<]*(?:<br>.)?(?:<font[^<]*</font><br>.)?</td>.<td>(([^<]*(<A [^<]*</a>[, ]*)*(?:<br>.?)?[^<]*)*)</td><td>(?:(?:[^<]*(?:<(?:A|i)[^<]*</(?:A|i)>)+[.()0-9a-zA-Z, ]*)*<br>.?)*#is';
-				$regex_numero='#<a href="issue.php\?c=[^"]*">([^<]*)</a>#';
-
-
-				list($nb_codes,$nb,$buffer,$codes,$histoirse)=liste_histoires($adresse_auteur,$regex_code_histoire,$regex_histoire_code_personnages);
-				echo '<br /><u>'.$auteur.'</u> : <br />';
-				echo 'Page 1 : '.$nb.'/'.$nb_codes.' total<br />';
-				$page=1;
-				$trouve=true;
-				while ($trouve) {
-					$adresse_auteur2='http://coa.inducks.org/comp2.php?imgmode=0&owned=&noowned=&pageDirecte='.$page.'&c2Direct=en&c3Direct=fr&queryDirect=';
-					$regex_requete='#input type=hidden name=queryDirect value="([^"]*)"#is';
-					$trouve=(preg_match($regex_requete,$buffer,$req)!=0);
-					$adresse_auteur2.=urlencode(preg_replace($regex_requete,'$1',$req[0]));
-					//echo $adresse_auteur2;
-					list($nb_codes,$nb,$buffer,$codes,$histoires)=liste_histoires($adresse_auteur2,$regex_code_histoire,$regex_histoire_code_personnages);
-					echo 'Page '.($page+1).' : '.$nb.'/'.$nb_codes.' total<br />';
-					if ($page==1) {
-						echo '<table border="1">';
-						foreach($codes[0] as $i=>$code) {
-							echo '<tr><td';
-							$date_et_publications=preg_replace($regex_histoire_code_personnages,'$3',$histoires[0][$i]);
-							//echo $date_et_publications;//echo preg_replace($regex_histoire_code_personnages,'<span style="background-color:#444499;">$1, $2, $3, $4, $5, $6, $7, $8, $9, $10</span>',$histoires[0][$i]);
-							$nb_publications=preg_match_all($regex_numero,$date_et_publications,$publications);
-							$liste_publications_texte='';
-							foreach($publications[0] as $publication) {
-								$magazine_numero=explode(' ',preg_replace($regex_numero,'$1',$publication));
-								$magazine=$magazine_numero[0];
-								$numero=$magazine_numero[1].$magazine_numero[2];
-								if ($this->est_possede($pays,$magazine,$numero)) {
-									echo ' style="background-color:#444444;"';
-									$liste_publications_texte.='X ';
-								}
-								$liste_publications_texte.= $magazine.' '.$numero.'<br />';
-							}
-							echo '>'.$liste_publications_texte.'</td>';
-							echo '<td>';
-							echo preg_replace($regex_code_histoire,'<span style="background-color:#444499;">$1</span>',$code);
-							echo '</td></tr>';
-						}
-						echo '</table>';
-					}
-					$page++;
-				}
-				continue;
-
-			}
-			echo '</td></tr></table>';
 			break;
 		}
 	}
