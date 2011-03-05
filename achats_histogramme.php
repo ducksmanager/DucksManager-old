@@ -64,9 +64,10 @@ while($mois_courant != date('Y-m')) {
     $liste_mois_affiches_complets[]=$mois_affiche_complet;
 }
 if (count($liste_mois)<=5)
-	$largeur=250;
+    $largeur=250;
 else
-	$largeur=25*count($liste_mois);
+    $largeur=25*count($liste_mois);
+$hauteur=380+20*round(count($noms_complets)/5);
 date_default_timezone_set('UTC');
 $regex_date='#([^-]+)-([^-]+)-(.+)#is';
 $titre = new title(utf8_encode(ACHATS));
@@ -97,7 +98,14 @@ foreach ($liste_mois as $i=>$mois) {
             $max = $cpt_mois;
 	$bar_stack->append_stack($sections);
 }
-
+$legendes=array();
+ksort($couleurs);
+foreach($couleurs as $pays_magazine=>$couleur) {
+    list($pays,$magazine)=explode('/',$pays_magazine);
+    $nom_magazine=$noms_complets[$pays.'/'.$magazine];
+    $legendes[]=new bar_stack_key( $couleur, $nom_magazine, 13 );
+}
+$bar_stack->set_keys($legendes);
 
 $y = new y_axis();
 $y->set_range( 0, $max, intval($max/10) );
@@ -139,13 +147,13 @@ $chart_pct->set_tooltip( $tooltip );
 <script type="text/javascript" src="js/json/json2.js"></script>
 <script type="text/javascript" src="js/swfobject.js"></script>
 <script type="text/javascript">
-swfobject.embedSWF("open-flash-chart.swf", "my_chart", "<?php echo $largeur;?>", "380", "9.0.0");
+swfobject.embedSWF("open-flash-chart.swf", "my_chart", "<?php echo $largeur;?>", "<?=$hauteur?>", "9.0.0");
 </script>
 
 <script type="text/javascript">
 
 function ofc_ready(){
-	parent.$('iframe_graphique').writeAttribute({'width':'<?php echo 80+$largeur;?>px','height':'450px'});
+	parent.$('iframe_graphique').writeAttribute({'width':'<?php echo 80+$largeur;?>px','height':'<?=(70+$hauteur)?>px'});
 
 }
 
