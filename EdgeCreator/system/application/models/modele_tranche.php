@@ -1,10 +1,12 @@
 <?php
 class Modele_tranche extends Model {
+    static $id_session;
     static $pays;
     static $magazine;
     static $numero_debut;
     static $numero_fin;
     static $numeros_dispos;
+    static $dropdown_numeros;
 
     function Modele_tranche($tab=array())
     {
@@ -82,8 +84,8 @@ class Modele_tranche extends Model {
         $resultats_options=new stdClass();
         $requete='SELECT '.implode(', ', self::$fields).' '
                 .'FROM tranches_modeles '
-                .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Nom_fonction LIKE \''.$nom_fonction.'\' AND Option_nom IS NOT NULL '
-                .'ORDER BY Option_nom ASC';
+                .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
+        $requete.='ORDER BY Option_nom ASC';
         //if (is_null($numero))
         //    echo $requete.'<br />';
         $resultats=$this->db->query($requete)->result();
@@ -105,6 +107,7 @@ class Modele_tranche extends Model {
                         $option_courante[$intervalle]=$resultat->Option_valeur;
                     else
                         $option_courante=$resultat->Option_valeur;
+                    continue;
                 }
             }
             $resultats_options->$option_nom=$option_courante;
@@ -115,11 +118,28 @@ class Modele_tranche extends Model {
         $f=new $nom_fonction($resultats_options,false,$creation); // Ajout des champs avec valeurs par défaut
         return $f->options;
     }
+    
+    function get_preview_existe($options_json) {
+        $requete='SELECT ID_Preview FROM tranches_previews WHERE Options LIKE \''.$options_json.'\' AND ID_Session LIKE \''.self::$id_session.'\'';
+        $resultat=$this->db->query($requete)->result();
+        return count($resultat) > 0;
+    }
 
+    function ajouter_preview($options_json) {
+        $requete='INSERT INTO tranches_previews(ID_Session,Options) VALUES (\''.self::$id_session.'\',\''.$options_json.'\')';
+        $this->db->query($requete);
+        $requete_get_id_preview='SELECT Max(ID_Preview) AS ID FROM tranches_previews';
+        $resultats_get_id_preview=$this->db->query($requete_get_id_preview)->result();
+        foreach($resultats_get_id_preview as $resultat)
+            return $resultat->ID;
+        return 1;
+    }
+    
     function sv_doublons($pays,$magazine) {
         $requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
         $this->db->query($requete_suppression_existants);
-        $numeros_disponibles=$this->get_numeros_disponibles($pays, $magazine);
+        self::$numeros_dispos=$this->get_numeros_disponibles($pays, $magazine);
+        $numeros_disponibles=self::$numeros_dispos;
         unset ($numeros_disponibles['Aucun']);
         $etape=-1;
         $requete_get_etape_max='SELECT MAX(Ordre) AS max FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
@@ -129,14 +149,16 @@ class Modele_tranche extends Model {
             $resultat_get_options=$this->db->query($requete_get_options)->result();
             foreach($resultat_get_options as $option) {
                 foreach(array_keys($numeros_disponibles) as $numero) {
-                    $intervalle=$this->getIntervalleShort($this->getIntervalle($option->Numero_debut, $option->Numero_fin));
+                    $intervalle=$option->Numero_debut.'~'.$option->Numero_fin;
                     if (est_dans_intervalle($numero,$intervalle)) {
                         if (is_string($numeros_disponibles[$numero]))
                             $numeros_disponibles[$numero]=array();
                         $a=$numeros_disponibles[$numero];
                         if (!array_key_exists($etape,$numeros_disponibles[$numero]))
                             $numeros_disponibles[$numero][$etape]=array();
-                        $numeros_disponibles[$numero][$etape][is_null($option->Option_nom)?'null':$option->Option_nom]=is_null($option->Option_valeur)?'null':$option->Option_valeur;
+                        $valeur=is_null($option->Option_valeur)?'null':$option->Option_valeur;
+                        //$valeur=Fonction_executable::toTemplatedString($valeur,false);
+                        $numeros_disponibles[$numero][$etape][is_null($option->Option_nom)?'null':$option->Option_nom]=$valeur;
                     }
                 }
             }
@@ -168,7 +190,8 @@ class Modele_tranche extends Model {
         $numeros_affiches=array('Aucun'=>'Aucun');
 
         include_once(BASEPATH.('/../../Inducks.class.php'));
-        $numeros_soustitres=Inducks::get_numeros($pays, $magazine);
+        Inducks::$use_db=false;
+        $numeros_soustitres=Inducks::get_numeros($pays, $magazine,false,true);
         foreach($numeros_soustitres[0] as $i=>$numero) {
             $numero_affiche=str_replace("\n",'',str_replace('+','',$numero));
             $numeros_affiches[$numero_affiche]=$numero_affiche;
@@ -218,6 +241,7 @@ class Modele_tranche extends Model {
         $this->db->query($requete);
         echo $requete;
         foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
+            $option_valeur=str_replace("'","\'",$option_valeur);
             list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
             list($numero_debut,$numero_fin)=explode('~',$intervalle);
             $requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
@@ -257,6 +281,7 @@ class Modele_tranche extends Model {
         $this->db->query($requete);
         echo $requete;
         foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
+            $option_valeur=str_replace("'","\'",$option_valeur);
             list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
             list($numero_debut,$numero_fin)=explode('~',$intervalle);
             $requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
@@ -295,12 +320,13 @@ class Modele_tranche extends Model {
                         $numeros_debut_fin['numeros_debut'][]=$numero_debut;
                         $numeros_debut_fin['numeros_fin'][]=$numero_fin;
                     }
-                    
+                    $condition_option_nom=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.$option_nom;
+                    $condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.str_replace("'","\'",$option_valeur);
                     $requete_update='UPDATE tranches_modeles SET Numero_debut=\''.implode(';',$numeros_debut_fin['numeros_debut']).'\', '
                                                                .'Numero_fin=\''.implode(';',$numeros_debut_fin['numeros_fin']).'\' '
                                    .'WHERE Pays LIKE \''.$resultat->Pays.'\' AND Magazine LIKE \''.$resultat->Magazine.'\' '
                                    .'AND Ordre LIKE \''.$resultat->Ordre.'\' AND Nom_fonction LIKE \''.$resultat->Nom_fonction.'\' '
-                                   .'AND Option_nom LIKE '.$option_nom.' AND Option_valeur LIKE '.$option_valeur.' '
+                                   .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
                                    .'AND Numero_debut LIKE \''.$resultat->Numero_debut.'\' AND Numero_fin LIKE \''.$resultat->Numero_fin.'\'';
                     echo $requete_update;
                     $this->db->query($requete_update);
@@ -434,9 +460,9 @@ class Modele_tranche extends Model {
                     ?><input class="parametre modifiable" id="<?=$id?>-" type="text" value="<?=($valeur)?>" /><?php
             }
             ?>
-            </td><td style="width:30px"></td><td class="cellule_intervalle_validite"><div class="intervalle_validite" name="<?=$option_nom?>">&nbsp;<?=$this->getIntervalleListesDeroulantes($option_nom,$intervalles_short,$modif)?></div>
-            </td><td><a class="cloner" href="javascript:void(0)" onclick="cloner(this)">Cloner</a>
-            </td><td><a class="supprimer" href="javascript:void(0)" onclick="supprimer(this)">Supprimer</a></td>
+            </td><td style="width:30px"></td><td class="cellule_intervalle_validite"><div class="intervalle_validite" name="<?=$option_nom?>"><?=$this->getIntervalleListesDeroulantes($option_nom,$intervalles_short,$modif)?></div>
+            </td><td><a class="cloner" href="javascript:void(0)" onclick="cloner(this)">Cl</a>
+            </td><td>|</td><td><a class="supprimer" href="javascript:void(0)" onclick="supprimer(this)">X</a></td>
             </tr></table></div><?php
         }?>
         <a href="javascript:void(0)" onclick="par_defaut('<?=$option_nom?>')">Renseigner la valeur par d&eacute;faut...</a><?php
@@ -535,6 +561,13 @@ class Modele_tranche extends Model {
         $ci->load->helper('form');
         if (strpos($intervalle,'&agrave;')!==false)
             $intervalle=$this->getIntervalleShort($intervalle);
+        if ($modif) {
+            $intervalles=explode(';',$intervalle);
+            foreach($intervalles as $i=>$sous_intervalle)
+                if (strpos($sous_intervalle, '~') === false)
+                    $intervalles[$i].='~'.$intervalles[$i];
+            $intervalle=implode(';',$intervalles);
+        }
         list($numero_debut_intervalle,$numero_fin_intervalle)=getNumerosDebutFinShort($intervalle,self::$numero_debut,self::$numero_fin);
         if ($modif) {
             $numeros_debut=explode(';',$numero_debut_intervalle);
@@ -561,9 +594,9 @@ class Modele_tranche extends Model {
             $id_debut=$option_nom.'.'.$this->getIntervalleShort($intervalle).'-numero-debut-intervalle'.$i.'-';
             $id_fin=$option_nom.'.'.$this->getIntervalleShort($intervalle).'-numero-fin-intervalle'.$i.'-';
 
-            $texte.='<a href="javascript:void(0)" onclick="ajouter_intervalle(this)">Cl</a>|<a href="javascript:void(0)" onclick="supprimer_intervalle(this)">X</a>&nbsp;'
+            $texte.='<div><a href="javascript:void(0)" onclick="ajouter_intervalle(this)">Cl</a>|<a href="javascript:void(0)" onclick="supprimer_intervalle(this)">X</a>&nbsp;'
                   .'Num&eacute;ros '.form_dropdown('', self::$numeros_dispos, $numero_debut,'id="'.$id_debut.'" class="debut"')
-                  .'&nbsp;&agrave;&nbsp; '.form_dropdown('', self::$numeros_dispos, $numero_fin,'id="'.$id_fin.'" class="fin"').'<br />';
+                  .'&nbsp;&agrave;&nbsp; '.form_dropdown('', self::$numeros_dispos, $numero_fin,'id="'.$id_fin.'" class="fin"').'</div>';
         }
         return $texte;
     }
@@ -583,6 +616,10 @@ class Modele_tranche extends Model {
         }
     }
 
+    function setSessionID($id_session) {
+        self::$id_session=$id_session;
+    }
+    
     function setPays($pays) {
         self::$pays=$pays;
     }
@@ -602,13 +639,38 @@ class Modele_tranche extends Model {
     function setNumerosDisponibles($numeros_disponibles) {
         self::$numeros_dispos=$numeros_disponibles;
     }
+    
+    function setDropdownNumeros($numeros_disponibles) {
+        self::$dropdown_numeros=$numeros_disponibles;
+    }
+    
+    function setDropdownNumerosId($id,$dropdown='static') {
+        if ($dropdown=='static')
+            $dropdown=self::$dropdown_numeros;
+        return str_replace('<select', '<select id="'.$id.'" ', $dropdown);
+    }
+    
+    function setDropdownNumerosName($name,$dropdown='static') {
+        if ($dropdown=='static')
+            $dropdown=self::$dropdown_numeros;
+        return preg_replace('#name="[^"]+"', 'name="'.$name.'"', $dropdown);
+    }
+    
+    function setDropdownNumerosSelected($value,$dropdown='static') {
+        if ($dropdown=='static')
+            $dropdown=self::$dropdown_numeros;
+        return str_replace('<option value="'.$value.'"', '<option value="'.$value.'" selected="selected" ', $dropdown);
+    }
+    
+    function getDropdownNumeros() {
+        return self::$dropdown_numeros;
+    }
 }
 Modele_tranche::$fields=array('Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin');
 Fonction::$valeurs_defaut=array('Remplir'=>array('Pos_x'=>0,'Pos_y'=>0));
 
-
 class Fonction extends Modele_tranche {
-    var $options;
+    public $options;
     static $valeurs_defaut=array();
 
     function option($nom) {
@@ -653,18 +715,46 @@ class Fonction_executable extends Fonction {
         $champs=$propriete_champs->getValue();
         foreach(array_keys($champs) as $nom) {
             if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom==array())) {
-                $this->erreur('Le champ "'.$nom.'" est indéfini !');
+                self::erreur('Le champ "'.$nom.'" est indéfini !');
             }
         }
     }
-    
-    function erreur($erreur) {
+        
+    function afficher_si_existant() {
+        $ci =& get_instance();
+        $ci->load->model('Modele_tranche','Modele_tranche',true);
+        $modele_tranche=new Modele_tranche();
+        if ($modele_tranche->get_preview_existe($this->getJSONOptions())) {
+            $session_id=$modele_tranche->id_session;
+            header('Content-type: image/png');
+            imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.Viewer::$pays.'_'.Viewer::$magazine.'_'.Viewer::$numero.'_'.Viewer::$etape_en_cours->num_etape.'_'.z(1).'.png'));
+            exit(0);
+        }
+    }
+
+    function getJSONOptions() {
+        return json_encode($this->options);
+    }
+    static function erreur($erreur) {
+        if (!is_resource(Viewer::$image)) {
+            Viewer::$largeur=z(20);
+            Viewer::$hauteur=z(220);
+            Viewer::$image=imagecreatetruecolor(Viewer::$largeur, Viewer::$hauteur);
+        }
         imagefilledrectangle(Viewer::$image, 0, 0, Viewer::$largeur, Viewer::$hauteur, imagecolorallocate(Viewer::$image, 255, 255, 255));
         $noir=imagecolorallocate(Viewer::$image,0,0,0);
-        $texte_erreur='Erreur etape '.Viewer::$etape_en_cours->num_etape.' (Fonction '.Viewer::$etape_en_cours->nom_fonction.') : '.$erreur;
-        imagettftext(Viewer::$image,z(4),90,
-                     Viewer::$largeur/4,Viewer::$hauteur,
-                     $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
+        $lignes_erreur=explode(';', $erreur);
+        foreach($lignes_erreur as $i=>$ligne) {
+            if ($i==0)
+                $texte_erreur='Erreur etape '.Viewer::$etape_en_cours->num_etape.' (Fonction '.Viewer::$etape_en_cours->nom_fonction.') : '.$ligne;
+            else
+                $texte_erreur=$ligne;
+            imagettftext(Viewer::$image,z(3),90,
+                         ($i+1)*Viewer::$largeur/3,Viewer::$hauteur,
+                         $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
+        }
+        if (Viewer::$is_debug===false)
+            header('Content-type: image/png');
         imagepng(Viewer::$image);
         exit();
     }
@@ -679,6 +769,8 @@ class Fonction_executable extends Fonction {
                    'largeur'=>'#\[Largeur\]#is',
                    'hauteur'=>'#\[Hauteur\]#is',
                    'caracteres_speciaux'=>'#\Â°#is');
+        if ($str==array())
+            $str='';
         foreach($tab as $nom=>$regex) {
             if (is_array($str)) {
                $a=1;
@@ -736,14 +828,15 @@ class Dimensions extends Fonction_executable {
         imageantialias(Viewer::$image, true);
         Viewer::$largeur=z($this->options->Dimension_x);
         Viewer::$hauteur=z($this->options->Dimension_y);
+        imagefill(Viewer::$image,0,0,  imagecolorallocate(Viewer::$image, 255, 255, 255));
     }
     
     function verifier_erreurs() {
         if ($this->options->Dimension_x < 0 || $this->options->Dimension_y < 0 ) {
-            Viewer::$largeur=z(20);
-            Viewer::$hauteur=z(220);
-            Viewer::$image=imagecreatetruecolor(Viewer::$largeur, Viewer::$hauteur);
-            $this->erreur('Dimensions négatives');
+            self::erreur('Dimensions négatives');
+        }
+        if ($this->options->Dimension_x == array() || $this->options->Dimension_y == array() ) {
+            self::erreur('Dimensions nulles');
         }
     }
 }
@@ -759,6 +852,7 @@ class Remplir extends Fonction_executable {
         $this->options->Pos_x=z(self::toTemplatedString($this->options->Pos_x));
         $this->options->Pos_y=z(self::toTemplatedString($this->options->Pos_y));
         $this->verifier_erreurs();
+        $this->afficher_si_existant();
         list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
         $couleur=imagecolorallocate(Viewer::$image, $r,$g,$b);
         imagefill(Viewer::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
@@ -766,9 +860,9 @@ class Remplir extends Fonction_executable {
     }
     
     function verifier_erreurs() {
-        if ($this->options->Pos_x >= Viewer::$largeur || $this->options->Pos_y > Viewer::$hauteur
+        if ($this->options->Pos_x >= Viewer::$largeur || $this->options->Pos_y >= Viewer::$hauteur
          || $this->options->Pos_x < 0 || $this->options->Pos_y < 0) {
-            $this->erreur('Point de remplissage hors de l\'image');
+            self::erreur('Point de remplissage hors de l\'image : ('.$this->options->Pos_x.','.$this->options->Pos_y.') vers ('.Viewer::$largeur.','.Viewer::$hauteur.')');
         }
     }
 }
@@ -783,20 +877,14 @@ class Image extends Fonction_executable {
             return;
         $this->options->Decalage_x=self::toTemplatedString($this->options->Decalage_x);
         $this->options->Decalage_y=self::toTemplatedString($this->options->Decalage_y);
-        if (is_string($this->options->Source)) {
-            //include_once(BASEPATH.('/../../Edge.class.php'));
-            $this->options->Source=self::toTemplatedString($this->options->Source);
-            $extension_image=strtolower(substr($this->options->Source, strrpos($this->options->Source, '.')+1,strlen($this->options->Source)-strrpos($this->options->Source, '.')-1));
-            $fonction_creation_image='imagecreatefrom'.$extension_image;
+        $this->options->Source=self::toTemplatedString($this->options->Source);
+        $this->verifier_erreurs();
+        $extension_image=strtolower(substr($this->options->Source, strrpos($this->options->Source, '.')+1,strlen($this->options->Source)-strrpos($this->options->Source, '.')-1));
+        $fonction_creation_image='imagecreatefrom'.$extension_image;
 
-            $chemin_reel=Image::get_chemin_reel($this->options->Source);
-            $sous_image=call_user_func($fonction_creation_image,$chemin_reel);
-            list($width,$height)=array(imagesx($sous_image),imagesy($sous_image));
-        }
-        else {
-            $width=imagesx($sous_image);
-            $height=imagesy($sous_image);
-        }
+        $chemin_reel=Image::get_chemin_reel($this->options->Source);
+        $sous_image=call_user_func($fonction_creation_image,$chemin_reel);
+        list($width,$height)=array(imagesx($sous_image),imagesy($sous_image));
         $hauteur_sous_image=Viewer::$largeur*($height/$width);
         if ($this->options->Position=='bas') {
             $this->options->Decalage_y=Viewer::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
@@ -815,6 +903,13 @@ class Image extends Fonction_executable {
     static function get_chemin_relatif($source) {
         return base_url().'../edges/'.self::$pays.'/elements/'.$source;
     }
+    
+    function verifier_erreurs() {
+        $chemin_reel=Image::get_chemin_reel($this->options->Source);
+        if (!is_file($chemin_reel)) {
+            self::erreur('Le fichier '.$this->options->Source.' n\'existe pas');
+        }
+    }
 }
 
 class TexteMyFonts extends Fonction_executable {
@@ -832,6 +927,7 @@ class TexteMyFonts extends Fonction_executable {
         $this->options->URL=str_replace('.','/',$this->options->URL);
         $this->options->Pos_x=self::toTemplatedString($this->options->Pos_x);
         $this->options->Pos_y=self::toTemplatedString($this->options->Pos_y);
+        $this->verifier_erreurs();
         list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur_fond);
         list($r_texte,$g_texte,$b_texte)=$this->getRGB(null, null, null, $this->options->Couleur_texte);
 
@@ -885,6 +981,13 @@ class TexteMyFonts extends Fonction_executable {
             $this->options->Pos_y-=$nouvelle_hauteur/z(1);
         imagecopyresampled (Viewer::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 
+    }
+    
+    function verifier_erreurs() {
+    	if (is_array($this->options->Couleur_fond) && count($this->options->Couleur_fond) ==0)
+    		self::erreur('Couleur de fond indéfinie');
+    	if (is_array($this->options->Couleur_texte) && count($this->options->Couleur_texte) ==0)
+    		self::erreur('Couleur de texte indéfinie');
     }
 }
 
@@ -1162,21 +1265,36 @@ function est_dans_intervalle($numero,$intervalle) {
         return true;
     if ($numero==$intervalle)
         return true;
+    if (!isset(Modele_tranche::$numeros_dispos)) {
+        $m=new Modele_tranche();
+        Modele_tranche::$numeros_dispos=$m->get_numeros_disponibles(Modele_tranche::$pays,Modele_tranche::$magazine);
+    }
+    $numeros_dispos=Modele_tranche::$numeros_dispos;
     if (strpos($intervalle,'~')!==false) {
         list($numeros_debut,$numeros_fin)=explode('~',$intervalle);
         $numeros_debut=explode(';',$numeros_debut);
         $numeros_fin=explode(';',$numeros_fin);
-        foreach($numeros_debut as $i=>$numero_debut) {
-            $numero_fin=$numeros_fin[$i];
-            list($partie_lettre1,$partie_numerique1)=decomposer_numero($numero_debut);
-            list($partie_lettre2,$partie_numerique2)=decomposer_numero($numero_fin);
-            list($partie_lettre,$partie_numerique)=decomposer_numero($numero);
-            if ($partie_lettre1=='Tous' && $partie_lettre2=='Tous')
+    }
+    else
+        list($numeros_debut,$numeros_fin)=array(explode(';',$intervalle),explode(';',$intervalle));
+    
+    foreach($numeros_debut as $i=>$numero_debut) {
+        $numero_fin=$numeros_fin[$i];
+        if ($numero_debut === $numero_fin) {
+            if ($numero_debut === $numero)
                 return true;
-
-            if ($partie_lettre>=$partie_lettre1 && $partie_lettre<=$partie_lettre2
-             && $partie_numerique>=$partie_numerique1 && $partie_numerique<=$partie_numerique2)
+            else
+                continue;
+        }
+        $numero_debut_trouve=false;
+        foreach($numeros_dispos as $numero_dispo) {
+            if ($numero_dispo==$numero_debut)
+                $numero_debut_trouve=true;
+            if ($numero_dispo==$numero && $numero_debut_trouve) {
                 return true;
+            }
+            if ($numero_dispo==$numero_fin) 
+                continue 2;
         }
     }
     return false;
@@ -1266,7 +1384,7 @@ function getNumerosDebutFinShort($intervalle=null) {
 
 function decomposer_numero ($numero) {
     if ($numero=='Tous') return array('Tous','Tous');
-    $regex_partie_numerique='#([A-Z]*)([0-9]+)#is';
+    $regex_partie_numerique='#([A-Z]*)([0-9]*)#is';
     preg_match($regex_partie_numerique, $numero,$resultat_numero_debut);
     if (!array_key_exists(1, $resultat_numero_debut)) {
         $a=1;
