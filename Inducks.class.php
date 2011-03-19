@@ -13,7 +13,7 @@ class Inducks {
             $url='http://coa.inducks.org/creator.php?c='.$nom_auteur_abrege;
             $page=Util::get_page($url);
             preg_match($regex_auteur,$page,$auteur);
-            return $auteur[1];  
+            return $auteur[1];
 	}
 
         static function get_vrai_magazine($pays,$magazine) {
@@ -23,7 +23,7 @@ class Inducks {
                 return $resultat_get_redirection[0]['NomAbrege'];
             return $magazine;
         }
-        
+
         static function get_vrais_magazine_numero($pays,$magazine,$numero) {
             $vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
             if ($vrai_magazine !=$magazine) {
@@ -32,7 +32,7 @@ class Inducks {
             }
             return array($magazine,$numero);
         }
-        
+
 	static function get_numeros($pays,$magazine,$get_url=false,$sans_espace=false) {
             $magazine_depart=$magazine;
             $magazine=Inducks::get_vrai_magazine($pays,$magazine);
@@ -52,7 +52,7 @@ class Inducks {
                 return array($numeros[1],$numeros[2]);
             }
 	}
-        
+
         static function get_covers($pays,$magazine) {
             $liste=array();
             $page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c='.$pays.'/'.$magazine);
@@ -67,7 +67,7 @@ class Inducks {
 	static function get_pays() {
             $url='http://coa.inducks.org/legend-country.php?xch=1&lg='.Lang::$codes_inducks[$_SESSION['lang']];
             $page=Util::get_page($url);
-            
+
             $regex_pays='#<a href=country\.php\?c=([^>]+)>([^<]+)</a>#i';
             preg_match_all($regex_pays,$page,$liste_pays);
             $liste_pays_courte=array();
@@ -113,7 +113,7 @@ class Inducks {
             if (array_key_exists($pays,self::$noms_complets)) return self::$noms_complets[$pays];
             $adresse_pays='http://coa.inducks.org/country.php?xch=1&c='.$pays.'&lg='.Lang::$codes_inducks[$_SESSION['lang']];
             $buffer=Util::get_page($adresse_pays);
-            
+
             $regex_magazine='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
             $regex_pays='#"">([^:]+): publications</h1>#is';
             preg_match($regex_pays,$buffer,$nom_pays_recup);
@@ -133,7 +133,7 @@ class Inducks {
     static function get_liste_magazines($pays) {
         $url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
         $buffer=Util::get_page($url);
-        
+
         $regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
         preg_match_all($regex_magazines,$buffer,$liste_magazines);
         $liste_magazines_courte=array();
@@ -160,7 +160,7 @@ class Inducks {
         $regex_retrieve_numeros='#country\^entrycode\^collectiontype\^comment#is';
         return preg_match($regex_retrieve_numeros,$texte,$liste)>0;
     }
-    
+
     static function get_nb_numeros_magazines_pays($pays) {
         $nb_numeros=array();
         $url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
@@ -198,9 +198,9 @@ elseif (isset($_POST['get_numeros'])) {
 }
 elseif (isset($_POST['get_cover'])) {
     $page=Inducks::numero_to_page($_POST['pays'], $_POST['magazine'], $_POST['numero']);
-    
+
     $regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&(?:amp;)?image=)([^"]+)" alt="HR" /><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
-        
+
     if (preg_match($regex_cover,$page,$code_image)==0)
         $url='images/cover_not_found.png';
     else {
@@ -209,8 +209,8 @@ elseif (isset($_POST['get_cover'])) {
                                  .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
         DM_Core::$d->requete($requete_ajout_couverture);
     }
-    $regex_extrait='#<img border=0 src=\'(?:hr\.php\?image=)?(http://outducks.org/(?:(?:(?:(?:thumbnails2?/)?(?:webusers/(?:webusers/)?)|(?:renamed/'.$_POST['pays'].'/))[0-9A-Za-z]+/[0-9A-Za-z]+/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_[^p]+p([0-9]+)_001)|(?:'.$_POST['pays'].'/'.strtolower($_POST['magazine']).'/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_))[^\'&]+)(?:[^\']+)?\'>#is';
-    
+    $regex_extrait='#<img border="0" src="(?:hr\.php\?image=)?(http://outducks.org/(?:(?:(?:(?:thumbnails2?/)?(?:webusers/(?:webusers/)?)|(?:renamed/'.$_POST['pays'].'/))[0-9A-Za-z]+/[0-9A-Za-z]+/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_[^p]+p([0-9]+)_001)|(?:'.$_POST['pays'].'/'.strtolower($_POST['magazine']).'/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_))[^"&]+)(?:[^"]+)?"#is';
+
     $resultats=array();
     if (preg_match_all($regex_extrait,$page,$codes_images)>0) {
         for($i=0;$i<count($codes_images[0]);$i++) {
@@ -284,7 +284,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
             $liste_magazines['limite']=true;
         }
     }
-        
+
     echo header("X-JSON: " . json_encode($liste_magazines));
 }
 
@@ -294,12 +294,12 @@ function trier_resultats_recherche ($a,$b) {
     else
         return $a['titre'] == $b['titre'] ? 0 : 1;
 }
-        
+
 function nettoyer_numero($numero) {
     $numero= str_replace("\n",'',preg_replace('#[+ ]+#is',' ',$numero));
     return $numero;
 }
-        
+
 function nettoyer_numero_sans_espace($numero) {
     $numero= str_replace("\n",'',preg_replace('#[+ ]+#is','',$numero));
     return $numero;
