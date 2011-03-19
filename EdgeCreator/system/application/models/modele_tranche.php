@@ -56,6 +56,19 @@ class Modele_tranche extends Model {
         return $resultats_ordres;
     }
 
+    function get_etapes_simple($pays,$magazine) {
+        $resultats_etapes=array();
+        $requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin, Nom_fonction '
+                .'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL ';
+        $requete.='ORDER BY Ordre';
+        $query = $this->db->query($requete);
+        $resultats=$query->result();
+        foreach($resultats as $resultat) {
+            $resultats_etapes[]=$resultat;
+        }
+        return $resultats_etapes;
+    }
+
     function get_fonctions($pays,$magazine,$ordre,$numero=null) {
         $resultats_fonctions=array();
         $requete='SELECT '.implode(', ', self::$fields).' '
@@ -80,7 +93,7 @@ class Modele_tranche extends Model {
         return $resultats_fonctions;
     }
 
-    function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false) {
+    function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false) {
         $resultats_options=new stdClass();
         $requete='SELECT '.implode(', ', self::$fields).' '
                 .'FROM tranches_modeles '
@@ -116,6 +129,19 @@ class Modele_tranche extends Model {
             if (isset($resultats_options->$option_nom))
                 uksort($resultats_options->$option_nom,'trier_intervalles');
         $f=new $nom_fonction($resultats_options,false,$creation); // Ajout des champs avec valeurs par défaut
+        if ($inclure_infos_options) {
+            foreach($f->options as $nom_option=>$val) {
+                $prop_champs=new ReflectionProperty(get_class($f), 'champs');
+                $champs=$prop_champs->getValue();
+                $prop_valeurs_defaut=new ReflectionProperty(get_class($f), 'valeurs_defaut');
+                $valeurs_defaut=$prop_valeurs_defaut->getValue();
+                $intervalles_option=$f->options->$nom_option;
+                $intervalles_option['type']=$champs[$nom_option];
+                if (array_key_exists($nom_option, $valeurs_defaut))
+                    $intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
+                $f->options->$nom_option=$intervalles_option;
+            }
+        }
         return $f->options;
     }
     
@@ -298,10 +324,33 @@ class Modele_tranche extends Model {
         echo $requete_suppr;
     }
 
+    function delete_option($pays,$magazine,$etape,$nom_option) {
+        if ($nom_option=='Actif')
+            $requete_suppr_option='DELETE FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+                                  .'AND Ordre='.$etape.' AND Option_nom IS NULL';
+        else
+            $requete_suppr_option='DELETE FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+                                  .'AND Ordre='.$etape.' AND Option_nom LIKE \''.$nom_option.'\'';
+        $this->db->query($requete_suppr_option);
+        echo $requete_suppr_option;
+    }
+
+    function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin) {
+        if ($option_nom=='Actif')
+            $requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
+                           .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+        else
+            $requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
+                           .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+        $this->db->query($requete_insert);
+        echo $requete_suppr_option;
+    }
+
     function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
         $requete_get_options='SELECT '.implode(', ', self::$fields).' '
                             .'FROM tranches_modeles '
                             .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+        echo $requete_get_options."\n";
         $resultats=$this->db->query($requete_get_options)->result();
         foreach($resultats as $resultat) {
             $modifs=array();
@@ -321,14 +370,14 @@ class Modele_tranche extends Model {
                         $numeros_debut_fin['numeros_fin'][]=$numero_fin;
                     }
                     $condition_option_nom=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.$option_nom;
-                    $condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.str_replace("'","\'",$option_valeur);
+                    $condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.$option_valeur;
                     $requete_update='UPDATE tranches_modeles SET Numero_debut=\''.implode(';',$numeros_debut_fin['numeros_debut']).'\', '
                                                                .'Numero_fin=\''.implode(';',$numeros_debut_fin['numeros_fin']).'\' '
                                    .'WHERE Pays LIKE \''.$resultat->Pays.'\' AND Magazine LIKE \''.$resultat->Magazine.'\' '
                                    .'AND Ordre LIKE \''.$resultat->Ordre.'\' AND Nom_fonction LIKE \''.$resultat->Nom_fonction.'\' '
                                    .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
                                    .'AND Numero_debut LIKE \''.$resultat->Numero_debut.'\' AND Numero_fin LIKE \''.$resultat->Numero_fin.'\'';
-                    echo $requete_update;
+                    echo $requete_update."\n";
                     $this->db->query($requete_update);
                 }
             }
