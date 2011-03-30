@@ -60,6 +60,10 @@ class MyFonts extends Model {
 
             $code_image=$this->p->content;
             preg_match(self::$regex_source_image, $code_image, $chemin);
+            if (!array_key_exists(1, $chemin)) {
+                echo 'Aucun chemin d\'image trouvé sur '.$this->p->url;
+                Fonction_executable::erreur('Image MyFonts non trouvée ; ('.$this->p->url.')');
+            }
             $this->chemin_image=$chemin[1];
             /*
             $requete_get_id='SELECT Max(ID) AS id_max FROM images_myfonts';
@@ -79,6 +83,7 @@ class MyFonts extends Model {
 class Post extends Model {
     var $header;
     var $content;
+    var $url;
     
     function Post($url, $referer, $_data,$type='POST',$cookie='',$easyget=true) {
         // convert variables array to string:
@@ -89,8 +94,8 @@ class Post extends Model {
         $data = implode('&', $data);
         // format --> test1=a&test2=b etc.
 
-        $url=$url.'?'.$data;
-        $this->content = Util::get_page($url);
+        $this->url=$url.'?'.$data;
+        $this->content = Util::get_page($this->url);
         
         return;
         
@@ -134,34 +139,6 @@ class Post extends Model {
         // return as array:
         $this->header=$header;
         $this->content=$content;
-    }
-}
-
-class Util {
-    static function get_page($url) {
-        if (extension_loaded('curl')) {
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_NOBODY, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($ch, CURLOPT_ENCODING, "gzip");
-            $page = curl_exec($ch);
-            curl_close($ch);
-            return $page;
-        }
-        else {
-            $handle = @fopen($url, "r");
-            if ($handle) {
-                $buffer="";
-                while (!feof($handle)) {
-                    $buffer.= fgets($handle, 4096);
-                }
-                fclose($handle);
-                return $buffer;
-            }
-            else return ERREUR_CONNEXION_INDUCKS;
-        }
     }
 }
 ?>

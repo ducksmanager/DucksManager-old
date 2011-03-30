@@ -7,14 +7,19 @@ class Viewer extends Controller {
     static $magazine;
     static $numero;
     static $parametrage;
+    static $fond_noir;
     static $zoom;
     static $etapes_actives=array();
+    static $is_debug=false;
     
     static $etape_en_cours;
     
-    function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$random=null,$debug=false) {
-        self::$zoom=$zoom;
+    function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random=null,$debug=false) {
+        $fond_noir = $fond_noir == 'true';
+        self::$is_debug=$debug;
+    	self::$zoom=$zoom;
         $this->load->library('session');
+        $session_id = $this->session->userdata('session_id');
         $this->load->database();
         
         $this->load->model('Modele_tranche');
@@ -56,6 +61,7 @@ class Viewer extends Controller {
         $this->Modele_tranche->setMagazine(self::$magazine);
         self::$numero=$numero;
         self::$parametrage=json_decode($parametrage);
+        self::$fond_noir=$fond_noir;
         $parametrage=json_decode($parametrage);
         self::$etapes_actives=explode('-', $etapes_actives);
         
@@ -63,7 +69,17 @@ class Viewer extends Controller {
         //print_r($ordres);
         $dimensions=array();
         self::$etape_en_cours=new stdClass();
+        $num_ordre=-2;
+        $fond_noir_fait=false;
         foreach($num_ordres as $num_ordre) {
+            if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
+                $options=new stdClass();
+                $options->Pos_x=$options->Pos_y=0;
+                $options->Couleur='000000';
+                new Remplir($options);
+                $fond_noir_fait=true;
+            }
+                
             if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives)) {
                 $ordres[$num_ordre]=$this->Modele_tranche->get_fonctions($pays,$magazine,$num_ordre,$numero);
                 self::$etape_en_cours->num_etape=$num_ordre;
@@ -85,7 +101,8 @@ class Viewer extends Controller {
                                         $options2->$option_nom
                                             =urldecode(str_replace('^','%',
                                                        str_replace('!amp!','&',
-                                                       str_replace('!sharp!','#',$option_valeur))));
+                                                       str_replace('!slash!','/',
+                                                       str_replace('!sharp!','#',$option_valeur)))));
                                     }
                                 }
                             }
@@ -99,13 +116,16 @@ class Viewer extends Controller {
         // Nouvelles étapes
         foreach(self::$parametrage as $parametres=>$options) {
             list($num_ordre_param_ajout,$nom_fonction_param)=explode('~', $parametres);
+            self::$etape_en_cours->num_etape=$num_ordre_param_ajout;
+            self::$etape_en_cours->nom_fonction=$nom_fonction_param;
             if ($num_ordre_param_ajout > $num_ordre) { // Numéro d'étape supérieure à la maximale existante
                 foreach($options as $option_nom__intervalle=>$option_valeur) {
                     list($option_nom,$intervalle)=explode('.',$option_nom__intervalle);
                     if (est_dans_intervalle($numero,$intervalle)) {
                         $ordres[$num_ordre_param_ajout][0]->options->$option_nom=urldecode(str_replace('^','%',
                                                    str_replace('!amp!','&',
-                                                   str_replace('!sharp!','#',$option_valeur))));
+                                                   str_replace('!slash!','/',
+                                                   str_replace('!sharp!','#',$option_valeur)))));
                     }
                 }
                 if (isset($ordres[$num_ordre_param_ajout][0]->options))
@@ -115,7 +135,7 @@ class Viewer extends Controller {
         
         new Dessiner_contour($dimensions);
         
-        if ($debug===false)
+        if (self::$is_debug===false)
             header('Content-type: image/png');
         if ($save=='true' && $zoom==1.5) {
             @mkdir('system/application/views/gen/'.$pays);

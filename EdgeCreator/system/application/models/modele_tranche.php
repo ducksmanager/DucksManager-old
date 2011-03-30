@@ -56,10 +56,23 @@ class Modele_tranche extends Model {
         return $resultats_ordres;
     }
 
-    function get_etapes_simple($pays,$magazine) {
+    function get_nb_etapes($pays,$magazine) {
+        $resultats_etapes=array();
+        $requete='SELECT Count(Nom_fonction) AS cpt '
+                .'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL ';
+        $query = $this->db->query($requete);
+        $resultats=$query->result();
+        foreach($resultats as $resultat) {
+            return $resultat->cpt;
+        }
+    }
+
+    function get_etapes_simple($pays,$magazine, $num_etape=null) {
         $resultats_etapes=array();
         $requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin, Nom_fonction '
                 .'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL ';
+        if (!is_null($num_etape))
+            $requete.='AND Ordre='.$num_etape.' ';
         $requete.='ORDER BY Ordre';
         $query = $this->db->query($requete);
         $resultats=$query->result();
@@ -93,42 +106,46 @@ class Modele_tranche extends Model {
         return $resultats_fonctions;
     }
 
-    function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false) {
-        $resultats_options=new stdClass();
-        $requete='SELECT '.implode(', ', self::$fields).' '
-                .'FROM tranches_modeles '
-                .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
-        $requete.='ORDER BY Option_nom ASC';
-        //if (is_null($numero))
-        //    echo $requete.'<br />';
-        $resultats=$this->db->query($requete)->result();
-        $option_nom='';
-        foreach($resultats as $resultat) {
-            if ($option_nom!=$resultat->Option_nom) {
-                $option_courante=array();
-                if (!empty($option_nom) && is_null($numero))
-                    uksort($resultats_options->$option_nom,'trier_intervalles');
-            }
-            $option_nom=$resultat->Option_nom;
-            $numeros_debut=explode(';',$resultat->Numero_debut);
-            $numeros_fin=explode(';',$resultat->Numero_fin);
-            foreach($numeros_debut as $i=>$numero_debut) {
-                $numero_fin=$numeros_fin[$i];
-                $intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
-                if (est_dans_intervalle($numero, $intervalle)) {
-                    if (is_null($numero))
-                        $option_courante[$intervalle]=$resultat->Option_valeur;
-                    else
-                        $option_courante=$resultat->Option_valeur;
-                    continue;
-                }
-            }
-            $resultats_options->$option_nom=$option_courante;
+    function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false) {
+        if (is_float($ordre)) { // Etape temporaire
+            $creation=false;
         }
-        if (is_null($numero))
-            if (isset($resultats_options->$option_nom))
-                uksort($resultats_options->$option_nom,'trier_intervalles');
-        $f=new $nom_fonction($resultats_options,false,$creation); // Ajout des champs avec valeurs par défaut
+            $resultats_options=new stdClass();
+            $requete='SELECT '.implode(', ', self::$fields).' '
+                    .'FROM tranches_modeles '
+                    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
+            $requete.='ORDER BY Option_nom ASC';
+            //if (is_null($numero))
+            //    echo $requete.'<br />';
+            $resultats=$this->db->query($requete)->result();
+            $option_nom='';
+            foreach($resultats as $resultat) {
+                if ($option_nom!=$resultat->Option_nom) {
+                    $option_courante=array();
+                    if (!empty($option_nom) && is_null($numero))
+                        uksort($resultats_options->$option_nom,'trier_intervalles');
+                }
+                $option_nom=$resultat->Option_nom;
+                $numeros_debut=explode(';',$resultat->Numero_debut);
+                $numeros_fin=explode(';',$resultat->Numero_fin);
+                foreach($numeros_debut as $i=>$numero_debut) {
+                    $numero_fin=$numeros_fin[$i];
+                    $intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
+                    if (est_dans_intervalle($numero, $intervalle)) {
+                        if (is_null($numero))
+                            $option_courante[$intervalle]=$resultat->Option_valeur;
+                        else
+                            $option_courante=$resultat->Option_valeur;
+                        continue;
+                    }
+                }
+                $resultats_options->$option_nom=$option_courante;
+            }
+            if (is_null($numero))
+                if (isset($resultats_options->$option_nom))
+                    uksort($resultats_options->$option_nom,'trier_intervalles');
+        
+        $f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
         if ($inclure_infos_options) {
             foreach($f->options as $nom_option=>$val) {
                 $prop_champs=new ReflectionProperty(get_class($f), 'champs');
@@ -143,6 +160,30 @@ class Modele_tranche extends Model {
             }
         }
         return $f->options;
+    }
+
+    function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
+        $requete='SELECT DISTINCT Ordre FROM tranches_modeles '
+                .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' '
+                .'ORDER BY Ordre';
+        $resultats=$this->db->query($requete)->result();
+        $debut=true;
+        foreach($resultats as $resultat) {
+            if (!$debut) {
+                if ($resultat->Ordre != $etape+1)
+                    break;
+            }
+            $etape=$resultat->Ordre;
+
+            $debut=false;
+        }
+        echo 'Decalage des etapes '.$etape_debut.' a '.$etape."\n";
+        
+        for ($i=$etape;$i>=$etape_debut;$i--) {
+            $requete='UPDATE tranches_modeles SET Ordre='.($i+1).' '
+                    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i;
+            $this->db->query($requete);
+        }
     }
     
     function get_preview_existe($options_json) {
@@ -302,6 +343,10 @@ class Modele_tranche extends Model {
     }
 
     function insert_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
+        $ordre_existe=count($this->get_etapes_simple($pays, $magazine, $ordre)) > 0;
+        if ($ordre_existe) {
+            return;
+        }
         $requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
                 .'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\') ';
         $this->db->query($requete);
@@ -319,7 +364,10 @@ class Modele_tranche extends Model {
 
     function delete_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction) {
         $requete_suppr='DELETE FROM tranches_modeles '
-                      .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\')';
+                      .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\'';
+        if ($numero_debut!=null)
+            $requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
+        $requete_suppr.=')';
         $this->db->query($requete_suppr);
         echo $requete_suppr;
     }
@@ -343,7 +391,7 @@ class Modele_tranche extends Model {
             $requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
                            .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\') ';
         $this->db->query($requete_insert);
-        echo $requete_suppr_option;
+        echo $requete_insert;
     }
 
     function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
@@ -739,7 +787,7 @@ class Fonction extends Modele_tranche {
 
 class Fonction_executable extends Fonction {
 
-    function Fonction_executable($options,$creation=false) {
+    function Fonction_executable($options,$creation=false,$get_options_defaut=true) {
         $this->options=$options;
         $classe=get_class($this);
         if ($creation) {
@@ -751,7 +799,7 @@ class Fonction_executable extends Fonction {
                 }
             }
         }
-        else {
+        else if ($get_options_defaut){
             $propriete_valeurs_defaut=new ReflectionProperty($classe, 'valeurs_defaut');
             $valeurs_defaut=$propriete_valeurs_defaut->getValue();
             foreach($valeurs_defaut as $nom=>$valeur) {
@@ -760,6 +808,16 @@ class Fonction_executable extends Fonction {
                 }
             }
         }
+        else {
+            $propriete_champs=new ReflectionProperty($classe, 'champs');
+            $valeurs_champs=$propriete_champs->getValue();
+            foreach($valeurs_champs as $nom=>$valeur) {
+                $this->options->$nom=null;
+            }
+
+            return;
+        }
+        
         $propriete_champs=new ReflectionProperty($classe, 'champs');
         $champs=$propriete_champs->getValue();
         foreach(array_keys($champs) as $nom) {
@@ -868,8 +926,8 @@ class Dimensions extends Fonction_executable {
     static $champs=array('Dimension_x'=>'quantite','Dimension_y'=>'quantite');
     static $valeurs_nouveau=array('Dimension_x'=>15,'Dimension_y'=>200);
     static $valeurs_defaut=array();
-    function Dimensions($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Dimensions($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->verifier_erreurs();
@@ -894,8 +952,8 @@ class Remplir extends Fonction_executable {
     static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Couleur'=>'couleur');
     static $valeurs_nouveau=array('Pos_x'=>0,'Pos_y'=>0,'Couleur'=>'AAAAAA');
     static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0);
-    function Remplir($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Remplir($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->options->Pos_x=z(self::toTemplatedString($this->options->Pos_x));
@@ -920,8 +978,8 @@ class Image extends Fonction_executable {
     static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
     static $valeurs_nouveau=array('Source'=>'Tete PM.png','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
     static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
-    function Image($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Image($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->options->Decalage_x=self::toTemplatedString($this->options->Decalage_x);
@@ -965,8 +1023,8 @@ class TexteMyFonts extends Fonction_executable {
     static $champs=array('URL'=>'texte','Couleur_texte'=>'couleur','Couleur_fond'=>'couleur','Largeur'=>'quantite','Chaine'=>'texte','Pos_x'=>'quantite','Pos_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Rotation'=>'quantite','Demi_hauteur'=>'liste','Mesure_depuis_haut'=>'liste');
     static $valeurs_nouveau=array('URL'=>'redrooster.block-gothic-rr.demi-extra-condensed','Couleur_texte'=>'000000','Couleur_fond'=>'ffffff','Largeur'=>'700','Chaine'=>'Le journal de Mickey','Pos_x'=>'0','Pos_y'=>'5','Compression_x'=>'0.3','Compression_y'=>'0.3','Rotation'=>'90','Demi_hauteur'=>'Oui','Mesure_depuis_haut'=>'Oui');
     static $valeurs_defaut=array('Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1','Mesure_depuis_haut'=>'Oui');
-    function TexteMyFonts($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function TexteMyFonts($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
 
@@ -1044,8 +1102,8 @@ class TexteTTF extends Fonction_executable {
     static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Rotation'=>'quantite','Taille'=>'quantite','Couleur'=>'couleur','Chaine'=>'texte','Police'=>'liste','Compression_x'=>'quantite','Compression_y'=>'quantite');
     static $valeurs_nouveau=array('Pos_x'=>'3','Pos_y'=>'5','Rotation'=>'-90','Taille'=>'3.5','Couleur'=>'F50D05','Chaine'=>'Texte du num&eacute;ro [Numero]','Police'=>'Arial','Compression_x'=>'1','Compression_y'=>'1');
     static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0,'Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1');
-    function TexteTTF($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function TexteTTF($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->options->Chaine=self::toTemplatedString($this->options->Chaine);
@@ -1097,8 +1155,8 @@ class Polygone extends Fonction_executable {
     static $champs=array('X'=>'texte','Y'=>'texte','Couleur'=>'couleur');
     static $valeurs_nouveau=array('X'=>'1,4,7,14','Y'=>'5,25,14,12','Couleur'=>'000000');
     static $valeurs_defaut=array();
-    function Polygone($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Polygone($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         if (is_array($this->options->X)) {
@@ -1141,8 +1199,8 @@ class Agrafer extends Fonction_executable {
     static $champs=array('Y1'=>'quantite','Y2'=>'quantite','Taille_agrafe'=>'quantite');
     static $valeurs_nouveau=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
     static $valeurs_defaut=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
-    function Agrafer($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Agrafer($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->options->Y1=self::toTemplatedString($this->options->Y1);
@@ -1158,8 +1216,8 @@ class Degrade extends Fonction_executable {
     static $champs=array('Couleur_debut'=>'couleur','Couleur_fin'=>'couleur','Sens'=>'liste','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite');
     static $valeurs_nouveau=array('Couleur_debut'=>'D01721','Couleur_fin'=>'0000FF','Sens'=>'Vertical','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5');
     static $valeurs_defaut=array();
-    function Degrade($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Degrade($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
 
@@ -1229,8 +1287,8 @@ class DegradeTrancheAgrafee extends Fonction_executable {
     static $champs=array('Couleur'=>'couleur');
     static $valeurs_nouveau=array('Couleur'=>'D01721');
     static $valeurs_defaut=array();
-    function DegradeTrancheAgrafee($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function DegradeTrancheAgrafee($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $coef_degrade=1.75;
@@ -1254,8 +1312,8 @@ class Rectangle extends Fonction_executable {
     static $champs=array('Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste');
     static $valeurs_nouveau=array('Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non');
     static $valeurs_defaut=array();
-    function Rectangle($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Rectangle($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->options->Pos_x_debut=z(self::toTemplatedString($this->options->Pos_x_debut));
@@ -1276,8 +1334,8 @@ class Arc_cercle extends Fonction_executable {
     static $champs=array('Couleur'=>'couleur','Pos_x_centre'=>'quantite','Pos_y_centre'=>'quantite','Largeur'=>'quantite','Hauteur'=>'quantite','Angle_debut'=>'quantite','Angle_fin'=>'quantite','Rempli'=>'liste');
     static $valeurs_nouveau=array('Couleur'=>'BBBBBB','Pos_x_centre'=>'10','Pos_y_centre'=>'50','Largeur'=>'10','Hauteur'=>'20','Angle_debut'=>'0','Angle_fin'=>'360','Rempli'=>'Non');
     static $valeurs_defaut=array();
-    function Arc_cercle($options,$executer=true,$creation=false) {
-        parent::Fonction_executable($options,$creation);
+    function Arc_cercle($options,$executer=true,$creation=false,$get_options_defaut=true) {
+        parent::Fonction_executable($options,$creation,$get_options_defaut);
         if (!$executer)
             return;
         $this->options->Pos_x_centre=z(self::toTemplatedString($this->options->Pos_x_centre));
