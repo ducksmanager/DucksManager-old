@@ -120,7 +120,7 @@ else
             break;
         case 'bibliotheque':
             if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
-                if (Util::getBrowser()!=='MSIE') {
+                if (Util::getBrowser()!=='MSIE<9') {
                     $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
                     $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
                     $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
@@ -398,10 +398,46 @@ else
                                         <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
                                         <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
                                         <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
-                                    
+                                        <a href="?action=mot_de_passe_oublie"><?=MOT_DE_PASSE_OUBLIE?></a>
                                     <?php
                                 }
-                                break;
+                            break;
+                            case 'mot_de_passe_oublie' :
+                                if (isset($_POST['champs_remplis'])) {
+                                    if (empty($_POST['email'])) {
+                                        echo MOT_DE_PASSE_OUBLIE_ERREUR_VIDE.'<br />';
+                                    }
+                                    else {
+                                        $requete_verifier_email='SELECT username,password FROM users WHERE Email LIKE \''.$_POST['email'].'\'';
+                                        $resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
+                                        if (count($resultat_verifier_email) ==0) {
+                                            echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
+                                        }
+                                        else {
+                                            $entete = "MIME-Version: 1.0\r\n";
+                                            $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
+                                            $entete .= "To: ".$resultat_verifier_email[0]['username']." <".$_POST['email'].">\r\n";
+                                            $entete .= "From: DucksManager <admin@ducksmanager.net>\r\n";
+                                            $contenu_mail='Bonjour '.$resultat_verifier_email[0]['username'].'<br /><br />'
+                                                         .'Vous recevez cet e-mail &agrave; la suite de votr demande de r&eacute;cup&eacute;ration de mot de passe sur DucksManager.'
+                                                         .'<br /><br />Votre mot de passe est :'.$resultat_verifier_email[0]['password']
+                                                         .'<br /><br /><br />A bient&ocirc;t sur DucksManager !<br /><br />Le webmaster';
+                                            if (mail($_POST['email'], 'Recuperation de mot de passe DucksManager', $contenu_mail,$entete))
+                                                echo MOT_DE_PASSE_OUBLIE_EMAIL_ENVOYE;
+                                            else
+                                                echo MOT_DE_PASSE_OUBLIE_ERREUR_ENVOI_EMAIL;
+                                            break;
+                                        }
+                                    }
+                                }
+                                ?><?=MOT_DE_PASSE_OUBLIE_EXPLICATION?><br /><br />
+                                <form method="post" action="?action=mot_de_passe_oublie">
+                                    <input type="hidden" name="champs_remplis" />
+                                    <input type="text" name="email" value="" /><br />
+                                    <input type="submit" value="<?=ENVOYER?>" />
+                                </form>
+                                <?php
+                            break;
                             case 'logout':
                                 session_destroy();
                                 session_unset();
@@ -425,8 +461,8 @@ else
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=bibliotheque');
                                 switch($onglet) {
                                     case 'affichage':
-                                        if (Util::getBrowser()==='MSIE') {
-                                            echo IE_NON_SUPPORTE;
+                                        if (Util::getBrowser()==='MSIE<9') {
+                                            echo IE_INF_A_9_NON_SUPPORTE;
                                         }
                                         else {
                                             ?>
@@ -673,19 +709,26 @@ else
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
                                             echo MODIFICATIONS_OK.'<br />';
-                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.($_POST['partage']=='on'?'1':'0').', AfficherVideo='.($_POST['video']=='on'?'1':'0').' '
-                                                       .'WHERE ID='.$id_user);
+                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.($_POST['partage']=='on'?'1':'0').', AfficherVideo='.($_POST['video']=='on'?'1':'0').', '
+                                                                .'Email=\''.$_POST['email'].'\' '
+                                                                .'WHERE ID='.$id_user);
                                         }
                                         $resultat_partage=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
+                                        $resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
                                         ?>
-                                        <form action="?action=gerer&amp;onglet=options" method="post">
+                                        <form action="?action=gerer&amp;onglet=compte" method="post">
+                                        <br /><?=ADRESSE_EMAIL?> : <br />
+                                        <input type="text" name="email" value=<?php
+                                        if (is_null($resultat_email[0]['Email'])) {
+                                            echo '""';
+                                        }
+                                        else {
+                                            echo '"'.$resultat_email[0]['Email'].'"';
+                                        }?> /> <?=EMAIL_EXPLICATION?><br /><br />
+                                        <input type="checkbox" name="partage"<?php
+                                        if ($resultat_partage[0]['AccepterPartage']==1) {?>checked="checked"<?php } ?>/><?=ACTIVER_PARTAGE?><br />
+										
                                         <br />
-                                        <input type="checkbox" name="partage"
-                                        <?php
-                                        if ($resultat_partage[0]['AccepterPartage']==1) {?>
-                                            checked="checked"
-                                        <?php } ?>
-                                         /><?=ACTIVER_PARTAGE?><br />
                                         <input type="checkbox" name="video"
                                         <?php
                                         if (DM_Core::$d->user_afficher_video()) {?>
@@ -1296,6 +1339,7 @@ function formulaire_inscription() {
             ?><input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" /><?php
         }?>
         <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text">&nbsp;</td></tr>
+            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="" /></td></tr>
             <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input name="pass" type="password" /></td></tr>
             <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input name="pass2" type="password" /></td></tr>
             <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" /></td></tr></table>
@@ -1303,7 +1347,7 @@ function formulaire_inscription() {
         <?php
     }
     else {
-        DM_Core::$d->nouveau_user($_POST['user'], $_POST['pass']);
+        DM_Core::$d->nouveau_user($_POST['user'], $_POST['email'],$_POST['pass']);
         if (isset($_POST['rawData'])) {
             $l = new Liste($_POST['rawData']);
             $l->add_to_database(DM_Core::$d, DM_Core::$d->user_to_id($_POST['user']));

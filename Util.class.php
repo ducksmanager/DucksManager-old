@@ -1,10 +1,11 @@
 <?php
-require_once ('Database.class.php');
+if (!isset($no_database))
+    require_once ('Database.class.php');
 
 class Util {
     static $nom_fic;
-    static function get_page($url,$essai=0) {
-        /*if (extension_loaded('curl')) {
+    static function get_page($url,$essai=0,$force_curl=false) {
+        if ($force_curl && extension_loaded('curl')) {
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_NOBODY, FALSE);
@@ -15,7 +16,7 @@ class Util {
             curl_close($ch);
             return $page;
         }
-        else */{
+        else {
             $handle = @fopen($url, "r");
             if ($handle) {
                 $buffer="";
@@ -55,8 +56,10 @@ class Util {
           $navigateur = "Netscape";
         elseif (preg_match("#Opera#", getenv("HTTP_USER_AGENT")))
           $navigateur = "Opera";
+        elseif (preg_match("#MSIE 9#", getenv("HTTP_USER_AGENT")))
+          $navigateur = "MSIE 9";
         elseif (preg_match("#MSIE#", getenv("HTTP_USER_AGENT")))
-          $navigateur = "MSIE";
+          $navigateur = "MSIE<9";
         elseif (preg_match("#Lynx#", getenv("HTTP_USER_AGENT")))
           $navigateur = "Lynx";
         elseif (preg_match("#WebTV#", getenv("HTTP_USER_AGENT")))
@@ -108,8 +111,8 @@ class Util {
         return $str;
     }
     
-    static function ecrire_dans_fichier($nom_fichier,$str) {
-        $inF = fopen($nom_fichier,"w");
+    static function ecrire_dans_fichier($nom_fichier,$str,$a_la_suite) {
+        $inF = fopen($nom_fichier,$a_la_suite ? 'a+' : 'w');
         fputs($inF,$str); 
         fclose($inF);
     }

@@ -201,6 +201,7 @@ define('ICI','here');
 define('IDENTIFIANTS_INCORRECTS','Incorrect username or password!');
 define('IDENTIFICATION_OBLIGATOIRE','Vous devez &ecirc;tre identifi&eacute; pour acc&eacute;der &agrave; cette page!');
 define('IDENTIFIEZ_VOUS','Login in order to access your DucksManager account.');
+define('IE_INF_A_9_NON_SUPPORTE', 'D&eacute;sol&eacute;, Internet Explorer n\'est pas support&eacute; qu\'&agrave; partir de la version 9 pour cette fonctionnalit&eacute;');
 define('IE_NON_SUPPORTE', 'Sorry, Internet Explorer is not supported for this functionnality');
 define('IMPORTATION_EN_COURS','DucksManager is now importing from Inducks...');
 define('IMPORTATION_NUMEROS','Importating issues...');
