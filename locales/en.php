@@ -379,6 +379,7 @@ define('PROPOSER_MAGAZINES_POSSEDES','Only suggest issues whose magazines are in
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','This option allows to tell DucksManager that only the issues belonging to your magazines list can be suggested.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Do you wish to execute these operations ?');
 define('QUESTION_IMPORTER_INDUCKS','Do you wish to import them?');
+define('QUESTION_SUPPRIMER_MAGAZINE','Would you like this magazine to be removed from your collection ? In this case, the following issues will also be removed from your collection :');
 define('RECHERCHE_MAGAZINE','Don\'t find the magazine name of your issue ? Please type hereunder the title of one of its stories. DucksManager will list the magazines which contain this story.');
 define('RECHERCHER_BIBLIOTHEQUE','Find a story in the bookcase :');
 define('RECHERCHER_BOUQUINERIES','Search for second-hand bookshops');

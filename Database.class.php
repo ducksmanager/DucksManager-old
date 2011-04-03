@@ -411,11 +411,7 @@ class Database {
 				?><tr><td>- <?=$auteur['NomAuteur']?></td><?php
 				if ($affiche_notation) {
 					?><td id="pouces<?=$num?>" onmouseout="vider_pouces()"><?php
-					for ($i=1;$i<=10;$i++) {
-						$orientation=$i<=5?'bas':'haut';
-						$pouce_rempli=$auteur['Notation']>=$i;
-						?><img id="pouce<?=$num?>_<?=$i?>" height="15" src="images/pouce_<?=$orientation.($pouce_rempli?'':'_blanc')?>.png" onclick="valider_note(<?=$num?>)" onmouseover="hover(<?=$num?>,<?=$i?>)"/><?php
-					}
+                                        echo note_to_pouces($num,$auteur['Notation']);
 					?><input type="hidden" value="<?=$auteur['NomAuteurAbrege']?>" name="auteur<?=$num?>" />
 					<input type="hidden" id="notation<?=$num?>" name="notation<?=$num?>" />
 					</td>
@@ -447,7 +443,7 @@ class Database {
 	function liste_suggestions_magazines() {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_numeros_recommandes='SELECT Pays, Magazine, Numero, Texte FROM numeros_recommandes '
-									.'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
+                                            .'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
 		$resultat_numeros_recommandes=DM_Core::$d->requete_select($requete_numeros_recommandes);
 		if (count($resultat_numeros_recommandes)!=0) {
 			echo INTRO_NUMEROS_RECOMMANDES;?>
@@ -457,39 +453,51 @@ class Database {
 			$auteurs=array();
 
 			foreach($resultat_numeros_recommandes as $numero) {
-				$pays=$numero['Pays'];
-				if (!array_key_exists($pays,$pays_parcourus))
-					$pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
-				?><li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br /><?php
-				$histoires=explode(',',$numero['Texte']);
-				$debut=true;
-				foreach ($histoires as $i=>$histoire) {
-					list($auteur,$nb_histoires)=explode('=',$histoire);
-					if (!array_key_exists($auteur,$auteurs))
-						$auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
-					if (!$debut) {
-						if ($i==count($histoires)-1) {
-							?> <?=ET?> <?php
-                        }
-						else {
-                        	?>, <?php
-                        }
-					}
-					if ($nb_histoires==1) {
-                    	?>1 <?=HISTOIRE?><?php
-                    }
-					else {
-                    	?><?=$nb_histoires?> <?=HISTOIRES?><?php
-                    }
-					?> <?=DE?> <?=$auteurs[$auteur]?><?php
-					$debut=false;
-				}
+                            $pays=$numero['Pays'];
+                            if (!array_key_exists($pays,$pays_parcourus))
+                                    $pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
+                            ?><li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br /><?php
+                            $auteurs__nbs=explode(',',$numero['Texte']);
+                            
+                            $note_histoire=0;
+                            $notes_auteurs=array();
+                            $resultat_notes_auteurs=DM_Core::$d->get_notes_auteurs($id_user);
+                            foreach($resultat_notes_auteurs as $note_auteur)
+                                $notes_auteurs[$note_auteur['NomAuteurAbrege']]=$note_auteur['Notation'];
+
+                            foreach ($auteurs__nbs as $i=>$auteur__nb) {
+                                list($auteur,$nb_histoires)=explode('=',$auteur__nb);
+                                $note_histoire+=$notes_auteurs[$auteur]*$nb_histoires;
+                            }
+                            echo note_to_pouces($note);
+                            $debut=true;
+                            foreach ($auteurs__nbs as $i=>$histoire) {
+                                list($auteur,$nb_histoires)=explode('=',$histoire);
+                                if (!array_key_exists($auteur,$auteurs))
+                                        $auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
+                                if (!$debut) {
+                                    if ($i==count($auteur__nb)-1) {
+                                        ?> <?=ET?> <?php
+                                    }
+                                    else {
+                                        ?>, <?php
+                                    }
+                                }
+                                if ($nb_histoires==1) {
+                                    ?>1 <?=HISTOIRE?><?php
+                                }
+                                else {
+                                    ?><?=$nb_histoires?> <?=HISTOIRES?><?php
+                                }
+                                ?> <?=DE?> <?=$auteurs[$auteur]?><?php
+                                $debut=false;
+                            }
 			}
 			?></ul><?php
 		}
 		else {
-        	?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
-        }
+                    ?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
+                }
 	}
 
 	function liste_auteurs_notes($auteurs_surveilles) {
@@ -500,6 +508,19 @@ class Database {
 				echo '0_';
 		}
 	}
+        function get_notes_auteurs($id_user) {
+            return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
+        }
+
+        function sous_liste($pays,$magazine) {
+            $l_magazine=new Liste();
+            if (isset($l->collection[$pays][$magazine])) {
+                foreach($l->collection[$pays][$magazine] as $numero) {
+                    $l_magazine->ajouter($pays, $magazine, $numero);
+                }
+            }
+            return $l_magazine;
+        }
 }
 require_once('DucksManager_Core.class.php');
 
@@ -554,7 +575,16 @@ if (isset($_POST['database'])) {
                 }
 		else {
                     echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
-                    @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
+                    ?><br /><br /><?php
+                    echo QUESTION_SUPPRIMER_MAGAZINE;
+                    $l_magazine=$l->sous_liste($pays,$magazine);
+                    
+                    $l_magazine->afficher('Classique');
+                    ?><br />
+                    <a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
+                    <a href="?action=gerer"><?=NON?></a><?php
+                    if (!Util::isLocalHost())
+                        @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
                 }
 	}
 	else if (isset($_POST['acquisition'])) {
@@ -598,7 +628,7 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['liste_notations'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		$resultat_notations=DM_Core::$d->requete_select('SELECT Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
+		$resultat_notations=DM_Core::$d->get_note_auteurs($id_user);
 		echo DM_Core::$d->liste_auteurs_notes($resultat_notations);
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
@@ -632,4 +662,14 @@ if (isset($_POST['database'])) {
 			echo 'OK, '.UTILISATEUR_VALIDE;
 	}
 }
+function note_to_pouces($num,$note) {
+    ob_start();
+    for ($i=1;$i<=10;$i++) {
+        $orientation=$i<=5?'bas':'haut';
+        $pouce_rempli=$note>=$i;
+        ?><img alt="+" id="pouce<?=$num?>_<?=$i?>" height="15" src="images/pouce_<?=$orientation.($pouce_rempli?'':'_blanc')?>.png" onclick="valider_note(<?=$num?>)" onmouseover="hover(<?=$num?>,<?=$i?>)"/><?php
+    }
+    ob_end_flush();
+}
+
 ?>

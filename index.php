@@ -694,6 +694,11 @@ else
                             case 'gerer':
                                 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                 $l=DM_Core::$d->toList($id_user);
+                                if (isset($_GET['supprimer_magazine'])) {
+                                    list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
+                                    $l_magazine=$l->sous_liste($pays,$magazine);
+                                    $l_magazine->remove_from_database (DM_Core::$d, $id_user);
+                                }
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php

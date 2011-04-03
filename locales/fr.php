@@ -381,6 +381,7 @@ define('PROPOSER_MAGAZINES_POSSEDES','Me proposer uniquement des magazines appar
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Quelles op&eacute;rations souhaitez-vous ex&eacute;cuter ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
+define('QUESTION_SUPPRIMER_MAGAZINE','Souhaitez-vous supprimer ce magazine de votre collection ? Les num&eacute;ros suivants seront &eacute;galement supprim&eacute;s de votre collection dans ce cas :');
 define('RECHERCHE_MAGAZINE','Vous ne connaissez pas le nom du magazine ? Entrez ci-dessous le titre d\'une de ses histoires. DucksManager vous proposera une liste de magazines contenant cette histoire.');
 define('RECHERCHER_BIBLIOTHEQUE','Rechercher une histoire dans la biblioth&egrave;que :');
 define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');

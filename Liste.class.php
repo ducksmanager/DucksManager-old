@@ -260,8 +260,7 @@ class Liste {
                     continue;
                 foreach($numeros_pays as $magazine=>$numeros) {
                     foreach($numeros as $numero) {
-                        $num_final='';
-                        $num_final.=$numero;
+                        $num_final=$numero[0];
                         $requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numero LIKE \''.$num_final.'\')';
                         DM_Core::$d->requete($requete);
                         $cpt++;
