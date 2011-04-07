@@ -2,7 +2,7 @@
 class fr_TP extends Edge {
     var $pays='fr';
     var $magazine='TP';
-    var $intervalles_validite=array(array('debut'=>3,'fin'=>13));
+    var $intervalles_validite=array(array('debut'=>3,'fin'=>14));
 
     static $largeur_defaut=15;
     static $hauteur_defaut=278;
