@@ -2,7 +2,7 @@
 class fr_MPO extends Edge {
     var $pays='fr';
     var $magazine='MPO';
-    var $intervalles_validite=array(13,17,19,20,31,40,117);
+    var $intervalles_validite=array(5,13,15,17,18,19,20,24,31,40,101,117);
 
     static $largeur_defaut=10;
     static $hauteur_defaut=120;
