@@ -13,7 +13,7 @@ $hauteur=$_POST['hauteur'];
         <?php
         new JS('js/scriptaculous/lib/prototype.js');
         new JS('js/scriptaculous/src/scriptaculous.js');
-        new JS('js/edges.js');
+        new JS('js/edges2.js');
         ?>
 
     </head>
@@ -31,14 +31,14 @@ $hauteur=$_POST['hauteur'];
         list($width, $height, $type, $attr)=getimagesize('edges/textures/'.Etagere::$texture1.'/'.Etagere::$sous_texture1.'.jpg');
         if ($width<Etagere::$largeur)
             Etagere::$largeur=$width;
-        list($html_bibliotheque, $pourcentage_visible)=Edge::getPourcentageVisible(true,$regen);
-        $html=Edge::getEtagereHTML().$html_bibliotheque.Edge::getEtagereHTML(false);
+        echo Edge::getEtagereHTML();
+        list($html, $pourcentage_visible)=Edge::getPourcentageVisible(true,$regen);
         echo $html;
-        $rand=rand(10000, 99999);
+        echo Edge::getEtagereHTML(false);
         //Util::ecrire_dans_fichier('./edges/_tmp/'.$rand.'.html', $html);
         echo '';
-        ?>
-    <div style="display:none" id="num_gen" name="<?=$rand?>"></div>
+        /*?>
+    <div style="display:none" id="num_gen" name="<?=$rand?>"></div><?php */?>
     <div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
     <div id="nb_numeros_visibles" style="display:none" name="<?=$pourcentage_visible?>"></div>
     <div id="hauteur_etage" style="display:none" name="<?=Etagere::$hauteur_max_etage?>"></div>

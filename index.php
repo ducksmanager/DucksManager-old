@@ -61,7 +61,7 @@ else
             new JS('js/sel_num.js');
             switch($_GET['action']) {
                 case 'gerer':
-                    new JS('js/edges.js','js/menu_contextuel.js');
+                    new JS('js/edges2.js','js/menu_contextuel.js');
                 break;  
                 case 'bibliotheque':
                     $textures=array();
@@ -79,7 +79,7 @@ else
                         var texture2='<?=$textures[2]?>';
                         var sous_texture2='<?=$textures[3]?>';
                     </script><?php
-                    new JS('js/edges.js');
+                    new JS('js/edges2.js');
                 break; 
                 case 'stats':
                     switch($_GET['onglet']) {
