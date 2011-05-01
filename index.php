@@ -606,7 +606,7 @@ else
                                                     ?>
                                                     <?=MERCI_CONTRIBUTION?><br /><?=EMAIL_ENVOYE;?>
                                                     <?php
-                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide pour la bibliothèque',
+                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide dde '.$_SESSION['user'].' pour la bibliothèque',
                                                          $_POST['texte_participation'],'From: '.$_POST['email']);
                                                 }
                                                 else {
