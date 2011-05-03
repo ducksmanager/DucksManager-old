@@ -82,28 +82,28 @@ class Modele_tranche extends Model {
         return $resultats_etapes;
     }
 
-    function get_fonctions($pays,$magazine,$ordre,$numero=null) {
+    function get_fonction($pays,$magazine,$ordre,$numero=null) {
         $resultats_fonctions=array();
         $requete='SELECT '.implode(', ', self::$fields).' '
                 .'FROM tranches_modeles '
                 .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL ';
         $query = $this->db->query($requete);
         $resultats=$query->result();
-        foreach($resultats as $resultat) {
-            if (!is_null($numero)) {
-                $numeros_debut=explode(';',$resultat->Numero_debut);
-                $numeros_fin=explode(';',$resultat->Numero_fin);
-                foreach($numeros_debut as $i=>$numero_debut) {
-                    $numero_fin=$numeros_fin[$i];
-                    $intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
-                    if (!est_dans_intervalle($numero, $intervalle))
-                        continue;
-                }
-
+        if (count($resultats) == 0)
+            return null;
+        $resultat=$resultats[0];
+        if (!is_null($numero)) {
+            $numeros_debut=explode(';',$resultat->Numero_debut);
+            $numeros_fin=explode(';',$resultat->Numero_fin);
+            foreach($numeros_debut as $i=>$numero_debut) {
+                $numero_fin=$numeros_fin[$i];
+                $intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
+                if (!est_dans_intervalle($numero, $intervalle))
+                    continue;
             }
-            $resultats_fonctions[]=new Fonction($resultat);
+
         }
-        return $resultats_fonctions;
+        return new Fonction($resultat);
     }
 
     function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false) {
@@ -144,7 +144,7 @@ class Modele_tranche extends Model {
             if (is_null($numero))
                 if (isset($resultats_options->$option_nom))
                     uksort($resultats_options->$option_nom,'trier_intervalles');
-        
+                
         $f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
         if ($inclure_infos_options) {
             foreach($f->options as $nom_option=>$val) {
@@ -160,6 +160,29 @@ class Modele_tranche extends Model {
             }
         }
         return $f->options;
+    }
+
+    function get_noms_champs($nom_fonction) {
+        $f=new $nom_fonction(null,false,false,false);
+        foreach($f->options as $nom_option=>$val) {
+            $prop_champs=new ReflectionProperty(get_class($f), 'champs');
+            $champs=$prop_champs->getValue();
+            $prop_valeurs_defaut=new ReflectionProperty(get_class($f), 'valeurs_defaut');
+            $valeurs_defaut=$prop_valeurs_defaut->getValue();
+            $intervalles_option=$f->options->$nom_option;
+            $intervalles_option['type']=$champs[$nom_option];
+            if (array_key_exists($nom_option, $valeurs_defaut))
+                $intervalles_option['valeur_defaut']=$valeurs_defaut[$nom_option];
+            $f->options->$nom_option=$intervalles_option;
+        }
+        return $f->options;
+    }
+
+    function has_no_option($pays,$magazine,$etape) {
+        $requete='SELECT Option_nom '
+                .'FROM tranches_modeles '
+                .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL';
+        return $this->db->query($requete)->num_rows() == 0;
     }
 
     function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
@@ -253,15 +276,29 @@ class Modele_tranche extends Model {
         echo '<pre>';print_r($groupes_numeros);echo '</pre>';
     }
     
-    function get_numeros_disponibles($pays,$magazine) {
+    function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
         $numeros_affiches=array('Aucun'=>'Aucun');
-
+        if ($get_prets)
+            $tranches_pretes=array();
         include_once(BASEPATH.('/../../Inducks.class.php'));
-        Inducks::$use_db=false;
+        Inducks::$use_db=true;
+        Inducks::$use_local_db=true;
         $numeros_soustitres=Inducks::get_numeros($pays, $magazine,false,true);
         foreach($numeros_soustitres[0] as $i=>$numero) {
             $numero_affiche=str_replace("\n",'',str_replace('+','',$numero));
             $numeros_affiches[$numero_affiche]=$numero_affiche;
+
+            if ($get_prets) {
+                $requete_get_prets='SELECT issuenumber FROM tranches_pretes '
+                        .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero_affiche.'\'';
+                $resultat_get_prets=$this->db->query($requete_get_prets)->result();
+                if (count($resultat_get_prets) > 0)
+                    $tranches_pretes[$numero_affiche]=1;
+
+            }
+        }
+        if ($get_prets) {
+            return array($numeros_affiches, $tranches_pretes);
         }
         return $numeros_affiches;
         /*$requete='SELECT DISTINCT Numero_debut, Numero_fin '
@@ -384,10 +421,12 @@ class Modele_tranche extends Model {
     }
 
     function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin) {
-        if ($option_nom=='Actif')
+        $valeur=mysql_real_escape_string($valeur);
+        if ($option_nom=='Actif') {
             $requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
                            .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\') ';
-        else
+        }
+            else
             $requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
                            .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\') ';
         $this->db->query($requete_insert);
@@ -807,6 +846,13 @@ class Fonction_executable extends Fonction {
                     $this->options->$nom=$valeur;
                 }
             }
+            $propriete_champs=new ReflectionProperty($classe, 'champs');
+            $champs=$propriete_champs->getValue();
+            foreach(array_keys($champs) as $nom) {
+                if (!isset($this->options->$nom))
+                    $this->options->$nom=null;
+            }
+            return;
         }
         else {
             $propriete_champs=new ReflectionProperty($classe, 'champs');
@@ -817,12 +863,14 @@ class Fonction_executable extends Fonction {
 
             return;
         }
-        
-        $propriete_champs=new ReflectionProperty($classe, 'champs');
-        $champs=$propriete_champs->getValue();
-        foreach(array_keys($champs) as $nom) {
-            if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom==array())) {
-                self::erreur('Le champ "'.$nom.'" est indéfini !');
+
+        if ($creation) {
+            $propriete_champs=new ReflectionProperty($classe, 'champs');
+            $champs=$propriete_champs->getValue();
+            foreach(array_keys($champs) as $nom) {
+                if (!isset($this->options->$nom) || (strpos('Couleur', $nom)!==false && $this->options->$nom==array())) {
+                    self::erreur('Le champ "'.$nom.'" est indéfini !');
+                }
             }
         }
     }
@@ -1305,6 +1353,9 @@ class DegradeTrancheAgrafee extends Fonction_executable {
             imageline(Viewer::$image, $milieu+$i, 0, $milieu+$i, Viewer::$hauteur, $couleur_allouee);
             imageline(Viewer::$image, $milieu-$i, 0, $milieu-$i, Viewer::$hauteur, $couleur_allouee);
         }
+        $noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
+        imagefilledrectangle(Viewer::$image, $milieu -z(.25), Viewer::$hauteur*0.2, $milieu +z(.25), Viewer::$hauteur*0.2+Viewer::$hauteur*0.05, $noir);
+        imagefilledrectangle(Viewer::$image, $milieu -z(.25), Viewer::$hauteur*0.8, $milieu +z(.25), Viewer::$hauteur*0.8+Viewer::$hauteur*0.05, $noir);
     }
 }
 

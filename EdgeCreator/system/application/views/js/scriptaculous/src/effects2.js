@@ -189,7 +189,8 @@ Resizeable.prototype = {
         this.options.resize(this.element);
     }
     if ($('corps')) {
-        $('corps').setStyle({'left':$('viewer').clientWidth+'px'});
+        var decalage=$('viewer').clientWidth+($('viewer').scrollHeight > $('body').scrollHeight ? 16 : 0) ;
+        $('corps').setStyle({'left':decalage+'px'});
     }
   },
   keyPress: function(event) {

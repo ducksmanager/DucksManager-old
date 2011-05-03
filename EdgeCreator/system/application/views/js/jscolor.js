@@ -174,11 +174,11 @@ var jscolor = {
 	getMousePos : function(e) {
 		if(!e) { e = window.event; }
 		if(typeof e.pageX === 'number') {
-			return [e.pageX, e.pageY];
+			return [e.pageX-$('corps').cumulativeScrollOffset()['left'], e.pageY-$('corps').cumulativeScrollOffset()['top']];
 		} else if(typeof e.clientX === 'number') {
 			return [
-				e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft,
-				e.clientY + document.body.scrollTop + document.documentElement.scrollTop
+				e.clientX + document.getElementById('infos').scrollLeft + document.documentElement.scrollLeft,
+				e.clientY + document.getElementById('infos').scrollTop + document.documentElement.scrollTop
 			];
 		}
 	},
@@ -538,7 +538,7 @@ var jscolor = {
 
 		function removePicker() {
 			delete jscolor.picker.owner;
-			document.getElementsByTagName('body')[0].removeChild(jscolor.picker.boxB);
+			document.getElementById('infos').removeChild(jscolor.picker.boxB);
 		}
 
 
@@ -599,7 +599,7 @@ var jscolor = {
 			// picker border
 			p.boxB.style.position = 'absolute';
 			p.boxB.style.clear = 'both';
-			p.boxB.style.left = x+'px';
+			//p.boxB.style.left = x+'px';
 			p.boxB.style.top = y+'px';
 			p.boxB.style.zIndex = THIS.pickerZIndex;
 			p.boxB.style.border = THIS.pickerBorder+'px solid';
@@ -663,7 +663,7 @@ var jscolor = {
 			redrawSld();
 
 			jscolor.picker.owner = THIS;
-			document.getElementsByTagName('body')[0].appendChild(p.boxB);
+			document.getElementById('infos').appendChild(p.boxB);
 		}
 
 

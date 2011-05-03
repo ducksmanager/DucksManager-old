@@ -40,17 +40,17 @@ class MyFonts extends Model {
             'goodies'=>'ot.liga',
             urlencode('i[0]')=>urlencode($this->font.',,720,144')
         );
-        /*
+        $texte_sans_espaces_finaux=preg_replace('#[ ]+\.$#','',$this->text);
         $requete_image_existe='SELECT ID FROM images_myfonts '
                              .'WHERE Font LIKE \''.$this->font.'\' AND Color LIKE \''.$this->color.'\' AND ColorBG LIKE \''.$this->color_bg.'\''
-                             .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$this->text.'\' AND Precision_ LIKE \''.$this->precision.'\'';
+                             .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$texte_sans_espaces_finaux.'\' AND Precision_ LIKE \''.$this->precision.'\'';
         $requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
         $image_existe=count($requete_image_existe_resultat) != 0;
         if ($image_existe && !isset($_GET['force_post'])) {
             $id_image=$requete_image_existe_resultat[0]->ID;
-            $this->chemin_image='edges/images_myfonts/'.$id_image.'.gif';
+            $this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
         }
-        else {*/
+        else {
             $this->p=new Post(
                 "http://new.myfonts.com/ajax-server/testdrive.xml",
                 "http://www.jonasjohn.de/",
@@ -65,18 +65,15 @@ class MyFonts extends Model {
                 Fonction_executable::erreur('Image MyFonts non trouvée ; ('.$this->p->url.')');
             }
             $this->chemin_image=$chemin[1];
-            /*
-            $requete_get_id='SELECT Max(ID) AS id_max FROM images_myfonts';
-            $resultat_get_id=$this->db->query($requete_get_id)->result();
-            $id=$resultat_get_id[0]->id_max+1;
+            
             $requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
-                    .'VALUES('.$id.',\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
-                    .'\''.$this->width.'\',\''.$this->text.'\',\''.$this->precision.'\')';
+                    .'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
+                    .'\''.$this->width.'\',\''.$texte_sans_espaces_finaux.'\',\''.$this->precision.'\')';
             $this->db->query($requete);
             
             $im=imagecreatefromgif($this->chemin_image);
-            imagegif($im,'edges/images_myfonts/'.$id.'.gif');
-        }*/
+            imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
+        }
     }
 }
 

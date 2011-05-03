@@ -73,10 +73,10 @@ class Viewer extends Controller {
                     imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.$pays.'_'.$magazine.'_'.$numero.'_'.$num_etape.'_'.self::$zoom.'.png'));
                     exit(0);
                 }*/
-                $etapes[$num_etape]=$this->Modele_tranche->get_fonctions($pays,$magazine,$num_etape,$numero);
+                $etapes[$num_etape]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_etape,$numero);
                 self::$etape_en_cours->num_etape=$num_etape;
-                self::$etape_en_cours->nom_fonction=$etapes[$num_etape][0]->Nom_fonction;
-                $fonction=$etapes[$num_etape][0];
+                self::$etape_en_cours->nom_fonction=$etapes[$num_etape]->Nom_fonction;
+                $fonction=$etapes[$num_etape];
                 $a=est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin);
                 if (est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin)) {
                     $options2=$this->Modele_tranche->get_options($pays,$magazine,$num_etape,$fonction->Nom_fonction,$numero);
@@ -102,7 +102,7 @@ class Viewer extends Controller {
                     }
                     $id_preview=-1;
                     if ($num_etape == -1) {
-                        $o_dimensions=new $etapes[$num_etape][0]->Nom_fonction($options2);
+                        $o_dimensions=new $etapes[$num_etape]->Nom_fonction($options2);
                         $o_options_dimensions=$o_dimensions->options;
                         if (self::$etapes_actives == array(1)) {
                             $id_preview=$this->Modele_tranche->ajouter_preview(json_encode($o_options_dimensions));
@@ -111,7 +111,7 @@ class Viewer extends Controller {
                             
                     }
                     if ($num_etape >= 0 || self::$etapes_actives==array(-1)) {
-                        $nom_fonction=$etapes[$num_etape][0]->Nom_fonction;
+                        $nom_fonction=$etapes[$num_etape]->Nom_fonction;
                         $o_etape=new $nom_fonction($options2);
                         $options=new stdClass();
                         $options->dimensions=$o_options_dimensions;
@@ -135,14 +135,14 @@ class Viewer extends Controller {
                 foreach($options as $option_nom__intervalle=>$option_valeur) {
                     list($option_nom,$intervalle)=explode('.',$option_nom__intervalle);
                     if (est_dans_intervalle($numero,$intervalle)) {
-                        $etapes[$num_etape_param_ajout][0]->options->$option_nom=urldecode(str_replace('^','%',
+                        $etapes[$num_etape_param_ajout]->options->$option_nom=urldecode(str_replace('^','%',
                                                    str_replace('!amp!','&',
                                                    str_replace('!slash!','/',
                                                    str_replace('!sharp!','#',$option_valeur)))));
                     }
                 }
-                if (isset($etapes[$num_etape_param_ajout][0]->options))
-                    new $nom_fonction_param($etapes[$num_etape_param_ajout][0]->options);
+                if (isset($etapes[$num_etape_param_ajout]->options))
+                    new $nom_fonction_param($etapes[$num_etape_param_ajout]->options);
             }
         }
         

@@ -27,6 +27,13 @@ class ParametrageG extends Controller {
         $this->Modele_tranche->setMagazine(self::$magazine);
         if (is_null(self::$etape)) { // Liste des étapes
             $etapes=$this->Modele_tranche->get_etapes_simple(self::$pays,self::$magazine);
+            if (count($etapes) == 0) {
+                $fonction_dimension=new stdClass();
+                $fonction_dimension->Ordre=-1;
+                $fonction_dimension->Numero_debut=$fonction_dimension->Numero_fin=-1;
+                $fonction_dimension->Nom_fonction='Dimensions';
+                $etapes[]=$fonction_dimension;
+            }
             $data=array('etapes'=>$etapes);
         }
         else {
@@ -34,8 +41,16 @@ class ParametrageG extends Controller {
                 $options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$nom_fonction, null, false, true, true);
             }
             else {
-                $fonctions=$this->Modele_tranche->get_fonctions(self::$pays,self::$magazine,self::$etape);
-                $options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonctions[0]->Nom_fonction, null, false, true);
+                $fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
+                if (is_null($fonction) && self::$etape == -1) {
+                    $fonction=new stdClass();
+                    $fonction->Nom_fonction='Dimensions';
+                }
+                if ($this->Modele_tranche->has_no_option(self::$pays,self::$magazine,self::$etape)) {
+                    $options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
+                }
+                else
+                    $options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction, null, false, true);
 
             }
             
