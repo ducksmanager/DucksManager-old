@@ -1157,22 +1157,32 @@ class TexteTTF extends Fonction_executable {
         $this->options->Chaine=self::toTemplatedString($this->options->Chaine);
         list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
         $couleur_texte=imagecolorallocate(Viewer::$image, $r,$g,$b);
-        if ($this->options->Pos_x == -1 || $this->options->Pos_y == -1) {
-            $p=$this->calculateTextBox($this->options->Chaine, BASEPATH.'fonts/'.$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
-            if ($this->options->Pos_x == -1)
-                $this->options->Pos_x=(Viewer::$largeur-$p['width'])/z(2);
-            if ($this->options->Pos_y == -1)
-                $this->options->Pos_y=(Viewer::$hauteur-$p['height'])/z(2);
+        
+        $centrage_auto_x=$this->options->Pos_x == -1;
+        $centrage_auto_y=$this->options->Pos_y == -1;
+        $p=$this->calculateTextBox($this->options->Chaine, BASEPATH.'fonts/'.$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
+        if ($centrage_auto_x || $centrage_auto_y) {
+            if ($centrage_auto_x)
+                $this->options->Pos_x=(Viewer::$largeur-$p['width']*$this->options->Compression_x)/z(2);
+            if ($centrage_auto_y)
+                $this->options->Pos_y=(Viewer::$hauteur-$p['height']*$this->options->Compression_y)/z(2);
         }
         if ($this->options->Compression_x != 1 || $this->options->Compression_y != 1) {
-            $image2=imagecreatetruecolor(Viewer::$largeur, Viewer::$hauteur);
+            $largeur_tmp=max($p['width'],Viewer::$largeur)+z(1);
+            $hauteur_tmp=max($p['height'],Viewer::$hauteur)+z(1);
+            $image2=imagecreatetruecolor($largeur_tmp,$hauteur_tmp);
             imagefill($image2, 0,0, imagecolorallocatealpha($image2, 255, 255, 255, 127));
+            if ($this->options->Rotation == 90) {
+            	$pos_x_tmp=$p['left'];
+            	$pos_y_tmp=$p['top'];
+            }
+            
             imagettftext($image2,z($this->options->Taille),$this->options->Rotation,
-                         z($this->options->Pos_x),z($this->options->Pos_y),
+                         $pos_x_tmp,$pos_y_tmp,
                          $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
-            $p=$this->calculateTextBox($this->options->Chaine, BASEPATH.'fonts/'.$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
-
-            imagecopyresampled(Viewer::$image, $image2, 2*(1-$this->options->Compression_x)*$p['width'], 2*(1-$this->options->Compression_y)*$p['height'], 0,0, Viewer::$largeur*$this->options->Compression_x, Viewer::$hauteur*$this->options->Compression_y, Viewer::$largeur, Viewer::$hauteur);
+            imagepng($image2, BASEPATH.'../../edges/tmp/ttfcomp.png');
+            
+            imagecopyresampled(Viewer::$image, $image2, z($this->options->Pos_x)*(Viewer::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer::$hauteur/$hauteur_tmp), 0,0, Viewer::$largeur*$this->options->Compression_x, Viewer::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
 
         }
         else {
