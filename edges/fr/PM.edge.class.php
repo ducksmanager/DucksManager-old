@@ -2,7 +2,7 @@
 class fr_PM extends Edge {
     var $pays='fr';
     var $magazine='PM';
-    var $intervalles_validite=array(array('debut'=>1, 'fin'=>469));
+    var $intervalles_validite=array(array('debut'=>1, 'fin'=>469),'471');
     static $largeur_defaut=6;
     static $hauteur_defaut=254;
 
