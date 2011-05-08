@@ -280,7 +280,7 @@ class Modele_tranche extends Model {
         $numeros_affiches=array('Aucun'=>'Aucun');
         if ($get_prets)
             $tranches_pretes=array();
-        include_once(BASEPATH.('/../../Inducks.class.php'));
+        include_once(BASEPATH.'/../../Inducks.class.php');
         Inducks::$use_db=true;
         Inducks::$use_local_db=true;
         $numeros_soustitres=Inducks::get_numeros($pays, $magazine,false,true);
@@ -436,7 +436,8 @@ class Modele_tranche extends Model {
     function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
         $requete_get_options='SELECT '.implode(', ', self::$fields).' '
                             .'FROM tranches_modeles '
-                            .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+                            .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+                            .'ORDER BY Ordre';
         echo $requete_get_options."\n";
         $resultats=$this->db->query($requete_get_options)->result();
         foreach($resultats as $resultat) {
@@ -1439,9 +1440,12 @@ function est_dans_intervalle($numero,$intervalle) {
     }
     $numeros_dispos=Modele_tranche::$numeros_dispos;
     if (strpos($intervalle,'~')!==false) {
-        list($numeros_debut,$numeros_fin)=explode('~',$intervalle);
-        $numeros_debut=explode(';',$numeros_debut);
-        $numeros_fin=explode(';',$numeros_fin);
+    	$intervalles=explode(';',$intervalle);
+    	foreach($intervalles as $intervalle) {
+    		list($numero_debut,$numero_fin)=explode('~',$intervalle);
+    		$numeros_debut[]=$numero_debut;
+    		$numeros_fin[]=$numero_fin;
+    	}
     }
     else
         list($numeros_debut,$numeros_fin)=array(explode(';',$intervalle),explode(';',$intervalle));

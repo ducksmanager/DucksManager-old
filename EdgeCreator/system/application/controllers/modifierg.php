@@ -20,6 +20,7 @@ class ModifierG extends Controller {
         self::$numeros=$numeros=explode('~',$numeros);
         self::$nom_option=$nom_option;
         self::$nouvelle_valeur=is_null($nouvelle_valeur) ? null : urldecode(str_replace('!','%',$nouvelle_valeur));
+        $a=self::$nouvelle_valeur;
         $this->load->library('session');
         $this->load->database();
         $this->db->query('SET NAMES UTF8');
@@ -34,44 +35,51 @@ class ModifierG extends Controller {
 
         if ($est_etape_temporaire) {
             $this->Modele_tranche->decaler_etapes_a_partir_de(self::$pays,self::$magazine,intval(self::$etape)+1);
-            self::$etape=intval(self::$etape);
+            self::$etape=intval(self::$etape)+1;
             $this->Modele_tranche->insert_ordre(self::$pays,self::$magazine,self::$etape,self::$numeros[0],self::$numeros[count(self::$numeros)-1],$nom_nouvelle_fonction,array());
         }
-        $fonctions=$this->Modele_tranche->get_fonctions(self::$pays,self::$magazine,self::$etape);
-        $options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonctions[0]->Nom_fonction);
-
-
         $valeurs=array();
-        if ($nom_option == 'Actif') {
-            $intervalles=array();
-            $numeros_debut=explode(';',$fonctions[0]->Numero_debut);
-            $numeros_fin=explode(';',$fonctions[0]->Numero_fin);
-            foreach($numeros_debut as $i=>$numero_debut)
-                $intervalles[]=$numero_debut.'~'.$numeros_fin[$i];
-            $intervalles=implode(';',$intervalles);
-            $valeurs_preexistantes=array($intervalles=>'on');
-        }
-        else
-            $valeurs_preexistantes=$options->$nom_option;
-        foreach($valeurs_preexistantes as $intervalles=>$valeur) {
-            $liste_intervalles=explode(';',$intervalles);
-            foreach($liste_intervalles as $i=>$intervalle) {
-                list($numero_debut,$numero_fin)=strpos($intervalle, '~') == false ? array($intervalle,$intervalle) : explode('~',$intervalle);
-                if ($numero_debut === $numero_fin)
-                    $valeurs[$numero_debut]=$valeur;
+        $fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
+        if (!is_null($fonction)) {
+            $options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction);
 
-                $numero_debut_trouve=false;
-                foreach($numeros_dispos as $numero_dispo) {
-                    if ($numero_dispo==$numero_debut)
-                        $numero_debut_trouve=true;
-                    if ($numero_debut_trouve) {
-                        $valeurs[$numero_dispo]=$valeur;
+            if ($nom_option == 'Actif') {
+                $intervalles=array();
+                $numeros_debut=explode(';',$fonction->Numero_debut);
+                $numeros_fin=explode(';',$fonction->Numero_fin);
+                foreach($numeros_debut as $i=>$numero_debut)
+                    $intervalles[]=$numero_debut.'~'.$numeros_fin[$i];
+                $intervalles=implode(';',$intervalles);
+                $valeurs_preexistantes=array($intervalles=>'on');
+            }
+            else
+                $valeurs_preexistantes=$options->$nom_option;
+            foreach($valeurs_preexistantes as $intervalles=>$valeur) {
+                $liste_intervalles=explode(';',$intervalles);
+                foreach($liste_intervalles as $i=>$intervalle) {
+                    list($numero_debut,$numero_fin)=strpos($intervalle, '~') == false ? array($intervalle,$intervalle) : explode('~',$intervalle);
+                    if ($numero_debut === $numero_fin)
+                        $valeurs[$numero_debut]=$valeur;
+
+                    $numero_debut_trouve=false;
+                    foreach($numeros_dispos as $numero_dispo) {
+                        if ($numero_dispo==$numero_debut)
+                            $numero_debut_trouve=true;
+                        if ($numero_debut_trouve) {
+                            $valeurs[$numero_dispo]=$valeur;
+                        }
+                        if ($numero_dispo==$numero_fin)
+                            continue 2;
                     }
-                    if ($numero_dispo==$numero_fin)
-                        continue 2;
                 }
             }
         }
+        else {
+            $fonction=new stdClass();
+            $fonction->Nom_fonction='Dimensions';
+        }
+
+        
         foreach($numeros as $numero) {
             if ($nom_option == 'Actif' && (is_null(self::$nouvelle_valeur) || empty(self::$nouvelle_valeur))) {
                 if (array_key_exists($numero, $valeurs))
@@ -79,9 +87,6 @@ class ModifierG extends Controller {
             }
             else
                 $valeurs[$numero]=self::$nouvelle_valeur;
-        }
-        foreach($valeurs as $numero=>$valeur) {
-
         }
         $valeurs_distinctes=array_unique($valeurs);
         $valeurs_distinctes_numeros_groupes=array();
@@ -123,7 +128,7 @@ class ModifierG extends Controller {
                 $numeros_debut[]=$numero_debut;
                 $numeros_fin[]=$numero_fin;
             }
-            $this->Modele_tranche->insert_valeur_option(self::$pays,self::$magazine,self::$etape,$fonctions[0]->Nom_fonction,self::$nom_option,
+            $this->Modele_tranche->insert_valeur_option(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction,self::$nom_option,
                                                         $valeur,implode(';',$numeros_debut),implode(';',$numeros_fin));
         }
         $this->load->view('parametragegview',$data);

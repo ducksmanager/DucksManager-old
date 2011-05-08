@@ -80,35 +80,34 @@ class Viewer extends Controller {
                 $fond_noir_fait=true;
             }
                 
-            if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives)) {
-                $ordres[$num_ordre]=$this->Modele_tranche->get_fonctions($pays,$magazine,$num_ordre,$numero);
+            if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives==array('all')) {
+                $ordres[$num_ordre]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_ordre,$numero);
                 self::$etape_en_cours->num_etape=$num_ordre;
-                self::$etape_en_cours->nom_fonction=$ordres[$num_ordre][0]->Nom_fonction;
-                foreach($ordres[$num_ordre] as $i=>$fonction) {
-                    if (est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin)) {
-                        $options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,$fonction->Nom_fonction,$numero);
-                        if ($num_ordre==-1)
-                            $dimensions=$options2;
-                        foreach(self::$parametrage as $parametres=>$options) {
-                            list($num_ordre_param,$nom_fonction_param)=explode('~', $parametres);
-                            if ($num_ordre_param==$num_ordre && $nom_fonction_param==$fonction->Nom_fonction) {
-                                foreach($options as $option_nom__intervalle=>$option_valeur) {
-                                    if(strpos($option_nom__intervalle, '.')==false) {
-                                        continue;
-                                    }
-                                    list($option_nom,$intervalle)=explode('.',$option_nom__intervalle);
-                                    if (est_dans_intervalle($numero,$intervalle)) {
-                                        $options2->$option_nom
-                                            =urldecode(str_replace('^','%',
-                                                       str_replace('!amp!','&',
-                                                       str_replace('!slash!','/',
-                                                       str_replace('!sharp!','#',$option_valeur)))));
-                                    }
+                self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
+                $fonction=$ordres[$num_ordre];
+                if (est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin)) {
+                    $options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,$fonction->Nom_fonction,$numero);
+                    if ($num_ordre==-1)
+                        $dimensions=$options2;
+                    foreach(self::$parametrage as $parametres=>$options) {
+                        list($num_ordre_param,$nom_fonction_param)=explode('~', $parametres);
+                        if ($num_ordre_param==$num_ordre && $nom_fonction_param==$fonction->Nom_fonction) {
+                            foreach($options as $option_nom__intervalle=>$option_valeur) {
+                                if(strpos($option_nom__intervalle, '.')==false) {
+                                    continue;
+                                }
+                                list($option_nom,$intervalle)=explode('.',$option_nom__intervalle);
+                                if (est_dans_intervalle($numero,$intervalle)) {
+                                    $options2->$option_nom
+                                        =urldecode(str_replace('^','%',
+                                                   str_replace('!amp!','&',
+                                                   str_replace('!slash!','/',
+                                                   str_replace('!sharp!','#',$option_valeur)))));
                                 }
                             }
                         }
-                        new $ordres[$num_ordre][$i]->Nom_fonction($options2);
                     }
+                    new $ordres[$num_ordre]->Nom_fonction($options2);
                 }
             }
         }
@@ -137,10 +136,19 @@ class Viewer extends Controller {
         
         if (self::$is_debug===false)
             header('Content-type: image/png');
-        if ($save=='true' && $zoom==1.5) {
+        if ($save=='save' && $zoom==1.5) {
             @mkdir('system/application/views/gen/'.$pays);
-            imagepng(Viewer::$image,'system/application/views/gen/'.$pays.'/'.$magazine.'.'.$numero.'.png');
             imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
+            
+            $requete_tranche_deja_prete='SELECT issuenumber '
+                                       .'FROM tranches_pretes '
+                                       .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero.'\'';
+
+            if (count($this->db->query($requete_tranche_deja_prete)->result()) == 0) {
+                $requete='INSERT INTO tranches_pretes(publicationcode,issuenumber) VALUES '
+                        .'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\')';
+                $this->db->query($requete);
+            }
         }
         imagepng(Viewer::$image);
         
