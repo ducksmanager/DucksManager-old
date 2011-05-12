@@ -12,11 +12,11 @@
 		line-height:25px;
 	}
 
-	html, body, span, td {
+	html, body, span, td, th {
 		font-family: Charcoal,arial,sans-serif;
 	}
 
-	span, td {
+	span, td, th {
 		font-size:16px;
 	}
 
@@ -264,7 +264,12 @@
 	<script type="text/javascript" src="<?=base_url()?>system/application/views/js/scriptaculous/src/scriptaculous.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>system/application/views/js/json2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>system/application/views/js/jscolor.js" ></script>
+	
+	<script type="text/javascript" src="<?=base_url()?>system/application/views/js/jquery.js" ></script>
 	<script type="text/javascript">
+
+		jQuery.noConflict();
+    
 		var first_cell=null;
 		var zoom=1.5;
 		var pays='<?=$pays?>';
@@ -340,15 +345,15 @@
 			$$('.lien_etape>span').invoke('stopObserving','click')
 								  .invoke('observe','click',function (event) {
 				var element=Event.element(event);
-				if (element.tagName!='TD')
-					element=element.up('td');
-				var num_etape=$('table_numeros').down('tr').down('td',element.previousSiblings().length).retrieve('etape');
+				if (element.tagName!='TH')
+					element=element.up('th');
+				var num_etape=$('table_numeros').down('tr').down('th',element.previousSiblings().length).retrieve('etape');
 				charger_etape(num_etape);
 			});
 			
 			$$('.supprimer_etape').invoke('observe','click',function (event) {
 
-				var element=Event.element(event).up('td');
+				var element=Event.element(event).up('th');
 				var num_etape_a_supprimer=element.retrieve('etape');
 				$('chargement').update('Suppression de l\'&eacute;tape '+num_etape_a_supprimer+'...');
 				if (confirm('Etes vous sur(e) de vouloir supprimer l\'etape '+num_etape_a_supprimer+" ?")) {
@@ -366,12 +371,11 @@
 					alert('Une etape est deja en train d\'etre ajoutee');
 					return;
 				}
-				var element=Event.element(event).up('td');
+				var element=Event.element(event).up('th');
 				num_etape_avant_nouvelle=element.retrieve('etape');
 				if (true) {//confirm('Vous allez ajouter une etape apres l\'etape '+num_etape_avant_nouvelle+'\nContinuer ?')) {
 					fermer_etapes();
 					var liste_possibilites=new Element('select',{'id':'liste_possibilites_fonctions'});
-					'Dimensions','Remplir','Agrafer','TexteTTF','TexteMyFonts','Image','Polygone','Degrade','DegradeTrancheAgrafee','Rectangle','Arc_cercle'
 					if ($$('[name="entete_etape_-1"]').length >0) {
 						liste_possibilites.insert(new Element('option',{'title':'Remplir'}).update('Remplir une zone avec une couleur'))
 										  .insert(new Element('option',{'title':'Degrade'}).update('Remplir une zone avec un d&eacute;grad&eacute;'))
@@ -384,7 +388,7 @@
 										  .insert(new Element('option',{'title':'Arc_cercle'}).update('Dessiner un arc de cercle'));
 					}
 					else
-						liste_possibilites.update(new Element('option',{'title':'Dimensions'}).update('Sp&eacute;cifier les dimensions d\'une tranche'))
+						liste_possibilites.update(new Element('option',{'title':'Dimensions'}).update('Sp&eacute;cifier les dimensions d\'une tranche'));
 					var bouton_ok=new Element('button').update('OK');
 					$('helpers').update('Si ce n\'est pas encore fait, prenez en photo avec un appareil photo num&eacute;rique la tranche que vous souhaitez recr&eacute;er.')
 								   .insert(new Element('br'))
@@ -627,7 +631,7 @@
 			div_regle_h.update(image_regle_h);
 			//$('viewer_inner').insert(div_regle_h);
 
-			$$('.regle').invoke('removeClassName','cache').invoke('setStyle',{'display':'block'})
+			$$('.regle').invoke('removeClassName','cache').invoke('setStyle',{'display':'block'});
 			if (image == null) {
 				$$('.image_preview').each(function(image_preview) {
 					if (image_preview.retrieve('etape') == $$('.regle')[0].retrieve('etape'))
@@ -826,7 +830,7 @@
 
 		function marquer_cellules(first_cell,last_cell) {
 			if (!colonne_ouverte)
-				etape_en_cours=$$('.ligne_etapes')[0].down('td',first_cell.previousSiblings().length).retrieve('etape');
+				etape_en_cours=$$('.ligne_etapes')[0].down('th',first_cell.previousSiblings().length).retrieve('etape');
 			$$('.selected.tmp').invoke('removeClassName','selected tmp');
 			   
 			var pos_colonne=first_cell.previousSiblings().length;
@@ -916,7 +920,7 @@
 								}
 								
 								if (est_etape_temporaire || recharger_etape) {
-									charger_etape(etape_en_cours, numeros, nom_option);
+									charger_etape(etape_en_cours, numeros, nom_option, true);
 								}
 							}
 						});
@@ -943,7 +947,7 @@
 			if ($$('td.selected').length==0)
 				return null;
 			var pos_colonne_sel=$$('td.selected')[0].previousSiblings().length;
-			var nom_option=$$('.ligne_noms_options')[0].down('td',pos_colonne_sel).retrieve('nom_option');
+			var nom_option=$$('.ligne_noms_options')[0].down('th',pos_colonne_sel).retrieve('nom_option');
 			if (typeof(nom_option) == 'undefined' || nom_option == '')
 				nom_option='Actif';
 			return nom_option;
@@ -998,10 +1002,10 @@
 			return td;
 		}
 		
-		function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
-		function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
-		function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
-		function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+		function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16);}
+		function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16);}
+		function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16);}
+		function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h;}
 
 		function formater_modifier_valeur(nom_option) {
 			if (nom_option=='Actif') {
@@ -1115,14 +1119,14 @@
 
 					var table=new Element('table',{'id':'table_numeros'}).addClassName('bordered').writeAttribute({'border':'1'})
 								.insert(new Element('tr').addClassName('ligne_entete ligne_etapes')
-														 .insert(new Element('td'))
-														 .insert(new Element('td'))
-														 .insert(new Element('td')) // Cellule temporaire
+														 .insert(new Element('th'))
+														 .insert(new Element('th'))
+														 .insert(new Element('th')) // Cellule temporaire
 									   )
 								.insert(new Element('tr').addClassName('ligne_entete ligne_noms_options')
-														 .insert(new Element('td'))
-														 .insert(new Element('td'))
-														 .insert(new Element('td'))
+														 .insert(new Element('th'))
+														 .insert(new Element('th'))
+														 .insert(new Element('th'))
 									   );
 					$('corps').insert(table);
 
@@ -1165,7 +1169,7 @@
 						var span_preview=new Element('span').addClassName('preview')
 							.update(new Element('img',{'src':'<?=base_url()?>system/application/views/images/view.png',
 													   'title':'Voir la tranche'}).addClassName('view_preview'));						
-						tr.insert(td.insert(span_preview))
+						tr.insert(td.insert(span_preview));
 						table.insert(tr);
 						span_preview.observe('click',function(event) {
 							preview_numero(Event.element(event));
@@ -1208,10 +1212,15 @@
 									charger_etape_ligne(etapes_valides[i],tr);
 								}
 							});
+
+
+							$$('.ligne_entete td').each(function(td) {
+								td.replace(new Element('th'));
+							});
 							
 							$$(selecteur_cellules).each(function(td) {
 								td.store('valeur_reelle',td.hasClassName('num_checked') ? 'Utilis&eacute;' : 'Non utilis&eacute;');
-								td.store('etape',$$('.ligne_etapes')[0].down('td',td.previousSiblings().length).retrieve('etape'));
+								td.store('etape',$$('.ligne_etapes')[0].down('th',td.previousSiblings().length).retrieve('etape'));
 							});
 
 
@@ -1337,6 +1346,7 @@
 		}
 
 		function setupFixedTableHeader() {
+			
 			var setup=$('body').scrollTop >= $('table_numeros').cumulativeOffset()['top'] ; // Scroll en-dessous du header de la table
 				
 			if ($$('.header_fixe').length > 0) {
@@ -1363,9 +1373,9 @@
 				$$('.header_fixe').invoke('setStyle',{'width':'','height':''});
 				$$('.header_fixe').each(function(header_fixe) {
 					var i=0;
-					header_fixe.select('td').each(function(td) {
-						td.writeAttribute({'width':$('table_numeros').down('tr',header_fixe.hasClassName('ligne_etapes') ? 0 : 1)
-																	 .down('td',i).offsetWidth})
+					header_fixe.select('th').each(function(th) {
+						th.writeAttribute({'width':$('table_numeros').down('tr',header_fixe.hasClassName('ligne_etapes') ? 0 : 1)
+																	 .down('th',i).offsetWidth})
 						  .addClassName('header_fixe_col');
 						i++;
 					});
@@ -1375,24 +1385,26 @@
 		}
 
 		function charger_etape_ligne (etape, tr) {
+			var est_ligne_header = [0,1,nb_lignes-1,nb_lignes].indexOf(tr.previousSiblings().length) != -1;
+			var balise_cellule = est_ligne_header ? 'th':'td';
 			var num_etape=etape.Ordre;
-			if (num_etape==-1) { // td d? existant
-				var td=tr.down('td',2);
+			if (num_etape==-1) { // cellule deja existante
+				var cellule=tr.down(balise_cellule,2);
 			}
 			else {
-				var td=new Element('td');
-				if (num_etape != parseInt(num_etape)) {// Nouvelle ?pe
-					tr.down('td',$$('[name="entete_etape_'+parseInt(num_etape-.5)+'"]')[0].previousSiblings().length).insert({'after':td});
+				var cellule=new Element(balise_cellule);
+				if (num_etape != parseInt(num_etape)) {// Nouvelle etape
+					tr.down(balise_cellule,$$('[name="entete_etape_'+parseInt(num_etape-.5)+'"]')[0].previousSiblings().length).insert({'after':cellule});
 					//num_etape-=.5;
 				}
 				else
-					tr.insert(td);
+					tr.insert(cellule);
 			}
 			switch(tr.previousSiblings().length) {
-				case 0: case nb_lignes-1:// Ligne des ?pes
+				case 0: case nb_lignes-1:// Ligne des etapes
 
 					var nom_fonction=etape.Nom_fonction;
-					td.addClassName('lien_etape')
+					cellule.addClassName('lien_etape')
 					  .update(image_supprimer.clone(true))
 					  .insert(new Element('span').addClassName('numero_etape')
 												 .update(num_etape == -1 ? 'Dimensions' : ('Etape '+num_etape)))
@@ -1407,7 +1419,7 @@
 				break;
 				default:
 					if (est_dans_intervalle(tr.retrieve('numero'), etape.Numero_debut+'~'+etape.Numero_fin))
-						td.update().addClassName('num_checked');
+						cellule.update().addClassName('num_checked');
 				break;
 			}
 		}
@@ -1443,16 +1455,19 @@
 			$$('.ligne_noms_options')[0].select('.option_etape').each(function (colonne_entete) {
 				var num_colonne=colonne_entete.previousSiblings().length;
 				$$('.ligne_dispo,.ligne_noms_options').each(function(ligne) {
-					ligne.down('td',num_colonne).remove();
+					ligne.down('td,th',num_colonne).remove();
 				});
 			});
 			$$('.lien_etape').invoke('writeAttribute',{'colspan':1});
+			$$('.etape_ouverte').invoke('removeClassName','etape_ouverte');
 		}
 
-		function charger_etape(num_etape, numeros_sel, nom_option_sel) {
+		function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 			if ($$('.ligne_noms_options')[0].select('.option_etape').length > 0) {
+				var est_etape_ouverte= num_etape == $$('.etape_ouverte')[0].retrieve('etape');
 				fermer_etapes();
-				return;
+				if (est_etape_ouverte && typeof(recharger) == 'undefined')
+					return;
 			}
 			
 			var element=$$('[name="entete_etape_'+num_etape+'"]:not(.header_fixe_col)')[0];
@@ -1464,13 +1479,14 @@
 				method: 'post',
 				parameters: 'etape='+num_etape,
 				onSuccess:function(transport) {
+					$$('[name="entete_etape_'+num_etape+'"]')[0].addClassName('etape_ouverte');
 					colonne_ouverte=true;
 					etape_en_cours=num_etape;
 					var nb_options=Object.values(transport.headerJSON).length;
 					
 					$$('.ligne_etapes').each(function(ligne_etape) {
-						var colspan = ligne_etape.down('td',num_colonne).readAttribute('colspan');
-						ligne_etape.down('td',num_colonne)
+						var colspan = ligne_etape.down('th',num_colonne).readAttribute('colspan');
+						ligne_etape.down('th',num_colonne)
 								   .writeAttribute({'colspan':parseInt(colspan == null ? 1:colspan)+nb_options});
 					});
 					var i=0;
@@ -1484,7 +1500,7 @@
 						//	valeurs_defaut_options[option_nom]=transport.headerJSON[option_nom]['valeur_defaut'];
 
 						$$('.ligne_noms_options').each(function(ligne) {
-							var nouvelle_cellule=new Element('td')
+							var nouvelle_cellule=new Element('th')
 													.addClassName('etape_'+num_etape+'__option')
 													.addClassName('option_etape');
 							contenu=new Element('a',{'href':'javascript:void(0)'}).insert(option_nom);
@@ -1493,7 +1509,7 @@
 							
 							nouvelle_cellule.insert(contenu)
 											.store('nom_option',option_nom);
-							ligne.down('td',num_colonne+i).insert({'before':nouvelle_cellule});
+							ligne.down('th',num_colonne+i).insert({'before':nouvelle_cellule});
 						});
 						i++;
 					}
@@ -1533,9 +1549,9 @@
 					}
 					if (typeof(numeros_sel) != 'undefined') {
 						numeros_sel.split(new RegExp(/~/g)).each(function(numero_sel) {
-							$$('.ligne_noms_options')[0].select('.option_etape').each(function(nom_option_td) {
-								if (nom_option_td.retrieve('nom_option') == nom_option_sel)
-									$('ligne_'+numero_sel).down('td',nom_option_td.previousSiblings().length).addClassName('selected');
+							$$('.ligne_noms_options')[0].select('.option_etape').each(function(nom_option_th) {
+								if (nom_option_th.retrieve('nom_option') == nom_option_sel)
+									$('ligne_'+numero_sel).down('td',nom_option_th.previousSiblings().length).addClassName('selected');
 							});
 						});
 						assistant_cellules_sel();
@@ -1637,16 +1653,6 @@
 <title><?=$title?></title>
 </head>
 <body id="body" style="margin:0;padding:0">
-	<?php /*
-	$server='87.106.165.63';
-	$user='phpmyadmin';
-	$database='coa';
-	$password='ddelph8';
-	if (!$idbase = mysql_pconnect($server, $user, $password))
-		echo 'Erreur connexion serveur';
-	if (!mysql_select_db($database))
-		echo 'Erreur connexion base';*/
-	?>
 	<div id="viewer">
 		<div id="viewer_inner">
 			<div id="zoom_slider" class="slider">

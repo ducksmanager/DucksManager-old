@@ -1016,7 +1016,7 @@ class Remplir extends Fonction_executable {
 	static $valeurs_nouveau=array('Pos_x'=>0,'Pos_y'=>0,'Couleur'=>'AAAAAA');
 	static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0);
 	static $descriptions=array('Pos_x'=>'Abscisse du point de d&eacute;part du remplissage', 
-							   'Pos_y'=>'Ordonn&eacute; du point de d&eacute;part du remplissage',
+							   'Pos_y'=>'Ordonn&eacute;e du point de d&eacute;part du remplissage',
 							   'Couleur'=>'Couleur de remplissage');
 	
 	function Remplir($options,$executer=true,$creation=false,$get_options_defaut=true) {
@@ -1045,13 +1045,6 @@ class Image extends Fonction_executable {
 	static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
 	static $valeurs_nouveau=array('Source'=>'Tete PM.png','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
 	static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
-	
-	static $descriptions=array('Decalage_x'=>'Marge de l\'image depuis la gauche de la tranche', 
-							   'Decalage_y'=>'Marge de l\'image depuis le haut (si Position = haut) ou le bas (si Position = bas) de la tranche',
-							   'Compression_x'=>'Compression de la largeur de l\'image<br />(1 = Pas de compression)',
-							   'Compression_y'=>'Compression de la hauteur de l\'image<br />(1 = Pas de compression)',
-							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : haut ou bas',
-							   'Source'=>'Nom du fichier image');
 	
 	function Image($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
@@ -1098,6 +1091,20 @@ class TexteMyFonts extends Fonction_executable {
 	static $champs=array('URL'=>'texte','Couleur_texte'=>'couleur','Couleur_fond'=>'couleur','Largeur'=>'quantite','Chaine'=>'texte','Pos_x'=>'quantite','Pos_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Rotation'=>'quantite','Demi_hauteur'=>'liste','Mesure_depuis_haut'=>'liste');
 	static $valeurs_nouveau=array('URL'=>'redrooster.block-gothic-rr.demi-extra-condensed','Couleur_texte'=>'000000','Couleur_fond'=>'ffffff','Largeur'=>'700','Chaine'=>'Le journal de Mickey','Pos_x'=>'0','Pos_y'=>'5','Compression_x'=>'0.3','Compression_y'=>'0.3','Rotation'=>'90','Demi_hauteur'=>'Oui','Mesure_depuis_haut'=>'Oui');
 	static $valeurs_defaut=array('Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1','Mesure_depuis_haut'=>'Oui');
+	
+	static $descriptions=array('URL'=>'Nom de la police', 
+							   'Couleur_texte'=>'Couleur du texte',
+							   'Couleur_fond'=>'Couleur de l\'arri&egrave;re-plan du texte',
+							   'Largeur'=>'Largeur occup&eacute; par le texte',
+							   'Chaine'=>'Cha&icirc;ne de caract&egrave;res du texte',
+							   'Pos_x'=>'Marge de l\'image depuis la gauche de la tranche',
+							   'Pos_y'=>'Marge de l\'image depuis le haut de la tranche',
+							   'Compression_x'=>'Compression de la largeur du texte<br />(1 = Pas de compression)',
+							   'Compression_y'=>'Compression de la hauteur du texte<br />(1 = Pas de compression)',
+							   'Rotation'=>'Rotation du texte<br />(0 = Pas de rotation)',
+							   'Demi_hauteur'=>'S&eacute;lectionnez "Oui" si jamais vous ne voyez le texte que sur la moiti&eacute; de sa hauteur',
+							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte');
+	
 	function TexteMyFonts($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1177,6 +1184,18 @@ class TexteTTF extends Fonction_executable {
 	static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Rotation'=>'quantite','Taille'=>'quantite','Couleur'=>'couleur','Chaine'=>'texte','Police'=>'liste','Compression_x'=>'quantite','Compression_y'=>'quantite');
 	static $valeurs_nouveau=array('Pos_x'=>'3','Pos_y'=>'5','Rotation'=>'-90','Taille'=>'3.5','Couleur'=>'F50D05','Chaine'=>'Texte du num&eacute;ro [Numero]','Police'=>'Arial','Compression_x'=>'1','Compression_y'=>'1');
 	static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0,'Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1');
+	
+	
+	static $descriptions=array('Pos_x'=>'Marge du texte depuis la gauche de la tranche', 
+							   'Pos_y'=>'Marge du texte depuis le haut de la tranche',
+							   'Rotation'=>'Rotation du texte<br />(0 = Pas de rotation)',
+							   'Taille'=>'Taille du texte, en pt',
+							   'Couleur'=>'Couleur du texte',
+							   'Chaine'=>'Cha&icirc;ne de caract&egrave;res du texte',
+							   'Police'=>'Nom de la police de caract&egrave;res',
+							   'Compression_x'=>'Compression de la largeur de l\'image<br />(1 = Pas de compression)',
+							   'Compression_y'=>'Compression de la hauteur de l\'image<br />(1 = Pas de compression)');
+	
 	function TexteTTF($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1224,6 +1243,11 @@ class Polygone extends Fonction_executable {
 	static $champs=array('X'=>'texte','Y'=>'texte','Couleur'=>'couleur');
 	static $valeurs_nouveau=array('X'=>'1,4,7,14','Y'=>'5,25,14,12','Couleur'=>'000000');
 	static $valeurs_defaut=array();
+	
+	static $descriptions=array('X'=>'Liste des abscisses des points, s&eacute;par&eacute;es par virgules', 
+							   'Y'=>'Liste des coordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
+							   'Couleur'=>'Couleur du polygone');
+	
 	function Polygone($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1231,8 +1255,8 @@ class Polygone extends Fonction_executable {
 		if (is_array($this->options->X)) {
 			$a=1;
 		}
-		$this->options->X=explode(',',$this->options->X);
-		$this->options->Y=explode(',',$this->options->Y);
+		$this->options->X=explode(',',str_replace(' ','',$this->options->X));
+		$this->options->Y=explode(',',str_replace(' ','',$this->options->Y));
 		$args=array(Viewer::$image);
 		$coord=array();
 		foreach(array_keys($this->options->X) as $i) {
@@ -1249,25 +1273,16 @@ class Polygone extends Fonction_executable {
 
 	}
 }
-/*
-class Agrafer extends Fonction_executable {
-	static $champs=array();
-	static $valeurs_nouveau=array();
-	static $valeurs_defaut=array();
-	function Agrafer($options,$executer=true,$creation=false) {
-		parent::Fonction_executable($options,$creation);
-		if (!$executer)
-			return;
-		$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
-		imagefilledrectangle(Viewer::$image, Viewer::$largeur/2 -z(.25), Viewer::$hauteur/5, Viewer::$largeur/2 +z(.25), Viewer::$hauteur/4, $noir);
-		imagefilledrectangle(Viewer::$image, Viewer::$largeur/2 -z(.25), Viewer::$hauteur*4/5, Viewer::$largeur/2 +z(.25), Viewer::$hauteur*4/5 - (Viewer::$hauteur/4 - Viewer::$hauteur/5), $noir);
-	}
-}*/
 
 class Agrafer extends Fonction_executable {
 	static $champs=array('Y1'=>'quantite','Y2'=>'quantite','Taille_agrafe'=>'quantite');
 	static $valeurs_nouveau=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
 	static $valeurs_defaut=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
+	
+	static $descriptions=array('Y1'=>'Marge de la 1&egrave;re agrafe par rapport au haut de la tranche', 
+							   'Y1'=>'Marge de la 2&egrave;me agrafe par rapport au haut de la tranche', 
+							   'Taille_agrafe'=>'Hauteur de chaque agrafe');
+	
 	function Agrafer($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1285,6 +1300,15 @@ class Degrade extends Fonction_executable {
 	static $champs=array('Couleur_debut'=>'couleur','Couleur_fin'=>'couleur','Sens'=>'liste','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite');
 	static $valeurs_nouveau=array('Couleur_debut'=>'D01721','Couleur_fin'=>'0000FF','Sens'=>'Vertical','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5');
 	static $valeurs_defaut=array();
+	
+	static $descriptions=array('Couleur_debut'=>'Couleur du d&eacute;but du d&eacute;grad&eacute;', 
+							   'Couleur_fin'=>'Couleur du fin du d&eacute;grad&eacute;',  
+							   'Sens'=>'"Horizontal" (de gauche &agrave; droite) ou "Vertical" (de haut en bas)',  
+							   'Pos_x_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport &agrave; la gauche de la tranche',
+							   'Pos_x_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport &agrave; la gauche de la tranche',
+							   'Pos_y_debut'=>'Marge du d&eacute;but du d&eacute;grad&eacute; par rapport au haut de la tranche',
+							   'Pos_y_fin'=>'Marge de la fin du d&eacute;grad&eacute; par rapport au haut de la tranche');
+	
 	function Degrade($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1356,6 +1380,9 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 	static $champs=array('Couleur'=>'couleur');
 	static $valeurs_nouveau=array('Couleur'=>'D01721');
 	static $valeurs_defaut=array();
+	
+	static $descriptions=array('Couleur'=>'Couleur de la tranche');
+	
 	function DegradeTrancheAgrafee($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1384,6 +1411,14 @@ class Rectangle extends Fonction_executable {
 	static $champs=array('Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste');
 	static $valeurs_nouveau=array('Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non');
 	static $valeurs_defaut=array();
+	
+	static $descriptions=array('Couleur'=>'Couleur du rectangle', 
+							   'Pos_x_debut'=>'Marge du d&eacute;but du rectangle par rapport &agrave; la gauche de la tranche',
+							   'Pos_x_fin'=>'Marge de la fin du rectangle par rapport &agrave; la gauche de la tranche',
+							   'Pos_y_debut'=>'Marge du d&eacute;but du rectangle par rapport au haut de la tranche',
+							   'Pos_y_fin'=>'Marge de la fin du rectangle par rapport au haut de la tranche',
+							   'Rempli'=>'"Oui" pour dessiner un rectangle rempli, "Non" pour dessiner seulement le contour');
+	
 	function Rectangle($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
@@ -1406,6 +1441,16 @@ class Arc_cercle extends Fonction_executable {
 	static $champs=array('Couleur'=>'couleur','Pos_x_centre'=>'quantite','Pos_y_centre'=>'quantite','Largeur'=>'quantite','Hauteur'=>'quantite','Angle_debut'=>'quantite','Angle_fin'=>'quantite','Rempli'=>'liste');
 	static $valeurs_nouveau=array('Couleur'=>'BBBBBB','Pos_x_centre'=>'10','Pos_y_centre'=>'50','Largeur'=>'10','Hauteur'=>'20','Angle_debut'=>'0','Angle_fin'=>'360','Rempli'=>'Non');
 	static $valeurs_defaut=array();
+	
+	static $descriptions=array('Couleur'=>'Couleur de l\'arc de cercle', 
+							   'Pos_x_centre'=>'Marge du centre de l\arc par rapport &agrave; la gauche de la tranche',
+							   'Pos_y_centre'=>'Marge du centre de l\arc par rapport au haut de la tranche',
+							   'Largeur'=>'Largeur de l\'arc de cercle<br />(Correspond au diam&egrave;tre pour un cercle complet)',
+							   'Hauteur'=>'Hauteur de l\'arc de cercle<br />(Correspond au diam&egrave;tre pour un cercle complet)',
+							   'Angle_debut'=>'Angle du d&eacute;but de l\'arc de cercle<br />(0 pour un cercle complet)',
+							   'Angle_fin'=>'Angle de la fin de l\'arc de cercle<br />(360 pour un cercle complet)',
+							   'Rempli'=>'"Oui" pour dessiner un arc de cercle rempli, "Non" pour dessiner seulement le trait');
+	
 	function Arc_cercle($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
