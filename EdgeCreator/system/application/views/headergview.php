@@ -268,8 +268,6 @@
 	<script type="text/javascript" src="<?=base_url()?>system/application/views/js/jquery.js" ></script>
 	<script type="text/javascript">
 
-		jQuery.noConflict();
-    
 		var first_cell=null;
 		var zoom=1.5;
 		var pays='<?=$pays?>';
@@ -518,7 +516,7 @@
 										var element=Event.element(event).up('td');
 										var num_etape=element.retrieve('etape');
 										element.toggleClassName('fond_noir_active').toggleClassName('fond_noir_inactive');
-										reload_etape(num_etape);
+										reload_etape(num_etape, false);
 									});
 									break;
 								}
@@ -673,10 +671,11 @@
 			});
 		}
 
-		function reload_etape(num_etape) {
+		function reload_etape(num_etape,recharger_finale) {
 			var num_etapes_final=$$('.num_etape_preview:not(.final)').invoke('retrieve','etape');
-			chargements=new Array();
-			chargements.push(num_etape, num_etapes_final); // Toujours recharger la tranche compl?
+			chargements=new Array(num_etape);
+			if (typeof(recharger_finale) == 'undefined' || recharger_finale)
+				chargements.push(num_etapes_final);
 			chargement_courant=0;
 			charger_preview_etape(chargements[chargement_courant],true);
 		}
@@ -865,12 +864,14 @@
 				var nom_option=get_nom_option_sel();
 				texte.insert('Option : '+nom_option)
 					 .insert(new Element('br'))
+					 .insert(new Element('i').update(typeof(descriptions_options[nom_option]) == 'undefined' ? '' : descriptions_options[nom_option]))
+					 .insert(new Element('br'))
 					 .insert('Valeurs actuelles :');
 				var liste_valeurs=new Element('ul');
 
 				var texte_erreurs=new Array('Erreur : ');
 				$A(sans_doublons($$('td.selected'))).each(function(td_sel) {
-					liste_valeurs.insert(new Element('li').insert(formater_valeur(new Element('div'),nom_option,td_sel.retrieve('valeur_reelle'))));
+					liste_valeurs.insert(new Element('li').insert(td_sel.retrieve('valeur_reelle')));
 					td_sel.classNames().each(function(className) {
 					   switch(className) {
 						   case 'erreur_valeurs_multiples':
@@ -931,16 +932,16 @@
 										   .insert(new Element('br'))
 										   .insert('Commencez par d&eacute;finir l\'&eacute;tape comme active pour ce num&eacute;ro.');
 				}
+
+				jscolor.init();
+				
+				if (texte_erreurs.length == 1)
+					$('erreurs').update();
+				else
+					$('erreurs').update(texte_erreurs.join('<br />'));
 			}
 			else
 				$('helpers').update();
-
-			jscolor.init();
-			
-			if (texte_erreurs.length == 1)
-				$('erreurs').update();
-			else
-				$('erreurs').update(texte_erreurs.join('<br />'));
 		}
 		
 		function get_nom_option_sel() {
@@ -1462,6 +1463,8 @@
 			$$('.etape_ouverte').invoke('removeClassName','etape_ouverte');
 		}
 
+		var descriptions_options=new Array();
+		
 		function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 			if ($$('.ligne_noms_options')[0].select('.option_etape').length > 0) {
 				var est_etape_ouverte= num_etape == $$('.etape_ouverte')[0].retrieve('etape');
@@ -1473,7 +1476,10 @@
 			var element=$$('[name="entete_etape_'+num_etape+'"]:not(.header_fixe_col)')[0];
 
 			var num_colonne=element.previousSiblings().length;
-			$('chargement').update('Chargement des param&egrave;tres de l\'&eacute;tape '+num_etape+'...');
+			if (num_etape == -1)
+				$('chargement').update('Chargement des param&egrave;tres des dimensions de tranche...');
+			else
+				$('chargement').update('Chargement des param&egrave;tres de l\'&eacute;tape '+num_etape+'...');
 			removeFixedTableHeader();
 			new Ajax.Request('<?=site_url('parametrageg')?>/'+['index',pays,magazine,num_etape,nom_nouvelle_fonction==null?'null':nom_nouvelle_fonction].join('/'), {
 				method: 'post',
@@ -1504,8 +1510,10 @@
 													.addClassName('etape_'+num_etape+'__option')
 													.addClassName('option_etape');
 							contenu=new Element('a',{'href':'javascript:void(0)'}).insert(option_nom);
-							if (transport.headerJSON[option_nom]['description'] != '')
+							if (transport.headerJSON[option_nom]['description'] != '') {
 								contenu.insert(new Element('span').update(transport.headerJSON[option_nom]['description']));
+								descriptions_options[option_nom]=transport.headerJSON[option_nom]['description'];
+							}
 							
 							nouvelle_cellule.insert(contenu)
 											.store('nom_option',option_nom);
@@ -1528,9 +1536,8 @@
 									if (intervalle != 'type' && intervalle != 'valeur_defaut') {
 										if (intervalle == 0)
 											texte.push(transport.headerJSON[option_nom]);
-										else if (est_dans_intervalle(numero, intervalle)) {
+										else if (est_dans_intervalle(numero, intervalle))
 											texte.push(transport.headerJSON[option_nom][intervalle]);
-										}
 									}
 								}
 								if (texte.length > 1) {
