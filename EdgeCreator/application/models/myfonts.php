@@ -14,7 +14,7 @@ class MyFonts extends CI_Model {
 
 	function MyFonts($font=null,$color=null,$color_bg=null, $width=null, $text=null,$precision=18) {
 		
-		parent::Model();
+		parent::__construct();
 		if (is_null($font))
 			return;
 		$this->font=$font;

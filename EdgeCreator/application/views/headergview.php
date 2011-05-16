@@ -1,13 +1,10 @@
-<?php 
-
-
-?><html>
+<html>
 <head>
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>../csstabs.css" />
 	<style type="text/css">
-	html, body, #chargement, #chargement span {
+	html, body, #chargement, #chargement span, #filtre_numeros {
 		height:100%;
 		padding:0;
 		margin:0;
@@ -22,8 +19,22 @@
 	span, td, th {
 		font-size:16px;
 	}
+	#corps h2 {
+		margin-bottom: 0;
+	}
+	
+	.entete_page {
+		height:60px;
+		width:100%;
+		border-bottom:1px solid gray;
+	}
+	
+	#filtre_numeros {
+		background:transparent url('<?=base_url()?>images/funnel.png') no-repeat center left;
+		padding-left: 20px;
+	}
 
-	#viewer h1 {
+	#viewer h2 {
 		margin-top:-10px;
 	}
 
@@ -89,10 +100,15 @@
 		width:100%;
 	}
 	
+	.tabnav {
+		margin-top: 10px;
+	}
+	
 	#corps {
 		position:absolute;
 		left:225px;
 		padding-left:10px;
+		width: 100%;
 	}
 
 	table.bordered {
@@ -274,6 +290,7 @@
 		var base_url='<?=base_url()?>';
 
 		var urls=new Array();
+		urls['edgecreatorg']='<?=site_url('edgecreatorg')?>/';
 		urls['numerosdispos']='<?=site_url('numerosdispos')?>/';
 		urls['parametrageg']='<?=site_url('parametrageg')?>/';
 		urls['modifierg']='<?=site_url('modifierg')?>/';
@@ -294,7 +311,7 @@
 	}
 	if ($privilege==null) {?>
 		Identifiez-vous<br /><br />
-		<form method="post" action="">
+		<form method="post" action="index">
 			<table border="0">
 				<tr><td>Nom d'utilisateur :</td><td><input type="text" name="user" /></td></tr>
 				<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>
@@ -306,10 +323,24 @@
 	}?>
 	<div id="viewer">
 		<div id="viewer_inner">
-			<?=$user?> - <?=$privilege?><hr />
-			<div id="zoom_slider" class="slider">
-				<div class="handle"></div>
-			</div>&nbsp;Zoom : <span id="zoom_value"></span>
+		
+			<div class="entete_page">
+				<a title="Deconnexion" href="<?=site_url('edgecreatorg')?>/logout">X</a>
+				&nbsp;<?=$user?> - <?=$privilege?>
+				<table>
+				<tr>
+				<td>
+					<div id="zoom_slider" class="slider">
+							<div class="handle"></div>
+						</div>
+					</div>
+				</td>
+				<td style="font-size: 11px">
+					Zoom<span style="display:none"> : <span id="zoom_value"></span></span>
+				</td>
+				</tr>
+				</table>
+			</div>
 			<?php
 
 			include_once(BASEPATH.('/../../Affichage.class.php'));
@@ -350,8 +381,23 @@
 		</div>
 	</div>
 	<div id="corps">
-		<h1>Mod&egrave;le de tranche</h1>
-		<div id="nom_magazine"></div>
+		<div class="entete_page">
+			<table>
+				<tr>
+					<td>
+						<h2>Mod&egrave;le de tranche</h2>
+					</td>
+					<td>
+						<select style="font-size:11px" id="liste_pays"></select>
+						&nbsp;&nbsp;
+						<select style="font-size:11px" id="liste_magazines"></select><br />
+						<div id="filtre_numeros">Num&eacute;ros</div>
+						
+						
+					</td>
+				</tr>
+			</table>
+		</div>
 		<br />
 	</div>
 	<div id="infos">

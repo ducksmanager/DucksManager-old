@@ -3,6 +3,13 @@ class EdgeCreatorg extends CI_Controller {
 	static $pays;
 	static $magazine;
 	
+	function logout() {
+		$this->load->library('session');
+		$this->session->unset_userdata('user');
+		$this->session->unset_userdata('pass');
+		$this->index();
+	}
+	
 	function index($pays=null,$magazine=null,$etape_ouverture=null)
 	{
 		self::$pays=$pays;
@@ -10,6 +17,7 @@ class EdgeCreatorg extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->database();
 		$this->load->library('session');
+		
 
 		$privilege=null;
 		global $erreur;

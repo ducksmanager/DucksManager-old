@@ -286,6 +286,20 @@ class Modele_tranche extends CI_Model {
 		echo '<pre>';print_r($groupes_numeros);echo '</pre>';
 	}
 	
+	function get_pays() {
+		include_once(BASEPATH.'/../../Inducks.class.php');
+		Inducks::$use_db=true;
+		Inducks::$use_local_db=false;
+		return Inducks::get_pays();
+	}
+	
+	function get_magazines($pays) {
+		include_once(BASEPATH.'/../../Inducks.class.php');
+		Inducks::$use_db=true;
+		Inducks::$use_local_db=false;
+		return Inducks::get_liste_magazines($pays);
+	}
+	
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
 		$numeros_affiches=array('Aucun'=>'Aucun');
 		if ($get_prets)
