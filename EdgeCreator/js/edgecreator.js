@@ -770,19 +770,19 @@ function formater_modifier_valeur(nom_option) {
 							.insert('&nbsp;Utilis&eacute;');
 		return true;
 	}
-	if ($$('td.selected').invoke('retrieve','valeur_reelle').indexOf(undefined) != -1) { // Au moins un des numeros n'est pas defini pour cette etape
+	if ($$('td.selected').invoke('hasClassName','non_concerne').indexOf(true) != -1) { // Au moins un des numeros n'est pas defini pour cette etape
 		return false;
 	}
 	var premiere_valeur_sel=$$('td.selected')[0].retrieve('valeur_reelle');
-	// var valeur_defaut = typeof(valeurs_defaut_options[nom_option]) ==
-	// 'undefined' ? '' : valeurs_defaut_options[nom_option];
+	if (typeof(premiere_valeur_sel) == 'undefined')
+		premiere_valeur_sel='';
 	
 	switch(types_options[nom_option]) {
 		case 'couleur':
 			$('valeur_modifiee').update(new Element('input').addClassName('color')
 															.writeAttribute({'type':'text','value':premiere_valeur_sel}));
 		break;
-		case 'liste':
+		case 'liste': case 'fichier_ou_texte':
 			if (nom_option.indexOf('Police') != -1 && !$('liste_polices')) {
 				new Ajax.Request(base_url+'system/fonts/ttflist.php', {
 					method: 'get',
@@ -794,7 +794,7 @@ function formater_modifier_valeur(nom_option) {
 				});
 			}
 			else {
-				new Ajax.Request(urls['listerg']+['index',nom_option].join('/'), {
+				new Ajax.Request(urls['listerg']+['index',nom_option,pays].join('/'), {
 					method: 'post',
 					parameters:'select=true',
 					onSuccess:function(transport) {
@@ -1181,8 +1181,8 @@ function setupFixedTableHeader() {
 	}
 }
 
-function charger_etape_ligne (etape, tr) {
-	var est_ligne_header = [0,1,nb_lignes-1,nb_lignes].indexOf(tr.previousSiblings().length) != -1;
+function charger_etape_ligne (etape, tr, est_nouvelle) {
+	var est_ligne_header = typeof(tr.down('th')) != 'undefined';
 	var balise_cellule = est_ligne_header ? 'th':'td';
 	var num_etape=etape.Ordre;
 	if (num_etape==-1) { // cellule deja existante
@@ -1204,7 +1204,11 @@ function charger_etape_ligne (etape, tr) {
 			cellule.addClassName('lien_etape')
 			  .update(image_supprimer.clone(true))
 			  .insert(new Element('span').addClassName('numero_etape')
-										 .update(num_etape == -1 ? 'Dimensions' : ('Etape '+num_etape)))
+										 .update(num_etape == -1 
+												 ? 'Dimensions' 
+												 : (typeof(est_nouvelle) == 'undefined' 
+													 ? 'Etape '+num_etape 
+													 : 'Nouvelle &eacute;tape')))
 			  .insert(new Element('br'))
 			  .insert(new Element('img',{'height':18,'src':base_url+'images/'+nom_fonction+'.png',
 										 'title':nom_fonction,'alt':nom_fonction}).addClassName('logo_option'))
@@ -1453,7 +1457,7 @@ function charger_helper(nom_helper, nom_div, nom_fonction) {
 				nouvelle_etape['Ordre']=parseInt(num_etape_avant_nouvelle)+.5;
 				nom_nouvelle_fonction=nouvelle_etape['Nom_fonction'];
 				$('table_numeros').select('tr').each(function(tr) {
-					charger_etape_ligne(nouvelle_etape,tr);
+					charger_etape_ligne(nouvelle_etape,tr, true);
 				});
 				reload_observers_etapes();
 				reload_observers_cells();

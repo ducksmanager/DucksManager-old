@@ -1,7 +1,7 @@
 <?php
 class ListerG extends CI_Controller {
 	
-	function index($nom_option) {
+	function index($nom_option,$arg) {
 		if (in_array(null,array($nom_option))) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
@@ -9,7 +9,7 @@ class ListerG extends CI_Controller {
 		$this->load->library('session');
 		$this->load->model('Modele_tranche');
 
-		$liste=get_liste(null, $nom_option);
+		$liste=get_liste(null, $nom_option,$arg);
 
 			$data = array(
 					'liste'=>$liste

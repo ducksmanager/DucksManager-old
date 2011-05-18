@@ -148,8 +148,8 @@ class Modele_tranche extends CI_Model {
 				
 		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
 		if ($inclure_infos_options) {
-				$prop_champs=new ReflectionProperty(get_class($f), 'champs');
-				$champs=$prop_champs->getValue();
+			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
+			$champs=$prop_champs->getValue();
 			$prop_valeurs_defaut=new ReflectionProperty(get_class($f), 'valeurs_defaut');
 			$valeurs_defaut=$prop_valeurs_defaut->getValue();
 			$prop_descriptions=new ReflectionProperty(get_class($f), 'descriptions');
@@ -157,7 +157,7 @@ class Modele_tranche extends CI_Model {
 			foreach($f->options as $nom_option=>$val) {
 				$intervalles_option=$f->options->$nom_option;
 				if (!is_array($intervalles_option))
-					$intervalles_option=array($intervalles_option);
+					$intervalles_option=array(null=>$intervalles_option);
 				$intervalles_option['type']=$champs[$nom_option];
 				$intervalles_option['description']=isset($descriptions[$nom_option]) ? $descriptions[$nom_option] : '';
 				if (array_key_exists($nom_option, $valeurs_defaut))
@@ -941,8 +941,10 @@ class Fonction_executable extends Fonction {
 		exit();
 	}
 	
-	static function getCheminElements() {
-		return BASEPATH.'/../../edges/'.self::$pays.'/elements';
+	static function getCheminElements($pays=null) {
+		if (is_null($pays))
+			$pays=self::$pays;
+		return BASEPATH.'../../edges/'.$pays.'/elements';
 	}
 
 	static function toTemplatedString($str,$actif=true) {
@@ -1060,6 +1062,13 @@ class Image extends Fonction_executable {
 	static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
 	static $valeurs_nouveau=array('Source'=>'Tete PM.png','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
 	static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
+	
+	static $descriptions=array('Source'=>'Nom de l\'image', 
+							   'Decalage_x'=>'Marge gauche de l\'image', 
+							   'Decalage_y'=>'Marge haute de l\'image<br />(Par rapport au haut de l\'image si Position=haut, sinon par rapport au bas)',
+							   'Compression_x'=>'Compression de la largeur de l\'image',
+							   'Compression_y'=>'Compression de la hauteur de l\'image',
+							   'Position'=>'Position de l\'image par rapport &agrave; la tranche : Haut ou Bas');
 	
 	function Image($options,$executer=true,$creation=false,$get_options_defaut=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
@@ -1542,7 +1551,7 @@ function est_dans_intervalle($numero,$intervalle) {
 	return false;
 }
 
-function get_liste($fonction,$type) {
+function get_liste($fonction,$type,$arg=null) {
 	$liste=array();
 	switch($type) {
 		case 'Police':
@@ -1558,7 +1567,8 @@ function get_liste($fonction,$type) {
 			}
 		 break;
 		 case 'Source':
-			$rep=Fonction_executable::getCheminElements().'/';
+		 	$pays=$arg;
+			$rep=Fonction_executable::getCheminElements($pays).'/';
 			$dir = opendir($rep);
 			while ($f = readdir($dir)) {
 				if (strpos($f,'.png')===false)
