@@ -23,6 +23,9 @@ function reEnable(){
 	return true
 }
 function reload_observers_cells() {
+	if (privilege =='Affichage')
+		return;
+	
 	$$(selecteur_cellules).invoke('stopObserving','mousedown')
 						  .invoke('stopObserving','mouseup')
 						  .invoke('stopObserving','mousemove')
@@ -77,6 +80,9 @@ function reload_observers_etapes() {
 		var num_etape=$('table_numeros').down('tr').down('th',element.previousSiblings().length).retrieve('etape');
 		charger_etape(num_etape);
 	});
+	
+	if (privilege =='Affichage')
+		return;
 	
 	$$('.supprimer_etape').invoke('observe','click',function (event) {
 
@@ -190,10 +196,11 @@ var numero_chargement;
 
 function preview_numero(element) {
 	$$('.regle').invoke('setStyle',{'display':'none'});
-	$('save_png').setStyle({'display':'block'});
+	if (privilege == 'Admin' || privilege == 'Enregistrement')
+		$('save_png').setStyle({'display':'block'});
 	var numero=element.up('tr').readAttribute('id').substring('ligne_'.length,element.up('tr').readAttribute('id').length);
 	
-   var table=new Element('table');
+	var table=new Element('table');
 	switch(onglet_sel) {
 	   case 'Builder':
 		   $('numero_preview').store('numero',numero)
@@ -618,13 +625,13 @@ function assistant_cellules_sel() {
 
 		var texte_erreurs=new Array('Erreur : ');
 		$A(sans_doublons($$('td.selected'))).each(function(td_sel) {
-			liste_valeurs.insert(new Element('li').insert(td_sel.retrieve('valeur_reelle')));
-			td_sel.classNames().each(function(className) {
+			liste_valeurs.insert(new Element('li').insert(td_sel.retrieve('valeur_reelle') == null ? '[Non d&eacute;fini]' : td_sel.retrieve('valeur_reelle')));
+			/*td_sel.classNames().each(function(className) {
 			   switch(className) {
 				   case 'erreur_valeurs_multiples':
 					   texte_erreurs.push('Valeurs multiples : '+td_sel.retrieve('valeur_reelle').split('--').join(' et '));
 			   }
-		   });
+		   });*/
 		});
 		texte.insert(liste_valeurs);
 		var section_modifier_valeur=new Element('div').writeAttribute({'id':'modifier_valeur'})
@@ -632,7 +639,8 @@ function assistant_cellules_sel() {
 													  .insert(new Element('br'))
 													  .insert(new Element('div').writeAttribute({'id':'valeur_modifiee'}));
 		
-		$('helpers').update(texte).insert(section_modifier_valeur);
+		if (privilege != 'Affichage')
+			$('helpers').update(texte).insert(section_modifier_valeur);
 		var succes_formatage=formater_modifier_valeur(nom_option);
 		if (succes_formatage) {
 			section_modifier_valeur.insert(new Element('button',{'id':'modifier_valeur_ok'}).update('OK'));
@@ -687,7 +695,7 @@ function assistant_cellules_sel() {
 		else
 			$('erreurs').update(texte_erreurs.join('<br />'));
 	}
-	else
+	else if (privilege !='Affichage')
 		$('helpers').update();
 }
 
@@ -726,7 +734,7 @@ var types_options=new Array();
 types_options['Actif']='actif';
 
 function formater_valeur(td,nom_option,valeur) {
-	if (typeof (valeur) == 'undefined')
+	if (valeur == null || typeof (valeur) == 'undefined')
 		valeur='[Non d&eacute;fini]';
 
 	else if (nom_option.indexOf('Couleur') != -1) {
@@ -762,17 +770,7 @@ function formater_modifier_valeur(nom_option) {
 							.insert('&nbsp;Utilis&eacute;');
 		return true;
 	}
-	if ($$('td.selected').invoke('retrieve','valeur_reelle').indexOf(undefined) != -1) { // Au
-																							// moins
-																							// un
-																							// des
-																							// num?s
-																							// n'est
-																							// pas
-																							// d?ni
-																							// pour
-																							// cette
-																							// ?pe'
+	if ($$('td.selected').invoke('retrieve','valeur_reelle').indexOf(undefined) != -1) { // Au moins un des numeros n'est pas defini pour cette etape
 		return false;
 	}
 	var premiere_valeur_sel=$$('td.selected')[0].retrieve('valeur_reelle');
@@ -848,6 +846,8 @@ var parametres_helper=new Object();
 
 var onglet_sel=null;
 
+var pays_sel=null;
+
 new Event.observe(window, 'load',function() {
 	$$('.tabnav a').invoke('observe','click',function(ev) {
 		var element=Event.element(ev);
@@ -855,6 +855,12 @@ new Event.observe(window, 'load',function() {
 	});
 	new Resizeable($('viewer'));
 	toggle_item_menu($('Builder'));
+	
+	$('liste_pays').observe('change',function(ev) {
+		var element=Event.element(ev);
+		var nouveau_pays=element.options[element.options.selectedIndex].value;
+		window.location=urls['edgecreatorg']+'index/'+nouveau_pays;
+	});
 	
 	new Ajax.Request(urls['numerosdispos']+'index', {
 		method:'post',
@@ -864,9 +870,14 @@ new Event.observe(window, 'load',function() {
 					.insert(new Element('option',{'value':i})
 							  .update(transport.headerJSON.pays[i]));
 			}
-			var pays_sel = pays == '' ? 'fr' : pays;
+			pays_sel = pays == '' || typeof($('liste_pays').down('[value="'+pays+'"]')) == 'undefined' ? 'fr' : pays;
 			$('liste_pays').selectedIndex=$('liste_pays').down('[value="'+pays_sel+'"]').index;
 			
+			$('liste_magazines').observe('change',function(ev) {
+				var element=Event.element(ev);
+				var nouveau_magazine=element.options[element.options.selectedIndex].value;
+				window.location=urls['edgecreatorg']+'index/'+pays_sel+'/'+nouveau_magazine;
+			});
 			new Ajax.Request(urls['numerosdispos']+'index/'+pays_sel, {
 				method:'post',
 				onSuccess:function(transport) {
@@ -876,11 +887,7 @@ new Event.observe(window, 'load',function() {
 								  .update(transport.headerJSON.magazines[i]));
 					}
 					$('liste_magazines').selectedIndex=$('liste_magazines').down('[value="'+magazine+'"]').index;
-					$('liste_magazines').observe('change',function(ev) {
-						var element=Event.element(ev);
-						var nouveau_magazine=element.options[element.options.selectedIndex].value;
-						window.location=urls['edgecreatorg']+'index/'+pays+'/'+nouveau_magazine;
-					});
+					
 				}
 			});
 		}
@@ -1071,22 +1078,25 @@ new Event.observe(window, 'load',function() {
 		}
 	});
 	
-	$('save_png').observe('click',function() {
-	   if (typeof (numero_chargement) != null) {
-		   var num_etapes_final=$$('.num_etape_preview:not(.final)').invoke('retrieve','etape');
-			chargements=new Array();
-			chargements.push(num_etapes_final);
-			chargement_courant=0;
-			charger_preview_etape(chargements[chargement_courant],false);
-	   }
-	});
-	
-	$('toggle_helpers').observe('click',function() {
-		$('toggle_helpers').update(
-			($('infos').hasClassName('cache') ? 'Cacher':'Montrer') 
-		   +' l\'assistant');
-	   $('infos').toggleClassName('cache');
-	});
+	if (privilege == 'Admin' || privilege == 'Enregistrement') {
+		$('save_png').observe('click',function() {
+		   if (typeof (numero_chargement) != null) {
+			   var num_etapes_final=$$('.num_etape_preview:not(.final)').invoke('retrieve','etape');
+				chargements=new Array();
+				chargements.push(num_etapes_final);
+				chargement_courant=0;
+				charger_preview_etape(chargements[chargement_courant],false);
+		   }
+		});
+	}
+	if (privilege != 'Affichage') {
+		$('toggle_helpers').observe('click',function() {
+			$('toggle_helpers').update(
+				($('infos').hasClassName('cache') ? 'Cacher':'Montrer') 
+			   +' l\'assistant');
+		   $('infos').toggleClassName('cache');
+		});
+	}
 	
 	$('viewer_inner').observe( 'scroll', function() {
 			adapter_scroll_reperes();
@@ -1314,24 +1324,33 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 			for (var option_nom in transport.headerJSON) {
 				$$('.ligne_dispo').each(function(ligne) {
 					nouvelle_cellule=new Element('td');
-					texte=new Array();
 					var numero=ligne.retrieve('numero');
 					var etape_utilisee=ligne.down('td',$$('[name="entete_etape_'+num_etape+'"]')[0].previousSiblings().length+i).hasClassName('num_checked');
 					if (etape_utilisee) {
 						if (typeof(transport.headerJSON[option_nom])=='string')
 							transport.headerJSON[option_nom]=new Array(transport.headerJSON[option_nom]);
+
+						texte=null;
 						for (var intervalle in transport.headerJSON[option_nom]) {
-							if (intervalle != 'type' && intervalle != 'valeur_defaut') {
-								if (intervalle == 0)
-									texte.push(transport.headerJSON[option_nom]);
+							if (intervalle != 'type' && intervalle != 'valeur_defaut' && intervalle !='description') {
+								/*if (transport.headerJSON[option_nom][intervalle] == null)
+									transport.headerJSON[option_nom][intervalle]=transport.headerJSON[option_nom]['valeur_defaut'];
+								if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
+									texte=transport.headerJSON[option_nom];*/
+								if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
+									texte=transport.headerJSON[option_nom]['valeur_defaut'];
 								else if (est_dans_intervalle(numero, intervalle))
-									texte.push(transport.headerJSON[option_nom][intervalle]);
+									texte=transport.headerJSON[option_nom][intervalle];
 							}
 						}
-						if (texte.length > 1) {
+						/*if (texte.length > 1) {
 							nouvelle_cellule.addClassName('erreur_valeurs_multiples');
+							texte=texte.join('--');
 						}
-						texte=texte.join('--');
+						else if (texte.length == 1)
+							texte=texte[0];
+						else
+							texte=null;*/
 						nouvelle_cellule=formater_valeur(nouvelle_cellule,option_nom,texte)
 										 .store('valeur_reelle',texte);
 					}
@@ -1389,7 +1408,7 @@ function charger_helper(nom_helper, nom_div, nom_fonction) {
 	// if ($$('')))
 	if (!$(nom_div))
 		$('helpers').insert(new Element('div',{'id':nom_div}));
-	new Ajax.Request(base_url+'helpers/'+nom_helper+'.html', {
+	new Ajax.Request(base_url+'index.php/helper/index/'+nom_helper+'.html', {
 		method: 'post',
 		parameters: 'nom_helper='+nom_helper,
 		onFailure:function() {

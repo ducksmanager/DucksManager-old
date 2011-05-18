@@ -1,6 +1,5 @@
 <html>
 <head>
-	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>../csstabs.css" />
 	<style type="text/css">
@@ -73,6 +72,7 @@
 		right:0px;
 		margin-top:20px;
 		z-index:1000;
+		background-color:white;
 	}
 	
 	#erreurs {
@@ -288,6 +288,7 @@
 		var pays='<?=$pays?>';
 		var magazine='<?=$magazine?>';
 		var base_url='<?=base_url()?>';
+		var privilege='<?=$privilege?>';
 
 		var urls=new Array();
 		urls['edgecreatorg']='<?=site_url('edgecreatorg')?>/';
@@ -311,7 +312,7 @@
 	}
 	if ($privilege==null) {?>
 		Identifiez-vous<br /><br />
-		<form method="post" action="index">
+		<form method="post" action="<?=site_url('edgecreatorg')?>">
 			<table border="0">
 				<tr><td>Nom d'utilisateur :</td><td><input type="text" name="user" /></td></tr>
 				<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>
@@ -331,8 +332,7 @@
 				<tr>
 				<td>
 					<div id="zoom_slider" class="slider">
-							<div class="handle"></div>
-						</div>
+						<div class="handle"></div>
 					</div>
 				</td>
 				<td style="font-size: 11px">
@@ -352,7 +352,9 @@
 			<div id="contenu_builder">
 				<h1>Builder</h1>
 				<div id="numero_preview">Cliquez sur le lien "Preview" d'un num&eacute;ro pour le pr&eacute;visaliser.</div>
-				<a style="display:none" id="save_png" href="javascript:void(0)">Enregistrer comme image PNG</a>
+				<?php if ($privilege == 'Admin' || $privilege == 'Enregistrement') {?>
+					<a style="display:none" id="save_png" href="javascript:void(0)">Enregistrer comme image PNG</a>
+				<?php } ?>
 				<div class="previews"></div>
 			</div>
 			<div id="contenu_previews">
@@ -400,10 +402,14 @@
 		</div>
 		<br />
 	</div>
-	<div id="infos">
-		<div id="helpers"></div>
-	</div>
+	<?php if ($privilege !='Affichage') { ?>
+		<div id="infos">
+			<div id="helpers"></div>
+		</div>
+	<?php } ?>
 	<div id="chargement">
 	</div>
 	<div id="erreurs"></div>
-	<a id="toggle_helpers" href="javascript:void(0)">Cacher l'assistant</a>
+	<?php if ($privilege !='Affichage') { ?>
+		<a id="toggle_helpers" href="javascript:void(0)">Cacher l'assistant</a>
+	<?php } ?>
