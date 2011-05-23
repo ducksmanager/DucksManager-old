@@ -1,5 +1,6 @@
 <html>
 <head>
+	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>../csstabs.css" />
 	<style type="text/css">
@@ -73,6 +74,7 @@
 		margin-top:20px;
 		z-index:1000;
 		background-color:white;
+		height: 100px;
 	}
 	
 	#erreurs {

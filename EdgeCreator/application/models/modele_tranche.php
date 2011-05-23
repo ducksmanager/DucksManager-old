@@ -200,17 +200,16 @@ class Modele_tranche extends CI_Model {
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' '
 				.'ORDER BY Ordre';
 		$resultats=$this->db->query($requete)->result();
-		$debut=true;
 		foreach($resultats as $resultat) {
-			if (!$debut) {
-				if ($resultat->Ordre != $etape+1)
-					break;
-			}
+			if ($resultat->Ordre != $etape+1)
+				break;
 			$etape=$resultat->Ordre;
 
-			$debut=false;
 		}
-		echo 'Decalage des etapes '.$etape_debut.' a '.$etape."\n";
+		if (isset($etape))
+			echo 'Decalage des etapes '.$etape_debut.' a '.$etape."\n";
+		else
+			echo 'Pas de decalage';
 		
 		for ($i=$etape;$i>=$etape_debut;$i--) {
 			$requete='UPDATE tranches_modeles SET Ordre='.($i+1).' '
@@ -885,7 +884,8 @@ class Fonction_executable extends Fonction {
 			$propriete_champs=new ReflectionProperty($classe, 'champs');
 			$valeurs_champs=$propriete_champs->getValue();
 			foreach($valeurs_champs as $nom=>$valeur) {
-				$this->options->$nom=null;
+				if (!isset($this->options->$nom))
+					$this->options->$nom=null;
 			}
 
 			return;

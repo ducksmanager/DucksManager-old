@@ -1,6 +1,6 @@
 <?php
-$url_root='../../../../../';
-$dossier = $url_root.'edges/'.$_POST['pays'].'/elements/';
+$url_root=getcwd();
+$dossier = $url_root.'/../edges/'.$_POST['pays'].'/elements/';
 $fichier = basename($_FILES['image']['name']);
 $taille_maxi = 400000;
 $taille = filesize($_FILES['image']['tmp_name']);
@@ -25,7 +25,6 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 	 $fichier = strtr($fichier,
 		  'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ',
 		  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
-	 $fichier = preg_replace('/([^.a-z0-9]+)/i', '-', $fichier);
 	 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
 	 {
 		  echo 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';

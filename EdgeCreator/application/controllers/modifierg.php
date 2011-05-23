@@ -14,7 +14,6 @@ class ModifierG extends CI_Controller {
 			exit();
 		}
 		self::$etape=$etape;
-		$est_etape_temporaire="".intval(self::$etape) != self::$etape;
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		self::$numeros=$numeros=explode('~',$numeros);
@@ -28,14 +27,15 @@ class ModifierG extends CI_Controller {
 		$this->load->helper('form');
 		
 		$this->load->model('Modele_tranche');
+		$est_etape_temporaire=count($this->Modele_tranche->get_etapes_simple($pays, $magazine, $etape)) == 0;
+		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
 
 		if ($est_etape_temporaire) {
-			$this->Modele_tranche->decaler_etapes_a_partir_de(self::$pays,self::$magazine,intval(self::$etape)+1);
-			self::$etape=intval(self::$etape)+1;
+			$this->Modele_tranche->decaler_etapes_a_partir_de(self::$pays,self::$magazine,self::$etape);
 			$this->Modele_tranche->insert_ordre(self::$pays,self::$magazine,self::$etape,self::$numeros[0],self::$numeros[count(self::$numeros)-1],$nom_nouvelle_fonction,array());
 		}
 		$valeurs=array();
