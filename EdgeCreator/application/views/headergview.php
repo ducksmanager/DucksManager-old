@@ -87,12 +87,12 @@
 	#viewer {
 		position:fixed;
 		left:0px;
-		padding-right:15px;
 		width:200px;
 		height:100%;
 		border-right:1px solid black;
 		background-color: white;
 		z-index: 500;
+		padding-right: 5px;
 	}
 
 	#viewer_inner {
@@ -111,6 +111,7 @@
 		left:225px;
 		padding-left:10px;
 		width: 100%;
+		padding-right: 450px;
 	}
 
 	table.bordered {
@@ -280,12 +281,13 @@
 	div.slider { width:150px; margin:10px 0; background-color:#ccc; height:10px; position: relative; white-space: nowrap; }
 
 	div.slider div.handle { width:10px; height:15px; background-color:#f00; cursor:move; position: absolute; }
+	
 	</style>
 	<script type="text/javascript" src="<?=base_url()?>js/prototype.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/scriptaculous/src/scriptaculous.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jscolor.js" ></script>
-	
+
 	<script type="text/javascript">
 		var pays='<?=$pays?>';
 		var magazine='<?=$magazine?>';

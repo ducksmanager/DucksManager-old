@@ -227,10 +227,10 @@ Resizeable.prototype = {
     var pointer = [Event.pointerX(event), Event.pointerY(event)];
     var offsets = Position.cumulativeOffset(this.element);
 
-    var cursor = '';
-    if (this.between((offsets[0] + this.element.offsetWidth) - pointer[0], 0, this.options.right)) cursor += 'e';
+    if (Math.abs(pointer[0]-$('body').scrollLeft - this.element.offsetWidth) <5)
+    	return 'e';
 
-    return cursor;
+    return '';
   },
   cursor: function(event) {
     var cursor = this.directions(event);

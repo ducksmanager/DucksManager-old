@@ -1,7 +1,7 @@
 <?php
 class ListerG extends CI_Controller {
 	
-	function index($nom_option,$arg) {
+	function index($nom_option,$arg=null,$format='json') {
 		if (in_array(null,array($nom_option))) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
@@ -12,7 +12,8 @@ class ListerG extends CI_Controller {
 		$liste=get_liste(null, $nom_option,$arg);
 
 			$data = array(
-					'liste'=>$liste
+					'liste'=>$liste,
+					'format'=>$format
 			);
 
 			$this->load->view('listergview',$data);

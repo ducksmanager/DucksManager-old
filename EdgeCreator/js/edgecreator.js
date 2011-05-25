@@ -163,7 +163,7 @@ function reload_observers_tranches() {
 	   if (nom_option_sel != null) {
 		   var element_modif=$('valeur_modifiee').down('input,select');
 		   if (!isNaN(parseFloat($F(element_modif)))) {
-			   var valeur_modifiee_actuelle=$F() * zoom;
+			   var valeur_modifiee_actuelle=$F(element_modif) * zoom;
 			   if (nom_option_sel.match(new RegExp(/_x$/)) != null) {
 				   $('viewer').insert(new Element('div').addClassName('repere')
 										.setStyle({'position':'absolute','top':tranche.cumulativeOffset()['top']+'px','width': '1px', 
@@ -796,39 +796,30 @@ function formater_modifier_valeur(nom_option) {
 	var premiere_valeur_sel=$$('td.selected')[0].retrieve('valeur_reelle');
 	if (typeof(premiere_valeur_sel) == 'undefined')
 		premiere_valeur_sel='';
-	
+
 	switch(types_options[nom_option]) {
 		case 'couleur':
 			$('valeur_modifiee').update(new Element('input').addClassName('color')
 															.writeAttribute({'type':'text','value':premiere_valeur_sel}));
 		break;
 		case 'liste': case 'fichier_ou_texte':
-			if (nom_option.indexOf('Police') != -1 && !$('liste_polices')) {
-				new Ajax.Request(base_url+'system/fonts/ttflist.php', {
-					method: 'get',
-					parameters:'select=true',
-					onSuccess:function(transport) {
-						$('valeur_modifiee').update(transport.responseText);
-						$('liste_polices').selectedIndex=$('liste_polices').down('option[value="'+premiere_valeur_sel+'"]').index;
+			var arg='_';
+			if (nom_option=='Source')
+				arg=pays;
+			new Ajax.Request(urls['listerg']+['index',nom_option,arg].join('/'), {
+				method: 'post',
+				parameters:'select=true',
+				onSuccess:function(transport) {
+					var select = new Element('select');
+					for(var nom in transport.headerJSON) {
+						var option=new Element('option',{'value':nom}).update(transport.headerJSON[nom]);
+						if (option.value==premiere_valeur_sel)
+							option.writeAttribute({'selected':'selected'});
+						select.insert(option);
 					}
-				});
-			}
-			else {
-				new Ajax.Request(urls['listerg']+['index',nom_option,pays].join('/'), {
-					method: 'post',
-					parameters:'select=true',
-					onSuccess:function(transport) {
-						var select = new Element('select');
-						for(var nom in transport.headerJSON) {
-							var option=new Element('option',{'value':nom}).update(transport.headerJSON[nom]);
-							if (option.value==premiere_valeur_sel)
-								option.writeAttribute({'selected':'selected'});
-							select.insert(option);
-						}
-						$('valeur_modifiee').update(select);
-					}
-				});
-			}
+					$('valeur_modifiee').update(select);
+				}
+			});
 		break;
 		default:
 			$('valeur_modifiee').update(new Element('input').writeAttribute({'type':'text','value':premiere_valeur_sel}));
@@ -873,6 +864,7 @@ new Event.observe(window, 'load',function() {
 		var element=Event.element(ev);
 		toggle_item_menu(element);
 	});
+	 
 	new Resizeable($('viewer'));
 	toggle_item_menu($('Builder'));
 	
@@ -1491,4 +1483,12 @@ function charger_helper(nom_helper, nom_div, nom_fonction) {
 
 		}
 	});
+}
+
+function remplacer_caracteres_whatthefont() {
+	var nom_police=$('url_police').value.replace(new RegExp(/(?:http:\/\/)?(?:new\.)?myfonts.com\/fonts\/(.*)\//g),'$1');
+	nom_police=nom_police.replace(new RegExp(/\//g),'.');
+	$('nom_police').update('Notez le nom de la police correspondant &agrave; votre texte :')
+				   .insert(new Element('br'))
+				   .insert(new Element('b').update(nom_police));
 }
