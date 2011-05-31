@@ -10,7 +10,7 @@ class EdgeCreatorg extends CI_Controller {
 		$this->index();
 	}
 	
-	function index($pays=null,$magazine=null,$etape_ouverture=null)
+	function index($pays=null,$magazine=null,$etape_ouverture=null,$numero_debut_filtre=null,$numero_fin_filtre=null)
 	{
 		self::$pays=$pays;
 		self::$magazine=$magazine;
@@ -41,7 +41,9 @@ class EdgeCreatorg extends CI_Controller {
 				'title' => 'EdgeCreator',
 				'pays' => self::$pays,
 				'magazine'=>self::$magazine,
-				'etape_ouverture'=>$etape_ouverture
+				'etape_ouverture'=>$etape_ouverture,
+				'numero_debut_filtre'=>$numero_debut_filtre,
+				'numero_fin_filtre'=>$numero_fin_filtre
 		);
 		$this->load->view('headergview',$data);
 		$this->load->view('edgecreatorgview',$data);

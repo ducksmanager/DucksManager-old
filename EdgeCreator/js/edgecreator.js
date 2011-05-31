@@ -93,7 +93,7 @@ function reload_observers_etapes() {
 			new Ajax.Request(urls['supprimerg']+'index/'+pays+'/'+magazine+'/'+num_etape_a_supprimer, {
 				method: 'post',
 				onSuccess:function() {
-					document.location.reload();
+					window.location=urls['edgecreatorg']+['index',pays,magazine,etape_ouverture,plage[0],plage[1]].join('/');
 				}
 			});
 		}
@@ -842,8 +842,6 @@ var etapes_utilisees=new Array();
 var etapes_valides=new Array();
 var etape_en_cours=null;
 
-var plage=new Array('null','null');
-
 var nb_lignes=null;
 
 var image_ajouter=new Element('img',{'title':'Ajouter une etape','src':base_url+'images/ajouter.png'})
@@ -932,10 +930,20 @@ new Event.observe(window, 'load',function() {
 													 .insert(new Element('th'))
 								   );
 				$('corps').insert(table);
-	
-				if (nb_etapes * (nb_numeros_dispos-1) >= 1000) {
+				
+				
+				$$('#filtre_debut,#filtre_fin').each(function(filtre_select) {
+					for (var numero_dispo in numeros_dispos)
+						if (numero_dispo != 'Aucun')
+							filtre_select.insert(new Element('option',{'value':numero_dispo}).update(numero_dispo));
+				});
+				$('filtre_fin').selectedIndex = $('filtre_fin').select('option:last')[0].index;
+				
+				if (plage[0]!='null') // Filtre defini dans la page precedente
+					recharger_selects_filtres();
+				else if (nb_etapes * (nb_numeros_dispos-1) >= 1000)
 					restriction_plage();
-				}
+
 	
 				var debut_plage_atteint=false;
 				var fin_plage_atteint=false;
@@ -1257,7 +1265,7 @@ function cloner_numero (ev) {
 		new Ajax.Request(urls['etendre']+'index/'+pays+'/'+magazine+'/'+numero_a_cloner+'/'+nouveau_numero, {
 			method: 'post',
 			onSuccess:function() {
-				document.location.reload();
+				window.location=urls['edgecreatorg']+['index',pays,magazine,etape_ouverture,plage[0],plage[1]].join('/');
 			},
 			onFailure:function() {
 				numero_a_cloner=null;
@@ -1419,10 +1427,23 @@ function restriction_plage() {
 				 }
 				 else {
 					 plage=new Array(plage_debut_entre,plage_fin_entre);
+					 recharger_selects_filtres();
 				 }
 			 }
 		 }
 	}
+}
+
+function recharger_selects_filtres() {
+	$('filtre_debut').select('option').each(function(option) {
+		if (option.value == plage[0])
+			$('filtre_debut').selectedIndex = option.index;
+	});
+
+	$('filtre_fin').select('option').each(function(option) {
+		if (option.value == plage[1])
+			$('filtre_fin').selectedIndex = option.index;
+	});
 }
 
 function charger_helper(nom_helper, nom_div, nom_fonction) {

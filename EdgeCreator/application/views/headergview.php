@@ -291,8 +291,19 @@
 	<script type="text/javascript">
 		var pays='<?=$pays?>';
 		var magazine='<?=$magazine?>';
-		var base_url='<?=base_url()?>';
+		var etape_ouverture='<?=is_null($etape_ouverture) || empty($etape_ouverture) ? '_' : $etape_ouverture?>';
 		var privilege='<?=$privilege?>';
+		
+		var plage=<?php
+		if (is_null($numero_debut_filtre)) {
+			?>new Array('null','null');<?php
+		}
+		else {
+			?>new Array('<?=$numero_debut_filtre?>','<?=$numero_fin_filtre?>');<?php
+		}?>
+		
+		var numero_fin_filtre='<?=$numero_fin_filtre?>';
+		var base_url='<?=base_url()?>';
 
 		var urls=new Array();
 		urls['edgecreatorg']='<?=site_url('edgecreatorg')?>/';
@@ -397,8 +408,11 @@
 						<select style="font-size:11px" id="liste_pays"></select>
 						&nbsp;&nbsp;
 						<select style="font-size:11px" id="liste_magazines"></select><br />
-						<div id="filtre_numeros">Num&eacute;ros</div>
-						
+						<div id="filtre_numeros">
+							Num&eacute;ros&nbsp;
+							<select id="filtre_debut"></select>&nbsp;&agrave;&nbsp;
+							<select id="filtre_fin"></select>
+						</div>
 						
 					</td>
 				</tr>
