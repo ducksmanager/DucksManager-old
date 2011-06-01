@@ -83,34 +83,32 @@ function reload_observers_etapes() {
 	
 	if (privilege =='Affichage')
 		return;
-	
+
+	$$('.supprimer_etape').invoke('stopObserving','click');
 	$$('.supprimer_etape').invoke('observe','click',function (event) {
 
 		var element=Event.element(event).up('th');
 		var num_etape_a_supprimer=element.retrieve('etape');
-		$('chargement').update('Suppression de l\'&eacute;tape '+num_etape_a_supprimer+'...');
 		if (confirm('Etes vous sur(e) de vouloir supprimer l\'etape '+num_etape_a_supprimer+" ?")) {
+			$('chargement').update('Suppression de l\'&eacute;tape '+num_etape_a_supprimer+'...');
 			new Ajax.Request(urls['supprimerg']+'index/'+pays+'/'+magazine+'/'+num_etape_a_supprimer, {
 				method: 'post',
 				onSuccess:function() {
-					window.location=urls['edgecreatorg']+['index',pays,magazine,etape_ouverture,plage[0],plage[1]].join('/');
+					window.location=get_current_url();
 				}
 			});
 		}
-		else
-			return;
 	});
 
+	$$('.ajouter_etape').invoke('stopObserving','click');
 	$$('.ajouter_etape').invoke('observe','click',function (event) {
-		if ($$('.lien_etape[id$=".5"]').length > 0) {
+		if ($$('.nouvelle').length > 0) {
 			alert('Une etape est deja en train d\'etre ajoutee');
 			return;
 		}
 		var element=Event.element(event).up('th');
 		num_etape_avant_nouvelle=element.retrieve('etape');
-		if (true) {// confirm('Vous allez ajouter une etape apres
-					// l\'etape '+num_etape_avant_nouvelle+'\nContinuer
-					// ?')) {
+		if (true) {
 			fermer_etapes();
 			var liste_possibilites=new Element('select',{'id':'liste_possibilites_fonctions'});
 			if ($$('[name="entete_etape_-1"]').length >0) {
@@ -136,6 +134,10 @@ function reload_observers_etapes() {
 						   .insert(liste_possibilites)
 						   .insert(bouton_ok);
 			bouton_ok.observe('click',function() {
+				if ($$('.nouvelle').length > 0 ) {
+					alert('Une etape est deja en train d\'etre ajoutee !');
+					return;
+				}
 				var name_sel=$('liste_possibilites_fonctions').down($('liste_possibilites_fonctions').selectedIndex).title;
 				var nom_helper='';
 				switch(name_sel) {
@@ -630,12 +632,6 @@ function assistant_cellules_sel() {
 		var texte_erreurs=new Array('Erreur : ');
 		$A(sans_doublons($$('td.selected'))).each(function(td_sel) {
 			liste_valeurs.insert(new Element('li').insert(td_sel.retrieve('valeur_reelle') == null ? '[Non d&eacute;fini]' : td_sel.retrieve('valeur_reelle')));
-			/*td_sel.classNames().each(function(className) {
-			   switch(className) {
-				   case 'erreur_valeurs_multiples':
-					   texte_erreurs.push('Valeurs multiples : '+td_sel.retrieve('valeur_reelle').split('--').join(' et '));
-			   }
-		   });*/
 		});
 		texte.insert(liste_valeurs);
 		var section_modifier_valeur=new Element('div').writeAttribute({'id':'modifier_valeur'})
@@ -735,6 +731,8 @@ function etape_temporaire_to_definitive() {
 		if (parseInt(etape) != etape)
 			td.store('etape',parseInt(etape+.5));
 	});
+	
+	$$('.nouvelle').invoke('removeClassName','nouvelle');
 	
 	if (etapes_maj)
 		reload_observers_etapes();
@@ -858,6 +856,9 @@ var onglet_sel=null;
 var pays_sel=null;
 
 new Event.observe(window, 'load',function() {
+	if (!$('viewer'))
+		return;
+	
 	$$('.tabnav a').invoke('observe','click',function(ev) {
 		var element=Event.element(ev);
 		toggle_item_menu(element);
@@ -966,7 +967,7 @@ new Event.observe(window, 'load',function() {
 						continue; 
 					var td_cloner=new Element('td');
 					var image_cloner = new Element('img').writeAttribute({'src':base_url+'images/clone.png','title':'Cloner le numero'})
-												.addClassName('cloner');
+														 .addClassName('cloner');
 					
 					td_cloner.update(image_cloner);
 					var tr=new Element('tr').writeAttribute({'id':'ligne_'+numero_dispo}).addClassName('ligne_dispo').store('numero',numero_dispo)
@@ -1204,6 +1205,7 @@ function setupFixedTableHeader() {
 }
 
 function charger_etape_ligne (etape, tr, est_nouvelle) {
+	est_nouvelle=typeof(est_nouvelle) != 'undefined';
 	var est_ligne_header = typeof(tr.down('th')) != 'undefined';
 	var balise_cellule = est_ligne_header ? 'th':'td';
 	var num_etape=etape.Ordre;
@@ -1226,14 +1228,12 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 
 			var nom_fonction=etape.Nom_fonction;
 			cellule
-			  .addClassName('lien_etape')
+			  .addClassName('lien_etape'+(est_nouvelle ? ' nouvelle':''))
 			  .update(image_supprimer.clone(true))
 			  .insert(new Element('span').addClassName('numero_etape')
 										 .update(num_etape == -1 
 												 ? 'Dimensions' 
-												 : (typeof(est_nouvelle) == 'undefined' 
-													 ? 'Etape '+num_etape 
-													 : 'Nouvelle &eacute;tape')))
+												 : (est_nouvelle ? 'Nouvelle &eacute;tape' : 'Etape '+num_etape)))
 			  .insert(new Element('br'))
 			  .insert(new Element('img',{'height':18,'src':base_url+'images/'+nom_fonction+'.png',
 										 'title':nom_fonction,'alt':nom_fonction}).addClassName('logo_option'))
@@ -1242,6 +1242,8 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 			  .writeAttribute({'name':'entete_etape_'+num_etape});
 		break;
 		case 1: case nb_lignes-2 :// Ligne des options, vide
+			cellule.addClassName('etape_active')
+				   .insert(new Element('a',{'href':'javascript:void(0)'}));
 		break;
 		default:
 			if (est_dans_intervalle(tr.retrieve('numero'), etape.Numero_debut+'~'+etape.Numero_fin))
@@ -1265,7 +1267,7 @@ function cloner_numero (ev) {
 		new Ajax.Request(urls['etendre']+'index/'+pays+'/'+magazine+'/'+numero_a_cloner+'/'+nouveau_numero, {
 			method: 'post',
 			onSuccess:function() {
-				window.location=urls['edgecreatorg']+['index',pays,magazine,etape_ouverture,plage[0],plage[1]].join('/');
+				window.location=get_current_url();
 			},
 			onFailure:function() {
 				numero_a_cloner=null;
@@ -1286,6 +1288,7 @@ function fermer_etapes() {
 	});
 	$$('.lien_etape').invoke('writeAttribute',{'colspan':1});
 	$$('.etape_ouverte').invoke('removeClassName','etape_ouverte');
+	$$('.etape_active').invoke('down','a').invoke('update','');
 }
 
 var descriptions_options=new Array();
@@ -1363,24 +1366,12 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 						texte=null;
 						for (var intervalle in transport.headerJSON[option_nom]) {
 							if (intervalle != 'type' && intervalle != 'valeur_defaut' && intervalle !='description') {
-								/*if (transport.headerJSON[option_nom][intervalle] == null)
-									transport.headerJSON[option_nom][intervalle]=transport.headerJSON[option_nom]['valeur_defaut'];
-								if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
-									texte=transport.headerJSON[option_nom];*/
 								if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
 									texte=transport.headerJSON[option_nom]['valeur_defaut'];
 								else if (est_dans_intervalle(numero, intervalle))
 									texte=transport.headerJSON[option_nom][intervalle];
 							}
 						}
-						/*if (texte.length > 1) {
-							nouvelle_cellule.addClassName('erreur_valeurs_multiples');
-							texte=texte.join('--');
-						}
-						else if (texte.length == 1)
-							texte=texte[0];
-						else
-							texte=null;*/
 						nouvelle_cellule=formater_valeur(nouvelle_cellule,option_nom,texte)
 										 .store('valeur_reelle',texte);
 					}
@@ -1400,6 +1391,9 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 				});
 				assistant_cellules_sel();
 			}
+			
+			$$('.etape_active').invoke('down','a').invoke('update','Active');
+			
 			$('chargement').update();
 			reload_observers_cells();
 			setupFixedTableHeader();
@@ -1512,4 +1506,15 @@ function remplacer_caracteres_whatthefont() {
 	$('nom_police').update('Notez le nom de la police correspondant &agrave; votre texte :')
 				   .insert(new Element('br'))
 				   .insert(new Element('b').update(nom_police));
+}
+
+function get_current_url() {
+	var url=urls['edgecreatorg']+['index',pays,magazine].join('/');
+	if (etape_ouverture != '_')
+		url+='/'+etape_ouverture;
+	if (plage[0] != 'null')
+		url+='/'+plage[0];
+	if (plage[1] != 'null')
+		url+='/'+plage[1];
+	return url;
 }

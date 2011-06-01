@@ -327,7 +327,7 @@
 	}
 	if ($privilege==null) {?>
 		Identifiez-vous<br /><br />
-		<form method="post" action="<?=site_url('edgecreatorg')?>">
+		<form method="post" action="<?=site_url('edgecreatorg/index/'.$pays.'/'.$magazine)?>">
 			<table border="0">
 				<tr><td>Nom d'utilisateur :</td><td><input type="text" name="user" /></td></tr>
 				<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>
