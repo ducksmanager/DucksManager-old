@@ -4,11 +4,11 @@ class fr_GB extends Edge {
 	var $magazine='GB';
 	var $intervalles_validite=array('4');
 	static $largeur_defaut=31;
-	static $hauteur_defaut=253;
+	static $hauteur_defaut=353;
 
-	function fr_DM ($numero) {
+	function fr_GB ($numero) {
 		$this->numero=$numero;
-		$this->hauteur=253;
+		$this->hauteur=353;
 		$this->largeur=31;
 		$this->hauteur*=Edge::$grossissement;
 		$this->largeur*=Edge::$grossissement;
