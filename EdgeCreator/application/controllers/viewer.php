@@ -24,6 +24,8 @@ class Viewer extends CI_Controller {
 		
 		$this->load->model('Modele_tranche');
 		
+		$privilege=$this->Modele_tranche->get_privilege();
+		
 		if (is_null($pays) || is_null($magazine)) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
@@ -137,22 +139,30 @@ class Viewer extends CI_Controller {
 		if (self::$is_debug===false)
 			header('Content-type: image/png');
 		if ($save=='save' && $zoom==1.5) {
-			@mkdir('system/application/views/gen/'.$pays);
-			imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
-			
-			$requete_tranche_deja_prete='SELECT issuenumber '
-									   .'FROM tranches_pretes '
-									   .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero.'\'';
-
-			if (count($this->db->query($requete_tranche_deja_prete)->result()) == 0) {
-				$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber) VALUES '
-						.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\')';
-				$this->db->query($requete);
+			switch($privilege) {
+				case 'Admin':
+					@mkdir('system/application/views/gen/'.$pays);
+					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
+					
+					$requete_tranche_deja_prete='SELECT issuenumber '
+											   .'FROM tranches_pretes '
+											   .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero.'\'';
+		
+					if (count($this->db->query($requete_tranche_deja_prete)->result()) == 0) {
+						$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber) VALUES '
+								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\')';
+						$this->db->query($requete);
+					}
+				break;
+				case 'Edition':
+					
+				break;
+				default:
+					echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';
+				break;
 			}
 		}
 		imagepng(Viewer::$image);
-		
-		exit();
 	}
 }
 

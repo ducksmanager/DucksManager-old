@@ -22,6 +22,13 @@ class Etendre extends CI_Controller {
 		$this->load->helper('url');
 		
 		$this->load->model('Modele_tranche');
+		
+		$privilege=$this->Modele_tranche->get_privilege();
+		if ($privilege == 'Affichage') {
+			echo 'Erreur : droits insuffisants';
+			return;
+		}
+		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		$this->Modele_tranche->etendre_numero($pays,$magazine,$numero,$nouveau_numero);

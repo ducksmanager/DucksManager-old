@@ -27,6 +27,13 @@ class ModifierG extends CI_Controller {
 		$this->load->helper('form');
 		
 		$this->load->model('Modele_tranche');
+		
+		$privilege=$this->Modele_tranche->get_privilege();
+		if ($privilege == 'Affichage') {
+			echo 'Erreur : droits insuffisants';
+			return;
+		}
+		
 		$est_etape_temporaire=count($this->Modele_tranche->get_etapes_simple($pays, $magazine, $etape)) == 0;
 		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);

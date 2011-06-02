@@ -93,8 +93,11 @@ function reload_observers_etapes() {
 			$('chargement').update('Suppression de l\'&eacute;tape '+num_etape_a_supprimer+'...');
 			new Ajax.Request(urls['supprimerg']+'index/'+pays+'/'+magazine+'/'+num_etape_a_supprimer, {
 				method: 'post',
-				onSuccess:function() {
-					window.location=get_current_url();
+				onSuccess:function(transport) {
+					if (transport.responseText.indexOf('Erreur') != -1)
+						alert(transport.responseText);
+					else
+						window.location=get_current_url();
 				}
 			});
 		}
@@ -254,7 +257,7 @@ var numero_chargement;
 
 function preview_numero(element) {
 	$$('.regle').invoke('setStyle',{'display':'none'});
-	if (privilege == 'Admin' || privilege == 'Enregistrement')
+	if (privilege == 'Admin' || privilege == 'Edition')
 		$('save_png').setStyle({'display':'block'});
 	var numero=element.up('tr').readAttribute('id').substring('ligne_'.length,element.up('tr').readAttribute('id').length);
 	
@@ -545,8 +548,20 @@ function charger_image(type_chargement,src,num) {
 			fixer_regles(image);
 		});
 		if (image.readAttribute('src').indexOf('/save') != -1) {
-			alert('Image enregistree');
-			$('ligne_'+numero_chargement).addClassName('tranche_prete');
+			switch(privilege) {
+				case 'Admin':
+					alert('Image enregistree');
+					$('ligne_'+numero_chargement).addClassName('tranche_prete');
+					
+				break;
+				case 'Edition':
+					alert('Votre proposition de modele a ete envoyee au webmaster pour validation. Merci !');
+					$('ligne_'+numero_chargement).addClassName('tranche_en_validation');
+				break;
+				default:
+					alert('Vous ne possedez pas les droits necessaires pour cette action');
+				break;
+			}
 		}
 		if (est_visu) {
 			// $('regle').writeAttribute({'height':(300*val_zoom)});
@@ -655,6 +670,11 @@ function assistant_cellules_sel() {
 				new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction].join('/'), {
 					method: 'post',
 					onSuccess:function() {
+						if (transport.responseText.indexOf('Erreur') != -1) {
+							alert(transport.responseText);
+							return;
+						}
+							
 						$('chargement').update();
 						var recharger_etape = nom_option != 'Actif' && ($('reload_after_update') && $('reload_after_update').checked) ;
 						
@@ -1099,7 +1119,7 @@ new Event.observe(window, 'load',function() {
 		}
 	});
 	
-	if (privilege == 'Admin' || privilege == 'Enregistrement') {
+	if (privilege == 'Admin' || privilege == 'Edition') {
 		$('save_png').observe('click',function() {
 		   if (typeof (numero_chargement) != null) {
 			   var num_etapes_final=$$('.num_etape_preview:not(.final)').invoke('retrieve','etape');
@@ -1228,16 +1248,24 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 
 			var nom_fonction=etape.Nom_fonction;
 			cellule
-			  .addClassName('lien_etape'+(est_nouvelle ? ' nouvelle':''))
-			  .update(image_supprimer.clone(true))
+			  .addClassName('lien_etape'+(est_nouvelle ? ' nouvelle':''));
+			
+			if (privilege !='Affichage')
+			  cellule.update(image_supprimer.clone(true));
+			
+			cellule
 			  .insert(new Element('span').addClassName('numero_etape')
 										 .update(num_etape == -1 
 												 ? 'Dimensions' 
 												 : (est_nouvelle ? 'Nouvelle &eacute;tape' : 'Etape '+num_etape)))
 			  .insert(new Element('br'))
 			  .insert(new Element('img',{'height':18,'src':base_url+'images/'+nom_fonction+'.png',
-										 'title':nom_fonction,'alt':nom_fonction}).addClassName('logo_option'))
-			  .insert(image_ajouter.clone(true))
+										 'title':nom_fonction,'alt':nom_fonction}).addClassName('logo_option'));
+			  
+			if (privilege !='Affichage')
+				cellule.insert(image_ajouter.clone(true));
+				
+			cellule
 			  .store('etape',num_etape)
 			  .writeAttribute({'name':'entete_etape_'+num_etape});
 		break;
@@ -1267,7 +1295,10 @@ function cloner_numero (ev) {
 		new Ajax.Request(urls['etendre']+'index/'+pays+'/'+magazine+'/'+numero_a_cloner+'/'+nouveau_numero, {
 			method: 'post',
 			onSuccess:function() {
-				window.location=get_current_url();
+				if (transport.responseText.indexOf('Erreur') != -1)
+					alert(transport.responseText);
+				else
+					window.location=get_current_url();
 			},
 			onFailure:function() {
 				numero_a_cloner=null;
@@ -1442,7 +1473,7 @@ function recharger_selects_filtres() {
 
 function charger_helper(nom_helper, nom_div, nom_fonction) {
 	$('liste_possibilites_fonctions').selectedIndex = $('liste_possibilites_fonctions').down('[title="'+nom_fonction+'"]').index;
-	// if ($$('')))
+	
 	if (!$(nom_div))
 		$('helpers').insert(new Element('div',{'id':nom_div}));
 	new Ajax.Request(base_url+'index.php/helper/index/'+nom_helper+'.html', {

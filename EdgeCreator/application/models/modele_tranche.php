@@ -15,6 +15,59 @@ class Modele_tranche extends CI_Model {
 			$this->$arg_name=$arg_value;
 		parent::__construct();
 	}
+	
+	function get_privilege() {
+		$privilege=null;
+		if (isset($_POST['user'])) {
+			if (!is_null($privilege = $this->user_connects($_POST['user'],$_POST['pass'])))
+				$this->creer_id_session($_POST['user'],md5($_POST['pass']));
+		}
+		else {
+			if ($this->session->userdata('user') !== false && $this->session->userdata('pass') !== false) {
+				$privilege = $this->user_connects($this->session->userdata('user'),$this->session->userdata('pass'));
+				if ($privilege == null) {
+					$this->creer_id_session($this->session->userdata('user'),$this->session->userdata('pass'));
+				}
+			}
+		}
+		return $privilege;
+	}
+	
+	function user_connects($user,$pass) {
+		global $erreur;
+		if (!$this->user_exists($user)) {
+			$erreur = 'Cet utilisateur n\'existe pas';
+			return false;
+		}
+		else {
+			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND (password LIKE \''.$pass.'\' OR md5(password) LIKE \''.$pass.'\')';
+			$resultat=$this->db->query($requete);
+			if ($resultat->num_rows==0) {
+				$erreur = 'Identifiants invalides !';
+				return null;
+			}
+			else {
+				$requete='SELECT privilege FROM edgecreator_droits WHERE username LIKE(\''.$user.'\')';
+				$resultat= $this->db->query($requete);
+				if ($resultat->row()==null) {
+					$erreur='Vous n\'&ecirc;tes pas membre de la team EdgeCreator';
+					return null;
+				}
+				return $resultat->row()->privilege;
+			}
+		}
+	}
+
+	function user_exists($user) {
+		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
+		return ($this->db->query($requete)->num_rows > 0);
+	}
+	
+	
+	function creer_id_session($user,$pass) {
+		
+		$this->session->set_userdata(array('user' => $user, 'pass' => $pass));
+	}
 
 	function get_modeles_magazine($pays,$magazine,$ordre=null)
 	{
