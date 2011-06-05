@@ -4,7 +4,11 @@ class Numerosdispos extends CI_Controller {
 	function index($pays=null,$magazine=null) {
 		
 		$this->load->database();
+		$this->load->library('session');
 		$this->load->model('Modele_tranche');
+		
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
+		
 		if ($pays == null) {
 			$data=array('mode'=>'get_pays');
 			$pays=$this->Modele_tranche->get_pays();

@@ -30,8 +30,11 @@
 	}
 	
 	#filtre_numeros {
-		background:transparent url('<?=base_url()?>images/funnel.png') no-repeat center left;
 		padding-left: 20px;
+	}
+	
+	#filtre_numeros img {
+		cursor:pointer;
 	}
 
 	#viewer h2 {
@@ -191,6 +194,7 @@
 		border:1px solid #cccccc; 
 		background:#ffffff; 
 		color:#C88964;
+		z-index:500;
 	}
 	
 	.previews td {
@@ -217,6 +221,10 @@
 
 	tr.tranche_prete {
 		background-color: #98EBB2;
+	}
+
+	tr.tranche_en_validation {
+		background-color: #5983FF;!important
 	}
 
 	#table_numeros tr:not(.ligne_entete)>td:not(.intitule_numero):not(.cloner) {
@@ -367,9 +375,18 @@
 			<div id="contenu_builder">
 				<h1>Builder</h1>
 				<div id="numero_preview">Cliquez sur le lien "Preview" d'un num&eacute;ro pour le pr&eacute;visaliser.</div>
-				<?php if ($privilege == 'Admin' || $privilege == 'Enregistrement') {?>
+				<?php switch($privilege) {
+					case 'Admin' :
+					?>
 					<a style="display:none" id="save_png" href="javascript:void(0)">Enregistrer comme image PNG</a>
-				<?php } ?>
+				<?php 
+					break;
+					case 'Edition' :
+					?>
+					<a style="display:none" id="save_png" href="javascript:void(0)">Proposer le mod&egrave;le de tranche</a>
+				<?php
+					break;
+				} ?>
 				<div class="previews"></div>
 			</div>
 			<div id="contenu_previews">
@@ -409,6 +426,7 @@
 						&nbsp;&nbsp;
 						<select style="font-size:11px" id="liste_magazines"></select><br />
 						<div id="filtre_numeros">
+							<img title="Cliquez pour changer l'intervalle des num&eacute;ros affich&eacute;s" src="<?=base_url()?>images/funnel.png" />
 							Num&eacute;ros&nbsp;
 							<select id="filtre_debut"></select>&nbsp;&agrave;&nbsp;
 							<select id="filtre_fin"></select>

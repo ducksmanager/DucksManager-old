@@ -88,6 +88,10 @@ function reload_observers_etapes() {
 	$$('.supprimer_etape').invoke('observe','click',function (event) {
 
 		var element=Event.element(event).up('th');
+		if (element.hasClassName('nouvelle')) {
+			window.location=get_current_url();
+			return;
+		}
 		var num_etape_a_supprimer=element.retrieve('etape');
 		if (confirm('Etes vous sur(e) de vouloir supprimer l\'etape '+num_etape_a_supprimer+" ?")) {
 			$('chargement').update('Suppression de l\'&eacute;tape '+num_etape_a_supprimer+'...');
@@ -494,11 +498,12 @@ function charger_previews_numeros(numero,est_visu) {
 function charger_preview_etape(etapes_preview,est_visu) {
 	var parametrage=new Object();
 	var zoom_utilise= est_visu ? zoom : 1.5;
-		
+	if (etapes_preview == '')
+		etapes_preview=-1;
 	if ((typeof(etapes_preview) == 'string' && etapes_preview.indexOf(',') == -1)
 	 || typeof(etapes_preview) == 'number')  {
 		$('chargement').update('Chargement de la preview de l\'&eacute;tape '+etapes_preview);
-		var fond_noir=$('fond_noir_'+etapes_preview).hasClassName('fond_noir_active');
+		var fond_noir=($('fond_noir_'+etapes_preview) && $('fond_noir_'+etapes_preview).hasClassName('fond_noir_active')) ? 'true':'false';
 		var etapes_preview2 = etapes_preview;
 		etapes_preview=new Array();
 		etapes_preview.push(etapes_preview2);
@@ -555,8 +560,10 @@ function charger_image(type_chargement,src,num) {
 					
 				break;
 				case 'Edition':
-					alert('Votre proposition de modele a ete envoyee au webmaster pour validation. Merci !');
-					$('ligne_'+numero_chargement).addClassName('tranche_en_validation');
+					if (confirm('Votre modele de tranche va etre envoye au webmaster pour validation. Continuer ?')) {
+						alert('Votre proposition de modele a ete envoyee au webmaster pour validation. Merci !');
+						$('ligne_'+numero_chargement).addClassName('tranche_en_validation');
+					}
 				break;
 				default:
 					alert('Vous ne possedez pas les droits necessaires pour cette action');
@@ -659,9 +666,6 @@ function assistant_cellules_sel() {
 		var succes_formatage=formater_modifier_valeur(nom_option);
 		if (succes_formatage) {
 			section_modifier_valeur.insert(new Element('button',{'id':'modifier_valeur_ok'}).update('OK'));
-			section_modifier_valeur.insert(new Element('br'))
-								   .insert(new Element('input',{'type':'checkbox','id':'reload_after_update','checked':'checked'}))
-								   .insert('Recharger apr&egrave;s');
 			$('modifier_valeur_ok').observe('click',function() {
 				$('chargement').update('Enregistrement des param&egrave;tres...');
 				var numeros=element_to_numero($$('td.selected').invoke('up','tr')).join('~');
@@ -669,14 +673,14 @@ function assistant_cellules_sel() {
 				etape_temporaire_to_definitive();
 				new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction].join('/'), {
 					method: 'post',
-					onSuccess:function() {
+					onSuccess:function(transport) {
 						if (transport.responseText.indexOf('Erreur') != -1) {
 							alert(transport.responseText);
 							return;
 						}
 							
 						$('chargement').update();
-						var recharger_etape = nom_option != 'Actif' && ($('reload_after_update') && $('reload_after_update').checked) ;
+						var recharger_etape = nom_option != 'Actif';
 						
 						reload_observers_etapes();
 						
@@ -828,14 +832,40 @@ function formater_modifier_valeur(nom_option) {
 				method: 'post',
 				parameters:'select=true',
 				onSuccess:function(transport) {
-					var select = new Element('select');
+					var select = new Element('select').addClassName('switchable');
+					var valeur_trouvee=false;
 					for(var nom in transport.headerJSON) {
 						var option=new Element('option',{'value':nom}).update(transport.headerJSON[nom]);
-						if (option.value==premiere_valeur_sel)
+						if (option.value==premiere_valeur_sel) {
 							option.writeAttribute({'selected':'selected'});
+							valeur_trouvee=true;
+						}
 						select.insert(option);
 					}
 					$('valeur_modifiee').update(select);
+					if (types_options[nom_option] == 'fichier_ou_texte' && !$('section_texte_variable')) {
+						var div_texte_variable=new Element('div',{'id':'section_texte_variable'});
+						$('valeur_modifiee').insert({'after':div_texte_variable});
+						var lien_texte_variable=new Element('a').update('nom de fichier variable').addClassName('switchable');
+						var lien_nom_fichier=new Element('a').update('nom de fichier fixe').addClassName('switchable cache');
+						var input_texte_variable=new Element('input',{'type':'text','value':premiere_valeur_sel})
+													.addClassName('switchable cache');
+						div_texte_variable.insert(input_texte_variable)
+			  			  				  .insert('&nbsp;ou&nbsp;')
+							  			  .insert(lien_texte_variable)
+							  			  .insert(lien_nom_fichier);
+						[lien_texte_variable,lien_nom_fichier].invoke('observe','click',function(ev) {
+							$('modifier_valeur').select('.switchable').invoke('toggleClassName','cache');
+							var element=$('modifier_valeur').down('select');
+							var other=$('modifier_valeur').down('input');
+							var stub = document.createElement('div');
+						    other = Element.replace(other, stub);
+						    element = Element.replace(element, other);
+						});
+						if (!valeur_trouvee) {
+							
+						}
+					}
 				}
 			});
 		break;
@@ -926,7 +956,7 @@ new Event.observe(window, 'load',function() {
 	
 	if (pays != "" && magazine != "") {
 		$('chargement').update('Chargement de la liste INDUCKS...');
-		new Ajax.Request(urls['numerosdispos']+'index/'+pays+'/'+magazine, {
+		new Ajax.Request(urls['numerosdispos']+['index',pays,magazine].join('/'), {
 			method: 'post',
 			onSuccess:function(transport) {
 				if (transport.responseText.indexOf('Nombre d\'arguments insuffisant') != -1) {
@@ -959,11 +989,23 @@ new Event.observe(window, 'load',function() {
 							filtre_select.insert(new Element('option',{'value':numero_dispo}).update(numero_dispo));
 				});
 				$('filtre_fin').selectedIndex = $('filtre_fin').select('option:last')[0].index;
+
+				$('filtre_numeros').down('img').observe('click',function(ev) {
+					if (confirm('La page va etre rechargee avec l\'intervalle de numeros selectionne.\nContinuer ?')) {
+						plage[0]=$('filtre_debut').options[$('filtre_debut').selectedIndex].value;
+						plage[1]=$('filtre_fin').options[$('filtre_fin').selectedIndex].value;
+						
+						window.location=get_current_url();
+					}
+				});
 				
 				if (plage[0]!='null') // Filtre defini dans la page precedente
 					recharger_selects_filtres();
-				else if (nb_etapes * (nb_numeros_dispos-1) >= 1000)
-					restriction_plage();
+				
+				var nb_numeros_plage=$('filtre_fin').selectedIndex-$('filtre_debut').selectedIndex;
+				if (nb_numeros_plage >= 1000)
+					if (restriction_plage())
+						return;
 
 	
 				var debut_plage_atteint=false;
@@ -1032,6 +1074,11 @@ new Event.observe(window, 'load',function() {
 								}
 							}
 						});
+						
+						if (etapes_valides.length * nb_numeros_plage >= 1000)
+							if (restriction_plage())
+								return;
+
 						etapes_valides.sort(function(etape1,etape2) {
 							if (parseInt(etape1.Ordre)<parseInt(etape2.Ordre))
 								return -1;
@@ -1051,8 +1098,8 @@ new Event.observe(window, 'load',function() {
 						});
 						
 						$$(selecteur_cellules).each(function(td) {
-							td.store('valeur_reelle',td.hasClassName('num_checked') ? 'Utilis&eacute;' : 'Non utilis&eacute;');
-							td.store('etape',$$('.ligne_etapes')[0].down('th',td.previousSiblings().length).retrieve('etape'));
+							td.store('valeur_reelle',td.hasClassName('num_checked') ? 'Utilis&eacute;' : 'Non utilis&eacute;')
+							  .store('etape',$$('.ligne_etapes')[0].down('th',td.previousSiblings().length).retrieve('etape'));
 						});
 	
 	
@@ -1061,9 +1108,9 @@ new Event.observe(window, 'load',function() {
 						reload_observers_cells();
 						$('chargement').update();
 	
-						Event.observe(window, 'scroll', function() {
-							setupFixedTableHeader();
-						});
+						//Event.observe(window, 'scroll', function(ev) {
+						//	setupFixedTableHeader();
+						//});
 					}
 				});
 			}
@@ -1294,7 +1341,7 @@ function cloner_numero (ev) {
 		var nouveau_numero=numero;
 		new Ajax.Request(urls['etendre']+'index/'+pays+'/'+magazine+'/'+numero_a_cloner+'/'+nouveau_numero, {
 			method: 'post',
-			onSuccess:function() {
+			onSuccess:function(transport) {
 				if (transport.responseText.indexOf('Erreur') != -1)
 					alert(transport.responseText);
 				else
@@ -1436,7 +1483,9 @@ function restriction_plage() {
 	if (confirm('Le nombre d\'informations sur les tranches de ce magazine semble tres important.\n'
 			   +'Pour des raisons de fluidite, il est conseille de restreindre la plage de numeros a afficher.\n'
 			   +'Voulez vous indiquer une plage de numeros ?')) {
-		 var plage_debut_entre=prompt('Entrez le premier numero de la plage');
+		alert('Utilisez les listes deroulantes en haut de la page pour indiquer le premier et le dernier numero de la plage, puis cliquez sur le filtre pour valider');
+		return true;/* 
+		var plage_debut_entre=prompt('Entrez le premier numero de la plage');
 		 if (plage_debut_entre == null)
 			 alert('Operation annulee');
 		 else {
@@ -1455,8 +1504,9 @@ function restriction_plage() {
 					 recharger_selects_filtres();
 				 }
 			 }
-		 }
+		 }*/
 	}
+	return false;
 }
 
 function recharger_selects_filtres() {
@@ -1541,8 +1591,7 @@ function remplacer_caracteres_whatthefont() {
 
 function get_current_url() {
 	var url=urls['edgecreatorg']+['index',pays,magazine].join('/');
-	if (etape_ouverture != '_')
-		url+='/'+etape_ouverture;
+	url+='/'+etape_ouverture;
 	if (plage[0] != 'null')
 		url+='/'+plage[0];
 	if (plage[1] != 'null')

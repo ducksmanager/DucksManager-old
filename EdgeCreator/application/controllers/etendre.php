@@ -28,6 +28,7 @@ class Etendre extends CI_Controller {
 			echo 'Erreur : droits insuffisants';
 			return;
 		}
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);

@@ -13,7 +13,7 @@ class ParametrageG extends CI_Controller {
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		self::$etape=$etape=='null'?null:$etape;
-		$nom_fonction=$nom_fonction=='null'?null:$nom_fonction;
+		$nom_fonction=$nom_fonction=='null' ? null : $nom_fonction;
 		$this->load->library('session');
 		$this->load->database();
 		$this->db->query('SET NAMES UTF8');
@@ -21,6 +21,11 @@ class ParametrageG extends CI_Controller {
 		$this->load->helper('form');
 		
 		$this->load->model('Modele_tranche');
+		
+		$this->Modele_tranche->setUsername($this->Modele_tranche->user_possede_modele($pays,$magazine,$this->session->userdata('user')) 
+												? $this->session->userdata('user') 
+												: 'brunoperel');
+		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		$this->Modele_tranche->setPays(self::$pays);

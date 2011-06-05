@@ -15,6 +15,7 @@ class Viewer extends CI_Controller {
 	static $etape_en_cours;
 	
 	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random=null,$debug=false) {
+		$parametrage=urldecode($parametrage);
 		$fond_noir = $fond_noir == 'true';
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
@@ -25,6 +26,7 @@ class Viewer extends CI_Controller {
 		$this->load->model('Modele_tranche');
 		
 		$privilege=$this->Modele_tranche->get_privilege();
+		
 		
 		if (is_null($pays) || is_null($magazine)) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
@@ -61,16 +63,41 @@ class Viewer extends CI_Controller {
 		self::$magazine=$magazine;
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		self::$numero=$numero;
-		self::$parametrage=json_decode($parametrage);
-		self::$fond_noir=$fond_noir;
 		$parametrage=json_decode($parametrage);
+		self::$parametrage=$parametrage;
+		self::$fond_noir=$fond_noir;
 		self::$etapes_actives=explode('-', $etapes_actives);
 		
 		$num_ordres=$this->Modele_tranche->get_ordres($pays,$magazine,$numero);
 		//print_r($ordres);
 		$dimensions=array();
 		self::$etape_en_cours=new stdClass();
+		
+		/*foreach($num_ordres as $num_ordre) {
+			if ($num_ordre==-1) {
+				if (!est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin)) {
+					$largeur=20;
+					$hauteur=250;
+					self::$image=imagecreatetruecolor(z($largeur), z($hauteur));
+					$blanc=imagecolorallocate(self::$image, 255,255,255);
+					imagefill(self::$image,0,0,$blanc);
+					$noir=imagecolorallocate(self::$image, 0,0,0);
+					imagettftext(self::$image,z(10),-90,z(5),z(5),
+								 $noir,BASEPATH.'fonts/Arial.TTF','Ce numero ne possde pas de dimensions');
+					$dimensions=new stdClass();
+					$dimensions->Dimension_x=$largeur;
+					$dimensions->Dimension_y=$hauteur;
+					new Dessiner_contour($dimensions);
+
+					header('Content-type: image/png');
+					imagepng(self::$image);
+					return;
+				}
+			}
+		}*/
+		
 		$num_ordre=-2;
 		$fond_noir_fait=false;
 		foreach($num_ordres as $num_ordre) {

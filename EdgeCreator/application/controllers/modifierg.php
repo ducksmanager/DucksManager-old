@@ -33,6 +33,7 @@ class ModifierG extends CI_Controller {
 			echo 'Erreur : droits insuffisants';
 			return;
 		}
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$est_etape_temporaire=count($this->Modele_tranche->get_etapes_simple($pays, $magazine, $etape)) == 0;
 		
@@ -123,6 +124,8 @@ class ModifierG extends CI_Controller {
 			if (!is_null($numero_debut))
 				$valeurs_distinctes_numeros_groupes[$valeur_distincte][]=$numero_debut.'~'.$numero_fin;
 		}
+		
+		$this->Modele_tranche->dupliquer_modele_magazine_si_besoin($pays,$magazine,$username);
 
 		if (!$est_temporaire)
 			$this->Modele_tranche->delete_option(self::$pays,self::$magazine,self::$etape,self::$nom_option);

@@ -23,6 +23,15 @@ class Cloner extends CI_Controller {
 		$this->load->helper('form');
 		
 		$this->load->model('Modele_tranche');
+		
+		$privilege=$this->Modele_tranche->get_privilege();
+		if ($privilege == 'Affichage') {
+			echo 'Erreur : droits insuffisants';
+			return;
+		}
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
+		
+		
 		$this->Modele_tranche->cloner_etape($pays,$magazine,$etape_courante,$etape);
 		
 	}

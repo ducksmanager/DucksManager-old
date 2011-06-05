@@ -3,6 +3,7 @@ class Modele_tranche extends CI_Model {
 	static $id_session;
 	static $pays;
 	static $magazine;
+	static $username;
 	static $numero_debut;
 	static $numero_fin;
 	static $numeros_dispos;
@@ -68,13 +69,28 @@ class Modele_tranche extends CI_Model {
 		
 		$this->session->set_userdata(array('user' => $user, 'pass' => $pass));
 	}
+	
+	function user_possede_modele($pays,$magazine,$username) {
+		$requete_modele_magazine_existe='SELECT 1 FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.$username.'\'';
+		return $this->db->query($requete_modele_magazine_existe)->num_rows > 0;
+	}
 
+	function dupliquer_modele_magazine_si_besoin($pays,$magazine,$username) {
+		if (!$this->user_possede_modele($pays,$magazine,$username)) {
+			$options=$this->get_modeles_magazine($pays,$magazine);
+			foreach($options as $option) {
+				$option->username=$username;
+			}
+			$this->db->insert_batch('tranches_modeles', $options); 
+		}
+	}
+	
 	function get_modeles_magazine($pays,$magazine,$ordre=null)
 	{
 		$resultats_o=array();
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' ';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
@@ -88,7 +104,7 @@ class Modele_tranche extends CI_Model {
 	function get_ordres($pays,$magazine,$numero=null) {
 		$resultats_ordres=array();
 		$requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin '
-				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' ';
+				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
 		$requete.='ORDER BY Ordre';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
@@ -113,7 +129,7 @@ class Modele_tranche extends CI_Model {
 	function get_nb_etapes($pays,$magazine) {
 		$resultats_etapes=array();
 		$requete='SELECT Count(Nom_fonction) AS cpt '
-				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL ';
+				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL AND username LIKE \''.self::$username.'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		foreach($resultats as $resultat) {
@@ -127,6 +143,7 @@ class Modele_tranche extends CI_Model {
 				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL ';
 		if (!is_null($num_etape))
 			$requete.='AND Ordre='.$num_etape.' ';
+		$requete.='AND username LIKE \''.self::$username.'\' ';
 		$requete.='ORDER BY Ordre';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
@@ -140,7 +157,7 @@ class Modele_tranche extends CI_Model {
 		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL ';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL AND username LIKE \''.self::$username.'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		if (count($resultats) == 0)
@@ -167,7 +184,7 @@ class Modele_tranche extends CI_Model {
 			$resultats_options=new stdClass();
 			$requete='SELECT '.implode(', ', self::$fields).' '
 					.'FROM tranches_modeles '
-					.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
+					.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL AND Nom_fonction LIKE \''.$nom_fonction.'\' AND username LIKE \''.self::$username.'\'';
 			$requete.='ORDER BY Option_nom ASC';
 			//if (is_null($numero))
 			//	echo $requete.'<br />';
@@ -244,13 +261,13 @@ class Modele_tranche extends CI_Model {
 	function has_no_option($pays,$magazine,$etape) {
 		$requete='SELECT Option_nom '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL AND username LIKE \''.self::$username.'\'';
 		return $this->db->query($requete)->num_rows() == 0;
 	}
 
 	function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
 		$requete='SELECT DISTINCT Ordre FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' '
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.self::$username.'\' '
 				.'ORDER BY Ordre';
 		$resultats=$this->db->query($requete)->result();
 		foreach($resultats as $resultat) {
@@ -266,7 +283,7 @@ class Modele_tranche extends CI_Model {
 		
 		for ($i=$etape;$i>=$etape_debut;$i--) {
 			$requete='UPDATE tranches_modeles SET Ordre='.($i+1).' '
-					.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i;
+					.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.self::$username.'\'';
 			$this->db->query($requete);
 		}
 	}
@@ -288,16 +305,16 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function sv_doublons($pays,$magazine) {
-		$requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+		$requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
 		$this->db->query($requete_suppression_existants);
 		self::$numeros_dispos=$this->get_numeros_disponibles($pays, $magazine);
 		$numeros_disponibles=self::$numeros_dispos;
 		unset ($numeros_disponibles['Aucun']);
 		$etape=-1;
-		$requete_get_etape_max='SELECT MAX(Ordre) AS max FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+		$requete_get_etape_max='SELECT MAX(Ordre) AS max FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
 		$resultat_get_etape_max=$this->db->query($requete_get_etape_max)->result();
 		for($etape=-1;$etape<=$resultat_get_etape_max[0]->max;$etape++) {
-			$requete_get_options='SELECT Numero_debut, Numero_fin, Option_nom, Option_valeur FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape;
+			$requete_get_options='SELECT Numero_debut, Numero_fin, Option_nom, Option_valeur FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape.' AND username LIKE \''.self::$username.'\'';
 			$resultat_get_options=$this->db->query($requete_get_options)->result();
 			foreach($resultat_get_options as $option) {
 				foreach(array_keys($numeros_disponibles) as $numero) {
@@ -377,55 +394,22 @@ class Modele_tranche extends CI_Model {
 			return array($numeros_affiches, $tranches_pretes);
 		}
 		return $numeros_affiches;
-		/*$requete='SELECT DISTINCT Numero_debut, Numero_fin '
-				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre=-1 AND Nom_fonction LIKE \'Dimensions\' AND Option_nom IS NULL '
-				.'ORDER BY Numero_debut';
-		$resultats=$this->db->query($requete)->result();
-		if (count($resultats)==0) {
-			$resultats[0]=new stdClass();
-			$resultats[0]->Numero_debut=$numero_debut;
-			$resultats[0]->Numero_fin=$numero_fin;
-		}
-		foreach($resultats as $resultat) {
-			$numeros_debut=explode(';',$resultat->Numero_debut);
-			$numeros_fin=explode(';',$resultat->Numero_fin);
-
-			foreach($numeros_debut as $i=>$numero_debut) {
-				$numero_fin=$numeros_fin[$i];
-				if ($numero_debut == $numero_fin)
-					$numeros[$numero_debut]=$numero_fin;
-				else {
-					list($partie_lettre1,$partie_numerique1)=decomposer_numero($numero_debut);
-					list($partie_lettre2,$partie_numerique2)=decomposer_numero($numero_fin);
-					 for ($i=$partie_lettre1;$i<=$partie_lettre2;$i++) {
-						for ($j=$partie_numerique1;$j<=$partie_numerique2;$j++) {
-							 if (!array_key_exists($i.$j.'', $numeros))
-								$numeros[$i.$j.'']=$i.$j.'';
-						}
-					 }
-				}
-			}
-		}
-		if (array_key_exists('', $numeros))
-			unset($numeros['']);
-		return $numeros;*/
 	}
 
 	function update_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
-		$requete_suppr='DELETE FROM tranches_modeles WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND Nom_Fonction LIKE \''.$nom_fonction.'\')';
+		$requete_suppr='DELETE FROM tranches_modeles WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND username LIKE \''.self::$username.'\')';
 		$this->db->query($requete_suppr);
 		echo $requete_suppr;
-		$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
-				.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+		$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin,username) VALUES '
+				.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\') ';
 		$this->db->query($requete);
 		echo $requete;
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
 			$option_valeur=str_replace("'","\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
-			$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
-					.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$option_valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+			$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin,username) VALUES '
+					.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$option_valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\') ';
 			$this->db->query($requete);
 			echo $requete;
 		}
@@ -434,25 +418,12 @@ class Modele_tranche extends CI_Model {
 	function cloner_etape($pays,$magazine,$etape_courante,$etape) {
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape_courante;
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username LIKE \''.self::$username.'\'';
 		$resultats=$this->db->query($requete)->result();
 		foreach($resultats as $resultat) {
-			$requete_ajout='INSERT INTO tranches_modeles ('.implode(', ', self::$fields).') VALUES ';
-			$valeurs=array();
-			foreach(self::$fields as $field) {
-				if ($field=='Ordre')
-					$valeurs[]=$etape;
-				else {
-					if (is_null($resultat->$field))
-						$valeurs[]='NULL';
-					else
-						$valeurs[]='\''.mysql_real_escape_string($resultat->$field).'\'';
-				}
-			}
-			$requete_ajout.='('.implode(',',$valeurs).')';
-			$this->db->query($requete_ajout);
-			echo $requete_ajout."\n";
+			$resultat->Ordre=$etape;
 		}
+		$this->db->insert_batch('tranches_modeles',$resultats);
 	}
 
 	function insert_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
@@ -460,16 +431,16 @@ class Modele_tranche extends CI_Model {
 		if ($ordre_existe) {
 			return;
 		}
-		$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
-				.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+		$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin,username) VALUES '
+				.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\') ';
 		$this->db->query($requete);
 		echo $requete;
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
 			$option_valeur=str_replace("'","\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
-			$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
-					.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$option_valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+			$requete='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin,username) VALUES '
+					.'(\''.$pays.'\',\''.$magazine.'\',\''.$ordre.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$option_valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\') ';
 			$this->db->query($requete);
 			echo $requete;
 		}
@@ -477,7 +448,7 @@ class Modele_tranche extends CI_Model {
 
 	function delete_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction) {
 		$requete_suppr='DELETE FROM tranches_modeles '
-					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\'';
+					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND username LIKE \''.self::$username.'\'';
 		if ($numero_debut!=null)
 			$requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
 		$requete_suppr.=')';
@@ -488,10 +459,10 @@ class Modele_tranche extends CI_Model {
 	function delete_option($pays,$magazine,$etape,$nom_option) {
 		if ($nom_option=='Actif')
 			$requete_suppr_option='DELETE FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom IS NULL';
+								  .'AND Ordre='.$etape.' AND Option_nom IS NULL AND username LIKE \''.self::$username.'\'';
 		else
 			$requete_suppr_option='DELETE FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom LIKE \''.$nom_option.'\'';
+								  .'AND Ordre='.$etape.' AND Option_nom LIKE \''.$nom_option.'\' AND username LIKE \''.self::$username.'\'';
 		$this->db->query($requete_suppr_option);
 		echo $requete_suppr_option;
 	}
@@ -499,18 +470,18 @@ class Modele_tranche extends CI_Model {
 	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin) {
 		$valeur=mysql_real_escape_string($valeur);
 		if ($option_nom=='Actif') {
-			$requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
-						   .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+			$requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin,username) VALUES '
+						   .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',NULL,NULL,\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\') ';
 		}
 			else
-			$requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin) VALUES '
-						   .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\') ';
+			$requete_insert='INSERT INTO tranches_modeles (Pays,Magazine,Ordre,Nom_fonction,Option_nom,Option_valeur,Numero_debut,Numero_fin,username) VALUES '
+						   .'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$valeur.'\',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\') ';
 		$this->db->query($requete_insert);
 		echo $requete_insert;
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
-		$requete_get_options='SELECT '.implode(', ', self::$fields).' '
+		$requete_get_options='SELECT '.implode(', ', self::$fields).',username '
 							.'FROM tranches_modeles '
 							.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
 							.'ORDER BY Ordre';
@@ -540,7 +511,8 @@ class Modele_tranche extends CI_Model {
 								   .'WHERE Pays LIKE \''.$resultat->Pays.'\' AND Magazine LIKE \''.$resultat->Magazine.'\' '
 								   .'AND Ordre LIKE \''.$resultat->Ordre.'\' AND Nom_fonction LIKE \''.$resultat->Nom_fonction.'\' '
 								   .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
-								   .'AND Numero_debut LIKE \''.$resultat->Numero_debut.'\' AND Numero_fin LIKE \''.$resultat->Numero_fin.'\'';
+								   .'AND Numero_debut LIKE \''.$resultat->Numero_debut.'\' AND Numero_fin LIKE \''.$resultat->Numero_fin.'\' '
+								   .'AND username LIKE \''.$resultat->username.'\'';
 					echo $requete_update."\n";
 					$this->db->query($requete_update);
 				}
@@ -839,6 +811,10 @@ class Modele_tranche extends CI_Model {
 
 	function setMagazine($magazine) {
 		self::$magazine=$magazine;
+	}
+
+	function setUsername($username) {
+		self::$username=$username;
 	}
 
 	function setNumeroDebut($numero_debut) {
@@ -1322,7 +1298,7 @@ class Polygone extends Fonction_executable {
 	static $valeurs_defaut=array();
 	
 	static $descriptions=array('X'=>'Liste des abscisses des points, s&eacute;par&eacute;es par virgules', 
-							   'Y'=>'Liste des coordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
+							   'Y'=>'Liste des ordonn&eacute;es des points, s&eacute;par&eacute;es par virgules', 
 							   'Couleur'=>'Couleur du polygone');
 	
 	function Polygone($options,$executer=true,$creation=false,$get_options_defaut=true) {
@@ -1574,7 +1550,10 @@ function est_dans_intervalle($numero,$intervalle) {
 	if (strpos($intervalle,'~')!==false) {
 		$intervalles=explode(';',$intervalle);
 		foreach($intervalles as $intervalle) {
-			list($numero_debut,$numero_fin)=explode('~',$intervalle);
+			if (strpos($intervalle, '~') === false)
+				list($numero_debut,$numero_fin)=array($intervalle,$intervalle);
+			else
+				list($numero_debut,$numero_fin)=explode('~',$intervalle);
 			$numeros_debut[]=$numero_debut;
 			$numeros_fin[]=$numero_fin;
 		}
