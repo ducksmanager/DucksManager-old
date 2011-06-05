@@ -33,7 +33,7 @@ class ModifierG extends CI_Controller {
 			echo 'Erreur : droits insuffisants';
 			return;
 		}
-		$this->Modele_tranche->setUsername($this->session->userdata('user'));
+		$this->Modele_tranche->setUsername($this->session->userdata('username'));
 		
 		$est_etape_temporaire=count($this->Modele_tranche->get_etapes_simple($pays, $magazine, $etape)) == 0;
 		
