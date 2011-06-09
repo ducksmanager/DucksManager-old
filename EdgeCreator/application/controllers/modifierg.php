@@ -7,7 +7,8 @@ class ModifierG extends CI_Controller {
 	static $nom_option;
 	static $nouvelle_valeur;
 	
-	function index($pays=null,$magazine=null,$etape=null,$numeros='',$nom_option='',$nouvelle_valeur='', $debut_plage='null',$fin_plage='null', $nom_nouvelle_fonction=null) {
+	function index($pays=null,$magazine=null,$etape=null,$numeros='',$nom_option='',$nouvelle_valeur='', $debut_plage='null',$fin_plage='null', $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
+		$est_etape_temporaire=$est_etape_temporaire === 'true';
 		$nouvelle_valeur=$nouvelle_valeur=='null' ? null : $nouvelle_valeur;
 		if (in_array(null,array($pays,$magazine,$etape))) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
@@ -33,9 +34,7 @@ class ModifierG extends CI_Controller {
 			echo 'Erreur : droits insuffisants';
 			return;
 		}
-		$this->Modele_tranche->setUsername($this->session->userdata('username'));
-		
-		$est_etape_temporaire=count($this->Modele_tranche->get_etapes_simple($pays, $magazine, $etape)) == 0;
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
@@ -43,6 +42,7 @@ class ModifierG extends CI_Controller {
 		$this->Modele_tranche->setMagazine(self::$magazine);
 
 		if ($est_etape_temporaire) {
+			$this->Modele_tranche->dupliquer_modele_magazine_si_besoin($pays,$magazine);
 			$this->Modele_tranche->decaler_etapes_a_partir_de(self::$pays,self::$magazine,self::$etape);
 			$this->Modele_tranche->insert_ordre(self::$pays,self::$magazine,self::$etape,self::$numeros[0],self::$numeros[count(self::$numeros)-1],$nom_nouvelle_fonction,array());
 		}
@@ -125,9 +125,9 @@ class ModifierG extends CI_Controller {
 				$valeurs_distinctes_numeros_groupes[$valeur_distincte][]=$numero_debut.'~'.$numero_fin;
 		}
 		
-		$this->Modele_tranche->dupliquer_modele_magazine_si_besoin($pays,$magazine,$username);
+		$this->Modele_tranche->dupliquer_modele_magazine_si_besoin($pays,$magazine);
 
-		if (!$est_temporaire)
+		if (!$est_etape_temporaire)
 			$this->Modele_tranche->delete_option(self::$pays,self::$magazine,self::$etape,self::$nom_option);
 
 		foreach($valeurs_distinctes_numeros_groupes as $valeur=>$intervalles) {

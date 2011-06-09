@@ -36,7 +36,10 @@
 	#filtre_numeros img {
 		cursor:pointer;
 	}
-
+	
+	#filtre_numeros option.tranche_prete {
+		background-color:#98EBB2;
+	}
 	#viewer h2 {
 		margin-top:-10px;
 	}
@@ -113,8 +116,7 @@
 		position:absolute;
 		left:225px;
 		padding-left:10px;
-		width: 100%;
-		padding-right: 450px;
+		padding-right: 400px;
 	}
 
 	table.bordered {
@@ -402,6 +404,18 @@
 						</td>
 					</tr>
 				</table>
+				<?php switch($privilege) {
+					case 'Admin' :
+					?>
+					<a style="display:none" id="save_pngs" href="javascript:void(0)">Enregistrer comme images PNG</a>
+				<?php 
+					break;
+					case 'Edition' :
+					?>
+					<a style="display:none" id="save_pngs" href="javascript:void(0)">Proposer les mod&egrave;les de tranches</a>
+				<?php
+					break;
+				} ?>
 				<div id="numero_preview_debut" style="display:inline">
 					Cliquez sur le lien "Preview" d'un num&eacute;ro 
 					pour le s&eacute;lectionner comme premier num&eacute;ro &agrave; pr&eacute;visualiser.

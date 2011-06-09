@@ -22,9 +22,7 @@ class ParametrageG extends CI_Controller {
 		
 		$this->load->model('Modele_tranche');
 		
-		$this->Modele_tranche->setUsername($this->Modele_tranche->user_possede_modele($pays,$magazine,$this->session->userdata('user')) 
-												? $this->session->userdata('user') 
-												: 'brunoperel');
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);

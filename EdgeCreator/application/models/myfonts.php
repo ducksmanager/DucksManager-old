@@ -34,16 +34,16 @@ class MyFonts extends CI_Model {
 			'size'=>$this->precision,
 			'w'=>$this->width,
 			'src'=>'custom',
-			'text'=>urlencode(($this->text)),
+			'text'=>$this->text,
 			'fg'=>$this->color,
 			'bg'=>$this->color_bg,
 			'goodies'=>'ot.liga',
 			urlencode('i[0]')=>urlencode($this->font.',,720,144')
 		);
-		$texte_sans_espaces_finaux=preg_replace('#[ ]+\.$#','',$this->text);
+		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
 		$requete_image_existe='SELECT ID FROM images_myfonts '
 							 .'WHERE Font LIKE \''.$this->font.'\' AND Color LIKE \''.$this->color.'\' AND ColorBG LIKE \''.$this->color_bg.'\''
-							 .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$texte_sans_espaces_finaux.'\' AND Precision_ LIKE \''.$this->precision.'\'';
+							 .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$texte_clean.'\' AND Precision_ LIKE \''.$this->precision.'\'';
 		$requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
 		$image_existe=count($requete_image_existe_resultat) != 0;
 		if ($image_existe && !isset($_GET['force_post'])) {
@@ -68,7 +68,7 @@ class MyFonts extends CI_Model {
 			
 			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
 					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
-					.'\''.$this->width.'\',\''.$texte_sans_espaces_finaux.'\',\''.$this->precision.'\')';
+					.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
 			$this->db->query($requete);
 			
 			$im=imagecreatefromgif($this->chemin_image);

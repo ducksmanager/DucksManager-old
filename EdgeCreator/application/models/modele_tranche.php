@@ -9,6 +9,7 @@ class Modele_tranche extends CI_Model {
 	static $numeros_dispos;
 	static $dropdown_numeros;
 	static $fields;
+	static $user_possede_modele=null;
 
 	function Modele_tranche($tab=array())
 	{
@@ -70,18 +71,25 @@ class Modele_tranche extends CI_Model {
 		$this->session->set_userdata(array('user' => $user, 'pass' => $pass));
 	}
 	
-	function user_possede_modele($pays,$magazine,$username) {
-		$requete_modele_magazine_existe='SELECT 1 FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.$username.'\'';
-		return $this->db->query($requete_modele_magazine_existe)->num_rows > 0;
+	function user_possede_modele($pays=null,$magazine=null,$username=null) {
+		if (is_null($pays)) $pays=self::$pays;
+		if (is_null($magazine)) $magazine=self::$magazine;
+		if (is_null($username)) $username=self::$username;
+		if (is_null(self::$user_possede_modele)) {
+			$requete_modele_magazine_existe='SELECT 1 FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.$username.'\'';
+			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->num_rows > 0;
+		}
+		return $user_possede_modele;
 	}
 
-	function dupliquer_modele_magazine_si_besoin($pays,$magazine,$username) {
-		if (!$this->user_possede_modele($pays,$magazine,$username)) {
+	function dupliquer_modele_magazine_si_besoin($pays,$magazine) {
+		if (!$this->user_possede_modele($pays,$magazine,self::$username)) {
 			$options=$this->get_modeles_magazine($pays,$magazine);
 			foreach($options as $option) {
-				$option->username=$username;
+				$option->username=self::$username;
 			}
-			$this->db->insert_batch('tranches_modeles', $options); 
+			if (count($options) > 0)
+				$this->db->insert_batch('tranches_modeles', $options); 
 		}
 	}
 	
@@ -90,7 +98,8 @@ class Modele_tranche extends CI_Model {
 		$resultats_o=array();
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
@@ -104,8 +113,9 @@ class Modele_tranche extends CI_Model {
 	function get_ordres($pays,$magazine,$numero=null) {
 		$resultats_ordres=array();
 		$requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin '
-				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
-		$requete.='ORDER BY Ordre';
+				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
+				.'ORDER BY Ordre';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		foreach($resultats as $resultat) {
@@ -129,21 +139,24 @@ class Modele_tranche extends CI_Model {
 	function get_nb_etapes($pays,$magazine) {
 		$resultats_etapes=array();
 		$requete='SELECT Count(Nom_fonction) AS cpt '
-				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL AND username LIKE \''.self::$username.'\'';
+				.'FROM tranches_modeles '
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
+				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
+			
 		foreach($resultats as $resultat) {
 			return $resultat->cpt;
 		}
 	}
 
-	function get_etapes_simple($pays,$magazine, $num_etape=null) {
+	function get_etapes_simple($pays,$magazine,$num_etape=null) {
 		$resultats_etapes=array();
 		$requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin, Nom_fonction '
 				.'FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL ';
 		if (!is_null($num_etape))
 			$requete.='AND Ordre='.$num_etape.' ';
-		$requete.='AND username LIKE \''.self::$username.'\' ';
+		$requete.='AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		$requete.='ORDER BY Ordre';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
@@ -157,11 +170,13 @@ class Modele_tranche extends CI_Model {
 		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$fields).' '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL AND username LIKE \''.self::$username.'\'';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
+				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
-		if (count($resultats) == 0)
+		if (count($resultats) == 0) {
 			return null;
+		}
 		$resultat=$resultats[0];
 		if (!is_null($numero)) {
 			$numeros_debut=explode(';',$resultat->Numero_debut);
@@ -178,44 +193,44 @@ class Modele_tranche extends CI_Model {
 	}
 
 	function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false) {
-		if (is_float($ordre)) { // Etape temporaire
-			$creation=false;
-		}
-			$resultats_options=new stdClass();
-			$requete='SELECT '.implode(', ', self::$fields).' '
-					.'FROM tranches_modeles '
-					.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL AND Nom_fonction LIKE \''.$nom_fonction.'\' AND username LIKE \''.self::$username.'\'';
-			$requete.='ORDER BY Option_nom ASC';
-			//if (is_null($numero))
-			//	echo $requete.'<br />';
-			$resultats=$this->db->query($requete)->result();
-			$option_nom='';
-			foreach($resultats as $resultat) {
-				if ($option_nom!=$resultat->Option_nom) {
-					$option_courante=array();
-					if (!empty($option_nom) && is_null($numero))
-						uksort($resultats_options->$option_nom,'trier_intervalles');
-				}
-				$option_nom=$resultat->Option_nom;
-				$numeros_debut=explode(';',$resultat->Numero_debut);
-				$numeros_fin=explode(';',$resultat->Numero_fin);
-				foreach($numeros_debut as $i=>$numero_debut) {
-					$numero_fin=$numeros_fin[$i];
-					$intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
-					if (est_dans_intervalle($numero, $intervalle)) {
-						if (is_null($numero))
-							$option_courante[$intervalle]=$resultat->Option_valeur;
-						else
-							$option_courante=$resultat->Option_valeur;
-						continue;
-					}
-				}
-				$resultats_options->$option_nom=$option_courante;
-			}
-			if (is_null($numero))
-				if (isset($resultats_options->$option_nom))
+		$creation=false;
+		$resultats_options=new stdClass();
+		$requete='SELECT '.implode(', ', self::$fields).' '
+				.'FROM tranches_modeles '
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
+				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+		if (!is_null($nom_fonction))
+			$requete.='AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
+		$requete.='ORDER BY Option_nom ASC';
+		$resultats=$this->db->query($requete)->result();
+		$option_nom='';
+		foreach($resultats as $resultat) {
+			if ($option_nom!=$resultat->Option_nom) {
+				$option_courante=array();
+				if (!empty($option_nom) && is_null($numero))
 					uksort($resultats_options->$option_nom,'trier_intervalles');
-				
+			}
+			$nom_fonction=$resultat->Nom_fonction;
+			$option_nom=$resultat->Option_nom;
+			$numeros_debut=explode(';',$resultat->Numero_debut);
+			$numeros_fin=explode(';',$resultat->Numero_fin);
+			foreach($numeros_debut as $i=>$numero_debut) {
+				$numero_fin=$numeros_fin[$i];
+				$intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
+				if (est_dans_intervalle($numero, $intervalle)) {
+					if (is_null($numero))
+						$option_courante[$intervalle]=$resultat->Option_valeur;
+					else
+						$option_courante=$resultat->Option_valeur;
+					continue;
+				}
+			}
+			$resultats_options->$option_nom=$option_courante;
+		}
+		if (is_null($numero))
+			if (isset($resultats_options->$option_nom))
+				uksort($resultats_options->$option_nom,'trier_intervalles');
+			
 		$f=new $nom_fonction($resultats_options,false,$creation,!$nouvelle_etape); // Ajout des champs avec valeurs par défaut
 		if ($inclure_infos_options) {
 			$prop_champs=new ReflectionProperty(get_class($f), 'champs');
@@ -261,31 +276,28 @@ class Modele_tranche extends CI_Model {
 	function has_no_option($pays,$magazine,$etape) {
 		$requete='SELECT Option_nom '
 				.'FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL AND username LIKE \''.self::$username.'\'';
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NOT NULL '
+				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		return $this->db->query($requete)->num_rows() == 0;
 	}
 
 	function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
-		$requete='SELECT DISTINCT Ordre FROM tranches_modeles '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.self::$username.'\' '
-				.'ORDER BY Ordre';
-		$resultats=$this->db->query($requete)->result();
-		foreach($resultats as $resultat) {
-			if ($resultat->Ordre != $etape+1)
-				break;
-			$etape=$resultat->Ordre;
-
-		}
-		if (isset($etape))
+		$requete='SELECT Max(Ordre) AS max_ordre FROM tranches_modeles '
+				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+		$resultat=$this->db->query($requete)->row(0);
+		
+		if (!is_null($resultat)) {
+			$etape=$resultat->max_ordre;
 			echo 'Decalage des etapes '.$etape_debut.' a '.$etape."\n";
+			for ($i=$etape;$i>=$etape_debut;$i--) {
+				$requete='UPDATE tranches_modeles SET Ordre='.($i+1).' '
+						.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+				$this->db->query($requete);
+			}
+		}
 		else
 			echo 'Pas de decalage';
 		
-		for ($i=$etape;$i>=$etape_debut;$i--) {
-			$requete='UPDATE tranches_modeles SET Ordre='.($i+1).' '
-					.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.self::$username.'\'';
-			$this->db->query($requete);
-		}
 	}
 	
 	function get_preview_existe($options_json) {
@@ -459,7 +471,7 @@ class Modele_tranche extends CI_Model {
 	function delete_option($pays,$magazine,$etape,$nom_option) {
 		if ($nom_option=='Actif')
 			$requete_suppr_option='DELETE FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom IS NULL AND username LIKE \''.self::$username.'\'';
+								  .'AND Ordre='.$etape.' AND username LIKE \''.self::$username.'\'';
 		else
 			$requete_suppr_option='DELETE FROM tranches_modeles WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
 								  .'AND Ordre='.$etape.' AND Option_nom LIKE \''.$nom_option.'\' AND username LIKE \''.self::$username.'\'';
@@ -1183,7 +1195,7 @@ class TexteMyFonts extends Fonction_executable {
 						  $this->options->Couleur_texte,
 						  $this->options->Couleur_fond,
 						  $this->options->Largeur,
-						  $this->options->Chaine.'										 .');
+						  $this->options->Chaine.'                                    .');
 		$chemin_image=$post->chemin_image;
 		$texte=imagecreatefromgif($chemin_image);
 		if ($this->options->Demi_hauteur == 'Oui') {
@@ -1524,9 +1536,13 @@ class Arc_cercle extends Fonction_executable {
 
 class Dessiner_contour {
 	function Dessiner_contour($dimensions) {
-		$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
-		for ($i=0;$i<z(0.15);$i++)
-			imagerectangle(Viewer::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
+		if (is_null(Viewer::$image))
+			Fonction_executable::erreur('Pas d\'infos sur cette tranche');
+		else {
+			$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
+			for ($i=0;$i<z(0.15);$i++)
+				imagerectangle(Viewer::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
+		}
 	}
 }
 

@@ -115,50 +115,49 @@ function reload_observers_etapes() {
 		}
 		var element=Event.element(event).up('th');
 		num_etape_avant_nouvelle=element.retrieve('etape');
-		if (true) {
-			fermer_etapes();
-			var liste_possibilites=new Element('select',{'id':'liste_possibilites_fonctions'});
-			if ($$('[name="entete_etape_-1"]').length >0) {
-				liste_possibilites.insert(new Element('option',{'title':'Remplir'}).update('Remplir une zone avec une couleur'))
-								  .insert(new Element('option',{'title':'Degrade'}).update('Remplir une zone avec un d&eacute;grad&eacute;'))
-								  .insert(new Element('option',{'title':'Agrafer'}).update('Agrafer la tranche'))
-								  .insert(new Element('option',{'title':'DegradeTrancheAgrafee'}).update('Remplir la tranche avec un d&eacute;grad&eacute; et l\'agrafer'))
-								  .insert(new Element('option',{'title':'Texte'}).update('Ajouter du texte'))
-								  .insert(new Element('option',{'title':'Image'}).update('Ins&eacute;rer une image'))
-								  .insert(new Element('option',{'title':'Rectangle'}).update('Dessiner un rectangle'))
-								  .insert(new Element('option',{'title':'Polygone'}).update('Dessiner un polygone'))
-								  .insert(new Element('option',{'title':'Arc_cercle'}).update('Dessiner un arc de cercle'));
-			}
-			else
-				liste_possibilites.update(new Element('option',{'title':'Dimensions'}).update('Sp&eacute;cifier les dimensions d\'une tranche'));
-			var bouton_ok=new Element('button').update('OK');
-			$('helpers').update('Si ce n\'est pas encore fait, prenez en photo avec un appareil photo num&eacute;rique la tranche que vous souhaitez recr&eacute;er.')
-						   .insert(new Element('br'))
-						   .insert('Stockez cette photo sur votre ordinateur, vous allez en avoir besoin !')
-						   .insert(new Element('br'))
-						   .insert('Que voulez-vous faire ? ')
-						   .insert(new Element('br'))
-						   .insert(liste_possibilites)
-						   .insert(bouton_ok);
-			bouton_ok.observe('click',function() {
-				if ($$('.nouvelle').length > 0 ) {
-					alert('Une etape est deja en train d\'etre ajoutee !');
-					return;
-				}
-				var name_sel=$('liste_possibilites_fonctions').down($('liste_possibilites_fonctions').selectedIndex).title;
-				var nom_helper='';
-				switch(name_sel) {
-					case 'Texte':
-						nom_helper='whatthefont';
-					break;
-					default:
-						nom_helper=name_sel.toLowerCase();
-					break;
-				}
-				charger_helper(nom_helper+'_1','helper_'+nom_helper,name_sel);
-			});
-
+		if (typeof(num_etape_avant_nouvelle) == 'undefined')
+			location.reload();
+		fermer_etapes();
+		var liste_possibilites=new Element('select',{'id':'liste_possibilites_fonctions'});
+		if ($$('[name="entete_etape_-1"]').length >0) {
+			liste_possibilites.insert(new Element('option',{'title':'Remplir'}).update('Remplir une zone avec une couleur'))
+							  .insert(new Element('option',{'title':'Degrade'}).update('Remplir une zone avec un d&eacute;grad&eacute;'))
+							  .insert(new Element('option',{'title':'Agrafer'}).update('Agrafer la tranche'))
+							  .insert(new Element('option',{'title':'DegradeTrancheAgrafee'}).update('Remplir la tranche avec un d&eacute;grad&eacute; et l\'agrafer'))
+							  .insert(new Element('option',{'title':'Texte'}).update('Ajouter du texte'))
+							  .insert(new Element('option',{'title':'Image'}).update('Ins&eacute;rer une image'))
+							  .insert(new Element('option',{'title':'Rectangle'}).update('Dessiner un rectangle'))
+							  .insert(new Element('option',{'title':'Polygone'}).update('Dessiner un polygone'))
+							  .insert(new Element('option',{'title':'Arc_cercle'}).update('Dessiner un arc de cercle'));
 		}
+		else
+			liste_possibilites.update(new Element('option',{'title':'Dimensions'}).update('Sp&eacute;cifier les dimensions d\'une tranche'));
+		var bouton_ok=new Element('button').update('OK');
+		$('helpers').update('Si ce n\'est pas encore fait, prenez en photo avec un appareil photo num&eacute;rique la tranche que vous souhaitez recr&eacute;er.')
+					   .insert(new Element('br'))
+					   .insert('Stockez cette photo sur votre ordinateur, vous allez en avoir besoin !')
+					   .insert(new Element('br'))
+					   .insert('Que voulez-vous faire ? ')
+					   .insert(new Element('br'))
+					   .insert(liste_possibilites)
+					   .insert(bouton_ok);
+		bouton_ok.observe('click',function() {
+			if ($$('.nouvelle').length > 0 ) {
+				alert('Une etape est deja en train d\'etre ajoutee !');
+				return;
+			}
+			var name_sel=$('liste_possibilites_fonctions').down($('liste_possibilites_fonctions').selectedIndex).title;
+			var nom_helper='';
+			switch(name_sel) {
+				case 'Texte':
+					nom_helper='whatthefont';
+				break;
+				default:
+					nom_helper=name_sel.toLowerCase();
+				break;
+			}
+			charger_helper(nom_helper+'_1','helper_'+nom_helper,name_sel);
+		});
 	});
 }
 
@@ -262,7 +261,7 @@ var numero_chargement;
 function preview_numero(element) {
 	$$('.regle').invoke('setStyle',{'display':'none'});
 	if (privilege == 'Admin' || privilege == 'Edition')
-		$('save_png').setStyle({'display':'block'});
+		$$('#save_png,#save_pngs').invoke('setStyle',{'display':'block'});
 	var numero=element.up('tr').readAttribute('id').substring('ligne_'.length,element.up('tr').readAttribute('id').length);
 	
 	var table=new Element('table');
@@ -488,11 +487,12 @@ function reload_numero(numero) {
 }
 
 function charger_previews_numeros(numero,est_visu) {
+	numero_chargement=numero;
 	var parametrage=new Object();
 	var zoom_utilise= est_visu ? zoom : 1.5;
 		
 	$('chargement').update('Chargement de la preview de la tranche');
-	charger_image('numero',urls['viewer']+'/'+[numero,zoom_utilise,'all',JSON.stringify(parametrage),(est_visu?'false':'true'),'false'].join('/'),numero);
+	charger_image('numero',urls['viewer']+'/'+[numero,zoom_utilise,'all',JSON.stringify(parametrage),(est_visu?'false':'save'),'false'].join('/'),numero);
 }
 
 function charger_preview_etape(etapes_preview,est_visu) {
@@ -524,7 +524,20 @@ function charger_image(type_chargement,src,num) {
 	var random=Math.random();
 	src+='/'+random;
 	var image=new Element('img').addClassName('image_preview').store(type_chargement,num);
-	var est_visu=true;
+	var est_visu=src.indexOf('/save') == -1;
+	if (!est_visu) {
+		switch(privilege) {
+			case 'Admin':break;
+			case 'Edition':
+				if (!confirm('Votre modele de tranche va etre envoye au webmaster pour validation. Continuer ?'))
+					return;
+			break;
+			default:
+				alert('Vous ne possedez pas les droits necessaires pour cette action');
+				return;
+			break;
+		}
+	}
 	var cellules_previews=$$(selecteur_cellules_preview);
 	if (type_chargement == 'etape') {
 		if (cellules_previews.invoke('retrieve','etape').indexOf(num)==-1) // Numéro d'étape non trouvé
@@ -543,6 +556,7 @@ function charger_image(type_chargement,src,num) {
 	}
 	image.writeAttribute({'src':src});
 	image.observe('load',function(ev) {
+		chargement_courant++;
 		var image=Event.element(ev);
 		
 		if ($$(selecteur_cellules_preview).length == 2)
@@ -552,39 +566,39 @@ function charger_image(type_chargement,src,num) {
 			var image=Event.element(ev);
 			fixer_regles(image);
 		});
-		if (image.readAttribute('src').indexOf('/save') != -1) {
+		if (!est_visu && chargement_courant >= chargements.length) {
 			switch(privilege) {
 				case 'Admin':
-					alert('Image enregistree');
+					if (type_chargement=='etape')
+						alert('Image enregistree');
+					else
+						alert('Images enregistrees');
 					$('ligne_'+numero_chargement).addClassName('tranche_prete');
 					
 				break;
 				case 'Edition':
-					if (confirm('Votre modele de tranche va etre envoye au webmaster pour validation. Continuer ?')) {
+					if (type_chargement=='etape')
 						alert('Votre proposition de modele a ete envoyee au webmaster pour validation. Merci !');
-						$('ligne_'+numero_chargement).addClassName('tranche_en_validation');
-					}
-				break;
-				default:
-					alert('Vous ne possedez pas les droits necessaires pour cette action');
+					else
+						alert('Vos propositions de modeles ont ete envoyees au webmaster pour validation. Merci !');
+					$('ligne_'+numero_chargement).addClassName('tranche_en_validation');
+					
 				break;
 			}
 		}
-		if (est_visu) {
-			// $('regle').writeAttribute({'height':(300*val_zoom)});
-			$('chargement').update();
-			$('erreurs').update();
-			chargement_courant++;
-			if (chargement_courant < chargements.length) {
-				if (type_chargement=='etape')
-					charger_preview_etape(chargements[chargement_courant],true);
-				else
-					charger_previews_numeros(chargements[chargement_courant],true);
-			}
-			else {
-				fixer_regles(null);
-				reload_observers_tranches();
-			}
+		
+		// $('regle').writeAttribute({'height':(300*val_zoom)});
+		$('chargement').update();
+		$('erreurs').update();
+		if (chargement_courant < chargements.length) {
+			if (type_chargement=='etape')
+				charger_preview_etape(chargements[chargement_courant],est_visu);
+			else
+				charger_previews_numeros(chargements[chargement_courant],est_visu);
+		}
+		else {
+			fixer_regles(null);
+			reload_observers_tranches();
 		}
 			
 	});
@@ -644,6 +658,14 @@ function assistant_cellules_sel() {
 		var texte=new Element('div').insert(new Element('span').setStyle({'fontWeight':'bold'}).update($$('td.selected').length+' num&eacute;ro(s) s&eacute;lectionn&eacute;(s)'))
 									.insert(new Element('br'));
 		var nom_option=get_nom_option_sel();
+		texte.insert('Etape : '+etape_en_cours+'&nbsp;');
+		if (nom_option=='Actif') {
+			var lien_charger_etape=new Element('a',{'href':'javascript:void(0)'}).update('D&eacute;velopper l\'&eacute;tape');
+			texte.insert(lien_charger_etape).insert(new Element('br'));
+			lien_charger_etape.observe('click',function() {
+				charger_etape(etape_en_cours);
+			});
+		}
 		texte.insert('Option : '+nom_option)
 			 .insert(new Element('br'))
 			 .insert(new Element('i').update(typeof(descriptions_options[nom_option]) == 'undefined' ? '' : descriptions_options[nom_option]))
@@ -670,8 +692,8 @@ function assistant_cellules_sel() {
 				$('chargement').update('Enregistrement des param&egrave;tres...');
 				var numeros=element_to_numero($$('td.selected').invoke('up','tr')).join('~');
 				var nouvelle_valeur=escape(get_nouvelle_valeur(nom_option)).replace(/%/g,'!');
-				etape_temporaire_to_definitive();
-				new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction].join('/'), {
+				var est_nouvelle_fonction=etape_temporaire_to_definitive() ? 'true':'false';
+				new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction,est_nouvelle_fonction].join('/'), {
 					method: 'post',
 					onSuccess:function(transport) {
 						if (transport.responseText.indexOf('Erreur') != -1) {
@@ -684,9 +706,14 @@ function assistant_cellules_sel() {
 						
 						reload_observers_etapes();
 						
-						if (nom_option=='Actif')
+						if (nom_option=='Actif') {
 							$$('td.selected')
 								.invoke(nouvelle_valeur=='on' ? 'addClassName':'removeClassName','num_checked');
+							if ($$('.etape_ouverte').length > 0 && $$('.etape_ouverte')[0].retrieve('etape') == etape_en_cours) {
+								fermer_etapes();
+								charger_etape(etape_en_cours);
+							}
+						}
 						else {
 							if (numeros.split('~').indexOf($('numero_preview').retrieve('numero')) != -1 && recharger_etape) {
 								if (etape_en_cours == -1) {
@@ -758,8 +785,11 @@ function etape_temporaire_to_definitive() {
 	
 	$$('.nouvelle').invoke('removeClassName','nouvelle');
 	
-	if (etapes_maj)
+	if (etapes_maj) {
 		reload_observers_etapes();
+		return true;
+	}
+	return false;
 }
 
 function sans_doublons(tab){
@@ -963,10 +993,8 @@ new Event.observe(window, 'load',function() {
 					$('nom_magazine').update('Utilisez un nom de magazine valide');
 					return;
 				}
-				var nb_numeros_dispos=transport.headerJSON.nb_numeros_dispos;
 				numeros_dispos=transport.headerJSON.numeros_dispos;
 				var tranches_pretes=transport.headerJSON.tranches_pretes;
-				var nb_etapes=transport.headerJSON.nb_etapes;
 	
 				var table=new Element('table',{'id':'table_numeros'}).addClassName('bordered').writeAttribute({'border':'1'})
 							.insert(new Element('tr').addClassName('ligne_entete ligne_etapes')
@@ -985,8 +1013,13 @@ new Event.observe(window, 'load',function() {
 				
 				$$('#filtre_debut,#filtre_fin').each(function(filtre_select) {
 					for (var numero_dispo in numeros_dispos)
-						if (numero_dispo != 'Aucun')
-							filtre_select.insert(new Element('option',{'value':numero_dispo}).update(numero_dispo));
+						if (numero_dispo != 'Aucun') {
+							var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
+							var option=new Element('option',{'value':numero_dispo}).update(numero_dispo);
+							if (est_dispo)
+								option.addClassName('tranche_prete');
+							filtre_select.insert(option);
+						}
 				});
 				$('filtre_fin').selectedIndex = $('filtre_fin').select('option:last')[0].index;
 
@@ -1175,6 +1208,16 @@ new Event.observe(window, 'load',function() {
 				chargement_courant=0;
 				charger_preview_etape(chargements[chargement_courant],false);
 		   }
+		});
+		$('save_pngs').observe('click',function() {
+			numero_chargement=null;
+			chargements=new Array();
+			$$('.numero_preview').each(function(td_numero) {
+				var numero=td_numero.retrieve('numero');
+				chargements.push(numero.toString());
+			});
+			chargement_courant=0;
+			charger_previews_numeros(chargements[chargement_courant],false);
 		});
 	}
 	if (privilege != 'Affichage') {
@@ -1367,6 +1410,7 @@ function fermer_etapes() {
 	$$('.lien_etape').invoke('writeAttribute',{'colspan':1});
 	$$('.etape_ouverte').invoke('removeClassName','etape_ouverte');
 	$$('.etape_active').invoke('down','a').invoke('update','');
+	colonne_ouverte=false;
 }
 
 var descriptions_options=new Array();
@@ -1474,7 +1518,7 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 			
 			$('chargement').update();
 			reload_observers_cells();
-			setupFixedTableHeader();
+			//setupFixedTableHeader();
 		}
 	});
 }
@@ -1484,6 +1528,7 @@ function restriction_plage() {
 			   +'Pour des raisons de fluidite, il est conseille de restreindre la plage de numeros a afficher.\n'
 			   +'Voulez vous indiquer une plage de numeros ?')) {
 		alert('Utilisez les listes deroulantes en haut de la page pour indiquer le premier et le dernier numero de la plage, puis cliquez sur le filtre pour valider');
+		$('chargement').update();
 		return true;/* 
 		var plage_debut_entre=prompt('Entrez le premier numero de la plage');
 		 if (plage_debut_entre == null)
