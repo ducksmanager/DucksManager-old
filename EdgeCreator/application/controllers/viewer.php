@@ -100,6 +100,7 @@ class Viewer extends CI_Controller {
 		
 		$num_ordre=-2;
 		$fond_noir_fait=false;
+		$options_preview=array();
 		foreach($num_ordres as $num_ordre) {
 			if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
 				$options=new stdClass();
@@ -137,6 +138,7 @@ class Viewer extends CI_Controller {
 						}
 					}
 					new $ordres[$num_ordre]->Nom_fonction($options2);
+					$options_preview[$num_ordre]=$options2;
 				}
 			}
 		}
@@ -182,7 +184,11 @@ class Viewer extends CI_Controller {
 					}
 				break;
 				case 'Edition':
-					
+					ob_start();
+					print_r($options_preview);
+					$affichage_options=ob_get_contents();
+					ob_end_clean();
+					@mail('admin@ducksmanager.net','Proposition de modele de tranche de '.$this->session->userdata('user'),$affichage_options);
 				break;
 				default:
 					echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';

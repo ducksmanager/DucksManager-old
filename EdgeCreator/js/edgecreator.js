@@ -189,11 +189,7 @@ function reload_observers_tranches() {
 		   }
 		   adapter_scroll_reperes();
 	   }
-	   $('chargement').update('X = ')
-					  .insert(new Element('span',{'id':'X'}))
-					  .insert(new Element('br'))
-					  .insert('Y = ')
-					  .insert(new Element('span',{'id':'Y'}));
+	   inserer_elements_coord();
 	})
 		.invoke('observe','mouseout',function(ev) {
 	   $('chargement').update();
@@ -210,9 +206,19 @@ function reload_observers_tranches() {
 	   var y_valeur = toAlwaysFloat(parseInt(10 * y/zoom)/10);
 	   var x_pct = toAlwaysFloat(parseInt(1000 * x / tranche.width)/10);
 	   var y_pct = toAlwaysFloat(parseInt(1000 * y / tranche.height)/10);
+	   if (!$('X'))
+		   inserer_elements_coord();
 	   $('X').update(x_valeur+'mm (Largeur x '+x_pct+'%)');
 	   $('Y').update(y_valeur+'mm (Hauteur x '+y_pct+'%)');
 	});
+}
+
+function inserer_elements_coord() {
+	$('chargement').update('X = ')
+	  .insert(new Element('span',{'id':'X'}))
+	  .insert(new Element('br'))
+	  .insert('Y = ')
+	  .insert(new Element('span',{'id':'Y'}));
 }
 
 function est_dans_intervalle(numero,intervalle) {
@@ -653,11 +659,13 @@ function marquer_cellules(first_cell,last_cell) {
 	assistant_cellules_sel();
 }
 
+var nom_option = null; // Nom d'option en cours de modif
+
 function assistant_cellules_sel() {
 	if ($$('td.selected').length > 0) {
 		var texte=new Element('div').insert(new Element('span').setStyle({'fontWeight':'bold'}).update($$('td.selected').length+' num&eacute;ro(s) s&eacute;lectionn&eacute;(s)'))
 									.insert(new Element('br'));
-		var nom_option=get_nom_option_sel();
+		nom_option=get_nom_option_sel();
 		texte.insert('Etape : '+etape_en_cours+'&nbsp;');
 		if (nom_option=='Actif') {
 			var lien_charger_etape=new Element('a',{'href':'javascript:void(0)'}).update('D&eacute;velopper l\'&eacute;tape');
@@ -688,52 +696,7 @@ function assistant_cellules_sel() {
 		var succes_formatage=formater_modifier_valeur(nom_option);
 		if (succes_formatage) {
 			section_modifier_valeur.insert(new Element('button',{'id':'modifier_valeur_ok'}).update('OK'));
-			$('modifier_valeur_ok').observe('click',function() {
-				$('chargement').update('Enregistrement des param&egrave;tres...');
-				var numeros=element_to_numero($$('td.selected').invoke('up','tr')).join('~');
-				var nouvelle_valeur=escape(get_nouvelle_valeur(nom_option)).replace(/%/g,'!');
-				var est_nouvelle_fonction=etape_temporaire_to_definitive() ? 'true':'false';
-				new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction,est_nouvelle_fonction].join('/'), {
-					method: 'post',
-					onSuccess:function(transport) {
-						if (transport.responseText.indexOf('Erreur') != -1) {
-							alert(transport.responseText);
-							return;
-						}
-							
-						$('chargement').update();
-						var recharger_etape = nom_option != 'Actif';
-						
-						reload_observers_etapes();
-						
-						if (nom_option=='Actif') {
-							$$('td.selected')
-								.invoke(nouvelle_valeur=='on' ? 'addClassName':'removeClassName','num_checked');
-							if ($$('.etape_ouverte').length > 0 && $$('.etape_ouverte')[0].retrieve('etape') == etape_en_cours) {
-								fermer_etapes();
-								charger_etape(etape_en_cours);
-							}
-						}
-						else {
-							if (numeros.split('~').indexOf($('numero_preview').retrieve('numero')) != -1 && recharger_etape) {
-								if (etape_en_cours == -1) {
-									var num_etapes=$$('.num_etape_preview').invoke('retrieve','etape');
-									chargements=num_etapes;
-									chargement_courant=0;
-									charger_preview_etape(chargements[chargement_courant],true);
-								}
-								if ($$('.num_etape_preview').invoke('retrieve','etape').indexOf(etape_en_cours+'') != -1)
-									reload_etape(etape_en_cours+'');
-							}
-						}
-						etape_temporaire_to_definitive();
-						
-						if (recharger_etape) {
-							charger_etape(etape_en_cours, numeros, nom_option, true);
-						}
-					}
-				});
-			  });
+			$('modifier_valeur_ok').observe('click',valider_modifier_valeur);
 		}
 		else {
 			section_modifier_valeur.insert('L\'un au moins des num&eacute;ros s&eacute;lectionn&eacute;s n\'est pas d&eacute;fini pour cette &eacute;tape.')
@@ -751,6 +714,53 @@ function assistant_cellules_sel() {
 	else if (privilege !='Affichage')
 		$('helpers').update();
 }
+
+function valider_modifier_valeur() {
+	$('chargement').update('Enregistrement des param&egrave;tres...');
+	var numeros=element_to_numero($$('td.selected').invoke('up','tr')).join('~');
+	var nouvelle_valeur=escape(get_nouvelle_valeur(nom_option)).replace(/%/g,'!');
+	var est_nouvelle_fonction=etape_temporaire_to_definitive() ? 'true':'false';
+	new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction,est_nouvelle_fonction].join('/'), {
+		method: 'post',
+		onSuccess:function(transport) {
+			if (transport.responseText.indexOf('Erreur') != -1) {
+				alert(transport.responseText);
+				return;
+			}
+				
+			$('chargement').update();
+			var recharger_etape = nom_option != 'Actif';
+			
+			reload_observers_etapes();
+			
+			if (nom_option=='Actif') {
+				$$('td.selected')
+					.invoke(nouvelle_valeur=='on' ? 'addClassName':'removeClassName','num_checked');
+				if ($$('.etape_ouverte').length > 0 && $$('.etape_ouverte')[0].retrieve('etape') == etape_en_cours) {
+					fermer_etapes();
+					charger_etape(etape_en_cours);
+				}
+			}
+			else {
+				if (numeros.split('~').indexOf($('numero_preview').retrieve('numero')) != -1 && recharger_etape) {
+					if (etape_en_cours == -1) {
+						var num_etapes=$$('.num_etape_preview').invoke('retrieve','etape');
+						chargements=num_etapes;
+						chargement_courant=0;
+						charger_preview_etape(chargements[chargement_courant],true);
+					}
+					if ($$('.num_etape_preview').invoke('retrieve','etape').indexOf(etape_en_cours+'') != -1)
+						reload_etape(etape_en_cours+'');
+				}
+			}
+			etape_temporaire_to_definitive();
+			
+			if (recharger_etape) {
+				charger_etape(etape_en_cours, numeros, nom_option, true);
+			}
+		}
+	});
+  }
 
 function get_nom_option_sel() {
 	if ($$('td.selected').length==0)
@@ -849,10 +859,12 @@ function formater_modifier_valeur(nom_option) {
 	if (typeof(premiere_valeur_sel) == 'undefined')
 		premiere_valeur_sel='';
 
+	var input_valeur = null;
 	switch(types_options[nom_option]) {
 		case 'couleur':
-			$('valeur_modifiee').update(new Element('input').addClassName('color')
-															.writeAttribute({'type':'text','value':premiere_valeur_sel}));
+			input_valeur=new Element('input').addClassName('color')
+								.writeAttribute({'type':'text','value':premiere_valeur_sel});
+			$('valeur_modifiee').update(input_valeur);
 		break;
 		case 'liste': case 'fichier_ou_texte':
 			var arg='_';
@@ -878,37 +890,46 @@ function formater_modifier_valeur(nom_option) {
 						$('valeur_modifiee').insert({'after':div_texte_variable});
 						var lien_texte_variable=new Element('a').update('nom de fichier variable').addClassName('switchable');
 						var lien_nom_fichier=new Element('a').update('nom de fichier fixe').addClassName('switchable cache');
-						var input_texte_variable=new Element('input',{'type':'text','value':premiere_valeur_sel})
+						var input_valeur=new Element('input',{'type':'text','value':premiere_valeur_sel})
 													.addClassName('switchable cache');
-						div_texte_variable.insert(input_texte_variable)
+						div_texte_variable.insert(input_valeur)
 			  			  				  .insert('&nbsp;ou&nbsp;')
 							  			  .insert(lien_texte_variable)
 							  			  .insert(lien_nom_fichier);
-						[lien_texte_variable,lien_nom_fichier].invoke('observe','click',function(ev) {
-							$('modifier_valeur').select('.switchable').invoke('toggleClassName','cache');
-							var element=$('modifier_valeur').down('select');
-							var other=$('modifier_valeur').down('input');
-							var stub = document.createElement('div');
-						    other = Element.replace(other, stub);
-						    element = Element.replace(element, other);
-						});
-						if (!valeur_trouvee) {
-							
-						}
+						[lien_texte_variable,lien_nom_fichier].invoke('observe','click',toggleSwitchables);
+						
+						if (!valeur_trouvee && premiere_valeur_sel != '')
+							toggleSwitchables();
 					}
 				}
 			});
 		break;
 		default:
-			$('valeur_modifiee').update(new Element('input').writeAttribute({'type':'text','value':premiere_valeur_sel}));
+			input_valeur = new Element('input').writeAttribute({'type':'text','value':premiere_valeur_sel});
+			$('valeur_modifiee').update(input_valeur);
 		break;
+	}
+	
+	if (input_valeur != null) {
+		input_valeur.observe('keydown',function(ev) {
+			if (ev.keyCode == Event.KEY_RETURN)
+				valider_modifier_valeur();
+		});
 	}
 
 	return true;
 }
 
+function toggleSwitchables(ev) {
+	$('modifier_valeur').select('.switchable').invoke('toggleClassName','cache');
+}
+
 function get_nouvelle_valeur(nom_option) {
 	switch(types_options[nom_option]) {
+		case 'fichier_ou_texte':
+			var element= $('valeur_modifiee').down().hasClassName('cache') ? $('section_texte_variable').down() : $('valeur_modifiee').down();
+			return $F(element);
+		break;
 		default:
 			return $F($('valeur_modifiee').down());
 		break;
@@ -1045,17 +1066,17 @@ new Event.observe(window, 'load',function() {
 				var fin_plage_atteint=false;
 				for (var numero_dispo in numeros_dispos) {
 					if (plage[0] != 'null') {
+						if (!debut_plage_atteint) {
+							if (numero_dispo == plage[0])
+								debut_plage_atteint=true;
+							else
+								continue;
+						}
 						if (debut_plage_atteint) {
 							if (fin_plage_atteint)
 								break;
 							if (numero_dispo == plage[1])
 								fin_plage_atteint=true;
-						}
-						else {
-							if (numero_dispo == plage[0])
-								debut_plage_atteint=true;
-							else
-								continue;
 						}
 					}
 					if (numero_dispo == 'Aucun')

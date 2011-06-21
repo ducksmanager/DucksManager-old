@@ -40,15 +40,17 @@ class ParametrageG extends CI_Controller {
 			$data=array('etapes'=>$etapes);
 		}
 		else {
-			if (!is_null($nom_fonction)) {// Etape temporaire
-				$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$nom_fonction, null, false, true, true);
-			}
-			else {
-				$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
-				if (is_null($fonction) && self::$etape == -1) {
+			$fonction=$this->Modele_tranche->get_fonction(self::$pays,self::$magazine,self::$etape);
+			if (is_null($fonction)) {// Etape temporaire ou dimensions
+				if (self::$etape == -1) {
 					$fonction=new stdClass();
 					$fonction->Nom_fonction='Dimensions';
 				}
+				else
+					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$nom_fonction, null, false, true, true);
+			}
+			else {
+				
 				if ($this->Modele_tranche->has_no_option(self::$pays,self::$magazine,self::$etape)) {
 					$options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
 				}
