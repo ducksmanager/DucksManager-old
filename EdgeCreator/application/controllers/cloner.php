@@ -32,6 +32,8 @@ class Cloner extends CI_Controller {
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		
+		$this->Modele_tranche->dupliquer_modele_magazine_si_besoin(self::$pays,self::$magazine);
+		
 		$this->Modele_tranche->cloner_etape($pays,$magazine,$etape_courante,$etape);
 		
 	}

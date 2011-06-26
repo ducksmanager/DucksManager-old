@@ -693,6 +693,7 @@ function assistant_cellules_sel() {
 		
 		if (privilege != 'Affichage')
 			$('helpers').update(texte).insert(section_modifier_valeur);
+		section_modifier_valeur_terminee=false;
 		var succes_formatage=formater_modifier_valeur(nom_option);
 		if (succes_formatage) {
 			section_modifier_valeur.insert(new Element('button',{'id':'modifier_valeur_ok'}).update('OK'));
@@ -716,6 +717,7 @@ function assistant_cellules_sel() {
 }
 
 function valider_modifier_valeur() {
+	$('modifier_valeur_ok').writeAttribute({'disabled':'disabled'});
 	$('chargement').update('Enregistrement des param&egrave;tres...');
 	var numeros=element_to_numero($$('td.selected').invoke('up','tr')).join('~');
 	var nouvelle_valeur=escape(get_nouvelle_valeur(nom_option)).replace(/%/g,'!');
@@ -758,6 +760,7 @@ function valider_modifier_valeur() {
 			if (recharger_etape) {
 				charger_etape(etape_en_cours, numeros, nom_option, true);
 			}
+			$('modifier_valeur_ok').writeAttribute({'disabled':''});
 		}
 	});
   }
@@ -846,6 +849,7 @@ function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16);}
 function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16);}
 function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h;}
 
+var section_modifier_valeur_terminee=false;
 function formater_modifier_valeur(nom_option) {
 	if (nom_option=='Actif') {
 		$('valeur_modifiee').update(new Element('input').writeAttribute({'type':'checkbox','checked':'checked'}))
@@ -874,6 +878,8 @@ function formater_modifier_valeur(nom_option) {
 				method: 'post',
 				parameters:'select=true',
 				onSuccess:function(transport) {
+					if (section_modifier_valeur_terminee)
+						return;
 					var select = new Element('select').addClassName('switchable');
 					var valeur_trouvee=false;
 					for(var nom in transport.headerJSON) {
@@ -900,6 +906,7 @@ function formater_modifier_valeur(nom_option) {
 						
 						if (!valeur_trouvee && premiere_valeur_sel != '')
 							toggleSwitchables();
+						section_modifier_valeur_terminee=true;
 					}
 				}
 			});
@@ -921,7 +928,10 @@ function formater_modifier_valeur(nom_option) {
 }
 
 function toggleSwitchables(ev) {
-	$('modifier_valeur').select('.switchable').invoke('toggleClassName','cache');
+	if (!$('valeur_modifiee').down('select').hasClassName('cache') && !$('section_texte_variable').down('input').hasClassName('cache'))
+		$('valeur_modifiee').down('select').addClassName('cache');
+	else
+		$('modifier_valeur').select('.switchable').invoke('toggleClassName','cache');
 }
 
 function get_nouvelle_valeur(nom_option) {
@@ -1082,10 +1092,12 @@ new Event.observe(window, 'load',function() {
 					if (numero_dispo == 'Aucun')
 						continue; 
 					var td_cloner=new Element('td');
-					var image_cloner = new Element('img').writeAttribute({'src':base_url+'images/clone.png','title':'Cloner le numero'})
-														 .addClassName('cloner');
-					
-					td_cloner.update(image_cloner);
+					if (privilege == 'Admin' || privilege == 'Edition') {
+						var image_cloner = new Element('img').writeAttribute({'src':base_url+'images/clone.png','title':'Cloner le numero'})
+															 .addClassName('cloner');
+						
+						td_cloner.update(image_cloner);
+					}
 					var tr=new Element('tr').writeAttribute({'id':'ligne_'+numero_dispo}).addClassName('ligne_dispo').store('numero',numero_dispo)
 											.insert(td_cloner);
 					if (typeof(tranches_pretes[numero_dispo]) != 'undefined') {
@@ -1103,8 +1115,10 @@ new Event.observe(window, 'load',function() {
 						preview_numero(Event.element(event));
 					});
 					
-					image_cloner.store('numero',numero_dispo)
-								.observe('click',cloner_numero);
+					if (privilege == 'Admin' || privilege == 'Edition') {
+						image_cloner.store('numero',numero_dispo)
+									.observe('click',cloner_numero);
+					}
 								
 					var td_temp=new Element('td');
 					tr.insert(td_temp);
@@ -1270,7 +1284,7 @@ function toggle_item_menu (element) {
 	element.up().select('li.active').invoke('removeClassName','active');
 	$(element).toggleClassName('active');
 	element.up().select('li a').pluck('name').each(function(nom) {
-		$('contenu_'+nom).setStyle({'display':'none'});
+		$('contenu_'+nom.toLowerCase()).setStyle({'display':'none'});
 	});
 	$('contenu_'+element.down().name).setStyle({'display':'block'});
 	

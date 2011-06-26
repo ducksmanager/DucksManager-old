@@ -27,7 +27,6 @@ class Viewer extends CI_Controller {
 		
 		$privilege=$this->Modele_tranche->get_privilege();
 		
-		
 		if (is_null($pays) || is_null($magazine)) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
@@ -101,6 +100,7 @@ class Viewer extends CI_Controller {
 		$num_ordre=-2;
 		$fond_noir_fait=false;
 		$options_preview=array();
+		try {
 		foreach($num_ordres as $num_ordre) {
 			if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
 				$options=new stdClass();
@@ -142,7 +142,11 @@ class Viewer extends CI_Controller {
 				}
 			}
 		}
-		
+		}
+		catch(Exception $e) {
+	    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
+	    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
+		}
 		// Nouvelles étapes
 		foreach(self::$parametrage as $parametres=>$options) {
 			list($num_ordre_param_ajout,$nom_fonction_param)=explode('~', $parametres);
@@ -162,7 +166,6 @@ class Viewer extends CI_Controller {
 					new $nom_fonction_param($ordres[$num_ordre_param_ajout][0]->options);
 			}
 		}
-		
 		new Dessiner_contour($dimensions);
 		
 		if (self::$is_debug===false)

@@ -26,6 +26,8 @@ class SupprimerG extends CI_Controller {
 		else {
 			$this->Modele_tranche->setUsername($this->session->userdata('user'));
 			
+			$this->Modele_tranche->dupliquer_modele_magazine_si_besoin(self::$pays,self::$magazine);
+			
 			$this->Modele_tranche->delete_ordre(self::$pays,self::$magazine,self::$etape,null,null,null);
 			$this->load->view('parametragegview',$data);
 		}
