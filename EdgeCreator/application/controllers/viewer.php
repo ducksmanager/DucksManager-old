@@ -20,6 +20,7 @@ class Viewer extends CI_Controller {
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
 		$this->load->library('session');
+		$this->load->library('email');
 		$session_id = $this->session->userdata('session_id');
 		$this->load->database();
 		
@@ -62,7 +63,12 @@ class Viewer extends CI_Controller {
 		self::$magazine=$magazine;
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
-		$this->Modele_tranche->setUsername($this->session->userdata('user'));
+		if (strpos($save,'integrate') !== false) {
+			$username_modele=substr($save,strlen('integrate_'));
+			$this->Modele_tranche->setUsername($username_modele);
+		}
+		else
+			$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		self::$numero=$numero;
 		$parametrage=json_decode($parametrage);
 		self::$parametrage=$parametrage;
@@ -115,30 +121,35 @@ class Viewer extends CI_Controller {
 				self::$etape_en_cours->num_etape=$num_ordre;
 				self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
 				$fonction=$ordres[$num_ordre];
-				if (est_dans_intervalle($numero,$fonction->Numero_debut.'~'.$fonction->Numero_fin)) {
-					$options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,$fonction->Nom_fonction,$numero);
-					if ($num_ordre==-1)
-						$dimensions=$options2;
-					foreach(self::$parametrage as $parametres=>$options) {
-						list($num_ordre_param,$nom_fonction_param)=explode('~', $parametres);
-						if ($num_ordre_param==$num_ordre && $nom_fonction_param==$fonction->Nom_fonction) {
-							foreach($options as $option_nom__intervalle=>$option_valeur) {
-								if(strpos($option_nom__intervalle, '.')==false) {
-									continue;
-								}
-								list($option_nom,$intervalle)=explode('.',$option_nom__intervalle);
-								if (est_dans_intervalle($numero,$intervalle)) {
-									$options2->$option_nom
-										=urldecode(str_replace('^','%',
-												   str_replace('!amp!','&',
-												   str_replace('!slash!','/',
-												   str_replace('!sharp!','#',$option_valeur)))));
+				$numeros_debut=explode(';',$fonction->Numero_debut);
+				$numeros_fin=explode(';',$fonction->Numero_fin);
+				foreach( $numeros_debut as $i=>$numero_debut) {
+					$numero_fin=$numeros_fin[$i];
+					if (est_dans_intervalle($numero,$numero_debut.'~'.$numero_fin)) {
+						$options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,$fonction->Nom_fonction,$numero);
+						if ($num_ordre==-1)
+							$dimensions=$options2;
+						foreach(self::$parametrage as $parametres=>$options) {
+							list($num_ordre_param,$nom_fonction_param)=explode('~', $parametres);
+							if ($num_ordre_param==$num_ordre && $nom_fonction_param==$fonction->Nom_fonction) {
+								foreach($options as $option_nom__intervalle=>$option_valeur) {
+									if(strpos($option_nom__intervalle, '.')==false) {
+										continue;
+									}
+									list($option_nom,$intervalle)=explode('.',$option_nom__intervalle);
+									if (est_dans_intervalle($numero,$intervalle)) {
+										$options2->$option_nom
+											=urldecode(str_replace('^','%',
+													   str_replace('!amp!','&',
+													   str_replace('!slash!','/',
+													   str_replace('!sharp!','#',$option_valeur)))));
+									}
 								}
 							}
 						}
+						new $ordres[$num_ordre]->Nom_fonction(clone $options2);
+						$options_preview[$num_ordre]=$options2;
 					}
-					new $ordres[$num_ordre]->Nom_fonction($options2);
-					$options_preview[$num_ordre]=$options2;
 				}
 			}
 		}
@@ -170,10 +181,16 @@ class Viewer extends CI_Controller {
 		
 		if (self::$is_debug===false)
 			header('Content-type: image/png');
+		
+		
+		if (strpos($save,'integrate') !== false && $privilege == 'Admin') {
+			print_r($options_preview);
+		}
+		
 		if ($save=='save' && $zoom==1.5) {
 			switch($privilege) {
 				case 'Admin':
-					@mkdir('system/application/views/gen/'.$pays);
+					@mkdir('../edges/'.$pays.'/gen/'.$pays);
 					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
 					
 					$requete_tranche_deja_prete='SELECT issuenumber '
@@ -191,7 +208,21 @@ class Viewer extends CI_Controller {
 					print_r($options_preview);
 					$affichage_options=ob_get_contents();
 					ob_end_clean();
-					@mail('admin@ducksmanager.net','Proposition de modele de tranche de '.$this->session->userdata('user'),$affichage_options);
+					
+					@mkdir('../edges/'.$pays.'/tmp/');
+					$rand=rand(0,99999);
+					$nom_image='../edges/'.$pays.'/tmp/'.$magazine.'.'.$numero.'_tmp'.$rand.'.png';
+					imagepng(Viewer::$image,$nom_image);
+					
+					$this->email->from('admin@ducksmanager.net', 'DucksManager - '.$this->session->userdata('user'));
+					$this->email->to('admin@ducksmanager.net');
+					
+					$this->email->subject('Proposition de modele de tranche de '.$this->session->userdata('user'));
+					$this->email->message($affichage_options);
+					$this->email->attach($nom_image);
+					$this->email->send();
+					$this->email->print_debugger();
+					
 				break;
 				default:
 					echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';

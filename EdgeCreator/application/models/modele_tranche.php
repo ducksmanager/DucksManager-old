@@ -169,7 +169,8 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND EXISTS (SELECT 1 FROM edgecreator_intervalles WHERE edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID AND username LIKE \''.$username.'\') ';
+				.'AND EXISTS (SELECT 1 FROM edgecreator_intervalles WHERE edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID AND username LIKE \''.$username.'\') '
+				.'GROUP BY Ordre ';
 		if (!is_null($num_etape))
 			$requete.='AND Ordre='.$num_etape.' ';
 		$requete.=' ORDER BY Ordre';
@@ -179,9 +180,11 @@ class Modele_tranche extends CI_Model {
 			$resultat->Numero_debut=array();
 			$resultat->Numero_fin=array();
 			$requete_intervalles='SELECT Numero_debut, Numero_fin '
-								.'FROM edgecreator_intervalles '
-								.'WHERE ID_Valeur='.$resultat->ID_Valeur.' AND username LIKE \''.$username.'\'';
-				$resultats_intervalles = $this->db->query($requete_intervalles)->result();
+								.'FROM edgecreator_modeles2 '
+								.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
+								.'INNER JOIN edgecreator_intervalles ON edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID '
+			    				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$resultat->Ordre.' AND Option_nom IS NULL ';
+			$resultats_intervalles = $this->db->query($requete_intervalles)->result();
 			foreach($resultats_intervalles as $intervalle) {
 				$resultat->Numero_debut[]=$intervalle->Numero_debut;
 				$resultat->Numero_fin[]=$intervalle->Numero_fin;
@@ -189,7 +192,6 @@ class Modele_tranche extends CI_Model {
 			$resultat->Numero_debut=implode(';',$resultat->Numero_debut);
 			$resultat->Numero_fin=implode(';',$resultat->Numero_fin);
 			$resultats_etapes[]=$resultat;
-			
 		}
 		return $resultats_etapes;
 	}
@@ -420,14 +422,14 @@ class Modele_tranche extends CI_Model {
 	function get_pays() {
 		include_once(BASEPATH.'/../../Inducks.class.php');
 		Inducks::$use_db=true;
-		Inducks::$use_local_db=false;
+		Inducks::$use_local_db=true;
 		return Inducks::get_pays();
 	}
 	
 	function get_magazines($pays) {
 		include_once(BASEPATH.'/../../Inducks.class.php');
 		Inducks::$use_db=true;
-		Inducks::$use_local_db=false;
+		Inducks::$use_local_db=true;
 		return Inducks::get_liste_magazines($pays);
 	}
 	
@@ -437,7 +439,7 @@ class Modele_tranche extends CI_Model {
 			$tranches_pretes=array();
 		include_once(BASEPATH.'/../../Inducks.class.php');
 		Inducks::$use_db=true;
-		Inducks::$use_local_db=false;
+		Inducks::$use_local_db=true;
 		$numeros_soustitres=Inducks::get_numeros($pays, $magazine,false,true);
 		foreach($numeros_soustitres[0] as $i=>$numero) {
 			$numero_affiche=str_replace("\n",'',str_replace('+','',$numero));
