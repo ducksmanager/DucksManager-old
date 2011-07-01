@@ -1,4 +1,8 @@
 <?php
+include_once(BASEPATH.'/../../Inducks.class.php');
+Inducks::$use_db=true;
+Inducks::$use_local_db=strpos($_SERVER['SERVER_ADDR'],'localhost') === false;
+		
 class Modele_tranche extends CI_Model {
 	static $id_session;
 	static $pays;
@@ -58,6 +62,12 @@ class Modele_tranche extends CI_Model {
 				return $resultat->row()->privilege;
 			}
 		}
+	}
+	
+	function username_to_id($username) {
+		$requete='SELECT ID FROM users WHERE username LIKE \''.$username.'\'';
+		$resultat=$this->db->query($requete);
+		return $resultat->row()->ID;
 	}
 
 	function user_exists($user) {
@@ -239,6 +249,7 @@ class Modele_tranche extends CI_Model {
 		if (!is_null($nom_fonction))
 			$requete.='AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
+		
 		$resultats=$this->db->query($requete)->result();
 		$option_nom='';
 		foreach($resultats as $resultat) {
@@ -420,16 +431,10 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_pays() {
-		include_once(BASEPATH.'/../../Inducks.class.php');
-		Inducks::$use_db=true;
-		Inducks::$use_local_db=true;
 		return Inducks::get_pays();
 	}
 	
 	function get_magazines($pays) {
-		include_once(BASEPATH.'/../../Inducks.class.php');
-		Inducks::$use_db=true;
-		Inducks::$use_local_db=true;
 		return Inducks::get_liste_magazines($pays);
 	}
 	
@@ -437,20 +442,20 @@ class Modele_tranche extends CI_Model {
 		$numeros_affiches=array('Aucun'=>'Aucun');
 		if ($get_prets)
 			$tranches_pretes=array();
-		include_once(BASEPATH.'/../../Inducks.class.php');
-		Inducks::$use_db=true;
-		Inducks::$use_local_db=true;
 		$numeros_soustitres=Inducks::get_numeros($pays, $magazine,false,true);
+		$id_user=$this->username_to_id(self::$username);
 		foreach($numeros_soustitres[0] as $i=>$numero) {
 			$numero_affiche=str_replace("\n",'',str_replace('+','',$numero));
 			$numeros_affiches[$numero_affiche]=$numero_affiche;
 
 			if ($get_prets) {
-				$requete_get_prets='SELECT issuenumber FROM tranches_pretes '
+				$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
 						.'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero_affiche.'\'';
 				$resultat_get_prets=$this->db->query($requete_get_prets)->result();
-				if (count($resultat_get_prets) > 0)
-					$tranches_pretes[$numero_affiche]=1;
+				if (count($resultat_get_prets) > 0) {
+					$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
+					$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs) ? 'par_moi' : 'global';
+				}
 
 			}
 		}
@@ -1163,7 +1168,7 @@ class Dimensions extends Fonction_executable {
 			return;
 		$this->verifier_erreurs();
 		Viewer::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
-		imageantialias(Viewer::$image, true);
+		//imageantialias(Viewer::$image, true);
 		Viewer::$largeur=z($this->options->Dimension_x);
 		Viewer::$hauteur=z($this->options->Dimension_y);
 		imagefill(Viewer::$image,0,0,  imagecolorallocate(Viewer::$image, 255, 255, 255));

@@ -2,7 +2,7 @@
 class MyFonts extends CI_Model {
 	var $p;
 	var $chemin_image;
-	static $regex_source_image='#src="([^"]+)"#is';
+	static $regex_source_image='#(http:.*\.gif)#isU';
 	var $font;
 	var $color;
 	var $color_bg;
@@ -34,7 +34,7 @@ class MyFonts extends CI_Model {
 			'size'=>$this->precision,
 			'w'=>$this->width,
 			'src'=>'custom',
-			'text'=>$this->text,
+			'text'=>str_replace(' ','%20',$this->text),
 			'fg'=>$this->color,
 			'bg'=>$this->color_bg,
 			'goodies'=>'ot.liga',
@@ -52,7 +52,7 @@ class MyFonts extends CI_Model {
 		}
 		else {
 			$this->p=new Post(
-				"http://new.myfonts.com/ajax-server/testdrive.xml",
+				"http://new.myfonts.com/widgets/testdrive/testdrive-ajax.php",
 				"http://www.jonasjohn.de/",
 				$this->data,
 				'GET'
@@ -65,6 +65,7 @@ class MyFonts extends CI_Model {
 				Fonction_executable::erreur('Image MyFonts non trouvée ; ('.$this->p->url.')');
 			}
 			$this->chemin_image=$chemin[1];
+			$this->chemin_image=str_replace('\\','',$this->chemin_image);
 			
 			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
 					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','

@@ -38,8 +38,13 @@
 	}
 	
 	#filtre_numeros option.tranche_prete {
+		background-color:#CBF5D9;
+	}
+	
+	#filtre_numeros option.cree_par_moi {
 		background-color:#98EBB2;
 	}
+	
 	#viewer h2 {
 		margin-top:-10px;
 	}
@@ -63,6 +68,15 @@
 		width:375px;
 		overflow-y: auto;
 		height: 100%;
+	}
+	
+	#upload_fichier {
+		position:fixed;
+		right:5px;
+		bottom:0;
+		background-color:white;
+		z-index:500;
+		overflow-y: auto;
 	}
 	
 	#toggle_helpers{
@@ -222,7 +236,11 @@
 	}
 
 	tr.tranche_prete {
-		background-color: #98EBB2;
+		background-color: #CBF5D9;
+	}
+	
+	tr.cree_par_moi {
+		background-color:#98EBB2;
 	}
 
 	tr.tranche_en_validation {
@@ -297,12 +315,14 @@
 	<script type="text/javascript" src="<?=base_url()?>js/scriptaculous/src/scriptaculous.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jscolor.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/edgecreatorlib.js" ></script>
 
 	<script type="text/javascript">
 		var pays='<?=$pays?>';
 		var magazine='<?=$magazine?>';
 		var etape_ouverture='<?=is_null($etape_ouverture) || empty($etape_ouverture) ? '_' : $etape_ouverture?>';
 		var privilege='<?=$privilege?>';
+		var username = '<?=$user?>';
 		
 		var plage=<?php
 		if (is_null($numero_debut_filtre)) {
@@ -455,6 +475,8 @@
 	<?php if ($privilege !='Affichage') { ?>
 		<div id="infos">
 			<div id="helpers"></div>
+		</div>
+		<div id="upload_fichier">
 		</div>
 	<?php } ?>
 	<div id="chargement">

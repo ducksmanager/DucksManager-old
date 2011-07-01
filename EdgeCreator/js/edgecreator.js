@@ -221,45 +221,6 @@ function inserer_elements_coord() {
 	  .insert(new Element('span',{'id':'Y'}));
 }
 
-function est_dans_intervalle(numero,intervalle) {
-	if (numero==null || intervalle.indexOf('Tous') != -1 || numero==intervalle)
-		return true;
-	if (intervalle.indexOf('~')!=-1) {
-		var numeros_debut_fin=intervalle.split('~');
-		var numeros_debut=numeros_debut_fin[0].split(';');
-		var numeros_fin=numeros_debut_fin[1].split(';');
-	}
-	else {
-		var numeros_debut=intervalle.split(';');
-		var numeros_fin=intervalle.split(';');
-	}
-	var trouve=false;
-	Object.keys(numeros_debut).each(function(i) {
-		var numero_debut=numeros_debut[i];
-		var numero_fin=numeros_fin[i];
-		if (numero_debut === numero_fin) {
-			if (numero_debut == numero) {
-				trouve=true;
-				return;
-			}
-		}
-		else {
-			numero_debut_trouve=false;
-			for(numero_dispo in numeros_dispos) {
-				if (numero_dispo==numero_debut)
-					numero_debut_trouve=true;
-				if (numero_dispo==numero && numero_debut_trouve) {
-					trouve=true;
-					return;
-				}
-				if (numero_dispo==numero_fin) 
-					return;
-			}
-		}
-	});
-	return trouve;
-}
-
 var chargements;
 var chargement_courant;
 var numero_chargement;
@@ -527,11 +488,14 @@ var selecteur_cellules_preview=null;
 
 
 function charger_image(type_chargement,src,num) {
-	var random=Math.random();
-	src+='/'+random;
 	var image=new Element('img').addClassName('image_preview').store(type_chargement,num);
 	var est_visu=src.indexOf('/save') == -1;
-	if (!est_visu) {
+	if (est_visu) {
+		var random=Math.random();
+		src+='/'+random;
+	}
+	else {
+		src+='/'+username;
 		switch(privilege) {
 			case 'Admin':break;
 			case 'Edition':
@@ -579,7 +543,7 @@ function charger_image(type_chargement,src,num) {
 						alert('Image enregistree');
 					else
 						alert('Images enregistrees');
-					$('ligne_'+numero_chargement).addClassName('tranche_prete');
+					$('ligne_'+numero_chargement).addClassName('cree_par_moi');
 					
 				break;
 				case 'Edition':
@@ -987,6 +951,24 @@ new Event.observe(window, 'load',function() {
 	new Ajax.Request(urls['numerosdispos']+'index', {
 		method:'post',
 		onSuccess:function(transport) {
+			if (privilege != 'Affichage') {
+				var toggle_iframe_upload=new Element('span',{'id':'toggle_iframe_upload'}).update('^');
+				var lien_upload=new Element('a',{'href':'javascript:void(0)'}).setStyle({'float':'right'})
+					.update('Envoyer une image &agrave; EdgeCreator&nbsp;')
+					.insert(toggle_iframe_upload);
+				lien_upload.observe('click',function(event) {
+					if ($('iframe_upload')) {
+						$('iframe_upload').remove();
+						$('toggle_iframe_upload').update('^');
+					}
+					else {
+						var iframe_upload=new Element('iframe',{'id':'iframe_upload','src':base_url+'index.php/helper/index/image_upload.php'});
+						$('upload_fichier').insert(iframe_upload);
+						$('toggle_iframe_upload').update('v');
+					}
+				});
+				$('upload_fichier').insert(lien_upload).insert(new Element('br'));
+			}
 			for (var i in transport.headerJSON.pays) {
 				$('liste_pays')
 					.insert(new Element('option',{'value':i})
@@ -1045,10 +1027,15 @@ new Event.observe(window, 'load',function() {
 				$$('#filtre_debut,#filtre_fin').each(function(filtre_select) {
 					for (var numero_dispo in numeros_dispos)
 						if (numero_dispo != 'Aucun') {
-							var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
 							var option=new Element('option',{'value':numero_dispo}).update(numero_dispo);
-							if (est_dispo)
-								option.addClassName('tranche_prete');
+							var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
+							if (est_dispo) {
+								var utilisateur_est_createur=tranches_pretes[numero_dispo] == 'par_moi';
+								if (utilisateur_est_createur)
+									option.addClassName('cree_par_moi');
+								else
+									option.addClassName('tranche_prete');
+							}
 							filtre_select.insert(option);
 						}
 				});
@@ -1101,8 +1088,14 @@ new Event.observe(window, 'load',function() {
 					var tr=new Element('tr').writeAttribute({'id':'ligne_'+numero_dispo}).addClassName('ligne_dispo').store('numero',numero_dispo)
 											.insert(td_cloner);
 					if (typeof(tranches_pretes[numero_dispo]) != 'undefined') {
-						tr.addClassName('tranche_prete');
-						tr.writeAttribute({'title':'Cette tranche est deja prete'});
+						if (tranches_pretes[numero_dispo] == 'par_moi') {
+							tr.addClassName('cree_par_moi');
+							tr.writeAttribute({'title':'Vous avez contribue a modeliser cette tranche.'});
+						}
+						else {
+							tr.addClassName('tranche_prete');
+							tr.writeAttribute({'title':'Cette tranche est modelisee.'});
+						}
 					}
 					var td=new Element('td').addClassName('intitule_numero')
 											.insert(numero_dispo).insert('&nbsp;');
@@ -1380,6 +1373,7 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 			
 			cellule
 			  .insert(new Element('span').addClassName('numero_etape')
+					  					 .writeAttribute({'title':'Cliquez pour developper l\'etape '+num_etape})
 										 .update(num_etape == -1 
 												 ? 'Dimensions' 
 												 : (est_nouvelle ? 'Nouvelle &eacute;tape' : 'Etape '+num_etape)))

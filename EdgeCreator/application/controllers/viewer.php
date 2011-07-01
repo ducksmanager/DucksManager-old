@@ -14,13 +14,14 @@ class Viewer extends CI_Controller {
 	
 	static $etape_en_cours;
 	
-	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random=null,$debug=false) {
+	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random_ou_username=null,$debug=false) {
 		$parametrage=urldecode($parametrage);
 		$fond_noir = $fond_noir == 'true';
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
 		$this->load->library('session');
 		$this->load->library('email');
+		$this->load->helper('url');
 		$session_id = $this->session->userdata('session_id');
 		$this->load->database();
 		
@@ -183,8 +184,15 @@ class Viewer extends CI_Controller {
 			header('Content-type: image/png');
 		
 		
-		if (strpos($save,'integrate') !== false && $privilege == 'Admin') {
-			print_r($options_preview);
+		if (strpos($save,'integrate') !== false && $privilege == 'Admin' && self::$is_debug!==false) {
+			$data = array(
+				'pays'=>$pays,
+				'magazine'=>$magazine,
+				'numero'=>$numero,
+				'options'=>$options_preview,
+				'username'=>$username_modele
+			);
+			$this->load->view('integrateview',$data);
 		}
 		
 		if ($save=='save' && $zoom==1.5) {
@@ -193,15 +201,21 @@ class Viewer extends CI_Controller {
 					@mkdir('../edges/'.$pays.'/gen/'.$pays);
 					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
 					
-					$requete_tranche_deja_prete='SELECT issuenumber '
+					$requete_tranche_deja_prete='SELECT createurs, issuenumber '
 											   .'FROM tranches_pretes '
 											   .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero.'\'';
-		
-					if (count($this->db->query($requete_tranche_deja_prete)->result()) == 0) {
+					$resultat_tranche_prete = $this->db->query($requete_tranche_deja_prete);
+					if ($resultat_tranche_prete->num_rows== 0) {
 						$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber) VALUES '
 								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\')';
-						$this->db->query($requete);
 					}
+					else {
+						$id_utilisateur=$this->Modele_tranche->username_to_id($random_ou_username).';';
+						$createurs=$resultat_tranche_prete->row()->createurs == null ? $id_utilisateur : ($resultat_tranche_prete->row()->createurs.$id_utilisateur); 
+						$requete='UPDATE tranches_pretes SET createurs=\''.$createurs.'\' '
+								.'WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
+					}
+					$this->db->query($requete);
 				break;
 				case 'Edition':
 					ob_start();
@@ -214,10 +228,10 @@ class Viewer extends CI_Controller {
 					$nom_image='../edges/'.$pays.'/tmp/'.$magazine.'.'.$numero.'_tmp'.$rand.'.png';
 					imagepng(Viewer::$image,$nom_image);
 					
-					$this->email->from('admin@ducksmanager.net', 'DucksManager - '.$this->session->userdata('user'));
+					$this->email->from('admin@ducksmanager.net', 'DucksManager - '.$username_modele);
 					$this->email->to('admin@ducksmanager.net');
 					
-					$this->email->subject('Proposition de modele de tranche de '.$this->session->userdata('user'));
+					$this->email->subject('Proposition de modele de tranche de '.$username_modele);
 					$this->email->message($affichage_options);
 					$this->email->attach($nom_image);
 					$this->email->send();
@@ -229,7 +243,8 @@ class Viewer extends CI_Controller {
 				break;
 			}
 		}
-		imagepng(Viewer::$image);
+		if (self::$is_debug===false)
+			imagepng(Viewer::$image);
 	}
 }
 
