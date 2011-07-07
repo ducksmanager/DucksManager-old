@@ -87,6 +87,7 @@ function ouvrir_tranche() {
                 if (!ouverture_couverture)
                     return;
                 
+                tranche_en_cours.setStyle({'width':tranche_en_cours.width+'px','height':tranche_en_cours.height+'px'});
                 new Effect.Parallel([
                     new Effect.Morph(current_couv, {'width':parseInt(couverture.width/(hauteur_image/couverture.height))+'px', sync:true}),
                     new Effect.BlindRight(current_couv, {sync:true}),    
