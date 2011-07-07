@@ -232,8 +232,29 @@ Proto.Menu = Class.create({
                 });
                 tab_achats.each(function(achat) {
                     liste_achats.insert(new Element('li',{
+                    	'id':'achat_'+achat.id,
                         'class':'editer_date'
-                    }).update(Object.extend(
+                    }).insert(Object.extend(
+                    	new Element('img', {
+                    		'src':'images/supprimer.png',
+                    		'title':'Supprimer cette date d\'achat'})
+                    		.setStyle({'position': 'absolute', 'right': 0,'width':'10px','cursor':'pointer'})))
+                    		.observe('click', function (e) {
+		                        if (confirm('Confirmez-vous la suppression de cette date d\'achat ?')) {
+		                        	var id_achat=Event.element(e).up('li').readAttribute('id').split(new RegExp(/_/g))[1]; 
+		                        	new Ajax.Request('Database.class.php', {
+		                                 method: 'post',
+		                                 parameters:'database=true&supprimer_acquisition='+id_achat,
+		                                 onSuccess:function(transport,json) {
+		                                	 $('achat_'+id_achat).remove();
+		                                	 $('achat_'+id_achat).remove();
+		                                	 $$('.bloc_details .achat_'+id_achat).invoke('down','img').invoke('remove');
+		                                	 alert('La date d\'achat a ete supprimee');
+		                                 }
+		                        	 });
+		                        }
+		                    })
+                      .insert(Object.extend(
                         new Element('a', {
                             href: 'javascript:return false;',
                             name: achat.groupName,

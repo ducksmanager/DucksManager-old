@@ -20,16 +20,14 @@ function init_observers_gerer_numeros() {
 	   method: 'post',
 	   parameters:'database=true&liste_achats=true',
 	   onSuccess:function(transport) {
-	    	var reg=new RegExp("_", "g");
-	    	var achats=transport.responseText.split(reg);
-	    	for (var i=0;i<achats.length-1;i++) {
-	    		var reg_caract_achat=new RegExp("~","g");
-	    		var caract_achat=achats[i].split(reg_caract_achat);
-	    		var achat=new Object();
-	    		achat['name']='Achat "'+caract_achat[0]+'"<br />'+caract_achat[1];
+	    	var achats=transport.headerJSON;
+	    	for (var i in achats) {
+	    		var achat=achats[i];
+	    		achat['name']='Achat "'+achat.description+'"<br />'+achat.date;
 	    		achat['className']='date2';
 	    		achat['groupName']='achat';
 	    		achat['selected']=false;
+	    		achat['id']=achat.id;
 	    		tab_achats[i]=achat;
 	    	}
 			myMenuItems = [
@@ -156,6 +154,7 @@ function init_observers_gerer_numeros() {
                             method: 'post',
                             parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
                             onSuccess:function(transport) {
+                                element.writeAttribute({'src':'images/icones/view.png'});
                                 if (transport.headerJSON==null) {
                                     $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
                                     return;
@@ -164,9 +163,9 @@ function init_observers_gerer_numeros() {
                                 var fin_menu_gauche=$('colonne_gauche').down('div').cumulativeOffset()['top']+$('colonne_gauche').down('div').scrollHeight;
                                 $('couverture_preview').setStyle({'paddingTop':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top']-fin_menu_gauche)+'px'});
                                 $('couverture_preview').update(new Element('img',{'src':transport.headerJSON['cover']}).setStyle({'width':'100%'}));
-                                element.writeAttribute({'src':'images/icones/view.png'});
                             },
                             onError:function() {
+                                element.writeAttribute({'src':'images/icones/view.png'});
                                 $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
                             }
                         });
