@@ -238,7 +238,7 @@ Proto.Menu = Class.create({
                     	new Element('img', {
                     		'src':'images/supprimer.png',
                     		'title':'Supprimer cette date d\'achat'})
-                    		.setStyle({'position': 'absolute', 'right': 0,'width':'10px','cursor':'pointer'})))
+                    		.setStyle({'position': 'absolute', 'right': 0,'width':'10px','cursor':'pointer'})
                     		.observe('click', function (e) {
 		                        if (confirm('Confirmez-vous la suppression de cette date d\'achat ?')) {
 		                        	var id_achat=Event.element(e).up('li').readAttribute('id').split(new RegExp(/_/g))[1]; 
@@ -253,7 +253,7 @@ Proto.Menu = Class.create({
 		                                 }
 		                        	 });
 		                        }
-		                    })
+		                    })))
                       .insert(Object.extend(
                         new Element('a', {
                             href: 'javascript:return false;',
