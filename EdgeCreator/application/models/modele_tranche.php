@@ -179,11 +179,11 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND EXISTS (SELECT 1 FROM edgecreator_intervalles WHERE edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID AND username LIKE \''.$username.'\') '
-				.'GROUP BY Ordre ';
+				.'AND EXISTS (SELECT 1 FROM edgecreator_intervalles WHERE edgecreator_intervalles.ID_Valeur = edgecreator_valeurs.ID AND username LIKE \''.$username.'\') ';
 		if (!is_null($num_etape))
 			$requete.='AND Ordre='.$num_etape.' ';
-		$requete.=' ORDER BY Ordre';
+		$requete.=' GROUP BY Ordre'
+				 .' ORDER BY Ordre ';
 		echo $requete;
 		$resultats = $this->db->query($requete)->result();
 		foreach($resultats as $resultat) {
@@ -373,18 +373,20 @@ class Modele_tranche extends CI_Model {
 	
 	function sv_doublons($pays,$magazine) {
 		$requete_suppression_existants='DELETE FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
-		$this->db->query($requete_suppression_existants);
+		//$this->db->query($requete_suppression_existants);
 		self::$numeros_dispos=$this->get_numeros_disponibles($pays, $magazine);
 		$numeros_disponibles=self::$numeros_dispos;
 		unset ($numeros_disponibles['Aucun']);
 		$etape=-1;
-		$requete_get_etape_max='SELECT MAX(Ordre) AS max '
+		$requete_get_etapes='SELECT DISTINCT Ordre '
 							  .'FROM edgecreator_modeles2 '
 							  .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 						      .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
 						      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.self::$username.'\'';
-		$resultat_get_etape_max=$this->db->query($requete_get_etape_max)->result();
-		for($etape=-1;$etape<=$resultat_get_etape_max[0]->max;$etape++) {
+		$resultat_get_etapes=$this->db->query($requete_get_etapes)->result();
+		$dimensions=array();
+		foreach($resultat_get_etapes as $resultat_etape) {
+			$etape=$resultat_etape->Ordre;
 			$requete_get_options='SELECT Numero_debut, Numero_fin, Option_nom, Option_valeur '
 								.'FROM edgecreator_modeles2 '
 								.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
@@ -393,6 +395,13 @@ class Modele_tranche extends CI_Model {
 			$resultat_get_options=$this->db->query($requete_get_options)->result();
 			foreach($resultat_get_options as $option) {
 				foreach(array_keys($numeros_disponibles) as $numero) {
+					Viewer::$numero=$numero;
+					if (!isset($dimensions[$numero]))
+						$dimensions[$numero]=array();
+					if (isset($dimensions[$numero]['x']) && isset($dimensions[$numero]['y'])) {
+						Viewer::$largeur=$dimensions[$numero]['x'];
+						Viewer::$hauteur=$dimensions[$numero]['y'];
+					}
 					$intervalle=$option->Numero_debut.'~'.$option->Numero_fin;
 					if (est_dans_intervalle($numero,$intervalle)) {
 						if (is_string($numeros_disponibles[$numero]))
@@ -401,8 +410,14 @@ class Modele_tranche extends CI_Model {
 						if (!array_key_exists($etape,$numeros_disponibles[$numero]))
 							$numeros_disponibles[$numero][$etape]=array();
 						$valeur=is_null($option->Option_valeur)?'null':$option->Option_valeur;
-						//$valeur=Fonction_executable::toTemplatedString($valeur,false);
-						$numeros_disponibles[$numero][$etape][is_null($option->Option_nom)?'null':$option->Option_nom]=$valeur;
+						$valeur_calculee=Fonction_executable::toTemplatedString($valeur,true);
+						if ($valeur_calculee !== true)
+							$valeur=$valeur_calculee;
+						if ($option->Option_nom == 'Dimension_x')
+							$dimensions[$numero]['x']=$valeur;
+						if ($option->Option_nom == 'Dimension_y')
+							$dimensions[$numero]['y']=$valeur;
+						$numeros_disponibles[$numero][$etape][is_null($option->Option_nom)?'null':$option->Option_nom]=utf8_encode($valeur);
 					}
 				}
 			}
@@ -423,11 +438,16 @@ class Modele_tranche extends CI_Model {
 					$numero=$groupe[$i];
 					$requete='INSERT INTO tranches_doublons(Pays,Magazine,Numero,NumeroReference) '
 							.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.$numero_reference.'\')';
-					$this->db->query($requete);
+					//$this->db->query($requete);
+					echo $requete.'<br />';
 				}
 			}
 		}
-		echo '<pre>';print_r($groupes_numeros);echo '</pre>';
+		$groupes_numeros_lisibles=array();
+		foreach($groupes_numeros as $i=>$groupe) {
+			$groupes_numeros_lisibles[json_encode(unserialize($i))]=$groupe;
+		}
+		echo '<pre>';print_r($groupes_numeros_lisibles);echo '</pre>';
 	}
 	
 	function get_pays() {
