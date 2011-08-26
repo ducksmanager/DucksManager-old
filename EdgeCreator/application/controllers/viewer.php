@@ -198,8 +198,11 @@ class Viewer extends CI_Controller {
 		if ($save=='save' && $zoom==1.5) {
 			switch($privilege) {
 				case 'Admin':
-					@mkdir('../edges/'.$pays.'/gen/'.$pays);
+					@mkdir('../edges/'.$pays.'/gen/'.$magazine);
 					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
+					
+					if (self::$is_debug!==false)
+						echo 'Image enregistree dans '.getcwd().'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png';
 					
 					$requete_tranche_deja_prete='SELECT createurs, issuenumber '
 											   .'FROM tranches_pretes '

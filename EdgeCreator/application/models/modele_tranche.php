@@ -1,7 +1,7 @@
 <?php
 include_once(BASEPATH.'/../../Inducks.class.php');
 Inducks::$use_db=true;
-Inducks::$use_local_db=strpos($_SERVER['SERVER_ADDR'],'localhost') === false;
+Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
 class Modele_tranche extends CI_Model {
 	static $id_session;
@@ -209,9 +209,7 @@ class Modele_tranche extends CI_Model {
 	function get_fonction($pays,$magazine,$ordre,$numero=null) {
 		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$fields).' '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
+				.'FROM edgecreator_modeles_vue '
 				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
 				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		$query = $this->db->query($requete);
@@ -222,13 +220,12 @@ class Modele_tranche extends CI_Model {
 		$numeros_debut=array();
 		$numeros_fin=array();
 		foreach($resultats as $resultat) {
-			if (!is_null($numero)) {
-				$numeros_debut[]=$resultat->Numero_debut;
-				$numeros_fin[]=$resultat->Numero_fin;
-				$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
-				if (!est_dans_intervalle($numero, $intervalle))
-					continue;
-			}
+			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
+			if (!is_null($numero) && !est_dans_intervalle($numero, $intervalle))
+				continue;
+			
+			$numeros_debut[]=$resultat->Numero_debut;
+			$numeros_fin[]=$resultat->Numero_fin;
 		}
 		$resultat_tous_intervalles=$resultat;
 		$resultat_tous_intervalles->Numero_debut=implode(';',$numeros_debut);
@@ -237,7 +234,7 @@ class Modele_tranche extends CI_Model {
 		return new Fonction($resultat_tous_intervalles);
 	}
 
-	function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false) {
+	function get_options($pays,$magazine,$ordre,$nom_fonction,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null) {
 		$creation=false;
 		$resultats_options=new stdClass();
 		$requete='SELECT '.implode(', ', self::$fields).' '
@@ -248,6 +245,8 @@ class Modele_tranche extends CI_Model {
 				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($nom_fonction))
 			$requete.='AND Nom_fonction LIKE \''.$nom_fonction.'\' ';
+		if (!is_null($nom_option))
+			$requete.='AND Option_nom LIKE \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
 		
 		$resultats=$this->db->query($requete)->result();
