@@ -1000,6 +1000,25 @@ class Modele_tranche extends CI_Model {
 	function getDropdownNumeros() {
 		return self::$dropdown_numeros;
 	}
+	
+	
+	function urlDecode() {
+		$requete='SELECT ID, ID_Option, Option_valeur '
+				.'FROM edgecreator_valeurs ';
+		
+		$resultats=$this->db->query($requete)->result();
+		foreach($resultats as $resultat) {
+			if (is_null($resultat->Option_valeur))
+				continue;
+			echo $resultat->Option_valeur;
+			$resultat->Option_valeur=urldecode($resultat->Option_valeur);
+			$resultat->Option_valeur=str_replace("'","\'",$resultat->Option_valeur);
+			echo ' => '.$resultat->Option_valeur.'<br />';
+			//$requete_update='UPDATE edgecreator_valeurs SET Option_valeur=\''.urldecode($resultat->Option_valeur).'\' '
+			//			   .'WHERE ID='.$resultat->ID.' AND ID_Option='.$resultat->ID_Option;
+			//$this->db->query($requete_update);
+		}
+	}
 }
 Modele_tranche::$fields=array('Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin');
 Fonction::$valeurs_defaut=array('Remplir'=>array('Pos_x'=>0,'Pos_y'=>0));
@@ -1330,15 +1349,17 @@ class TexteMyFonts extends Fonction_executable {
 						  $this->options->Couleur_fond,
 						  $this->options->Largeur,
 						  $this->options->Chaine.'                                    .');
-		$chemin_image=$post->chemin_image;
-		$texte=imagecreatefromgif($chemin_image);
+		$texte=$post->im;
 		if ($this->options->Demi_hauteur == 'Oui') {
 			$width=imagesx($texte);
 			$height=imagesy($texte);
 			$texte2=imagecreatetruecolor ($width, $height/2);
+			imagefill($texte2,0,0,imagecolorallocate($texte2,$r,$g,$b));
 			imagecopyresampled($texte2, $texte, 0, 0, 0, 0, $width, $height/2, $width, $height/2);
 			$texte=$texte2;
 		}
+		
+		
 		$width=imagesx($texte);
 		$height=imagesy($texte);
 
@@ -1361,6 +1382,8 @@ class TexteMyFonts extends Fonction_executable {
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);
 		$texte=imagerotate($texte, $this->options->Rotation, $fond);
+		
+		
 		$width=imagesx($texte);
 		$height=imagesy($texte);
 		$nouvelle_largeur=Viewer::$largeur*$this->options->Compression_x;

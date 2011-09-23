@@ -93,7 +93,8 @@ function reload_observers_etapes() {
 			return;
 		}
 		var num_etape_a_supprimer=element.retrieve('etape');
-		if (confirm('Etes vous sur(e) de vouloir supprimer l\'etape '+num_etape_a_supprimer+" ?")) {
+		var message = 'Etes vous sur(e) de vouloir supprimer ' + (num_etape_a_supprimer == -1 ? 'les informations sur les dimensions de tranches ?' : ('l\'etape '+num_etape_a_supprimer+' ?')); 
+		if (confirm(message)) {
 			$('chargement').update('Suppression de l\'&eacute;tape '+num_etape_a_supprimer+'...');
 			new Ajax.Request(urls['supprimerg']+'index/'+pays+'/'+magazine+'/'+num_etape_a_supprimer, {
 				method: 'post',
@@ -231,7 +232,7 @@ function preview_numero(element) {
 		$$('#save_png,#save_pngs').invoke('setStyle',{'display':'block'});
 	var numero=element.up('tr').readAttribute('id').substring('ligne_'.length,element.up('tr').readAttribute('id').length);
 	
-	var table=new Element('table');
+	var table=new Element('table',{'cellspacing':'0','cellpadding':'0'});
 	switch(onglet_sel) {
 	   case 'Builder':
 		   $('numero_preview').store('numero',numero)
@@ -684,7 +685,7 @@ function valider_modifier_valeur() {
 	$('modifier_valeur_ok').writeAttribute({'disabled':'disabled'});
 	$('chargement').update('Enregistrement des param&egrave;tres...');
 	var numeros=element_to_numero($$('td.selected').invoke('up','tr')).join('~');
-	var nouvelle_valeur=escape(get_nouvelle_valeur(nom_option)).replace(/%/g,'!');
+	var nouvelle_valeur=get_nouvelle_valeur(nom_option).replace(new RegExp('\\.','g'),'[pt]');
 	var est_nouvelle_fonction=etape_temporaire_to_definitive() ? 'true':'false';
 	new Ajax.Request(urls['modifierg']+['index',pays,magazine,etape_en_cours,numeros,nom_option,nouvelle_valeur,plage.join('/'),nom_nouvelle_fonction==null?'Dimensions':nom_nouvelle_fonction,est_nouvelle_fonction].join('/'), {
 		method: 'post',
@@ -798,7 +799,7 @@ function formater_valeur(td,nom_option,valeur) {
 		td.setStyle({'backgroundColor':'rgb('+rgb.join(',')+')',
 					 'color':couleur_texte});
 	}
-	else if (nom_option.indexOf('Dimension') != -1 || nom_option.indexOf('Decalage') != -1 || nom_option.indexOf('Pos_x') != -1 || nom_option.indexOf('Pos_y') != -1)
+	else if (nom_option.indexOf('Dimension') != -1 || nom_option.indexOf('Decalage') != -1 || nom_option.indexOf('Pos_x') != -1 || nom_option.indexOf('Pos_y') != -1 || nom_option.indexOf('Y1') != -1  || nom_option.indexOf('Y2') != -1)
 		valeur+=' mm';
 	else if (nom_option.indexOf('Compression') != -1)
 		valeur=parseInt(valeur*100)+'%';
@@ -886,6 +887,7 @@ function formater_modifier_valeur(nom_option) {
 			if (ev.keyCode == Event.KEY_RETURN)
 				valider_modifier_valeur();
 		});
+		//input_valeur.focus();
 	}
 
 	return true;
@@ -1445,11 +1447,14 @@ function fermer_etapes() {
 var descriptions_options=new Array();
 
 function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
+	recharger = typeof(recharger) != 'undefined';
 	if ($$('.ligne_noms_options')[0].select('.option_etape').length > 0) {
 		var est_etape_ouverte= num_etape == $$('.etape_ouverte')[0].retrieve('etape');
-		fermer_etapes();
-		if (est_etape_ouverte && typeof(recharger) == 'undefined')
-			return;
+		if (!recharger) {
+			fermer_etapes();
+			if (est_etape_ouverte)
+				return;
+		}
 	}
 	
 	var element=$$('[name="entete_etape_'+num_etape+'"]:not(.header_fixe_col)')[0];
@@ -1460,7 +1465,7 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 	else
 		$('chargement').update('Chargement des param&egrave;tres de l\'&eacute;tape '+num_etape+'...');
 	removeFixedTableHeader();
-	new Ajax.Request(urls['parametrageg']+['index',pays,magazine,num_etape,nom_nouvelle_fonction==null?'null':nom_nouvelle_fonction].join('/'), {
+	new Ajax.Request(urls['parametrageg']+['index',pays,magazine,num_etape,nom_nouvelle_fonction==null?'null':nom_nouvelle_fonction, typeof(nom_option_sel) == 'undefined' ? 'null':nom_option_sel].join('/'), {
 		method: 'post',
 		parameters: 'etape='+num_etape,
 		onSuccess:function(transport) {
@@ -1468,71 +1473,125 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 			colonne_ouverte=true;
 			etape_en_cours=num_etape;
 			var nb_options=Object.values(transport.headerJSON).length;
-			
-			$$('.ligne_etapes').each(function(ligne_etape) {
-				var colspan = ligne_etape.down('th',num_colonne).readAttribute('colspan');
-				ligne_etape.down('th',num_colonne)
-						   .writeAttribute({'colspan':parseInt(colspan == null ? 1:colspan)+nb_options});
-			});
-			var i=0;
-			var contenu;
 			var texte='';
-			types_options=new Array();
-			valeurs_defaut_options=new Array();
-			for (var option_nom in transport.headerJSON) {
-				types_options[option_nom]=transport.headerJSON[option_nom]['type'];
-				// if
-				// (typeof(transport.headerJSON[option_nom]['valeur_defaut'])
-				// != 'undefined')
-				// valeurs_defaut_options[option_nom]=transport.headerJSON[option_nom]['valeur_defaut'];
-
-				$$('.ligne_noms_options').each(function(ligne) {
-					var nouvelle_cellule=new Element('th')
-											.addClassName('etape_'+num_etape+'__option')
-											.addClassName('option_etape')
-											.store('etape',num_etape);
-					contenu=new Element('a',{'href':'javascript:void(0)'}).insert(option_nom);
-					if (transport.headerJSON[option_nom]['description'] != '') {
-						contenu.insert(new Element('span').update(transport.headerJSON[option_nom]['description']));
-						descriptions_options[option_nom]=transport.headerJSON[option_nom]['description'];
-					}
-					
-					nouvelle_cellule.insert(contenu)
-									.store('nom_option',option_nom);
-					ligne.down('th',num_colonne+i).insert({'before':nouvelle_cellule});
-				});
-				i++;
-			}
-
-			i=0;
-			for (var option_nom in transport.headerJSON) {
-				$$('.ligne_dispo').each(function(ligne) {
-					nouvelle_cellule=new Element('td');
-					var numero=ligne.retrieve('numero');
-					var etape_utilisee=ligne.down('td',$$('[name="entete_etape_'+num_etape+'"]')[0].previousSiblings().length+i).hasClassName('num_checked');
-					if (etape_utilisee) {
-						if (typeof(transport.headerJSON[option_nom])=='string')
-							transport.headerJSON[option_nom]=new Array(transport.headerJSON[option_nom]);
-
-						texte=null;
-						for (var intervalle in transport.headerJSON[option_nom]) {
-							if (intervalle != 'type' && intervalle != 'valeur_defaut' && intervalle !='description') {
-								if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
-									texte=transport.headerJSON[option_nom]['valeur_defaut'];
-								else if (est_dans_intervalle(numero, intervalle))
-									texte=transport.headerJSON[option_nom][intervalle];
-							}
+			
+			if (recharger) {
+				
+				$$('td.selected').each(function(td_sel) {
+					var numero=td_sel.up('tr').retrieve('numero');
+					for (var intervalle in transport.headerJSON[nom_option_sel]) {
+						if (est_dans_intervalle(numero, intervalle)) {
+							texte_valeur=transport.headerJSON[nom_option_sel][intervalle];
+							var td_valeur_option=formater_valeur(td_sel,nom_option_sel,texte_valeur).store('valeur_reelle',texte_valeur);
+							
+							Effect.Pulsate(td_valeur_option,{pulses: 3, duration: 1.5});
+							td_sel.replace(td_valeur_option);
 						}
-						nouvelle_cellule=formater_valeur(nouvelle_cellule,option_nom,texte)
-										 .store('valeur_reelle',texte);
 					}
-					else
-						nouvelle_cellule.update().addClassName('non_concerne');
-					ligne.down('td',num_colonne+i).insert({'before':nouvelle_cellule});
+				});/*
+				var i=0;
+				for (var option_nom in transport.headerJSON) {
+					if (option_nom != nom_option_sel)
+						continue;
+					
+					numeros_sel.split(new RegExp(/~/g)).each(function(numero) {
+						var ligne=$('ligne_'+numero);
+						nouvelle_cellule=new Element('td');
+						
+						$$('.ligne_noms_options')[0].select('.option_etape').each(function(nom_option_th) {
+							if (nom_option_th.retrieve('nom_option') == nom_option_sel) {
+								var td=ligne.down('td',nom_option_th.previousSiblings().length);
+								
+								if (typeof(transport.headerJSON[option_nom])=='string')
+									transport.headerJSON[option_nom]=new Array(transport.headerJSON[option_nom]);
 
-				});
-				i++;
+								texte=null;
+								for (var intervalle in transport.headerJSON[option_nom]) {
+									if (intervalle != 'type' && intervalle != 'valeur_defaut' && intervalle !='description') {
+										if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
+											texte=transport.headerJSON[option_nom]['valeur_defaut'];
+										else if (est_dans_intervalle(numero, intervalle))
+											texte=transport.headerJSON[option_nom][intervalle];
+									}
+								}
+							}
+						});
+					});
+					i++;
+				}*/
+				
 			}
+			else {
+				$$('.ligne_etapes').each(function(ligne_etape) {
+					var colspan = ligne_etape.down('th',num_colonne).readAttribute('colspan');
+					ligne_etape.down('th',num_colonne)
+							   .writeAttribute({'colspan':parseInt(colspan == null ? 1:colspan)+nb_options});
+				});
+				var i=0;
+				var contenu;
+				types_options=new Array();
+				valeurs_defaut_options=new Array();
+				for (var option_nom in transport.headerJSON) {
+					types_options[option_nom]=transport.headerJSON[option_nom]['type'];
+					// if
+					// (typeof(transport.headerJSON[option_nom]['valeur_defaut'])
+					// != 'undefined')
+					// valeurs_defaut_options[option_nom]=transport.headerJSON[option_nom]['valeur_defaut'];
+	
+					$$('.ligne_noms_options').each(function(ligne) {
+						var nouvelle_cellule=new Element('th')
+												.addClassName('etape_'+num_etape+'__option')
+												.addClassName('option_etape')
+												.store('etape',num_etape);
+						contenu=new Element('a',{'href':'javascript:void(0)'}).insert(option_nom);
+						if (transport.headerJSON[option_nom]['description'] != '') {
+							contenu.insert(new Element('span').update(transport.headerJSON[option_nom]['description']));
+							descriptions_options[option_nom]=transport.headerJSON[option_nom]['description'];
+						}
+						
+						nouvelle_cellule.insert(contenu)
+										.store('nom_option',option_nom);
+						ligne.down('th',num_colonne+i).insert({'before':nouvelle_cellule});
+					});
+					i++;
+				}
+	
+				i=0;
+				for (var option_nom in transport.headerJSON) {
+					$$('.ligne_dispo').each(function(ligne) {
+						nouvelle_cellule=new Element('td');
+						var numero=ligne.retrieve('numero');
+						var etape_utilisee=ligne.down('td',$$('[name="entete_etape_'+num_etape+'"]')[0].previousSiblings().length+i).hasClassName('num_checked');
+						if (etape_utilisee) {
+							if (typeof(transport.headerJSON[option_nom])=='string')
+								transport.headerJSON[option_nom]=new Array(transport.headerJSON[option_nom]);
+	
+							texte=null;
+							for (var intervalle in transport.headerJSON[option_nom]) {
+								if (intervalle != 'type' && intervalle != 'valeur_defaut' && intervalle !='description') {
+									if (intervalle == "" && typeof(transport.headerJSON[option_nom][intervalle]) !='undefined')
+										texte=transport.headerJSON[option_nom]['valeur_defaut'];
+									else if (est_dans_intervalle(numero, intervalle))
+										texte=transport.headerJSON[option_nom][intervalle];
+								}
+							}
+							nouvelle_cellule=formater_valeur(nouvelle_cellule,option_nom,texte)
+											 .store('valeur_reelle',texte);
+						}
+						else
+							nouvelle_cellule.update().addClassName('non_concerne');
+						ligne.down('td',num_colonne+i).insert({'before':nouvelle_cellule});
+	
+					});
+					i++;
+				}
+			}
+			
+			$$('.etape_active').invoke('down','a').invoke('update','Active');
+			
+			$('chargement').update();
+			reload_observers_cells();
+			
 			if (typeof(numeros_sel) != 'undefined') {
 				numeros_sel.split(new RegExp(/~/g)).each(function(numero_sel) {
 					$$('.ligne_noms_options')[0].select('.option_etape').each(function(nom_option_th) {
@@ -1542,12 +1601,6 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
 				});
 				assistant_cellules_sel();
 			}
-			
-			$$('.etape_active').invoke('down','a').invoke('update','Active');
-			
-			$('chargement').update();
-			reload_observers_cells();
-			//setupFixedTableHeader();
 		}
 	});
 }

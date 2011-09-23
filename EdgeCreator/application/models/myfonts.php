@@ -11,6 +11,7 @@ class MyFonts extends CI_Model {
 	var $precision;
 
 	var $data;
+	var $im;
 
 	function MyFonts($font=null,$color=null,$color_bg=null, $width=null, $text=null,$precision=18) {
 		
@@ -49,6 +50,7 @@ class MyFonts extends CI_Model {
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
+			$im=imagecreatefromgif($this->chemin_image);
 		}
 		else {
 			$this->p=new Post(
@@ -75,6 +77,7 @@ class MyFonts extends CI_Model {
 			$im=imagecreatefromgif($this->chemin_image);
 			imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
 		}
+		$this->im=$im;
 	}
 }
 

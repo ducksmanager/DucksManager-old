@@ -10,7 +10,7 @@ class ModifierG extends CI_Controller {
 	function index($pays=null,$magazine=null,$etape=null,$numeros='',$nom_option='',$nouvelle_valeur='', $debut_plage='null',$fin_plage='null', $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
 		try {
 			$est_etape_temporaire=$est_etape_temporaire === 'true';
-			$nouvelle_valeur=$nouvelle_valeur=='null' ? null : $nouvelle_valeur;
+			$nouvelle_valeur=$nouvelle_valeur=='null' ? null : str_replace('[pt]','.',urldecode($nouvelle_valeur));
 			if (in_array(null,array($pays,$magazine,$etape))) {
 				echo 'Erreur : Nombre d\'arguments insuffisant';
 				exit();
@@ -20,7 +20,7 @@ class ModifierG extends CI_Controller {
 			self::$magazine=$magazine;
 			self::$numeros=$numeros=explode('~',$numeros);
 			self::$nom_option=$nom_option;
-			self::$nouvelle_valeur=is_null($nouvelle_valeur) ? null : urldecode(str_replace('!','%',$nouvelle_valeur));
+			self::$nouvelle_valeur=$nouvelle_valeur;
 			$a=self::$nouvelle_valeur;
 			$this->load->library('session');
 			$this->load->database();

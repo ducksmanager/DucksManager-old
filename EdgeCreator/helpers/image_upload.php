@@ -10,7 +10,7 @@
 <form method="POST" action="upload.php" enctype="multipart/form-data">
 	 <input type="hidden" name="MAX_FILE_SIZE" value="400000" />
 	 <input type="hidden" id="pays" name="pays" value="" />
-	 <input type="file" name="image" /><br />
+	 <input type="file" name="image" style="width: 260px"/><br />
 	 <input type="submit" value="Go" />
 </form>
 	</body>

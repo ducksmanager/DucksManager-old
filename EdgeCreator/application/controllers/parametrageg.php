@@ -4,7 +4,7 @@ class ParametrageG extends CI_Controller {
 	static $magazine;
 	static $etape;
 	
-	function index($pays=null,$magazine=null,$etape=null,$nom_fonction='null') {
+	function index($pays=null,$magazine=null,$etape=null,$nom_fonction='null', $nom_option_sel='null') {
 		
 		if (in_array(null,array($pays,$magazine))) {
 			echo 'Erreur : Nombre d\'arguments insuffisant';
@@ -14,6 +14,8 @@ class ParametrageG extends CI_Controller {
 		self::$magazine=$magazine;
 		self::$etape=$etape=='null'?null:$etape;
 		$nom_fonction=$nom_fonction=='null' ? null : $nom_fonction;
+		$nom_option=$nom_option_sel=='null' ? null : $nom_option_sel;
+		
 		$this->load->library('session');
 		$this->load->database();
 		$this->db->query('SET NAMES UTF8');
@@ -47,7 +49,7 @@ class ParametrageG extends CI_Controller {
 					$fonction->Nom_fonction='Dimensions';
 				}
 				else
-					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$nom_fonction, null, false, true, true);
+					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$nom_fonction, null, false, true, true, $nom_option);
 			}
 			else {
 				
@@ -55,7 +57,7 @@ class ParametrageG extends CI_Controller {
 					$options=$this->Modele_tranche->get_noms_champs($fonction->Nom_fonction);
 				}
 				else
-					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction, null, false, true);
+					$options=$this->Modele_tranche->get_options(self::$pays,self::$magazine,self::$etape,$fonction->Nom_fonction, null, false, true, false, $nom_option);
 
 			}
 			
