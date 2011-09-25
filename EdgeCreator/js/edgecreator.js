@@ -38,7 +38,7 @@ function reload_observers_cells() {
 									$('table_numeros').onmousedown=disableselect
 									$('table_numeros').onclick=reEnable
 								}
-								if (Event.element(event).hasClassName('cloner') || Event.element(event).up().hasClassName('cloner'))
+								if (Event.element(event).hasClassName('cloner'))
 									return;
 								first_cell=Event.element(event);
 								if (first_cell.tagName=='DIV')
@@ -227,37 +227,33 @@ var chargement_courant;
 var numero_chargement;
 
 function preview_numero(element) {
-	$$('.regle').invoke('setStyle',{'display':'none'});
 	if (privilege == 'Admin' || privilege == 'Edition')
 		$$('#save_png,#save_pngs').invoke('setStyle',{'display':'block'});
 	var numero=element.up('tr').readAttribute('id').substring('ligne_'.length,element.up('tr').readAttribute('id').length);
 	
-	var table=new Element('table',{'cellspacing':'0','cellpadding':'0'});
+	var table=new Element('table',{'cellspacing':'0','cellpadding':'0'}).setStyle({'marginLeft':(3*zoom)+'px'});
 	switch(onglet_sel) {
 	   case 'Builder':
 		   $('numero_preview').store('numero',numero)
 							  .update('N&deg; '+numero);
+		   
 		for (var i=0;i<=4;i++) {
 			var tr=new Element('tr');
 			var td=new Element('td');
 			if (i==3) {
 				tr.addClassName('ligne_previews');
-				var image_regle_v=new Element('img',{'id':'regle_verticale','src':base_url+'../images/regle.png'}).addClassName('regle').addClassName('cache');
-				td.update(image_regle_v);
 			}
 			tr.insert(td);
+			
 			element.up('tr').select('.num_checked').each(function(td_etape) {
 				var num_etape=td_etape.retrieve('etape');
 				if (num_etape != -1) {
 					var td=new Element('td').store('etape',num_etape+'');
 					switch(i) {
 						case 0:
-							td.addClassName('reload');
-							var image_reload=new Element('img',{'src':base_url+'../images/reload.png'}).addClassName('pointer');
-							td.update(image_reload);
-							image_reload.observe('click',function(event) {
-								var element=Event.element(event).up('td');
-								var num_etape=element.retrieve('etape');
+							td.addClassName('reload')
+							  .observe('click',function(event) {
+								var num_etape=Event.element(event).retrieve('etape');
 								reload_etape(num_etape,true);
 							});
 							break;
@@ -272,12 +268,10 @@ function preview_numero(element) {
 							td.addClassName('image_etape');
 							break;
 						case 4:
-							var image_fond_noir=new Element('img',{'src':base_url+'../images/fond_noir.png','title':'Voir sous fond noir'}).addClassName('pointer');
-							td.update(image_fond_noir).addClassName('fond_noir_inactive')
-							  .setStyle({'verticalAlign':'top'})
-							  .writeAttribute({'id':'fond_noir_'+num_etape});
-							image_fond_noir.observe('click',function(event) {
-								var element=Event.element(event).up('td');
+							td.addClassName('fond_noir_inactive')
+							  .writeAttribute({'id':'fond_noir_'+num_etape,'title':'Voir sous fond noir'})
+							  .observe('click',function(event) {
+								var element=Event.element(event);
 								var num_etape=element.retrieve('etape');
 								element.toggleClassName('fond_noir_active').toggleClassName('fond_noir_inactive');
 								reload_etape(num_etape, false);
@@ -290,19 +284,22 @@ function preview_numero(element) {
 				var tranche_finale=new Element('td').store('etape','final').addClassName('image_etape');
 				if (i==1)
 					tranche_finale.update('Tranche')
-				.addClassName('num_etape_preview final');
+								  .addClassName('num_etape_preview final');
 				tr.insert(tranche_finale);
 				table.insert(tr);
 			}
 			$('contenu_'+onglet_sel.toLowerCase()).down('.previews').update(table);
+			fixer_regles(true);
+			
 			chargements=new Array();
 			numero_chargement=numero;
 			$$('.num_etape_preview').each(function(td_num_etape) {
+				var num_etape=null;
 				if (td_num_etape.hasClassName('final')) {
-					var num_etape=$$('.num_etape_preview:not(.final)').invoke('retrieve','etape');
+					num_etape=$$('.num_etape_preview:not(.final)').invoke('retrieve','etape');
 				}
 				else {
-					var num_etape=td_num_etape.retrieve('etape');
+					num_etape=td_num_etape.retrieve('etape');
 				}
 				chargements.push(num_etape+'');
 			});
@@ -332,22 +329,18 @@ function preview_numero(element) {
 				var td=new Element('td');
 				if (ligne==2) {
 					tr.addClassName('ligne_previews');
-					var image_regle_v=new Element('img',{'id':'regle_verticale','src':base_url+'../images/regle.png'}).addClassName('regle').addClassName('cache');
-					td.update(image_regle_v);
 				}
 				tr.insert(td);
 				var numero=numero_debut;
+				var numero_fin_depasse=false;
 				do {
-					var numero_fin_depasse = numero==numero_fin;
+					numero_fin_depasse = (numero==numero_fin);
 					var td=new Element('td').store('numero',numero);
 					switch(ligne) {
 						case 0:
-							td.addClassName('reload');
-							var image_reload=new Element('img',{'src':base_url+'../images/reload.png'}).addClassName('pointer');
-							td.update(image_reload);
-							image_reload.observe('click',function(event) {
-								var element=Event.element(event).up('td');
-								var numero=element.retrieve('numero');
+							td.addClassName('reload')
+							  .observe('click',function(event) {
+								var numero=Event.element(event).retrieve('numero');
 								reload_numero(numero);
 							});
 						break;
@@ -366,7 +359,9 @@ function preview_numero(element) {
 				
 				table.insert(tr);
 			}
+			
 			$('contenu_'+onglet_sel.toLowerCase()).down('.previews').update(table);
+			fixer_regles(true);
 			
 			numero_chargement=null;
 			chargements=new Array();
@@ -383,56 +378,30 @@ function preview_numero(element) {
 	
 }
 
-function fixer_regles(image) {
-	$('regle_verticale').setStyle({'height':(300*zoom)});
+function fixer_regles(creer) {
+	var zone_onglet=$('contenu_'+onglet_sel.toLowerCase());
+	if (creer) {
+		if ($('regle_verticale') != null)
+			$('regle_verticale').remove();
 	
-	var image_regle_h=new Element('img',{'id':'regle_horizontale','src':base_url+'../images/regle_h.png'}).addClassName('regle');
-
-	var div_regle_h=new Element('div',{'id':'zone_regle_horizontale'}).addClassName('zone_regle');
-
-	div_regle_h.update(image_regle_h);
-	// $('viewer_inner').insert(div_regle_h);
-
-	$$('.regle').invoke('removeClassName','cache').invoke('setStyle',{'display':'block'});
-	if (image == null) {
-		$$('.image_preview').each(function(image_preview) {
-			if (image_preview.retrieve('etape') == $$('.regle')[0].retrieve('etape'))
-				image=image_preview;
-		});
-		if (image == null)
-			image=$('contenu_'+onglet_sel.toLowerCase()).down('.ligne_previews').down('.image_preview');
-	}
-	$('regle_verticale').writeAttribute({'height':image.height*1.1+'px','width':(3*zoom)});
-	// $('regle_horizontale').writeAttribute({'width':(300*zoom)});
-	$$('.regle').each(function(regle) {
-		var offset_left=image.cumulativeOffset().left;
-		var offset_top=image.cumulativeOffset().top;
+		var regle = new Element('img',{'id':'regle_verticale','src':base_url+'../images/regle.png'})
+						.removeClassName('cache')
+						.setStyle({'width':(3*zoom)})
+						.observe('dblclick',function(ev) {
+							var regle=Event.element(ev);
+							regle.setStyle({'left':''});
+						});
 		
-		regle.store('etape',image.retrieve('etape'));
-		var zone_regle=regle.up('.zone_regle');
-		var left,top;
-		if (regle.readAttribute('id') == 'regle_horizontale') {
-			left=offset_left;
-			top=offset_top-regle.height;
-			zone_regle.setStyle({'height':regle.height+'px'});
-			zone_regle.setStyle({'width':image.width*1.1+'px'});
-		}
-		if (left < 0) {
-			$('viewer_inner').setStyle({'paddingLeft':(-1*left)+'px'});
-			left=0;
-		}
-		else
-			$('viewer_inner').setStyle({'paddingLeft':'0px'});
-		new Draggable(regle,{'constraint':'horizontal',
-							 'starteffect':function(){}
-							});
-		// zone_regle.setStyle({'left':left+'px'});
-		// zone_regle.setStyle({'top':top+'px'});
-	});
-	$$('.regle').invoke('observe','dblclick',function(ev) {
-		var regle=Event.element(ev);
-		regle.setStyle({'left':''});
-	});
+		zone_onglet.select('.previews')[0].insert(regle);
+	
+		new Draggable($('regle_verticale'),
+						{'constraint':'horizontal',
+						 'starteffect':function(){}}
+					 );
+	}
+	$('regle_verticale').setStyle({'top':zone_onglet.select('.ligne_previews')[0].cumulativeOffset().top
+										-$('viewer_inner').scrollTop});
+	
 }
 
 function reload_etape(num_etape,recharger_finale) {
@@ -533,10 +502,6 @@ function charger_image(type_chargement,src,num) {
 		if ($$(selecteur_cellules_preview).length == 2)
 			$$(selecteur_cellules_preview)[$$(selecteur_cellules_preview).length-1]
 				.update(image.clone(true));
-		image.observe('click',function(ev) {
-			var image=Event.element(ev);
-			fixer_regles(image);
-		});
 		if (!est_visu && chargement_courant >= chargements.length) {
 			switch(privilege) {
 				case 'Admin':
@@ -558,7 +523,6 @@ function charger_image(type_chargement,src,num) {
 			}
 		}
 		
-		// $('regle').writeAttribute({'height':(300*val_zoom)});
 		$('chargement').update();
 		$('erreurs').update();
 		if (chargement_courant < chargements.length) {
@@ -568,14 +532,12 @@ function charger_image(type_chargement,src,num) {
 				charger_previews_numeros(chargements[chargement_courant],est_visu);
 		}
 		else {
-			fixer_regles(null);
 			reload_observers_tranches();
 		}
 			
 	});
 	image.observe('error',function(event) {
 		if (est_visu) {
-			// $('regle').writeAttribute({'height':0});
 			$('chargement').update('Erreur !');
 			$('erreurs').update(new Element('iframe',{'src':Event.element(event).src+'/debug'}));
 			chargement_courant++;
@@ -1082,10 +1044,10 @@ new Event.observe(window, 'load',function() {
 						continue; 
 					var td_cloner=new Element('td');
 					if (privilege == 'Admin' || privilege == 'Edition') {
-						var image_cloner = new Element('img').writeAttribute({'src':base_url+'images/clone.png','title':'Cloner le numero'})
-															 .addClassName('cloner');
-						
-						td_cloner.update(image_cloner);
+						td_cloner.addClassName('cloner')
+								 .writeAttribute({'title':'Cloner le numero'})
+								 .store('numero',numero_dispo)
+								 .observe('click',cloner_numero);
 					}
 					var tr=new Element('tr').writeAttribute({'id':'ligne_'+numero_dispo}).addClassName('ligne_dispo').store('numero',numero_dispo)
 											.insert(td_cloner);
@@ -1099,24 +1061,16 @@ new Event.observe(window, 'load',function() {
 							tr.writeAttribute({'title':'Cette tranche est modelisee.'});
 						}
 					}
-					var td=new Element('td').addClassName('intitule_numero')
-											.insert(numero_dispo).insert('&nbsp;');
-					var span_preview=new Element('span').addClassName('preview')
-						.update(new Element('img',{'src':base_url+'images/view.png',
-												   'title':'Voir la tranche'}).addClassName('view_preview'));						
-					tr.insert(td.insert(span_preview));
-					table.insert(tr);
-					span_preview.observe('click',function(event) {
+					var td=new Element('td',{'title':'Voir la tranche'})
+						.addClassName('intitule_numero preview')
+						.insert(numero_dispo).insert('&nbsp;');					
+					table.insert(tr.insert(td));
+
+					td.observe('click',function(event) {
 						preview_numero(Event.element(event));
 					});
-					
-					if (privilege == 'Admin' || privilege == 'Edition') {
-						image_cloner.store('numero',numero_dispo)
-									.observe('click',cloner_numero);
-					}
 								
-					var td_temp=new Element('td');
-					tr.insert(td_temp);
+					tr.insert(new Element('td'));
 				}
 				$('chargement').update('Chargement des &eacute;tapes...');
 				table.insert($$('.ligne_noms_options')[0].clone(true))
@@ -1198,8 +1152,9 @@ new Event.observe(window, 'load',function() {
 		   
 		   var numero=numero_debut;
 		   var chargements=new Array();
+		   var numero_fin_depasse=false;
 		   do {
-			   var numero_fin_depasse = numero==numero_fin;
+			   numero_fin_depasse = (numero==numero_fin);
 			   chargements.push(numero);
 			   numero = $('ligne_'+numero).next().retrieve('numero');
 		   } while (!numero_fin_depasse);
@@ -1207,7 +1162,6 @@ new Event.observe(window, 'load',function() {
 		   chargement_courant=0;
 		   charger_previews_numeros(chargements[chargement_courant],true);
 		}
-		$$('.regle').invoke('setStyle',{'display':'none'});
 	  },
 	  onSlide: function(value) {
 		$('zoom_value').update(value);
@@ -1222,6 +1176,7 @@ new Event.observe(window, 'load',function() {
 			case 'option_details':
 				$('contenu_previews').select('.numero_preview, .reload')
 					.invoke('setStyle',{'display':element.checked ? 'block' : 'none'});
+				fixer_regles(false);
 			break;
 			case 'option_pretes_seulement':
 				
@@ -1261,6 +1216,7 @@ new Event.observe(window, 'load',function() {
 	
 	$('viewer_inner').observe( 'scroll', function() {
 			adapter_scroll_reperes();
+			fixer_regles(false);
 		});
 	});
 
@@ -1283,7 +1239,7 @@ function toggle_item_menu (element) {
 	});
 	$('contenu_'+element.down().name).setStyle({'display':'block'});
 	
-	// Sp?fique EdgeCreator
+	// Specifique EdgeCreator
 	if (onglet_sel=='Builder')
 		var titre_image_view='Voir la composition de cette tranche';
 	else
@@ -1349,12 +1305,13 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 	var est_ligne_header = typeof(tr.down('th')) != 'undefined';
 	var balise_cellule = est_ligne_header ? 'th':'td';
 	var num_etape=etape.Ordre;
+	var cellule=null;
 	if (num_etape==-1) { // cellule deja existante
-		var cellule=tr.down(balise_cellule,2);
+		cellule=tr.down(balise_cellule,2);
 	}
 	else {
 		var num_etape_precedente=parseInt(num_etape-.5);
-		var cellule=new Element(balise_cellule).store('etape',num_etape);
+		cellule=new Element(balise_cellule).store('etape',num_etape);
 		if (num_etape != parseInt(num_etape)) {// Nouvelle etape
 			
 			tr.down(balise_cellule,$$('[name="entete_etape_'+num_etape_precedente+'"]')[0].previousSiblings().length)
@@ -1380,7 +1337,7 @@ function charger_etape_ligne (etape, tr, est_nouvelle) {
 												 ? 'Dimensions' 
 												 : (est_nouvelle ? 'Nouvelle &eacute;tape' : 'Etape '+num_etape)))
 			  .insert(new Element('br'))
-			  .insert(new Element('img',{'height':18,'src':base_url+'images/'+nom_fonction+'.png',
+			  .insert(new Element('img',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
 										 'title':nom_fonction,'alt':nom_fonction}).addClassName('logo_option'));
 			  
 			if (privilege !='Affichage')
