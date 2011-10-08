@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
@@ -8,9 +9,9 @@ include_once('Database.class.php');
 class Inducks {
 	static $noms_complets;
 		static $use_db=true;
-		static $use_local_db=false;
+		static $use_local_db=true;
 
-		static function requete_select($requete) {
+		static function requete_select($requete,$db='coa',$serveur='serveur_virtuel') {
 			if (Inducks::$use_local_db) {
 				mysql_select_db('coa');
 				$resultat = DM_Core::$d->requete_select($requete);
@@ -18,7 +19,11 @@ class Inducks {
 				return $resultat;
 			}
 			else {
-				list($champs,$resultats)=unserialize(Util::get_page(DatabasePriv::$url_serveur_virtuel.'/sql.php?req='.urlencode($requete)));
+				$ip_serveur=$serveur=='serveur_virtuel' ? DatabasePriv::$url_serveur_virtuel : 'ducksmanager.net';
+				$output=unserialize(Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)));
+				if ($output == '') // Cas des requetes hors SELECT
+					return array();
+				list($champs,$resultats)=$output;
 				foreach($champs as $i_champ=>$nom_champ) {
 					foreach($resultats as $i=>$resultat) {
 						$resultats[$i][$nom_champ]=$resultat[$i_champ];
@@ -170,28 +175,14 @@ class Inducks {
 	}
 
 	static function get_liste_magazines($pays) {
-		if (self::$use_db) {
-			$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode LIKE \''.$pays.'\'';
-			$resultat_requete=Inducks::requete_select($requete);
-			$liste_magazines_courte=array();
-			foreach($resultat_requete as $magazine) {
-				list($nom_pays,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
-				$liste_magazines_courte[$nom_magazine_abrege]=$magazine['title'];
-			}
-			array_multisort($liste_magazines_courte,SORT_STRING);
-			return $liste_magazines_courte;
-		}
-		$url='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays;
-		$buffer=Util::get_page($url);
-		
-		$regex_magazines='#<a href="publication\.php\?c='.$pays.'/([^"]+)">([^<]+)</a>&nbsp;#is';
-		preg_match_all($regex_magazines,$buffer,$liste_magazines);
+		$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode LIKE \''.$pays.'\'';
+		$resultat_requete=Inducks::requete_select($requete);
 		$liste_magazines_courte=array();
-		foreach($liste_magazines[0] as $magazine) {
-			$liste_magazines_courte[preg_replace($regex_magazines,'$1',$magazine)]=preg_replace($regex_magazines,'$2',$magazine);
+		foreach($resultat_requete as $magazine) {
+			list($nom_pays,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
+			$liste_magazines_courte[$nom_magazine_abrege]=$magazine['title'];
 		}
-		array_multisort($liste_magazines_courte,SORT_STRING);
-		//sort($liste_pays_courte);
+		asort($liste_magazines_courte);
 		return $liste_magazines_courte;
 	}
 
