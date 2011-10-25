@@ -170,7 +170,12 @@ class Liste {
 								echo AUCUNE_DATE_ACQUISITION;
 							}
 							else {
-								?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe><?php
+								?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe>
+								<br />
+								<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">Afficher les nouvelles acquisitions</a> 
+								&nbsp;-&nbsp;
+								<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">Afficher les possessions totales</a>
+								<?php
 							}
 						break;
 			case 'auteurs':
