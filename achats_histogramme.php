@@ -30,6 +30,7 @@ session_start();
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
+
 include_once ('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once ('Database.class.php');
@@ -47,7 +48,6 @@ foreach($resultat_liste_pays_magazines as $resultat_pays_magazine) {
 	$couleurs[$pays.'/'.$magazine]='#'.random_hex_color();
 	$noms_complets[$pays.'/'.$magazine]=implode(' - ',DM_Core::$d->get_nom_complet_magazine($pays,$magazine,true));
 }
-
 $requete_premier_mois='SELECT Date FROM achats WHERE ID_User='.$id_user.' AND Date > \'2000-01-01\' ORDER BY Date LIMIT 1';
 $resultat_premier_mois=DM_Core::$d->requete_select($requete_premier_mois);
 $mois_courant=substr($resultat_premier_mois[0]['Date'], 0,7);
@@ -87,8 +87,6 @@ $bar_stack = new bar_stack();
 $bar_stack_pct = new bar_stack();
 $max=0;
 foreach ($liste_mois as $i=>$mois) {
-	$val_non_poss_fr=$non_poss_fr[$index];
-	$val_non_poss_etr=$non_poss_etr[$index];
 	$requete='SELECT Count(a.ID_Acquisition) AS cpt, Pays, Magazine '
 			.'FROM numeros n '
 			.'LEFT JOIN achats a ON a.ID_Acquisition = n.ID_Acquisition AND a.Date LIKE \''.$mois.'%\' '
@@ -139,9 +137,7 @@ $bar_stack->set_keys($legendes);
 
 $y = new y_axis();
 if ($type == 'progressif') {
-	$requete_nb_total='SELECT Count(Numero) AS Max FROM numeros WHERE ID_Utilisateur='.$id_user;
-	$requete_nb_total_resultat=DM_Core::$d->requete_select($requete_nb_total);
-	$max=$requete_nb_total_resultat[0]['Max'];
+	$max=$cpt_total;
 }
 $y->set_range( 0, $max, intval($max/10) );
 
@@ -161,15 +157,19 @@ $chart->add_y_axis( $y );
 $chart->set_tooltip( $tooltip );
 
 
-if (count($liste_mois)<=5)
-	$largeur=250;
-else
-	$largeur=25*count($liste_mois);
+$LARGEUR_MOYENNE_TITRE_MAGAZINE=250;
+$NB_TITRES_MAGAZINE_PAR_LIGNE=3;
+$HAUTEUR_1_NUMERO = $type == 'progressif' ? 2 : 6;
+$HAUTEUR_LIGNE_TITRE_MAGAZINE=25;
 
-if ($type == 'progressif')
-	$hauteur=intval($cpt_total*3/4);
-else
-	$hauteur=$max*5+20*round(count($noms_complets)/5); 
+$largeur_barres = count($liste_mois)<=5 ? 250 : (25*count($liste_mois) + 40);
+$largeur_titres_magazines=$LARGEUR_MOYENNE_TITRE_MAGAZINE*$NB_TITRES_MAGAZINE_PAR_LIGNE;
+$largeur = max($largeur_barres,$largeur_titres_magazines);
+
+$hauteur_barres = min(500,$max * $HAUTEUR_1_NUMERO + 50);
+$hauteur_titres_magazines = intval($HAUTEUR_LIGNE_TITRE_MAGAZINE*(count($noms_complets)/(($largeur/$LARGEUR_MOYENNE_TITRE_MAGAZINE)-0.5)));
+
+$hauteur = $hauteur_barres + $hauteur_titres_magazines;
 
 ?>
 
@@ -221,6 +221,10 @@ var data_1 = <?php echo $chart->toPrettyString(); ?>;
 <body>
 
 <div id="my_chart"></div>
+<?php if (isset($_GET['debug'])) {
+	echo ($largeur_barres.'+'.$largeur_titres_magazines).'x'.($hauteur_barres.'+'.$hauteur_titres_magazines);
+}
+?>
 <br>
 </body>
 </html>
