@@ -9,12 +9,9 @@ class JS {
 		$balise_script_commencee=false;
 		foreach($noms as $nom) {
             $prefixe=substr($nom,0,strrpos($nom,'.'));
-            if (strpos($nom,'scriptaculous')!==false || in_array($nom,array('prototype.js','js/json/json2.js','js/swfobject.js'))) {
+            if (isset($_GET['debug']) || strpos($nom,'scriptaculous')!==false || in_array($nom,array('prototype.js','js/json/json2.js','js/swfobject.js'))) {
                 ?><script type="text/javascript" src="<?=$nom?>"></script><?php
                 continue;
-            }
-            elseif (isset($_GET['debug'])) {
-                $scripts[]=str_replace('/','__',$prefixe);
             }
             $creer_c=false;
             if (file_exists($prefixe.'_c.js') && file_exists($prefixe.'_c.txt')) {
