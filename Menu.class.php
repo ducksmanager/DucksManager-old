@@ -15,7 +15,7 @@ class Item {
 		$this->beta = $beta;
 	}
 	
-	function __toString() {
+	function afficherItem() {
 		if ($this->est_affiche()) {
    	        ?><br /><?php
 			if (is_null($this->nom)) { // Menu
@@ -52,10 +52,10 @@ class Menu extends Item{
 		$this->items = $items;
 	}
 	
-	public function __toString() {
-		parent::__toString();
+	public function afficherMenu() {
+		parent::afficherItem();
         foreach($this->items as $item) {
-        	echo $item;
+        	$item->afficherItem();
         }
         
         ?><br /><?php
@@ -63,7 +63,7 @@ class Menu extends Item{
 	
 	static function afficher($menus) {
 		foreach($menus as $menu)
-			echo $menu;
+			$menu->afficherMenu();
 	}
 }
 
