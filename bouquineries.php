@@ -24,8 +24,7 @@
 			function analyserAdresseSuivante() {
 				if (id_adresse_courante < adresses.length) {
 					adresses[id_adresse_courante].id=id_adresse_courante;
-					var adresse=adresses[id_adresse_courante];
-					localiser(adresse.AdresseGoogle);
+					localiser(id_adresse_courante);
 					id_adresse_courante++;
 					window.setTimeout(analyserAdresseSuivante,500);
 				}
@@ -51,19 +50,12 @@
 				map = new google.maps.Map(document.getElementById("map_canvas"),  myOptions);
 			}
 
-			function localiser(adresse) {
-				geocoder.geocode( { 'address': adresse}, function(results, status) {
-					if (status == google.maps.GeocoderStatus.OK) {
-						map.setCenter(results[0].geometry.location);
-						for (id_adresse in adresses) {
-							if (adresses[id_adresse].AdresseGoogle == results[0].formatted_address) {
-								creer_marqueur(adresses[id_adresse],results[0].geometry.location);
-								trouve=true;
-								break;
-							}
-						}
-					}
-				});
+			function localiser(id_adresse) {
+				if (adresses[id_adresse].CoordX != '0') {
+					creer_marqueur(adresses[id_adresse],
+							   new google.maps.LatLng(adresses[id_adresse].CoordX, 
+													  adresses[id_adresse].CoordY));
+				}
 			}
 
 			function creer_marqueur(adresse,position) {
@@ -80,6 +72,11 @@
 					'<h1 id="firstHeading" class="firstHeading">'+adresse.Nom+'</h1>'+
 					'<div id="bodyContent">'+
 					'<p>'+adresse.Commentaire+'</p>'+
+					'<p>Adresse : </p>'+
+					'<p>'+adresse.Adresse+'<br />'+
+						 +adresse.CodePostal+' '+adresse.Ville+'<br />'+/*
+					     +adresse.Pays+'<br /></p>'+
+					+adresse.Signature+'<br /></p>'+*/
 					'</div>'+
 					'</div>';
 

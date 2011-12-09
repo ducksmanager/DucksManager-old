@@ -1,43 +1,87 @@
 <?php
 
 class Item {
-    var $nom;
-    var $est_prive;
-    var $texte;
-    var $beta=false;
-    
-    function __construct($nom, $est_prive, $texte, $beta=false) {
-        $this->nom = $nom;
-        $this->est_prive = $est_prive;
-        $this->texte = $texte;
-        $this->beta = $beta;
-    }
+	var $nom;
+	var $est_prive;
+	var $texte;
+	var $beta=false;
+	static $beta_user=false;
+	static $action="";
+	
+	function __construct($nom, $est_prive, $texte, $beta=false) {
+		$this->nom = $nom;
+		$this->est_prive = $est_prive;
+		$this->texte = $texte;
+		$this->beta = $beta;
+	}
+	
+	function __toString() {
+		if ($this->est_affiche()) {
+   	        ?><br /><?php
+			if (is_null($this->nom)) { // Menu
+				?><span style="font-weight: bold; text-decoration: underline;"><?=$this->texte?></span><?php
+			}
+			else {
+				?>&nbsp;&nbsp;<?php
+				if ($this->nom == 'print') {
+					?><a href="print.php" target="_blank"><?=$this->texte?></a><?php
+  				}
+   				else {
+  					?><a href="?action=<?=$this->nom?>"><?=$this->texte?></a><?php
+    			}
+			}
+   			if ($this->beta && self::$beta_user) {
+		   		?><span class="beta"><?=BETA?></span><?php
+   	        }
+		}
+	}
+	
+	function est_affiche() {
+		return ($this->est_prive=='no'
+		     || ($this->est_prive=='always' && isset($_SESSION['user']) &&!(self::$action=='logout'))
+			 || ($this->est_prive=='never'  &&!(isset($_SESSION['user']) &&!(self::$action=='logout'))))
+			&& (!$this->beta || self::$beta_user);
+	}
 }
 
-class Menu {
-    var $nom;
-    var $items;
+class Menu extends Item{
+	var $items;
 
-    function __construct($nom, $items) {
-        $this->nom = $nom;
-        $this->items = $items;
-    }
+	function __construct($nom, $est_prive, $items) {
+		parent::__construct(null,$est_prive,$nom,false);
+		$this->items = $items;
+	}
+	
+	public function __toString() {
+		parent::__toString();
+        foreach($this->items as $item) {
+        	echo $item;
+        }
+        
+        ?><br /><?php
+	}
+	
+	static function afficher($menus) {
+		foreach($menus as $menu)
+			echo $menu;
+	}
 }
 
 $menus=array(
-    new Menu(COLLECTION,
-             array(new Item('new', 'never', NOUVELLE_COLLECTION),
-                   new Item('open', 'never', OUVRIR_COLLECTION),
-                   new Item('bibliotheque', 'always', BIBLIOTHEQUE_COURT),
-                   new Item('gerer', 'always', GERER_COLLECTION),
-                   new Item('stats', 'always', STATISTIQUES_COLLECTION),
-                   new Item('agrandir', 'always', AGRANDIR_COLLECTION),
-                   new Item('print', 'always', IMPRIMER_COLLECTION,true),
-                   new Item('logout', 'always', DECONNEXION)
-            )),
-    new Menu(COLLECTION_INDUCKS,
-             array(new Item('inducks', 'no', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS)/*
-                   new Item('export', 'no', EXPORTER_INDUCKS)*/
-
-)));
+	new Menu(COLLECTION, 'no',
+			 array(new Item('new', 'never', NOUVELLE_COLLECTION),
+				   new Item('open', 'never', OUVRIR_COLLECTION),
+				   new Item('bibliotheque', 'always', BIBLIOTHEQUE_COURT),
+				   new Item('gerer', 'always', GERER_COLLECTION),
+				   new Item('stats', 'always', STATISTIQUES_COLLECTION),
+				   new Item('agrandir', 'always', AGRANDIR_COLLECTION),
+				   new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS),
+				   new Item('print', 'always', IMPRIMER_COLLECTION,true),
+				   new Item('logout', 'always', DECONNEXION)
+			)),
+	new Menu(DUCKHUNT_TOUR, 'no',
+			array(new Item('duckhunt_tour', 'no', PRESENTATION_DUCKHUNT_TOUR),
+				  new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES))
+			)
+);
 ?>

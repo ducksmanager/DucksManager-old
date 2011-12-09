@@ -16,6 +16,7 @@ if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
 else
     $titre=constant('TITRE_PAGE_ACCUEIL');
+$id_user=null;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -34,6 +35,8 @@ else
         <link rel="stylesheet" type="text/css" href="autocompleter.css">
         <link rel="stylesheet" type="text/css" href="csstabs.css">
         <link rel="stylesheet" type="text/css" href="bibliotheque.css">
+        <link rel="stylesheet" type="text/css" href="pluit-carousel.css">
+        <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('_priv/Database.priv.class.php');
@@ -56,7 +59,7 @@ else
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script><?php
-        new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js');
+        new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
             switch($_GET['action']) {
@@ -158,10 +161,6 @@ else
             }
             break;
         case 'agrandir':
-            if (isset($_GET['onglet']) && $_GET['onglet']=='bouquineries') {
-                //echo 'initPays();';
-                //echo 'select_etats();';
-            }
             if (isset($_GET['onglet']) && $_GET['onglet']=='auteurs_favoris') {
                 echo 'init_autocompleter_auteurs();';
                 echo 'init_notations();';
@@ -189,7 +188,7 @@ else
                                     if (isset($_SESSION['user']) &&!($action=='logout')) {?>
                                         src="vert.png" alt="O" />&nbsp;<span id="texte_connecte"><?=CONNECTE_EN_TANT_QUE.$_SESSION['user']?></span>
                                     <?php } else {?>
-                                        src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><a href="?action=open"><?=NON_CONNECTE?></a></span><br /><br />
+                                        src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><?=NON_CONNECTE?></span><br /><br />
                                     <?php }?>
                                 </div>
                             </td></tr>
@@ -227,39 +226,12 @@ else
                             <tr>
                                 <td id="colonne_gauche" valign="top" style="padding:5px;">
                                     <div>
-                                        <b><a href="?"><?=ACCUEIL?></a></b><br /><br />
+                                        <b><a href="?"><?=ACCUEIL?></a></b><br />
                                         <?php
                                         $beta_user=DM_Core::$d->user_is_beta();
-                                        foreach($menus as $i=>$menu) {
-                                            ?>
-                                            <span style="font-weight: bold; text-decoration: underline;"><?=$menu->nom?></span><br />
-                                            <?php
-                                            foreach($menu->items as $j=>$item) {
-                                                if ($item->est_prive=='no'
-                                                || ($item->est_prive=='always' && isset($_SESSION['user']) &&!($action=='logout'))
-                                                || ($item->est_prive=='never'  &&!(isset($_SESSION['user']) &&!($action=='logout')))) {
-                                                    if ($item->beta && !$beta_user)
-                                                        continue;
-                                                    if ($item->nom == 'print') { ?>
-                                                        <a href="print.php" target="_blank"><?php
-                                                    }
-                                                    else {?>
-                                                        <a href="?action=<?=$item->nom?>"><?php
-                                                    }?>
-                                                    <?=$item->texte?>
-                                                    <?php
-                                                    if ($item->beta && $beta_user) {
-                                                        ?><span class="beta"><?=BETA?></span>
-                                                        <?php
-                                                    }?>
-                                                    </a><br>
-                                                    <?php
-                                                }
-                                            }
-                                            ?>
-                                            <br />
-                                            <?php
-                                        }
+                                        Menu::$beta_user=$beta_user;
+                                        Menu::$action=$action;
+                                        Menu::afficher($menus);
                                         ?>
                                         <br/>
                                     </div>
@@ -1022,9 +994,7 @@ else
                                 $l=DM_Core::$d->toList($id_user);
 
                                 $onglets=array(ACHAT_VENTE_NUMEROS=>array('achat_vente',CONTACT_UTILISATEURS),
-                                               AUTEURS_FAVORIS=>array('auteurs_favoris',AUTEURS_FAVORIS_TEXTE),
-                                               //COMPLETER_SERIES=>array('completer_series',COMPLETER_SERIES_TEXTE),
-                                               RECHERCHER_BOUQUINERIES=>array('bouquineries',RECHERCHER_BOUQUINERIES_TEXTE));
+                                               AUTEURS_FAVORIS=>array('auteurs_favoris',AUTEURS_FAVORIS_TEXTE));
                                 if (!isset($_GET['onglet']))
                                     $onglet='achat_vente';
                                 else
@@ -1140,133 +1110,216 @@ else
                                     case 'completer_series':
                                         echo INTRO_COMPLETER_SERIES.'<br /><br />';
                                         break;
-                                    case 'bouquineries':
-                                        echo INTRO_BOUQUINERIES.'<br />';
-                                        if (isset($_POST['ajouter'])) {
-                                            $requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.$id_user.')';
-                                            ?>
-                                            <span style="color:red">
-                                            <?php
-                                            if ($id_user==1)
-                                                DM_Core::$d->requete($requete);
-                                            else {
-                                                mail('admin@ducksmanager.net','Ajout de bouquinerie',$requete);
-                                                echo EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE;
-                                            }
-                                            echo MERCI_CONTRIBUTION;
-                                            ?>
-                                            </span><br />
-                                            <?php
-                                        }
-                                        ?>
-                                        <h2><?=LISTE_BOUQUINERIES?></h2>
-                                        <iframe src="bouquineries.php" width="70%" height="700px"></iframe>
-                                        <br /><br />
-                                        <?php
-                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-                                        ?>
-                                        <h2><?=PROPOSER_BOUQUINERIE?></h2>
-                                        <?=PRESENTATION_BOUQUINERIE1?><br />
-                                        <?=INTRO_NOUVELLE_BOUQUINERIE?><br />
-                                        <?=PRIX_HONNETES?>
-                                        <br /><br />
-                                        <form method="post" action="?action=agrandir&amp;onglet=bouquineries">
-                                            <table border="0">
-                                                <tr><td><?=NOM_BOUQUINERIE?> :</td><td><input maxlength="25" size="26" name="nom" type="text" /></td></tr>
-                                                <tr><td><?=ADRESSE?> :</td><td><textarea cols="20" name="adresse"></textarea></td></tr>
-                                                <tr><td><?=CODE_POSTAL?> :</td><td><input maxlength="11" name="cp" type="text" size="5" maxlength="5"/></td></tr>
-                                                <tr><td><?=VILLE?> :</td><td><input maxlength="20" size="26" name="ville" type="text" /></td></tr>
-                                                <tr><td><?=COMMENTAIRES_BOUQUINERIE?><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
-                                                    <td><textarea name="commentaire" colspan="40" rowspan="5"></textarea></td></tr>
-                                        <?php
-                                        //echo '<tr><td>Pays :</td><td><input name="pays" type="text" /></td></tr>';
-                                        /*echo '<tr><td colspan="2"><div style="border:1px solid white;"><u>Exemples de prix : </u><br />';
-                                        echo '<div id="liste_exemples"></div>';
-                                        echo '<span id="ajouter_exemple"></span></div>';
-                                        echo '<a href="javascript:void(0)" onclick="ajouter_exemple()">Ajouter un exemple de prix</a></td></tr>';*/
-                                        ?>
-                                                <tr><td align="center" colspan="2"><input name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" /></td></tr>
-                                            </table>
-                                        </form>
-                                        <?php
-                                        break;
                                 }
 
                                 break;
+                                case 'bouquineries':
+                                	echo INTRO_BOUQUINERIES.'<br />';
+                                	if (isset($_POST['ajouter'])) {
+                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.$id_user.')';
+                                		?>
+								<span style="color: red">
+								<?php
+								if (!is_null($id_user) && $id_user==1)
+									DM_Core::$d->requete($requete);
+								else {
+									mail('admin@ducksmanager.net','Ajout de bouquinerie',$requete);
+									echo EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE;
+								}
+								echo MERCI_CONTRIBUTION;
+								?> </span><br />
+		
+								<?php
+		                     }
+		                     ?>
+							<h2>
+							<?=LISTE_BOUQUINERIES?>
+							</h2>
+							<iframe src="bouquineries.php" width="70%" height="700px"></iframe>
+							<br /> <br />
+	
+							<h2>
+							<?=PROPOSER_BOUQUINERIE?>
+							</h2>
+							<?=PRESENTATION_BOUQUINERIE1?>
+							<br />
+							<?=INTRO_NOUVELLE_BOUQUINERIE?>
+							<br />
+							<?=PRIX_HONNETES?>
+							<br /> <br />
+							<form method="post" action="?action=bouquineries">
+								<table border="0">
+									<tr>
+										<td><?=NOM_BOUQUINERIE?> :</td>
+										<td><input maxlength="25" size="26" name="nom" type="text" /></td>
+									</tr>
+									<tr>
+										<td><?=ADRESSE?> :</td>
+										<td><textarea cols="20" name="adresse"></textarea></td>
+									</tr>
+									<tr>
+										<td><?=CODE_POSTAL?> :</td>
+										<td><input maxlength="11" name="cp" type="text" size="5"
+											maxlength="5" /></td>
+									</tr>
+									<tr>
+										<td><?=VILLE?> :</td>
+										<td><input maxlength="20" size="26" name="ville" type="text" />
+										</td>
+									</tr>
+									<tr>
+										<td><?=COMMENTAIRES_BOUQUINERIE?><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
+										<td><textarea name="commentaire" colspan="40" rowspan="5"></textarea>
+										</td>
+									</tr>
+									<tr>
+										<td align="center" colspan="2">
+											<input name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" />
+										</td>
+									</tr>
+	                        	</table>
+							</form>
+						<?php
+						break;
+						
+						case 'duckhunt_tour':
+						?>
+						<h2>
+						<?=DUCKHUNT_TOUR?>
+						</h2>
+						<br />
+						<?php
+						echo TEXTE_DUCKHUNT_TOUR_1.'<br /><br />';
+						echo TEXTE_DUCKHUNT_TOUR_2.'<br /><br />';
+						echo TEXTE_DUCKHUNT_TOUR_3.'<br /><br />';
+						?>
+						<hr />
+						<h3>
+						<?=DUCKHUNT_TOUR_2011_1?>
+						</h3>
+						<br />
 
-                            default:
-                                ?>
-                                <br /><br />
-                                <?php /*
-                                <?=PRESENTATION1?><br /><br />
-                                <?=PRESENTATION2?><br /><br /><br /><?php */?>
-                                <table>
-                                    <tr>
-                                        <td style="width:400px;border:1px solid gray;padding:10px">
-                                            <img alt="demo 2_1" src="demo2_1.png" />
-                                        </td>
-                                        <td style="background-color:gray;vertical-align:top;padding-left:10px;width:650px;">
-                                            <h3><?=PRESENTATION_GERER_TITRE?></h3>
-                                            <br /><br />
-                                            <?=PRESENTATION_GERER_1?>
-                                            <br /><br />
-                                            <?=PRESENTATION_GERER_2?>
-                                            <br /><br />
-                                            <?=PRESENTATION_GERER_3?><div style="height:30px"></div>
-                                            <div style="border:1px solid gray;padding:10px">
-                                                <img src="demo2_2.png" alt="demo2_2"/>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr style="height:50px"></tr>
-                                    <tr>
-                                        <td style="background-color:gray;vertical-align:top;width:350px">
-                                            <h3><?=PRESENTATION_STATS_TITRE?></h3>
-                                            <br /><br />
-                                            <?=PRESENTATION_STATS_1?>
-                                            <br /><br />
-                                            <?=PRESENTATION_STATS_2?>
-                                            <br /><br />
-                                            <?=PRESENTATION_STATS_3?>
-                                            <br /><br />
-                                            <?=ANNONCE_AGRANDIR_COLLECTION1?>
-                                            <br />
-                                            <div style="height:35px"></div>
-                                            <div style="border:1px solid gray;padding:10px">
-                                                <img src="images/demo3.png" alt="demo3"/>
-                                            </div>
-                                        </td>
-                                        <td style="vertical-align:top;width:600px;border:1px solid gray;padding:10px">
-                                            <img width="300" alt="demo 1" src="images/demo1.png" />&nbsp;
-                                            <img alt="demo 2" src="images/demo2.png" />
-                                        </td>
-                                    </tr>
-                                    <tr style="height:50px"></tr>
-                                    <tr>
-                                        <td style="vertical-align:top;width:550px;border:1px solid gray;padding:10px">
-                                            <img alt="demo b" width="550" src="demo_bibliotheque.png" />
-                                        </td>
-                                        <td style="background-color:gray;vertical-align:top;padding-left:10px;width:650px;">
-                                            <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
-                                            <br />  
-                                            <?=PRESENTATION_BIBLIOTHEQUE_1?>
-                                            <br /><br />
-                                            <?=PRESENTATION_BIBLIOTHEQUE_2?>
-                                            <br /><br />
-                                            <?=PRESENTATION_BIBLIOTHEQUE_3?><div style="height:30px"></div>
-                                            <div style="border:1px solid gray;padding:10px">
-                                                <img src="demo_bibliotheque2.png" alt="demo2_2"/>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <br />
-                                
-                                <div style="border:1px solid white;text-align:center;">
-                                    <?=PRESENTATION_GENERALE?>.<br />
-                                    <h3><?=BIENVENUE?></h3>
-                                </div>
-                                <?=GRATUIT_AUCUNE_LIMITE?> <a href="?action=new"><?=INSCRIVEZ_VOUS?></a>
+						<?php
+						echo TEXTE_DUCKHUNT_TOUR_2011_1.'<br />';
+						?>
+						<table style="width: 100%; border: 0">
+							<tr>
+								<td style="width:273px"><img src="images/duckhunt_tour_2011.png" /></td>
+								<td>
+									<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.fr/maps?saddr=libourne&amp;daddr=saintes+to:la+rochelle+to:Beaulieu-Sous-la-Roche+to:Nantes+to:Saint-Nazaire+to:Angers+to:Avrill%C3%A9+to:Laval+to:Change,+Mayenne,+Pays+de+la+Loire+to:Le+Mans+to:blois+to:tours+to:Montmorillon+to:Poitiers+to:Saint-Maixent-l'%C3%89cole+to:Niort+to:m%C3%A9rignac&amp;hl=fr&amp;ie=UTF8&amp;sll=46.505954,-1.230469&amp;sspn=5.44462,14.27124&amp;geocode=FWZRrQId70b8_yn7BnAWT0lVDTHw4RZIF2UGBA%3BFS8AugId01X2_ylVtrfUV_0ASDEU_3AchsfvVA%3BFclZwAIdXW_u_yl1PSXJg1MBSDFAlu5gktMFBA%3BFRE-yAIdsm3n_ylvCK844DcESDGZXNhevR-9Jg%3BFcN-0AIdK0vo_ymtrqjwge4FSDEw7Q0eUjcNBA%3BFRpW0QIdKDje_ykT78I8j2UFSDE9H35eDebfZA%3BFZN21AIdImj3_ymdjuUA2ngISDEwnA0eUjcNBA%3BFbff1AId2_z2_ykdFBprxn4ISDHvBrnoflBflg%3BFSec3QIdpj_0_ynBa1n86f0ISDHgFg0eUjcNBA%3BFYDt3QIdVPbz_ymrsBfEVQIJSDFwGw0eUjcNBA%3BFd6D3AIdhAsDACkxqvMU0ojiRzF_4H1qTF0CaQ%3BFXAi1gId0GMUACld0sgjlVfjRzGwKTgF18gNBA%3BFWAt0wIdKHMKAClVmpdKs9X8RzEwhDgF18gNBA%3BFUNjxAId0D4NACmLtkm69zv8RzEFV_CQAV3uoQ%3BFQDCxgIdlzEFACmrs55Dcr79RzGTkODFGSPelw%3BFW01xAIdbuX8_ynPRvrIRkQHSDHQJuhgktMFBA%3BFQTYwgIdd-j4_yn1htYRMjAHSDHAKuhgktMFBA%3BFU1HrAIdGvz1_ym3I4C629lUDTF2HoHc9b1EVg&amp;vpsrc=0&amp;mra=ls&amp;t=m&amp;ll=46.475699,-0.428467&amp;spn=5.447645,14.27124&amp;output=embed"></iframe>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2">Pour l'&eacute;dition 2011, 24 bouquineries et
+									centres Emma&ucirc;s ont &eacute;t&eacute; recherch&eacute;s.<br />
+									Parmi ces 24,
+									<ul style="padding-left:20px;">
+										<li>19 ont &eacute;t&eacute; trouv&eacute;s.</li>
+										<li>15 &eacute;taient ouverts lors de notre passage.</li>
+										<li><b>5 se sont r&eacute;v&eacute;l&eacute;s &ecirc;tre des lieux
+											&agrave; d&eacute;couvrir pour tout fan de magazines Disney
+											qui se respecte, et ont par cons&eacute;quence &eacute;t&eacute; ajout&eacute;s &agrave; la 
+											<a href="?action=bouquineries">Carte des bouquineries de DucksManager</a>.</b></li>
+									</ul> La m&eacute;daille d'or revient au sympathique
+									bouquiniste de Saintes, rue Cl&eacute;menceau, qui regorge de
+									vieux Mickey Parade, y compris dans l'arri&egrave;re boutique.<br />
+									<br /> Les d&eacute;tails sur chacune des bouquineries : <br />
+									<iframe style="width: 90%; height: 500px"
+										src="duckhunt_tour_2011.htm"></iframe>
+								</td>
+							</tr>
+						</table>
+						<?php
+						break;
+
+						default:?>
+						<div id="carousel-1"
+							class="pluit-carousel top-stories-skin">
+							<div class="viewport">
+								<ul>
+									<li><img src="images/montage DucksManager_petit.jpg" alt="logo"
+										height="333" width="501" />
+									</li>
+									<li><img src="images/demo2_2.png" alt="demo2_2" width="500"
+										height="333" />
+									</li>
+									<li><img src="images/demo3.png" alt="demo3" width="500"
+										height="333" />
+									</li>
+									<li><img src="images/demo_bibliotheque.png" alt="demo2_2"
+										width="500" height="333" />
+									</li>
+								</ul>
+							</div>
+							<!-- Custom Navigation -->
+							<ul class="nav">
+								<li class="pages">
+									<ul>
+										<li class="active page-1"><a href="#"><?=BIENVENUE?> </a></li>
+										<li class="page-2"><a href="#"><?=PRESENTATION_GERER_TITRE?> </a>
+										</li>
+										<li class="page-3"><a href="#"><?=PRESENTATION_STATS_TITRE?> </a>
+										</li>
+										<li class="last page-4"><a href="#"><?=PRESENTATION_BIBLIOTHEQUE_TITRE?>
+										</a></li>
+									</ul>
+								</li>
+							</ul>
+							<div id="conteneur_infos_fonc">
+
+								<div id="infos-page-1" class="infos-fonc"
+									style="margin-top: 100px">
+									<?=PRESENTATION1?>
+									<br /> <br />
+									<?=PRESENTATION2?>
+									<br /> <br />
+									<?=GRATUIT_AUCUNE_LIMITE?>
+									<a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
+								</div>
+
+								<div id="infos-page-2" class="infos-fonc"
+									style="display: none; margin-top: 100px">
+									<?=PRESENTATION_GERER_1?>
+									<br /> <br />
+									<?=PRESENTATION_GERER_2?>
+									<br /> <br />
+									<?=PRESENTATION_GERER_3?>
+								</div>
+
+								<div id="infos-page-3" class="infos-fonc" style="display: none">
+									<?=PRESENTATION_STATS_1?>
+									<br /> <br />
+									<?=PRESENTATION_STATS_2?>
+									<br /> <br />
+									<?=PRESENTATION_STATS_3?>
+									<br /> <br /> <img alt="demo 2" src="images/demo2.png" />
+								</div>
+
+								<div id="infos-page-4" class="infos-fonc" style="display: none">
+									<?=PRESENTATION_BIBLIOTHEQUE_1?>
+									<br /> <br />
+									<?=PRESENTATION_BIBLIOTHEQUE_2?>
+									<br /> <br />
+									<?=PRESENTATION_BIBLIOTHEQUE_3?>
+									<br /> <img src="images/demo_bibliotheque2.png" alt="demo2_2" />
+								</div>
+
+							</div>
+						</div>
+						<script type="text/javascript">
+						    new Pluit.Carousel('#carousel-1', {
+						      circular: true
+						    });
+						  </script>
+
+						<div style="border: 1px solid white; text-align: center;">
+							<?=PRESENTATION_GENERALE?>
+							.<br />
+							<h3>
+								<a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
+							</h3>
+						</div>
+						
                                 <?php
                                 break;
                         }
@@ -1274,7 +1327,7 @@ else
 
                         function fin_de_page() {
                             ?>
-                    </div>
+					</div>
                 </td>
 
             </tr>
