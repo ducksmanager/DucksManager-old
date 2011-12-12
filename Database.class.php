@@ -641,8 +641,8 @@ if (isset($_POST['database'])) {
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege LIKE \''.$_POST['nom_auteur'].'\'');
 	}
 		elseif (isset($_POST['liste_bouquineries'])) {
-			$requete_bouquineries='SELECT Nom, AdresseGoogle, Commentaire, username AS Utilisateur FROM bouquineries '
-								 .'INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
+			$requete_bouquineries='SELECT Nom, CONCAT(Adresse, \'<br />\',CodePostal, \' \',Ville) AS Adresse, Pays, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
+								 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 								 .'ORDER BY Pays, CodePostal, Ville';
 			$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
 			foreach($resultat_bouquineries as &$bouquinerie) {
@@ -651,9 +651,6 @@ if (isset($_POST['database'])) {
 					unset ($bouquinerie[$i]);
 					$i++;
 				}
-				$bouquinerie['Commentaire'].='<br /><br />'.SIGNALE_PAR.$bouquinerie['Utilisateur'];
-				foreach(array_keys($bouquinerie) as $champ)
-					$bouquinerie[$champ]=$bouquinerie[$champ];
 
 			}
 			$json=json_encode($resultat_bouquineries);

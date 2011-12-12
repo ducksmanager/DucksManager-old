@@ -16,7 +16,7 @@ if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
 else
     $titre=constant('TITRE_PAGE_ACCUEIL');
-$id_user=null;
+$id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) : null;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -62,13 +62,13 @@ $id_user=null;
         new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
-            switch($_GET['action']) {
+			if (!isset($_GET['action'])) $_GET['action']='';            
+			switch($_GET['action']) {
                 case 'gerer':
                     new JS('js/edges2.js','js/menu_contextuel.js');
                 break;  
                 case 'bibliotheque':
                     $textures=array();
-                    $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                     for ($i=1;$i<=2;$i++) {
                         $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
                         $resultat_textures=DM_Core::$d->requete_select($requete_textures);
@@ -83,8 +83,8 @@ $id_user=null;
                         var sous_texture2='<?=$textures[3]?>';
                     </script><?php
                     new JS('js/edges2.js');
-                break; 
-                case 'stats':
+                break;
+                case 'stats':if (!isset($_GET['onglet'])) $_GET['onglet']='';
                     switch($_GET['onglet']) {
                         case 'possessions':
                             new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
@@ -458,7 +458,6 @@ $id_user=null;
                                     break;
                                     case 'options':
                                         require_once('Edge.class.php');
-                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                         if (isset($_POST['texture1'])) {
                                             for ($i=1;$i<=2;$i++) {
                                                 $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\' WHERE id='.$id_user;
@@ -664,7 +663,6 @@ $id_user=null;
                             break;
 
                             case 'gerer':
-                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                 $l=DM_Core::$d->toList($id_user);
                                 if (isset($_GET['supprimer_magazine'])) {
                                     list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
@@ -758,7 +756,6 @@ $id_user=null;
                                         /*if (isset($_POST['supprimer_doublons'])) {
                                             
                                         }
-                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
                                         $requete_doublons='SELECT Pays,Magazine,Numero FROM numeros '
                                                          .'GROUP BY Pays, Magazine, Numero, Id_Utilisateur '
@@ -780,7 +777,6 @@ $id_user=null;
                                                 <input type="submit" value="<?=SUPPRIMER_DOUBLONS?>" />
                                             </form><br /><br /><hr /><?php
                                         }*/
-                                        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                         $l=DM_Core::$d->toList($id_user);
                                         $nb_numeros=0;
                                         $nb_magazines=$nb_pays=0;
@@ -899,7 +895,6 @@ $id_user=null;
                                 ?>
                                 <h2><?=STATISTIQUES_COLLECTION?></h2><br />
                                 <?php
-                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                 $l=DM_Core::$d->toList($id_user);
                                 if (!isset($_GET['onglet']))
                                     $onglet='magazines';
@@ -990,7 +985,6 @@ $id_user=null;
                                 break;
 
                             case 'agrandir':
-                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                 $l=DM_Core::$d->toList($id_user);
 
                                 $onglets=array(ACHAT_VENTE_NUMEROS=>array('achat_vente',CONTACT_UTILISATEURS),
@@ -1025,7 +1019,6 @@ $id_user=null;
                                         echo PRESENTATION_AUTEURS_FAVORIS;
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
-                                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                                 $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
                                                 $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                                 ?>
@@ -1054,7 +1047,6 @@ $id_user=null;
                                                 DM_Core::$d->liste_suggestions_magazines();
                                                 break;
                                             case 'preferences':
-                                                $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
                                                 if (isset($_POST['auteur_nom'])) {
                                                     DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
                                                 }
@@ -1116,7 +1108,7 @@ $id_user=null;
                                 case 'bouquineries':
                                 	echo INTRO_BOUQUINERIES.'<br />';
                                 	if (isset($_POST['ajouter'])) {
-                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.$id_user.')';
+                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).')';
                                 		?>
 								<span style="color: red">
 								<?php

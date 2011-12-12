@@ -73,10 +73,9 @@
 					'<div id="bodyContent">'+
 					'<p>'+adresse.Commentaire+'</p>'+
 					'<p>Adresse : </p>'+
-					'<p>'+adresse.Adresse+'<br />'+
-						 +adresse.CodePostal+' '+adresse.Ville+'<br />'+/*
-					     +adresse.Pays+'<br /></p>'+
-					+adresse.Signature+'<br /></p>'+*/
+					'<p>'+adresse.Adresse+'<br />'
+					     +adresse.Pays+'<br /></p>'
+						+adresse.Signature+'<br />'+
 					'</div>'+
 					'</div>';
 
@@ -85,9 +84,13 @@
 				});
 				
 				google.maps.event.addListener(marker, 'click', function() {
-				  for (id_adresse in adresses)
-					if (marker.title == adresses[id_adresse].Nom)
-						infowindows[id_adresse].open(map,marker);
+				  for (id_adresse in adresses) {
+					if (typeof(infowindows[id_adresse]) != 'undefined') {
+						infowindows[id_adresse].close(map,marker);
+						if (marker.title == adresses[id_adresse].Nom)
+							infowindows[id_adresse].open(map,marker);
+					}
+				  }
 				});
 
 			}
