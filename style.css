@@ -10,6 +10,9 @@ a {
 	color:#ffffff;
 	text-decoration: none;
 	white-space: nowrap;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color:#ffffff;
 }
 a:HOVER {
 	text-decoration:none;
@@ -28,6 +31,10 @@ a.important {
 a.important:HOVER {
 	text-decoration:underline;
 	font-weight: bold;
+}
+
+#contenu {
+	overflow-x:auto;
 }
 /*
 .num_manque, .num_possede {

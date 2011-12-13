@@ -241,7 +241,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             </tr></tbody>
                     </table>
                 </td>
-                <td colspan="2" style="padding-left:5px;vertical-align: top;background-color:rgb(61, 75, 95);">
+                <td colspan="3" style="padding-left:5px;vertical-align: top;background-color:rgb(61, 75, 95);">
                     <?php if (!isset($_GET['action'])) {
                         ?>
                         <h3><?=BIENVENUE?></h3>
