@@ -166,7 +166,7 @@ $largeur_barres = count($liste_mois)<=5 ? 250 : (25*count($liste_mois) + 40);
 $largeur_titres_magazines=$LARGEUR_MOYENNE_TITRE_MAGAZINE*$NB_TITRES_MAGAZINE_PAR_LIGNE;
 $largeur = max($largeur_barres,$largeur_titres_magazines);
 
-$hauteur_barres = min(500,$max * $HAUTEUR_1_NUMERO + 50);
+$hauteur_barres = max(400,$max * $HAUTEUR_1_NUMERO + 50);
 $hauteur_titres_magazines = intval($HAUTEUR_LIGNE_TITRE_MAGAZINE*(count($noms_complets)/(($largeur/$LARGEUR_MOYENNE_TITRE_MAGAZINE)-0.5)));
 
 $hauteur = $hauteur_barres + $hauteur_titres_magazines;
