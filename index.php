@@ -84,7 +84,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     </script><?php
                     new JS('js/edges2.js');
                 break;
-                case 'stats':if (!isset($_GET['onglet'])) $_GET['onglet']='';
+                case 'stats':if (!isset($_GET['onglet'])) $_GET['onglet']='magazines';
                     switch($_GET['onglet']) {
                         case 'possessions':
                             new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
