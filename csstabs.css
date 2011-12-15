@@ -30,7 +30,7 @@ ul.tabnav li.active a {
     display:block;
     float:left;
     padding:4px;
-    text-decoration:none;
+    border-bottom: 0px;
 }
 .tabnav a:hover {
     background:none repeat scroll 0 0 #FFFFFF;
