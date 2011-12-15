@@ -34,7 +34,8 @@ define('ATTENTION_MOT_DE_PASSE_INDUCKS','Warning ! If you wish to use the same p
 define('AUCUNE_ACQUISITION','No saved purchase');
 define('AUCUNE_DATE_ACQUISITION','You haven\'t added any purchase date for the moment');
 define('AUCUNE_NOTE','No scoring');
-define('AUCUN_AUTEUR_SURVEILLE','No watched author');
+define('AUCUN_AUTEUR_SURVEILLE','No author on your watch list.');
+define('AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET','Click on the "Authors preferences" to add an author to your watch list !');
 define('AUCUN_NUMERO_IMPORTE','No issue reported for magazine ');
 define('AUCUN_NUMERO_INDUCKS','DucksManager didn\'t find any issue in your Inducks account!');
 define('AUCUN_NUMERO_POSSEDE_1','You don\'t possess any comic!Click ');

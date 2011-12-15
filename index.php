@@ -1037,14 +1037,14 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         <br />
                                                         <button onclick="stats_auteur(<?=$id_user?>)"><?=LANCER_CALCUL_SUGGESTIONS?></button>
                                                         <div id="resultat_stats"></div>
-                                                        <?php
+                                                        
+		                                                <br /><br />
+		                                                <?php
+		                                                DM_Core::$d->liste_suggestions_magazines();
                                                     }
                                                 }
-                                                else echo AUCUN_AUTEUR_SURVEILLE;
-                                                ?>
-                                                <br /><br />
-                                                <?php
-                                                DM_Core::$d->liste_suggestions_magazines();
+                                                else echo AUCUN_AUTEUR_SURVEILLE.' '.AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET;
+                                                
                                                 break;
                                             case 'preferences':
                                                 if (isset($_POST['auteur_nom'])) {

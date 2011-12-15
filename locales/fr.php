@@ -36,7 +36,8 @@ define('ATTENTION_MOT_DE_PASSE_INDUCKS','Attention ! Si vous souhaitez utiliser 
 define('AUCUNE_ACQUISITION','Aucune acquisition enregistr&eacute;e');
 define('AUCUNE_DATE_ACQUISITION','Vous n\'avez entr&eacute; aucune date d\'acquisition pour le moment');
 define('AUCUNE_NOTE','Aucune note');
-define('AUCUN_AUTEUR_SURVEILLE','Aucun auteur surveill&eacute;');
+define('AUCUN_AUTEUR_SURVEILLE','Aucun auteur surveill&eacute;.');
+define('AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET','Cliquez sur l\'onglet "Pr&eacute;f&eacute;rences d\'auteurs" pour ajouter un auteur &agrave; votre liste.');
 define('AUCUN_NUMERO_IMPORTE','Aucun num&eacute;ro n\'est r&eacute;pertori&eacute; pour ');
 define('AUCUN_NUMERO_INDUCKS','DucksManager n\'a trouv&eacute; aucun num&eacute;ro dans votre compte Inducks !');
 define('AUCUN_NUMERO_POSSEDE_1','Vous ne poss&eacute;dez aucun num&eacute;ro ! Cliquez ');
