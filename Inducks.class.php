@@ -9,7 +9,7 @@ include_once('Database.class.php');
 class Inducks {
 	static $noms_complets;
 		static $use_db=true;
-		static $use_local_db=true;
+		static $use_local_db=false;
 
 		static function requete_select($requete,$db='coa',$serveur='serveur_virtuel') {
 			if (Inducks::$use_local_db) {
@@ -249,67 +249,43 @@ elseif (isset($_POST['get_numeros'])) {
 }
 elseif (isset($_POST['get_cover'])) {
 	$resultats=array();
-	if (Inducks::$use_db) {
-		$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
-		$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) == 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
-		$liste_magazines=array();
-		$_POST['magazine']=strtoupper($_POST['magazine']);
-		$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
-							 .'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
-							 .'INNER JOIN inducks_entryurl ON inducks_entry.entrycode = inducks_entryurl.entrycode '
-							 .'WHERE inducks_issue.publicationcode LIKE \''.$_POST['pays'].'/'.$_POST['magazine'].'\' ' 
-							 .'AND (issuenumber LIKE \''.$_POST['numero'].'\' '.(is_null($numero_alternatif) ? '':'OR issuenumber REGEXP \''.$numero_alternatif.'\'').') '
-							 //.'AND inducks_entryurl.sitecode LIKE \'webusers\' '
-							 .'GROUP BY inducks_entry.entrycode '
-							 .'ORDER BY position';
-		$resultat_get_extraits=Inducks::requete_select($requete_get_extraits);
-		$i=0;
-		foreach($resultat_get_extraits as $extrait) {
-			switch($extrait['sitecode']) {
-				case 'webusers': case 'thumbnails':
-					$url='http://outducks.org/webusers/'.$extrait['url'];
-				break;
-				default:
-					$url='http://outducks.org/'.$extrait['sitecode'].'/'.$extrait['url'];
-			}
-			
-			if (count($resultats) == 0)
-				$resultats['cover']=$url;
-			else {	
-				$num_page=$extrait['position'];
-				if (preg_match('#p.+#i', $num_page) == 0)
-					$num_page=-99+($i++);
-				else
-					$num_page=substr ($num_page, 1);
-				$resultats[]=array('page'=>$num_page,'url'=>$url);
-			}
+	$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
+	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) == 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
+	$liste_magazines=array();
+	$_POST['magazine']=strtoupper($_POST['magazine']);
+	$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
+						 .'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
+						 .'INNER JOIN inducks_entryurl ON inducks_entry.entrycode = inducks_entryurl.entrycode '
+						 .'WHERE inducks_issue.publicationcode LIKE \''.$_POST['pays'].'/'.$_POST['magazine'].'\' ' 
+						 .'AND (REPLACE(issuenumber,\' \',\'\') LIKE \''.$_POST['numero'].'\' '.(is_null($numero_alternatif) ? '':'OR REPLACE(issuenumber,\' \',\'\') REGEXP \''.$numero_alternatif.'\'').') '
+						 //.'AND inducks_entryurl.sitecode LIKE \'webusers\' '
+						 .'GROUP BY inducks_entry.entrycode '
+						 .'ORDER BY position';
+	$resultat_get_extraits=Inducks::requete_select($requete_get_extraits);
+	$i=0;
+	foreach($resultat_get_extraits as $extrait) {
+		switch($extrait['sitecode']) {
+			case 'webusers': case 'thumbnails':
+				$url='http://outducks.org/webusers/'.$extrait['url'];
+			break;
+			default:
+				$url='http://outducks.org/'.$extrait['sitecode'].'/'.$extrait['url'];
 		}
-		if (count($resultat_get_extraits) == 0)
-			$resultats['cover']='images/cover_not_found.png';
+		
+		if (count($resultats) == 0)
+			$resultats['cover']=$url;
+		else {	
+			$num_page=$extrait['position'];
+			if (preg_match('#p.+#i', $num_page) == 0)
+				$num_page=-99+($i++);
+			else
+				$num_page=substr ($num_page, 1);
+			$resultats[]=array('page'=>$num_page,'url'=>$url);
+		}
 	}
-	else {
-		$page=Inducks::numero_to_page($_POST['pays'], $_POST['magazine'], $_POST['numero']);
-
-		$regex_cover='#<img src="(?:hr\.php\?normalsize=[\d]+&(?:amp;)?image=)([^"]+)" alt="HR" /><br />[^<]*<span class="infoImage">[^<]*<a href=\'http://outducks.org\'>outducks.org</a>#is';
-
-		if (preg_match($regex_cover,$page,$code_image)==0)
-			$url='images/cover_not_found.png';
-		else {
-			$url=$code_image[1];
-			$requete_ajout_couverture='INSERT INTO couvertures(Pays,Magazine,Numero,URL) '
-									 .'VALUES (\''.$_POST['pays'].'\',\''.$_POST['magazine'].'\',\''.$_POST['numero'].'\',\''.$url.'\')';
-			DM_Core::$d->requete($requete_ajout_couverture);
-		}
-		$regex_extrait='#<img border="0" src="(?:hr\.php\?image=)?(http://outducks.org/(?:(?:(?:(?:thumbnails2?/)?(?:webusers/(?:webusers/)?)|(?:renamed/'.$_POST['pays'].'/))[0-9A-Za-z]+/[0-9A-Za-z]+/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_[^p]+p([0-9]+)_001)|(?:'.$_POST['pays'].'/'.strtolower($_POST['magazine']).'/'.$_POST['pays'].'_'.strtolower($_POST['magazine']).'_))[^"&]+)(?:[^"]+)?"#is';
-
-		if (preg_match_all($regex_extrait,$page,$codes_images)>0) {
-			for($i=0;$i<count($codes_images[0]);$i++) {
-				$num_page=empty($codes_images[2][$i])?(-99+$i):intval($codes_images[2][$i]);
-				$resultats[]=array('page'=>$num_page,'url'=>$codes_images[1][$i]);
-			}
-		}
-		$resultats['cover']=$url;
-	}
+	if (count($resultat_get_extraits) == 0)
+		$resultats['cover']='images/cover_not_found.png';
+	
 	echo header("X-JSON: " . json_encode($resultats));
 }
 elseif (isset($_POST['get_covers'])) {
