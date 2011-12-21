@@ -654,7 +654,7 @@ if (isset($_POST['database'])) {
 
 			}
 			$json=json_encode($resultat_bouquineries);
-			echo header("X-JSON: " . $json);
+			echo $json;
 		}
 	else { // Vérification de l'utilisateur
 			if (DM_Core::$d->user_exists($_POST['user']))

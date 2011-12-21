@@ -35,7 +35,7 @@
 				   method: 'post',
 				   parameters:'database=true&liste_bouquineries=true',
 				   onSuccess:function(transport,json) {
-					   adresses=transport.headerJSON;
+					   adresses=JSON.parse(transport.responseText);
 					   analyserAdresseSuivante();
 				   }
 				});
