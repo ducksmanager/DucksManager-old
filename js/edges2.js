@@ -63,6 +63,8 @@ function ouvrir_tranche() {
         method: 'post',
         parameters:'get_cover=true&debug='+debug+'&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
         onSuccess:function(transport) {
+            if ($('infobulle'))
+                $('infobulle').remove();
             if (transport.headerJSON==null)
                 return;
             couverture_ouverte=true;
@@ -96,6 +98,7 @@ function ouvrir_tranche() {
                      ], {
                     duration: 1,
                     afterFinish:function() {
+                        ouverture_couverture=false;
                         if ($('animation'))
                             $('animation').remove();
                         
@@ -107,7 +110,6 @@ function ouvrir_tranche() {
                 if ($('animation'))
                     $('animation').remove();
                 action_en_cours=false;
-                ouverture_couverture=false;
             });
         }
     });
@@ -292,7 +294,7 @@ function back_to_cover() {
 }
 
 function fermer() {
-    if (action_en_cours)
+    if (action_en_cours || ouverture_couverture)
         return;
     action_en_cours=true;
     //if ($('page_precedente'))
@@ -598,7 +600,7 @@ function ouvrirInfoBulleEffectif(tranche,timestamp) {
     if (bulle == null) {
         bulle=new Element('div',{'id':'infobulle'})
             .addClassName('bulle')
-            .setStyle({'top':tranche.offsetTop+'px', 'left':pos_left+'px'});
+            .setStyle({'top':(tranche.offsetTop-50)+'px', 'left':pos_left+'px'});
         $('body').insert(bulle);
     }
     else {

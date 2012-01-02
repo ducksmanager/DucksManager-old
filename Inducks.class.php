@@ -296,7 +296,6 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 	echo $nom_histoire."\n";
 	if (Inducks::$use_db) {
 		$liste_magazines=array();
-		mysql_select_db('coa');
 		if (strpos($nom_histoire, 'code=') === 0) {
 			$liste_magazines['direct']=true;
 			$code=substr($nom_histoire, strlen('code='));
@@ -304,7 +303,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 					.'FROM inducks_issue '
 					.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
 					.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-					.'WHERE storycode LIKE \''.$code.'\' '
+					.'WHERE storycode = \''.$code.'\' '
 					.'ORDER BY publicationcode, issuenumber';
 			$resultat_requete=Inducks::requete_select($requete);
 			foreach($resultat_requete as $resultat) {
@@ -337,7 +336,6 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		}
 		$requete='SELECT publicationcode, Count(issuenumber) AS cpt FROM inducks_issue WHERE publicationcode LIKE \''.$pays.'/%\' GROUP BY publicationcode';
 		$resultat_requete=Inducks::requete_select($requete);
-		mysql_select_db('db301759616');
 	}
 	else {
 		if (strpos($nom_histoire, 'code=') === 0) {

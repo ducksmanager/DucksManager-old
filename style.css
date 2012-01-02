@@ -201,3 +201,18 @@ a.important:HOVER {
 .icone_detail {
     width:16px;
 }
+
+a.drapeau_langue, a.drapeau_langue:HOVER, a.drapeau_langue img {
+	border:0;
+}
+
+#presentation_demo {
+	border:1px solid white;
+	width: 400px;
+	margin-bottom: 20px;
+	padding: 5px 10px 10px 15px;
+}
+
+#presentation_demo h2 {
+	text-align: center;
+}

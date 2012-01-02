@@ -185,7 +185,6 @@ function defiler_log (texte) {
 		$('log').update(span1);
 		$('log').insert('<br />');
 		$('log').insert(span2);
-		$('log1').update('DucksManager 3');
 	}
 	else
 		$('log1').update($('log2').innerHTML);

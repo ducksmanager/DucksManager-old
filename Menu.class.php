@@ -15,7 +15,7 @@ class Item {
 		$this->beta = $beta;
 	}
 	
-	function afficherItem() {
+	function afficher() {
 		if ($this->est_affiche()) {
    	        ?><br /><?php
 			if (is_null($this->nom)) { // Menu
@@ -44,6 +44,17 @@ class Item {
 	}
 }
 
+class LigneVide extends Item{
+	function __construct() {
+		
+	}
+	
+	function afficher() {
+		?><br /><?php
+	}
+	
+}
+
 class Menu extends Item{
 	var $items;
 
@@ -52,18 +63,19 @@ class Menu extends Item{
 		$this->items = $items;
 	}
 	
-	public function afficherMenu() {
-		parent::afficherItem();
+	public function afficher() {
+		parent::afficher();
         foreach($this->items as $item) {
-        	$item->afficherItem();
+        	$item->afficher();
         }
         
-        ?><br /><?php
+        ?><br /><br /><?php
 	}
 	
-	static function afficher($menus) {
-		foreach($menus as $menu)
-			$menu->afficherMenu();
+	static function afficherMenus($menus) {
+		foreach($menus as $menu) {
+			$menu->afficher();
+		}
 	}
 }
 
@@ -82,6 +94,8 @@ $menus=array(
 	new Menu(DUCKHUNT_TOUR, 'no',
 			array(new Item('duckhunt_tour', 'no', PRESENTATION_DUCKHUNT_TOUR),
 				  new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES))
-			)
+			),
+	new LigneVide(),
+	new Item('demo','never',DEMO_MENU)
 );
 ?>

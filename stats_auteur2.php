@@ -16,25 +16,25 @@ foreach ($resultat_auteurs as $auteur)
 
 if (!is_null($id_user))
 	$l = DM_Core::$d->toList($id_user);
-
+$liste_magazines=array();
 foreach ($auteurs as $auteur) {
 	if (empty($auteur))
 		continue;
 	
 	$users=array();
 	
-	$requete_users = 'SELECT ID_User FROM auteurs_pseudos '
-				   . 'WHERE NomAuteurAbrege = \'' . $auteur . '\' AND DateStat = \'0000-00-00\' ';
+	$requete_users = 'SELECT auteurs_pseudos.ID_User, users.RecommandationsListeMags FROM auteurs_pseudos INNER JOIN users ON auteurs_pseudos.ID_User=users.ID '
+				   . 'WHERE auteurs_pseudos.NomAuteurAbrege = \'' . $auteur . '\' AND auteurs_pseudos.DateStat = \'0000-00-00\' ';
 	if (!is_null($id_user))
 		$requete_users.='AND ID_User=' . $id_user;
 	$resultat_users = DM_Core::$d->requete_select($requete_users);
 	foreach ($resultat_users as $user) {
-		if ($user['RecommandationsListeMags'] === 1) {
+		if ($user['RecommandationsListeMags'] == 1) {
 			$l = DM_Core::$d->toList($user['ID_User']);
 			$liste_magazines = $l->liste_magazines();
 		}
 		else
-			$liste_magazines=array('vide' => 'vide');
+			$liste_magazines = array('vide' => 'vide');
 		$users[ $user['ID_User'] ]= $liste_magazines;
 	}
 	
@@ -46,12 +46,7 @@ foreach ($auteurs as $auteur) {
 	}
 
 	foreach ($users as $id_user => $liste_magazines) {
-		$requete_accepte_magazines_possedes_seulement = 
-			'SELECT RecommandationsListeMags FROM users '
-		  . 'WHERE Id_Utilisateur = '.$id_user;
-		$resultat_accepte_magazines_possedes_seulement = DM_Core::$d->requete_select($requete_accepte_magazines_possedes_seulement);
-		$accepte_magazines_possedes_seulement=$resultat_accepte_magazines_possedes_seulement['RecommandationsListeMags']==1;
-		
+		$accepte_magazines_possedes_seulement = ! array_key_exists('vide',$liste_magazines);
 		if (!array_key_exists($id_user, $notations_tous_users))
 			$notations_tous_users[$id_user] = array();
 		$notations_magazines = array();
@@ -111,10 +106,12 @@ foreach ($auteurs as $auteur) {
 				$est_possede=true;
 			}
 			else {
-				if (!array_key_exists($pays . '/' . $magazine . ' ' . $numero, $notations_magazines))
-					$notations_magazines[$pays . '/' . $magazine . ' ' . $numero] = array('Score' => 0, 'Auteurs' => array($auteur=>0));
-				$notations_magazines[$pays . '/' . $magazine . ' ' . $numero]['Score']+=$notation_auteur;
-				$notations_magazines[$pays . '/' . $magazine . ' ' . $numero]['Auteurs'][$auteur]++;
+				if (!$accepte_magazines_possedes_seulement|| array_key_exists($pays.'/'.$magazine,$liste_magazines)) {
+					if (!array_key_exists($pays . '/' . $magazine . ' ' . $numero, $notations_magazines))
+						$notations_magazines[$pays . '/' . $magazine . ' ' . $numero] = array('Score' => 0, 'Auteurs' => array($auteur=>0));
+					$notations_magazines[$pays . '/' . $magazine . ' ' . $numero]['Score']+=$notation_auteur;
+					$notations_magazines[$pays . '/' . $magazine . ' ' . $numero]['Auteurs'][$auteur]++;
+				}
 			}
 		}
 		$total_codes=$possedes+$publie_france_non_possede+$publie_etranger_non_possede;
@@ -150,20 +147,20 @@ foreach ($notations_tous_users as $user => $notations_user) {
 	DM_Core::$d->requete($requete_supprime_recommandation);
 	for ($i = count($notations_user2[$user]) - 20; $i < count($notations_user2[$user]); $i++) {
 		list($pays, $magazine_numero) = explode('/', $notations_user2[$user][$i]['Numero']);
-		list($magazine, $numero) = explode(' ', $magazine_numero);
-		if (!$accepte_magazines_possedes_seulement || array_key_exists($pays.'/'.$magazine,$liste_magazines)) {
-			$notation = $notations_user2[$user][$i]['Score'];
-			$auteurs_et_nb_histoires = array();
-			if (isset($notations_user2[$user][$i]['Auteurs'])) {
-				foreach ($notations_user2[$user][$i]['Auteurs'] as $auteur => $nb_histoires) {
-					$auteurs_et_nb_histoires[]= $auteur.'='.$nb_histoires;
-				}
+		$magazine_numero=explode(' ',$magazine_numero);
+		$magazine = $magazine_numero[0];
+		$numero = implode(' ',array_slice($magazine_numero,1,count($magazine_numero)-1));
+		$notation = $notations_user2[$user][$i]['Score'];
+		$auteurs_et_nb_histoires = array();
+		if (isset($notations_user2[$user][$i]['Auteurs'])) {
+			foreach ($notations_user2[$user][$i]['Auteurs'] as $auteur => $nb_histoires) {
+				$auteurs_et_nb_histoires[]= $auteur.'='.$nb_histoires;
 			}
-			$requete_ajout_recommandation = 'INSERT INTO numeros_recommandes(Pays,Magazine,Numero,Notation,ID_Utilisateur,Texte) '
-				. 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',\'' . $numero . '\',' . $notation . ',' . $user . ',\'' . implode($auteurs_et_nb_histoires,',') . '\')';
-			echo $requete_ajout_recommandation.'<br />';
-			DM_Core::$d->requete($requete_ajout_recommandation);
 		}
+		$requete_ajout_recommandation = 'INSERT INTO numeros_recommandes(Pays,Magazine,Numero,Notation,ID_Utilisateur,Texte) '
+			. 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',\'' . $numero . '\',' . $notation . ',' . $user . ',\'' . implode($auteurs_et_nb_histoires,',') . '\')';
+		echo $requete_ajout_recommandation.'<br />';
+		DM_Core::$d->requete($requete_ajout_recommandation);
 	}
 }
 echo '<pre>';

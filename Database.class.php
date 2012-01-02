@@ -358,7 +358,7 @@ class Database {
 		}
 	}
 	
-	function ajouter_auteur($id,$nom) {
+function ajouter_auteur($id,$nom) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_auteur_existe='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE NomAuteurAbrege LIKE \''.$id.'\' AND DateStat LIKE \'0000-00-00\' AND ID_User='.$id_user;
 		$resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
@@ -366,16 +366,10 @@ class Database {
 			echo AUTEUR_DEJA_DANS_LISTE.'<br />';
 		}
 		else {
-			$requete_ajout_auteur='INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat, Notation) '
-								 .'VALUES (\''.$nom.'\', \''.$id.'\','.$id_user.',0,\'0000-00-00\', 5)';
+			$requete_ajout_auteur='INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat) '
+								 .'VALUES (\''.$nom.'\', \''.$id.'\','.$id_user.',0,\'0000-00-00\')';
 			DM_Core::$d->requete($requete_ajout_auteur);
 		}
-	}
-	
-	function update_notation($nom_abrege, $notation) {
-		$id_user=$this->user_to_id($_SESSION['user']);
-		$requete_update_auteur='UPDATE auteurs_pseudos SET Notation='.$notation.' WHERE NomAuteurAbrege LIKE \''.$nom_abrege.'\' AND ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
-		DM_Core::$d->requete($requete_update_auteur);
 	}
 
 	function liste_auteurs_surveilles($auteurs_surveilles,$affiche_notation) {
@@ -388,13 +382,12 @@ class Database {
 			if ($affiche_notation) {
 				?><form method="post" action="?action=agrandir&onglet=auteurs_favoris&onglet_auteur=preferences"><?php
 			}
-			?><table id="auteurs_surveilles" style="border:1px solid gray"><?php
-			/*
+			?><table style="width:100%"><?php
 			foreach($auteurs_surveilles as $num=>$auteur) {
 				?><tr><td>- <?=$auteur['NomAuteur']?></td><?php
 				if ($affiche_notation) {
 					?><td id="pouces<?=$num?>" onmouseout="vider_pouces()"><?php
-										echo note_to_pouces($num,$auteur['Notation']);
+                                        echo note_to_pouces($num,$auteur['Notation']);
 					?><input type="hidden" value="<?=$auteur['NomAuteurAbrege']?>" name="auteur<?=$num?>" />
 					<input type="hidden" id="notation<?=$num?>" name="notation<?=$num?>" />
 					</td>
@@ -403,7 +396,7 @@ class Database {
 				}
 				?><td><a href="javascript:void(0)" onclick="supprimer_auteur('<?=$auteur['NomAuteurAbrege']?>')"><?=SUPPRIMER?></a></td>
 				</tr><?php
-			}*/
+			}
 			?></table><?php
 			if ($affiche_notation) {
 				$id_user=$this->user_to_id($_SESSION['user']);
@@ -416,7 +409,7 @@ class Database {
 				?><br /><br />
 				<input type="checkbox" <?=($recommandations_liste_mags?'checked="checked" ':'')?>
 					   name="proposer_magazines_possedes" />&nbsp;<?=PROPOSER_MAGAZINES_POSSEDES?><br />
-				<span style="font-size:12px"><?=PROPOSER_MAGAZINES_POSSEDES_EXPLICATION?></span>
+				<span style="font-size:10px"><?=PROPOSER_MAGAZINES_POSSEDES_EXPLICATION?></span>
 				<br /><br /><input type="submit" class="valider" value="<?=VALIDER_NOTATIONS?>" /></form>
 				<?php
 			}
@@ -426,81 +419,68 @@ class Database {
 	function liste_suggestions_magazines() {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_numeros_recommandes='SELECT Pays, Magazine, Numero, Texte, Notation FROM numeros_recommandes '
-											.'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
+                                            .'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
 		$resultat_numeros_recommandes=DM_Core::$d->requete_select($requete_numeros_recommandes);
 		if (count($resultat_numeros_recommandes)!=0) {
 			echo INTRO_NUMEROS_RECOMMANDES;?>
 			<br />
-			<ul><?php
+			<ol><?php
 			$pays_parcourus=array();
 			$auteurs=array();
 
 			foreach($resultat_numeros_recommandes as $numero) {
-							$pays=$numero['Pays'];
-							if (!array_key_exists($pays,$pays_parcourus))
-									$pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
-							?><li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br /><?php
-							$auteurs__nbs=explode(',',$numero['Texte']);
-							
-							$note_histoire=0;
-							$notes_auteurs=array();
-							$resultat_notes_auteurs=DM_Core::$d->get_notes_auteurs($id_user);
-							foreach($resultat_notes_auteurs as $note_auteur)
-								$notes_auteurs[$note_auteur['NomAuteurAbrege']]=$note_auteur['Notation'];
+				$pays=$numero['Pays'];
+				if (!array_key_exists($pays,$pays_parcourus))
+					$pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
+				?>
+				<li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br />
+				
+				<?php
+				$auteurs__nbs=explode(',',$numero['Texte']);
 
-							foreach ($auteurs__nbs as $i=>$auteur__nb) {
-								list($auteur,$nb_histoires)=explode('=',$auteur__nb);
-								$note_histoire+=$notes_auteurs[$auteur]*$nb_histoires;
-							}
-							echo $numero['Notation'].' points : ';
-							$debut=true;
-							foreach ($auteurs__nbs as $i=>$histoire) {
-								list($auteur,$nb_histoires)=explode('=',$histoire);
-								if (!array_key_exists($auteur,$auteurs))
-										$auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
-								if (!$debut) {
-									if ($i==count($auteur__nb)-1) {
-										?> <?=ET?> <?php
-									}
-									else {
-										?>, <?php
-									}
-								}
-								if ($nb_histoires==1) {
-									?>1 <?=HISTOIRE?><?php
-								}
-								else {
-									?><?=$nb_histoires?> <?=HISTOIRES?><?php
-								}
-								?> <?=DE?> <?=$auteurs[$auteur]?><?php
-								$debut=false;
-							}
+				echo '<b>'.$numero['Notation'].' points : </b>';
+				$debut=true;
+				foreach ($auteurs__nbs as $i=>$histoire) {
+					list($auteur,$nb_histoires)=explode('=',$histoire);
+					if (!array_key_exists($auteur,$auteurs))
+					$auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
+					if (!$debut) {
+						if ($i==count($auteur__nb)-1) {
+							?> <?=ET?> <?php
+						}
+						else {
+							?>, <?php
+						}
+					}
+					if ($nb_histoires==1) {
+						?>1 <?=HISTOIRE?><?php
+					}
+					else {
+						?><?=$nb_histoires?> <?=HISTOIRES?><?php
+					}
+					?> <?=DE?> <?=$auteurs[$auteur]?><?php
+					$debut=false;
+				}
 			}
-			?></ul><?php
+			?>
+		</ol><?php
 		}
 		else {
-					?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
-				}
+                    ?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
+                }
 	}
 
 	function liste_auteurs_notes($auteurs_surveilles) {
-		$notations=array();
 		foreach($auteurs_surveilles as $auteur) {
-			$o=new stdClass();
-			$o->nom_auteur=$auteur['NomAuteur'];
-			$o->nom_auteur_abrege=$auteur['NomAuteurAbrege'];
-			$o->note=$auteur['Notation'];
-			$notations[]=$o;
+			if ($auteur['Notation']>=1)
+				echo '1_';
+			else
+				echo '0_';
 		}
-		return $notations;
 	}
-	
-	function get_notes_auteurs($id_user) {
-		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation '
-									.'FROM auteurs_pseudos '
-									.'WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\' '
-									.'ORDER BY NomAuteur');
-	}
+        function get_notes_auteurs($id_user) {
+            return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
+        }
 
 	function sous_liste($pays,$magazine) {
 		$l_magazine=new Liste();
@@ -640,7 +620,7 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege LIKE \''.$_POST['nom_auteur'].'\'');
 	}
-		elseif (isset($_POST['liste_bouquineries'])) {
+elseif (isset($_POST['liste_bouquineries'])) {
 			$requete_bouquineries='SELECT Nom, CONCAT(Adresse, \'<br />\',CodePostal, \' \',Ville) AS Adresse, Pays, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
 								 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 								 .'ORDER BY Pays, CodePostal, Ville';

@@ -99,6 +99,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
     <?php
     $texte_debut='';
+    if ($action=='demo') {
+    	$action='open';
+    	$_POST['user']='demo';
+    	$_POST['pass']='demodemo';
+    }
     if ($action=='open'&& isset($_POST['user'])) {
         if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass']))
             $texte_debut.= 'Identifiants invalides!<br /><br />';
@@ -231,7 +236,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         $beta_user=DM_Core::$d->user_is_beta();
                                         Menu::$beta_user=$beta_user;
                                         Menu::$action=$action;
-                                        Menu::afficher($menus);
+                                        Menu::afficherMenus($menus);
                                         ?>
                                         <br/>
                                     </div>
@@ -683,10 +688,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 switch($onglet) {
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
-                                            echo MODIFICATIONS_OK.'<br />';
-                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.($_POST['partage']=='on'?'1':'0').', AfficherVideo='.($_POST['video']=='on'?'1':'0').', '
-                                                                .'Email=\''.$_POST['email'].'\' '
-                                                                .'WHERE ID='.$id_user);
+                                        	if ($_SESSION['user'] == 'demo') {
+                                        		echo OPERATION_IMPOSSIBLE_MODE_DEMO.'<br />';
+                                        	}
+                                        	else {
+	                                            echo MODIFICATIONS_OK.'<br />';
+	                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.($_POST['partage']=='on'?'1':'0').', AfficherVideo='.($_POST['video']=='on'?'1':'0').', '
+	                                                                .'Email=\''.$_POST['email'].'\' '
+	                                                                .'WHERE ID='.$id_user);
+                                        	}
                                         }
                                         $resultat_partage=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
                                         $resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
@@ -714,30 +724,37 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         <input name="submit_options" class="valider" type="submit" value="<?=VALIDER?>" /></form>
                                         <br /><br /><br />
                                         <?php
+                                        if (isset($_GET['confirm']) && $_SESSION['user'] == 'demo') {
+                                        	echo OPERATION_IMPOSSIBLE_MODE_DEMO.'<br /><br />';
+                                        	unset($_GET['vider']);
+                                        	unset($_GET['supprimer']);
+                                        }
                                         if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
                                             if (isset($_GET['confirm']) && $_GET['confirm']=='true') {
-                                                $action=isset($_GET['vider'])?'vider':'supprimer';
-                                                switch ($action) {
-                                                    case 'vider':
-                                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-                                                        DM_Core::$d->requete($requete);
-                                                        echo NUMEROS_SUPPRIMES.'.<br />';
-                                                        break;
-                                                    case 'supprimer':
-                                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-                                                        DM_Core::$d->requete($requete);
-                                                        echo NUMEROS_SUPPRIMES.'<br />';
-                                                        $requete_compte='DELETE FROM users WHERE ID='.$id_user;
-                                                        DM_Core::$d->requete($requete_compte);
-                                                        session_destroy();
-                                                        echo COMPTE_SUPPRIME_DECONNECTE.'<br />';
-                                                        break;
+                                                if ($_SESSION['user'] != 'demo') {
+                                               	 	$action=isset($_GET['vider'])?'vider':'supprimer';
+	                                                switch ($action) {
+	                                                    case 'vider':
+	                                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
+	                                                        DM_Core::$d->requete($requete);
+	                                                        echo NUMEROS_SUPPRIMES.'.<br />';
+	                                                        break;
+	                                                    case 'supprimer':
+	                                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
+	                                                        DM_Core::$d->requete($requete);
+	                                                        echo NUMEROS_SUPPRIMES.'<br />';
+	                                                        $requete_compte='DELETE FROM users WHERE ID='.$id_user;
+	                                                        DM_Core::$d->requete($requete_compte);
+	                                                        session_destroy();
+	                                                        echo COMPTE_SUPPRIME_DECONNECTE.'<br />';
+	                                                        break;
+	                                                }
                                                 }
                                             }
                                             else {
                                                 ?>
                                                 <?=OPERATION_IRREVERSIBLE?><br /><?=CONTINUER_OUI_NON?><br />
-                                                <a href="?action=gerer&amp;onglet=compte&amp;<?php isset($_GET['vider'])?'vider':'supprimer'?>=true&amp;confirm=true">
+                                                <a href="?action=gerer&amp;onglet=compte&amp;<?= isset($_GET['vider'])?'vider':'supprimer'?>=true&amp;confirm=true">
                                                     <button><?=OUI?></button></a>&nbsp;
                                                 <a href="?action=gerer">
                                                     <button><?=NON?></button></a>
@@ -753,30 +770,16 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                         break;
                                     case 'ajout_suppr':
-                                        /*if (isset($_POST['supprimer_doublons'])) {
-                                            
+                                        if ($_SESSION['user'] == 'demo') {
+                                        	require_once('init_demo.php');
+											$nb_minutes_avant_reset=60 - strftime('%M',time());
+											if ($nb_minutes_avant_reset == 0)
+											$nb_minutes_avant_reset=60;
+                                        	?><div id="presentation_demo">
+                                        		<h2><?=PRESENTATION_DEMO_TITRE?></h2>
+                                        		<?=PRESENTATION_DEMO.$nb_minutes_avant_reset.' '.MINUTES?>
+                                        	</div><?php
                                         }
-
-                                        $requete_doublons='SELECT Pays,Magazine,Numero FROM numeros '
-                                                         .'GROUP BY Pays, Magazine, Numero, Id_Utilisateur '
-                                                         .'HAVING COUNT(*) > 1 AND  Id_Utilisateur ='.$id_user.' '
-                                                         .'ORDER BY Id_Utilisateur, Pays, Magazine, Numero';
-                                        echo $requete_doublons;$resultat_doublons=DM_Core::$d->requete_select($requete_doublons);
-                                        if (count($resultat_doublons)>0) {
-                                            ?><h3><?=AVERTISSEMENT?></h3><?php
-                                            echo AVERTISSEMENT_DOUBLONS_1.' '.count($resultat_doublons).' '.AVERTISSEMENT_DOUBLONS_2;
-                                            $liste_doublons=new Liste();
-                                            foreach($resultat_doublons as $doublon) {
-                                                $liste_doublons->ajouter($doublon['Pays'], $doublon['Magazine'], $doublon['Numero']);
-                                            }
-                                            $liste_doublons->afficher('Classique');
-                                            echo AVERTISSEMENT_DOUBLONS_3;
-                                            ?><form action="">
-                                                <input type="hidden" name="action" value="gerer" />
-                                                <input type="hidden" name="supprimer_doublons" value="true" />
-                                                <input type="submit" value="<?=SUPPRIMER_DOUBLONS?>" />
-                                            </form><br /><br /><hr /><?php
-                                        }*/
                                         $l=DM_Core::$d->toList($id_user);
                                         $nb_numeros=0;
                                         $nb_magazines=$nb_pays=0;
@@ -1223,7 +1226,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 						</table>
 						<?php
 						break;
-
+						
 						default:?>
 						<div id="carousel-1"
 							class="pluit-carousel top-stories-skin">
@@ -1348,7 +1351,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 if (endsWith($f,'.php') && strpos($f,'lang')===false) {
                                     $nom_langue=substr($f,0,strrpos($f,'.'));
                                     ?>
-                                    <a href="?<?=str_replace('&','&amp;',$_SERVER['QUERY_STRING'])?>&amp;lang=<?=$nom_langue?>">
+                                    <a class="drapeau_langue" href="?<?=str_replace('&','&amp;',$_SERVER['QUERY_STRING'])?>&amp;lang=<?=$nom_langue?>">
                                           <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
                                     </a>
                                     <?php
