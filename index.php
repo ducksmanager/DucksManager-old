@@ -10,6 +10,7 @@ require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
 require_once('Util.class.php');
+error_reporting(E_ALL);
 
 $action=isset($_GET['action'])?$_GET['action']:null;
 if (defined('TITRE_PAGE_'.strtoupper($action)))
@@ -258,6 +259,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         <?php
                         echo $texte_debut;
                         foreach($menus as $i=>$menu) {
+                        	if (! isset($menu->items))
+                        		continue;
                             foreach($menu->items as $j=>$item) {
                                 if ($item->nom==$action) {
                                     /*if (isset($infos_sous_item['coa_related'])) {
@@ -279,7 +282,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     }
                                 }
                             }
-                        }                   
+                        }             
                         switch($action) {
                             case 'inducks':
                                 if (isset($_POST['rawData'])) {
