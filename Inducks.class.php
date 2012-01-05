@@ -252,6 +252,7 @@ elseif (isset($_POST['get_cover'])) {
 	$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
 	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) == 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
 	$liste_magazines=array();
+	$_POST['numero']=str_replace(' ','',$_POST['numero']);
 	$_POST['magazine']=strtoupper($_POST['magazine']);
 	$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
 						 .'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
