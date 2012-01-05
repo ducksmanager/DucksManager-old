@@ -94,82 +94,96 @@ function init_observers_gerer_numeros() {
 			  className: 'menu desktop',
 			  menuItems: myMenuItems
 			});
-                        var arr_l10n=new Array(
-                                        'conserver_etat_actuel','marquer_non_possede','marquer_possede',
-                                        'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
-                                        'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
-                                        'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
-                                        'enregistrer_changements');
-                        l10n_action('remplirSpanName',arr_l10n);
-                    $$('.num_manque','.num_possede').invoke(
+            var arr_l10n=new Array(
+                            'conserver_etat_actuel','marquer_non_possede','marquer_possede',
+                            'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
+                            'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
+                            'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
+                            'enregistrer_changements');
+            l10n_action('remplirSpanName',arr_l10n);
+            
+            $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
 		        'observe',
 		        'mouseover',
 		        function(event) {
 		        	$$('.survole').invoke('removeClassName','survole');
 		        	var element=Event.element(event);
-                                if (!(element.tagName=='DIV'))
-                                    element=element.up('div');
-                                lighten(element);
+                    if (!(element.tagName=='DIV'))
+                        element=element.up('div');
+                    lighten(element);
 		          }
 		    ); 
-		    $$('.num_manque','.num_possede').invoke(
+		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
 		        'observe',
 		        'mouseout',
 		        function(event) {
-                                unlighten(Event.element(event));
-		          }
+		        	var element=Event.element(event);
+                    if (!(element.tagName=='DIV'))
+                        element=element.up('div');
+		        	unlighten(element);
+		        }
 		    ); 
-		    $$('.num_manque','.num_possede').invoke(
+		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
 		        'observe',
 		        'mouseup',
 		        function(event) {
-		        	if (event.isLeftClick())
-		        		stop_selection(Event.element(event));
-		        	
-		          }
+		        	if (event.isLeftClick()) {
+			        	var element=Event.element(event);
+	                    if (!(element.tagName=='DIV'))
+	                        element=element.up('div');
+		        		stop_selection(element);
+		        	}
+		        }
 		    ); 
-		    $$('.num_manque','.num_possede').invoke(
+		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
 		        'observe',
 		        'mousedown',
 		        function(event) {
-                            if (event.isLeftClick())
-                                start_selection(Event.element(event));
-		          }
+                    if (event.isLeftClick()) {
+    		        	var element=Event.element(event);
+                        if (!(element.tagName=='DIV'))
+                            element=element.up('div');
+                        start_selection(element);
+		        	}
+		        }
 		    );
-		    $$('.num_manque','.num_possede').invoke(
+		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
 		        'observe',
 		        'mousemove',
 		        function(event) {
-		        	pre_select(Event.element(event));
+		        	var element=Event.element(event);
+                    if (!(element.tagName=='DIV'))
+                        element=element.up('div');
+		        	pre_select(element);
 		          }
 		    );  
                         
-                    $$('.preview').invoke('observe','click',function(event) {
-                        var element=Event.element(event);
-                        element.writeAttribute({'src':'loading.gif'});
-                        var pays=$('pays').innerHTML;
-                        var magazine=$('magazine').innerHTML;
-                        var numero=element.up('div').title;
-                        new Ajax.Request('Inducks.class.php', {
-                            method: 'post',
-                            parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
-                            onSuccess:function(transport) {
-                                element.writeAttribute({'src':'images/icones/view.png'});
-                                if (transport.headerJSON==null) {
-                                    $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
-                                    return;
-                                }
-                                largeur_image=$('colonne_gauche').scrollWidth;
-                                var fin_menu_gauche=$('colonne_gauche').down('div').cumulativeOffset()['top']+$('colonne_gauche').down('div').scrollHeight;
-                                $('couverture_preview').setStyle({'paddingTop':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top']-fin_menu_gauche)+'px'});
-                                $('couverture_preview').update(new Element('img',{'src':transport.headerJSON['cover']}).setStyle({'width':'100%'}));
-                            },
-                            onError:function() {
-                                element.writeAttribute({'src':'images/icones/view.png'});
-                                $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
-                            }
-                        });
-                    });
+            $$('.preview').invoke('observe','click',function(event) {
+                var element=Event.element(event);
+                element.writeAttribute({'src':'loading.gif'});
+                var pays=$('pays').innerHTML;
+                var magazine=$('magazine').innerHTML;
+                var numero=element.up('div').title;
+                new Ajax.Request('Inducks.class.php', {
+                    method: 'post',
+                    parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
+                    onSuccess:function(transport) {
+                        element.writeAttribute({'src':'images/icones/view.png'});
+                        if (transport.headerJSON==null) {
+                            $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
+                            return;
+                        }
+                        largeur_image=$('colonne_gauche').scrollWidth;
+                        var fin_menu_gauche=$('colonne_gauche').down('div').cumulativeOffset()['top']+$('colonne_gauche').down('div').scrollHeight;
+                        $('couverture_preview').setStyle({'paddingTop':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top']-fin_menu_gauche)+'px'});
+                        $('couverture_preview').update(new Element('img',{'src':transport.headerJSON['cover']}).setStyle({'width':'100%'}));
+                    },
+                    onError:function() {
+                        element.writeAttribute({'src':'images/icones/view.png'});
+                        $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
+                    }
+                });
+            });
                          
 		    var image_checked= new Image;
                     image_checked.src = "checkedbox.png";
