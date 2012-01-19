@@ -79,21 +79,32 @@ class Affichage {
 		?></ul><br /><?php
 	}
 	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
-			$nb_possedes=0;
-			foreach($numeros as $i=>$numero) {
-				list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
-				if (!empty($etat))
-					$nb_possedes++;
+		$liste->nettoyer_collection();
+		$nb_possedes=0;
+		$numeros2=array();
+		foreach($numeros as $i=>$numero) {
+			$infos_numero=$liste->infos_numero($pays,$magazine,$numero);
+			$o=new stdClass();
+			$o->est_possede=false;
+			if (!is_null($infos_numero)) {
+				$nb_possedes++;
+				$o->est_possede=true;
 			}
-			$nb_non_possedes=count($numeros)-$nb_possedes;
+			$o->etat=$infos_numero[1];
+			$o->av=$infos_numero[2];
+			$o->id_acquisition=$infos_numero[3];
+			$o->sous_titre=$sous_titres[$i];
+			$numeros2[$numero]=$o;
+		}
+		$nb_non_possedes=count($numeros)-$nb_possedes;
 						
 						
 		$etats=array('manque'=>ETAT_MANQUANTS,
-							 'mauvais'=>ETAT_MAUVAIS,
-							 'moyen'=>ETAT_MOYEN,
-							 'bon'=>ETAT_BON,
-							 'excellent'=>ETAT_EXCELLENT,
-							 'indefini'=>ETAT_INDEFINI);
+					 'mauvais'=>ETAT_MAUVAIS,
+					 'moyen'=>ETAT_MOYEN,
+					 'bon'=>ETAT_BON,
+					 'excellent'=>ETAT_EXCELLENT,
+					 'indefini'=>ETAT_INDEFINI);
 		$cpt=0;
 		//print_r($liste->collection[$pays][$magazine]);
 		?>
@@ -101,7 +112,7 @@ class Affichage {
 		<span id="magazine" style="display:none"><?=$magazine?></span>
 		<?php
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-				list($pays_complet,$nom_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+		list($pays_complet,$nom_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
 		?>
 		<br />
 		<table border="0" width="100%">
@@ -133,67 +144,51 @@ class Affichage {
 		</table>
 		<?php
 		//echo '<pre>';print_r($liste);echo '</pre>';
-		foreach($numeros as $i=>$numero) {
+		foreach($numeros2 as $numero=>$infos) {
+			$etat=$infos->etat;
+			$id_acquisition=$infos->id_acquisition;
+			$av=$infos->av;
+			$sous_titre=$infos->sous_titre;
+			$possede=$infos->est_possede;
 			?>
-				<div class="num_<?php
-					$possede=false;
-					list($etat,$av,$id_acq)=$liste->est_possede_etat_av_idacq($pays,$magazine,$numero);
-					if (!empty($etat)) {
-						$possede=true;
-						$noms_etats=array();
-						foreach(Database::$etats as $etat_court=>$infos_etat) {
-							if ($etat==$etat_court) {
-								$etat_class=$etat_court;
-								$etat_nom_complet=$infos_etat[0];
-								break;
-							}
-						}
-						echo 'possede';
-					}
-					else
-						echo 'manque';
-					?>" id="n<?=($cpt)?>" title="<?=$numero?>"><img class="preview" src="images/icones/view.png" /><span class="num">n&deg;<?=$numero?>&nbsp;<span class="soustitre"><?=$sous_titres[$i]?></span></span>
-							<?php
-							
-							if ($possede) {
-								?><div class="bloc_details"><?php
-								if (!isset($etat_class)) {
-									?><div class="details_numero num_indefini detail_indefini" title="<?=get_constant('ETAT_INDEFINI')?>"><?php
-								}
-								else {
-									?><div class="details_numero num_<?=$etat_class?> detail_<?=$etat_class?>" title="<?=get_constant('ETAT_'.$etat_class)?>"><?php
-								}
-								?></div><?php
-								if ($id_acq!=-1 && $id_acq!=-2) {
-									$requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acq.' AND ID_User='.$id_user;
-									$resultat_date=DM_Core::$d->requete_select($requete_date_achat);
-									if (count($resultat_date)>0) {
-										$regex_date='#([^-]+)-([^-]+)-(.+)#is';
-										$date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-										$id=$resultat_date[0]['ID_Acquisition'];
-										if (!is_null($date) && !empty($date)) {
-											?>
-												<div class="details_numero detail_date" class="achat_<?=$id?>">
-													<img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
-												</div><?php
-										}
+			<div class="num_<?=$possede ? 'possede' : 'manque'?>" 
+				 id="n<?=($cpt)?>" title="<?=$numero?>"><img class="preview" src="images/icones/view.png" /><span class="num">n&deg;<?=$numero?>&nbsp;<span class="soustitre"><?=$sous_titre?></span></span>
+						<?php
+						
+						if ($possede) {
+							?><div class="bloc_details">
+								<div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
+							</div><?php
+							if (!in_array($id_acquisition,array(-1,-2))) {
+								$requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
+								$resultat_date=DM_Core::$d->requete_select($requete_date_achat);
+								if (count($resultat_date)>0) {
+									$regex_date='#([^-]+)-([^-]+)-(.+)#is';
+									$date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+									$id=$resultat_date[0]['ID_Acquisition'];
+									if (!is_null($date) && !empty($date)) {
+										?>
+											<div class="details_numero detail_date" class="achat_<?=$id?>">
+												<img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
+											</div><?php
 									}
 								}
-								else { ?>
-									<div class="details_numero detail_date"></div><?php
-								}
-								?><div class="details_numero detail_a_vendre"><?php
-								if ($av) {
-									?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
-								}
-								?></div>
-							 </div><?php
 							}
-						?>
-						</div>
+							else { ?>
+								<div class="details_numero detail_date"></div><?php
+							}
+							?><div class="details_numero detail_a_vendre"><?php
+							if ($av) {
+								?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
+							}
+							?></div>
+						 </div><?php
+						}
+					?>
 					</div>
-					<?php
-					$cpt++;
+				</div>
+				<?php
+				$cpt++;
 		}
 	}
 }

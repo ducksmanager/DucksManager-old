@@ -1,7 +1,7 @@
 <?php
 define('','');
 define('A','&agrave;');
-define('A_VENDRE');
+define('A_VENDRE','A vendre');
 define('ACCUEIL','Accueil');
 define('ACHAT_ASSOCIER_DATE_ACHAT','Associer avec une date d\'achat');
 define('ACHAT_CONSERVER_DATE_ACHAT','Conserver la date d\'achat');

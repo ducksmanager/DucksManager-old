@@ -163,21 +163,21 @@ class Liste {
 				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe><?php
 			break;
 
-						case 'achats':
-							$requete_achat_existe='SELECT Count(Date) AS cpt FROM achats WHERE ID_User='.$id_user;
-							$resultat_achat_existe=DM_Core::$d->requete_select($requete_achat_existe);
-							if ($resultat_achat_existe[0]['cpt']==0) {
-								echo AUCUNE_DATE_ACQUISITION;
-							}
-							else {
-								?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe>
-								<br />
-								<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">Afficher les nouvelles acquisitions</a> 
-								&nbsp;-&nbsp;
-								<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">Afficher les possessions totales</a>
-								<?php
-							}
-						break;
+			case 'achats':
+				$requete_achat_existe='SELECT Count(Date) AS cpt FROM achats WHERE ID_User='.$id_user;
+				$resultat_achat_existe=DM_Core::$d->requete_select($requete_achat_existe);
+				if ($resultat_achat_existe[0]['cpt']==0) {
+					echo AUCUNE_DATE_ACQUISITION;
+				}
+				else {
+					?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe>
+					<br />
+					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">Afficher les nouvelles acquisitions</a> 
+					&nbsp;-&nbsp;
+					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">Afficher les possessions totales</a>
+					<?php
+				}
+			break;
 			case 'auteurs':
 				if (isset($_POST['auteur_nom'])) {
 					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
@@ -446,17 +446,34 @@ class Liste {
 		}
 		return false;
 	}
-	function est_possede_etat_av_idacq($pays,$magazine,$numero) {
+	function infos_numero($pays,$magazine,$numero) {
 		if (array_key_exists($pays,$this->collection)) {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
 				foreach($this->collection[$pays][$magazine] as $id=>$numero_liste) {
-					if (nettoyer_numero($numero_liste[0])==$numero) {
-						return array($numero_liste[1],$numero_liste[2],$numero_liste[3]);
+					if ($numero_liste[0]==$numero) {
+						return array($numero_liste[0],
+									 array_key_exists($numero_liste[1],Database::$etats) ? $numero_liste[1] : 'indefini',
+									 $numero_liste[2],
+									 $numero_liste[3]);
 					}
 				}
 			}
 		}
-		return array('','','');
+		return null;
+	}
+	
+	function nettoyer_collection() {
+		$collection2=array();
+		foreach($this->collection as $pays=>$liste_magazines) {
+			$collection2[$pays]=array();
+			foreach($liste_magazines as $magazine=>$liste_numeros) {
+				$collection2[$pays][$magazine]=array();
+				foreach($liste_numeros as $numero_liste) {
+					$collection2[$pays][$magazine][]=array(nettoyer_numero($numero_liste[0]),$numero_liste[1],$numero_liste[2],$numero_liste[3]);
+				}
+			}	
+		}
+		$this->collection=$collection2;
 	}
 		
 		function get_liste_auto($pays,$magazine) {
