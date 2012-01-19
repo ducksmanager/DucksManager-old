@@ -56,7 +56,7 @@ function hover (num_auteur,num_image) {
 		if (src.indexOf('blanc')!==-1)
 			$('pouce'+num_auteur+'_'+i).writeAttribute({'src':src.substring(0,src.length-10)+'.png'});
 	}
-	for (var i=num_image+1;;i++) {
+	for (i=num_image+1;;i++) {
 		if (!$('pouce'+num_auteur+'_'+i))
 			break;
 		var src=$('pouce'+num_auteur+'_'+i).readAttribute('src');

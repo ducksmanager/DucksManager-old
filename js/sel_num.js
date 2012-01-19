@@ -47,15 +47,17 @@ function stop_selection(sel) {
 		fin_selection=tmp;
 	}
 	for (var i=debut_selection;i<=fin_selection;i++) {
-		$('n'+i).setOpacity(1);
-		if ($('n'+i).hasClassName('num_checked')) {
-			$('n'+i).removeClassName('num_checked');
-			$('nb_selection').update(parseInt($('nb_selection').innerHTML)-1);
-			continue;	
-		}
-		else {
-			$('n'+i).addClassName('num_checked');
-			$('nb_selection').update(parseInt($('nb_selection').innerHTML)+1);
+		if ($('n'+i)) {
+			$('n'+i).setOpacity(1);
+			if ($('n'+i).hasClassName('num_checked')) {
+				$('n'+i).removeClassName('num_checked');
+				$('nb_selection').update(parseInt($('nb_selection').innerHTML)-1);
+				continue;	
+			}
+			else {
+				$('n'+i).addClassName('num_checked');
+				$('nb_selection').update(parseInt($('nb_selection').innerHTML)+1);
+			}
 		}
 	}
 	var nb_numeros_sel=parseInt($('nb_selection').innerHTML);

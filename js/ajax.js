@@ -108,7 +108,7 @@ function init_observers_gerer_numeros() {
 		        function(event) {
 		        	$$('.survole').invoke('removeClassName','survole');
 		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV'))
+                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
                         element=element.up('div');
                     lighten(element);
 		          }
@@ -118,7 +118,7 @@ function init_observers_gerer_numeros() {
 		        'mouseout',
 		        function(event) {
 		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV'))
+                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
                         element=element.up('div');
 		        	unlighten(element);
 		        }
@@ -129,7 +129,7 @@ function init_observers_gerer_numeros() {
 		        function(event) {
 		        	if (event.isLeftClick()) {
 			        	var element=Event.element(event);
-	                    if (!(element.tagName=='DIV'))
+	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
 	                        element=element.up('div');
 		        		stop_selection(element);
 		        	}
@@ -141,7 +141,7 @@ function init_observers_gerer_numeros() {
 		        function(event) {
                     if (event.isLeftClick()) {
     		        	var element=Event.element(event);
-                        if (!(element.tagName=='DIV'))
+                        if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
                             element=element.up('div');
                         start_selection(element);
 		        	}
@@ -152,7 +152,7 @@ function init_observers_gerer_numeros() {
 		        'mousemove',
 		        function(event) {
 		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV'))
+                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
                         element=element.up('div');
 		        	pre_select(element);
 		          }
