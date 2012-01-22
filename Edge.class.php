@@ -9,6 +9,7 @@ class Edge {
 	var $pays;
 	var $magazine;
 	var $numero;
+	var $numero_reference;
 	var $textes=array();
 	var $largeur=20;
 	var $hauteur=200;
@@ -32,14 +33,15 @@ class Edge {
 		$this->magazine_est_inexistant=false;
 		$this->pays=$pays;
 		$this->magazine=$magazine;
-		$this->numero= self::get_numero_clean($this->pays,$this->magazine,$numero);
-		list($this->magazine,$this->numero)=Inducks::get_vrais_magazine_numero($this->pays, $this->magazine, $this->numero);
+		$this->numero= self::get_numero_clean($this->pays,$this->magazine,$numero, true);
+		$this->numero_reference= self::get_numero_clean($this->pays,$this->magazine,$numero);
+		list($this->magazine,$this->numero_reference)=Inducks::get_vrais_magazine_numero($this->pays, $this->magazine, $this->numero_reference);
 		
-		$url_image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero.'.png';
+		$url_image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero_reference.'.png';
 		if ($image_seulement)
 			$this->image=imagecreatefrompng($url_image);
 		else {
-			$this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero);
+			$this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero_reference);
 			
 			$this->image_existe=file_exists($url_image);
 			if ($this->est_visible && $this->image_existe) {
@@ -48,9 +50,9 @@ class Edge {
 				$this->hauteur=intval( $this->hauteur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
 			}
 			else {
-				$dimensions=getDimensionsParDefaut($this->pays,$this->magazine,array($this->numero));
-				if (!is_null($dimensions[$this->numero]) && $dimensions[$this->numero]!='null')
-					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero]);
+				$dimensions=getDimensionsParDefaut($this->pays,$this->magazine,array($this->numero_reference));
+				if (!is_null($dimensions[$this->numero_reference]) && $dimensions[$this->numero_reference]!='null')
+					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
 				
 				if (!$this->image_existe) {
 					@imagepng($this->dessiner_defaut(),$url_image);
@@ -78,8 +80,11 @@ class Edge {
 		return $code;
 	}
 	
-	static function get_numero_clean($pays,$magazine,$numero) {
+	static function get_numero_clean($pays,$magazine,$numero, $numero_reel=false) {
 		$numero_clean=str_replace('+','',str_replace(' ','',$numero));
+		if ($numero_reel)
+			return $numero_clean;
+		
 		$requete_recherche_numero_reference='SELECT NumeroReference FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numero LIKE \''.$numero_clean.'\'';
 		$resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
 		if (count($resultat_numero_reference) ==0)
@@ -92,7 +97,6 @@ class Edge {
 	
 	function getImgHTML($regen=false) {
 		$code='';
-		$numero_clean_reference= self::get_numero_clean($this->pays,$this->magazine,$this->numero);
 		if (Edge::$largeur_numeros_precedents + $this->largeur > Etagere::$largeur) {
 			$code.=Edge::getEtagereHTML();
 			Edge::$largeur_numeros_precedents=0;
@@ -100,15 +104,15 @@ class Edge {
 		if ($this->hauteur > Etagere::$hauteur_max_etage)
 			Etagere::$hauteur_max_etage = $this->hauteur ;
 		$code.= '<img class="tranche" ';
-		$image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$numero_clean_reference.'.png';
+		$image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero_reference.'.png';
 		
 		if ($this->image_existe && !$regen) {
-			$code.='name="'.$this->pays.'/'.$this->magazine.'.'.$numero_clean_reference.'" ';
+			$code.='name="'.$this->pays.'/'.$this->magazine.'.'.$this->numero_reference.'" ';
 		}
 		else {
-			$code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$numero_clean_reference.'&amp;grossissement='.Edge::$grossissement.'" ';
+			$code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero_reference.'&amp;grossissement='.Edge::$grossissement.'" ';
 		}
-		$code.='width="'.$this->largeur.'" height="'.$this->hauteur.'" id="'.$this->pays.'/'.$this->magazine.'.'.$numero_clean_reference.'"/>';
+		$code.='width="'.$this->largeur.'" height="'.$this->hauteur.'" id="'.$this->pays.'/'.$this->magazine.'.'.$this->numero.'"/>';
 		
 		Edge::$largeur_numeros_precedents+=$this->largeur;
 		return $code;
@@ -120,7 +124,7 @@ class Edge {
 		$noir = imagecolorallocate($this->image, 0, 0, 0);
 		imagefilledrectangle($this->image, 0, 0, $this->largeur-2, $this->hauteur-2, $blanc);
 		imagettftext($this->image,$this->largeur/3.5,90,$this->largeur*7/10,$this->hauteur-$this->largeur*4/5,
-		 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
+		 			 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
 		$this->dessiner_contour();
 		$gris_250=imagecolorallocate($this->image, 250,250,250);
 		imageantialias($this->image, true);
@@ -133,14 +137,6 @@ class Edge {
         for ($i=0;$i<.15*Edge::$grossissement;$i++)
             imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
     }
-
-	function getDataFromDB($default_text='') {
-		$requete_couleurs='SELECT Autre FROM bibliotheque_options WHERE Pays LIKE \''.$this->pays.'\' AND Magazine LIKE \''.$this->magazine.'\' AND Numero LIKE \''.$this->numero.'\'';
-		$resultat=DM_Core::$d->requete_select($requete_couleurs);
-		if (count($resultat)==0)
-			return $default_text;
-		return $resultat[0]['Autre'];
-	}
 
 	function placer_image($sous_image, $position='haut', $decalage=array(0,0), $compression_largeur=1, $compression_hauteur=1) {
 		if (is_string($sous_image)) {
