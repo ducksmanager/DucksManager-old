@@ -19,7 +19,7 @@ class Inducks {
 				return $resultat;
 			}
 			else {
-				$ip_serveur=$serveur=='serveur_virtuel' ? DatabasePriv::$url_serveur_virtuel : 'ducksmanager.net';
+				$ip_serveur=$serveur=='serveur_virtuel' ? DatabasePriv::$url_serveur_virtuel : 'http://www.ducksmanager.net';
 				$output=unserialize(Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)));
 				if ($output == '') // Cas des requetes hors SELECT
 					return array();
