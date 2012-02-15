@@ -62,8 +62,6 @@ if (!$dernier_init_est_recent) {
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'PM', '387', 'bon', 1001, 0, ".$id_user_demo.");
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('us', 'WDC', '375', 'bon', 1001, 0, ".$id_user_demo.");
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('es', 'BCB', '1', 'bon', 1002, 0, ".$id_user_demo.");
-	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'ALPM', 'A E', 'bon', -2, 0, ".$id_user_demo.");
-	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'ALPM', 'A V', 'bon', -2, 0, ".$id_user_demo.");
 	
 	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1000, ".$id_user_demo.", '2011-10-15', NULL, NULL, NULL, NULL, 'Bouquinerie Bordeaux');
 	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1001, ".$id_user_demo.", '2011-11-01', NULL, NULL, NULL, NULL, 'Bouquinerie La Rochelle');
