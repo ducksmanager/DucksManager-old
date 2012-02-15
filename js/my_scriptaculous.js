@@ -373,9 +373,9 @@ function init_autocompleter_auteurs() {
 
 
 function ac_return(field, item){
-    $('auteur_nom').value=field.value.replace(new RegExp(' ','g'),'');;
+	$('auteur_nom').value=field.value.replace(/\t| /g,'');
     $('auteur_id').value=item.down('[name="nom_auteur"]').readAttribute('title');
-    $('auteur_cherche').value=$('auteur_cherche').value.replace(new RegExp(' ','g'),'');
+    $('auteur_cherche').value=$('auteur_cherche').value.replace(/\t| /g,'');
 }
 
 function ajouter_auteur() {
