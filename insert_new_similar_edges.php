@@ -13,17 +13,29 @@ $requete='SELECT issuenumber FROM inducks_issue '
 		.'  AND issuenumber REGEXP \'^[0-9]+$\' '
 		.'  AND CAST(issuenumber AS UNSIGNED) > CAST('.$numero_reference.' AS UNSIGNED)';
 
-$doublons_coa=Inducks::requete_select($requete,'coa','serveur_virtuel');
+$doublons_coa=DM_Core::$d->requete_select($requete,'coa','serveur_virtuel');
 
 $requete_doublons_deja_dispo="SELECT Numero FROM tranches_doublons "
 							."WHERE NumeroReference=$numero_reference "
 							."  AND CONCAT(Pays,'/',Magazine)='fr/JM'";
+if (isset($_GET['dbg']))
+	echo $requete_doublons_deja_dispo;
 $resultats_doublons_deja_dispo=Inducks::requete_select($requete_doublons_deja_dispo,'db301759616','ducksmanager.net');
+
+if (isset($_GET['dbg'])) {
+	print_r( $resultats_doublons_deja_dispo);
+}
+
 $doublons_deja_dispo=array();
 $doublons_a_ajouter=array();
 
 foreach($resultats_doublons_deja_dispo as $doublon_deja_dispo) {
 	$doublons_deja_dispo[$doublon_deja_dispo['Numero']]=true;
+}
+if (isset($_GET['dbg'])) {
+	echo 'Doublons deja dispos : <br />';
+	echo '<pre>';print_r($doublons_deja_dispo);echo '</pre>';
+
 }
 
 foreach($doublons_coa as $doublon_coa) {
@@ -39,8 +51,10 @@ if (count($doublons_a_ajouter) > 0) {
 	
 	$requete_ajout_doublons.=implode(',',$mini_requetes_ajout);
 	
-	//Inducks::requete_select($requete_ajout_doublons,'db301759616','ducksmanager.net');
-	echo $requete_ajout_doublons.'<br />';
+	if (isset($_GET['dbg']))
+		echo $requete_ajout_doublons.'<br />';
+	Inducks::requete_select($requete_ajout_doublons,'db301759616','ducksmanager.net');
+	//echo $requete_ajout_doublons.'<br />';
 }
 
 $requete_tranches_deja_pretes="SELECT issuenumber FROM tranches_pretes "
@@ -66,7 +80,8 @@ if (count($tranches_a_ajouter) > 0) {
 	
 	$requete_ajout_tranches.=implode(',',$mini_requetes_ajout);
 	
-	//Inducks::requete_select($requete_ajout_tranches,'db301759616','ducksmanager.net');
-	echo $requete_ajout_tranches;
+	if (isset($_GET['dbg']))
+		echo $requete_ajout_tranches.'<br />';
+	Inducks::requete_select($requete_ajout_tranches,'db301759616','ducksmanager.net');
+	//echo $requete_ajout_tranches;
 }
-$a=1;
