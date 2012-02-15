@@ -6,18 +6,6 @@ include_once ('locales/lang.php');
 require_once('Liste.class.php');
 require_once('Inducks.class.php');
 
-if (!isset($GLOBALS['firephp'])) {
-	require_once('FirePHPCore/FirePHP.class.php');
-
-	$GLOBALS['firephp'] = FirePHP::getInstance(true);
-	$GLOBALS['firephp']->registerErrorHandler(
-				$throwErrorExceptions=true);
-	$GLOBALS['firephp']->registerExceptionHandler();
-	$GLOBALS['firephp']->registerAssertionHandler(
-				$convertAssertionErrorsToExceptions=true,
-				$throwAssertionExceptions=false);
-	ob_start();
-}
 Database::$etats=array(
    'mauvais'=>array(MAUVAIS,'#FF0000'),
    'moyen'=>array(MOYEN,'#FF8000'),
@@ -143,7 +131,7 @@ class Database {
 		return Inducks::get_nom_complet_magazine($pays,$magazine);
 	}
 
-	function get_nom_complet_pays() {
+	function get_noms_complets_pays() {
 		return Inducks::get_pays();
 	}
 

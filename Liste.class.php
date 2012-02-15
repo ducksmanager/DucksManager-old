@@ -267,7 +267,7 @@ class Liste {
 					continue;
 				foreach($numeros_pays as $magazine=>$numeros) {
 					foreach($numeros as $numero) {
-						$num_final=$numero[0];
+						$num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
 						$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numero LIKE \''.$num_final.'\')';
 						DM_Core::$d->requete($requete);
 						$cpt++;
@@ -314,47 +314,24 @@ class Liste {
 	}
 
 	function lire() {
-			$lignes=explode("\r\n",$this->texte);
-			foreach($lignes as $ligne) {
-				$infos_ligne=explode('^',$ligne);
-				if (count($infos_ligne)>=3) {
-					$country=$infos_ligne[0];
-					if ($country=='cou')
-						xdebug_break();
-					$regex='#^([^ ]*)[ ]+(.*)$#';
-					preg_match($regex,$infos_ligne[1],$magazine_numero);
-					$magazine=$magazine_numero[1];
-					$numero=$magazine_numero[2];
-					if (!array_key_exists($country,$this->collection)) {
-							$arr_temp=array($magazine=>array(0=>$numero));
-							$this->collection[$country]=$arr_temp;
-					}
-					else {
-							if (!array_key_exists($magazine,$this->collection[$country])) {
-									$this->collection[$country][$magazine]=array($numero);
-							}
-							else
-									if (!array_push($this->collection[$country][$magazine],$numero))
-											echo '<b>'.$magazine.$numero.'</b>';
-					}
-				}
-			}
+		$id_fichier_tmp=rand(0,10000);
+		$nom_fichier_tmp='rawdata_'.$id_fichier_tmp.'.txt';
+		Util::ecrire_dans_fichier('_tmp/'.$nom_fichier_tmp,$this->texte);
+		
+		$serveur='serveur_virtuel';
+		$reponse=Util::get_page(DatabasePriv::$url_serveur_virtuel.'/parse_coa_rawdata.php?rawData_file='.$id_fichier_tmp.'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
+		$this->collection=unserialize($reponse);
+		@unlink('_tmp/'.$nom_fichier_tmp);
 	}
 
 	function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {
-		   if ($ajouter_numeros || $supprimer_numeros) {
-				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		   }
+			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 			$numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
 
-			$noms_magazines=array();
 			$liste_a_supprimer=new Liste();
-
+			
 			foreach($this->collection as $pays=>$numeros_pays) {
-				if (!array_key_exists($pays,$noms_magazines))
-					$noms_magazines[$pays]=array();
 				foreach($numeros_pays as $magazine=>$numeros) {
-					$noms_magazines[$pays][$magazine]=DM_Core::$d->get_nom_complet_magazine($pays, $magazine,true);
 					$magazine_affiche=false;
 					sort($numeros);
 					foreach($numeros as $numero) {
@@ -370,16 +347,13 @@ class Liste {
 					}
 				}
 			}
-			if (supprimer_numeros)
+			if ($supprimer_numeros)
 				$liste_a_supprimer->remove_from_database (DM_Core::$d, $id_user);
 			$liste_a_ajouter=new Liste();
 			foreach($other_list->collection as $pays=>$numeros_pays) {
-				if (!array_key_exists($pays,$noms_magazines))
-					$noms_magazines[$pays]=array();
 				foreach($numeros_pays as $magazine=>$numeros) {
 					if ($pays=='country')
 						continue;
-					list($nom_complet_pays,$noms_magazines[$pays][$magazine])=DM_Core::$d->get_nom_complet_magazine($pays, $magazine,true);
 					$magazine_affiche=false;
 					foreach($numeros as $numero) {
 						$trouve=false;

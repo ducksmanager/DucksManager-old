@@ -12,6 +12,24 @@ require_once('Inducks.class.php');
 require_once('Util.class.php');
 error_reporting(E_ALL);
 
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+	setCookie('user','',time()-3600);
+	setCookie('pass','',time()-3600);
+}
+else {
+	if (isset($_SESSION['user']) && !isset($_COOKIE['user']) ) {
+		setCookie('user',$_SESSION['user'],time()+3600);
+		setCookie('pass',$_SESSION['pass'],time()+3600);
+	}
+	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
+		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
+			$_SESSION['user']=$_COOKIE['user'];
+			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies à jour à chaque rafraichissement
+			setCookie('pass',sha1($_COOKIE['pass']),time()+3600);
+		}
+	}
+}
+
 $action=isset($_GET['action'])?$_GET['action']:null;
 if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
@@ -113,13 +131,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         }
     }
     else {
-        if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
-            if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
-                $_SESSION['user']=$_COOKIE['user'];
-                setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies à jour à chaque rafraichissement
-                setCookie('pass',sha1($_COOKIE['pass']),time()+3600);
-            }
-        }
+        
     }
     ?>
     <body id="body" style="margin:0" onload="<?php
@@ -291,7 +303,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
                                             $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
                                             $l=new Liste($_POST['rawData']);
-                                            $l->lire();
                                             $l->synchro_to_database(DM_Core::$d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);
                                         }
                                         else {
@@ -359,6 +370,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 <form method="post" action="?action=inducks">
                                                     <textarea name="rawData" rows="10" cols="40"></textarea>
                                                     <br />
+                                                    <input type="hidden" name="dbg" value="<?=isset($_GET['dbg']) ? "true":"false"?>" />
                                                     <input type="submit" value="<?=IMPORTER?>" />
                                                 </form>
                                             </td>
@@ -419,10 +431,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 <?php
                             break;
                             case 'logout':
-                                session_destroy();
-                                session_unset();
-                                setCookie('user','',time()-3600);
-                                setCookie('pass','',time()-3600);
+								session_destroy();
+								session_unset();
                                 echo DECONNEXION_OK;
                                 break;
                             case 'bibliotheque':
@@ -1413,9 +1423,12 @@ function formulaire_inscription() {
 }
 
 function creer_id_session($user,$pass) {
-    setCookie('user',$user,time()+3600);
-    setCookie('pass',sha1($pass),time()+3600);
     $_SESSION['user']=$user;
-    header('Location: index.php?action=gerer');
+    $_SESSION['pass']=sha1($pass);
+    echo '<script language="Javascript">
+    <!--
+    document.location.replace("index.php?action=gerer");
+    // -->
+    </script>';
 }
 ?>

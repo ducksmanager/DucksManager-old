@@ -324,7 +324,7 @@ define('NUMEROS_SELECTIONNES','num&eacute;ros s&eacute;lectionn&eacute;s');
 define('NUMEROS__GRAPHIQUE','numéros');
 define('NUMEROS_A_AJOUTER','num&eacute;ro(s) apparai(ssen)t uniquement dans la collection Inducks');
 define('NUMEROS_A_SUPPRIMER','num&eacute;ro(s) apparai(ssen)t uniquement dans la collection DucksManager');
-define('NUMEROS_COMMUNS','num&eacute;ro(s) commun(s) aux deux collections');
+define('NUMEROS_COMMUNS','num&eacute;ro(s) sont commun(s) aux deux collections');
 define('NUMEROS_IMPORTES','num&eacute;ros import&eacute;s.');
 define('NUMEROS_MANQUANTS','Numéros manquants');
 define('NUMEROS_POSSEDES','Numéros possédés');
