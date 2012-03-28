@@ -6,23 +6,22 @@ class SupprimerG extends CI_Controller {
 	
 	function index($pays=null,$magazine=null,$etape=null) {
 		if (in_array(null,array($pays,$magazine,$etape))) {
-			echo 'Erreur : Nombre d\'arguments insuffisant';
+			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
 			exit();
 		}
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		self::$etape=$etape;
 
-		$this->load->library('session');
-		$this->load->database();
+		
 		$this->db->query('SET NAMES UTF8');
-		$this->load->model('Modele_tranche');
+		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		$privilege=$this->Modele_tranche->get_privilege();
 		$data=array();
 		
 		
 		if ($privilege == 'Affichage')
-			echo 'Erreur : Droits insuffisants';
+			$this->load->view('errorview',array('Erreur'=>'droits insuffisants'));
 		else {
 			$this->Modele_tranche->setUsername($this->session->userdata('user'));
 			

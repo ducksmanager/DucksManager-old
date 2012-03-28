@@ -15,5 +15,5 @@ switch($mode) {
 		$envoi->nom_magazine=$nom_magazine;
 	break;
 }
-header("X-JSON: " . json_encode($envoi));
+echo json_encode($envoi);
 ?>

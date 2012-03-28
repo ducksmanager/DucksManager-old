@@ -4,6 +4,7 @@ Inducks::$use_db=true;
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
 class Modele_tranche extends CI_Model {
+	static $just_connected;
 	static $id_session;
 	static $pays;
 	static $magazine;
@@ -23,28 +24,42 @@ class Modele_tranche extends CI_Model {
 		$_SESSION['lang']='fr';
 	}
 	
+	function get_just_connected() {
+		return self::$just_connected;
+	}
+	
 	function get_privilege() {
 		$privilege=null;
+		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
 		if (isset($_POST['user'])) {
+			self::$just_connected=true;
 			if (!is_null($privilege = $this->user_connects($_POST['user'],$_POST['pass'])))
-				$this->creer_id_session($_POST['user'],md5($_POST['pass']));
+				$this->creer_id_session($_POST['user'],md5($_POST['pass']),$_POST['mode_expert']);
 		}
 		else {
 			if ($this->session->userdata('user') !== false && $this->session->userdata('pass') !== false) {
 				$privilege = $this->user_connects($this->session->userdata('user'),$this->session->userdata('pass'));
 				if ($privilege == null) {
-					$this->creer_id_session($this->session->userdata('user'),$this->session->userdata('pass'));
+					$this->creer_id_session($this->session->userdata('user'),
+											$this->session->userdata('pass'),
+											$this->session->userdata('mode_expert'));
 				}
+			}
+			else {
+				$this->creer_id_session('demo',md5('demodemo'),false);
+				return $this->get_privilege();
 			}
 		}
 		return $privilege;
 	}
 	
 	function user_connects($user,$pass) {
+		$user=mysql_real_escape_string($user);
+		$pass=mysql_real_escape_string($pass);
 		global $erreur;
 		if (!$this->user_exists($user)) {
 			$erreur = 'Cet utilisateur n\'existe pas';
-			return false;
+			return null;
 		}
 		else {
 			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND (password LIKE \''.$pass.'\' OR md5(password) LIKE \''.$pass.'\')';
@@ -54,9 +69,9 @@ class Modele_tranche extends CI_Model {
 				return null;
 			}
 			else {
-				$requete='SELECT privilege FROM edgecreator_droits WHERE username LIKE(\''.$user.'\')';
+				$requete='SELECT privilege FROM edgecreator_droits WHERE username =\''.$user.'\'';
 				$resultat= $this->db->query($requete);
-				if ($resultat->row()==null) {
+				if ($resultat->num_rows()==0) {
 					return 'Affichage';
 				}
 				return $resultat->row()->privilege;
@@ -65,20 +80,20 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function username_to_id($username) {
-		$requete='SELECT ID FROM users WHERE username LIKE \''.$username.'\'';
+		$requete='SELECT ID FROM users WHERE username = \''.$username.'\'';
 		$resultat=$this->db->query($requete);
 		return $resultat->row()->ID;
 	}
 
 	function user_exists($user) {
-		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
+		$requete='SELECT username FROM users WHERE username =\''.$user.'\'';
 		return ($this->db->query($requete)->num_rows > 0);
 	}
 	
 	
-	function creer_id_session($user,$pass) {
+	function creer_id_session($user,$pass,$mode_expert) {
 		
-		$this->session->set_userdata(array('user' => $user, 'pass' => $pass));
+		$this->session->set_userdata(array('user' => $user, 'pass' => $pass, 'mode_expert'=>$mode_expert));
 	}
 	
 	function user_possede_modele($pays=null,$magazine=null,$username=null) {
@@ -184,7 +199,6 @@ class Modele_tranche extends CI_Model {
 			$requete.='AND Ordre='.$num_etape.' ';
 		$requete.=' GROUP BY Ordre'
 				 .' ORDER BY Ordre ';
-		echo $requete;
 		$resultats = $this->db->query($requete)->result();
 		foreach($resultats as $resultat) {
 			$resultat->Numero_debut=array();
@@ -490,8 +504,9 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function insert($pays,$magazine,$etape,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,$username,$id_valeur=null) {
-		$option_nom=is_null($option_nom) ? 'NULL' : '\''.$option_nom.'\'';
-		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.$option_valeur.'\'';
+		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
+		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
+		
 		
 		$requete='INSERT INTO edgecreator_modeles2 (Pays,Magazine,Ordre,Nom_fonction,Option_nom) VALUES '
 				.'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\','.$option_nom.') ';
@@ -580,13 +595,13 @@ class Modele_tranche extends CI_Model {
 								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 							      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND username LIKE \''.self::$username.'\'';
+								  .'AND Ordre='.$etape.' AND Option_nom IS NULL AND username = \''.self::$username.'\'';
 		else
 			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
 								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
 							      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-								  .'AND Ordre='.$etape.' AND Option_nom LIKE \''.$nom_option.'\' AND username LIKE \''.self::$username.'\'';
+								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
 		$this->db->query($requete_suppr_option);
 		echo $requete_suppr_option."\n";
 	}
@@ -619,31 +634,29 @@ class Modele_tranche extends CI_Model {
 		foreach($resultats as $resultat) {
 			$modifs=array();
 			$modifs_requete=array();
-			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.$resultat->Option_nom.'\'');
-			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.$resultat->Option_valeur.'\'');
+			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
+			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
 			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
 			if (est_dans_intervalle($numero,$intervalle)) {
 				if (!est_dans_intervalle($nouveau_numero,$intervalle)) {
 					$intervalle=$this->ajouterNumeroAIntervalle($intervalle, $nouveau_numero);
 					
-					$condition_option_nom=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.$option_nom;
-					$condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : 'LIKE '.$option_valeur;
-					$requete_id_valeur='SELECT edgecreator_valeurs.ID AS ID '
-									  .'FROM edgecreator_valeurs '
-									  .'INNER JOIN edgecreator_modeles2 ON edgecreator_valeurs.ID_Option = edgecreator_modeles2.ID '	
-									  .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '		   
-									  .'WHERE Pays LIKE \''.$resultat->Pays.'\' AND Magazine LIKE \''.$resultat->Magazine.'\' '
-									  .'AND Ordre LIKE \''.$resultat->Ordre.'\' AND Nom_fonction LIKE \''.$resultat->Nom_fonction.'\' '
+					$condition_option_nom=is_null($resultat->Option_nom) ? 'IS NULL' : '= '.$option_nom;
+					$condition_option_valeur=is_null($resultat->Option_nom) ? 'IS NULL' : '= '.$option_valeur;
+					$requete_id_valeur='SELECT edgecreator_modeles_vue.ID_Valeur AS ID '
+									  .'FROM edgecreator_modeles_vue '
+									  .'WHERE Pays = \''.$resultat->Pays.'\' AND Magazine = \''.$resultat->Magazine.'\' '
+									  .'AND Ordre = \''.$resultat->Ordre.'\' AND Nom_fonction = \''.$resultat->Nom_fonction.'\' '
 									  .'AND Option_nom '.$condition_option_nom.' AND Option_valeur '.$condition_option_valeur.' '
-									  .'AND Numero_debut LIKE \''.$resultat->Numero_debut.'\' AND Numero_fin LIKE \''.$resultat->Numero_fin.'\' '
-									  .'AND username LIKE \''.$resultat->username.'\'';
+									  .'AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
+									  .'AND username = \''.mysql_real_escape_string($resultat->username).'\'';
 					echo $requete_id_valeur."\n";
 					$id_valeur = $this->db->query($requete_id_valeur)->first_row()->ID;
 					
 					
 					$req_suppression_existantes='DELETE FROM edgecreator_intervalles '
-											   .'WHERE ID_Valeur='.$id_valeur.' AND Numero_debut LIKE \''.$resultat->Numero_debut.'\' AND Numero_fin LIKE \''.$resultat->Numero_fin.'\' '
-											   .'AND username LIKE \''.$resultat->username.'\'';
+											   .'WHERE ID_Valeur='.$id_valeur.' AND Numero_debut = \''.$resultat->Numero_debut.'\' AND Numero_fin = \''.$resultat->Numero_fin.'\' '
+											   .'AND username = \''.mysql_real_escape_string($resultat->username).'\'';
 					echo $req_suppression_existantes."\n";
 					$this->db->query($req_suppression_existantes);
 											
@@ -651,7 +664,7 @@ class Modele_tranche extends CI_Model {
 					foreach($intervalles as $intervalle) {
 						list($numero_debut,$numero_fin)=explode('~',$intervalle);
 						$req_ajout_nouvel_intervalle='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) '
-										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.$resultat->username.'\')';
+										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.mysql_real_escape_string($resultat->username).'\')';
 						echo $req_ajout_nouvel_intervalle."\n";
 						$this->db->query($req_ajout_nouvel_intervalle);
 							
@@ -1019,6 +1032,70 @@ class Modele_tranche extends CI_Model {
 			//$this->db->query($requete_update);
 		}
 	}
+	
+	
+	function get_liste($fonction,$type,$arg=null) {
+		$liste=array();
+		switch($type) {
+			case 'Police':
+				$rep=BASEPATH.'fonts/';
+				$dir = opendir($rep);
+				while ($f = readdir($dir)) {
+					if (strpos($f,'.ttf')===false)
+					continue;
+					if(is_file($rep.$f)) {
+						$nom=substr($f,0,strlen($f)-strlen('.ttf'));
+						$liste[$nom]=$nom;
+					}
+				}
+			 break;
+			case 'Source':
+				$pays=$arg;
+				$rep=Fonction_executable::getCheminElements($pays).'/';
+				$dir = opendir($rep);
+				while ($f = readdir($dir)) {
+					if (strpos($f,'.png')===false)
+					continue;
+					if(is_file($rep.$f)) {
+						$nom=$f;
+						$liste[$nom]=utf8_encode($nom);
+					}
+				}
+			 break;
+			case 'Position':
+				$liste['bas']='bas';
+				$liste['haut']='haut';
+			 break;
+			case 'Demi_hauteur':case 'Rempli':case 'Mesure_depuis_haut':
+				$liste['Oui']='Oui';
+				$liste['Non']='Non';
+			 break;
+			case 'Sens':
+				$liste['Horizontal']='Horizontal';
+				$liste['Vertical']='Vertical';
+			 break;
+			case 'Utilisateurs':
+				list($pays,$magazine,$numero)=explode('_',$arg);
+				$requete_contributeurs_tranche='SELECT photographes, createurs FROM tranches_pretes WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
+				$resultat_contributeurs_tranche=$this->db->query($requete_contributeurs_tranche)->first_row();
+				$photographes=explode(';',$resultat_contributeurs_tranche->photographes);
+				$createurs=explode(';',$resultat_contributeurs_tranche->createurs);
+				
+				$requete_utilisateurs='SELECT username FROM users ORDER BY username';
+				$resultats_utilisateurs=$this->db->query($requete_utilisateurs)->result();
+				foreach($resultats_utilisateurs as $resultat_utilisateur) {
+					$username = $resultat_utilisateur->username;
+					$est_photographe = in_array($username,$photographes);
+					$est_designer = in_array($username,$createurs);
+					
+					$liste[$username]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
+				}
+			 break;
+		}
+		uksort($liste,"strnatcasecmp");
+		return $liste;
+	}
+	
 }
 Modele_tranche::$fields=array('Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin');
 Fonction::$valeurs_defaut=array('Remplir'=>array('Pos_x'=>0,'Pos_y'=>0));
@@ -1754,50 +1831,6 @@ function est_dans_intervalle($numero,$intervalle) {
 		}
 	}
 	return false;
-}
-
-function get_liste($fonction,$type,$arg=null) {
-	$liste=array();
-	switch($type) {
-		case 'Police':
-			$rep=BASEPATH.'fonts/';
-			$dir = opendir($rep);
-			while ($f = readdir($dir)) {
-				if (strpos($f,'.ttf')===false)
-					continue;
-				if(is_file($rep.$f)) {
-					$nom=substr($f,0,strlen($f)-strlen('.ttf'));
-					$liste[$nom]=$nom;
-				}
-			}
-		 break;
-		 case 'Source':
-		 	$pays=$arg;
-			$rep=Fonction_executable::getCheminElements($pays).'/';
-			$dir = opendir($rep);
-			while ($f = readdir($dir)) {
-				if (strpos($f,'.png')===false)
-					continue;
-				if(is_file($rep.$f)) {
-					$nom=$f;
-					$liste[$nom]=utf8_encode($nom);
-				}
-			}
-		 break;
-		 case 'Position':
-			 $liste['bas']='bas';
-			 $liste['haut']='haut';
-		 break;
-		 case 'Demi_hauteur':case 'Rempli':case 'Mesure_depuis_haut':
-			 $liste['Oui']='Oui';
-			 $liste['Non']='Non';
-		 break;
-		 case 'Sens':
-			 $liste['Horizontal']='Horizontal';
-			 $liste['Vertical']='Vertical';
-		 break;
-	}
-	return $liste;
 }
 
 

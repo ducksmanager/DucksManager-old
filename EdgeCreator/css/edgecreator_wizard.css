@@ -1,0 +1,67 @@
+@CHARSET "ISO-8859-1";
+
+.ui-dialog {
+	max-height: 100%;
+	overflow-y: auto; !important
+}
+
+#wizard-1 #tranches_en_cours {
+	margin-left: 20px;
+}
+
+#wizard-proposition-clonage table td {
+	text-align: center;
+}
+
+#wizard-proposition-clonage .image_preview:hover {
+	outline: 2px dashed orange;
+}
+
+#wizard-proposition-clonage .image_preview.selected {
+	outline: 2px solid orange;
+}
+	
+	
+#wizard-clonage .loading {
+	background:url('../images/clone.png') no-repeat left center;
+	padding-left: 30px;
+}
+#wizard-clonage .done {
+	background:url('../images/ok.png') no-repeat left center;
+	padding-left: 30px;
+}
+
+
+.wizard.preview_etape:not(.final):not(.modif) {
+	cursor: pointer;
+}
+
+.wizard.preview_etape img {
+	text-align: center;
+}
+
+.wizard.preview_etape #point_remplissage {
+	height: 12px; 
+	width: 12px; 
+	position: fixed;
+	cursor: move;
+}
+
+.dialog-preview-etape .ui-dialog-titlebar {
+	line-height: 10px;
+}
+
+
+.image_preview {
+	float: left;
+}
+
+.options_etape {
+	/*float: left;*/
+	margin-left: 30px;
+}
+
+button.small .ui-button-text {
+	padding: 0px 10px 0px 10px !important;
+	font-size: 0.9em !important;
+}

@@ -3,9 +3,8 @@ class Numerosdispos extends CI_Controller {
 	
 	function index($pays=null,$magazine=null) {
 		
-		$this->load->database();
-		$this->load->library('session');
-		$this->load->model('Modele_tranche');
+		
+		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
@@ -17,7 +16,7 @@ class Numerosdispos extends CI_Controller {
 		else if ($magazine == null) {
 			$data=array('mode'=>'get_magazines');
 			$magazines=$this->Modele_tranche->get_magazines($pays);
-			$data['magazines']=array_merge(array(''=>''),$magazines);
+			$data['magazines']=$magazines;
 			
 		}
 		else {

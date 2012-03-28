@@ -50,7 +50,10 @@ class MyFonts extends CI_Model {
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
-			$im=imagecreatefromgif($this->chemin_image);
+			if (false === (@$im=imagecreatefromgif($this->chemin_image))) {
+				echo 'Aucun chemin d\'image trouve sur '.$this->p->url;
+				Fonction_executable::erreur('Image MyFonts non trouvee ; ('.$this->p->url.')');
+			}
 		}
 		else {
 			$this->p=new Post(
@@ -63,19 +66,21 @@ class MyFonts extends CI_Model {
 			$code_image=$this->p->content;
 			preg_match(self::$regex_source_image, $code_image, $chemin);
 			if (!array_key_exists(1, $chemin)) {
-				echo 'Aucun chemin d\'image trouvé sur '.$this->p->url;
-				Fonction_executable::erreur('Image MyFonts non trouvée ; ('.$this->p->url.')');
+				echo 'Aucun chemin d\'image trouve sur '.$this->p->url;
+				Fonction_executable::erreur('Image MyFonts non trouvee ; ('.$this->p->url.')');
 			}
-			$this->chemin_image=$chemin[1];
-			$this->chemin_image=str_replace('\\','',$this->chemin_image);
-			
-			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
-					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
-					.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
-			$this->db->query($requete);
-			
-			$im=imagecreatefromgif($this->chemin_image);
-			imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
+			else {
+				$this->chemin_image=$chemin[1];
+				$this->chemin_image=str_replace('\\','',$this->chemin_image);
+				
+				$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
+						.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
+						.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
+				$this->db->query($requete);
+				
+				$im=imagecreatefromgif($this->chemin_image);
+				imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
+			}
 		}
 		$this->im=$im;
 	}

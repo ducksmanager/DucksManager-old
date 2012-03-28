@@ -1,6 +1,6 @@
 <?php
 if (isset($options))
-	header("X-JSON: " . json_encode($options));
+	echo json_encode($options);
 if (isset($etapes))
-	header("X-JSON: " . json_encode($etapes));
+	echo json_encode($etapes);
 ?>

@@ -11,31 +11,27 @@ html, body, span, td, th {
 }
 
 span, td, th {
-	font-size:16px;
+	font-size:14px;
 }
 #corps h2 {
 	margin-bottom: 0;
 }
 
-.entete_page {
+#entete_page {
 	height:60px;
 	width:100%;
 	border-bottom:1px solid gray;
+	position: fixed;
+	z-index: 1000;
+	background-color: white;
+	padding-right:10px;
 }
 
-#filtre_numeros {
-	padding-left: 20px;
-}
-
-#filtre_numeros img {
-	cursor:pointer;
-}
-
-#filtre_numeros option.tranche_prete {
+option.tranche_prete {
 	background-color:#CBF5D9;
 }
 
-#filtre_numeros option.cree_par_moi {
+option.cree_par_moi {
 	background-color:#98EBB2;
 }
 
@@ -50,7 +46,7 @@ a {
 }
 
 .cache {
-	display:none;
+	display:none !important;
 }
 
 #infos {
@@ -59,9 +55,14 @@ a {
 	top:0;
 	background-color:white;
 	z-index:500;
-	width:375px;
+	width:175px;
 	overflow-y: auto;
 	height: 100%;
+	border-left: 1px solid black;	
+}
+
+#helpers {
+	overflow-x: auto;
 }
 
 #upload_fichier {
@@ -69,14 +70,15 @@ a {
 	right:5px;
 	bottom:0;
 	background-color:white;
-	z-index:500;
+	z-index: 1001;
 	overflow-y: auto;
 }
 
 #toggle_helpers{
 	position:fixed;
 	right:0;
-	top:0;
+	top: 34px;
+	border: 1px dashed black;
 	z-index:1000;
 	background-color:white;
 }
@@ -95,6 +97,7 @@ a {
 	position:fixed;
 	right:0;
 	bottom:0;
+	background-color: white;
 	color:red;
 }
 
@@ -102,11 +105,8 @@ a {
 	position:fixed;
 	left:0px;
 	width:200px;
-	height:100%;
-	border-right:1px solid black;
 	background-color: white;
 	z-index: 500;
-	padding-right: 5px;
 }
 
 #viewer_inner {
@@ -114,6 +114,7 @@ a {
 	overflow-x:auto;
 	overflow-y:auto;
 	width:100%;
+	background-color: #FEEEBD;
 }
 
 .tabnav {
@@ -125,6 +126,11 @@ a {
 	left:225px;
 	padding-left:10px;
 	padding-right: 400px;
+}
+
+#viewer, #corps, #infos {
+	top:61px;
+	bottom:0px;
 }
 
 table.bordered {
@@ -143,6 +149,10 @@ td.preview {
 	vertical-align:middle;
 	background:url('../images/view.png') no-repeat center right;
 	padding-right: 20px;
+}
+
+.save {
+	white-space: nowrap;
 }
  
 .valeur_reelle {
@@ -164,6 +174,10 @@ td.preview {
 	background-color:gray;
 }
 
+.erreurs {
+	color:red;
+}
+
 .erreur_valeurs_multiples {
 	border:1px solid red;
 }
@@ -174,6 +188,16 @@ td.preview {
 .centre {
 	text-align:center;
 }
+
+.etape_active {
+	color:blue;
+}
+
+.num_etape_preview, .numero_preview {
+	height: 40px;
+	vertical-align: top;
+}
+
 .lien_etape,.num_etape_preview {
 	text-align:center;
 }
@@ -186,24 +210,15 @@ td.preview {
 	white-space:nowrap;
 }
 
-.option_etape a{
-	color:black;
+.option_etape {
 	cursor:default;
 }
 
-.option_etape a:hover{
-	background-color:white;
-}
-
-.option_etape a span {
-	display:none; 
-	padding:2px 3px; 
-	margin-left:10px; 
-	width:300px;
-}
-
-.option_etape a:hover span{
+.option_etape .desc{
 	display:inline; 
+	padding:2px 3px; 
+	margin-top: -3em; 
+	width:300px;
 	position:absolute; 
 	border:1px solid #cccccc; 
 	background:#ffffff; 
@@ -287,10 +302,11 @@ td.reload {
 	border-bottom:1px solid blue;
 }
 
-#regle_verticale {
+.regle {
 	position:absolute;
 	z-index: 500;
 	cursor:e-resize;
+	left: 0px;
 }
 
 .zone_regle {
@@ -315,6 +331,27 @@ td.reload {
 	white-space: nowrap;
 }
 
-div.slider { width:150px; margin:10px 0; background-color:#ccc; height:10px; position: relative; white-space: nowrap; }
+#zoom_slider {
+	margin-right: 10px;
+	width: 150px;
+}
 
-div.slider div.handle { width:10px; height:15px; background-color:#f00; cursor:e-resize; position: absolute; }
+#dialog_save_png .username {
+	display: block;
+}
+
+#dialog_save_png span {
+	float: left;
+	height: 250px;
+	overflow-y: auto;
+	width: 40%;
+}
+
+.fixed_header {
+	position:fixed;
+	back
+}
+
+.wizard {
+	display: none;
+}

@@ -11,7 +11,7 @@
 	 <input type="hidden" name="MAX_FILE_SIZE" value="400000" />
 	 <input type="hidden" id="pays" name="pays" value="" />
 	 <input type="file" name="image" style="width: 260px"/><br />
-	 <input type="submit" value="Go" />
+	 <input type="submit" value="Envoyer" />
 </form>
 	</body>
 	</html>

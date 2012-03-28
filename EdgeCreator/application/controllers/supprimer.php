@@ -25,7 +25,7 @@ class Supprimer extends CI_Controller {
 		$this->db->query('SET NAMES UTF8');
 		$this->load->helper('url');
 		
-		$this->load->model('Modele_tranche');
+		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->delete_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction);
 	}
 }

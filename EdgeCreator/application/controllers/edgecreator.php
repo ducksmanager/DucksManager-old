@@ -22,7 +22,7 @@ class EdgeCreator extends CI_Controller {
 			self::$magazine=$this->session->userdata('magazine');
 		}
 
-		$this->load->model('Modele_tranche');
+		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
 		$num_ordres=$this->Modele_tranche->get_ordres(self::$pays,self::$magazine);
