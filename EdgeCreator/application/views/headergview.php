@@ -14,7 +14,7 @@ header("Pragma: no-cache"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
 	
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.7.1.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.7.2.min.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.8.18.custom.min.js" ></script>
 	
 	<!-- <script type="text/javascript" src="<?=base_url()?>js/jquery.scrollbarTable.js" ></script>!-->
@@ -54,6 +54,7 @@ header("Pragma: no-cache"); ?>
 		urls['etendre']='<?=site_url('etendre')?>/';
 		urls['viewer']='<?=site_url('viewer')?>/';
 		urls['viewer_wizard']='<?=site_url('viewer_wizard')?>/';
+		urls['viewer_myfonts']='<?=site_url('viewer_myfonts')?>/';
 	</script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreator.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreator_wizard.js" ></script>

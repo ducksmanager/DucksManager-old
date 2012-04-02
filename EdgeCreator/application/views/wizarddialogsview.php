@@ -158,7 +158,7 @@
 					</tr>
 					<tr>
 						<td>Police de caract&egrave;res : </td>
-						<td><input name="option-Police" type="text" maxlength="30" size="20" /></td>
+						<td><input name="option-URL" type="text" maxlength="30" size="20" /></td>
 					</tr>
 					<tr>
 						<td>
@@ -179,13 +179,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">
+						<td colspan="2" style="text-align: center">
 							Aper&ccedil;u : <br />
-							<span class="apercu_myfonts"></span>
+							<div class="apercu_myfonts"></div>
 						</td>
 					</tr>
 				</table>
 			</div>
+			<br />
 			<div style="text-align: center">Int&eacute;gration &agrave; la tranche</div>
 			<div style="border:1px dashed black">
 				<table style="border:0" cellspacing="0" cellpadding="1">

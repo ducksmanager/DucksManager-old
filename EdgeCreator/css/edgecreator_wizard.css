@@ -47,6 +47,12 @@
 	cursor: move;
 }
 
+.apercu_myfonts img {
+	border: 1px solid black;
+	max-width: 200px;
+    text-align: left;
+}
+
 .dialog-preview-etape .ui-dialog-titlebar {
 	line-height: 10px;
 }

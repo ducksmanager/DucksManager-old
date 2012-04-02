@@ -1400,7 +1400,7 @@ class TexteMyFonts extends Fonction_executable {
 							   'Demi_hauteur'=>'S&eacute;lectionnez "Oui" si jamais vous ne voyez le texte que sur la moiti&eacute; de sa hauteur',
 							   'Mesure_depuis_haut'=>'"Oui" si Pos_y doit repr&eacute;senter la marge jusqu\'au haut du texte, "Non" s\'il s\'agit de la marge jusqu\'au bas du texte');
 	
-	function TexteMyFonts($options,$executer=true,$creation=false,$get_options_defaut=true) {
+	function TexteMyFonts($options,$executer=true,$creation=false,$get_options_defaut=true,$options_avancees=true) {
 		parent::Fonction_executable($options,$creation,$get_options_defaut);
 		if (!$executer)
 			return;
@@ -1409,8 +1409,6 @@ class TexteMyFonts extends Fonction_executable {
 		if ($this->options->Chaine==' ')
 			return;
 		$this->options->URL=str_replace('.','/',$this->options->URL);
-		$this->options->Pos_x=self::toTemplatedString($this->options->Pos_x);
-		$this->options->Pos_y=self::toTemplatedString($this->options->Pos_y);
 		$this->verifier_erreurs();
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur_fond);
 		list($r_texte,$g_texte,$b_texte)=$this->getRGB(null, null, null, $this->options->Couleur_texte);
@@ -1458,16 +1456,23 @@ class TexteMyFonts extends Fonction_executable {
 		//echo ($fin-$debut).'<br />';
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);
-		$texte=imagerotate($texte, $this->options->Rotation, $fond);
 		
 		
-		$width=imagesx($texte);
-		$height=imagesy($texte);
-		$nouvelle_largeur=Viewer::$largeur*$this->options->Compression_x;
-		$nouvelle_hauteur=Viewer::$largeur*($height/$width)*$this->options->Compression_y;
-		if ($this->options->Mesure_depuis_haut=='Non')
-			$this->options->Pos_y-=$nouvelle_hauteur/z(1);
-		imagecopyresampled (Viewer::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+		if ($options_avancees) {
+			$this->options->Pos_x=self::toTemplatedString($this->options->Pos_x);
+			$this->options->Pos_y=self::toTemplatedString($this->options->Pos_y);
+		
+			$texte=imagerotate($texte, $this->options->Rotation, $fond);
+			$width=imagesx($texte);
+			$height=imagesy($texte);
+			$nouvelle_largeur=Viewer::$largeur*$this->options->Compression_x;
+			$nouvelle_hauteur=Viewer::$largeur*($height/$width)*$this->options->Compression_y;
+			if ($this->options->Mesure_depuis_haut=='Non')
+				$this->options->Pos_y-=$nouvelle_hauteur/z(1);
+			imagecopyresampled (Viewer::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+		}
+		else
+			Viewer::$image=$texte;
 
 	}
 	

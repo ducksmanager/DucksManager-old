@@ -565,9 +565,20 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			classes_farbs['Couleur_texte']='.texte';
 			classes_farbs['Couleur_fond']='.fond';
 			
-			form_userfriendly.find('input[name="option-Chaine"]').val(valeurs['Chaine']);
-			form_userfriendly.find('input[name="option-Police"]').val(valeurs['URL']);
-			form_userfriendly.find('input[name="option-Rotation"]').val(valeurs['Rotation']);
+			$.each($(['Chaine','URL','Rotation']),function(i,option_nom) {
+				form_userfriendly.find('input[name="option-'+option_nom+'"]').val(valeurs[option_nom]);				
+			});
+			
+			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"]').blur(function() {
+				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
+				form_options.find('input[name="'+nom_option+'"]').val($(this).val());
+				load_myfonts_preview();
+			});
+			
+			form_userfriendly.find('.apercu_myfonts').html(
+					$('<img>',{'src':urls['viewer_myfonts']+['index',valeurs['URL'],valeurs['Couleur_texte'],valeurs['Couleur_fond'],valeurs['Largeur'],valeurs['Chaine'],valeurs['Demi_hauteur']].join('/')}));
+			
+		break;
 	}
 	
 	for (var nom_option in classes_farbs) {
@@ -660,6 +671,19 @@ function callback_change_picked_color(farb, input_couleur) {
 
 function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
 	tester_option_preview(nom_fonction,nom_option);
+	if (nom_fonction=='TexteMyFonts') {
+		load_myfonts_preview();
+	}
+}
+
+function load_myfonts_preview() {
+	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+	var form_options=dialogue.find('[name="form_options"]');
+	var url_appel=urls['viewer_myfonts']+"index";
+	$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
+		url_appel+="/"+form_options.find('[name="'+nom_option+'"]').val();
+	});
+	dialogue.find('.apercu_myfonts').html($('<img>',{'src':url_appel}));	
 }
 
 
