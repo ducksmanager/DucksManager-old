@@ -17,17 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-jQuery.fn.farbtastic = function (callback) {
-  $.farbtastic(this, callback);
+jQuery.fn.farbtastic = function (callback, callbackMouseUp) {
+  $.farbtastic(this, callback, callbackMouseUp);
   return this;
 };
 
-jQuery.farbtastic = function (container, callback) {
+jQuery.farbtastic = function (container, callback, callbackMouseUp) {
   var container = $(container).get(0);
-  return container.farbtastic || (container.farbtastic = new jQuery._farbtastic(container, callback));
+  return container.farbtastic || (container.farbtastic = new jQuery._farbtastic(container, callback, callbackMouseUp));
 }
 
-jQuery._farbtastic = function (container, callback) {
+jQuery._farbtastic = function (container, callback, callbackMouseUp) {
   // Store farbtastic object
   var fb = this;
 
@@ -55,12 +55,15 @@ jQuery._farbtastic = function (container, callback) {
   }
 
   /**
-   * Link to the given element(s) or callback.
+   * Link to the given element(s) or callback(s).
    */
-  fb.linkTo = function (callback) {
+  fb.linkTo = function (callback, callbackMouseUp) {
     // Unbind previous nodes
     if (typeof fb.callback == 'object') {
       $(fb.callback).unbind('keyup', fb.updateValue);
+    }
+    if (typeof fb.callbackMouseUp == 'object') {
+        $(fb.callbackMouseUp).unbind('keyup', fb.updateValue);
     }
 
     // Reset color
@@ -77,8 +80,30 @@ jQuery._farbtastic = function (container, callback) {
         fb.setColor(fb.callback.get(0).value);
       }
     }
+    // Bind callback or elements
+    if (typeof callbackMouseUp == 'function') {
+      fb.callbackMouseUp = callbackMouseUp;
+    }
     return this;
-  }
+  };
+
+  /**
+   * Link to the given element(s) or callback.
+   */
+  fb.linkMouseUpTo = function (callbackMouseUp) {
+    // Unbind previous nodes
+    if (typeof fb.callbackMouseUp == 'object') {
+      $(fb.callbackMouseUp).unbind('keyup', fb.updateValue);
+    }
+
+    // Reset color
+    fb.color = null;
+
+    fb.callbackMouseUp = callbackMouseUp;
+   
+    return this;
+  };
+  
   fb.updateValue = function (event) {
     if (this.value && this.value != fb.color) {
       fb.setColor(this.value);
@@ -215,6 +240,7 @@ jQuery._farbtastic = function (container, callback) {
     $(document).unbind('mousemove', fb.mousemove);
     $(document).unbind('mouseup', fb.mouseup);
     document.dragging = false;
+    fb.callbackMouseUp.call(fb, fb.color);
   }
 
   /**

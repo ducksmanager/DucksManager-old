@@ -134,7 +134,7 @@
 		</div>
 		
 		<div id="options-etape--Remplir" class="options_etape cache">
-			<img id="point_remplissage" src="../images/cross.png" />
+			<img class="point_remplissage" src="../images/cross.png" />
 			<p>
 				Le remplissage de la tranche est d&eacute;fini par une couleur et par des coordonn&eacute;es indiquant le point &agrave; partir duquel le remplissage est effectu&eacute;.
 				<br />
@@ -142,10 +142,63 @@
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage.
 			</p>
 			<form id="options_etape">
-				<div id="picker"></div>
-				<label for="option-couleur">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-couleur" size="4" maxlength="7" readonly="readonly"/>
+				<div class="picker cache"></div>
+				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
+				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
 			</form>
+		</div>
+		
+		<div id="options-etape--TexteMyFonts" class="options_etape cache">
+			<div style="text-align: center">Propri&eacute;t&eacute;s du texte</div>
+			<div style="border:1px dashed black">
+				<table style="border:0" cellspacing="0" cellpadding="1">
+					<tr>
+						<td>Texte : </td>
+						<td><input name="option-Chaine" type="text" maxlength="90" size="30" /></td>
+					</tr>
+					<tr>
+						<td>Police de caract&egrave;res : </td>
+						<td><input name="option-Police" type="text" maxlength="30" size="20" /></td>
+					</tr>
+					<tr>
+						<td>
+							<label for="option-Couleur_texte">Couleur du texte : </label>
+						</td>
+						<td>
+							<div class="picker texte cache"></div>
+							<input type="text" name="option-Couleur_texte" size="4" maxlength="7" readonly="readonly"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="option-Couleur_fond">Couleur du fond : </label>
+						</td>
+						<td>
+							<div class="picker fond cache"></div>
+							<input type="text" name="option-Couleur_fond" size="4" maxlength="7" readonly="readonly"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							Aper&ccedil;u : <br />
+							<span class="apercu_myfonts"></span>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div style="text-align: center">Int&eacute;gration &agrave; la tranche</div>
+			<div style="border:1px dashed black">
+				<table style="border:0" cellspacing="0" cellpadding="1">
+					<tr>
+						<td>Rotation : </td>
+						<td><input name="option-Rotation" type="text" maxlength="90" size="30" /></td>
+					</tr>
+					<tr>
+						<td>Compression (?) : </td>
+						<td><input name="option-Compression" type="text" maxlength="30" size="20" /></td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	
 		<div id="wizard-numero-inconnu" class="wizard dead-end" title="Num&eacute;ro non r&eacute;f&eacute;renc&eacute;">

@@ -40,7 +40,7 @@
 	text-align: center;
 }
 
-.wizard.preview_etape #point_remplissage {
+.wizard.preview_etape .point_remplissage {
 	height: 12px; 
 	width: 12px; 
 	position: fixed;

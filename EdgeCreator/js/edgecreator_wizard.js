@@ -11,10 +11,16 @@
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
+var num_etape_courante=null;
+
+var url_viewer='viewer_wizard';
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=60;
-var url_viewer='viewer_wizard';
+var OPTIONS_FONCTIONS={'Remplir':['Pos_x','Pos_y','Couleur'],
+					   'TexteMyFonts':['URL','Couleur_texte','Couleur_fond','Largeur','Chaine',
+					                   'Pos_x','Pos_y','Compression_x','Compression_y',
+					                   'Rotation','Demi_hauteur','Mesure_depuis_haut']};
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -447,6 +453,7 @@ function wizard_init(wizard_id) {
 								modification_etape=dialogue;
 								
 								var num_etape=dialogue.data('etape');
+								num_etape_courante=num_etape;
 								var nom_fonction=dialogue.data('nom_fonction');
 								
 								var section_preview_etape=dialogue.find('.preview_etape');
@@ -501,9 +508,11 @@ function largeur_max_preview_etape_ouverte() {
 
 function fermer_dialogue_preview(dialogue) {
 	dialogue.dialog('option', 'width', 'auto');
-	dialogue.dialog('option','buttons', null);
+	dialogue.find('.ui-dialog-buttonpane').remove();
 	dialogue.find('.ui-dialog-titlebar').find('span').addClass('cache');
-	dialogue.find('img.image_preview').next('.options_etape').remove();
+	dialogue.find('.options_etape').addClass('cache');
+	dialogue.find('[name="form_options"]').remove();
+	dialogue.find('.preview_etape').removeClass('modif');
 }
 
 function placer_dialogues_preview() {
@@ -521,55 +530,118 @@ function placer_dialogues_preview() {
 	}
 }
 
-var farb;
+var farbs;
 function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction) {
-	var image = section_preview_etape.find('.image_preview');
-	switch(nom_fonction) {
-		case 'Remplir':
-			var input_couleur=section_preview_etape.find('input[name="option-couleur"]');
-			farb=$.farbtastic($('#picker'));
-			farb.linkTo(function() {callback_change_picked_color($(this),input_couleur);});
-			farb.setColor('#'+valeurs['Couleur']);
-			
-			var cote_croix_remplissage=$('#point_remplissage').width();
-			var limites_drag=[(image.offset().left				 -cote_croix_remplissage/2+1),
-			                  (image.offset().top 				 -cote_croix_remplissage/2+1),
-			                  (image.offset().left+image.width() -cote_croix_remplissage/2-1),
-			                  (image.offset().top +image.height()-cote_croix_remplissage/2-1)];
-			$('#point_remplissage').css({'left':(limites_drag[0]+valeurs['Pos_x']*zoom)+'px', 
-										 'top': (limites_drag[1]+valeurs['Pos_y']*zoom)+'px'})
-								   .draggable({containment:limites_drag});
-		break;
-	}
+	farbs={};
+	var classes_farbs={};
+	
+	var form_userfriendly=section_preview_etape.find('.options_etape');
 	var form_options=$('<form>',{'name':'form_options'});
 	for(var nom_option in valeurs) {
 		form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(valeurs[nom_option]));
 	}
 	section_preview_etape.append(form_options);
+	
+	
+	var image = section_preview_etape.find('.image_preview');
+	switch(nom_fonction) {
+		case 'Remplir':
+			classes_farbs['Couleur']='';
+			
+			var cote_croix_remplissage=form_userfriendly.find('.point_remplissage').width();
+			var limites_drag=[(image.offset().left				 -cote_croix_remplissage/2+1),
+			                  (image.offset().top 				 -cote_croix_remplissage/2+1),
+			                  (image.offset().left+image.width() -cote_croix_remplissage/2-1),
+			                  (image.offset().top +image.height()-cote_croix_remplissage/2-1)];
+			form_userfriendly.find('.point_remplissage').css({'left':(limites_drag[0]+valeurs['Pos_x']*zoom)+'px', 
+										 					  'top': (limites_drag[1]+valeurs['Pos_y']*zoom)+'px'})
+													    .draggable({containment:limites_drag,
+														   		    stop:function(event, ui) {
+														   		    	tester_option_preview(nom_fonction,'Pos_x'); 
+														   		    	tester_option_preview(nom_fonction,'Pos_y');
+														   		    }});
+		break;
+		case 'TexteMyFonts':
+			classes_farbs['Couleur_texte']='.texte';
+			classes_farbs['Couleur_fond']='.fond';
+			
+			form_userfriendly.find('input[name="option-Chaine"]').val(valeurs['Chaine']);
+			form_userfriendly.find('input[name="option-Police"]').val(valeurs['URL']);
+			form_userfriendly.find('input[name="option-Rotation"]').val(valeurs['Rotation']);
+	}
+	
+	for (var nom_option in classes_farbs) {
+		var input=form_userfriendly.find('input[name="option-'+nom_option+'"]');
+		ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
+					 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
+		input.click(function() {
+			var this_picker=$(this).prevAll('.picker');
+			$('.picker').not(this_picker).addClass('cache');
+			this_picker.toggleClass('cache');
+		});
+	}
+}
+
+
+function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
+	farbs[nom_option]=$.farbtastic(picker)
+					  .linkTo(function() {callback_change_picked_color($(this),input);},
+							  function() {callback_test_picked_color  ($(this),input,nom_fonction,nom_option);})
+					  .setColor(valeur);
+	
 }
 
 function tester_options_preview() {
 	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+
 	var form_options=dialogue.find('[name="form_options"]');
-	var nom_fonction=dialogue.data('nom_fonction');
-	var num_etape=dialogue.data('etape');
-	switch(nom_fonction) {
-		case 'Remplir':
-			form_options.find('[name="Couleur"]').val(farb.color.replace(/#/g,''));
-			var limites_drag_point_remplissage=$('#point_remplissage').draggable('option','containment');
-			form_options.find('[name="Pos_x"]').val(new String(parseFloat(($('#point_remplissage').offset().left - limites_drag_point_remplissage[0])/zoom)+'')
-				.replace(/([0-9]+\.[0-9]{2}).*/g,'$1'));
-			form_options.find('[name="Pos_y"]').val(new String(parseFloat(($('#point_remplissage').offset().top  - limites_drag_point_remplissage[1])/zoom)+'')
-				.replace(/([0-9]+\.[0-9]{2}).*/g,'$1'));
-		break;
-	}
 	chargements=new Array();
-	chargements.push(num_etape+'');
+	chargements.push(num_etape_courante+'');
 	zoom=1.5;
 	chargement_courant=0;
 	var parametrage=form_options.serialize();
     charger_preview_etape(chargements[0],true,parametrage);
 }
+
+function tester_option_preview(nom_fonction,nom_option) {
+	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+	var form_options=dialogue.find('[name="form_options"]');
+	var nom_fonction=dialogue.data('nom_fonction');
+	
+	var val=null;
+	switch(nom_fonction) {
+		case 'Remplir':
+			var point_remplissage=dialogue.find('.point_remplissage');
+			switch(nom_option) {
+				case 'Couleur':
+					var farb=farbs[nom_option];
+					val=farb.color.replace(/#/g,'');
+				break;
+				case 'Pos_x':
+					var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+					val = new String(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom)+'')
+							.replace(/([0-9]+\.[0-9]{2}).*/g,'$1');
+				break;
+				case 'Pos_y':
+					var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+					val = new String(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom)+'')
+							.replace(/([0-9]+\.[0-9]{2}).*/g,'$1');
+				break;
+			}
+		break;
+		case 'TexteMyFonts':
+			switch(nom_option) {
+				case 'Couleur_fond': case 'Couleur_texte':
+					var farb=farbs[nom_option];
+					val=farb.color.replace(/#/g,'');
+				break;
+			}
+		break;
+	}
+	form_options.find('[name="'+nom_option+'"]').val(val);
+	
+}
+
 
 function callback_change_picked_color(farb, input_couleur) {
 	var couleur=farb[0].color.replace(/#/g,'');
@@ -580,9 +652,14 @@ function callback_change_picked_color(farb, input_couleur) {
 					  *parseInt(g,16)
 					  *parseInt(b,16) < 100*100*100;
 	input_couleur
-		//.val(couleur)
 		.css({'background-color':'#'+couleur, 
 			  'color':couleur_foncee ? '#ffffff' : '#000000'});
+	
+}
+
+
+function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
+	tester_option_preview(nom_fonction,nom_option);
 }
 
 
