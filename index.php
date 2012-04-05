@@ -17,7 +17,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 	setCookie('pass','',time()-3600);
 }
 else {
-	if (isset($_SESSION['user']) && !isset($_COOKIE['user']) ) {
+	if (isset($_SESSION['user']) && isset($_SESSION['pass']) && !isset($_COOKIE['user']) ) {
 		setCookie('user',$_SESSION['user'],time()+3600);
 		setCookie('pass',$_SESSION['pass'],time()+3600);
 	}
@@ -1327,6 +1327,17 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 								<a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
 							</h3>
 						</div>
+						<div style="width:300px;margin-top:20px;border:1px solid white">
+							<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
+							<p style="margin-left:10px">
+								<?=PUB_WHATTHEDUCK_1?>
+								<a target="_blank" href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
+								<?=PUB_WHATTHEDUCK_2?>
+								<br />
+								<?=PUB_WHATTHEDUCK_3?>
+							</p>
+						</div>
+						<br />
 						
                                 <?php
                                 break;
