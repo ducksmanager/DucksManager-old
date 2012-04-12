@@ -1437,32 +1437,34 @@ class TexteMyFonts extends Fonction_executable {
 		
 		$width=imagesx($texte);
 		$height=imagesy($texte);
-
-		$debut=microtime(true);
-		$espace=imagecreatetruecolor(2*$height, $height);
-		imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
-		for ($i=0;$i<$width;$i+=2*$height) {
-			$image_decoupee=imagecreatetruecolor(2*$height, $height);
-			imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
-			imagetruecolortopalette($image_decoupee, false, 255);
-			if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
-				$texte2=imagecreatetruecolor($i, $height);
-				imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
-				$texte=$texte2;
-				break;
+		
+		if ($options_avancees) { // Découpage des espaces blancs => Pas pour le preview
+			$espace=imagecreatetruecolor(2*$height, $height);
+			imagefill($espace, 0, 0, imagecolorallocate($espace,$r, $g, $b));
+			for ($i=0;$i<$width;$i+=2*$height) {
+				$image_decoupee=imagecreatetruecolor(2*$height, $height);
+				imagecopyresampled($image_decoupee, $texte, 0, 0, $i, 0, 2*$height, $height, 2*$height, $height);
+				imagetruecolortopalette($image_decoupee, false, 255);
+				if (imagecolorstotal($image_decoupee) == 1) { // Image remplie uniformément => découpage
+					$texte2=imagecreatetruecolor($i, $height);
+					imagecopy($texte2, $texte, 0, 0, 0, 0, $i, $height);
+					$texte=$texte2;
+					break;
+				}
 			}
 		}
-		$fin=microtime(true);
-		//echo ($fin-$debut).'<br />';
+		
 		$fond=imagecolorallocatealpha($texte, $r, $g, $b, 127);
 		imagefill($texte,0,0,$fond);
 		
+		if (!is_null($this->options->Rotation)) {
+			$texte=imagerotate($texte, $this->options->Rotation, $fond);
+		}
 		
 		if ($options_avancees) {
 			$this->options->Pos_x=self::toTemplatedString($this->options->Pos_x);
 			$this->options->Pos_y=self::toTemplatedString($this->options->Pos_y);
 		
-			$texte=imagerotate($texte, $this->options->Rotation, $fond);
 			$width=imagesx($texte);
 			$height=imagesy($texte);
 			$nouvelle_largeur=Viewer::$largeur*$this->options->Compression_x;

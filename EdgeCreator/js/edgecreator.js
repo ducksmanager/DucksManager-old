@@ -130,7 +130,7 @@ function reload_observers_etapes() {
             jqueryui_alert('Une &eacute;tape est d&eacute;j&agrave; en train d\'&ecirc;tre ajout&eacute;e');
             return;
         }
-        setFixedHeaders(true);
+        //setFixedHeaders(true);
         var element=$(this).parent('th');
         num_etape_avant_nouvelle=element.data('etape');
         if (typeof(num_etape_avant_nouvelle) == 'undefined')
@@ -1046,7 +1046,7 @@ $(window).load(function() {
     if (!$('#viewer'))
         return;
     
-    $(window).scroll(function(a,b) {setFixedHeaders(false);});
+    //$(window).scroll(function(a,b) {setFixedHeaders(false);});
     
     $('#connexion').button();
 	
@@ -1130,31 +1130,47 @@ $(window).load(function() {
 
     var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
     $('#zoom_slider').slider({
-        value:2,
+        value:1 /* Valeur n°1 du tableau, donc = 1.5*/,
         min:0,
         max:valeurs_possibles_zoom.length-1,
         step:1,
         change: function(event,ui) {
             zoom=valeurs_possibles_zoom[ui.value];
             $('#zoom_value').html(zoom);
-            if (onglet_sel == 'Builder') {
-                if ($('#numero_preview').data('numero') != null)
-                    preview_numero($('#ligne_'+$('#numero_preview').data('numero')).children('.intitule_numero:first'));
+            if (mode_expert) {
+            	if (onglet_sel == 'Builder') {
+	                if ($('#numero_preview').data('numero') != null)
+	                    preview_numero($('#ligne_'+$('#numero_preview').data('numero')).children('.intitule_numero:first'));
+	            }
+	            else {
+	            	var premier_numero=get_onglet_courant().find('.numero_preview').first().html();
+	            	var dernier_numero=get_onglet_courant().find('.numero_preview').last().html();
+	               
+	            	var numero=premier_numero;
+	            	var chargements=new Array();
+	            	do {
+	            		chargements.push(numero);
+	            		var ligne=$('#ligne_'+numero).next();
+	            		numero = ligne.data('numero');
+	            	} while (numero != dernier_numero || typeof(numero) == 'undefined');
+	               
+	            	chargement_courant=0;
+	            	charger_previews_numeros(chargements[chargement_courant],true);
+	            }
             }
             else {
-            	var premier_numero=get_onglet_courant().find('.numero_preview').first().html();
-            	var dernier_numero=get_onglet_courant().find('.numero_preview').last().html();
-               
-               var numero=premier_numero;
-               var chargements=new Array();
-               do {
-                   chargements.push(numero);
-                   var ligne=$('#ligne_'+numero).next();
-                   numero = ligne.data('numero');
-               } while (numero != dernier_numero || typeof(numero) == 'undefined');
-               
-               chargement_courant=0;
-               charger_previews_numeros(chargements[chargement_courant],true);
+            	if (etapes_valides.length > 1) {
+	    			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+	            	chargements=new Array();
+					for (var i=0;i<etapes_valides.length;i++) {
+						if (etapes_valides[i].Ordre != -1)
+							chargements.push(etapes_valides[i].Ordre+'');
+					}
+					chargements.push(chargements+''); // Etape finale
+					
+					chargement_courant=0;
+		            charger_preview_etape(chargements[0],true);
+            	}
             }
           },
           slide: function(event,ui) {
@@ -1367,7 +1383,7 @@ function setFixedHeaders(reload) {
 }
 
 function charger_liste_numeros(magazine_sel) {
-    setFixedHeaders(true);
+    //setFixedHeaders(true);
 	magazine=magazine_sel;
 	$('#chargement').html('Chargement de la liste des num&eacute;ros...');
 	$.ajax({
@@ -1663,7 +1679,7 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
         var est_etape_ouverte= num_etape == $('.etape_ouverte').first().data('etape');
         if (!recharger) {
             fermer_etapes();
-            setFixedHeaders(true);
+            //setFixedHeaders(true);
             if (est_etape_ouverte)
                 return;
         }
@@ -1773,7 +1789,7 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
                     i++;
                 }
             }
-            setFixedHeaders(true);
+            //setFixedHeaders(true);
             
             $.each($('.etape_active'),function(index,etape_active) {
             	$(etape_active).html('Active');

@@ -13,10 +13,12 @@ var id_wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
 
+zoom=1.5;
 var url_viewer='viewer_wizard';
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
-var LARGEUR_INTER_ETAPES=60;
+var LARGEUR_INTER_ETAPES=25;
+var MARGE_DROITE_TRANCHE_FINALE=10;
 var OPTIONS_FONCTIONS={'Remplir':['Pos_x','Pos_y','Couleur'],
 					   'TexteMyFonts':['URL','Couleur_texte','Couleur_fond','Largeur','Chaine',
 					                   'Pos_x','Pos_y','Compression_x','Compression_y',
@@ -61,13 +63,18 @@ function launch_wizard(id) {
 	$('#'+id).dialog({
 		width: 650,
 		position: 'top',
-		modal: true,
+		modal: false,
+		autoResize: true,
 		resizable: $('#'+id).hasClass('resizable'),
 		buttons: buttons,
 		open:function(event,ui) {
-			$(this).css({'maxHeight':($('#body').height()
-									 -$(this).parent().find('.ui-dialog-titlebar').height()
-									 -$(this).parent().find('.ui-dialog-buttonpane').height()*2)+'px'});
+			var dialog=$(this).closest('.ui-dialog');
+			$(this).css({'max-height':(
+										$('#body').height()
+									   -dialog.find('.ui-dialog-titlebar').height()
+									   -dialog.find('.ui-dialog-buttonpane').height()*2
+									   -dialog.css('top')
+									 )+'px'});
 			wizard_init($(this).attr('id'));
 		}
 	});
@@ -206,7 +213,6 @@ function wizard_init(wizard_id) {
 			pays=get_option_wizard('wizard-creer', 'wizard_pays');
 			magazine=get_option_wizard('wizard-creer', 'wizard_magazine');
 			numero=get_option_wizard('wizard-creer', 'wizard_numero');
-			zoom=2;
 			selecteur_cellules_preview='#'+wizard_id+' #tranches_pretes_magazine td';
 			
 			var numero_selectionne=numero;
@@ -371,7 +377,6 @@ function wizard_init(wizard_id) {
 							
 							$('#wizard-conception').find('.chargement,form').toggleClass('cache');
 							
-							var liste_num_etapes=new Array();
 							for (var i=0;i<etapes_valides.length;i++) {
 								var etape=etapes_valides[i];
 								var num_etape=etape.Ordre;
@@ -382,7 +387,7 @@ function wizard_init(wizard_id) {
 									var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
 									wizard_etape.html(div_preview);
 									
-									var posX = $('#wizard-conception').parent().offset().left-LARGEUR_INTER_ETAPES*(etapes_valides.length-i);
+									var posX = $('#wizard-conception').parent().offset().left-(etapes_valides.length-i);
 									wizard_etape.dialog({
 										resizable: false,
 										draggable: false,
@@ -401,15 +406,17 @@ function wizard_init(wizard_id) {
 																		 .data('nom_fonction',nom_fonction);
 											$(this).closest('.ui-dialog').find(".ui-dialog-titlebar-close").hide();
 											$(this).closest('.ui-dialog').find('.ui-dialog-titlebar').css({'padding':'.3em .6em;'})
-																						.html($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
-								  			   	   											    		 'alt':nom_fonction}))
-								  			   	   										.append($('<span>').addClass('cache').html(nom_fonction))
-								  			   	   										.addClass('logo_option');
+																		 .html($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
+				  			   	   											    		  'alt':nom_fonction}))
+				  			   	   										 .append($('<span>').addClass('cache').html(nom_fonction))
+				  			   	   										 .addClass('logo_option');
 										}
+									});
+									wizard_etape.closest('.ui-dialog').bind('resize',function() {
+										placer_dialogues_preview();
 									});
 									chargements.push(num_etape+'');
 								}
-								liste_num_etapes.push(num_etape);
 							}
 							
 							var wizard_etape_finale = $('.wizard.preview_etape.initial').clone(true);
@@ -428,17 +435,17 @@ function wizard_init(wizard_id) {
 								open:function(event,ui) {
 									$(this).removeClass('initial').addClass('final');
 									$(this).data('etape','finale');
-									$(this).closest('.ui-dialog').data('etape','finale');
+									$(this).closest('.ui-dialog').addClass('dialog-preview-etape finale')
+																 .data('etape','finale');
 									$(this).closest('.ui-dialog').find(".ui-dialog-titlebar-close").hide();
 									$(this).closest('.ui-dialog').find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
 																				.html('Tranche<br />finale');
 								}
 							});
 
-							chargements.push(liste_num_etapes+'');
+							chargements.push(chargements+''); // On ajoute l'étape finale
 							
 							numero_chargement=numero;
-							zoom=1.5;
 							chargement_courant=0;
 				            charger_preview_etape(chargements[0],true);
 				            
@@ -458,11 +465,12 @@ function wizard_init(wizard_id) {
 								
 								var section_preview_etape=dialogue.find('.preview_etape');
 								section_preview_etape.addClass('modif');
+								dialogue.addClass('modif');
 								
 								section_preview_etape.dialog('option', 'width', largeur_max_preview_etape_ouverte());
 								dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
 								dialogue.find('.image_etape').after($('#options-etape--'+nom_fonction).removeClass('cache'));
-								placer_dialogues_preview();
+								//placer_dialogues_preview();
 								section_preview_etape.dialog('option','buttons',{
 									'Annuler': function() {
 										
@@ -516,18 +524,25 @@ function fermer_dialogue_preview(dialogue) {
 }
 
 function placer_dialogues_preview() {
-	for (var id_etape=etapes_valides.length-1;id_etape>0;id_etape--) {
-		var dialogue=$('.preview_etape').getElementsWithData('id_etape',id_etape).parent();
-		var dialogue_suivant=$('.preview_etape').getElementsWithData('id_etape',parseInt(id_etape)+1).parent();
-		var largeur_dialog=dialogue.width();
-		if (id_etape === etapes_valides.length-1)// Par rapport au wizard
-			var posX=$('#wizard-conception').parent().offset().left-largeur_dialog-25;
-		else // Par rapport au dialogue suivant
-			var posX=dialogue_suivant.offset().left-largeur_dialog-25;
-		if (posX < 0)
-			posX=0;
-		dialogue.css({'left':posX+'px'});
-	}
+	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').closest('.ui-dialog'));
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
+		return $(dialogue2).offset().left - $(dialogue1).offset().left;
+	});
+	$.each(dialogues,function(i,dialogue) {
+		var largeur=$(dialogue).width();
+		if (i == 0) {
+			$(dialogue).css({'left':$(window).width()-largeur-MARGE_DROITE_TRANCHE_FINALE});			
+		}
+		else {
+			var dialogue_suivant=$(dialogues[i-1]);
+			var marge_gauche=dialogue_suivant.offset().left-largeur-LARGEUR_INTER_ETAPES;
+			if (marge_gauche < 10) {
+				marge_gauche=10;
+				$(dialogue).width(dialogue_suivant.offset().left-LARGEUR_INTER_ETAPES-10);
+			}
+			$(dialogue).css({'left':marge_gauche+'px'});
+		}
+	});
 }
 
 var farbs;
@@ -549,12 +564,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			classes_farbs['Couleur']='';
 			
 			var cote_croix_remplissage=form_userfriendly.find('.point_remplissage').width();
-			var limites_drag=[(image.offset().left				 -cote_croix_remplissage/2+1),
-			                  (image.offset().top 				 -cote_croix_remplissage/2+1),
+			var limites_drag=[(image.offset().left			 -cote_croix_remplissage/2+1),
+			                  (image.offset().top 			 -cote_croix_remplissage/2+1),
 			                  (image.offset().left+image.width() -cote_croix_remplissage/2-1),
 			                  (image.offset().top +image.height()-cote_croix_remplissage/2-1)];
-			form_userfriendly.find('.point_remplissage').css({'left':(limites_drag[0]+valeurs['Pos_x']*zoom)+'px', 
-										 					  'top': (limites_drag[1]+valeurs['Pos_y']*zoom)+'px'})
+			form_userfriendly.find('.point_remplissage').css({'left':(image.offset().left+parseFloat(valeurs['Pos_x'])*zoom)+'px', 
+										 					  'top': (image.offset().top +parseFloat(valeurs['Pos_y'])*zoom)+'px'})
 													    .draggable({containment:limites_drag,
 														   		    stop:function(event, ui) {
 														   		    	tester_option_preview(nom_fonction,'Pos_x'); 
@@ -565,18 +580,74 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			classes_farbs['Couleur_texte']='.texte';
 			classes_farbs['Couleur_fond']='.fond';
 			
-			$.each($(['Chaine','URL','Rotation']),function(i,option_nom) {
+			$.each($(['Chaine','URL','Largeur']),function(i,option_nom) {
 				form_userfriendly.find('input[name="option-'+option_nom+'"]').val(valeurs[option_nom]);				
 			});
 			
-			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"]').blur(function() {
+			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]').blur(function() {
 				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-				form_options.find('input[name="'+nom_option+'"]').val($(this).val());
-				load_myfonts_preview();
+				tester_option_preview(nom_fonction,nom_option);
+				load_myfonts_preview(true,true,true);
 			});
 			
-			form_userfriendly.find('.apercu_myfonts').html(
-					$('<img>',{'src':urls['viewer_myfonts']+['index',valeurs['URL'],valeurs['Couleur_texte'],valeurs['Couleur_fond'],valeurs['Largeur'],valeurs['Chaine'],valeurs['Demi_hauteur']].join('/')}));
+			form_userfriendly.find('input[name="option-Demi_hauteur"]')
+				.attr('checked',valeurs[nom_option]=='Oui' ? 'checked':'')
+				.change(function() {
+					var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
+					tester_option_preview(nom_fonction,nom_option);
+					load_myfonts_preview(true,true,true);
+			});
+
+			$(document).mouseup( stopRotate );
+			var input_rotation=form_userfriendly.find('input[name="option-Rotation"]');
+			input_rotation.data('currentRotation',0)
+						  .mousedown( startRotate );
+			$('[name~="fixer_rotation"]').click(function() {
+				var angle=$(this).prop('name').split(/ /g)[1];
+				rotateImageDegValue(input_rotation,angle);
+			});
+			rotateImageDegValue(input_rotation,-1*parseFloat(valeurs['Rotation']));
+			
+			
+			form_userfriendly.find('.accordion').accordion({
+				change:function(event,ui) {
+					var section_active_integration=$(this).find('.ui-accordion-content-active').hasClass('finition_texte_genere');
+					if (section_active_integration)
+						placer_extension_largeur_preview();
+					
+					var section_active_positionnement=$(this).find('.ui-accordion-content-active').hasClass('positionnement');
+					if (section_active_positionnement) {
+						load_myfonts_preview(false,false,true,function() {
+							var position_texte=form_userfriendly.find('.position_texte');
+							var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
+							var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+							var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
+							var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
+							var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
+							var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image_preview_ajustee);
+
+							var limites_drag=[(image.offset().left			 -parseFloat(largeur)),
+							                  (image.offset().top 			 -parseFloat(hauteur)),
+							                  (image.offset().left+image.width()),
+							                  (image.offset().top +image.height())];
+							position_texte.css({'left':pos_x+'px', 
+	  										   'top': pos_y+'px',
+	  										   'width':largeur+'px',
+	  										   'height':hauteur+'px'})
+	  									  .removeClass('cache')
+	  									  .draggable({//containment:limites_drag, 
+	  										  		  stop:function(event, ui) {
+										   		    	tester_option_preview(nom_fonction,'Pos_x'); 
+										   		    	tester_option_preview(nom_fonction,'Pos_y');
+										   		      }
+										  });
+						});
+					}
+					else
+						form_userfriendly.find('.position_texte').addClass('cache');
+				}
+			});
+			load_myfonts_preview(true,true,true);
 			
 		break;
 	}
@@ -608,7 +679,6 @@ function tester_options_preview() {
 	var form_options=dialogue.find('[name="form_options"]');
 	chargements=new Array();
 	chargements.push(num_etape_courante+'');
-	zoom=1.5;
 	chargement_courant=0;
 	var parametrage=form_options.serialize();
     charger_preview_etape(chargements[0],true,parametrage);
@@ -617,7 +687,9 @@ function tester_options_preview() {
 function tester_option_preview(nom_fonction,nom_option) {
 	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
 	var form_options=dialogue.find('[name="form_options"]');
+	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
+	var image=dialogue.find('.image_preview');
 	
 	var val=null;
 	switch(nom_fonction) {
@@ -630,27 +702,45 @@ function tester_option_preview(nom_fonction,nom_option) {
 				break;
 				case 'Pos_x':
 					var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-					val = new String(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom)+'')
-							.replace(/([0-9]+\.[0-9]{2}).*/g,'$1');
+					val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
 				break;
 				case 'Pos_y':
 					var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-					val = new String(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom)+'')
-							.replace(/([0-9]+\.[0-9]{2}).*/g,'$1');
+					val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
 				break;
 			}
 		break;
 		case 'TexteMyFonts':
+			var positionnement=dialogue.find('.position_texte');
 			switch(nom_option) {
+				case 'Pos_x':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+				break;
+				case 'Pos_y':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().top - image.offset().top)/zoom));
+				break;
 				case 'Couleur_fond': case 'Couleur_texte':
-					var farb=farbs[nom_option];
-					val=farb.color.replace(/#/g,'');
+					val=farbs[nom_option].color.replace(/#/g,'');
+				break;
+				case 'Chaine': case 'URL':
+					val=form_userfriendly.find('input[name="option-'+nom_option+'"]').val();
+				break;
+				case 'Largeur':
+					var largeur_courante=form_options.find('[name="Largeur"]').val();
+					var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
+												-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
+					val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
+				break;
+				case 'Demi_hauteur':
+					val=form_userfriendly.find('input[name="option-'+nom_option+'"]').prop('checked') ? 'Oui' : 'Non';					
+				break;
+				case 'Rotation':
+					val=-1*radToDeg(form_userfriendly.find('input[name="option-'+nom_option+'"]').data('currentRotation'));
 				break;
 			}
 		break;
 	}
 	form_options.find('[name="'+nom_option+'"]').val(val);
-	
 }
 
 
@@ -672,18 +762,68 @@ function callback_change_picked_color(farb, input_couleur) {
 function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
 	tester_option_preview(nom_fonction,nom_option);
 	if (nom_fonction=='TexteMyFonts') {
-		load_myfonts_preview();
+		load_myfonts_preview(true,true,true);
 	}
 }
 
-function load_myfonts_preview() {
+function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
 	var form_options=dialogue.find('[name="form_options"]');
-	var url_appel=urls['viewer_myfonts']+"index";
-	$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
-		url_appel+="/"+form_options.find('[name="'+nom_option+'"]').val();
+	var selectors=[];
+	if (preview1)
+		selectors.push('.proprietes_texte .apercu_myfonts');
+	if (preview2)
+		selectors.push('.finition_texte_genere .apercu_myfonts');
+	if (preview3)
+		selectors.push('.positionnement .apercu_myfonts');
+	var apercus=$(selectors.join(','));
+	var images=apercus.find('img');
+	if (images.length == 0) {
+		apercus.html($('<img>'));
+		images=apercus.find('img');
+	}
+	
+	$.each(images,function() {
+		var url_appel=urls['viewer_myfonts']+"index";
+		$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
+			url_appel+="/"+form_options.find('[name="'+nom_option+'"]').val();
+		});
+		if ($(this).closest('.positionnement').length != 0)
+			url_appel+="/"+form_options.find('[name="Rotation"]').val();
+		else
+			url_appel+='/null';
+
+		$(this).attr({'src':url_appel});	
+		$(this).load(function() {
+			if ($(this).closest('.finition_texte_genere').length > 0) {
+				var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
+				if (section_active_integration)
+					placer_extension_largeur_preview();
+			}
+			if (callback != undefined)
+				callback();
+		});
 	});
-	dialogue.find('.apercu_myfonts').html($('<img>',{'src':url_appel}));	
+}
+
+var largeur_physique_preview_initiale=null;
+
+function placer_extension_largeur_preview() {
+	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+	var image_integration=dialogue.find('.finition_texte_genere img');
+	largeur_physique_preview_initiale=image_integration.width();
+	
+	dialogue.find('.finition_texte_genere .extension_largeur').removeClass('cache')
+			.css({'margin-left':(image_integration.width())+'px',
+				  'height':image_integration.height()+'px',
+				  'left':''})
+			.draggable({
+				axis: 'x',
+				stop:function(event,ui) {
+					tester_option_preview('TexteMyFonts','Largeur');
+					load_myfonts_preview(false,true,false);	
+				}
+			});
 }
 
 
@@ -748,4 +888,9 @@ function get_option_wizard(id_wizard, nom_option) {
 	if (options_wizard == undefined || options_wizard == null)
 		return undefined;
 	return options_wizard[nom_option] || undefined;
+}
+
+
+function toFloat2Decimals(floatVal) {
+	return new String(floatVal).replace(/([0-9]+)(\.[0-9]{0,2})?.*/g,'$1$2');
 }

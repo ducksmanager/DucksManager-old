@@ -149,56 +149,94 @@
 		</div>
 		
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">
-			<div style="text-align: center">Propri&eacute;t&eacute;s du texte</div>
-			<div style="border:1px dashed black">
-				<table style="border:0" cellspacing="0" cellpadding="1">
-					<tr>
-						<td>Texte : </td>
-						<td><input name="option-Chaine" type="text" maxlength="90" size="30" /></td>
-					</tr>
-					<tr>
-						<td>Police de caract&egrave;res : </td>
-						<td><input name="option-URL" type="text" maxlength="30" size="20" /></td>
-					</tr>
-					<tr>
-						<td>
-							<label for="option-Couleur_texte">Couleur du texte : </label>
-						</td>
-						<td>
-							<div class="picker texte cache"></div>
-							<input type="text" name="option-Couleur_texte" size="4" maxlength="7" readonly="readonly"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label for="option-Couleur_fond">Couleur du fond : </label>
-						</td>
-						<td>
-							<div class="picker fond cache"></div>
-							<input type="text" name="option-Couleur_fond" size="4" maxlength="7" readonly="readonly"/>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" style="text-align: center">
-							Aper&ccedil;u : <br />
-							<div class="apercu_myfonts"></div>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<br />
-			<div style="text-align: center">Int&eacute;gration &agrave; la tranche</div>
-			<div style="border:1px dashed black">
-				<table style="border:0" cellspacing="0" cellpadding="1">
-					<tr>
-						<td>Rotation : </td>
-						<td><input name="option-Rotation" type="text" maxlength="90" size="30" /></td>
-					</tr>
-					<tr>
-						<td>Compression (?) : </td>
-						<td><input name="option-Compression" type="text" maxlength="30" size="20" /></td>
-					</tr>
-				</table>
+			<div class="position_texte cache"></div>
+			<div class="accordion">
+				<h3><a href="#">Propri&eacute;t&eacute;s du texte</a></h3>
+				<div class="proprietes_texte">
+					<table style="border:0" cellspacing="0" cellpadding="1">
+						<tr>
+							<td>Texte : </td>
+							<td><input name="option-Chaine" type="text" maxlength="90" size="30" /></td>
+						</tr>
+						<tr>
+							<td>Police de caract&egrave;res : </td>
+							<td><input name="option-URL" type="text" maxlength="30" size="20" /></td>
+						</tr>
+						<tr>
+							<td>
+								<label for="option-Couleur_texte">Couleur du texte : </label>
+							</td>
+							<td>
+								<div class="picker texte cache"></div>
+								<input type="text" name="option-Couleur_texte" size="4" maxlength="7" readonly="readonly"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="option-Couleur_fond">Couleur du fond : </label>
+							</td>
+							<td>
+								<div class="picker fond cache"></div>
+								<input type="text" name="option-Couleur_fond" size="4" maxlength="7" readonly="readonly"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" style="text-align: center">
+								Texte g&eacute;n&eacute;r&eacute; : <br />
+								<div class="apercu_myfonts" style="height:100px">
+								</div>
+							</td>
+						</tr>
+						<tr>
+					</table>
+				</div>
+				<h3><a href="#">Finition du texte g&eacute;n&eacute;r&eacute;</a></h3>
+				<div class="finition_texte_genere">
+					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; s'il n'est pas enti&egrave;rement visible.
+					<br />
+					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case si le texte apparait 2 fois.</label> 
+					<br /><br />
+					<div>
+						<div class="extension_largeur cache">&nbsp;</div>
+						<table style="border:0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td colspan="2" style="text-align: center">
+									<div class="apercu_myfonts" style="height:100px">
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<h3><a href="#">Rotation</a></h3>
+				<div class="rotation">
+					Faites tourner la zone de texte pour modifier la rotation du texte sur la tranche.
+					<br />
+					<table style="border:0" cellspacing="0" cellpadding="1">
+						<tr style="height: 320px">
+							<td>
+								<a href="javascript:void(0)" name="fixer_rotation -90">Fixer &agrave; -90 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation 0">Fixer &agrave; 0 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation 90">Fixer &agrave; 90 &deg;</a><br />
+								<a href="javascript:void(0)" name="fixer_rotation 180">Fixer &agrave; 180 &deg;</a><br />
+							</td>
+							<td><input name="option-Rotation" type="text" maxlength="90" size="35" value="Faites tourner cette zone (Rotation=0.00&deg;)" /></td>
+						</tr>
+					</table>
+				</div>
+				<h3><a href="#">Positionnement</a></h3>
+				<div class="positionnement">
+					<div class="apercu_myfonts" style="height:100px">
+					</div>
+					<ul>
+						<li>
+							D&eacute;placez la zone de texte au niveau de la tranche pour positionner le texte.
+						</li>
+						<li>
+							Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	

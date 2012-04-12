@@ -3,7 +3,7 @@ include_once(BASEPATH.'/../application/controllers/viewer.php');
 
 class Viewer_myfonts extends Viewer {
 	
-	function index($url,$couleur_texte,$couleur_fond,$largeur,$chaine,$demi_hauteur,$debug=false) {
+	function index($url,$couleur_texte,$couleur_fond,$largeur,$chaine,$demi_hauteur,$rotation,$debug=false) {
 		self::$is_debug = $debug === 'true';
 		
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
@@ -15,7 +15,8 @@ class Viewer_myfonts extends Viewer {
 		$options->Couleur_fond=$couleur_fond;
 		$options->Largeur=$largeur;
 		$options->Chaine=$chaine;
-		$options->Demi_hauteur=($demi_hauteur == 1);
+		$options->Demi_hauteur=$demi_hauteur;
+		$options->Rotation=$rotation=='null' ? null : $rotation;
 		
 		new TexteMyFonts($options,true,false,true,false);
 		

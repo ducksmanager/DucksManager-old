@@ -1,8 +1,7 @@
 @CHARSET "ISO-8859-1";
 
 .ui-dialog {
-	max-height: 100%;
-	overflow-y: auto; !important
+	top: 70px !important;
 }
 
 #wizard-1 #tranches_en_cours {
@@ -43,15 +42,50 @@
 .wizard.preview_etape .point_remplissage {
 	height: 12px; 
 	width: 12px; 
-	position: fixed;
+	position: absolute;
 	cursor: move;
 }
 
-.apercu_myfonts img {
+
+.wizard.preview_etape .position_texte {
+	position: absolute;
+	cursor: move;
+	background-color:orange;
+	opacity: 0.5;
 	border: 1px solid black;
+}
+
+.wizard.preview_etape .apercu_myfonts img {
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
 	max-width: 200px;
+	max-height: 100px;
     text-align: left;
 }
+
+
+.wizard.preview_etape .proprietes_texte .apercu_myfonts img {
+	border-right: 1px solid black;	
+}
+
+.wizard.preview_etape div.extension_largeur {
+	position: absolute;
+	background-color: black;
+	width: 2px;
+	margin-top: 1px;
+	cursor: e-resize;
+}
+
+.wizard.preview_etape a[name~="fixer_rotation"]:hover {
+	text-decoration: underline;
+}
+
+.wizard.preview_etape input.option-Rotation {
+	cursor: move;
+}
+
+.wizard.preview_etape .ui-resizable-helper { border: 2px dotted #00F; }
 
 .dialog-preview-etape .ui-dialog-titlebar {
 	line-height: 10px;

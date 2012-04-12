@@ -8,13 +8,14 @@ header("Pragma: no-cache"); ?>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.8.17.custom.css" />
+	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.8.18.custom.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/csstabs.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.8.18.custom.min.js" ></script>
 	
 	<!-- <script type="text/javascript" src="<?=base_url()?>js/jquery.scrollbarTable.js" ></script>!-->
@@ -58,6 +59,7 @@ header("Pragma: no-cache"); ?>
 	</script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreator.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreator_wizard.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/edgecreator_wizard_imagerotate.js" ></script>
 	
 	<title><?=$title?></title>
 </head>
