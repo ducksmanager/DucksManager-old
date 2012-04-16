@@ -331,6 +331,12 @@ td.reload {
 	white-space: nowrap;
 }
 
+#zoom {
+	float:left;
+	margin-left:10px;
+	margin-top:10px;
+}
+
 #zoom_slider {
 	margin-right: 10px;
 	width: 150px;

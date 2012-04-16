@@ -5,10 +5,7 @@
 	</p>
 	<hr />
 	<p>
-		Si vous poss&eacute;dez un acc&egrave;s &agrave; EdgeCreator,
-		entrez vos identifiants ci-dessous et cliquez sur "Connexion".
-		<br />
-		Sinon, cliquez sur "Connexion en tant que visiteur".
+		Entrez vos identifiants DucksManager ci-dessous et cliquez sur "Connexion".
 	</p>
 	<p class="erreurs"></p>
 	<form>
@@ -134,7 +131,7 @@
 		</div>
 		
 		<div id="options-etape--Remplir" class="options_etape cache">
-			<img class="point_remplissage" src="../images/cross.png" />
+			<img class="point_remplissage cache" src="../images/cross.png" />
 			<p>
 				Le remplissage de la tranche est d&eacute;fini par une couleur et par des coordonn&eacute;es indiquant le point &agrave; partir duquel le remplissage est effectu&eacute;.
 				<br />

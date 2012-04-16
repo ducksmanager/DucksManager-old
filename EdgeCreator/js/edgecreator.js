@@ -31,6 +31,7 @@ var numeros_dispos;
 var selecteur_cellules='#table_numeros tr:not(.ligne_entete)>td:not(.intitule_numero):not(.cloner)';
 var colonne_ouverte=false;
 var url_viewer='viewer';
+var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
 
 function element_to_numero(elements) {
     var numeros=new Array();
@@ -130,7 +131,6 @@ function reload_observers_etapes() {
             jqueryui_alert('Une &eacute;tape est d&eacute;j&agrave; en train d\'&ecirc;tre ajout&eacute;e');
             return;
         }
-        //setFixedHeaders(true);
         var element=$(this).parent('th');
         num_etape_avant_nouvelle=element.data('etape');
         if (typeof(num_etape_avant_nouvelle) == 'undefined')
@@ -547,7 +547,7 @@ function charger_previews_numeros(numero,est_visu) {
     charger_image('numero',urls[url_viewer]+['index',pays,magazine,numero,zoom_utilise,'all',URLEncode(JSON.stringify(parametrage)),(est_visu?'false':'save'),'false'].join('/'),numero);
 }
 
-function charger_preview_etape(etapes_preview,est_visu, parametrage) {
+function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
 	if (parametrage==undefined)
 		parametrage='_';
     var zoom_utilise= est_visu ? zoom : 1.5;
@@ -568,13 +568,16 @@ function charger_preview_etape(etapes_preview,est_visu, parametrage) {
         if (typeof(etapes_preview) == 'string')
             etapes_preview=etapes_preview.split(/,/g);
     }
-    charger_image('etape',urls[url_viewer]+['index',pays,magazine,numero_chargement,zoom_utilise,etapes_preview.join("-"),parametrage,(est_visu?'false':'save'),fond_noir].join('/'),etapes_preview.join("-"));
+    charger_image('etape',urls[url_viewer]+['index',pays,magazine,numero_chargement,zoom_utilise,etapes_preview.join("-"),parametrage,(est_visu?'false':'save'),fond_noir].join('/'),etapes_preview.join("-"),callback);
 }
 
 var selecteur_cellules_preview=null;
 
 
-function charger_image(type_chargement,src,num) {
+function charger_image(type_chargement,src,num,callback) {
+	if (callback==undefined)
+		callback=function(){};
+		
     var image=$('<img>').addClass('image_preview').data(type_chargement,num);
     var est_visu=src.indexOf('/save') == -1;
     if (est_visu) {
@@ -651,6 +654,8 @@ function charger_image(type_chargement,src,num) {
             if (type_chargement=='numero')
             	$('#numero_preview_debut').data('numero',null);
         }
+        
+        callback(image);
     });
     
     image.error(function() {
@@ -1046,9 +1051,8 @@ $(window).load(function() {
     if (!$('#viewer'))
         return;
     
-    //$(window).scroll(function(a,b) {setFixedHeaders(false);});
-    
-    $('#connexion').button();
+    $('#connexion,#deconnexion').button();
+    $('.tip').tipTip({delay:0});
 	
     $('#tabs').tabs({
     	show:function(event,ui) {
@@ -1128,7 +1132,6 @@ $(window).load(function() {
     if (pays != "" && magazine != "")
         charger_liste_numeros(magazine);
 
-    var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
     $('#zoom_slider').slider({
         value:1 /* Valeur n°1 du tableau, donc = 1.5*/,
         min:0,
@@ -1137,40 +1140,24 @@ $(window).load(function() {
         change: function(event,ui) {
             zoom=valeurs_possibles_zoom[ui.value];
             $('#zoom_value').html(zoom);
-            if (mode_expert) {
-            	if (onglet_sel == 'Builder') {
-	                if ($('#numero_preview').data('numero') != null)
-	                    preview_numero($('#ligne_'+$('#numero_preview').data('numero')).children('.intitule_numero:first'));
-	            }
-	            else {
-	            	var premier_numero=get_onglet_courant().find('.numero_preview').first().html();
-	            	var dernier_numero=get_onglet_courant().find('.numero_preview').last().html();
-	               
-	            	var numero=premier_numero;
-	            	var chargements=new Array();
-	            	do {
-	            		chargements.push(numero);
-	            		var ligne=$('#ligne_'+numero).next();
-	            		numero = ligne.data('numero');
-	            	} while (numero != dernier_numero || typeof(numero) == 'undefined');
-	               
-	            	chargement_courant=0;
-	            	charger_previews_numeros(chargements[chargement_courant],true);
-	            }
+        	if (onglet_sel == 'Builder') {
+                if ($('#numero_preview').data('numero') != null)
+                    preview_numero($('#ligne_'+$('#numero_preview').data('numero')).children('.intitule_numero:first'));
             }
             else {
-            	if (etapes_valides.length > 1) {
-	    			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-	            	chargements=new Array();
-					for (var i=0;i<etapes_valides.length;i++) {
-						if (etapes_valides[i].Ordre != -1)
-							chargements.push(etapes_valides[i].Ordre+'');
-					}
-					chargements.push(chargements+''); // Etape finale
-					
-					chargement_courant=0;
-		            charger_preview_etape(chargements[0],true);
-            	}
+            	var premier_numero=get_onglet_courant().find('.numero_preview').first().html();
+            	var dernier_numero=get_onglet_courant().find('.numero_preview').last().html();
+               
+            	var numero=premier_numero;
+            	var chargements=new Array();
+            	do {
+            		chargements.push(numero);
+            		var ligne=$('#ligne_'+numero).next();
+            		numero = ligne.data('numero');
+            	} while (numero != dernier_numero || typeof(numero) == 'undefined');
+               
+            	chargement_courant=0;
+            	charger_previews_numeros(chargements[chargement_courant],true);
             }
           },
           slide: function(event,ui) {
@@ -1306,84 +1293,8 @@ function charger_liste_magazines(pays_sel) {
 	});
 }
 
-var reload_headers=false;
-function setFixedHeaders(reload) {
-	if (reload || reload_headers)
-		$('.fixed_header').remove();
-	if ( $(window).scrollTop() < 50)
-		$('.fixed_header.lignes').addClass('cache');
-	else {
-		var td_debut_etapes=$('#table_numeros').find('tr:first th:nth-child(3)');
-		if ($('.fixed_header.lignes').length == 0) {
-			var deux_premieres_lignes=$('#table_numeros').find('tr:nth-child(-n+2)').clone(true);
-			deux_premieres_lignes.find('th:nth-child(-n+2)').remove();
-			
-			var fixedHeader=$('<table>',{'border':'1'})
-				.addClass('fixed_header lignes bordered')
-				.css({'background-color':'white',
-					  'top': $('#entete_page').height()+$('.supprimer_etape:first').height()/2, 
-					  'left':td_debut_etapes.offset().left+$('#body').scrollLeft()})
-				.append(deux_premieres_lignes);
-			$.each(fixedHeader.find('tr th:nth-child(2)'), function() {
-				var num_ligne=$(this).parent('tr').prevAll().length+1;
-				var num_colonne=$(this).prevAll().length+1+2;
-			    $(this).append($('<br>')).append($('<img>',{'src':base_url+'/images/pixel.png', 'height':1,
-			    						  'width':$('#table_numeros').find('tr:nth-child('+num_ligne+') th:nth-child('+num_colonne+')').width()}));
-			    
-			});
-	
-			$('#body').append(fixedHeader);
-			fixedHeader.find('.ajouter_etape').click(function() {
-				var numero_colonne=$(this).parent('th').prevAll().length+3;
-				$('#table_numeros').find('tr:first').find('th:nth-child('+numero_colonne+')').find('.ajouter_etape').trigger('click');
-			});
-			reload_observers_etapes();
-		}
-		else {
-			$('.fixed_header.lignes').removeClass('cache');
-			$('.fixed_header.lignes').css({'left':td_debut_etapes.offset().left-$('#body').scrollLeft()});
-		}
-	}
-	if ( $(window).scrollLeft() < 50) {
-		$('.fixed_header.colonnes').addClass('cache');
-	}
-	else {
-		var td_debut=$('#table_numeros').find('tr:nth-child(3) td:first');
-		if ($('.fixed_header.colonnes').length == 0) {
-			var lignes_donnees=$('#table_numeros').find('tr:not(.ligne_entete)').clone(true);
-			lignes_donnees.find('td:nth-child(n+3)').remove();
-			
-			var fixedHeader=$('<table>',{'border':'1'})
-							.addClass('fixed_header colonnes bordered')
-							.css({'background-color':'white',
-								  'top': td_debut.offset().top, 
-								  'left':$('#viewer').width()});
-			var i=0;
-			$.each(lignes_donnees,function() {
-				var num_ligne=1+2+(i++);
-				$(this).find('td:first').append($('<img>',{'src':base_url+'/images/pixel.png', 'width':1,
-					  					  				   'height':$('#table_numeros').find('tr:nth-child('+num_ligne+') td:nth-child(1)').height()}));
-				fixedHeader.append($(this));
-			});
-			$('#body').append(fixedHeader);
-			fixedHeader.find('.cloner').click(function() {
-				var numero_ligne=$(this).parent('tr').prevAll().length+3;
-				$('#table_numeros').find('tr:nth-child('+numero_ligne+')').find('.cloner').trigger('click');
-			});
-			fixedHeader.find('.preview').click(function() {
-				var numero_ligne=$(this).parent('tr').prevAll().length+3;
-				$('#table_numeros').find('tr:nth-child('+numero_ligne+')').find('.preview').trigger('click');
-			});
-		}
-		else {
-			$('.fixed_header.colonnes').removeClass('cache');
-			$('.fixed_header.colonnes').css({'top':td_debut.offset().top-$('#body').scrollTop()});
-		}
-	}
-}
 
 function charger_liste_numeros(magazine_sel) {
-    //setFixedHeaders(true);
 	magazine=magazine_sel;
 	$('#chargement').html('Chargement de la liste des num&eacute;ros...');
 	$.ajax({
@@ -1679,7 +1590,6 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
         var est_etape_ouverte= num_etape == $('.etape_ouverte').first().data('etape');
         if (!recharger) {
             fermer_etapes();
-            //setFixedHeaders(true);
             if (est_etape_ouverte)
                 return;
         }
@@ -1789,7 +1699,6 @@ function charger_etape(num_etape, numeros_sel, nom_option_sel, recharger) {
                     i++;
                 }
             }
-            //setFixedHeaders(true);
             
             $.each($('.etape_active'),function(index,etape_active) {
             	$(etape_active).html('Active');
@@ -1938,9 +1847,6 @@ function jquery_connexion() {
 			            }
 			        }
 				});
-			},
-			"Connexion en tant que visiteur": function() {
-				$( this ).dialog( "close" );
 			}
 		}
 	});

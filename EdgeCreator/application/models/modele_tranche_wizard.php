@@ -236,48 +236,48 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $this->db->query($requete)->num_rows() > 0;
 	}
 	
-	function insert($pays,$magazine,$etape,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,$username,$id_valeur=null) {
+	function insert($id_modele,$ordre,$option_nom,$option_valeur) {
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
 		
-		
-		$requete='INSERT INTO edgecreator_modeles2 (Pays,Magazine,Ordre,Nom_fonction,Option_nom) VALUES '
-				.'(\''.$pays.'\',\''.$magazine.'\',\''.$etape.'\',\''.$nom_fonction.'\','.$option_nom.') ';
-		echo $requete."\n";
-		$this->db->query($requete);
-		$id_option = $this->db->insert_id();
-		
-		if (is_null($id_valeur) || !$this->valeur_existe($id_valeur)) {
-			if (is_null($id_valeur))
-				$requete='INSERT INTO edgecreator_valeurs (Option_valeur,ID_Option) VALUES ('.$option_valeur.','.$id_option.')';
-			else
-				$requete='INSERT INTO edgecreator_valeurs (ID,Option_valeur,ID_Option) VALUES ('.$id_valeur.','.$option_valeur.','.$id_option.')';
-				
-			echo $requete."\n";
-			$this->db->query($requete);
-			$id_valeur = $this->db->insert_id();
-		}
-		$requete='INSERT INTO edgecreator_intervalles (ID_Valeur,Numero_debut,Numero_fin,username) VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.self::$username.'\')';
+		$requete='INSERT INTO tranches_en_cours_valeurs (ID_Modele,Ordre,Nom_fonction,Option_nom,Option_valeur) VALUES '
+				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$option_valeur.'\') ';
 		echo $requete."\n";
 		$this->db->query($requete);
 			
 	}
+	
+	function getIdModele($pays,$magazine,$numero,$username) {
+		$requete='SELECT ID FROM tranches_en_cours_modeles '
+				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' AND username=\''.$username.'\'';
+		$resultat=$this->db->query($requete)->row(0);
+		return $resultat->ID;
+		
+	}
+	
+	function getNomFonction($id_modele,$ordre) {
+		$requete='SELECT Nom_fonction FROM tranches_en_cours_valeurs '
+				.'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
+		$resultat=$this->db->query($requete)->row(0);
+		return $resultat->Nom_fonction;
+	}
 
-	function update_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
-		$requete_suppr='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 AS modeles '
-					  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-				      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND username LIKE \''.self::$username.'\')';
+	function update_ordre($pays,$magazine,$numero,$ordre,$parametrage) {
+		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$nom_fonction=$this->getNomFonction($id_modele,$ordre);
+		
+		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
+					  .'WHERE ID_Modele='.$id_modele;
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
-		$this->insert($pays,$magazine,$ordre,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username);
+		
 		
 		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
 			$option_valeur=str_replace("'","\'",$option_valeur);
 			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
 			list($numero_debut,$numero_fin)=explode('~',$intervalle);
 			
-			$this->insert($pays,$magazine,$ordre,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,self::$username);
+			$this->insert($id_modele,$ordre,$option_nom,$option_valeur);
 		}
 	}
 

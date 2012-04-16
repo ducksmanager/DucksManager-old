@@ -150,8 +150,8 @@ function wizard_init(wizard_id) {
 						$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
 						for (var i_tranche_en_cours in data) {
 							var tranche_en_cours=data[i_tranche_en_cours];
-							var str_tranche=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 							var str_tranche_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
+							var str_tranche=str_tranche_userfriendly+'('+tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero+')';
 							var bouton_tranche_en_cours=$('#numero_tranche_en_cours').clone(true).removeClass('init');
 							var label_tranche_en_cours=$('#numero_tranche_en_cours').next('label').clone(true);
 							bouton_tranche_en_cours.attr({'id':str_tranche,'value':str_tranche});
@@ -316,16 +316,22 @@ function wizard_init(wizard_id) {
 		case 'wizard-conception':
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
 				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
-				var regex=/([^_]+)_([^_]+)_(.*)/g;
-				pays=tranche_en_cours.replace(regex,'$1');
-				magazine=tranche_en_cours.replace(regex,'$2');
-				numero=tranche_en_cours.replace(regex,'$3');
+				var regex=/([^\(]+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
+				var numero_complet_userfriendly=tranche_en_cours.replace(regex,'$1');
+				pays=tranche_en_cours.replace(regex,'$2');
+				magazine=tranche_en_cours.replace(regex,'$3');
+				numero=tranche_en_cours.replace(regex,'$4');
 			}
+			else {
+				var numero_complet_userfriendly='';
+			}
+			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
+			$('#action_bar').removeClass('cache');
 			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 			$('#'+wizard_id).dialog('option','position',['right','top']);
 			$('#'+wizard_id).parent().css({'left':($('#'+wizard_id).parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 			
-			$.ajax({
+			$.ajax({ // Numéros d'étapes
 				url: urls['parametrageg_wizard']+['index',pays,magazine,numero,'null','null'].join('/'),
 				type: 'post',
 				dataType: 'json',
@@ -344,11 +350,35 @@ function wizard_init(wizard_id) {
 						return 0;
 					});
 					
-					$.ajax({
+					$.ajax({ // Détails des étapes
 						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null','null'].join('/'),
 						type: 'post',
 						dataType:'json',
 						success:function(data) {
+							$('#zoom').removeClass('cache');
+							$('#zoom_slider').slider({change:function(event,ui) {
+					            zoom=valeurs_possibles_zoom[ui.value];
+					            $('#zoom_value').html(zoom);
+								if (etapes_valides.length > 1) {
+					    			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+					            	chargements=new Array();
+									for (var i=0;i<etapes_valides.length;i++) {
+										if (etapes_valides[i].Ordre != -1)
+											chargements.push(etapes_valides[i].Ordre+'');
+									}
+									chargements.push(chargements+''); // Etape finale
+									
+									chargement_courant=0;
+						            charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
+						            	var dialogue=image.closest('.ui-dialog');
+										var num_etape=dialogue.data('etape');
+										var section_preview_etape=dialogue.find('.preview_etape');
+										
+										recuperer_et_alimenter_options_preview(num_etape, section_preview_etape);						            	
+						            });
+				            	}
+							}});
+							
 							var texte="";
 							for (var option_nom in data) {
 								for (var intervalle in data[option_nom]) {
@@ -467,35 +497,28 @@ function wizard_init(wizard_id) {
 								section_preview_etape.addClass('modif');
 								dialogue.addClass('modif');
 								
+								var image=dialogue.find('.image_etape');
+								var largeur_tranche=image.width();
 								section_preview_etape.dialog('option', 'width', largeur_max_preview_etape_ouverte());
 								dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
-								dialogue.find('.image_etape').after($('#options-etape--'+nom_fonction).removeClass('cache'));
+								image.after($('#options-etape--'+nom_fonction)
+												.removeClass('cache')
+												.css({'margin-left':(image.position().left+largeur_tranche+5*zoom)+'px'}));
 								//placer_dialogues_preview();
 								section_preview_etape.dialog('option','buttons',{
 									'Annuler': function() {
 										
 									},
 									'Tester': function() {
-										tester_options_preview();
+										tester();
 									},
 									'Valider': function() {
+										valider();
 									}
 								});
 
-								$.ajax({
-							        url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
-							        type: 'post',
-							        dataType:'json',
-							        success:function(data) {
-							        	var valeurs={};
-							        	for (var option_nom in data) {
-							                if (typeof(data[option_nom]['valeur']) =='undefined')
-							                    data[option_nom]['valeur']=data[option_nom]['valeur_defaut'];
-							                valeurs[option_nom]=data[option_nom]['valeur'];
-							        	}
-							        	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
-							        }
-								});
+								recuperer_et_alimenter_options_preview(num_etape, section_preview_etape);
+								
 							});
 						}
 					});
@@ -515,6 +538,8 @@ function largeur_max_preview_etape_ouverte() {
 }
 
 function fermer_dialogue_preview(dialogue) {
+	dialogue.removeClass('modif')
+			.css({'width':'auto'});
 	dialogue.dialog('option', 'width', 'auto');
 	dialogue.find('.ui-dialog-buttonpane').remove();
 	dialogue.find('.ui-dialog-titlebar').find('span').addClass('cache');
@@ -545,6 +570,24 @@ function placer_dialogues_preview() {
 	});
 }
 
+function recuperer_et_alimenter_options_preview(num_etape, section_preview_etape) {
+	var nom_fonction=section_preview_etape.closest('.ui-dialog').data('nom_fonction');
+	$.ajax({
+	    url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
+	    type: 'post',
+	    dataType:'json',
+	    success:function(data) {
+	    	var valeurs={};
+	    	for (var option_nom in data) {
+	            if (typeof(data[option_nom]['valeur']) =='undefined')
+	                data[option_nom]['valeur']=data[option_nom]['valeur_defaut'];
+	            valeurs[option_nom]=data[option_nom]['valeur'];
+	    	}
+	    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+	    }
+	});
+}
+
 var farbs;
 function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction) {
 	farbs={};
@@ -563,13 +606,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		case 'Remplir':
 			classes_farbs['Couleur']='';
 			
-			var cote_croix_remplissage=form_userfriendly.find('.point_remplissage').width();
-			var limites_drag=[(image.offset().left			 -cote_croix_remplissage/2+1),
-			                  (image.offset().top 			 -cote_croix_remplissage/2+1),
-			                  (image.offset().left+image.width() -cote_croix_remplissage/2-1),
-			                  (image.offset().top +image.height()-cote_croix_remplissage/2-1)];
-			form_userfriendly.find('.point_remplissage').css({'left':(image.offset().left+parseFloat(valeurs['Pos_x'])*zoom)+'px', 
-										 					  'top': (image.offset().top +parseFloat(valeurs['Pos_y'])*zoom)+'px'})
+			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
+			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
+			                  (image.offset().top 			 	 -largeur_croix+1),
+			                  (image.offset().left+image.width() -largeur_croix-1),
+			                  (image.offset().top +image.height()-largeur_croix-1)];
+			form_userfriendly.find('.point_remplissage').css({'left':(image.position().left-largeur_croix+1+parseFloat(valeurs['Pos_x'])*zoom)+'px', 
+										 					  'top': (image.position().top -largeur_croix+1+parseFloat(valeurs['Pos_y'])*zoom)+'px'})
+										 				.removeClass('cache')
 													    .draggable({containment:limites_drag,
 														   		    stop:function(event, ui) {
 														   		    	tester_option_preview(nom_fonction,'Pos_x'); 
@@ -610,6 +654,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			
 			form_userfriendly.find('.accordion').accordion({
+				active: 0,
 				change:function(event,ui) {
 					var section_active_integration=$(this).find('.ui-accordion-content-active').hasClass('finition_texte_genere');
 					if (section_active_integration)
@@ -618,28 +663,37 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					var section_active_positionnement=$(this).find('.ui-accordion-content-active').hasClass('positionnement');
 					if (section_active_positionnement) {
 						load_myfonts_preview(false,false,true,function() {
+							var dialogue=form_userfriendly.closest('.ui-dialog');
+							var valeurs=dialogue.find('[name="form_options"]').serializeObject();
+							var image=dialogue.find('.image_preview');
+							
 							var position_texte=form_userfriendly.find('.position_texte');
 							var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
 							var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
-							var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
-							var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
+							
 							var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
 							var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image_preview_ajustee);
+							
+							var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
+							var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
+							if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+								pos_y-=hauteur;
+							}
 
 							var limites_drag=[(image.offset().left			 -parseFloat(largeur)),
 							                  (image.offset().top 			 -parseFloat(hauteur)),
 							                  (image.offset().left+image.width()),
 							                  (image.offset().top +image.height())];
 							position_texte.css({'left':pos_x+'px', 
-	  										   'top': pos_y+'px',
-	  										   'width':largeur+'px',
-	  										   'height':hauteur+'px'})
+	  										    'top': pos_y+'px',
+	  										    'width':largeur+'px',
+	  										    'height':hauteur+'px'})
 	  									  .removeClass('cache')
 	  									  .draggable({//containment:limites_drag, 
-	  										  		  stop:function(event, ui) {
-										   		    	tester_option_preview(nom_fonction,'Pos_x'); 
-										   		    	tester_option_preview(nom_fonction,'Pos_y');
-										   		      }
+									  		  stop:function(event, ui) {
+								   		    	tester_option_preview(nom_fonction,'Pos_x'); 
+								   		    	tester_option_preview(nom_fonction,'Pos_y');
+								   		      }
 										  });
 						});
 					}
@@ -647,6 +701,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						form_userfriendly.find('.position_texte').addClass('cache');
 				}
 			});
+			form_userfriendly.find('.accordion').accordion().change();
 			load_myfonts_preview(true,true,true);
 			
 		break;
@@ -673,7 +728,7 @@ function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
 	
 }
 
-function tester_options_preview() {
+function tester() {
 	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
 
 	var form_options=dialogue.find('[name="form_options"]');
@@ -681,7 +736,24 @@ function tester_options_preview() {
 	chargements.push(num_etape_courante+'');
 	chargement_courant=0;
 	var parametrage=form_options.serialize();
-    charger_preview_etape(chargements[0],true,parametrage);
+    charger_preview_etape(chargements[0],true,parametrage,function() { // Test de l'étape finale
+    	chargements=new Array();
+		chargements.push('all'); // Etape finale
+		
+    	chargement_courant=0;
+    	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
+    });
+}
+
+function valider() {
+	/*$.ajax({
+	    url: urls['update_wizard']+['index',pays,magazine,numero,ordre,parametrage].join('/'),
+	    type: 'post',
+	    dataType:'json',
+	    success:function(data) {
+	    	
+	    }
+	});*/
 }
 
 function tester_option_preview(nom_fonction,nom_option) {

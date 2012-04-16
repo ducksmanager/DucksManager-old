@@ -1,33 +1,46 @@
 <div id="barre"></div>
 <div id="entete_page">
-	<div style="float:left;margin-left:10px;margin-top:10px;">
-		Zoom : <span id="zoom_value">1.5</span>
-		<div id="zoom_slider"></div>
-	</div>
 	<?php
-	if ($mode_expert==true) {?>
-		<div style="position:fixed;left:210px">
-			<div style="float:left">
-				<select style="font-size:11px" id="liste_pays"></select>
-				&nbsp;&nbsp;
-				<select style="font-size:11px" id="liste_magazines"></select><br />
-				<div id="filtre_numeros">
-					Num&eacute;ros&nbsp;
-					<select id="filtre_debut"></select>&nbsp;&agrave;&nbsp;
-					<select id="filtre_fin"></select>
-					<button>OK</button>
+	if ($privilege!='Affichage') {?>
+		<div id="zoom" class="cache">
+			Zoom : <span id="zoom_value">1.5</span>
+			<div id="zoom_slider"></div>
+		</div>
+		<?php 
+		if ($mode_expert==true) {?>
+			<div style="position:fixed;left:210px">
+				<div style="float:left">
+					<select style="font-size:11px" id="liste_pays"></select>
+					&nbsp;&nbsp;
+					<select style="font-size:11px" id="liste_magazines"></select><br />
+					<div id="filtre_numeros">
+						Num&eacute;ros&nbsp;
+						<select id="filtre_debut"></select>&nbsp;&agrave;&nbsp;
+						<select id="filtre_fin"></select>
+						<button>OK</button>
+					</div>
 				</div>
 			</div>
-		</div>
-	<?php } ?>
-	<div style="float:right">
-		&nbsp;<?=$user?> - <?=$privilege?>
+		<?php }
+	} ?>
+	<div id="action_bar" class="cache">Mod&eacute;lisation de la tranche du num&eacute;ro <span id="nom_complet_tranche_en_cours"></span><br />
+		<img class="action tip" src="../images/photo.png" 
+			 title="S&eacute;lectionnez la photo de la tranche de votre ordinateur pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche">
+	</div>
+	<div id="status_user">
 		<?php
+		if ($privilege=='Affichage') {
+			?>Non connect&eacute;(e)<?php
+		}
+		else {
+			?>Connect&eacute;(e) en tant que <?=$user?><?php
+		}
+		?><br /><?php
 		if ($user=='demo') {
 			?><button class="small" id="connexion" onclick="location.reload()">Connexion</button><?php
 		}
 		else {
-			?><a title="Deconnexion" href="#" onclick="logout()">X</a><?php					
+			?><button class="small" id="deconnexion" onclick="logout()">D&eacute;connexion</button><?php					
 		}
 		?>
 	</div>
