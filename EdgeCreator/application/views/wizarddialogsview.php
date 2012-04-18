@@ -217,14 +217,13 @@
 								<a href="javascript:void(0)" name="fixer_rotation 90">Fixer &agrave; 90 &deg;</a><br />
 								<a href="javascript:void(0)" name="fixer_rotation 180">Fixer &agrave; 180 &deg;</a><br />
 							</td>
-							<td><input name="option-Rotation" type="text" maxlength="90" size="35" value="Faites tourner cette zone (Rotation=0.00&deg;)" /></td>
+							<td><input name="option-Rotation" type="text" maxlength="90" size="35" readonly="readonly"
+									   value="Faites tourner cette zone (Rotation=0.00&deg;)" /></td>
 						</tr>
 					</table>
 				</div>
 				<h3><a href="#">Positionnement</a></h3>
 				<div class="positionnement">
-					<div class="apercu_myfonts" style="height:100px">
-					</div>
 					<ul>
 						<li>
 							D&eacute;placez la zone de texte au niveau de la tranche pour positionner le texte.
@@ -233,6 +232,8 @@
 							Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
 						</li>
 					</ul>
+					<div class="apercu_myfonts" style="height:100px;visibility:hidden">
+					</div>
 				</div>
 			</div>
 		</div>

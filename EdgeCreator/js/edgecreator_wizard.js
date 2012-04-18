@@ -662,39 +662,41 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					
 					var section_active_positionnement=$(this).find('.ui-accordion-content-active').hasClass('positionnement');
 					if (section_active_positionnement) {
-						load_myfonts_preview(false,false,true,function() {
-							var dialogue=form_userfriendly.closest('.ui-dialog');
-							var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-							var image=dialogue.find('.image_preview');
-							
-							var position_texte=form_userfriendly.find('.position_texte');
-							var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
-							var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
-							
-							var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
-							var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image_preview_ajustee);
-							
-							var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
-							var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
-							if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
-								pos_y-=hauteur;
-							}
-
-							var limites_drag=[(image.offset().left			 -parseFloat(largeur)),
-							                  (image.offset().top 			 -parseFloat(hauteur)),
-							                  (image.offset().left+image.width()),
-							                  (image.offset().top +image.height())];
-							position_texte.css({'left':pos_x+'px', 
-	  										    'top': pos_y+'px',
-	  										    'width':largeur+'px',
-	  										    'height':hauteur+'px'})
-	  									  .removeClass('cache')
-	  									  .draggable({//containment:limites_drag, 
-									  		  stop:function(event, ui) {
-								   		    	tester_option_preview(nom_fonction,'Pos_x'); 
-								   		    	tester_option_preview(nom_fonction,'Pos_y');
-								   		      }
-										  });
+						tester(function() {
+							load_myfonts_preview(false,false,true,function() {
+								var dialogue=form_userfriendly.closest('.ui-dialog');
+								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
+								var image=dialogue.find('.image_preview');
+								
+								var position_texte=form_userfriendly.find('.position_texte');
+								var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
+								var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+								
+								var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
+								var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image_preview_ajustee);
+								
+								var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
+								var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
+								if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+									pos_y-=parseFloat(hauteur);
+								}
+	
+								var limites_drag=[(image.offset().left			 -parseFloat(largeur)),
+								                  (image.offset().top 			 -parseFloat(hauteur)),
+								                  (image.offset().left+image.width()),
+								                  (image.offset().top +image.height())];
+								position_texte.css({'left':pos_x+'px', 
+		  										    'top': pos_y+'px',
+		  										    'width':largeur+'px',
+		  										    'height':hauteur+'px'})
+		  									  .removeClass('cache')
+		  									  .draggable({//containment:limites_drag, 
+										  		  stop:function(event, ui) {
+									   		    	tester_option_preview(nom_fonction,'Pos_x'); 
+									   		    	tester_option_preview(nom_fonction,'Pos_y');
+									   		      }
+											  });
+							});
 						});
 					}
 					else
@@ -728,7 +730,7 @@ function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
 	
 }
 
-function tester() {
+function tester(callback) {
 	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
 
 	var form_options=dialogue.find('[name="form_options"]');
@@ -741,7 +743,11 @@ function tester() {
 		chargements.push('all'); // Etape finale
 		
     	chargement_courant=0;
-    	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
+    	if (callback == undefined)
+    		charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
+    	else
+    		charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
+    		
     });
 }
 
@@ -789,7 +795,9 @@ function tester_option_preview(nom_fonction,nom_option) {
 					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
 				break;
 				case 'Pos_y':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().top - image.offset().top)/zoom));
+					var pos_y_rectangle=positionnement.offset().top - image.offset().top;
+					val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
+					form_options.find('[name="Mesure_depuis_haut"]').val('Oui');
 				break;
 				case 'Couleur_fond': case 'Couleur_texte':
 					val=farbs[nom_option].color.replace(/#/g,'');
@@ -854,6 +862,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		apercus.html($('<img>'));
 		images=apercus.find('img');
 	}
+	images.addClass('loading');
 	
 	$.each(images,function() {
 		var url_appel=urls['viewer_myfonts']+"index";
@@ -867,6 +876,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 
 		$(this).attr({'src':url_appel});	
 		$(this).load(function() {
+			$(this).removeClass('loading');
 			if ($(this).closest('.finition_texte_genere').length > 0) {
 				var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
 				if (section_active_integration)

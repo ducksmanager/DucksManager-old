@@ -578,7 +578,7 @@ function charger_image(type_chargement,src,num,callback) {
 	if (callback==undefined)
 		callback=function(){};
 		
-    var image=$('<img>').addClass('image_preview').data(type_chargement,num);
+    var image=$('<img>').addClass('image_preview loading').data(type_chargement,num);
     var est_visu=src.indexOf('/save') == -1;
     if (est_visu) {
         var random=Math.random();
@@ -614,6 +614,7 @@ function charger_image(type_chargement,src,num,callback) {
     image.load(function() {
         chargement_courant++;
         var image=$(this);
+        image.removeClass('loading');
         
         if ($(selecteur_cellules_preview).length == 2 && chargement_courant == 1)
             $(selecteur_cellules_preview).last().html(image.clone(false));
@@ -1832,7 +1833,7 @@ function jqueryui_alert(texte, titre) {
 function jquery_connexion() {
 	$( "#login-form" ).dialog({
 		width: 500,
-		modal: true,
+		modal: false,
 		buttons: {
 			"Connexion":function() {
 				$.ajax({

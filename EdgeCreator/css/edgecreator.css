@@ -355,9 +355,15 @@ td.reload {
 
 .fixed_header {
 	position:fixed;
-	back
 }
 
 .wizard {
 	display: none;
+}
+
+img.loading {
+	opacity : 0.2;
+    -moz-opacity : 0.2;
+    -ms-filter: "alpha(opacity=20)";
+    filter : alpha(opacity=20);
 }
