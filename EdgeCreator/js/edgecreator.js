@@ -1288,6 +1288,7 @@ function charger_liste_magazines(pays_sel) {
 				if (!mode_expert) { // Lancement de l'assistant
 				    $('.wizard button').button();
 				    launch_wizard('wizard-1');
+				    init_action_bar();
 				}
 			}
 		}

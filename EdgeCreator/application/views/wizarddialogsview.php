@@ -71,6 +71,34 @@
 		</p>
 	</div>
 	
+	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+		<p>
+			Choisissez le num&eacute;ro dont vous souhaitez modifier la mod&eacute;lisation.<br />
+			<form>
+				<fieldset>
+					<label for="wizard_pays_modifier">Pays: </label>
+					<select name="wizard_pays" id="wizard_pays_modifier">
+						<option>Chargement...</option>
+					</select><br />
+					<label for="wizard_magazine_modifier">Magazine: </label>
+					<select name="wizard_magazine" id="wizard_magazine_modifier">
+						<option>Chargement...</option>
+					</select><br />
+					<label for="wizard_numero_modifier">Num&eacute;ro: </label>
+					<select name="wizard_numero" id="wizard_numero_modifier">
+						<option>Chargement...</option>
+					</select><br />
+					Les tranches sous fond vert sont modifiables. 
+					Si vous souhaitez en cr&eacute;er une nouvelle, repassez &agrave; l'&eacute;cran pr&eacute;c&eacute;dent
+					et choisissez "Cr&eacute;er une tranche de magazine".
+				</fieldset>
+				<div class="buttonset cache">
+					<input type="radio" checked="checked" name="choix" value="to-wizard-clonage-silencieux" id="to-wizard-clonage-silencieux" /><label for="to-wizard-clonage-silencieux">J'ai trouv&eacute; mon num&eacute;ro</label>
+				</div>
+			</form>
+		</p>
+	</div>
+	
 		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Cr&eacute;ation">
 			<p>
 				Certaines tranches sont d&eacute;j&agrave; pr&ecirc;tes pour le magazine s&eacute;lectionn&eacute;. 
@@ -96,8 +124,19 @@
 					Ce processus peut durer plus d'une minute dans certains cas. Veuillez patienter tant que le clonage est en cours, ne fermez pas cette fen&ecirc;tre.
 					<div class="loading">Clonage en cours...</div>
 					<div class="done cache">Clonage termin&eacute;. Vous pouvez passer &agrave; l'&eacute;tape suivante.</div>
-					
-					<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception2" />
+					<form>
+						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception2" />
+					</form>
+				</p>
+			</div>
+		
+			<div id="wizard-clonage-silencieux" class="wizard" title="Assistant DucksManager - Pr&eacute;paration de la tranche">
+				<p>
+					<div class="loading">Veuillez patienter...</div>
+					<div class="done cache">La tranche est pr&ecirc;te &agrave; &ecirc;tre modifi&eacute;e. Vous pouvez passer &agrave; l'&eacute;tape suivante.</div>
+					<form>
+						<input type="hidden" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception3" />
+					</form>
 				</p>
 			</div>
 			

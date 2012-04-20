@@ -4,8 +4,9 @@
 	text-align:center;
 }
 
-#action_bar .action {
+#action_bar img.action {
 	height: 20px;
+	margin-left: 5px;
 	cursor: pointer;
 }
 

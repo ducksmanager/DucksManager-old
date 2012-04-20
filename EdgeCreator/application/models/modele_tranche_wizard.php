@@ -395,6 +395,5 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		self::$numero=$numero;
 	}
 }
-Modele_tranche_Wizard::$fields=array('username', 'Pays', 'Magazine', 'Numero', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur');
 Modele_tranche_Wizard::$content_fields=array('Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur');
 ?>

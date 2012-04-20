@@ -24,8 +24,10 @@
 		<?php }
 	} ?>
 	<div id="action_bar" class="cache">Mod&eacute;lisation de la tranche du num&eacute;ro <span id="nom_complet_tranche_en_cours"></span><br />
-		<img class="action tip" src="../images/photo.png" 
-			 title="S&eacute;lectionnez la photo de la tranche de votre ordinateur pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche">
+		<img class="action tip" name="home" 
+			 title="Revenir &agrave; l'&eacute;cran d'accueil de EdgeCreator" />
+		<img class="action tip" name="photo" style="margin-left: 10px"
+			 title="Placer la photo de la tranche &agrave; c&ocirc;t&eacute; du mod&egrave;le" />
 	</div>
 	<div id="status_user">
 		<?php
