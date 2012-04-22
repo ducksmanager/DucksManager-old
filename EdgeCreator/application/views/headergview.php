@@ -16,6 +16,7 @@ header("Pragma: no-cache"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/tipTip.css" />
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.tipTip.minified.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.8.18.custom.min.js" ></script>

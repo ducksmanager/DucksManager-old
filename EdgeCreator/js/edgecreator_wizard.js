@@ -1,13 +1,3 @@
-/*
- * jQuery serializeObject - v0.2 - 1/20/2010
- * http://benalman.com/projects/jquery-misc-plugins/
- * 
- * Copyright (c) 2010 "Cowboy" Ben Alman
- * Dual licensed under the MIT and GPL licenses.
- * http://benalman.com/about/license/
- */
-(function($,a){$.fn.serializeObject=function(){var b={};$.each(this.serializeArray(),function(d,e){var f=e.name,c=e.value;b[f]=b[f]===a?c:$.isArray(b[f])?b[f].concat(c):[b[f],c];});return b;};})(jQuery);
-
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
@@ -717,6 +707,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 									   		    	tester_option_preview(nom_fonction,'Pos_x'); 
 									   		    	tester_option_preview(nom_fonction,'Pos_y');
 									   		      }
+											  })
+											  .resizable({
+													stop:function(event, ui) {
+										   		    	tester_option_preview(nom_fonction,'Compression_x'); 
+										   		    	tester_option_preview(nom_fonction,'Compression_y');
+										   		    }
 											  });
 							});
 						});
@@ -820,6 +816,17 @@ function tester_option_preview(nom_fonction,nom_option) {
 					var pos_y_rectangle=positionnement.offset().top - image.offset().top;
 					val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
 					form_options.find('[name="Mesure_depuis_haut"]').val('Oui');
+				break;
+				case 'Compression_x':
+					val = toFloat2Decimals(positionnement.width()/image.width());
+				break;
+				case 'Compression_y':
+					var compression_x=parseFloat(form_options.find('[name="Compression_x"]').val());
+					
+					var image_preview_ajustee=dialogue.find('.positionnement .apercu_myfonts img');
+					var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+					var ratio_positionnement=positionnement.width()/positionnement.height();
+					val = toFloat2Decimals(compression_x*(ratio_image_preview_ajustee/ratio_positionnement));
 				break;
 				case 'Couleur_fond': case 'Couleur_texte':
 					val=farbs[nom_option].color.replace(/#/g,'');
