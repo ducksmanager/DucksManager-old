@@ -85,27 +85,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 	function get_ordres($pays,$magazine,$numero=null) {
 		$resultats_ordres=array();
-		$requete='SELECT DISTINCT Ordre, Numero_debut, Numero_fin '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
-				.'ORDER BY Ordre';
+		$requete='SELECT DISTINCT Ordre, Numero '
+				.'FROM tranches_en_cours_modeles_vue '
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' ';
+		if (!is_null($numero)) {
+			$requete.='AND Numero=\''.$numero.'\' ';
+		}
+		$requete.='AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
+				 .'ORDER BY Ordre';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		foreach($resultats as $resultat) {
-			if (!is_null($numero)) {
-				$numeros_debut=explode(';',$resultat->Numero_debut);
-				$numeros_fin=explode(';',$resultat->Numero_fin);
-				foreach($numeros_debut as $i=>$numero_debut) {
-					$numero_fin=$numeros_fin[$i];
-					$intervalle=$this->getIntervalleShort($this->getIntervalle($numero_debut, $numero_fin));
-					if (!est_dans_intervalle($numero, $intervalle))
-						continue;
-				}
-
-			}
 			$resultats_ordres[]=$resultat->Ordre;
 		}
 		$resultats_ordres=array_unique($resultats_ordres);
@@ -133,7 +123,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$username=($this->user_possede_modele() ? self::$username : 'brunoperel');
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Option_nom IS NULL '
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
 				.'AND username = \''.self::$username.'\' ';
 		if (!is_null($num_etape))
 			$requete.='AND Ordre='.$num_etape.' ';
@@ -147,16 +137,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$resultats_fonctions=array();
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' AND Option_nom IS NULL '
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$ordre.' '
 				.'AND username = \''.self::$username.'\' '
 				.'AND Numero=\''.$numero.'\'';
 		
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
-		if (count($resultats) == 0) {
-			return null;
-		}
-		return new Fonction($resultats[0]);
+		$resultat = $this->db->query($requete)->row();
+		return is_null($resultat) ? null : new Fonction($resultat);
 	}
 
 	function get_options($pays,$magazine,$ordre,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null) {
@@ -165,7 +151,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$requete='SELECT '.implode(', ', self::$content_fields).' '
 				.'FROM tranches_en_cours_modeles_vue '
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($nom_option))
 			$requete.='AND Option_nom LIKE \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';

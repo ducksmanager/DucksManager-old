@@ -76,12 +76,16 @@ button#connexion, button#deconnexion {
 }
 
 
-.wizard.preview_etape .position_texte {
+.wizard.preview_etape .rectangle_position {
 	position: absolute;
 	cursor: move;
-	background-color:orange;
-	opacity: 0.5;
-	border: 1px solid black;
+	background-color:transparent;
+	opacity: 1;
+}
+
+.wizard.preview_etape .rectangle_position.outlined {
+	outline-width: 1px;
+	outline-style: dotted;
 }
 
 .wizard.preview_etape .apercu_myfonts img {

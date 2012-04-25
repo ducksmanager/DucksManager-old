@@ -9,10 +9,12 @@ var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=25;
 var MARGE_DROITE_TRANCHE_FINALE=10;
-var OPTIONS_FONCTIONS={'Remplir':['Pos_x','Pos_y','Couleur'],
-					   'TexteMyFonts':['URL','Couleur_texte','Couleur_fond','Largeur','Chaine',
-					                   'Pos_x','Pos_y','Compression_x','Compression_y',
-					                   'Rotation','Demi_hauteur','Mesure_depuis_haut']};
+
+var TEMPLATES ={'numero':/\[Numero\]/,
+	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
+	            'largeur':/\[Largeur\]/i,
+	            'hauteur':/\[Hauteur\]/i,
+	            'caracteres_speciaux':/\°/i};
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -381,12 +383,14 @@ function wizard_init(wizard_id) {
 									chargements.push(chargements+''); // Etape finale
 									
 									chargement_courant=0;
-						            charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
-						            	var dialogue=image.closest('.ui-dialog');
+									charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
+										var dialogue=image.closest('.ui-dialog');
 										var num_etape=dialogue.data('etape');
-										var section_preview_etape=dialogue.find('.preview_etape');
-										
-										recuperer_et_alimenter_options_preview(num_etape, section_preview_etape);						            	
+
+										if (modification_etape != null) {
+											if (dialogue.data('etape') == modification_etape.data('etape'))
+												recuperer_et_alimenter_options_preview(num_etape);
+										}
 						            });
 				            	}
 							}});
@@ -529,7 +533,7 @@ function wizard_init(wizard_id) {
 									}
 								});
 
-								recuperer_et_alimenter_options_preview(num_etape, section_preview_etape);
+								recuperer_et_alimenter_options_preview(num_etape);
 								
 							});
 						}
@@ -582,7 +586,8 @@ function placer_dialogues_preview() {
 	});
 }
 
-function recuperer_et_alimenter_options_preview(num_etape, section_preview_etape) {
+function recuperer_et_alimenter_options_preview(num_etape) {
+	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.closest('.ui-dialog').data('nom_fonction');
 	$.ajax({
 	    url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
@@ -608,12 +613,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	var form_userfriendly=section_preview_etape.find('.options_etape');
 	var form_options=$('<form>',{'name':'form_options'});
 	for(var nom_option in valeurs) {
-		form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(valeurs[nom_option]));
+		form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(templatedToVal(valeurs[nom_option])));
 	}
 	section_preview_etape.append(form_options);
 	
 	
 	var image = section_preview_etape.find('.image_preview');
+	
+	var checkboxes=new Array();
 	switch(nom_fonction) {
 		case 'Remplir':
 			classes_farbs['Couleur']='';
@@ -632,6 +639,52 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 														   		    	tester_option_preview(nom_fonction,'Pos_y');
 														   		    }});
 		break;
+		case 'Rectangle':
+			classes_farbs['Couleur']='';
+
+			var position_texte=form_userfriendly.find('.rectangle_position');
+
+			var pos_x_debut=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_debut']))*zoom;
+			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
+			var pos_x_fin=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
+			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
+
+			position_texte.css({	'left':			    pos_x_debut+'px', 
+								    'top': 			    pos_y_debut+'px',
+								    'width': (pos_x_fin-pos_x_debut)+'px',
+								    'height':(pos_y_fin-pos_y_debut)+'px'})
+						  .removeClass('cache')
+						  .draggable({//containment:limites_drag, 
+				  		  stop:function(event, ui) {
+			   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
+			   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
+			   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
+			   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+			   		      }
+						  })
+						  .resizable({
+								stop:function(event, ui) {
+					   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
+					   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+					   		    }
+						  });
+			
+			checkboxes.push('Rempli');
+			form_userfriendly.find('input[name="option-Rempli"]')
+			.change(function() {
+				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
+				tester_option_preview(nom_fonction,nom_option);
+				load_myfonts_preview(true,true,true);
+			});
+			
+			if (valeurs['Rempli'] == 'Oui') {
+				position_texte.css({'background-image': '-webkit-repeating-linear-gradient(135deg, white, white 5px, '
+																						 +'#'+valeurs['Couleur']+' 5px, #'+valeurs['Couleur']+' 10px)'});
+			}
+			position_texte.addClass('outlined')
+						  .css({'outline-color':'#'+valeurs['Couleur']});
+
+		break;
 		case 'TexteMyFonts':
 			classes_farbs['Couleur_texte']='.texte';
 			classes_farbs['Couleur_fond']='.fond';
@@ -646,13 +699,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				load_myfonts_preview(true,true,true);
 			});
 			
+			checkboxes.push('Demi_hauteur');
 			form_userfriendly.find('input[name="option-Demi_hauteur"]')
-				.attr('checked',valeurs[nom_option]=='Oui' ? 'checked':'')
-				.change(function() {
-					var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-					tester_option_preview(nom_fonction,nom_option);
-					load_myfonts_preview(true,true,true);
-			});
+								.change(function() {
+									var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
+									tester_option_preview(nom_fonction,nom_option);
+									load_myfonts_preview(true,true,true);
+								});
 
 			$(document).mouseup( stopRotate );
 			var input_rotation=form_userfriendly.find('input[name="option-Rotation"]');
@@ -680,7 +733,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
 								var image=dialogue.find('.image_preview');
 								
-								var position_texte=form_userfriendly.find('.position_texte');
+								var position_texte=form_userfriendly.find('.rectangle_position');
 								var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
 								var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
 								
@@ -718,7 +771,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						});
 					}
 					else
-						form_userfriendly.find('.position_texte').addClass('cache');
+						form_userfriendly.find('.rectangle_position').addClass('cache');
 				}
 			});
 			form_userfriendly.find('.accordion').accordion().change();
@@ -736,6 +789,11 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			$('.picker').not(this_picker).addClass('cache');
 			this_picker.toggleClass('cache');
 		});
+	}
+	
+	for (var i in checkboxes) {
+		form_userfriendly.find('input[name="option-'+checkboxes[i]+'"]')
+			.attr('checked',valeurs[checkboxes[i]]=='Oui' ? 'checked':'');
 	}
 }
 
@@ -806,8 +864,29 @@ function tester_option_preview(nom_fonction,nom_option) {
 				break;
 			}
 		break;
+		case 'Rectangle':
+			var positionnement=dialogue.find('.rectangle_position');
+			switch(nom_option) {
+				case 'Couleur':
+					var farb=farbs[nom_option];
+					val=farb.color.replace(/#/g,'');
+				break;
+				case 'Pos_x_debut':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+				break;
+				case 'Pos_y_debut':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().top  - image.offset().top )/zoom));
+				break;
+				case 'Pos_x_fin':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().left + positionnement.width() - image.offset().left)/zoom));
+				break;
+				case 'Pos_y_fin':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom));
+				break;
+			}
+		break;
 		case 'TexteMyFonts':
-			var positionnement=dialogue.find('.position_texte');
+			var positionnement=dialogue.find('.rectangle_position');
 			switch(nom_option) {
 				case 'Pos_x':
 					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
@@ -1042,4 +1121,37 @@ function init_action_bar() {
 			
 		});
 	});
+}
+
+function templatedToVal(templatedString) {
+	$.each(TEMPLATES,function(nom, regex) {
+		if ((templatedString+'').match(regex) != null) {
+			templatedString+='';
+			switch(nom) {
+				case 'numero':
+					templatedString=templatedString.replace(regex, numero);
+				break;
+				case 'numero[]':
+					var spl=(numero+'').split('');
+					var matches=templatedString.match(regex);
+					for (var i=0;i<matches.length;i++) {
+						var caractere=matches[i].replace(regex,'$1');
+						if (!isNaN(caractere) && parseInt(caractere) >= 0 && parseInt(caractere) < spl.length)
+							templatedString=templatedString.replace(matches[i],spl[parseInt(caractere)]);
+					}
+				break;
+				case 'largeur':
+					templatedString=templatedString.replace(regex, $('#dimension_x').val());
+				break;
+				case 'hauteur':
+					templatedString=templatedString.replace(regex, $('#dimension_y').val());
+				break;
+				case 'caracteres_speciaux':
+					templatedString=templatedString.replace(/°/,'�');
+				break;
+
+			}
+		}
+	});
+	return templatedString;
 }

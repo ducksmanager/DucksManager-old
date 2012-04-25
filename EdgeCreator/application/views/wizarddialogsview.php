@@ -172,8 +172,6 @@
 		<div id="options-etape--Remplir" class="options_etape cache">
 			<img class="point_remplissage cache" src="../images/cross.png" />
 			<p>
-				Le remplissage de la tranche est d&eacute;fini par une couleur et par des coordonn&eacute;es indiquant le point &agrave; partir duquel le remplissage est effectu&eacute;.
-				<br />
 				&gt; D&eacute;placez le curseur en forme de croix pour modifier le point de remplissage.<br />
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage.
 			</p>
@@ -184,8 +182,24 @@
 			</form>
 		</div>
 		
+		<div id="options-etape--Rectangle" class="options_etape cache">
+			<div class="rectangle_position cache"></div>
+			<p>
+				&gt; D&eacute;placez et redimensionnez le rectangle.<br />
+				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
+			</p>
+			<form id="options_etape">
+				<div class="picker cache"></div>
+				<label for="option-Couleur">Couleur : </label>
+				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+				<br />
+				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir le rectangle</label> 
+					
+			</form>
+		</div>
+		
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">
-			<div class="position_texte cache"></div>
+			<div class="rectangle_position cache"></div>
 			<div class="accordion">
 				<h3><a href="#">Propri&eacute;t&eacute;s du texte</a></h3>
 				<div class="proprietes_texte">

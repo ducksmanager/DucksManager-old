@@ -646,7 +646,7 @@ function charger_image(type_chargement,src,num,callback) {
             	fixer_regles(true);
             
             if (type_chargement=='etape')
-                charger_preview_etape(chargements[chargement_courant],est_visu);
+                charger_preview_etape(chargements[chargement_courant],est_visu, undefined, callback);
             else
                 charger_previews_numeros(chargements[chargement_courant],est_visu);
         }
