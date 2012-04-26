@@ -25,6 +25,12 @@ button#connexion, button#deconnexion {
 	top: 70px !important;
 }
 
+#wizard-conception .texte_presentation_tranche_finale {
+	width: 50%;
+	float: right;
+	text-align: right;
+}
+
 #wizard-1 #tranches_en_cours {
 	margin-left: 20px;
 }

@@ -158,7 +158,7 @@
 					&lt; Les &eacute;tapes de votre tranche sont pr&eacute;sent&eacute;es &agrave; gauche, dans leur ordre d'utilisation.<br />
 					&lt; 
 					Cliquez sur une &eacute;tape pour l'afficher ou la modifier.<br />
-					<p style="text-align: right">
+					<p class="texte_presentation_tranche_finale">
 						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; droite. &gt;
 					</p> 
 				</form>
