@@ -209,7 +209,7 @@ class Viewer extends CI_Controller {
 						}
 					}
 					
-					@mkdir('../edges/'.$pays.'/gen/'.$magazine);
+					@mkdir('../edges/'.$pays.'/gen',0777,true);
 					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
 					
 					if (self::$is_debug!==false)
