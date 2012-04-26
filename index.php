@@ -1331,7 +1331,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 							<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
 							<p style="margin-left:10px">
 								<?=PUB_WHATTHEDUCK_1?>
-								<a target="_blank" href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
+								<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
 								<?=PUB_WHATTHEDUCK_2?>
 								<br />
 								<?=PUB_WHATTHEDUCK_3?>
