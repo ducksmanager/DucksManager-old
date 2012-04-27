@@ -47,40 +47,39 @@ class MyFonts extends CI_Model {
 							 .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$texte_clean.'\' AND Precision_ LIKE \''.$this->precision.'\'';
 		$requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
 		$image_existe=count($requete_image_existe_resultat) != 0;
+		
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
-			if (false === (@$im=imagecreatefromgif($this->chemin_image))) {
-				echo 'Aucun chemin d\'image trouve sur '.$this->p->url;
-				Fonction_executable::erreur('Image MyFonts non trouvee ; ('.$this->p->url.')');
+			if (false !== (@$im=imagecreatefromgif($this->chemin_image))) { // Image stockée, pas besoin de la regénérer
+				$this->im=$im;
+				return;
 			}
 		}
-		else {
-			$this->p=new Post(
-				"http://new.myfonts.com/widgets/testdrive/testdrive-ajax.php",
-				"http://www.jonasjohn.de/",
-				$this->data,
-				'GET'
-			);
+		$this->p=new Post(
+			"http://new.myfonts.com/widgets/testdrive/testdrive-ajax.php",
+			"http://www.jonasjohn.de/",
+			$this->data,
+			'GET'
+		);
 
-			$code_image=$this->p->content;
-			preg_match(self::$regex_source_image, $code_image, $chemin);
-			if (!array_key_exists(1, $chemin)) {
-				echo 'Aucun chemin d\'image trouve sur '.$this->p->url;
-				Fonction_executable::erreur('Image MyFonts non trouvee ; ('.$this->p->url.')');
-			}
-			else {
-				$this->chemin_image=$chemin[1];
-				$this->chemin_image=str_replace('\\','',$this->chemin_image);
-				
-				$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
-						.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
-						.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
-				$this->db->query($requete);
-				
-				$im=imagecreatefromgif($this->chemin_image);
-				imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
-			}
+		$code_image=$this->p->content;
+		preg_match(self::$regex_source_image, $code_image, $chemin);
+		if (!array_key_exists(1, $chemin)) {
+			echo 'Aucun chemin d\'image trouve sur '.$this->p->url;
+			Fonction_executable::erreur('Image MyFonts non trouvee ; ('.$this->p->url.')');
+		}
+		else {
+			$this->chemin_image=$chemin[1];
+			$this->chemin_image=str_replace('\\','',$this->chemin_image);
+			
+			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
+					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
+					.'\''.$this->width.'\',\''.$texte_clean.'\',\''.$this->precision.'\')';
+			$this->db->query($requete);
+			
+			$im=imagecreatefromgif($this->chemin_image);
+			imagegif($im,BASEPATH.'../../edges/images_myfonts/'.$this->db->insert_id().'.gif');
 		}
 		$this->im=$im;
 	}

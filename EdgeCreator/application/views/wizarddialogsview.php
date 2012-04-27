@@ -298,3 +298,14 @@
 				R&eacute;f&eacute;rencez votre num&eacute;ro pour Inducks pour qu'il apparaisse dans les listes.
 			</p>
 		</div>
+
+<!--  Dialogues issus du menu et utilitaires -->
+		
+
+<div id="wizard-upload" class="wizard" title="Stockage d'une photo de tranche">
+	<p>
+		S&eacute;lectionnez une photo de tranche stock&eacute;e sur votre ordinateur 
+		pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche et ainsi pouvoir les comparer facilement.
+	</p>
+	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
+</div>

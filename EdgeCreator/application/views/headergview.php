@@ -47,18 +47,12 @@ header("Pragma: no-cache"); ?>
 		var base_url='<?=base_url()?>';
 
 		var urls=new Array();
-		urls['edgecreatorg']='<?=site_url('edgecreatorg')?>/';
-		urls['tranchesencours']='<?=site_url('tranchesencours')?>/';
-		urls['numerosdispos']='<?=site_url('numerosdispos')?>/';
-		urls['parametrageg']='<?=site_url('parametrageg')?>/';
-		urls['parametrageg_wizard']='<?=site_url('parametrageg_wizard')?>/';
-		urls['modifierg']='<?=site_url('modifierg')?>/';
-		urls['supprimerg']='<?=site_url('supprimerg')?>/';
-		urls['listerg']='<?=site_url('listerg')?>/';
-		urls['etendre']='<?=site_url('etendre')?>/';
-		urls['viewer']='<?=site_url('viewer')?>/';
-		urls['viewer_wizard']='<?=site_url('viewer_wizard')?>/';
-		urls['viewer_myfonts']='<?=site_url('viewer_myfonts')?>/';
+		<?php
+		$controleurs=array('edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
+		   				   'modifierg','supprimerg','listerg','etendre','upload_wizard','viewer','viewer_wizard','viewer_myfonts');
+		foreach($controleurs as $controleur) {
+			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
+		}?>
 	</script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreator.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/edgecreator_wizard.js" ></script>

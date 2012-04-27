@@ -1,19 +1,26 @@
 <?php
 $url_root=getcwd();
-$dossier = $url_root.'/../edges/'.$_POST['pays'].'/elements/';
-$fichier = basename($_FILES['image']['name']);
-$taille_maxi = 400000;
-$taille = filesize($_FILES['image']['tmp_name']);
-$extensions = array('.png');
+$est_photo_tranche = $_POST['photo_tranche'] == 1;
 $extension = strrchr($_FILES['image']['name'], '.');
+$dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
+
+if ($est_photo_tranche) {
+	$fichier=$_POST['magazine'].'.'.$_POST['numero'].$extension;
+}
+else {
+	$fichier = basename($_FILES['image']['name']);
+}
+$taille_maxi = $_POST['MAX_FILE_SIZE'];
+$taille = filesize($_FILES['image']['tmp_name']);
+$extensions = $est_photo_tranche ? array('.jpg','.png') : array('.png');
 //Début des vérifications de sécurité...
 if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
 {
-	 $erreur = 'Vous devez uploader un fichier de type png...';
+	 $erreur = 'Vous devez uploader un fichier de type '.implode(' ou ',$extensions);
 }
 if($taille>$taille_maxi)
 {
-	 $erreur = 'Le fichier est trop gros...';
+	 $erreur = 'Le fichier est trop gros.';
 }
 if (file_exists($dossier . $fichier)) {
 	$erreur = 'Echec de l\'envoi : ce fichier existe d&eacute;j&agrave; ! '
@@ -27,6 +34,25 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 		  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
 	 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
 	 {
+		  if ($est_photo_tranche) {
+	  		if ($extension == '.png') {
+		  		$im=imagecreatefrompng($dossier . $fichier);
+		  		unlink($dossier . $fichier);
+		  		$fichier=str_replace('.png','.jpg',$fichier);
+		  		imagejpeg($im, $dossier . $fichier);
+		  	}
+	  		list($width, $height, $type, $attr) = getimagesize($dossier . $fichier);
+	  		if ($width > $height) { // Image photographiée à l'horizontale
+	  			$im=imagecreatefromjpeg($dossier . $fichier);
+	  				
+				$fond=imagecolorallocatealpha($im, 255, 255, 255, 127);
+				$im=imagerotate($im, 90, $fond);
+	  			imagejpeg($im, $dossier . $fichier, 100);	  				
+	  		}
+	  		?><script type="text/javascript">
+				window.parent.afficher_photo_tranche();
+	  		<?php
+		  }
 		  echo 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
 	 }
 	 else //Sinon (la fonction renvoie FALSE).
