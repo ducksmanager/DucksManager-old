@@ -144,15 +144,15 @@
 		<div id="wizard-conception" class="wizard" title="Assistant DucksManager - Conception de la tranche">
 			<p>
 				<div class="chargement">Chargement...</div>
-				<form class="cache">
+				<form class="cache" name="form_options">
 					<span id="nom_complet_numero"></span>
 					Dimensions de la tranche : 
-					<input type="text" id="dimension_x" name="dimension_x" maxlength="3" size="2"> mm 
+					<input type="text" id="Dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
 					x 
-					<input type="text" id="dimension_y" name="dimension_y" maxlength="3" size="2"> mm
+					<input type="text" id="Dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 					<button id="modifier_dimensions" class="cache small">Modifier</button>
 					<br />
-					La tranche est d&eacute;j&agrave; en partie con&ccedil;ue.<br />
+					Un mod&egrave;le de tranche existe d&eacute;j&agrave; pour cette tranche.<br />
 					Chacune des manipulations permettant de cr&eacute;er la tranche sont appel&eacute;es des &eacute;tapes.
 					<br />
 					&lt; Les &eacute;tapes de votre tranche sont pr&eacute;sent&eacute;es &agrave; gauche, dans leur ordre d'utilisation.<br />
@@ -308,4 +308,10 @@
 		pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche et ainsi pouvoir les comparer facilement.
 	</p>
 	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
+</div>
+
+<div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Vous avez effectu&eacute; des modifications sur cette &eacute;tape. 
+	Souhaitez-vous vraiment annuler ?</p>
 </div>

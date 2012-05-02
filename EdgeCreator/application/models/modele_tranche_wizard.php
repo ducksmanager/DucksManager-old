@@ -213,8 +213,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			}
 		}
 		else
-			echo 'Pas de decalage'."\n";
-		
+			echo 'Pas de decalage'."\n";		
 	}
 	
 	function valeur_existe($id_valeur) {
@@ -222,15 +221,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $this->db->query($requete)->num_rows() > 0;
 	}
 	
-	function insert($id_modele,$ordre,$option_nom,$option_valeur) {
+	function insert($id_modele,$ordre,$nom_fonction,$option_nom,$option_valeur) {
 		$option_nom=is_null($option_nom) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_nom).'\'';
 		$option_valeur=is_null($option_valeur) ? 'NULL' : '\''.preg_replace("#([^\\\\])'#","$1\\'",$option_valeur).'\'';
 		
 		$requete='INSERT INTO tranches_en_cours_valeurs (ID_Modele,Ordre,Nom_fonction,Option_nom,Option_valeur) VALUES '
-				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\',\''.$option_nom.'\',\''.$option_valeur.'\') ';
+				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\','.$option_nom.','.$option_valeur.') ';
 		echo $requete."\n";
 		$this->db->query($requete);
-			
 	}
 	
 	function getIdModele($pays,$magazine,$numero,$username) {
@@ -253,17 +251,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$nom_fonction=$this->getNomFonction($id_modele,$ordre);
 		
 		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
-					  .'WHERE ID_Modele='.$id_modele;
+					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
 		
-		
-		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
-			$option_valeur=str_replace("'","\'",$option_valeur);
-			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
-			list($numero_debut,$numero_fin)=explode('~',$intervalle);
-			
-			$this->insert($id_modele,$ordre,$option_nom,$option_valeur);
+		foreach($parametrage as $parametre=>$valeur) {
+			$this->insert($id_modele,$ordre,$nom_fonction,$parametre,$valeur);			
 		}
 	}
 

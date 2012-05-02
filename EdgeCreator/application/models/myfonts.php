@@ -55,6 +55,10 @@ class MyFonts extends CI_Model {
 				$this->im=$im;
 				return;
 			}
+			else {
+				$requete_suppression_reference_image_inexistante='DELETE FROM images_myfonts WHERE ID='.$id_image;
+				$this->db->query($requete_suppression_reference_image_inexistante);
+			}
 		}
 		$this->p=new Post(
 			"http://new.myfonts.com/widgets/testdrive/testdrive-ajax.php",

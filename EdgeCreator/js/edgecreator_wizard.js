@@ -1,3 +1,16 @@
+(function($,undefined){
+	  $.fn.d = function(){
+		  return this.closest('.ui-dialog');
+	  };
+
+	  $.fn.valeur = function(nom_option){
+		 if (this.hasClass('options_etape'))
+			 return this.find('[name="option-'+nom_option+'"]');
+		 else
+			 return this.find('[name="'+nom_option+'"]');
+	  };
+})(jQuery);
+
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
@@ -59,8 +72,9 @@ function launch_wizard(id) {
 		autoResize: true,
 		resizable: $('#'+id).hasClass('resizable'),
 		buttons: buttons,
+		draggable: false,
 		open:function(event,ui) {
-			var dialog=$(this).closest('.ui-dialog');
+			var dialog=$(this).d();
 			$(this).css({'max-height':(
 										$('#body').height()
 									   -dialog.find('.ui-dialog-titlebar').height()
@@ -375,26 +389,7 @@ function wizard_init(wizard_id) {
 							$('#zoom_slider').slider({change:function(event,ui) {
 					            zoom=valeurs_possibles_zoom[ui.value];
 					            $('#zoom_value').html(zoom);
-								if (etapes_valides.length > 1) {
-					    			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-					            	chargements=new Array();
-									for (var i=0;i<etapes_valides.length;i++) {
-										if (etapes_valides[i].Ordre != -1)
-											chargements.push(etapes_valides[i].Ordre+'');
-									}
-									chargements.push(chargements+''); // Etape finale
-									
-									chargement_courant=0;
-									charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
-										var dialogue=image.closest('.ui-dialog');
-										var num_etape=dialogue.data('etape');
-
-										if (modification_etape != null) {
-											if (dialogue.data('etape') == modification_etape.data('etape'))
-												recuperer_et_alimenter_options_preview(num_etape);
-										}
-						            });
-				            	}
+								reload_all_previews();
 							}});
 							
 							var texte="";
@@ -409,18 +404,30 @@ function wizard_init(wizard_id) {
 								}
 								switch(option_nom) {
 									case 'Dimension_x':
-										$('#dimension_x').val(texte);
+										$('#Dimension_x').val(texte);
 									break;
 									case 'Dimension_y':
-										$('#dimension_y').val(texte);
+										$('#Dimension_y').val(texte);
 									break;
 								}
 							}
 							$('#modifier_dimensions')
 								.removeClass('cache')
 								.button()
-								.click(function() {
-									alert( "Modification des dimensions" );
+								.click(function(event) {
+							    	event.preventDefault();
+									verifier_changements_etapes_sauves($('.modif').d(),function() {
+										var form_options=$(event.currentTarget).d().find('[name="form_options"]');
+										var parametrage=form_options.serialize();
+										
+										$.ajax({
+										    url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage].join('/'),
+										    type: 'post',
+										    success:function(data) {
+										    	reload_all_previews();
+										    }
+										});
+									});
 								});
 							
 							$('#wizard-conception').find('.chargement,form').toggleClass('cache');
@@ -449,18 +456,18 @@ function wizard_init(wizard_id) {
 											$(this).removeClass('initial');
 											$(this).data('etape',num_etape)
 												   .data('id_etape',i);
-											$(this).closest('.ui-dialog').addClass('dialog-preview-etape')
+											$(this).d().addClass('dialog-preview-etape')
 																		 .data('etape',num_etape)
 																		 .data('nom_fonction',nom_fonction);
-											$(this).closest('.ui-dialog').find(".ui-dialog-titlebar-close").hide();
-											$(this).closest('.ui-dialog').find('.ui-dialog-titlebar').css({'padding':'.3em .6em;'})
+											$(this).d().find(".ui-dialog-titlebar-close").hide();
+											$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;'})
 																		 .html($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
 				  			   	   											    		  'alt':nom_fonction}))
-				  			   	   										 .append($('<span>').addClass('cache').html(nom_fonction))
+				  			   	   										 .append($('<span>').addClass('cache ui-dialog-title').html(nom_fonction))
 				  			   	   										 .addClass('logo_option');
 										}
 									});
-									wizard_etape.closest('.ui-dialog').bind('resize',function() {
+									wizard_etape.d().bind('resize',function() {
 										placer_dialogues_preview();
 									});
 									chargements.push(num_etape+'');
@@ -483,10 +490,10 @@ function wizard_init(wizard_id) {
 								open:function(event,ui) {
 									$(this).removeClass('initial').addClass('final');
 									$(this).data('etape','finale');
-									$(this).closest('.ui-dialog').addClass('dialog-preview-etape finale')
+									$(this).d().addClass('dialog-preview-etape finale')
 																 .data('etape','finale');
-									$(this).closest('.ui-dialog').find(".ui-dialog-titlebar-close").hide();
-									$(this).closest('.ui-dialog').find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
+									$(this).d().find(".ui-dialog-titlebar-close").hide();
+									$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;','text-align':'center'})
 																				.html('Tranche<br />finale');
 								}
 							});
@@ -498,7 +505,7 @@ function wizard_init(wizard_id) {
 				            charger_preview_etape(chargements[0],true);
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
-								var dialogue=$(this).closest('.ui-dialog');
+								var dialogue=$(this).d();
 								if (modification_etape != null) {
 									if (dialogue.data('etape') == modification_etape.data('etape'))
 										return;
@@ -522,16 +529,18 @@ function wizard_init(wizard_id) {
 								image.after($('#options-etape--'+nom_fonction)
 												.removeClass('cache')
 												.css({'margin-left':(image.position().left+largeur_tranche+5*zoom)+'px'}));
-								//placer_dialogues_preview();
+
 								section_preview_etape.dialog('option','buttons',{
-									'Annuler': function() {
-										
+									'Fermer': function() {
+										verifier_changements_etapes_sauves($(this).d());
 									},
 									'Tester': function() {
 										tester();
 									},
 									'Valider': function() {
-										valider();
+										valider(function() {
+											$( this ).dialog( "close" );															
+										});		
 									}
 								});
 
@@ -564,10 +573,11 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.options_etape').addClass('cache');
 	dialogue.find('[name="form_options"]').remove();
 	dialogue.find('.preview_etape').removeClass('modif');
+	modification_etape=null;
 }
 
 function placer_dialogues_preview() {
-	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').closest('.ui-dialog'));
+	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
 	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
@@ -594,7 +604,7 @@ function placer_dialogues_preview() {
 
 function recuperer_et_alimenter_options_preview(num_etape) {
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
-	var nom_fonction=section_preview_etape.closest('.ui-dialog').data('nom_fonction');
+	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
 	    url: urls['parametrageg_wizard']+['index',pays,magazine,numero,num_etape,'null','null'].join('/'),
 	    type: 'post',
@@ -621,7 +631,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	for(var nom_option in valeurs) {
 		form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(templatedToVal(valeurs[nom_option])));
 	}
-	section_preview_etape.append(form_options);
+	section_preview_etape.append(form_options).append(form_options.clone(true).attr({'name':'form_options_orig'}));
 	
 	
 	var image = section_preview_etape.find('.image_preview');
@@ -676,19 +686,14 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						  });
 			
 			checkboxes.push('Rempli');
-			form_userfriendly.find('input[name="option-Rempli"]')
-			.change(function() {
-				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-				tester_option_preview(nom_fonction,nom_option);
-				load_myfonts_preview(true,true,true);
-			});
+			form_userfriendly.valeur('Rempli')
+							 .change(function() {
+								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
+								 tester_option_preview(nom_fonction,nom_option);
+								 coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
+							 });
 			
-			if (valeurs['Rempli'] == 'Oui') {
-				position_texte.css({'background-image': '-webkit-repeating-linear-gradient(135deg, white, white 5px, '
-																						 +'#'+valeurs['Couleur']+' 5px, #'+valeurs['Couleur']+' 10px)'});
-			}
-			position_texte.addClass('outlined')
-						  .css({'outline-color':'#'+valeurs['Couleur']});
+			coloriser_rectangle_preview(valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
 
 		break;
 		case 'TexteMyFonts':
@@ -696,7 +701,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			classes_farbs['Couleur_fond']='.fond';
 			
 			$.each($(['Chaine','URL','Largeur']),function(i,option_nom) {
-				form_userfriendly.find('input[name="option-'+option_nom+'"]').val(valeurs[option_nom]);				
+				form_userfriendly.valeur(option_nom).val(valeurs[option_nom]);				
 			});
 			
 			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]').blur(function() {
@@ -706,7 +711,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			});
 			
 			checkboxes.push('Demi_hauteur');
-			form_userfriendly.find('input[name="option-Demi_hauteur"]')
+			form_userfriendly.valeur('Demi_hauteur')
 								.change(function() {
 									var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
 									tester_option_preview(nom_fonction,nom_option);
@@ -714,7 +719,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								});
 
 			$(document).mouseup( stopRotate );
-			var input_rotation=form_userfriendly.find('input[name="option-Rotation"]');
+			var input_rotation=form_userfriendly.valeur('Rotation');
 			input_rotation.data('currentRotation',0)
 						  .mousedown( startRotate );
 			$('[name~="fixer_rotation"]').click(function() {
@@ -735,7 +740,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					if (section_active_positionnement) {
 						tester(function() {
 							load_myfonts_preview(false,false,true,function() {
-								var dialogue=form_userfriendly.closest('.ui-dialog');
+								var dialogue=form_userfriendly.d();
 								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
 								var image=dialogue.find('.image_preview');
 								
@@ -787,7 +792,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 	
 	for (var nom_option in classes_farbs) {
-		var input=form_userfriendly.find('input[name="option-'+nom_option+'"]');
+		var input=form_userfriendly.valeur(nom_option);
 		ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
 					 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
 		input.click(function() {
@@ -798,11 +803,23 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 	
 	for (var i in checkboxes) {
-		form_userfriendly.find('input[name="option-'+checkboxes[i]+'"]')
+		form_userfriendly.valeur(checkboxes[i])
 			.attr('checked',valeurs[checkboxes[i]]=='Oui' ? 'checked':'');
 	}
 }
 
+function coloriser_rectangle_preview(couleur,est_rempli) {
+	var position_texte=$('.modif .rectangle_position');
+	if (est_rempli) {
+		position_texte.css({'background-image': '-webkit-repeating-linear-gradient(135deg, white, white 5px, '
+																				 +couleur+' 5px, '+couleur+' 10px)',})
+					  .removeClass('outlined');
+	}
+	else {
+		position_texte.addClass('outlined')
+					  .css({'outline-color':couleur,'background-image':'','background-color':'white'});
+	}
+}
 
 function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
 	farbs[nom_option]=$.farbtastic(picker)
@@ -812,12 +829,43 @@ function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
 	
 }
 
-function tester(callback) {
-	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+function verifier_changements_etapes_sauves(dialogue, callback) {
+	callback=callback || function() {};
+	if (dialogue.find('[name="form_options"]').serialize() 
+	 != dialogue.find('[name="form_options_orig"]').serialize()) {
+		$( "#wizard-confirmation-annulation").dialog({
+			resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				"Sauvegarder les changements": function() {
+					valider(function() {
+						fermer_dialogue_preview($('.modif'));
+						$( this ).dialog( "close" );	
+						callback();
+					});														
+				},
+				"Fermer l'etape sans sauvegarder": function() {
+					fermer_dialogue_preview($('.modif'));
+					$( this ).dialog( "close" );
+					callback();
+				},
+				"Revenir a l'edition d'etape": function() {
+					$( this ).dialog( "close" );
+					callback();
+				}
+			}
+		});
+	}
+	else callback();
+}
+
+function tester(callback, modif_dimensions) {
+	var dialogue=$('.wizard.preview_etape.modif').d();
 
 	var form_options=dialogue.find('[name="form_options"]');
 	chargements=new Array();
-	chargements.push(num_etape_courante+'');
+	chargements.push((modif_dimensions ? -1 : num_etape_courante)+'');
 	chargement_courant=0;
 	var parametrage=form_options.serialize();
     charger_preview_etape(chargements[0],true,parametrage,function() { // Test de l'étape finale
@@ -825,27 +873,26 @@ function tester(callback) {
 		chargements.push('all'); // Etape finale
 		
     	chargement_courant=0;
-    	if (callback == undefined)
-    		charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
-    	else
-    		charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
+    	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
     		
     });
 }
 
-function valider() {
-	/*$.ajax({
-	    url: urls['update_wizard']+['index',pays,magazine,numero,ordre,parametrage].join('/'),
+function valider(callback) {
+	var form_options=$('.modif').find('[name="form_options"]');
+	var parametrage=form_options.serialize();
+	
+	$.ajax({
+	    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
 	    type: 'post',
-	    dataType:'json',
 	    success:function(data) {
-	    	
+	    	callback();
 	    }
-	});*/
+	});
 }
 
 function tester_option_preview(nom_fonction,nom_option) {
-	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
@@ -900,13 +947,13 @@ function tester_option_preview(nom_fonction,nom_option) {
 				case 'Pos_y':
 					var pos_y_rectangle=positionnement.offset().top - image.offset().top;
 					val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
-					form_options.find('[name="Mesure_depuis_haut"]').val('Oui');
+					form_options.valeur('Mesure_depuis_haut').val('Oui');
 				break;
 				case 'Compression_x':
 					val = toFloat2Decimals(positionnement.width()/image.width());
 				break;
 				case 'Compression_y':
-					var compression_x=parseFloat(form_options.find('[name="Compression_x"]').val());
+					var compression_x=parseFloat(form_options.valeur('Compression_x').val());
 					
 					var image_preview_ajustee=dialogue.find('.positionnement .apercu_myfonts img');
 					var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
@@ -917,26 +964,48 @@ function tester_option_preview(nom_fonction,nom_option) {
 					val=farbs[nom_option].color.replace(/#/g,'');
 				break;
 				case 'Chaine': case 'URL':
-					val=form_userfriendly.find('input[name="option-'+nom_option+'"]').val();
+					val=form_userfriendly.valeur(nom_option).val();
 				break;
 				case 'Largeur':
-					var largeur_courante=form_options.find('[name="Largeur"]').val();
+					var largeur_courante=form_options.valeur('Largeur').val();
 					var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
 												-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
 					val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
 				break;
 				case 'Demi_hauteur':
-					val=form_userfriendly.find('input[name="option-'+nom_option+'"]').prop('checked') ? 'Oui' : 'Non';					
+					val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
 				break;
 				case 'Rotation':
-					val=-1*radToDeg(form_userfriendly.find('input[name="option-'+nom_option+'"]').data('currentRotation'));
+					val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
 				break;
 			}
 		break;
 	}
-	form_options.find('[name="'+nom_option+'"]').val(val);
+	form_options.valeur(nom_option).val(val);
 }
 
+function reload_all_previews() {
+	if (etapes_valides.length > 1) {
+		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+    	chargements=new Array();
+		for (var i=0;i<etapes_valides.length;i++) {
+			if (etapes_valides[i].Ordre != -1)
+				chargements.push(etapes_valides[i].Ordre+'');
+		}
+		chargements.push(chargements+''); // Etape finale
+		
+		chargement_courant=0;
+		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
+			var dialogue=image.d();
+			var num_etape=dialogue.data('etape');
+
+			if (modification_etape != null) {
+				if (dialogue.data('etape') == modification_etape.data('etape'))
+					recuperer_et_alimenter_options_preview(num_etape);
+			}
+        });
+	}
+}
 
 function callback_change_picked_color(farb, input_couleur) {
 	var couleur=farb[0].color.replace(/#/g,'');
@@ -955,13 +1024,19 @@ function callback_change_picked_color(farb, input_couleur) {
 
 function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
 	tester_option_preview(nom_fonction,nom_option);
-	if (nom_fonction=='TexteMyFonts') {
-		load_myfonts_preview(true,true,true);
+	switch (nom_fonction) {
+		case 'TexteMyFonts':
+			load_myfonts_preview(true,true,true);
+		break;
+		case 'Rectangle':
+			coloriser_rectangle_preview(farb[0].color,
+										input_couleur.d().find('[name="form_options"]').valeur('Rempli').val()=='Oui');
+		break;
 	}
 }
 
 function load_myfonts_preview(preview1, preview2, preview3, callback) {
-	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
 	var selectors=[];
 	if (preview1)
@@ -981,10 +1056,10 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	$.each(images,function() {
 		var url_appel=urls['viewer_myfonts']+"index";
 		$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
-			url_appel+="/"+form_options.find('[name="'+nom_option+'"]').val();
+			url_appel+="/"+form_options.valeur(nom_option).val();
 		});
 		if ($(this).closest('.positionnement').length != 0)
-			url_appel+="/"+form_options.find('[name="Rotation"]').val();
+			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
 			url_appel+='/null';
 
@@ -1005,7 +1080,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 var largeur_physique_preview_initiale=null;
 
 function placer_extension_largeur_preview() {
-	var dialogue=$('.wizard.preview_etape.modif').closest('.ui-dialog');
+	var dialogue=$('.wizard.preview_etape.modif').d();
 	var image_integration=dialogue.find('.finition_texte_genere img');
 	largeur_physique_preview_initiale=image_integration.width();
 	
@@ -1177,10 +1252,10 @@ function templatedToVal(templatedString) {
 					}
 				break;
 				case 'largeur':
-					templatedString=templatedString.replace(regex, $('#dimension_x').val());
+					templatedString=templatedString.replace(regex, $('#Dimension_x').val());
 				break;
 				case 'hauteur':
-					templatedString=templatedString.replace(regex, $('#dimension_y').val());
+					templatedString=templatedString.replace(regex, $('#Dimension_y').val());
 				break;
 				case 'caracteres_speciaux':
 					templatedString=templatedString.replace(/Â°/,'°');

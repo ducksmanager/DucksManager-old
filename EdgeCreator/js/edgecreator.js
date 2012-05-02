@@ -575,8 +575,7 @@ var selecteur_cellules_preview=null;
 
 
 function charger_image(type_chargement,src,num,callback) {
-	if (callback==undefined)
-		callback=function(){};
+	callback= callback || function(){};
 		
     var image=$('<img>').addClass('image_preview loading').data(type_chargement,num);
     var est_visu=src.indexOf('/save') == -1;

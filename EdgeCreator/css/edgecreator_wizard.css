@@ -95,7 +95,7 @@ button#connexion, button#deconnexion {
 
 .wizard.preview_etape .rectangle_position.outlined {
 	outline-width: 1px;
-	outline-style: dotted;
+	outline-style: solid;
 }
 
 .wizard.preview_etape .apercu_myfonts img {
@@ -133,8 +133,21 @@ button#connexion, button#deconnexion {
 }
 
 .dialog-preview-etape .ui-dialog-titlebar {
-	line-height: 10px;
+	line-height: 15px;
 	height: 20px;
+}
+
+.dialog-preview-etape .ui-dialog-titlebar img {
+	height: 18px;
+	float: left;
+}
+
+.dialog-preview-etape .ui-dialog-titlebar img ~ span{
+	margin-left: 13px;	
+}
+
+.dialog-preview-etape.finale .ui-dialog-titlebar {
+	line-height: 11px;
 }
 
 
