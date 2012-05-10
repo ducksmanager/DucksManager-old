@@ -595,7 +595,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                     ?>
                                                     <?=MERCI_CONTRIBUTION?><br /><?=EMAIL_ENVOYE;?>
                                                     <?php
-                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide dde '.$_SESSION['user'].' pour la bibliothèque',
+                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de '.$_SESSION['user'].' pour la bibliothèque',
                                                          $_POST['texte_participation'],'From: '.$_POST['email']);
                                                 }
                                                 else {
