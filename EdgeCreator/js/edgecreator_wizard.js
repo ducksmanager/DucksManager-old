@@ -936,6 +936,9 @@ function tester_option_preview(nom_fonction,nom_option) {
 				case 'Pos_y_fin':
 					val = toFloat2Decimals(parseFloat((positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom));
 				break;
+				case 'Rempli':
+					val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+				break;
 			}
 		break;
 		case 'TexteMyFonts':
