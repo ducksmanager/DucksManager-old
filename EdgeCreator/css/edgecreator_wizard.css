@@ -86,14 +86,19 @@ button#connexion, button#deconnexion {
 }
 
 
-.wizard.preview_etape .rectangle_position {
+.wizard.preview_etape .rectangle_position, .wizard.preview_etape .image_position {
 	position: absolute;
 	cursor: move;
 	background-color:transparent;
 	opacity: 1;
 }
 
-.wizard.preview_etape .rectangle_position.outlined {
+.wizard.preview_etape .image_position img {
+	width: 100%;
+	height: 100%;
+}
+
+.wizard.preview_etape .rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
 	outline-width: 1px;
 	outline-style: solid;
 }

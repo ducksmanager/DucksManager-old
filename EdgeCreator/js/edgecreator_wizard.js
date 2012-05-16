@@ -512,6 +512,11 @@ function wizard_init(wizard_id) {
 									else
 										fermer_dialogue_preview(modification_etape);
 								}
+								else {
+									if (dialogue.find('.image_preview').length == 0) {
+										return;
+									}
+								}
 								modification_etape=dialogue;
 								
 								var num_etape=dialogue.data('etape');
@@ -627,12 +632,15 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	var classes_farbs={};
 	
 	var form_userfriendly=section_preview_etape.find('.options_etape');
-	var form_options=$('<form>',{'name':'form_options'});
-	for(var nom_option in valeurs) {
-		form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(templatedToVal(valeurs[nom_option])));
+	if (section_preview_etape.find('[name="form_options"]').length == 0) {
+		var form_options=$('<form>',{'name':'form_options'});
+		for(var nom_option in valeurs) {
+			form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(templatedToVal(valeurs[nom_option])));
+		}
+		section_preview_etape.append(form_options)
+							 .append(form_options.clone(true)
+									 				.attr({'name':'form_options_orig'}));
 	}
-	section_preview_etape.append(form_options).append(form_options.clone(true).attr({'name':'form_options_orig'}));
-	
 	
 	var image = section_preview_etape.find('.image_preview');
 	
@@ -694,6 +702,79 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 							 });
 			
 			coloriser_rectangle_preview(valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
+
+		break;
+		case 'Image':
+			
+			$.each($(['Source']),function(i,option_nom) {
+				form_userfriendly.valeur(option_nom).val(valeurs[option_nom]);				
+			});
+
+			var position_image=form_userfriendly.find('.image_position');			
+			var apercu_image=form_userfriendly.find('.apercu_image');
+			
+			function positionner_image(preview) {
+				var dialogue=preview.d();
+				var valeurs=dialogue.find('[name="form_options"]').serializeObject();
+				var image=dialogue.find('.image_preview');
+				
+				var ratio_image=preview.prop('width')/preview.prop('height');
+				
+				var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
+				var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image);
+				
+				var pos_x=image.position().left+parseFloat(valeurs['Decalage_x'])*zoom;
+				var pos_y;
+				if (valeurs['Position'] == 'bas') {
+					pos_y=image.position().top + image.height() - hauteur - parseFloat(valeurs['Decalage_y'])*zoom;
+				}
+				else {
+					pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
+					if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+						pos_y-=parseFloat(hauteur);
+					}
+				}
+				
+				position_image.addClass('outlined')
+							  .css({'outline-color':'#000000','background-image':'','background-color':'white'});
+				
+				var limites_drag=[(image.offset().left-parseFloat(largeur)),
+				                  (image.offset().top -parseFloat(hauteur)),
+				                  (image.offset().left+image.width()),
+				                  (image.offset().top +image.height())];
+				position_image.css({'left':pos_x+'px', 
+									'top': pos_y+'px',
+									'width':largeur+'px',
+									'height':hauteur+'px'})
+							  .removeClass('cache')
+							  .html($('<img>',{'src':preview.attr('src')}))
+							  .draggable({//containment:limites_drag, 
+						  		  stop:function(event, ui) {
+					   		    	tester_option_preview(nom_fonction,'Decalage_x'); 
+					   		    	tester_option_preview(nom_fonction,'Decalage_y');
+					   		      }
+							  })
+							  .resizable('destroy')
+							  .resizable({
+									stop:function(event, ui) {
+						   		    	tester_option_preview(nom_fonction,'Compression_x'); 
+						   		    	tester_option_preview(nom_fonction,'Compression_y');
+						   		    }
+							  });
+			}
+			
+			if (apercu_image.attr('src') != undefined)
+				positionner_image(apercu_image);
+			else {
+				apercu_image
+					.attr({'src':base_url+'../edges/'+pays+'/elements/'+valeurs['Source']})
+					.load(function() {
+						positionner_image($(this));
+					})
+					.error(function() {
+						var a=21;
+					});
+			}
 
 		break;
 		case 'TexteMyFonts':
@@ -938,6 +1019,30 @@ function tester_option_preview(nom_fonction,nom_option) {
 				break;
 				case 'Rempli':
 					val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+				break;
+			}
+		break;
+		case 'Image':
+			var positionnement=dialogue.find('.image_position');
+			switch(nom_option) {
+				case 'Decalage_x':
+					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+				break;
+				case 'Decalage_y':
+					var pos_y_image=positionnement.offset().top - image.offset().top;
+					val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
+					form_options.valeur('Mesure_depuis_haut').val('Oui');
+				break;
+				case 'Compression_x':
+					val = toFloat2Decimals(positionnement.width()/image.width());
+				break;
+				case 'Compression_y':
+					var compression_x=parseFloat(form_options.valeur('Compression_x').val());
+					
+					var image_preview=dialogue.find('.apercu_image');
+					var ratio_image=image_preview.prop('width')/image_preview.prop('height');
+					var ratio_positionnement=positionnement.width()/positionnement.height();
+					val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
 				break;
 			}
 		break;

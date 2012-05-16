@@ -198,6 +198,16 @@
 			</form>
 		</div>
 		
+		<div id="options-etape--Image" class="options_etape cache">
+			<div class="image_position cache"></div>
+			<p>
+				&gt; D&eacute;placez et redimensionnez l'image incrust&eacute;e.<br />
+			</p>
+			<form id="options_etape">
+				Image utilis&eacute;e : <input type="text" name="option-Source" />
+				<img class="apercu_image hidden" style="height:100px" />
+		</div>
+		
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">
 			<div class="rectangle_position cache"></div>
 			<div class="accordion">
@@ -285,7 +295,7 @@
 							Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
 						</li>
 					</ul>
-					<div class="apercu_myfonts" style="height:100px;visibility:hidden">
+					<div class="apercu_myfonts hidden" style="height:100px">
 					</div>
 				</div>
 			</div>

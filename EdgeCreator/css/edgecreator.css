@@ -49,6 +49,10 @@ a {
 	display:none !important;
 }
 
+.hidden {
+	visibility: hidden !important;
+}
+
 #infos {
 	position:fixed;
 	right:0;
