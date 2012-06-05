@@ -548,7 +548,7 @@ function wizard_init(wizard_id) {
 										});		
 									}
 								});
-
+								section_preview_etape.find('button').button();
 								recuperer_et_alimenter_options_preview(num_etape);
 								
 							});
@@ -709,72 +709,63 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			$.each($(['Source']),function(i,option_nom) {
 				form_userfriendly.valeur(option_nom).val(valeurs[option_nom]);				
 			});
-
-			var position_image=form_userfriendly.find('.image_position');			
+		
 			var apercu_image=form_userfriendly.find('.apercu_image');
-			
-			function positionner_image(preview) {
-				var dialogue=preview.d();
-				var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-				var image=dialogue.find('.image_preview');
-				
-				var ratio_image=preview.prop('width')/preview.prop('height');
-				
-				var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
-				var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image);
-				
-				var pos_x=image.position().left+parseFloat(valeurs['Decalage_x'])*zoom;
-				var pos_y;
-				if (valeurs['Position'] == 'bas') {
-					pos_y=image.position().top + image.height() - hauteur - parseFloat(valeurs['Decalage_y'])*zoom;
-				}
-				else {
-					pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
-					if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
-						pos_y-=parseFloat(hauteur);
-					}
-				}
-				
-				position_image.addClass('outlined')
-							  .css({'outline-color':'#000000','background-image':'','background-color':'white'});
-				
-				var limites_drag=[(image.offset().left-parseFloat(largeur)),
-				                  (image.offset().top -parseFloat(hauteur)),
-				                  (image.offset().left+image.width()),
-				                  (image.offset().top +image.height())];
-				position_image.css({'left':pos_x+'px', 
-									'top': pos_y+'px',
-									'width':largeur+'px',
-									'height':hauteur+'px'})
-							  .removeClass('cache')
-							  .html($('<img>',{'src':preview.attr('src')}))
-							  .draggable({//containment:limites_drag, 
-						  		  stop:function(event, ui) {
-					   		    	tester_option_preview(nom_fonction,'Decalage_x'); 
-					   		    	tester_option_preview(nom_fonction,'Decalage_y');
-					   		      }
-							  })
-							  .resizable('destroy')
-							  .resizable({
-									stop:function(event, ui) {
-						   		    	tester_option_preview(nom_fonction,'Compression_x'); 
-						   		    	tester_option_preview(nom_fonction,'Compression_y');
-						   		    }
-							  });
-			}
-			
-			if (apercu_image.attr('src') != undefined)
+						
+			if (apercu_image.attr('src') == undefined)
+				definir_et_positionner_image(valeurs['Source']);
+			else
 				positionner_image(apercu_image);
-			else {
-				apercu_image
-					.attr({'src':base_url+'../edges/'+pays+'/elements/'+valeurs['Source']})
-					.load(function() {
-						positionner_image($(this));
-					})
-					.error(function() {
-						var a=21;
-					});
-			}
+
+			form_userfriendly.find('[name="modifier"]').click(function(event) {
+				$('#wizard-gallery').dialog({
+					width: 475,
+					modal: true,
+					height: $('#body').height(),
+					draggable: true,
+					buttons: {
+						'Annuler':function() {
+							$(this).dialog( "close" );
+						},
+						'Valider':function() {
+							if ($(this).find('.gallery img.selected').length == 0) {
+								jqueryui_alert('Vous n\'avez s&eacute;lectionn&eacute; aucune image. Cliquez sur l\'une d\'elles ou cliquez sur le bouton "Annuler"',
+											   'Aucune image s&eacute;lectionn&eacute;e');
+							}
+							else {
+				   		    	tester_option_preview('Image','Source'); 
+								$(this).dialog( "close" );
+							}
+						}						
+					},
+					open:function(event,ui) {
+						var dialog=$(this).d();
+						$.ajax({
+			                url: urls['listerg']+['index','Source',pays,magazine].join('/'),
+			                dataType:'json',
+			                type: 'post',
+			                success:function(data) {
+			                	var ul=$('#wizard-gallery').find('ul.gallery');
+			                	ul.find('li:not(.template)').remove();
+			                	for (var i in data) {
+			                		var li=ul.find('li.template').clone(true).removeClass('template');
+			                		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
+			                		li.find('img').prop({'src':base_url+'../edges/'+pays+'/elements/'+data[i]});
+			                		ul.append(li);
+			                	}
+			                	$('#wizard-gallery').find('ul.gallery li img').click(function() {
+			                		$('#wizard-gallery').find('ul.gallery li img').removeClass('selected');
+			                		$(this).addClass('selected');
+			                	});
+			                	$('#wizard-gallery').find('ul.gallery li img[src$="/'+form_userfriendly.valeur('Source').val()+'"]').click();
+			                	ul.removeClass('cache');
+			                	$('#wizard-gallery').find('.chargement_images').addClass('cache');
+			                }
+						});
+					}
+				});
+				event.preventDefault();
+			});
 
 		break;
 		case 'TexteMyFonts':
@@ -889,6 +880,71 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 }
 
+function positionner_image(preview) {
+	var form_userfriendly=modification_etape.find('.options_etape');
+	var position_image=form_userfriendly.find('.image_position');	
+	var dialogue=preview.d();
+	var valeurs=dialogue.find('[name="form_options"]').serializeObject();
+	var image=dialogue.find('.image_preview');
+	
+	var ratio_image=preview.prop('width')/preview.prop('height');
+	
+	var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
+	var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image);
+	
+	var pos_x=image.position().left+parseFloat(valeurs['Decalage_x'])*zoom;
+	var pos_y;
+	if (valeurs['Position'] == 'bas') {
+		pos_y=image.position().top + image.height() - hauteur - parseFloat(valeurs['Decalage_y'])*zoom;
+	}
+	else {
+		pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
+		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+			pos_y-=parseFloat(hauteur);
+		}
+	}
+	
+	var limites_drag=[(image.offset().left-parseFloat(largeur)),
+	                  (image.offset().top -parseFloat(hauteur)),
+	                  (image.offset().left+image.width()),
+	                  (image.offset().top +image.height())];
+	
+	position_image.addClass('outlined')
+				  .css({'outline-color':'#000000',
+					    'background-image':'',
+					    'background-color':'white',
+					    'left':pos_x+'px', 
+						'top': pos_y+'px',
+						'width':largeur+'px',
+						'height':hauteur+'px'})
+				  .removeClass('cache')
+				  .html($('<img>',{'src':preview.attr('src')}))
+				  .draggable({//containment:limites_drag, 
+			  		  stop:function(event, ui) {
+		   		    	tester_option_preview('Image','Decalage_x'); 
+		   		    	tester_option_preview('Image','Decalage_y');
+		   		      }
+				  })
+				  .resizable('destroy')
+				  .resizable({
+						stop:function(event, ui) {
+			   		    	tester_option_preview('Image','Compression_x'); 
+			   		    	tester_option_preview('Image','Compression_y');
+			   		    }
+				  });
+}
+
+function definir_et_positionner_image(source) {
+	var form_userfriendly=modification_etape.find('.options_etape');
+	var apercu_image=form_userfriendly.find('.apercu_image');
+	apercu_image
+		.attr({'src':base_url+'../edges/'+pays+'/elements/'+source})
+		.load(function() {
+			positionner_image($(this));
+		})
+		.error(function() {
+		});
+}
 function coloriser_rectangle_preview(couleur,est_rempli) {
 	var position_texte=$('.modif .rectangle_position');
 	if (est_rempli) {
@@ -1044,6 +1100,11 @@ function tester_option_preview(nom_fonction,nom_option) {
 					var ratio_positionnement=positionnement.width()/positionnement.height();
 					val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
 				break;
+				case 'Source':
+					val=$('.gallery img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
+					form_userfriendly.valeur(nom_option).val(val);
+					
+					definir_et_positionner_image(val);
 			}
 		break;
 		case 'TexteMyFonts':

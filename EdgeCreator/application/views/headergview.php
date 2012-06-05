@@ -12,6 +12,7 @@ header("Pragma: no-cache"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/csstabs.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
+	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/tipTip.css" />
 	

@@ -1034,7 +1034,7 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	
-	function get_liste($fonction,$type,$arg=null) {
+	function get_liste($fonction,$type,$arg=null,$arg2=null) {
 		$liste=array();
 		switch($type) {
 			case 'Police':
@@ -1051,14 +1051,15 @@ class Modele_tranche extends CI_Model {
 			 break;
 			case 'Source':
 				$pays=$arg;
+				$magazine=$arg2;
 				$rep=Fonction_executable::getCheminElements($pays).'/';
 				$dir = opendir($rep);
 				while ($f = readdir($dir)) {
-					if (strpos($f,'.png')===false)
-					continue;
+					if (strpos($f,'.png')===false || strpos($f,$magazine.'.') !== 0)
+						continue;
 					if(is_file($rep.$f)) {
 						$nom=$f;
-						$liste[$nom]=utf8_encode($nom);
+						$liste[]=utf8_encode($nom);
 					}
 				}
 			 break;

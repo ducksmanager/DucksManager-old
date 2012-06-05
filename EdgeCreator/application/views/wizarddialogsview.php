@@ -204,7 +204,10 @@
 				&gt; D&eacute;placez et redimensionnez l'image incrust&eacute;e.<br />
 			</p>
 			<form id="options_etape">
-				Image utilis&eacute;e : <input type="text" name="option-Source" />
+				Image utilis&eacute;e : 
+				<input type="text" name="option-Source" readonly="readonly" />
+				<button class="small" name="modifier">Modifier</button>
+				<br />
 				<img class="apercu_image hidden" style="height:100px" />
 		</div>
 		
@@ -318,6 +321,18 @@
 		pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche et ainsi pouvoir les comparer facilement.
 	</p>
 	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
+</div>
+
+<div id="wizard-gallery" class="wizard" title="Choix d'une image">
+	<p>
+		S&eacute;lectionnez une image.
+	</p>
+	<p class="chargement_images" >Chargement des images</p>
+	<ul class="gallery cache">
+		<li class="template">
+			<img />
+		</li>
+	</ul>
 </div>
 
 <div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
