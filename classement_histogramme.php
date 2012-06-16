@@ -4,15 +4,7 @@ if (isset($_GET['lang'])) {
 }
 include_once ('locales/lang.php');
 include_once('Util.class.php');
-require_once('FirePHPCore/FirePHP.class.php');
 
-$GLOBALS['firephp'] = FirePHP::getInstance(true);
-$GLOBALS['firephp']->registerErrorHandler(
-            $throwErrorExceptions=true);
-$GLOBALS['firephp']->registerExceptionHandler();
-$GLOBALS['firephp']->registerAssertionHandler(
-            $convertAssertionErrorsToExceptions=true,
-            $throwAssertionExceptions=false);
 ob_start();
 require_once('artichow/LinePlot.class.php');
 require_once('artichow/BarPlot.class.php');

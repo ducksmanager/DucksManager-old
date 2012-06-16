@@ -1,5 +1,5 @@
 <?php
-class HDN extends Edge {
+class fr_HDN extends Edge {
     var $pays='fr';
     var $magazine='HDN';
     var $intervalles_validite=array('1');
@@ -10,7 +10,7 @@ class HDN extends Edge {
     var $serie;
     var $numero_serie;
 
-    function HDN ($numero) {
+    function fr_HDN ($numero) {
         $this->numero=$numero;
         $this->serie=$numero[0];
         $this->numero_serie=substr($this->numero, strrpos($this->numero, ' ')+1, strlen($this->numero));
