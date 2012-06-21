@@ -1367,22 +1367,17 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     <?=LICENCE_INDUCKS3?>
                 </td>
                 <td style="vertical-align:top;" align="right">
-                        <?php
-                        $rep = "locales/";
-                        $dir = opendir($rep);
-                        while ($f = readdir($dir)) {
-                            if(is_file($rep.$f)) {
-                                if (endsWith($f,'.php') && strpos($f,'lang')===false) {
-                                    $nom_langue=substr($f,0,strrpos($f,'.'));
-                                    ?>
-                                    <a class="drapeau_langue" href="?<?=str_replace('&','&amp;',$_SERVER['QUERY_STRING'])?>&amp;lang=<?=$nom_langue?>">
-                                          <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
-                                    </a>
-                                    <?php
-                                }
-                            }
-                        }
-                        ?>
+                	<?php
+					foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
+						if(is_file('locales/'.$nom_langue.'.php')) {
+						?>
+							<a class="drapeau_langue" href="?<?=str_replace('&','&amp;',$_SERVER['QUERY_STRING'])?>&amp;lang=<?=$nom_langue?>">
+								<img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
+							</a>
+						<?php
+                    	}
+                    }
+                	?>
                 </td>
             </tr>
         </tbody>
