@@ -7,6 +7,7 @@ include_once ('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once('Database.class.php');
 require_once('Inducks.class.php');
+Util::exit_if_not_logged_in();
 
 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user);

@@ -6,6 +6,8 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once ('Database.class.php');
+Util::exit_if_not_logged_in();
+
 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $requete_date_dernier_calcul='SELECT MAX(DateStat) AS dernier_calcul FROM auteurs_pseudos WHERE ID_User='.$id_user;
 $resultat_date_dernier_calcul=DM_Core::$d->requete_select($requete_date_dernier_calcul);

@@ -7,6 +7,8 @@ include_once('locales/lang.php');
 include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once('Database.class.php');
 require_once('Inducks.class.php');
+Util::exit_if_not_logged_in();
+
 @session_start();
 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $l=DM_Core::$d->toList($id_user);
