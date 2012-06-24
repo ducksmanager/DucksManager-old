@@ -118,7 +118,7 @@ class Util {
 	}
 	
 	static function exit_if_not_logged_in() {
-		if (is_null($_SESSION['user'])) {
+		if (!isset($_SESSION['user'])) {
 			header('Location: http://www.ducksmanager.net');
 			exit(0);
 		}
