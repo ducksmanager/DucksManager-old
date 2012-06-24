@@ -160,7 +160,7 @@ class Liste {
 								<?php
 				break;
 			case 'etats':
-				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe><?php
+				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px;width:450px;height:420px"></iframe><?php
 			break;
 
 			case 'achats':

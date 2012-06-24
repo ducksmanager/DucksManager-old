@@ -4,17 +4,15 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 include_once ('locales/lang.php');
-include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 require_once('Database.class.php');
 require_once('Inducks.class.php');
 
 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user);
 $total=$resultat[0]['c'];
-$cpt_etats=array();
 $autres=0;
 $valeurs_magazines=array();
-$cles_magazines=array();
+$codes_couleur=array();
 foreach(Database::$etats as $etat_court=>$infos_etat) {
 	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat LIKE \''.$etat_court.'\'');
 	$cpt=$resultat[0]['c'];
@@ -23,76 +21,76 @@ foreach(Database::$etats as $etat_court=>$infos_etat) {
 		$autres+=$cpt;
 	}
 	else {
-		$valeur=new pie_value($cpt*100,utf8_encode(Database::$etats[$etat_court][0]));
-		$valeur->set_tooltip(utf8_encode(Database::$etats[$etat_court][0].'<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.round(100*$cpt/$total).'%)');
-		array_push($valeurs_magazines,$valeur);
+		$titre=utf8_encode(Database::$etats[$etat_court][0]);
+		$codes_couleur[]=Database::$etats[$etat_court][1];
+		$valeur=$cpt*100;
+		$valeurs_magazines[]=array($titre,$valeur);
 	}
 }
 if ($autres!=0) {
-	$valeur_autres=new pie_value($autres*100,utf8_encode(AUTRES));
-	$valeur_autres->set_tooltip(utf8_encode(AUTRES
-				   .'<br>'.NUMEROS_POSSEDES).' : '.$autres.' ('.round(100*$autres/$total).'%)');
-	array_push($valeurs_magazines,$valeur_autres);
+	$titre_autres=utf8_encode(AUTRES);
+	$codes_couleur[]='#FFFFFF';
+	$valeur_autres=$autres*100;
+	$valeurs_magazines[]=array($titre_autres,$valeur_autres);
 }
 
-$title=new title(utf8_encode(ETATS_MAGAZINES));
-$pie = new pie();
-$pie->set_alpha(0.6);
-$pie->set_start_angle( 35 );
-$pie->add_animation( new pie_fade() );
-$pie->set_values($valeurs_magazines);
-
-$chart = new open_flash_chart();
-$chart->set_title( $title );
-$chart->add_element( $pie );
-
-
-$chart->x_axis=null;
+$titre=utf8_encode(ETATS_MAGAZINES);
 ?>
 
 <html>
-<head>
-
-<script type="text/javascript" src="js/json/json2.js"></script>
-<script type="text/javascript" src="js/swfobject.js"></script>
-<script type="text/javascript">
-swfobject.embedSWF("open-flash-chart.swf", "my_chart", "700", "380", "9.0.0");
-</script>
-
-<script type="text/javascript">
-
-function ofc_ready(){
-	parent.$('iframe_graphique').writeAttribute({'width':'750px','height':'450px'});
-}
-
-function open_flash_chart_data()
-{
-    return JSON.stringify(data_1);
-}
-
-function load_1()
-{
-  tmp = findSWF("my_chart");
-  x = tmp.load( JSON.stringify(data_1) );
-}
-
-function findSWF(movieName) {
-  if (navigator.appName.indexOf("Microsoft")!= -1) {
-    return window[movieName];
-  } else {
-    return document[movieName];
-  }
-}
-
-var data_1 = <?php echo $chart->toPrettyString(); ?>;
-
-</script>
-
-
-</head>
-<body>
-
-<div id="my_chart"></div>
-<br>
-</body>
+	<head>
+		<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="jqplot/excanvas.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="jqplot/jquery.min.js"></script>
+		<script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.donutRenderer.min.js"></script>
+		<script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.js"></script>
+		<link rel="stylesheet" type="text/css" href="jqplot/jquery.jqplot.css" />
+		<style type="text/css">
+			body {
+				background-color:#F8F8D8;
+			}
+			#chart {
+				width: 400px;
+				height: 400px;
+			}
+			
+			.jqplot-title {
+				color: black;
+				font-size: 0.9em;
+			}
+		</style>
+		<script type="text/javascript">
+		var plot1;
+			$(document).ready(function(){
+				var data = [
+				    <?php foreach($valeurs_magazines as $titre_valeur) {
+				    		?>['<?=$titre_valeur[0]?>',<?=$titre_valeur[1]?>],<?php
+				    }?>
+				];
+				  
+				plot1 = jQuery.jqplot ('chart', [data], 
+				{ 
+					grid: {
+						background: '#F8F8D8'
+					},
+					title:'<?=$titre?>',
+					seriesColors:["<?=implode('","',$codes_couleur)?>"],
+					seriesDefaults: {
+						renderer: jQuery.jqplot.PieRenderer, 
+						rendererOptions: {
+							diameter: 250,
+							showDataLabels: true,  
+				            varyBarColor : true,
+							dataLabels:'percent'
+						}
+					}, 
+					legend: { show:true, location: 'e' }
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div id="chart"></div>
+	</body>
 </html>
