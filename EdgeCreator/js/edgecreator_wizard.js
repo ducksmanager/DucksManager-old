@@ -49,22 +49,28 @@ function launch_wizard(id) {
 	$('#'+id+' .buttonset').buttonset();
 	$('#wizard-1 .buttonset .disabled').button("option", "disabled", true);
 	
-	if (id != 'wizard-1') {
-		buttons["Precedent"]=function() {
-			$( this ).dialog( "close" );
-			launch_wizard(id_wizard_precedent);
+	if (id == 'wizard-conception') {
+		buttons["Soumettre la tranche"]=function() {
+			jqueryui_alert('Validation de la tranche','Validation de la tranche');
 		};
 	}
-
-	if (! $('#'+id).hasClass('dead-end')) {
-		buttons["Suivant"]=function() {
-			var id_wizard_suivant=wizard_check($(this).attr('id'));
-			if (id_wizard_suivant != null) {
-				wizard_goto($(this),id_wizard_suivant);
-			}
-		};
-	}
+	else {
+		if (id != 'wizard-1') {
+			buttons["Precedent"]=function() {
+				$( this ).dialog( "close" );
+				launch_wizard(id_wizard_precedent);
+			};
+		}
 	
+		if (! $('#'+id).hasClass('dead-end')) {
+			buttons["Suivant"]=function() {
+				var id_wizard_suivant=wizard_check($(this).attr('id'));
+				if (id_wizard_suivant != null) {
+					wizard_goto($(this),id_wizard_suivant);
+				}
+			};
+		}
+	}
 	$('#'+id).dialog({
 		width: 475,
 		position: 'top',
@@ -416,7 +422,7 @@ function wizard_init(wizard_id) {
 								.button()
 								.click(function(event) {
 							    	event.preventDefault();
-									verifier_changements_etapes_sauves($('.modif').d(),function() {
+									verifier_changements_etapes_sauves($('.modif').d(),'wizard-confirmation-rechargement',function() {
 										var form_options=$(event.currentTarget).d().find('[name="form_options"]');
 										var parametrage=form_options.serialize();
 										
@@ -537,7 +543,7 @@ function wizard_init(wizard_id) {
 
 								section_preview_etape.dialog('option','buttons',{
 									'Fermer': function() {
-										verifier_changements_etapes_sauves($(this).d());
+										verifier_changements_etapes_sauves($(this).d(),'wizard-confirmation-annulation');
 									},
 									'Tester': function() {
 										tester();
@@ -966,11 +972,11 @@ function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
 	
 }
 
-function verifier_changements_etapes_sauves(dialogue, callback) {
+function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sauvegarde, callback) {
 	callback=callback || function() {};
 	if (dialogue.find('[name="form_options"]').serialize() 
 	 != dialogue.find('[name="form_options_orig"]').serialize()) {
-		$( "#wizard-confirmation-annulation").dialog({
+		$("#"+id_dialogue_proposition_sauvegarde).dialog({
 			resizable: false,
 			height:140,
 			modal: true,

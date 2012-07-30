@@ -153,11 +153,11 @@
 					<button id="modifier_dimensions" class="cache small">Modifier</button>
 					<br />
 					Un mod&egrave;le de tranche existe d&eacute;j&agrave; pour cette tranche.<br />
-					Chacune des manipulations permettant de cr&eacute;er la tranche sont appel&eacute;es des &eacute;tapes.
+					Chacune des manipulations permettant de cr&eacute;er la tranche sont appel&eacute;es des <b>&eacute;tapes</b>.
 					<br />
 					&lt; Les &eacute;tapes de votre tranche sont pr&eacute;sent&eacute;es &agrave; gauche, dans leur ordre d'utilisation.<br />
 					&lt; 
-					Cliquez sur une &eacute;tape pour l'afficher ou la modifier.<br />
+					Cliquez sur une &eacute;tape pour la modifier.<br />
 					<p class="texte_presentation_tranche_finale">
 						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; droite. &gt;
 					</p> 
@@ -335,8 +335,14 @@
 	</ul>
 </div>
 
+<div id="wizard-confirmation-rechargement" class="wizard" title="Sauvegarder les changements ?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Vous avez effectu&eacute; des modifications non sauvegard&eacute;s sur l'&eacute;tape ouverte. 
+	Souhaitez-vous sauvegarder ces modifications ?</p>
+</div>
+
 <div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Vous avez effectu&eacute; des modifications sur cette &eacute;tape. 
-	Souhaitez-vous vraiment annuler ?</p>
+	Vous avez effectu&eacute; des modifications sur l'&eacute;tape que vous souhaitez fermer. 
+	Souhaitez-vous sauvegarder ces modifications ?</p>
 </div>
