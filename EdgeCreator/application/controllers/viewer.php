@@ -17,21 +17,20 @@ class Viewer extends CI_Controller {
 	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random_ou_username=null,$debug=false) {
 		$parametrage=urldecode($parametrage);
 		$fond_noir = $fond_noir == 'true';
-		if ($save==='save')
-			$zoom=1.5;
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
+		$this->load->library('session');
 		$this->load->library('email');
 		$this->load->helper('url');
 		$session_id = $this->session->userdata('session_id');
-		
+		$this->load->database();
 		
 		$this->load->model('Modele_tranche');
 		
 		$privilege=$this->Modele_tranche->get_privilege();
 		
 		if (is_null($pays) || is_null($magazine)) {
-			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
+			echo 'Erreur : Nombre d\'arguments insuffisant';
 			exit();
 		}
 		else {
@@ -199,47 +198,24 @@ class Viewer extends CI_Controller {
 		if ($save=='save' && $zoom==1.5) {
 			switch($privilege) {
 				case 'Admin':
-					$liste_photographes=explode(';',$random_ou_username);
-					foreach($liste_photographes as $photographe) {
-						$requete_photographe_existe='SELECT 1 FROM users WHERE username=\''.$photographe.'\'';
-						$resultat_photographe_existe = $this->db->query($requete_photographe_existe);
-						if ($resultat_photographe_existe->num_rows == 0) {
-							echo 'Erreur : l\'utilisateur '.$photographe.' n\'existe pas';
-							return;
-						}
-					}
-					
 					@mkdir('../edges/'.$pays.'/gen',0777,true);
 					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
 					
 					if (self::$is_debug!==false)
 						echo 'Image enregistree dans '.getcwd().'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png';
 					
-					$requete_tranche_deja_prete='SELECT createurs, photographes, issuenumber '
+					$requete_tranche_deja_prete='SELECT createurs, issuenumber '
 											   .'FROM tranches_pretes '
 											   .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero.'\'';
 					$resultat_tranche_prete = $this->db->query($requete_tranche_deja_prete);
 					if ($resultat_tranche_prete->num_rows== 0) {
-						$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber, photographes, createurs) VALUES '
-								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\',\''.$photographes.'\',\''.$random_ou_username.'\')';
+						$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber) VALUES '
+								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\')';
 					}
 					else {
 						$id_utilisateur=$this->Modele_tranche->username_to_id($random_ou_username).';';
-						$createurs=$resultat_tranche_prete->row()->createurs == null 
-							? $id_utilisateur 
-							: (in_array($utilisateur,explode(';',$resultat_tranche_prete->row()->createurs))
-								? $resultat_tranche_prete->row()->createurs
-								: $resultat_tranche_prete->row()->createurs.';'.$id_utilisateur); 
-						$photographes_finaux=is_null($resultat_tranche_prete->row()->photographes) 
-							? array() 
-							: explode(';',$resultat_tranche_prete->row()->photographes);
-						
-						foreach($photographes as $photographe)
-							if (!in_array($photographe, $photographes_finaux))
-								$photographes_finaux[]=$photographe;
-						$requete='UPDATE tranches_pretes '
-								.'SET createurs   =\''.$createurs.'\', '
-								.'    photographes=\''.implode(';',$photographes_finaux).'\' '
+						$createurs=$resultat_tranche_prete->row()->createurs == null ? $id_utilisateur : ($resultat_tranche_prete->row()->createurs.$id_utilisateur); 
+						$requete='UPDATE tranches_pretes SET createurs=\''.$createurs.'\' '
 								.'WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
 					}
 					$this->db->query($requete);

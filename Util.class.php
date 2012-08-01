@@ -116,6 +116,13 @@ class Util {
 		fputs($inF,$str); 
 		fclose($inF);
 	}
+	
+	static function exit_if_not_logged_in() {
+		if (!isset($_SESSION['user'])) {
+			header('Location: http://www.ducksmanager.net');
+			exit(0);
+		}
+	}
 }
 
 if (isset($_GET['magazines_supprimes'])) {

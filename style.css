@@ -10,17 +10,19 @@ a {
 	color:#ffffff;
 	text-decoration: none;
 	white-space: nowrap;
-	border-bottom-width: 1px;
-	border-bottom-style: dotted;
-	border-bottom-color:#ffffff;
+	border-bottom: 1px dotted #ffffff;
 }
+
+#colonne_gauche a {
+	border-bottom: none;
+}
+
 a:HOVER {
 	text-decoration:none;
-	border-bottom-width: 1px;
-	border-bottom-style: dashed;
-	border-bottom-color: #ffffff;
+	border-bottom: 1px dashed #ffffff !important;
 	white-space: nowrap;
 }
+
 del {
 	white-space:nowrap;
 }
