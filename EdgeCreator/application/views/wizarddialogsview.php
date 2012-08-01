@@ -71,6 +71,24 @@
 		</p>
 	</div>
 	
+		<div id="wizard-dimensions" class="wizard" title="Assistant DucksManager - Conception de la tranche">
+			<p>
+				<form name="form_options">
+					<span id="nom_complet_numero"></span>
+					Pour concevoir la tranche du magazine, nous devons connaitre ses dimensions.<br />
+					Indiquez ci-dessous l'<b>&eacute;paisseur</b> et la <b>hauteur</b> de la tranche, en millim&egrave;tres.
+					
+					Dimensions de la tranche : 
+					<input type="text" id="Dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
+					x 
+					<input type="text" id="Dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
+					<div class="buttonset cache">
+						<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
+					</div>
+				</form>
+			</p>
+		</div>
+	
 	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
 		<p>
 			Choisissez le num&eacute;ro dont vous souhaitez modifier la mod&eacute;lisation.<br />
@@ -101,7 +119,7 @@
 	
 		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Cr&eacute;ation">
 			<p>
-				Certaines tranches sont d&eacute;j&agrave; pr&ecirc;tes pour le magazine s&eacute;lectionn&eacute;. 
+				Certaines tranches ont d&eacute;j&agrave; &eacute;t&eacute; con&cedil;ues pour le magazine s&eacute;lectionn&eacute;. 
 				Si la v&ocirc;tre ressemble &agrave; l'une d'elles, sa cr&eacute;ation sera facilit&eacute;e.<br />
 				L'une des tranches si-dessous est identique &agrave; la v&ocirc;tre, ou bien seules quelques couleurs ou quelques textes sont diff&eacute;rents ? 
 				Si oui, s&eacute;lectionnez cette tranche. Sinon, cliquez sur "Cr&eacute;er une tranche originale".
@@ -112,7 +130,7 @@
 					<br />
 					<div class="buttonset">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" /><label for="to-wizard-clonage">J'ai trouv&eacute; une tranche similaire</label>
-						<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception1" /><label for="to-wizard-conception1">Cr&eacute;er une tranche originale</label>
+						<input type="radio" name="choix" value="to-wizard-dimensions" id="to-wizard-dimensions1" /><label for="to-wizard-dimensions1">Cr&eacute;er une tranche originale</label>
 					</div>
 				</form>
 			</p>
@@ -337,12 +355,12 @@
 
 <div id="wizard-confirmation-rechargement" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Vous avez effectu&eacute; des modifications non sauvegard&eacute;s sur l'&eacute;tape ouverte. 
-	Souhaitez-vous sauvegarder ces modifications ?</p>
+	Vous avez modifi&eacute; l'&eacute;tape ouverte sans valider ses modifications. 
+	Souhaitez-vous valider ces modifications ?</p>
 </div>
 
 <div id="wizard-confirmation-annulation" class="wizard" title="Sauvegarder les changements ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
-	Vous avez effectu&eacute; des modifications sur l'&eacute;tape que vous souhaitez fermer. 
+	Vous avez modifi&eacute; l'&eacute;tape que vous souhaitez fermer. 
 	Souhaitez-vous sauvegarder ces modifications ?</p>
 </div>

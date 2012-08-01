@@ -142,7 +142,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'AND Numero=\''.$numero.'\'';
 		
 		$resultat = $this->db->query($requete)->row();
-		return is_null($resultat) ? null : new Fonction($resultat);
+		return count($resultat) == 0 ? null : new Fonction($resultat);
 	}
 
 	function get_options($pays,$magazine,$ordre,$numero=null,$creation=false,$inclure_infos_options=false, $nouvelle_etape=false, $nom_option=null) {

@@ -55,7 +55,7 @@ function launch_wizard(id) {
 		};
 	}
 	else {
-		if (id != 'wizard-1') {
+		if (['wizard-1','wizard-dimensions'].indexOf(id) == -1) {
 			buttons["Precedent"]=function() {
 				$( this ).dialog( "close" );
 				launch_wizard(id_wizard_precedent);
@@ -127,6 +127,21 @@ function wizard_check(wizard_id) {
 							  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
 					}
+				break;
+				case 'wizard-dimensions':
+					$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
+						var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
+						var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
+						if ( valeur == ''
+						  || valeur.search(/^[0-9]+$/) != 0) {
+							erreur="Le champ "+nom_champ+" est vide ou n'est pas un nombre";
+						}
+						valeur=parseInt(valeur);
+						if (valeur < bornes_valeur[0] || valeur > bornes_valeur[1]) {
+							erreur="Le champ "+nom_champ+" doit &ecirc;tre compris entre "+bornes_valeur[0]+" et "+bornes_valeur[1];
+						}
+						
+					})
 				break;
 				case 'wizard-modifier':
 					if (chargement_listes)
@@ -259,7 +274,7 @@ function wizard_init(wizard_id) {
 			// Pas de proposition de tranche
 			if (tranches_pretes.length <= 1) {
 				$('#'+wizard_id+' #tranches_pretes_magazine').html('Pas de tranche similaire');
-				wizard_goto($('#'+wizard_id),'wizard-conception');
+				wizard_goto($('#'+wizard_id),'wizard-dimensions');
 				return;
 			}
 			
