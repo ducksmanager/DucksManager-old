@@ -212,32 +212,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             </td></tr>
                     </table>
                 </td>
-                <td style="background-color:rgb(200, 137, 100);height: 30px; text-align: center;"><!--
-                <span style="font-weight: bold;"><img src="favicon.png" />&nbsp;DucksManager 3&nbsp;<img src="favicon_inv.png" /></span>!-->
-                    <img src="images/logo2.png" alt="DucksManager"/></td>
-                <td>
-                </td>
-                <td valign="middle" align="right" style="background-color:rgb(200, 137, 100);height: 79px; width: 98px;">
-                    <?php if (!(Util::isLocalHost())) { ?>
-                        <script type="text/javascript" src="jw/swfobject.js"></script>
-                        <object id="player" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" name="player" width="79" height="98">
-                            <param name="movie" value="jw/player.swf" />
-                            <param name="allowfullscreen" value="false" />
-                            <param name="allowscriptaccess" value="always" />
-                            <param name="flashvars" value="file=../morph/morph.swf.flv&amp;controlbar=none&amp;autostart=true&amp;image=morph/rfl.jpg" />
-                            <object type="application/x-shockwave-flash" data="jw/player.swf" width="79" height="98">
-                                <param name="movie" value="jw/player.swf" />
-                                <param name="allowfullscreen" value="true" />
-
-                                <param name="allowscriptaccess" value="always" />
-                                <param name="flashvars" value="file=../morph/morph.swf.flv&amp;autostart=true&amp;controlbar=none&amp;image=morph/rfl.jpg" />
-                                <p><a href="http://get.adobe.com/flashplayer"><?=TELECHARGER_FLASH?></a> <?=POUR_VOIR_LA_VIDEO?>.</p>
-                            </object>
-                        </object>
-                    <?php } ?>
+                <td colspan="2" id="zone_logo1" style="">
                 </td>
             </tr>
-            <tr style="height:3px;background-color:black;"><td colspan="5"></td></tr>
             <tr style="height:100%">
                 <td style="height: 441px; vertical-align: top; width: 242px; background-color: rgb(200, 137, 100);">
                     <table style="height:100%; width:100%" cellspacing="0"><tbody>
@@ -259,7 +236,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             </tr></tbody>
                     </table>
                 </td>
-                <td colspan="3" style="padding-left:5px;vertical-align: top;background-color:rgb(61, 75, 95);">
+                <td colspan="2" id="zone_logo2">
                     <?php if (!isset($_GET['action'])) {
                         ?>
                         <h3><?=BIENVENUE?></h3>
@@ -1320,7 +1297,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 						    });
 						  </script>
 
-						<div style="border: 1px solid white; text-align: center;">
+						<div style="margin-right: 6px; border-top: 1px solid white; border-bottom: 1px solid white; text-align: center;">
 							<?=PRESENTATION_GENERALE?>
 							.<br />
 							<h3>
@@ -1350,15 +1327,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 </td>
 
             </tr>
-            <tr style="height:3px;background-color:black;"><td colspan="5"></td></tr>
+            <tr style="height:3px;background-color:black;"><td colspan="3"></td></tr>
             <tr style="height:20px">
-                <td align="center" style="vertical-align:top;padding-left:4px;width: 242px;">
+                <td align="center" style="vertical-align:middle;padding-left:4px;width: 242px;">
                         <?php
                         $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
                         echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
                         ?>
                 </td>
-                <td colspan="2" align="center">
+                <td align="center">
                     <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
                     <br /><br />
                     <?=LICENCE_INDUCKS1?>
