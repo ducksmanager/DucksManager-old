@@ -1338,6 +1338,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 <td align="center">
                     <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
                     <br /><br />
+                    <?=REMERCIEMENT_LOGO?>
+                    <br />
                     <?=LICENCE_INDUCKS1?>
                     <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
                     <br />
