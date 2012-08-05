@@ -79,9 +79,9 @@
 					Indiquez ci-dessous l'<b>&eacute;paisseur</b> et la <b>hauteur</b> de la tranche, en millim&egrave;tres.
 					
 					Dimensions de la tranche : 
-					<input type="text" id="Dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
+					<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
 					x 
-					<input type="text" id="Dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
+					<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 					<div class="buttonset cache">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
 					</div>

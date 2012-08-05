@@ -129,7 +129,7 @@ function wizard_check(wizard_id) {
 					}
 				break;
 				case 'wizard-dimensions':
-					$.each($(['Dimension_x','Dimension_y']),function(i,nom_champ) {
+					$.each($(['Nouvelle_dimension_x','Nouvelle_dimension_y']),function(i,nom_champ) {
 						var valeur= $('#'+wizard_id+' [name="'+nom_champ+'"]').val();
 						var bornes_valeur=nom_champ == 'Dimension_x' ? [3, 60] : [100, 450];
 						if ( valeur == ''
