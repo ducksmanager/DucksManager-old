@@ -650,6 +650,7 @@ function charger_image(type_chargement,src,num,callback) {
                 charger_previews_numeros(chargements[chargement_courant],est_visu);
         }
         else {
+        	chargement_courant=0;
             reload_observers_tranches();
             if (type_chargement=='numero')
             	$('#numero_preview_debut').data('numero',null);

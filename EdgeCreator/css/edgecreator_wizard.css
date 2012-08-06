@@ -70,7 +70,7 @@ button#connexion, button#deconnexion {
 	cursor: pointer;
 }
 
-.wizard.preview_etape img {
+.wizard.preview_etape .image_etape.finale {
 	text-align: center;
 }
 
@@ -156,7 +156,7 @@ button#connexion, button#deconnexion {
 }
 
 
-.image_preview {
+.dialog-preview-etape:not(.finale) .image_preview {
 	float: left;
 }
 

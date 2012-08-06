@@ -519,7 +519,7 @@ function wizard_init(wizard_id) {
 								}
 							});
 
-							chargements.push(chargements+''); // On ajoute l'étape finale
+							chargements.push('all'); // On ajoute l'étape finale
 							
 							numero_chargement=numero;
 							chargement_courant=0;
@@ -564,9 +564,7 @@ function wizard_init(wizard_id) {
 										tester();
 									},
 									'Valider': function() {
-										valider(function() {
-											$( this ).dialog( "close" );															
-										});		
+										valider();		
 									}
 								});
 								section_preview_etape.find('button').button();
@@ -716,6 +714,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			checkboxes.push('Rempli');
 			form_userfriendly.valeur('Rempli')
+							 .val(valeurs['Rempli'] == 'Oui')
 							 .change(function() {
 								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
 								 tester_option_preview(nom_fonction,nom_option);
@@ -897,7 +896,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	
 	for (var i in checkboxes) {
 		form_userfriendly.valeur(checkboxes[i])
-			.attr('checked',valeurs[checkboxes[i]]=='Oui' ? 'checked':'');
+						 .attr('checked',valeurs[checkboxes[i]]=='Oui');
 	}
 }
 
@@ -1027,8 +1026,7 @@ function tester(callback, modif_dimensions) {
 	chargement_courant=0;
 	var parametrage=form_options.serialize();
     charger_preview_etape(chargements[0],true,parametrage,function() { // Test de l'étape finale
-    	chargements=new Array();
-		chargements.push('all'); // Etape finale
+    	chargements=['all']; // Etape finale
 		
     	chargement_courant=0;
     	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
@@ -1036,7 +1034,7 @@ function tester(callback, modif_dimensions) {
     });
 }
 
-function valider(callback) {
+function valider() {
 	var form_options=$('.modif').find('[name="form_options"]');
 	var parametrage=form_options.serialize();
 	
@@ -1044,7 +1042,9 @@ function valider(callback) {
 	    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
 	    type: 'post',
 	    success:function(data) {
-	    	callback();
+			reload_current_and_final_previews(function() {;
+				fermer_dialogue_preview(modification_etape);
+			});
 	    }
 	});
 }
@@ -1174,15 +1174,23 @@ function tester_option_preview(nom_fonction,nom_option) {
 	form_options.valeur(nom_option).val(val);
 }
 
+function reload_current_and_final_previews(callback) {
+	chargements=[modification_etape.data('etape')];
+    charger_preview_etape(chargements[0],true, undefined, function() {
+    	chargements=['all'];
+        charger_preview_etape(chargements[0],true, undefined, callback);
+    });
+}
+
 function reload_all_previews() {
 	if (etapes_valides.length > 1) {
 		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
     	chargements=new Array();
 		for (var i=0;i<etapes_valides.length;i++) {
 			if (etapes_valides[i].Ordre != -1)
-				chargements.push(etapes_valides[i].Ordre+'');
+				chargements.push(etapes_valides[i].Ordre);
 		}
-		chargements.push(chargements+''); // Etape finale
+		chargements.push('all'); // Etape finale
 		
 		chargement_courant=0;
 		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {

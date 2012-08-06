@@ -6,8 +6,12 @@ class Viewer_wizard extends Viewer {
 	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random_ou_username=null,$debug=false) {
 		if ($etapes_actives=='all') {
 			preg_match('#^([0-9]+)\.#is',$parametrage,$matches_num_etape_parametrage);
-			$num_etape_parametrage=$matches_num_etape_parametrage[1];
-			$parametrage=substr($parametrage,strlen($num_etape_parametrage)+1,strlen($parametrage));
+			if (count($matches_num_etape_parametrage) == 0)
+				$num_etape_parametrage=null;
+			else {
+				$num_etape_parametrage=$matches_num_etape_parametrage[1];
+				$parametrage=substr($parametrage,strlen($num_etape_parametrage)+1,strlen($parametrage));
+			}
 		}
 		parse_str($parametrage,$parametrage);
 		$fond_noir = $fond_noir == 'true';
@@ -97,7 +101,7 @@ class Viewer_wizard extends Viewer {
 				$options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,self::$numero,$fonction->Nom_fonction,false);
 				if ($num_ordre==-1)
 					$dimensions=$options2;
-				if ((self::$etapes_actives==array('all') && $num_etape_parametrage == $num_ordre)
+				if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
 				 || self::$etapes_actives!=array('all')) {
 					foreach(self::$parametrage as $parametre=>$valeur) {
 						$options2->$parametre=$valeur;
