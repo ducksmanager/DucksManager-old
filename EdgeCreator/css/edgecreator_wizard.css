@@ -103,6 +103,11 @@ button#connexion, button#deconnexion {
 	outline-style: solid;
 }
 
+.wizard.preview_etape .apercu_myfonts, .wizard.preview_etape .apercu_image {
+	min-height: 30px;
+	max-height: 100px;
+}
+
 .wizard.preview_etape .apercu_myfonts img {
 	border-top: 1px solid black;
 	border-left: 1px solid black;
@@ -163,4 +168,8 @@ button#connexion, button#deconnexion {
 button.small .ui-button-text {
 	padding: 0px 10px 0px 10px !important;
 	font-size: 0.9em !important;
+}
+
+div.picker ~ input[type="text"] {
+	margin-left: 68px;
 }

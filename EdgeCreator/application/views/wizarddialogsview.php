@@ -226,11 +226,11 @@
 				<input type="text" name="option-Source" readonly="readonly" />
 				<button class="small" name="modifier">Modifier</button>
 				<br />
-				<img class="apercu_image hidden" style="height:100px" />
+				<img class="apercu_image hidden" />
 		</div>
 		
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">
-			<div class="rectangle_position cache"></div>
+			<div class="image_position cache"></div>
 			<div class="accordion">
 				<h3><a href="#">Propri&eacute;t&eacute;s du texte</a></h3>
 				<div class="proprietes_texte">
@@ -241,7 +241,7 @@
 						</tr>
 						<tr>
 							<td>Police de caract&egrave;res : </td>
-							<td><input name="option-URL" type="text" maxlength="30" size="20" /></td>
+							<td><input name="option-URL" type="text" maxlength="90" size="30" /></td>
 						</tr>
 						<tr>
 							<td>
@@ -263,8 +263,9 @@
 						</tr>
 						<tr>
 							<td colspan="2" style="text-align: center">
+								<br />
 								Texte g&eacute;n&eacute;r&eacute; : <br />
-								<div class="apercu_myfonts" style="height:100px">
+								<div class="apercu_myfonts">
 								</div>
 							</td>
 						</tr>
@@ -273,7 +274,7 @@
 				</div>
 				<h3><a href="#">Finition du texte g&eacute;n&eacute;r&eacute;</a></h3>
 				<div class="finition_texte_genere">
-					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; s'il n'est pas enti&egrave;rement visible.
+					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; de fa&cedil;on &agrave; ce qu'il soit enti&egrave;rement visible.
 					<br />
 					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case si le texte apparait 2 fois.</label> 
 					<br /><br />
@@ -282,7 +283,7 @@
 						<table style="border:0" cellspacing="0" cellpadding="0">
 							<tr>
 								<td colspan="2" style="text-align: center">
-									<div class="apercu_myfonts" style="height:100px">
+									<div class="apercu_myfonts">
 									</div>
 								</td>
 							</tr>
@@ -316,7 +317,7 @@
 							Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
 						</li>
 					</ul>
-					<div class="apercu_myfonts hidden" style="height:100px">
+					<div class="apercu_myfonts hidden">
 					</div>
 				</div>
 			</div>

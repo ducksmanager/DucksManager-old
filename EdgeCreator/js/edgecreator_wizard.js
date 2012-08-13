@@ -836,7 +836,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
 								var image=dialogue.find('.image_preview');
 								
-								var position_texte=form_userfriendly.find('.rectangle_position');
+								var position_texte=form_userfriendly.find('.image_position');
 								var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
 								var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
 								
@@ -869,7 +869,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 										   		    	tester_option_preview(nom_fonction,'Compression_x'); 
 										   		    	tester_option_preview(nom_fonction,'Compression_y');
 										   		    }
-											  });
+											  })
+											  .html(image_preview_ajustee.clone(false));
 							});
 						});
 					}
@@ -1129,7 +1130,7 @@ function tester_option_preview(nom_fonction,nom_option) {
 			}
 		break;
 		case 'TexteMyFonts':
-			var positionnement=dialogue.find('.rectangle_position');
+			var positionnement=dialogue.find('.image_position');
 			switch(nom_option) {
 				case 'Pos_x':
 					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
