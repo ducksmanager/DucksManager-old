@@ -759,7 +759,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						}						
 					},
 					open:function(event,ui) {
-						var dialog=$(this).d();
 						$.ajax({
 			                url: urls['listerg']+['index','Source',pays,magazine].join('/'),
 			                dataType:'json',
@@ -827,11 +826,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					var section_active_integration=$(this).find('.ui-accordion-content-active').hasClass('finition_texte_genere');
 					if (section_active_integration)
 						placer_extension_largeur_preview();
-					
 					var section_active_positionnement=$(this).find('.ui-accordion-content-active').hasClass('positionnement');
 					if (section_active_positionnement) {
+						$(this).find('.ui-accordion-content-active .chargement').toggleClass('cache');
 						tester(function() {
 							load_myfonts_preview(false,false,true,function() {
+								form_userfriendly.d().find('.ui-accordion-content-active .chargement').toggleClass('cache');
+								
 								var dialogue=form_userfriendly.d();
 								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
 								var image=dialogue.find('.image_preview');

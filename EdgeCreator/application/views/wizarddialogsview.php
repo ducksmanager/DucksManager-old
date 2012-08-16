@@ -119,7 +119,7 @@
 	
 		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Cr&eacute;ation">
 			<p>
-				Certaines tranches ont d&eacute;j&agrave; &eacute;t&eacute; con&cedil;ues pour le magazine s&eacute;lectionn&eacute;. 
+				Certaines tranches ont d&eacute;j&agrave; &eacute;t&eacute; con&ccedil;ues pour le magazine s&eacute;lectionn&eacute;. 
 				Si la v&ocirc;tre ressemble &agrave; l'une d'elles, sa cr&eacute;ation sera facilit&eacute;e.<br />
 				L'une des tranches si-dessous est identique &agrave; la v&ocirc;tre, ou bien seules quelques couleurs ou quelques textes sont diff&eacute;rents ? 
 				Si oui, s&eacute;lectionnez cette tranche. Sinon, cliquez sur "Cr&eacute;er une tranche originale".
@@ -274,9 +274,9 @@
 				</div>
 				<h3><a href="#">Finition du texte g&eacute;n&eacute;r&eacute;</a></h3>
 				<div class="finition_texte_genere">
-					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; de fa&cedil;on &agrave; ce qu'il soit enti&egrave;rement visible.
+					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; de fa&ccedil;on &agrave; ce qu'il soit enti&egrave;rement visible.
 					<br />
-					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case si le texte apparait 2 fois.</label> 
+					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case si le texte apparait sur 2 lignes.</label> 
 					<br /><br />
 					<div>
 						<div class="extension_largeur cache">&nbsp;</div>
@@ -309,15 +309,18 @@
 				</div>
 				<h3><a href="#">Positionnement</a></h3>
 				<div class="positionnement">
-					<ul>
-						<li>
-							D&eacute;placez la zone de texte au niveau de la tranche pour positionner le texte.
-						</li>
-						<li>
-							Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
-						</li>
-					</ul>
-					<div class="apercu_myfonts hidden">
+					<div class="chargement cache">Veuillez patienter...</div>
+					<div class="apres chargement">
+						<ul>
+							<li>
+								D&eacute;placez la zone de texte au niveau de la tranche pour positionner le texte.
+							</li>
+							<li>
+								Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
+							</li>
+						</ul>
+						<div class="apercu_myfonts hidden">
+						</div>
 					</div>
 				</div>
 			</div>
