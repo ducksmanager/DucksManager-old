@@ -15,8 +15,6 @@
 			<label for="password">Mot de passe: </label>
 			<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
 			<br />
-			<input type="checkbox" name="mode_expert" id="mode_expert" value="" class="text ui-widget-content ui-corner-all" />
-			<label for="mode_expert">Mode expert</label>
 		</fieldset>
 	</form>
 </div>
@@ -170,7 +168,6 @@
 					<input type="text" id="Dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 					<button id="modifier_dimensions" class="cache small">Modifier</button>
 					<br />
-					Un mod&egrave;le de tranche existe d&eacute;j&agrave; pour cette tranche.<br />
 					Chacune des manipulations permettant de cr&eacute;er la tranche sont appel&eacute;es des <b>&eacute;tapes</b>.
 					<br />
 					&lt; Les &eacute;tapes de votre tranche sont pr&eacute;sent&eacute;es &agrave; gauche, dans leur ordre d'utilisation.<br />
@@ -224,9 +221,10 @@
 			<form id="options_etape">
 				Image utilis&eacute;e : 
 				<input type="text" name="option-Source" readonly="readonly" />
-				<button class="small" name="modifier">Modifier</button>
+				<button class="small" name="parcourir">Parcourir</button>
 				<br />
 				<img class="apercu_image hidden" />
+			</form>
 		</div>
 		
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">

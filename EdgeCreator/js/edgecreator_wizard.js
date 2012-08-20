@@ -737,7 +737,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			else
 				positionner_image(apercu_image);
 
-			form_userfriendly.find('[name="modifier"]').click(function(event) {
+			form_userfriendly.find('[name="parcourir"],[name="option-Source"]').click(function(event) {
 				$('#wizard-gallery').dialog({
 					width: 475,
 					modal: true,
@@ -769,7 +769,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			                	for (var i in data) {
 			                		var li=ul.find('li.template').clone(true).removeClass('template');
 			                		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-			                		li.find('img').prop({'src':base_url+'../edges/'+pays+'/elements/'+data[i]});
+			                		li.find('img').prop({'src':base_url+'../edges/'+pays+'/elements/'+data[i],
+			                							 'title':data[i]});
 			                		ul.append(li);
 			                	}
 			                	$('#wizard-gallery').find('ul.gallery li img').click(function() {
@@ -1399,27 +1400,44 @@ function init_action_bar() {
 					location.reload();
 				break;
 				case 'photo':
-					$(this).toggleClass('active');
 					if ($(this).hasClass('active')) {
-						$.ajax({
-							url: urls['upload_wizard']+['index',pays,magazine,numero].join('/'),
-							type: 'post',
-							dataType: 'json',
-							success:function(data) {
-								if (data === false) {
-									$('#wizard-upload').dialog({
-										modal: true,
-										width: 330
-									});
-								}
-								else {
-									afficher_photo_tranche();
-								}								
-							}
-						});
+						$('#photo_tranche').html('');						
 					}
 					else {
-						$('#photo_tranche').html('');
+						$.ajax({
+			                url: urls['listerg']+['index','Source',pays,magazine].join('/'),
+			                dataType:'json',
+			                type: 'post',
+			                success:function(data) {
+			                	var photo_trouvee=false;
+			                	for (var i in data) {
+			                		if (data[i].match(new RegExp('^'+magazine+'\.'+numero+'\.photo\.png$','g'))) {
+			                			photo_trouvee=true;
+			                		}
+			                	}
+			                	if (photo_trouvee) {
+			    					$(this).toggleClass('active');
+			                	}
+			                	else {
+			                		$.ajax({
+										url: urls['upload_wizard']+['index',pays,magazine,numero].join('/'),
+										type: 'post',
+										dataType: 'json',
+										success:function(data) {
+											if (data === false) {
+												$('#wizard-upload').dialog({
+													modal: true,
+													width: 330
+												});
+											}
+											else {
+												afficher_photo_tranche();
+											}								
+										}
+									});
+			                	}
+			                }
+						});
 					}
 				break;
 			}

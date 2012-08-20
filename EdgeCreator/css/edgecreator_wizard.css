@@ -1,5 +1,9 @@
 @CHARSET "ISO-8859-1";
 
+iframe {
+	border: 0;
+}
+
 #action_bar {
 	text-align:center;
 }
