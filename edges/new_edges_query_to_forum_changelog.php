@@ -10,7 +10,7 @@
 
 <?php
 if (isset($_POST['query'])) {
-	include_once('Database.class.php');
+	include_once('../Database.class.php');
 	$numeros=array();
 	$abc=array();
 	for ($i='A';$i<='Z' && strlen($i)==1;$i++)
