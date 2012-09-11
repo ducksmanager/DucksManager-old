@@ -621,7 +621,8 @@ function charger_image(type_chargement,src,num,callback) {
             switch(privilege) {
                 case 'Admin':
                     if (type_chargement=='etape')
-                        jqueryui_alert('Image enregistr&eacute;e');
+                        jqueryui_alert($('<div>').html('Image enregistr&eacute;e')
+                        		.after($('<a>',{'href':'../../edges/'+pays+'/gen/'+magazine+'.'+numero+'.png','target':'_blank'}).html('&gt; Voir l\'image enregistr&eacute;e')));
                     else
                         jqueryui_alert('Images enregistr&eacute;es');
                     $('#ligne_'+numero_chargement).addClass('cree_par_moi');
@@ -1282,7 +1283,7 @@ function charger_liste_magazines(pays_sel) {
             $('#chargement').html('');
 			
 			if (username == 'demo') {
-				jquery_connexion();
+				afficher_dialogue_accueil();
 			}
 			else {
 				if (!mode_expert) { // Lancement de l'assistant
@@ -1826,6 +1827,28 @@ function jqueryui_alert(texte, titre) {
 		buttons: {
 			OK: function() {
 				$( this ).dialog( "close" );
+			}
+		}
+	});
+}
+
+function afficher_dialogue_accueil() {
+	$( "#wizard-accueil" ).dialog({
+		width: 500,
+		modal: false,
+		buttons: {
+			"Suivant":function() {
+				$( this ).dialog( "close" );
+				$( "#wizard-accueil2" ).dialog({
+					width: 500,
+					modal: false,
+					buttons: {
+						"Suivant":function() {
+							$( this ).dialog( "close" );
+							jquery_connexion();
+						}
+					}
+				});
 			}
 		}
 	});

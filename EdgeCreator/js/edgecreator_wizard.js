@@ -51,11 +51,17 @@ function launch_wizard(id) {
 	
 	if (id == 'wizard-conception') {
 		buttons["Soumettre la tranche"]=function() {
-			jqueryui_alert('Validation de la tranche','Validation de la tranche');
+			chargements=['all'];
+			
+			numero_chargement=numero;
+			chargement_courant=0;
+            charger_preview_etape(chargements[0],false,undefined,function() {
+            	
+            });
 		};
 	}
 	else {
-		if (['wizard-1','wizard-dimensions'].indexOf(id) == -1) {
+		if (['wizard-accueil','wizard-1','wizard-dimensions'].indexOf(id) == -1) {
 			buttons["Precedent"]=function() {
 				$( this ).dialog( "close" );
 				launch_wizard(id_wizard_precedent);
@@ -1405,18 +1411,19 @@ function init_action_bar() {
 					}
 					else {
 						$.ajax({
-			                url: urls['listerg']+['index','Source',pays,magazine].join('/'),
+			                url: urls['listerg']+['index','Source_photo',pays,magazine].join('/'),
 			                dataType:'json',
 			                type: 'post',
 			                success:function(data) {
-			                	var photo_trouvee=false;
+			                	var photo_trouvee=null;
 			                	for (var i in data) {
-			                		if (data[i].match(new RegExp('^'+magazine+'\.'+numero+'\.photo\.png$','g'))) {
-			                			photo_trouvee=true;
+			                		if (data[i].match(new RegExp('^'+magazine+'\.'+numero+'\.photo\.(png|jpg)$','g'))) {
+			                			photo_trouvee=data[i];
 			                		}
 			                	}
 			                	if (photo_trouvee) {
-			    					$(this).toggleClass('active');
+			    					$('#action_bar .action[name="photo"]').toggleClass('active');
+									afficher_photo_tranche();
 			                	}
 			                	else {
 			                		$.ajax({

@@ -19,11 +19,38 @@
 	</form>
 </div>
 
-
-<div id="wizard-1" class="wizard" title="Assistant DucksManager">
+<div id="wizard-accueil" class="wizard" title="Accueil EdgeCreator">
 	<p>
 		Vous &ecirc;tes &agrave; pr&eacute;sent connect&eacute;(e) sur EdgeCreator.
 	</p>
+	<p>
+		L'objectif d'EdgeCreator est de cr&eacute;er des images de tranches.
+		<br />
+		L'image d'une tranche que vous cr&eacute;erez appara&icirc;tra ensuite 
+		dans la section "Ma biblioth&egrave;que" de tous les utilisateurs de DucksManager 
+		poss&eacute;dant le num&eacute;ro correspondant.
+		<br />
+		<img style="height:300px" src="../images/construction_tranche.png" />
+		
+	</p>
+</div>
+
+<div id="wizard-accueil2" class="wizard" title="Accueil EdgeCreator">
+	<p>
+		Pour cr&eacute;er une tranche, vous aurez besoin :<br />
+		<div style="float: left;width:50%">
+			<img style="width: 100%" src="../images/regle.png" />
+			D'une r&egrave;gle
+		</div>
+		<div style="float: left;width:50%">
+			<img style="width: 100%" src="../images/appareil_photo.png" />
+			D'un appareil photo (ceux des t&eacute;l&eacute;phones donnent parfois des photos floues)
+		</div>
+		
+	</p>
+</div>
+
+<div id="wizard-1" class="wizard" title="Accueil EdgeCreator">
 	<p>
 		Commen&ccedil;ons par le d&eacute;but... Que voulez-vous faire ?<br />
 		<form>

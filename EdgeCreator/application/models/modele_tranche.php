@@ -1062,6 +1062,21 @@ class Modele_tranche extends CI_Model {
 						$liste[]=utf8_encode($nom);
 					}
 				}
+			case 'Source_photo':
+				$pays=$arg;
+				$magazine=$arg2;
+				$rep=Fonction_executable::getCheminPhotos($pays).'/';
+				$dir = opendir($rep);
+				while ($f = readdir($dir)) {
+					if ((strpos($f,'.png')===false 
+					  && strpos($f,'.jpg')===false )
+					 || strpos($f, $magazine.'.') !== 0)
+						continue;
+					if(is_file($rep.$f)) {
+						$nom=$f;
+						$liste[]=utf8_encode($nom);
+					}
+				}
 			 break;
 			case 'Position':
 				$liste['bas']='bas';
@@ -1211,6 +1226,12 @@ class Fonction_executable extends Fonction {
 			header('Content-type: image/png');
 		imagepng(Viewer::$image);
 		exit();
+	}
+	
+	static function getCheminPhotos($pays=null) {
+		if (is_null($pays))
+			$pays=self::$pays;
+		return BASEPATH.'../../edges/'.$pays.'/photos';
 	}
 	
 	static function getCheminElements($pays=null) {
