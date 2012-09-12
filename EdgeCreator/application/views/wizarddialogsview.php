@@ -184,7 +184,7 @@
 			</div>
 			
 			
-		<div id="wizard-conception" class="wizard" title="Assistant DucksManager - Conception de la tranche">
+		<div id="wizard-conception" class="main wizard" title="Assistant DucksManager - Conception de la tranche">
 			<p>
 				<div class="chargement">Chargement...</div>
 				<form class="cache" name="form_options">

@@ -33,6 +33,10 @@ button#connexion, button#deconnexion {
 	top: 70px !important;
 }
 
+.ui-dialog.main {
+	border-width: 2px;
+}
+
 #wizard-conception .texte_presentation_tranche_finale {
 	width: 50%;
 	float: right;
@@ -76,6 +80,7 @@ button#connexion, button#deconnexion {
 
 .wizard.preview_etape .image_etape.finale {
 	text-align: center;
+	display: inline;
 }
 
 .wizard.preview_etape .point_remplissage {
@@ -167,6 +172,22 @@ button#connexion, button#deconnexion {
 
 .dialog-preview-etape:not(.finale) .image_preview {
 	float: left;
+}
+
+#zone_ajout_etape {
+	position: absolute;
+	z-index: 999;
+}
+
+#ajout_etape {
+	cursor: pointer;
+	top: 117px;
+	position: fixed;
+	z-index: 1000;
+	transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
 }
 
 button.small .ui-button-text {

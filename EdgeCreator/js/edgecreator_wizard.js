@@ -87,12 +87,18 @@ function launch_wizard(id) {
 		draggable: false,
 		open:function(event,ui) {
 			var dialog=$(this).d();
+			if ($(this).hasClass('main'))
+				dialog.addClass('main');
+			
 			$(this).css({'max-height':(
 										$('#body').height()
 									   -dialog.find('.ui-dialog-titlebar').height()
 									   -dialog.find('.ui-dialog-buttonpane').height()*2
 									   -dialog.css('top')
 									 )+'px'});
+
+			dialog.find(".ui-dialog-titlebar-close").hide();
+			
 			wizard_init($(this).attr('id'));
 		}
 	});
@@ -531,6 +537,13 @@ function wizard_init(wizard_id) {
 							chargement_courant=0;
 				            charger_preview_etape(chargements[0],true);
 				            
+				            $('#zone_ajout_etape').mouseover(indiquer_ajout_etape)
+				            					  .mouseout (effacer_ajout_etape);
+				            
+				            $('#ajout_etape').click(function() {
+				            	alert('Ajout d\'une etape');
+				            });
+				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
 								var dialogue=$(this).d();
 								if (modification_etape != null) {
@@ -630,6 +643,39 @@ function placer_dialogues_preview() {
 			$(dialogue).css({'left':parseInt($(dialogue).css('left'))-min_marge_gauche+'px'});			
 		});
 	}
+	
+	// Positionnement de la zone d'ajout d'étape
+	var dialogue_gauche=$(dialogues[dialogues.size()-1]);
+	var dialogue_droite=$(dialogues[1]); // Avant le dialogue de conception et la tranche finale
+	$('#zone_ajout_etape').css({'left':	 dialogue_gauche.offset().left + dialogue_gauche.width(),
+						   'top': 	 dialogue_gauche.offset().top,
+						   'width':  dialogue_droite.offset().left - (dialogue_gauche.offset().left + dialogue_gauche.width()),
+						   'height': dialogue_gauche.height()});
+}
+
+function indiquer_ajout_etape(e) {
+	if (! $('#ajout_etape').hasClass('cache'))
+		return;
+	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
+		return $(dialogue2).offset().left - $(dialogue1).offset().left;
+	});
+	var nearestDialog=null;
+	var distance=null;
+	$.each(dialogues,function(i,dialogue) {
+		var rightDialogEdge = $(dialogue).offset().left + $(dialogue).width() ;
+		var currentDistance = e.pageX - rightDialogEdge;
+		if (currentDistance > 0 && (distance === null || currentDistance < distance )) {
+			distance = currentDistance;
+			nearestDialog=$(dialogue);
+		}
+	});
+	$('#ajout_etape').removeClass('cache');
+	$('#ajout_etape').css({'left':(nearestDialog.offset().left+nearestDialog.width()-35)+'px'});
+}
+
+function effacer_ajout_etape() {
+	$('#ajout_etape').addClass('cache');
 }
 
 function recuperer_et_alimenter_options_preview(num_etape) {

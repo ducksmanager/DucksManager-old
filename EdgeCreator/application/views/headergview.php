@@ -62,11 +62,10 @@ header("Pragma: no-cache"); ?>
 	<title><?=$title?></title>
 </head>
 <body id="body" style="margin:0;padding:0">
+	<div id="zone_ajout_etape">
+		<div id="ajout_etape" class="cache">Ajouter une &eacute;tape ici</div>
+	</div>
 	<?php
-	if ($just_connected) { ?>
-		
-	<?php 
-	}
 	if (!empty($erreur)) {
 		echo $erreur;
 		?><br /><?php
