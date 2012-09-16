@@ -19,7 +19,7 @@
 	</form>
 </div>
 
-<div id="wizard-accueil" class="wizard" title="Accueil EdgeCreator">
+<div id="wizard-accueil" class="first wizard" title="Accueil EdgeCreator">
 	<p>
 		Vous &ecirc;tes &agrave; pr&eacute;sent connect&eacute;(e) sur EdgeCreator.
 	</p>
@@ -50,7 +50,7 @@
 	</p>
 </div>
 
-<div id="wizard-1" class="wizard" title="Accueil EdgeCreator">
+<div id="wizard-1" class="first wizard" title="Accueil EdgeCreator">
 	<p>
 		Commen&ccedil;ons par le d&eacute;but... Que voulez-vous faire ?<br />
 		<form>
@@ -96,7 +96,7 @@
 		</p>
 	</div>
 	
-		<div id="wizard-dimensions" class="wizard" title="Assistant DucksManager - Conception de la tranche">
+		<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager - Conception de la tranche">
 			<p>
 				<form name="form_options">
 					<span id="nom_complet_numero"></span>
@@ -360,7 +360,13 @@
 		</div>
 
 <!--  Dialogues issus du menu et utilitaires -->
-		
+
+<div id="wizard-ajout-etape" class="first wizard" title="Ajouter une &eacute;tape">
+	<p>
+		Que souhaitez-vous faire ? 
+		<div id="liste_fonctions"></div>
+	</p>
+</div>
 
 <div id="wizard-upload" class="wizard" title="Stockage d'une photo de tranche">
 	<p>

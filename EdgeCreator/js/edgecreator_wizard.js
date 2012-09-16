@@ -61,7 +61,7 @@ function launch_wizard(id) {
 		};
 	}
 	else {
-		if (['wizard-accueil','wizard-1','wizard-dimensions'].indexOf(id) == -1) {
+		if (! $('#'+id).hasClass('first')) {
 			buttons["Precedent"]=function() {
 				$( this ).dialog( "close" );
 				launch_wizard(id_wizard_precedent);
@@ -153,7 +153,7 @@ function wizard_check(wizard_id) {
 							erreur="Le champ "+nom_champ+" doit &ecirc;tre compris entre "+bornes_valeur[0]+" et "+bornes_valeur[1];
 						}
 						
-					})
+					});
 				break;
 				case 'wizard-modifier':
 					if (chargement_listes)
@@ -541,7 +541,7 @@ function wizard_init(wizard_id) {
 				            					  .mouseout (effacer_ajout_etape);
 				            
 				            $('#ajout_etape').click(function() {
-				            	alert('Ajout d\'une etape');
+			                	launch_wizard('wizard-ajout-etape');
 				            });
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
@@ -596,6 +596,20 @@ function wizard_init(wizard_id) {
 				}
 			});
 		break;
+		case 'wizard-ajout-etape':
+        	$.ajax({
+                url: urls['listerg']+['index','Fonctions'].join('/'),
+                dataType:'json',
+                type: 'post',
+                success:function(data) {
+                	var select=$('<select>');
+                	for (var i in data) {
+                		select.append($('<option>',{'name':i}).html(data[i]));
+                	}
+                	$('#liste_fonctions').html(select);
+                }
+        	});
+        break;
 	}
 }
 

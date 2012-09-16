@@ -1107,6 +1107,14 @@ class Modele_tranche extends CI_Model {
 					$liste[$username]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
 				}
 			 break;
+			case 'Fonctions':
+				$noms_fonctions=array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
+									  'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
+				
+				foreach($noms_fonctions as $nom) {
+					$liste[$nom]=$nom::$libelle;
+				}
+			 break;
 		}
 		uksort($liste,"strnatcasecmp");
 		return $liste;
@@ -1322,6 +1330,7 @@ class Dimensions extends Fonction_executable {
 }
 
 class Remplir extends Fonction_executable {
+	static $libelle='Remplir une zone avec une couleur';
 	static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Couleur'=>'couleur');
 	static $valeurs_nouveau=array('Pos_x'=>0,'Pos_y'=>0,'Couleur'=>'AAAAAA');
 	static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0);
@@ -1352,6 +1361,7 @@ class Remplir extends Fonction_executable {
 }
 
 class Image extends Fonction_executable {
+	static $libelle='Ins&eacute;rer une image';
 	static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
 	static $valeurs_nouveau=array('Source'=>'Tete PM.png','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
 	static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
@@ -1405,6 +1415,7 @@ class Image extends Fonction_executable {
 }
 
 class TexteMyFonts extends Fonction_executable {
+	static $libelle='Ajouter du texte';
 	static $champs=array('URL'=>'texte','Couleur_texte'=>'couleur','Couleur_fond'=>'couleur','Largeur'=>'quantite','Chaine'=>'texte','Pos_x'=>'quantite','Pos_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Rotation'=>'quantite','Demi_hauteur'=>'liste','Mesure_depuis_haut'=>'liste');
 	static $valeurs_nouveau=array('URL'=>'redrooster.block-gothic-rr.demi-extra-condensed','Couleur_texte'=>'000000','Couleur_fond'=>'ffffff','Largeur'=>'700','Chaine'=>'Le journal de Mickey','Pos_x'=>'0','Pos_y'=>'5','Compression_x'=>'0.3','Compression_y'=>'0.3','Rotation'=>'90','Demi_hauteur'=>'Oui','Mesure_depuis_haut'=>'Oui');
 	static $valeurs_defaut=array('Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1','Mesure_depuis_haut'=>'Oui');
@@ -1509,6 +1520,7 @@ class TexteMyFonts extends Fonction_executable {
 }
 
 class TexteTTF extends Fonction_executable {
+	static $libelle='Ajouter du texte';
 	static $champs=array('Pos_x'=>'quantite','Pos_y'=>'quantite','Rotation'=>'quantite','Taille'=>'quantite','Couleur'=>'couleur','Chaine'=>'texte','Police'=>'liste','Compression_x'=>'quantite','Compression_y'=>'quantite');
 	static $valeurs_nouveau=array('Pos_x'=>'3','Pos_y'=>'5','Rotation'=>'-90','Taille'=>'3.5','Couleur'=>'F50D05','Chaine'=>'Texte du num&eacute;ro [Numero]','Police'=>'Arial','Compression_x'=>'1','Compression_y'=>'1');
 	static $valeurs_defaut=array('Pos_x'=>0,'Pos_y'=>0,'Rotation'=>0,'Compression_x'=>'1','Compression_y'=>'1');
@@ -1568,6 +1580,7 @@ class TexteTTF extends Fonction_executable {
 }
 
 class Polygone extends Fonction_executable {
+	static $libelle='Dessiner un polygone';
 	static $champs=array('X'=>'texte','Y'=>'texte','Couleur'=>'couleur');
 	static $valeurs_nouveau=array('X'=>'1,4,7,14','Y'=>'5,25,14,12','Couleur'=>'000000');
 	static $valeurs_defaut=array();
@@ -1603,6 +1616,7 @@ class Polygone extends Fonction_executable {
 }
 
 class Agrafer extends Fonction_executable {
+	static $libelle='Agrafer la tranche';
 	static $champs=array('Y1'=>'quantite','Y2'=>'quantite','Taille_agrafe'=>'quantite');
 	static $valeurs_nouveau=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
 	static $valeurs_defaut=array('Y1'=>'[Hauteur]*0.2','Y2'=>'[Hauteur]*0.8','Taille_agrafe'=>'[Hauteur]*0.05');
@@ -1625,6 +1639,7 @@ class Agrafer extends Fonction_executable {
 }
 
 class Degrade extends Fonction_executable {
+	static $libelle='Remplir une zone avec un d&eacute;grad&eacute;';
 	static $champs=array('Couleur_debut'=>'couleur','Couleur_fin'=>'couleur','Sens'=>'liste','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite');
 	static $valeurs_nouveau=array('Couleur_debut'=>'D01721','Couleur_fin'=>'0000FF','Sens'=>'Vertical','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5');
 	static $valeurs_defaut=array();
@@ -1705,6 +1720,7 @@ class Degrade extends Fonction_executable {
 }
 
 class DegradeTrancheAgrafee extends Fonction_executable {
+	static $libelle='Remplir la tranche avec un d&eacute;grad&eacute; et l\'agrafer';
 	static $champs=array('Couleur'=>'couleur');
 	static $valeurs_nouveau=array('Couleur'=>'D01721');
 	static $valeurs_defaut=array();
@@ -1736,6 +1752,7 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 }
 
 class Rectangle extends Fonction_executable {
+	static $libelle='Dessiner un rectangle';
 	static $champs=array('Couleur'=>'couleur','Pos_x_debut'=>'quantite','Pos_x_fin'=>'quantite','Pos_y_debut'=>'quantite','Pos_y_fin'=>'quantite','Rempli'=>'liste');
 	static $valeurs_nouveau=array('Couleur'=>'D01721','Pos_x_debut'=>'3','Pos_x_fin'=>'[Largeur]-3','Pos_y_debut'=>'3','Pos_y_fin'=>'[Hauteur]*0.5','Rempli'=>'Non');
 	static $valeurs_defaut=array();
@@ -1766,6 +1783,7 @@ class Rectangle extends Fonction_executable {
 }
 
 class Arc_cercle extends Fonction_executable {
+	static $libelle='Dessiner un arc de cercle';
 	static $champs=array('Couleur'=>'couleur','Pos_x_centre'=>'quantite','Pos_y_centre'=>'quantite','Largeur'=>'quantite','Hauteur'=>'quantite','Angle_debut'=>'quantite','Angle_fin'=>'quantite','Rempli'=>'liste');
 	static $valeurs_nouveau=array('Couleur'=>'BBBBBB','Pos_x_centre'=>'10','Pos_y_centre'=>'50','Largeur'=>'10','Hauteur'=>'20','Angle_debut'=>'0','Angle_fin'=>'360','Rempli'=>'Non');
 	static $valeurs_defaut=array();

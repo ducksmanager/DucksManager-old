@@ -5,7 +5,7 @@ $extension = strrchr($_FILES['image']['name'], '.');
 $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
 
 if ($est_photo_tranche) {
-	$fichier=$_POST['magazine'].'.'.$_POST['numero'].$extension;
+	$fichier=$_POST['magazine'].'.'.$_POST['numero'].'.photo.'.$extension;
 }
 else {
 	$fichier = basename($_FILES['image']['name']);
@@ -51,7 +51,7 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 	  		}
 	  		?><script type="text/javascript">
 				window.parent.afficher_photo_tranche();
-	  		<?php
+	  		</script><?php
 		  }
 		  echo 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
 	 }
