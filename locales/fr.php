@@ -403,7 +403,7 @@ define('RECOPIER_CODE_SUIVANT', 'Recopiez le code suivant');
 define('RECUPERATION_LISTE','R&eacute;cup&eacute;ration liste...');
 define('RECUPERATION_NUMEROS','R&eacute;cup&eacute;ration...');
 define('REFERENCES','référencés');
-define('REMERCIEMENT_LOGO','Le logo de DucksManager a &eacute;t&eacute; r&eacute;alis&eacute; par enigm.');
+define('REMERCIEMENT_LOGO','Les logos de DucksManager et de WhatTheDuck ont &eacute;t&eacute; r&eacute;alis&eacute;s par enigm.');
 define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Remplissez les informations ci-dessous pour que DucksManager d&eacute;termine le nouveau magazine pour lequel vous souhaitez ajouter des num&eacute;ros.');
 define('REMPLIR_PAYS_ET_MAGAZINE','Vous devez remplir les champs correspondant au pays et au nom du magazine\n pour lequel vous souhaitez ajouter des num&eacute;ros !');
 define('RESULTAT_NUMEROS_INDUCKS','DucksManager a trouv&eacute; les num&eacute;ros suivants sur votre compte Inducks.');

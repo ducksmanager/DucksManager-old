@@ -73,6 +73,8 @@ if (isset($_POST['id'])) {
     elseif (isset($_POST['fin'])) {
         include_once ('OpenFlashChart/php-ofc-library/open-flash-chart.php');
         include_once ('locales/lang.php');
+		foreach(array_keys($_POST) as $key)
+			$_POST[$key] = str_replace('\\"','"',$_POST[$key]);
         $infos=json_decode($_POST['infos']);
         $donnees=array();
         foreach(json_decode($_POST['ids']) as $i=>$pays) {
