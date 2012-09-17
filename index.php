@@ -1349,11 +1349,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 	<?php
 					foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
 						if(is_file('locales/'.$nom_langue.'.php')) {
-						?>
-							<a class="drapeau_langue" href="?<?=str_replace('&','&amp;',$_SERVER['QUERY_STRING'])?>&amp;lang=<?=$nom_langue?>">
+							$nouvelle_url = str_replace('&','&amp;',$_SERVER['QUERY_STRING']);
+							$nouvelle_url = preg_replace('#\??(?:&amp;)?lang=[a-z]+#u','',$nouvelle_url);
+							$nouvelle_url = '?'.(empty($nouvelle_url) ? '' : $nouvelle_url.'&amp;')
+										   .'lang='.$nom_langue;
+							?>
+							<a class="drapeau_langue" href="<?=$nouvelle_url?>">
 								<img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
 							</a>
-						<?php
+							<?php
                     	}
                     }
                 	?>

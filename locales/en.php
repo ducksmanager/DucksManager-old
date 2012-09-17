@@ -403,7 +403,7 @@ define('RECOPIER_CODE_SUIVANT', 'Please type the following code');
 define('RECUPERATION_LISTE','Retrieving the list...');
 define('RECUPERATION_NUMEROS','Retrieving issues...');
 define('REFERENCES','referenced');
-define('REMERCIEMENT_LOGO','The DucksManager logo is drawn by enigm.');
+define('REMERCIEMENT_LOGO','The DucksManager and WhatTheDuck logos are drawn by enigm.');
 define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Fill in the following fields in order DucksManager to determine the new magazine for which ou wish to add some issues.');
 define('REMPLIR_PAYS_ET_MAGAZINE','You must fill the fields corresponding to the country and the magazine\n for which you want to add some issues');
 define('RESULTAT_NUMEROS_INDUCKS','DucksManager found the following issues on your Inducks account.');
