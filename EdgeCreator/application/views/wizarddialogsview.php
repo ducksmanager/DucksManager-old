@@ -361,10 +361,13 @@
 
 <!--  Dialogues issus du menu et utilitaires -->
 
-<div id="wizard-ajout-etape" class="first wizard" title="Ajouter une &eacute;tape">
+<div id="wizard-ajout-etape" class="first wizard modal" title="Ajouter une &eacute;tape">
 	<p>
 		Que souhaitez-vous faire ? 
-		<div id="liste_fonctions"></div>
+		<form>
+			<div id="liste_fonctions"></div>
+			<input type="hidden" name="etape" />
+		</form>
 	</p>
 </div>
 

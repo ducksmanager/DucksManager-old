@@ -49,38 +49,61 @@ function launch_wizard(id) {
 	$('#'+id+' .buttonset').buttonset();
 	$('#wizard-1 .buttonset .disabled').button("option", "disabled", true);
 	
-	if (id == 'wizard-conception') {
-		buttons["Soumettre la tranche"]=function() {
-			chargements=['all'];
-			
-			numero_chargement=numero;
-			chargement_courant=0;
-            charger_preview_etape(chargements[0],false,undefined,function() {
-            	
-            });
-		};
-	}
-	else {
-		if (! $('#'+id).hasClass('first')) {
-			buttons["Precedent"]=function() {
-				$( this ).dialog( "close" );
-				launch_wizard(id_wizard_precedent);
+	switch(id) {
+		case 'wizard-conception' :
+			buttons["Soumettre la tranche"]=function() {
+				chargements=['all'];
+				
+				numero_chargement=numero;
+				chargement_courant=0;
+	            charger_preview_etape(chargements[0],false);
 			};
-		}
-	
-		if (! $('#'+id).hasClass('dead-end')) {
-			buttons["Suivant"]=function() {
-				var id_wizard_suivant=wizard_check($(this).attr('id'));
-				if (id_wizard_suivant != null) {
-					wizard_goto($(this),id_wizard_suivant);
+		break;
+		case 'wizard-ajout-etape':
+			$('#'+id).find('form input[name="etape"]').val($('#ajout_etape').data('etape'));
+			buttons={
+				'OK': function() {
+					var formData=$(this).find('form').serializeObject();
+					var etape = formData.etape;
+					var nom_fonction=formData.nom_fonction;
+					$.ajax({
+						url: urls['insert_wizard']+['index',pays,magazine,numero,etape,nom_fonction].join('/'),
+						type: 'post',
+						success:function(data) {
+							$('#wizard-ajout-etape').dialog( "close" );
+							$('.dialog-preview-etape').remove();
+							$('#wizard-conception').parent().remove();
+							wizard_goto($(this),'wizard-conception');
+						}
+					});
+				},
+				'Annuler':function() {
+					$( this ).dialog( "close" );
 				}
 			};
-		}
+		break;
+		default:
+			if (! $('#'+id).hasClass('first')) {
+				buttons["Precedent"]=function() {
+					$( this ).dialog( "close" );
+					launch_wizard(id_wizard_precedent);
+				};
+			}
+		
+			if (! $('#'+id).hasClass('dead-end')) {
+				buttons["Suivant"]=function() {
+					var id_wizard_suivant=wizard_check($(this).attr('id'));
+					if (id_wizard_suivant != null) {
+						wizard_goto($(this),id_wizard_suivant);
+					}
+				};
+			}
+		break;
 	}
 	$('#'+id).dialog({
 		width: 475,
 		position: 'top',
-		modal: false,
+		modal: $('#'+id).hasClass('modal'),
 		autoResize: true,
 		resizable: $('#'+id).hasClass('resizable'),
 		buttons: buttons,
@@ -261,7 +284,7 @@ function wizard_init(wizard_id) {
 				var index_numero_courant = $('#'+wizard_id+' [name="wizard_numero"] option[value="'+$(this).val()+'"]').prop('index');
 				if (index_numero_courant > index_numero_selectionne) {
 					if (!nouvelle_tranche_placee) {
-						if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 dernières précédentes
+						if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 derniè²¥s pré£©dentes
 							tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
 						tranches_pretes.push(numero_selectionne);
 						nouvelle_tranche_placee=true;
@@ -277,8 +300,7 @@ function wizard_init(wizard_id) {
 			});
 			
 			if (!nouvelle_tranche_placee) {
-				// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
-				if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 dernières précédentes
+				// Entrer ici signifie qu'il n'y a pas de tranches prê´¥s aprè³ le numé²¯ sé¬¥ctionnéŠ				if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 derniè²¥s pré£©dentes
 					tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
 				tranches_pretes.push(numero_selectionne);
 			}
@@ -394,7 +416,7 @@ function wizard_init(wizard_id) {
 			$('#'+wizard_id).dialog('option','position',['right','top']);
 			$('#'+wizard_id).parent().css({'left':($('#'+wizard_id).parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 			
-			$.ajax({ // Numéros d'étapes
+			$.ajax({ // Numé²¯s d'é´¡pes
 				url: urls['parametrageg_wizard']+['index',pays,magazine,numero,'null','null'].join('/'),
 				type: 'post',
 				dataType: 'json',
@@ -413,7 +435,7 @@ function wizard_init(wizard_id) {
 						return 0;
 					});
 					
-					$.ajax({ // Détails des étapes
+					$.ajax({ // Dé´¡ils des é´¡pes
 						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null','null'].join('/'),
 						type: 'post',
 						dataType:'json',
@@ -463,8 +485,10 @@ function wizard_init(wizard_id) {
 									});
 								});
 							
-							$('#wizard-conception').find('.chargement,form').toggleClass('cache');
+							$('#wizard-conception .chargement').addClass('cache');
+							$('#wizard-conception form').removeClass('cache');
 							
+							chargements=[];
 							for (var i=0;i<etapes_valides.length;i++) {
 								var etape=etapes_valides[i];
 								var num_etape=etape.Ordre;
@@ -531,7 +555,7 @@ function wizard_init(wizard_id) {
 								}
 							});
 
-							chargements.push('all'); // On ajoute l'étape finale
+							chargements.push('all'); // On ajoute l'é´¡pe finale
 							
 							numero_chargement=numero;
 							chargement_courant=0;
@@ -602,9 +626,9 @@ function wizard_init(wizard_id) {
                 dataType:'json',
                 type: 'post',
                 success:function(data) {
-                	var select=$('<select>');
+                	var select=$('<select>',{'name':'nom_fonction'});
                 	for (var i in data) {
-                		select.append($('<option>',{'name':i}).html(data[i]));
+                		select.append($('<option>',{'value':i}).html(data[i]));
                 	}
                 	$('#liste_fonctions').html(select);
                 }
@@ -635,7 +659,7 @@ function fermer_dialogue_preview(dialogue) {
 
 function placer_dialogues_preview() {
 	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Trié³ par offset gauche, de droite à §auche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
 	var min_marge_gauche=0;
@@ -658,7 +682,7 @@ function placer_dialogues_preview() {
 		});
 	}
 	
-	// Positionnement de la zone d'ajout d'étape
+	// Positionnement de la zone d'ajout d'é´¡pe
 	var dialogue_gauche=$(dialogues[dialogues.size()-1]);
 	var dialogue_droite=$(dialogues[1]); // Avant le dialogue de conception et la tranche finale
 	$('#zone_ajout_etape').css({'left':	 dialogue_gauche.offset().left + dialogue_gauche.width(),
@@ -671,7 +695,7 @@ function indiquer_ajout_etape(e) {
 	if (! $('#ajout_etape').hasClass('cache'))
 		return;
 	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
+	dialogues.sort(function(dialogue1,dialogue2) { // Trié³ par offset gauche, de droite à §auche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
 	var nearestDialog=null;
@@ -684,8 +708,12 @@ function indiquer_ajout_etape(e) {
 			nearestDialog=$(dialogue);
 		}
 	});
-	$('#ajout_etape').removeClass('cache');
-	$('#ajout_etape').css({'left':(nearestDialog.offset().left+nearestDialog.width()-35)+'px'});
+	
+	if (nearestDialog != null) {
+		$('#ajout_etape').removeClass('cache')
+						 .css({'left':(nearestDialog.offset().left+nearestDialog.width()-35)+'px'})
+						 .data('etape',parseInt(nearestDialog.data('etape'))+1);
+	}
 }
 
 function effacer_ajout_etape() {
@@ -913,7 +941,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								
 								var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
 								var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
-								if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+								if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré ¥ntre le haut de la tranche et le bas du texte
 									pos_y-=parseFloat(hauteur);
 								}
 	
@@ -988,7 +1016,7 @@ function positionner_image(preview) {
 	}
 	else {
 		pos_y=image.position().top +parseFloat(valeurs['Decalage_y'])*zoom;
-		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré ¥ntre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
 	}
@@ -1094,7 +1122,7 @@ function tester(callback, modif_dimensions) {
 	chargements.push((modif_dimensions ? -1 : num_etape_courante)+'');
 	chargement_courant=0;
 	var parametrage=form_options.serialize();
-    charger_preview_etape(chargements[0],true,parametrage,function() { // Test de l'étape finale
+    charger_preview_etape(chargements[0],true,parametrage,function() { // Test de l'é´¡pe finale
     	chargements=['all']; // Etape finale
 		
     	chargement_courant=0;
@@ -1543,7 +1571,7 @@ function templatedToVal(templatedString) {
 					templatedString=templatedString.replace(regex, $('#Dimension_y').val());
 				break;
 				case 'caracteres_speciaux':
-					templatedString=templatedString.replace(/Â°/,'°');
+					templatedString=templatedString.replace(/Â°/,'?');
 				break;
 
 			}

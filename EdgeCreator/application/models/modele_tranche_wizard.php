@@ -193,27 +193,12 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $this->db->query($requete)->num_rows() == 0;
 	}
 
-	function decaler_etapes_a_partir_de($pays,$magazine,$etape_debut) {
-		$requete='SELECT Max(Ordre) AS max_ordre FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre>='.$etape_debut.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		$resultat=$this->db->query($requete)->row(0);
-		
-		if (!is_null($resultat)) {
-			$etape=$resultat->max_ordre;
-			echo 'Decalage des etapes '.$etape_debut.' a '.$etape."\n";
-			for ($i=$etape;$i>=$etape_debut;$i--) {
-				$requete='UPDATE edgecreator_modeles2 '
-						.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-					    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-						.'SET Ordre='.($i+1).' '
-						.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$i.' AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-				$this->db->query($requete);
-			}
-		}
-		else
-			echo 'Pas de decalage'."\n";		
+	function decaler_etapes_a_partir_de($id_modele,$etape_debut) {
+		$requete='UPDATE tranches_en_cours_valeurs '
+				.'SET Ordre=Ordre+1 ' 
+				.'WHERE ID_Modele = '.$id_modele.' AND Ordre>='.$etape_debut;
+		echo $requete."\n";
+		$this->db->query($requete);
 	}
 	
 	function valeur_existe($id_valeur) {
@@ -246,17 +231,29 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultat->Nom_fonction;
 	}
 
-	function update_ordre($pays,$magazine,$numero,$ordre,$parametrage) {
+	function insert_etape($pays,$magazine,$numero,$etape,$nom_fonction) {
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
-		$nom_fonction=$this->getNomFonction($id_modele,$ordre);
+		
+		$this->decaler_etapes_a_partir_de($id_modele,$etape);
+		
+		$nouvelle_fonction=new $nom_fonction(false, null, false, true);
+		
+		foreach($nouvelle_fonction->options as $nom=>$valeur) {
+			$this->insert($id_modele,$etape,$nom_fonction,$nom,$valeur);			
+		}
+	}
+
+	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
+		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$nom_fonction=$this->getNomFonction($id_modele,$etape);
 		
 		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
-					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
+					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
 		
 		foreach($parametrage as $parametre=>$valeur) {
-			$this->insert($id_modele,$ordre,$nom_fonction,$parametre,$valeur);			
+			$this->insert($id_modele,$etape,$nom_fonction,$parametre,$valeur);			
 		}
 	}
 
@@ -271,22 +268,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$resultat->Ordre=$etape;
 		}
 		$this->db->insert_batch('edgecreator_modeles2',$resultats);
-	}
-
-	function insert_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction,$parametrage) {
-		$ordre_existe=count($this->get_etapes_simple($pays, $magazine, $ordre)) > 0;
-		if ($ordre_existe) {
-			return;
-		}
-		$this->insert($pays,$magazine,$ordre,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username);
-		foreach($parametrage as $option_nom_intervalle=>$option_valeur) {
-			$option_valeur=str_replace("'","\'",$option_valeur);
-			list($option_nom,$intervalle)=explode('.',$option_nom_intervalle);
-			list($numero_debut,$numero_fin)=explode('~',$intervalle);
-				
-			$this->insert($pays,$magazine,$ordre,$nom_fonction,$option_nom,$option_valeur,$numero_debut,$numero_fin,self::$username);
-			
-		}
 	}
 
 	function delete_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction) {
