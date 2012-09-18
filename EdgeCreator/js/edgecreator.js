@@ -609,70 +609,74 @@ function charger_image(type_chargement,src,num,callback) {
     else {
     	$(selecteur_cellules_preview).getElementsWithData('numero',num).html(image);
     }
-    image.attr({'src':src});
     image.load(function() {
-        chargement_courant++;
-        var image=$(this);
-        image.removeClass('loading');
-        
-        if ($(selecteur_cellules_preview).length == 2 && chargement_courant == 1)
-            $(selecteur_cellules_preview).last().html(image.clone(false));
-        if (!est_visu && chargement_courant >= chargements.length) {
-            switch(privilege) {
-                case 'Admin':
-                    if (type_chargement=='etape')
-                        jqueryui_alert($('<div>').html('Image enregistr&eacute;e')
-                        		.after($('<a>',{'href':'../../edges/'+pays+'/gen/'+magazine+'.'+numero+'.png','target':'_blank'}).html('&gt; Voir l\'image enregistr&eacute;e')));
-                    else
-                        jqueryui_alert('Images enregistr&eacute;es');
-                    $('#ligne_'+numero_chargement).addClass('cree_par_moi');
-                    
-                break;
-                case 'Edition':
-                    if (type_chargement=='etape')
-                        jqueryui_alert('Votre proposition de mod&egrave;le a ete envoy&eacute;e au webmaster pour validation. Merci !');
-                    else
-                        jqueryui_alert('Vos propositions de mod&egrave;les ont ete envoy&eacute;es au webmaster pour validation. Merci !');
-                    $('#ligne_'+numero_chargement).addClass('tranche_en_validation');
-                    
-                break;
-            }
-        }
-        
-        $('#chargement').html('');
-        $('#erreurs').html('');
-        if (chargement_courant < chargements.length) {
-            if (chargement_courant == 1)
-            	fixer_regles(true);
-            
-            if (type_chargement=='etape')
-                charger_preview_etape(chargements[chargement_courant],est_visu, undefined, callback);
-            else
-                charger_previews_numeros(chargements[chargement_courant],est_visu);
-        }
-        else {
-        	chargement_courant=0;
-            reload_observers_tranches();
-            if (type_chargement=='numero')
-            	$('#numero_preview_debut').data('numero',null);
-        }
-        
+    	if (!est_visu && chargement_courant >= chargements.length) {
+	        switch(privilege) {
+		        case 'Admin':
+		            if (type_chargement=='etape')
+		                jqueryui_alert($('<div>').html('Image enregistr&eacute;e')
+		                		.after($('<a>',{'href':'../../edges/'+pays+'/gen/'+magazine+'.'+numero+'.png','target':'_blank'}).html('&gt; Voir l\'image enregistr&eacute;e')));
+		            else
+		                jqueryui_alert('Images enregistr&eacute;es');
+		            $('#ligne_'+numero_chargement).addClass('cree_par_moi');
+		            
+		        break;
+		        case 'Edition':
+		            if (type_chargement=='etape')
+		                jqueryui_alert('Votre proposition de mod&egrave;le a ete envoy&eacute;e au webmaster pour validation. Merci !');
+		            else
+		                jqueryui_alert('Vos propositions de mod&egrave;les ont ete envoy&eacute;es au webmaster pour validation. Merci !');
+		            $('#ligne_'+numero_chargement).addClass('tranche_en_validation');
+		            
+		        break;
+		    }
+		}
+        charger_image_suivante($(this),callback,type_chargement,est_visu);
         callback(image);
     });
     
     image.error(function() {
     	var num_etape=chargements[chargement_courant];
-        $('#chargement').html('');
-        var texte_erreur=$('<p>')
-        	.append($('<p>').html("La g&eacute;n&eacute;ration de l'image pour l'&eacute;tape "+num_etape+" a &eacute;chou&eacute;"))
-        	.append($('<br>'))
-        	.append($('<p>').html("La g&eacute;n&eacute;ration des images des &eacute;tapes suivantes a &eacute;t&eacute; annul&eacute;e."))
-        	.append($('<p>').html("Merci de reporter ce probl&egrave;me au webmaster en indiquant le message d'erreur suivant :"))
-        	.append($('<br>'))
-        	.append($('<iframe>',{'src':$(this).attr('src')+'/debug'}));
-        jqueryui_alert(texte_erreur, "Erreur de g&eacute;n&eacute;ration d'image");
-        chargements=new Array();
+    	if (num_etape != 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
+	        var texte_erreur=$('<p>')
+	        	.append($('<p>').html("La g&eacute;n&eacute;ration de l'image pour l'&eacute;tape "+num_etape+" a &eacute;chou&eacute;"))
+	        	.append($('<br>'))
+	        	.append($('<p>').html("La g&eacute;n&eacute;ration des images des &eacute;tapes suivantes a &eacute;t&eacute; annul&eacute;e."))
+	        	.append($('<p>').html("Merci de reporter ce probl&egrave;me au webmaster en indiquant le message d'erreur suivant :"))
+	        	.append($('<br>'))
+	        	.append($('<iframe>',{'src':$(this).attr('src')+'/debug'}));
+	        jqueryui_alert(texte_erreur, "Erreur de g&eacute;n&eacute;ration d'image");
+    	}
+        charger_image_suivante($(this),callback,type_chargement,est_visu);
+        callback(image);
     });
+    image.attr({'src':src});
+}
+
+function charger_image_suivante(image,callback,type_chargement,est_visu) {
+	chargement_courant++;
+    image.removeClass('loading');
+    
+    if ($(selecteur_cellules_preview).length == 2 && chargement_courant == 1)
+        $(selecteur_cellules_preview).last().html(image.clone(false));
+    
+    $('#chargement').html('');
+    $('#erreurs').html('');
+    if (chargement_courant < chargements.length) {
+        if (chargement_courant == 1)
+        	fixer_regles(true);
+        
+        if (type_chargement=='etape')
+            charger_preview_etape(chargements[chargement_courant],est_visu, undefined, callback);
+        else
+            charger_previews_numeros(chargements[chargement_courant],est_visu);
+    }
+    else {
+    	chargement_courant=0;
+        reload_observers_tranches();
+        if (type_chargement=='numero')
+        	$('#numero_preview_debut').data('numero',null);
+    }
 }
 
 function toAlwaysFloat(val) {
