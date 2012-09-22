@@ -1,28 +1,4 @@
-<div id="login-form" class="wizard" title="Bienvenue sur EdgeCreator !">	
-	<p>
-		DucksManager EdgeCreator est un outil permettant de reconstituer des tranches de magazines Disney,
-		afin qu'elles apparaissent fid&egrave;lement dans votre biblioth&egrave;que DucksManager.  
-	</p>
-	<hr />
-	<p>
-		Entrez vos identifiants DucksManager ci-dessous et cliquez sur "Connexion".
-	</p>
-	<p class="erreurs"></p>
-	<form>
-		<fieldset>
-			<label for="username">Pseudo: </label>
-			<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
-			<label for="password">Mot de passe: </label>
-			<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
-			<br />
-		</fieldset>
-	</form>
-</div>
-
-<div id="wizard-accueil" class="first wizard" title="Accueil EdgeCreator">
-	<p>
-		Vous &ecirc;tes &agrave; pr&eacute;sent connect&eacute;(e) sur EdgeCreator.
-	</p>
+<div id="wizard-accueil" class="first wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
 		L'objectif d'EdgeCreator est de cr&eacute;er des images de tranches.
 		<br />
@@ -35,7 +11,7 @@
 	</p>
 </div>
 
-<div id="wizard-accueil2" class="wizard" title="Accueil EdgeCreator">
+<div id="wizard-accueil2" class="wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
 		Pour cr&eacute;er une tranche, vous aurez besoin :<br />
 		<div style="float: left;width:50%">
@@ -50,7 +26,26 @@
 	</p>
 </div>
 
+<div id="login-form" class="wizard" title="Connexion &agrave; EdgeCreator">
+	<p>
+		Entrez vos identifiants DucksManager habituels ci-dessous et cliquez sur "Connexion".
+	</p>
+	<p class="erreurs"></p>
+	<form>
+		<fieldset>
+			<label for="username">Pseudo: </label>
+			<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" />
+			<label for="password">Mot de passe: </label>
+			<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
+			<br />
+		</fieldset>
+	</form>
+</div>
+
 <div id="wizard-1" class="first wizard" title="Accueil EdgeCreator">
+	<p>
+		Vous &ecirc;tes &agrave; pr&eacute;sent connect&eacute;(e) sur EdgeCreator.
+	</p>
 	<p>
 		Commen&ccedil;ons par le d&eacute;but... Que voulez-vous faire ?<br />
 		<form>
@@ -389,6 +384,11 @@
 			<img />
 		</li>
 	</ul>
+</div>
+
+<div id="wizard-confirmation-supprimer" class="wizard" title="Supprimer l'&eacute;tape ?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Vous allez supprimer cette &eacute;tape. Continuer ?</p>
 </div>
 
 <div id="wizard-confirmation-rechargement" class="wizard" title="Sauvegarder les changements ?">

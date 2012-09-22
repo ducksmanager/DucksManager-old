@@ -38,10 +38,7 @@
 			?>Connect&eacute;(e) en tant que <?=$user?><?php
 		}
 		?><br /><?php
-		if ($user=='demo') {
-			?><button class="small" id="connexion" onclick="location.reload()">Connexion</button><?php
-		}
-		else {
+		if ($user!=='demo') {
 			?><button class="small" id="deconnexion" onclick="logout()">D&eacute;connexion</button><?php					
 		}
 		?>

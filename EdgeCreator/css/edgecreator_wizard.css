@@ -161,6 +161,14 @@ button#connexion, button#deconnexion {
 	float: left;
 }
 
+.dialog-preview-etape .ui-dialog-titlebar img.supprimer {
+	position: absolute;
+	height: 12px;
+	right: -4px;
+	top: -5px;
+	cursor: pointer;
+}
+
 .dialog-preview-etape .ui-dialog-titlebar img ~ span{
 	margin-left: 13px;	
 }

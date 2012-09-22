@@ -15,6 +15,7 @@ header("Pragma: no-cache"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/tipTip.css" />
+	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.7.2.min.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
