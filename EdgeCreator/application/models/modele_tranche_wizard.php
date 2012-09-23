@@ -193,10 +193,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $this->db->query($requete)->num_rows() == 0;
 	}
 
-	function decaler_etapes_a_partir_de($id_modele,$etape_debut) {
+	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
 		$requete='UPDATE tranches_en_cours_valeurs '
 				.'SET Ordre=Ordre+1 ' 
-				.'WHERE ID_Modele = '.$id_modele.' AND Ordre>='.$etape_debut;
+				.'WHERE ID_Modele = '.$id_modele.' '
+				  .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut;
 		echo $requete."\n";
 		$this->db->query($requete);
 	}
@@ -238,15 +239,16 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		echo $requete."\n";
 	}
 
-	function insert_etape($pays,$magazine,$numero,$etape,$nom_fonction) {
+	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
+		$inclure_avant = $pos==='avant';
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
 		
-		$this->decaler_etapes_a_partir_de($id_modele,$etape);
+		$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, false, true);
 		
 		foreach($nouvelle_fonction->options as $nom=>$valeur) {
-			$this->insert($id_modele,$etape,$nom_fonction,$nom,$valeur);			
+			$this->insert($id_modele,$inclure_avant ? $etape : $etape+1,$nom_fonction,$nom,$valeur);			
 		}
 	}
 

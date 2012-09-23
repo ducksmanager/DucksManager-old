@@ -362,6 +362,7 @@
 		<form>
 			<div id="liste_fonctions"></div>
 			<input type="hidden" name="etape" />
+			<input type="hidden" name="pos" />
 		</form>
 	</p>
 </div>

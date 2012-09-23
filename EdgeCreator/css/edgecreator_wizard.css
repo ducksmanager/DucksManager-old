@@ -189,13 +189,8 @@ button#connexion, button#deconnexion {
 
 #ajout_etape {
 	cursor: pointer;
-	top: 117px;
 	position: fixed;
 	z-index: 1000;
-	transform: rotate(-90deg);
-	-moz-transform: rotate(-90deg);
-	-webkit-transform: rotate(-90deg);
-	-o-transform: rotate(-90deg);
 }
 
 button.small .ui-button-text {

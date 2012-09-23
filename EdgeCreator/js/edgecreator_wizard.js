@@ -21,6 +21,7 @@ var url_viewer='viewer_wizard';
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=25;
+var SEPARATION_CONCEPTION_ETAPES=40;
 var MARGE_DROITE_TRANCHE_FINALE=10;
 
 var TEMPLATES ={'numero':/\[Numero\]/,
@@ -61,13 +62,12 @@ function launch_wizard(id) {
 		break;
 		case 'wizard-ajout-etape':
 			$('#'+id).find('form input[name="etape"]').val($('#ajout_etape').data('etape'));
+			$('#'+id).find('form input[name="pos"]').val($('#ajout_etape').data('pos'));
 			buttons={
 				'OK': function() {
 					var formData=$(this).find('form').serializeObject();
-					var etape = formData.etape;
-					var nom_fonction=formData.nom_fonction;
 					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,etape,nom_fonction].join('/'),
+						url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
 						type: 'post',
 						success:function(data) {
 							$('#wizard-ajout-etape').dialog( "close" );
@@ -582,13 +582,16 @@ function wizard_init(wizard_id) {
 							
 							numero_chargement=numero;
 							chargement_courant=0;
-				            charger_preview_etape(chargements[0],true);
+				            charger_preview_etape(chargements[0],true,'_',function() {
+								if (etapes_valides.length == 1) { // Dimensions seulement
+									placer_dialogues_preview();
+								}
+				            });
 				            
-				            $('#zone_ajout_etape').mouseover(indiquer_ajout_etape)
-				            					  .mouseout (effacer_ajout_etape);
+				            $('#zone_ajout_etape').hover(indiquer_ajout_etape,
+				            					  		 effacer_ajout_etape);
 				            
 				            $('#ajout_etape').click(function() {
-				            	$('#wizard-ajout-etape').find('form input[name="etape"]').val();
 			                	launch_wizard('wizard-ajout-etape');
 				            });
 				            
@@ -694,7 +697,8 @@ function placer_dialogues_preview() {
 		}
 		else {
 			var dialogue_suivant=$(dialogues[i-1]);
-			var marge_gauche=dialogue_suivant.offset().left-largeur-LARGEUR_INTER_ETAPES;
+			var marge_gauche=dialogue_suivant.offset().left-largeur
+							-(i==2 ? SEPARATION_CONCEPTION_ETAPES : LARGEUR_INTER_ETAPES);
 			$(dialogue).css({'left':marge_gauche+'px'});
 			min_marge_gauche=Math.min(marge_gauche,min_marge_gauche);
 		}
@@ -707,37 +711,54 @@ function placer_dialogues_preview() {
 	}
 	
 	// Positionnement de la zone d'ajout d'étape
-	var dialogue_gauche=$(dialogues[dialogues.size()-1]);
 	var dialogue_droite=$(dialogues[1]); // Avant le dialogue de conception et la tranche finale
-	$('#zone_ajout_etape').css({'left':	 dialogue_gauche.offset().left + dialogue_gauche.width(),
-						   'top': 	 dialogue_gauche.offset().top,
-						   'width':  dialogue_droite.offset().left - (dialogue_gauche.offset().left + dialogue_gauche.width()),
-						   'height': dialogue_gauche.height()});
+	var dialogue_gauche=$(dialogues[dialogues.size()-1]); // Première étape
+	$('#zone_ajout_etape').css({'left':	 dialogue_gauche.offset().left - LARGEUR_INTER_ETAPES,
+							    'top': 	 dialogue_gauche.offset().top,
+							    'height': dialogue_gauche.height()});
+	$('#zone_ajout_etape').css({'width':dialogue_droite.offset().left - $('#zone_ajout_etape').offset().left});
 }
 
 function indiquer_ajout_etape(e) {
-	if (! $('#ajout_etape').hasClass('cache'))
+	var ajout_etape = $('#ajout_etape');
+	if (! ajout_etape.hasClass('cache'))
 		return;
-	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
+	var dialogues=$('.dialog-preview-etape:not(.finale)').add($('#wizard-conception').d());
 	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
-	var nearestDialog=null;
-	var distance=null;
+	var nearestLeftDialog=null,
+		nearestRightDialog=null;
+	var minDistanceToLeftEdge=null,
+		minDistanceToRightEdge=null;
 	$.each(dialogues,function(i,dialogue) {
-		var rightDialogEdge = $(dialogue).offset().left + $(dialogue).width() ;
-		var currentDistance = e.pageX - rightDialogEdge;
-		if (currentDistance > 0 && (distance === null || currentDistance < distance )) {
-			distance = currentDistance;
-			nearestDialog=$(dialogue);
+		var currentDistanceToLeftEdge = $(dialogue).offset().left - e.pageX;
+		if (currentDistanceToLeftEdge > 0 && (minDistanceToLeftEdge === null || currentDistanceToLeftEdge < minDistanceToLeftEdge )) {
+			minDistanceToLeftEdge = currentDistanceToLeftEdge;
+			nearestRightDialog=$(dialogue);
+		}
+		var currentDistanceToRightEdge = e.pageX - ($(dialogue).offset().left + $(dialogue).width());
+		if (currentDistanceToRightEdge > 0 && (minDistanceToRightEdge === null || currentDistanceToRightEdge < minDistanceToRightEdge )) {
+			minDistanceToRightEdge = currentDistanceToRightEdge;
+			nearestLeftDialog=$(dialogue);
 		}
 	});
 	
-	if (nearestDialog != null) {
-		$('#ajout_etape').removeClass('cache')
-						 .css({'left':(nearestDialog.offset().left+nearestDialog.width()-35)+'px'})
-						 .data('etape',parseInt(nearestDialog.data('etape'))+1);
+	if (nearestLeftDialog != null) {
+		var etape = parseInt(nearestLeftDialog.data('etape'));
+		ajout_etape.removeClass('cache')
+				   .css({'left':(nearestLeftDialog.offset().left+nearestLeftDialog.width()+8)+'px'})
+				   .data('etape',etape)
+				   .data('pos','apres');
 	}
+	else if (nearestRightDialog != null) {
+		var etape = parseInt(nearestRightDialog.data('etape')) || 0;
+		ajout_etape.removeClass('cache')
+				   .css({'left':(nearestRightDialog.offset().left-ajout_etape.width()-2)+'px'})
+				   .data('etape',etape)
+				   .data('pos','avant');
+	}
+    $('.tip2').tipTip({delay:0});
 }
 
 function effacer_ajout_etape() {
