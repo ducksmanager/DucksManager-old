@@ -26,8 +26,8 @@ var MARGE_DROITE_TRANCHE_FINALE=10;
 
 var TEMPLATES ={'numero':/\[Numero\]/,
 	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
-	            'largeur':/\[Largeur\]/i,
-	            'hauteur':/\[Hauteur\]/i,
+	            'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
+	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
 	            'caracteres_speciaux':/\°/i};
 
 function can_launch_wizard(id) {
@@ -804,6 +804,43 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	
 	var checkboxes=new Array();
 	switch(nom_fonction) {
+		case 'Agrafer':
+			var agrafe1=form_userfriendly.find('.agrafe.premiere');
+			var agrafe2=form_userfriendly.find('.agrafe.deuxieme');
+			
+			var pos_x_debut=image.position().left+image.width()/2-.25*zoom;
+			var largeur=zoom;
+			var pos_y_agrafe1=image.position().top +parseFloat(templatedToVal(valeurs['Y1']))*zoom;
+			var pos_y_agrafe2=image.position().top +parseFloat(templatedToVal(valeurs['Y2']))*zoom;
+			var hauteur= parseFloat(templatedToVal(valeurs['Taille_agrafe']))*zoom;
+	
+			agrafe1.css({'top':    pos_y_agrafe1+'px'});
+			agrafe2.css({'top':    pos_y_agrafe2+'px'});
+			$('.agrafe')
+				.css({'left':   pos_x_debut	+'px', 
+					  'width':  largeur	  	+'px',
+					  'height': hauteur	  	+'px'})
+			    .removeClass('cache')
+			    .draggable({
+			    	axis: 'y',
+			    	stop:function(event, ui) {
+			    		var element=$(event.target);
+			    		if (element.hasClass('premiere')) {
+			    			tester_option_preview(nom_fonction,'Y1',element);
+			    		}
+			    		else {
+			    			tester_option_preview(nom_fonction,'Y2',element);
+			    		}
+			    	}
+			    })
+			    .resizable({
+			    	handles:'s',
+			    	resize:function(event, ui) {
+			    		tester_option_preview(nom_fonction,'Taille_agrafe',ui.element);
+			    	}
+			    });
+	
+		break;
 		case 'Remplir':
 			classes_farbs['Couleur']='';
 			
@@ -1191,7 +1228,7 @@ function valider() {
 	});
 }
 
-function tester_option_preview(nom_fonction,nom_option) {
+function tester_option_preview(nom_fonction,nom_option,element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
 	var form_userfriendly=dialogue.find('.options_etape');
@@ -1200,6 +1237,17 @@ function tester_option_preview(nom_fonction,nom_option) {
 	
 	var val=null;
 	switch(nom_fonction) {
+		case 'Agrafer':
+			switch(nom_option) {
+				case 'Taille_agrafe':
+					form_userfriendly.find('.agrafe').not(element).height(element.height());
+					val = element.height()/zoom;
+				break;
+				case 'Y1': case 'Y2':
+					val = (element.offset().top-image.offset().top)/zoom;
+				break;
+			}
+		break;
 		case 'Remplir':
 			var point_remplissage=dialogue.find('.point_remplissage');
 			switch(nom_option) {
@@ -1594,7 +1642,8 @@ function afficher_photo_tranche() {
 
 function templatedToVal(templatedString) {
 	$.each(TEMPLATES,function(nom, regex) {
-		if ((templatedString+'').match(regex) != null) {
+		var matches;
+		if ((matches = (templatedString+'').match(regex)) != null) {
 			templatedString+='';
 			switch(nom) {
 				case 'numero':
@@ -1610,10 +1659,30 @@ function templatedToVal(templatedString) {
 					}
 				break;
 				case 'largeur':
-					templatedString=templatedString.replace(regex, $('#Dimension_x').val());
+					if (matches[2] || matches[3]) {
+						var operation = matches[2] || matches[3];
+						var autre_nombre= matches[1] || matches[4];
+						switch(operation) {
+							case '*':
+								templatedString= $('#Dimension_x').val()*autre_nombre;
+							break;
+						}
+					}
+					else
+						templatedString=templatedString.replace(regex, $('#Dimension_x').val());
 				break;
 				case 'hauteur':
-					templatedString=templatedString.replace(regex, $('#Dimension_y').val());
+					if (matches[2] || matches[3]) {
+						var operation = matches[2] || matches[3];
+						var autre_nombre= matches[1] || matches[4];
+						switch(operation) {
+							case '*':
+								templatedString= $('#Dimension_y').val()*autre_nombre;
+							break;
+						}
+					}
+					else
+						templatedString=templatedString.replace(regex, $('#Dimension_y').val());
 				break;
 				case 'caracteres_speciaux':
 					templatedString=templatedString.replace(/°/,'�');

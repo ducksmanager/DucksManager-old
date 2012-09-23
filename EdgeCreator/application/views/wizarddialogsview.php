@@ -206,6 +206,14 @@
 			
 		</div>
 		
+		<div id="options-etape--Agrafer" class="options_etape cache">
+			<div class="premiere agrafe"></div>
+			<div class="deuxieme agrafe"></div>
+			<p>
+				&gt; D&eacute;placez et redimensionnez les agrafes.<br />
+			</p>
+		</div>
+		
 		<div id="options-etape--Remplir" class="options_etape cache">
 			<img class="point_remplissage cache" src="../images/cross.png" />
 			<p>
