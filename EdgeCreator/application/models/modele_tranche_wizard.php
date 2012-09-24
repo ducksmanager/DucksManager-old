@@ -245,7 +245,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
 		
-		$nouvelle_fonction=new $nom_fonction(false, null, false, true);
+		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		
 		foreach($nouvelle_fonction->options as $nom=>$valeur) {
 			$this->insert($id_modele,$inclure_avant ? $etape : $etape+1,$nom_fonction,$nom,$valeur);			

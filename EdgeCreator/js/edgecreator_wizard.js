@@ -435,7 +435,7 @@ function wizard_init(wizard_id) {
 			}
 			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
 			$('#action_bar').removeClass('cache');
-			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+			selecteur_cellules_preview='.wizard.preview_etape div.image_etape, div#preview_vide';
 			$('#'+wizard_id).dialog('option','position',['right','top']);
 			$('#'+wizard_id).parent().css({'left':($('#'+wizard_id).parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 			
@@ -578,7 +578,9 @@ function wizard_init(wizard_id) {
 								}
 							});
 
-							chargements.push('all'); // On ajoute l'étape finale
+							$('#preview_vide').data('etape','_');
+							
+							chargements.push('_','all'); // On ajoute "_" (l'étape vide utilisée lors des modifs d'étapes : on n'aura que les contours ; et l'étape finale
 							
 							numero_chargement=numero;
 							chargement_courant=0;
@@ -618,13 +620,16 @@ function wizard_init(wizard_id) {
 								section_preview_etape.addClass('modif');
 								dialogue.addClass('modif');
 								
-								var image=dialogue.find('.image_etape');
-								var largeur_tranche=image.width();
+								var section_image=dialogue.find('.image_etape');
+								section_image.find('img').addClass('cache');
+								section_image.append($('#preview_vide .image_preview').clone());
+								
+								var largeur_tranche=section_image.width();
 								section_preview_etape.dialog('option', 'width', largeur_max_preview_etape_ouverte());
 								dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
-								image.after($('#options-etape--'+nom_fonction)
+								section_image.after($('#options-etape--'+nom_fonction)
 												.removeClass('cache')
-												.css({'margin-left':(image.position().left+largeur_tranche+5*zoom)+'px'}));
+												.css({'margin-left':(section_image.position().left+largeur_tranche+5*zoom)+'px'}));
 
 								section_preview_etape.dialog('option','buttons',{
 									'Fermer': function() {
@@ -679,7 +684,9 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.ui-dialog-buttonpane').remove();
 	dialogue.find('.ui-dialog-titlebar').find('span').addClass('cache');
 	dialogue.find('.options_etape').addClass('cache');
-	dialogue.find('[name="form_options"]').remove();
+	dialogue.find('.image_etape img:not(.cache)').remove();
+	dialogue.find('.image_etape img.cache').removeClass('cache');
+	dialogue.find('[name="form_options"],[name="form_options_orig"]').remove();
 	dialogue.find('.preview_etape').removeClass('modif');
 	modification_etape=null;
 }
@@ -800,7 +807,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 									 				.attr({'name':'form_options_orig'}));
 	}
 	
-	var image = section_preview_etape.find('.image_preview');
+	var image = section_preview_etape.find('.image_preview:not(.cache)');
 	
 	var checkboxes=new Array();
 	switch(nom_fonction) {
@@ -839,6 +846,48 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			    		tester_option_preview(nom_fonction,'Taille_agrafe',ui.element);
 			    	}
 			    });
+	
+		break;
+		case 'DegradeTrancheAgrafee':
+			var agrafe1=form_userfriendly.find('.premiere.agrafe');
+			var agrafe2=form_userfriendly.find('.deuxieme.agrafe');
+			
+			var pos_x_debut=image.position().left+image.width()/2-.25*zoom;
+			var largeur=zoom;
+			var pos_y_agrafe1=image.position().top +0.2*image.height();
+			var pos_y_agrafe2=image.position().top +0.8*image.height();
+			var hauteur= image.height()*0.05;
+				
+			agrafe1.css({'top':    pos_y_agrafe1+'px'});
+			agrafe2.css({'top':    pos_y_agrafe2+'px'});
+			form_userfriendly.find('.agrafe')
+				.css({'left':   pos_x_debut	+'px', 
+					  'width':  largeur	  	+'px',
+					  'height': hauteur	  	+'px'})
+			    .removeClass('cache');
+
+			
+			var coef_degrade=1.75;
+			classes_farbs['Couleur']='';
+
+			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
+			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
+			
+			var c1=valeurs['Couleur'];
+			var c1_rgb=hex2rgb(hex2rgb(c1));
+			var c2='#'+rgb2hex(parseInt(c1_rgb[0]/coef_degrade),
+							   parseInt(c1_rgb[1]/coef_degrade),
+							   parseInt(c1_rgb[2]/coef_degrade));
+
+			rectangle1.css({'left':image.position().top+'px'});
+			rectangle2.css({'left':parseInt(image.position().top+image.width()/2)+'px'});
+			form_userfriendly.find('.rectangle_degrade')
+				.css({'top':    image.position().top +'px', 
+					  'width':  image.width()/2	  	 +'px',
+					  'height': image.height()		 +'px'})
+			    .removeClass('cache');
+			coloriser_rectangle_degrade(form_userfriendly.find('.premier.rectangle_degrade'), c1, c2);
+			coloriser_rectangle_degrade(form_userfriendly.find('.deuxieme.rectangle_degrade'), c2, c1);
 	
 		break;
 		case 'Remplir':
@@ -1012,7 +1061,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								
 								var dialogue=form_userfriendly.d();
 								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-								var image=dialogue.find('.image_preview');
+								var image=dialogue.find('.image_preview:not(.cache');
 								
 								var position_texte=form_userfriendly.find('.image_position');
 								var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
@@ -1084,7 +1133,7 @@ function positionner_image(preview) {
 	var position_image=form_userfriendly.find('.image_position');	
 	var dialogue=preview.d();
 	var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-	var image=dialogue.find('.image_preview');
+	var image=dialogue.find('.image_preview:not(.cache');
 	
 	var ratio_image=preview.prop('width')/preview.prop('height');
 	
@@ -1157,6 +1206,10 @@ function coloriser_rectangle_preview(couleur,est_rempli) {
 	}
 }
 
+function coloriser_rectangle_degrade(element,couleur1,couleur2) {
+	element.css({'background': 'background: -webkit-gradient(linear, left top, right top, from(#'+couleur1+'), to(#'+couleur2+')'});
+}
+
 function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
 	farbs[nom_option]=$.farbtastic(picker)
 					  .linkTo(function() {callback_change_picked_color($(this),input);},
@@ -1193,7 +1246,11 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 			}
 		});
 	}
-	else callback();
+	else {
+		fermer_dialogue_preview($('.modif'));
+		$( this ).dialog( "close" );
+		callback();
+	}
 }
 
 function tester(callback, modif_dimensions) {
@@ -1233,7 +1290,7 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 	var form_options=dialogue.find('[name="form_options"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
-	var image=dialogue.find('.image_preview');
+	var image=dialogue.find('.image_preview:not(.cache');
 	
 	var val=null;
 	switch(nom_fonction) {
@@ -1692,4 +1749,28 @@ function templatedToVal(templatedString) {
 		}
 	});
 	return templatedString;
+}
+
+function hex2rgb(hex) {
+	if (hex.length != 6){
+		return [0,0,0];
+	}
+	var rgb=[];
+	for (var i=0;i<3;i++){
+		rgb[i] = parseInt((hex.substring(2*i,2)+'').replace(/[^a-f0-9]/gi, ''),16);
+	}
+	return rgb;
+}
+
+function rgb2hex(r, g, b) {
+	var hex = "";
+	var rgb = [r, g, b];
+	for (var i = 0; i < 3; i++) {
+		tmp = parseInt(rgb[i], 10).toString(16);
+		if (tmp.length < 2)
+			hex += "0" + tmp;
+		else
+			hex += tmp;
+	}
+	return hex.toUpperCase();
 }

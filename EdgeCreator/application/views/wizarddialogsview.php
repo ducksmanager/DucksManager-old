@@ -214,6 +214,19 @@
 			</p>
 		</div>
 		
+		<div id="options-etape--DegradeTrancheAgrafee" class="options_etape cache">
+			<div class="premiere agrafe"></div>
+			<div class="deuxieme agrafe"></div>
+			<div class="premier rectangle_degrade"></div>
+			<div class="deuxieme rectangle_degrade"></div>
+			<p>
+				&gt; D&eacute;finissez la couleur de fond de la tranche.<br />
+				<div class="picker cache"></div>
+				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
+				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+			</p>
+		</div>
+		
 		<div id="options-etape--Remplir" class="options_etape cache">
 			<img class="point_remplissage cache" src="../images/cross.png" />
 			<p>
@@ -410,4 +423,7 @@
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
 	Vous avez modifi&eacute; l'&eacute;tape que vous souhaitez fermer. 
 	Souhaitez-vous sauvegarder ces modifications ?</p>
+</div>
+
+<div id="preview_vide"> 
 </div>
