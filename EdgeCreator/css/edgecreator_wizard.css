@@ -192,8 +192,10 @@ button#connexion, button#deconnexion {
 	float: left;
 }
 
-#preview_vide {
-	display: none;
+.preview_vide {
+	outline: 1px solid black;
+	background-color: white;
+	float: left;
 }
 
 #zone_ajout_etape {

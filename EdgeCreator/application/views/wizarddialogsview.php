@@ -424,6 +424,3 @@
 	Vous avez modifi&eacute; l'&eacute;tape que vous souhaitez fermer. 
 	Souhaitez-vous sauvegarder ces modifications ?</p>
 </div>
-
-<div id="preview_vide"> 
-</div>

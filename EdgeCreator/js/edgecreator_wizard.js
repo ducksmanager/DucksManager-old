@@ -435,7 +435,7 @@ function wizard_init(wizard_id) {
 			}
 			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
 			$('#action_bar').removeClass('cache');
-			selecteur_cellules_preview='.wizard.preview_etape div.image_etape, div#preview_vide';
+			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 			$('#'+wizard_id).dialog('option','position',['right','top']);
 			$('#'+wizard_id).parent().css({'left':($('#'+wizard_id).parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 			
@@ -520,7 +520,12 @@ function wizard_init(wizard_id) {
 									
 									var wizard_etape = $('.wizard.preview_etape.initial').clone(true);
 									var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
-									wizard_etape.html(div_preview);
+									var div_preview_vide=$('<div>')
+										.addClass('preview_vide cache')
+										.css({'width' :$('#Dimension_x').val()*zoom+'px', 
+											  'height':$('#Dimension_y').val()*zoom+'px'});
+									wizard_etape.append(div_preview)
+												.append(div_preview_vide);
 									
 									var posX = $('#wizard-conception').parent().offset().left-(etapes_valides.length-i);
 									wizard_etape.dialog({
@@ -578,9 +583,8 @@ function wizard_init(wizard_id) {
 								}
 							});
 
-							$('#preview_vide').data('etape','_');
 							
-							chargements.push('_','all'); // On ajoute "_" (l'étape vide utilisée lors des modifs d'étapes : on n'aura que les contours ; et l'étape finale
+							chargements.push('all'); // On ajoute l'étape finale
 							
 							numero_chargement=numero;
 							chargement_courant=0;
@@ -602,49 +606,17 @@ function wizard_init(wizard_id) {
 								if (modification_etape != null) {
 									if (dialogue.data('etape') == modification_etape.data('etape'))
 										return;
-									else
-										fermer_dialogue_preview(modification_etape);
+									else {
+										verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { ouvrir_dialogue_preview(dialogue);});
+										return;
+									}
 								}
 								else {
 									if (dialogue.find('.image_preview').length == 0) {
 										return;
 									}
 								}
-								modification_etape=dialogue;
-								
-								var num_etape=dialogue.data('etape');
-								num_etape_courante=num_etape;
-								var nom_fonction=dialogue.data('nom_fonction');
-								
-								var section_preview_etape=dialogue.find('.preview_etape');
-								section_preview_etape.addClass('modif');
-								dialogue.addClass('modif');
-								
-								var section_image=dialogue.find('.image_etape');
-								section_image.find('img').addClass('cache');
-								section_image.append($('#preview_vide .image_preview').clone());
-								
-								var largeur_tranche=section_image.width();
-								section_preview_etape.dialog('option', 'width', largeur_max_preview_etape_ouverte());
-								dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
-								section_image.after($('#options-etape--'+nom_fonction)
-												.removeClass('cache')
-												.css({'margin-left':(section_image.position().left+largeur_tranche+5*zoom)+'px'}));
-
-								section_preview_etape.dialog('option','buttons',{
-									'Fermer': function() {
-										verifier_changements_etapes_sauves($(this).d(),'wizard-confirmation-annulation');
-									},
-									'Tester': function() {
-										tester();
-									},
-									'Valider': function() {
-										valider();		
-									}
-								});
-								section_preview_etape.find('button').button();
-								recuperer_et_alimenter_options_preview(num_etape);
-								
+								ouvrir_dialogue_preview(dialogue);
 							});
 						}
 					});
@@ -677,6 +649,42 @@ function largeur_max_preview_etape_ouverte() {
 	return $(window).width()-largeur_autres;
 }
 
+function ouvrir_dialogue_preview(dialogue) {
+	modification_etape=dialogue;
+	
+	var num_etape=dialogue.data('etape');
+	num_etape_courante=num_etape;
+	var nom_fonction=dialogue.data('nom_fonction');
+	
+	var section_preview_etape=dialogue.find('.preview_etape');
+	section_preview_etape.addClass('modif');
+	dialogue.addClass('modif');
+
+	section_preview_etape.find('img,.preview_vide').toggleClass('cache');
+	
+	var section_preview_vide=dialogue.find('.preview_vide');
+	var largeur_tranche=section_preview_vide.width();
+	section_preview_etape.dialog('option', 'width', largeur_max_preview_etape_ouverte());
+	dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
+	section_preview_vide.after($('#options-etape--'+nom_fonction)
+						.removeClass('cache')
+						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px'}));
+
+	section_preview_etape.dialog('option','buttons',{
+		'Fermer': function() {
+			verifier_changements_etapes_sauves($(this).d(),'wizard-confirmation-annulation');
+		},
+		'Tester': function() {
+			tester();
+		},
+		'Valider': function() {
+			valider();		
+		}
+	});
+	section_preview_etape.find('button').button();
+	recuperer_et_alimenter_options_preview(num_etape);
+}
+
 function fermer_dialogue_preview(dialogue) {
 	dialogue.removeClass('modif')
 			.css({'width':'auto'});
@@ -684,8 +692,7 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.ui-dialog-buttonpane').remove();
 	dialogue.find('.ui-dialog-titlebar').find('span').addClass('cache');
 	dialogue.find('.options_etape').addClass('cache');
-	dialogue.find('.image_etape img:not(.cache)').remove();
-	dialogue.find('.image_etape img.cache').removeClass('cache');
+	dialogue.find('.image_etape img, .preview_vide').toggleClass('cache');
 	dialogue.find('[name="form_options"],[name="form_options_orig"]').remove();
 	dialogue.find('.preview_etape').removeClass('modif');
 	modification_etape=null;
@@ -807,7 +814,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 									 				.attr({'name':'form_options_orig'}));
 	}
 	
-	var image = section_preview_etape.find('.image_preview:not(.cache)');
+	var image = section_preview_etape.find('.preview_vide');
 	
 	var checkboxes=new Array();
 	switch(nom_fonction) {
@@ -874,20 +881,20 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
 			
 			var c1=valeurs['Couleur'];
-			var c1_rgb=hex2rgb(hex2rgb(c1));
-			var c2='#'+rgb2hex(parseInt(c1_rgb[0]/coef_degrade),
-							   parseInt(c1_rgb[1]/coef_degrade),
-							   parseInt(c1_rgb[2]/coef_degrade));
+			var c1_rgb=hex2rgb(c1);
+			var c2=rgb2hex(parseInt(c1_rgb[0]/coef_degrade),
+						   parseInt(c1_rgb[1]/coef_degrade),
+						   parseInt(c1_rgb[2]/coef_degrade));
 
-			rectangle1.css({'left':image.position().top+'px'});
-			rectangle2.css({'left':parseInt(image.position().top+image.width()/2)+'px'});
+			rectangle1.css({'left':image.position().left+'px'});
+			rectangle2.css({'left':parseInt(image.position().left+image.width()/2)+'px'});
 			form_userfriendly.find('.rectangle_degrade')
 				.css({'top':    image.position().top +'px', 
 					  'width':  image.width()/2	  	 +'px',
 					  'height': image.height()		 +'px'})
 			    .removeClass('cache');
-			coloriser_rectangle_degrade(form_userfriendly.find('.premier.rectangle_degrade'), c1, c2);
-			coloriser_rectangle_degrade(form_userfriendly.find('.deuxieme.rectangle_degrade'), c2, c1);
+			coloriser_rectangle_degrade(form_userfriendly.find('.premier.rectangle_degrade'), c2, c1);
+			coloriser_rectangle_degrade(form_userfriendly.find('.deuxieme.rectangle_degrade'), c1, c2);
 	
 		break;
 		case 'Remplir':
@@ -1061,7 +1068,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								
 								var dialogue=form_userfriendly.d();
 								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-								var image=dialogue.find('.image_preview:not(.cache');
+								var image=dialogue.find('.preview_vide');
 								
 								var position_texte=form_userfriendly.find('.image_position');
 								var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
@@ -1133,7 +1140,7 @@ function positionner_image(preview) {
 	var position_image=form_userfriendly.find('.image_position');	
 	var dialogue=preview.d();
 	var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-	var image=dialogue.find('.image_preview:not(.cache');
+	var image=dialogue.find('.preview_vide');
 	
 	var ratio_image=preview.prop('width')/preview.prop('height');
 	
@@ -1207,7 +1214,7 @@ function coloriser_rectangle_preview(couleur,est_rempli) {
 }
 
 function coloriser_rectangle_degrade(element,couleur1,couleur2) {
-	element.css({'background': 'background: -webkit-gradient(linear, left top, right top, from(#'+couleur1+'), to(#'+couleur2+')'});
+	element.css({'background': '-webkit-gradient(linear, left top, right top, from(#'+couleur1+'), to(#'+couleur2+'))'});
 }
 
 function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
@@ -1228,11 +1235,10 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 			modal: true,
 			buttons: {
 				"Sauvegarder les changements": function() {
-					valider(function() {
-						fermer_dialogue_preview($('.modif'));
-						$( this ).dialog( "close" );	
-						callback();
-					});														
+					fermer_dialogue_preview($('.modif'));
+					$( this ).dialog( "close" );	
+					valider();
+					callback();										
 				},
 				"Fermer l'etape sans sauvegarder": function() {
 					fermer_dialogue_preview($('.modif'));
@@ -1278,9 +1284,7 @@ function valider() {
 	    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
 	    type: 'post',
 	    success:function(data) {
-			reload_current_and_final_previews(function() {;
-				fermer_dialogue_preview(modification_etape);
-			});
+			reload_current_and_final_previews();
 	    }
 	});
 }
@@ -1290,7 +1294,7 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 	var form_options=dialogue.find('[name="form_options"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
-	var image=dialogue.find('.image_preview:not(.cache');
+	var image=dialogue.find('.preview_vide');
 	
 	var val=null;
 	switch(nom_fonction) {
@@ -1757,7 +1761,7 @@ function hex2rgb(hex) {
 	}
 	var rgb=[];
 	for (var i=0;i<3;i++){
-		rgb[i] = parseInt((hex.substring(2*i,2)+'').replace(/[^a-f0-9]/gi, ''),16);
+		rgb[i] = parseInt((hex.substring(2*i,2*(i+1))+'').replace(/[^a-f0-9]/gi, ''),16);
 	}
 	return rgb;
 }
