@@ -873,18 +873,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					  'height': hauteur	  	+'px'})
 			    .removeClass('cache');
 
-			
-			var coef_degrade=1.75;
 			classes_farbs['Couleur']='';
 
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
 			
 			var c1=valeurs['Couleur'];
-			var c1_rgb=hex2rgb(c1);
-			var c2=rgb2hex(parseInt(c1_rgb[0]/coef_degrade),
-						   parseInt(c1_rgb[1]/coef_degrade),
-						   parseInt(c1_rgb[2]/coef_degrade));
 
 			rectangle1.css({'left':image.position().left+'px'});
 			rectangle2.css({'left':parseInt(image.position().left+image.width()/2)+'px'});
@@ -893,12 +887,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					  'width':  image.width()/2	  	 +'px',
 					  'height': image.height()		 +'px'})
 			    .removeClass('cache');
-			coloriser_rectangle_degrade(form_userfriendly.find('.premier.rectangle_degrade'), c2, c1);
-			coloriser_rectangle_degrade(form_userfriendly.find('.deuxieme.rectangle_degrade'), c1, c2);
+			coloriser_rectangles_degrades(c1);
 	
 		break;
 		case 'Remplir':
 			classes_farbs['Couleur']='';
+			
+			coloriser_rectangle_preview(form_userfriendly.d().find('.preview_vide'),valeurs['Couleur'],true);
 			
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
 			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
@@ -950,10 +945,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 							 .change(function() {
 								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
 								 tester_option_preview(nom_fonction,nom_option);
-								 coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
+								 coloriser_rectangle_preview($('.modif .rectangle_position'),valeurs['Couleur'],$(this).prop('checked'));
 							 });
 			
-			coloriser_rectangle_preview(valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
+			coloriser_rectangle_preview($('.modif .rectangle_position'),valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
 
 		break;
 		case 'Image':
@@ -1200,17 +1195,26 @@ function definir_et_positionner_image(source) {
 		.error(function() {
 		});
 }
-function coloriser_rectangle_preview(couleur,est_rempli) {
-	var position_texte=$('.modif .rectangle_position');
+function coloriser_rectangle_preview(element,couleur,est_rempli) {
 	if (est_rempli) {
-		position_texte.css({'background-image': '-webkit-repeating-linear-gradient(135deg, white, white 5px, '
-																				 +couleur+' 5px, '+couleur+' 10px)',})
-					  .removeClass('outlined');
+		element.css({'background-color': couleur})
+			   .removeClass('outlined');
 	}
 	else {
-		position_texte.addClass('outlined')
-					  .css({'outline-color':couleur,'background-image':'','background-color':'white'});
+		element.addClass('outlined')
+			   .css({'outline-color':couleur,'background-color':''});
 	}
+}
+
+function coloriser_rectangles_degrades(c1) {
+	var coef_degrade=1.75;
+	
+	var c1_rgb=hex2rgb(c1);
+	var c2=rgb2hex(parseInt(c1_rgb[0]/coef_degrade),
+				   parseInt(c1_rgb[1]/coef_degrade),
+				   parseInt(c1_rgb[2]/coef_degrade));
+	coloriser_rectangle_degrade(modification_etape.find('.premier.rectangle_degrade'), c1,c2);
+	coloriser_rectangle_degrade(modification_etape.find('.deuxieme.rectangle_degrade'),c2,c1);
 }
 
 function coloriser_rectangle_degrade(element,couleur1,couleur2) {
@@ -1243,7 +1247,9 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 				"Fermer l'etape sans sauvegarder": function() {
 					fermer_dialogue_preview($('.modif'));
 					$( this ).dialog( "close" );
-					callback();
+					chargements=['all']; // Etape finale
+					chargement_courant=0;
+					charger_preview_etape(chargements[0],true,'_',callback);
 				},
 				"Revenir a l'edition d'etape": function() {
 					$( this ).dialog( "close" );
@@ -1263,17 +1269,10 @@ function tester(callback, modif_dimensions) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 
 	var form_options=dialogue.find('[name="form_options"]');
-	chargements=new Array();
-	chargements.push((modif_dimensions ? -1 : num_etape_courante)+'');
+	
+	chargements=['all']; // Etape finale
 	chargement_courant=0;
-	var parametrage=form_options.serialize();
-    charger_preview_etape(chargements[0],true,parametrage,function() { // Test de l'étape finale
-    	chargements=['all']; // Etape finale
-		
-    	chargement_courant=0;
-    	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
-    		
-    });
+	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
 }
 
 function valider() {
@@ -1307,6 +1306,13 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 				case 'Y1': case 'Y2':
 					val = (element.offset().top-image.offset().top)/zoom;
 				break;
+			}
+		break;
+		case 'DegradeTrancheAgrafee':
+			switch(nom_option) {
+				case 'Couleur':
+					var farb=farbs[nom_option];
+					val=farb.color.replace(/#/g,'');					
 			}
 		break;
 		case 'Remplir':
@@ -1427,6 +1433,7 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 
 function reload_current_and_final_previews(callback) {
 	chargements=[modification_etape.data('etape')];
+	fermer_dialogue_preview(modification_etape);
     charger_preview_etape(chargements[0],true, undefined, function() {
     	chargements=['all'];
         charger_preview_etape(chargements[0],true, undefined, callback);
@@ -1473,13 +1480,21 @@ function callback_change_picked_color(farb, input_couleur) {
 
 function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
 	tester_option_preview(nom_fonction,nom_option);
+	var form_options=input_couleur.d().find('[name="form_options"]');
+	var couleur = farb[0].color;
 	switch (nom_fonction) {
+		case 'Remplir':
+			coloriser_rectangle_preview(form_options.d().find('.preview_vide'),couleur,true);
+		break;
+		case 'DegradeTrancheAgrafee':
+			coloriser_rectangles_degrades(couleur.replace(/#/g,''));
+		break;
 		case 'TexteMyFonts':
 			load_myfonts_preview(true,true,true);
 		break;
 		case 'Rectangle':
-			coloriser_rectangle_preview(farb[0].color,
-										input_couleur.d().find('[name="form_options"]').valeur('Rempli').val()=='Oui');
+			coloriser_rectangle_preview(couleur,
+										form_options.valeur('Rempli').val()=='Oui');
 		break;
 	}
 }

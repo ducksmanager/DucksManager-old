@@ -102,6 +102,7 @@ button#connexion, button#deconnexion {
 	cursor: move;
 	background-color:transparent;
 	opacity: 1;
+	z-index: 1001;
 }
 
 .wizard.preview_etape .agrafe {
