@@ -135,68 +135,55 @@ class Database {
 		return Inducks::get_pays();
 	}
 
-	function get_noms_complets_magazines($pays) {
-		$requete_noms_complets='SELECT NomAbrege, RedirigeDepuis, NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\'';
-		$resultat_noms_complets=DM_Core::$d->requete_select($requete_noms_complets);
-		$tab=array();
-		foreach($resultat_noms_complets as $resultat) {
-			$tab[$resultat['NomAbrege']]=$resultat['NomComplet'];
-			if (!is_null($resultat['RedirigeDepuis']))
-				$tab[$resultat['RedirigeDepuis']]=$resultat['NomComplet'];
-				
-		}
-		return $tab;
-	}
-
 	function liste_etats() {
-			$etats=array();
-			foreach(self::$etats as $etat_court=>$infos_etat) {
-				if ($etat_court!='indefini') {
-					$etats[]=$infos_etat[0];
-				}
+		$etats=array();
+		foreach(self::$etats as $etat_court=>$infos_etat) {
+			if ($etat_court!='indefini') {
+				$etats[]=$infos_etat[0];
 			}
-			echo implode('~', $etats);
+		}
+		echo implode('~', $etats);
 	}
 
-			function liste_numeros_externes_dispos($id_user) {
-			$requete_numeros_externes = 'SELECT Id_Utilisateur, Pays,Magazine,Numero,Etat,AV FROM numeros WHERE (Id_Utilisateur<>'.$id_user.' AND AV=1) ORDER BY Id_Utilisateur, Pays, Magazine';
-			$numeros_externes = DM_Core::$d->requete_select($requete_numeros_externes);
-			if (count($numeros_externes) != 0) {
-				$requete_pseudos_utilisateurs = 'SELECT ID, username FROM users';
-				$liste_utilisateurs = array();
-				$liste_utilisateurs_resultat = DM_Core::$d->requete_select($requete_pseudos_utilisateurs);
-				foreach ($liste_utilisateurs_resultat as $utilisateur) {
-					$liste_utilisateurs[$utilisateur['ID']] = $utilisateur['username'];
-				}
-				$id_utilisateur = '';
-				$pays = '';
-				foreach ($numeros_externes as $numero) {
-					if ($numero['Pays'] != $pays)
-						$liste_magazines = $this->get_noms_complets_magazines($numero['Pays']);
-					$pays = $numero['Pays'];
-					$requete_possede = 'SELECT Count(Numero) AS c FROM numeros WHERE (ID_Utilisateur='
-									  .$id_user.' AND Pays LIKE \'' .$numero['Pays'].'\' AND Magazine LIKE \''
-									  .$numero['Magazine'].'\' AND Numero LIKE \''.$numero['Numero'].'\')';
-					$resultat_possede = DM_Core::$d->requete_select($requete_possede);
-					if ($resultat_possede[0]['c'] == 0) {
-						if ($id_utilisateur != $numero['Id_Utilisateur']) {
-							if (!empty($id_utilisateur)) {
-								?></ul><br /><?php
-							}
-							?><ul><b><?=utf8_decode($liste_utilisateurs[$numero['Id_Utilisateur']])?></b> <?=PROPOSE_LES_NUMEROS?>
-						<?php } 
-						list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($numero['Pays'],$numero['Magazine']);
-						?>
-						<li>
-							<?=$nom_complet_magazine?> (<?=$nom_complet_pays?>) n&deg;<?=$numero['Numero']?>
-						</li><?php
-						$id_utilisateur = $numero['Id_Utilisateur'];
-					}
+	function liste_numeros_externes_dispos($id_user) {
+		$requete_numeros_externes = 'SELECT Id_Utilisateur, Pays,Magazine,Numero,Etat,AV FROM numeros WHERE (Id_Utilisateur<>'.$id_user.' AND AV=1) ORDER BY Id_Utilisateur, Pays, Magazine';
+		$numeros_externes = DM_Core::$d->requete_select($requete_numeros_externes);
+		if (count($numeros_externes) != 0) {
+			$requete_pseudos_utilisateurs = 'SELECT ID, username FROM users';
+			$liste_utilisateurs = array();
+			$liste_utilisateurs_resultat = DM_Core::$d->requete_select($requete_pseudos_utilisateurs);
+			foreach ($liste_utilisateurs_resultat as $utilisateur) {
+				$liste_utilisateurs[$utilisateur['ID']] = $utilisateur['username'];
+			}
+			$id_utilisateur = '';
+			$pays = '';
+			foreach ($numeros_externes as $numero) {
+				if ($numero['Pays'] != $pays)
+					$liste_magazines = Inducks::get_liste_magazines($numero['Pays']);
+				$pays = $numero['Pays'];
+				$requete_possede = 'SELECT Count(Numero) AS c FROM numeros WHERE (ID_Utilisateur='
+								  .$id_user.' AND Pays LIKE \'' .$numero['Pays'].'\' AND Magazine LIKE \''
+								  .$numero['Magazine'].'\' AND Numero LIKE \''.$numero['Numero'].'\')';
+				$resultat_possede = DM_Core::$d->requete_select($requete_possede);
+				if ($resultat_possede[0]['c'] == 0) {
+					if ($id_utilisateur != $numero['Id_Utilisateur']) {
+						if (!empty($id_utilisateur)) {
+							?></ul><br /><?php
+						}
+						?><ul><b><?=utf8_decode($liste_utilisateurs[$numero['Id_Utilisateur']])?></b> <?=PROPOSE_LES_NUMEROS?>
+					<?php } 
+					list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($numero['Pays'],$numero['Magazine']);
+					?>
+					<li>
+						<?=$nom_complet_magazine?> (<?=$nom_complet_pays?>) n&deg;<?=$numero['Numero']?>
+					</li><?php
+					$id_utilisateur = $numero['Id_Utilisateur'];
 				}
 			}
-			else
-				echo AUCUN_NUMERO_PROPOSE;
 		}
+		else
+			echo AUCUN_NUMERO_PROPOSE;
+	}
 
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
 		if ($etat=='possede') $etat='indefini';
@@ -419,7 +406,7 @@ function ajouter_auteur($id,$nom) {
 			foreach($resultat_numeros_recommandes as $numero) {
 				$pays=$numero['Pays'];
 				if (!array_key_exists($pays,$pays_parcourus))
-					$pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
+					$pays_parcourus[$pays]=Inducks::get_liste_magazines($pays);
 				?>
 				<li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br />
 				
@@ -466,9 +453,10 @@ function ajouter_auteur($id,$nom) {
 				echo '0_';
 		}
 	}
-        function get_notes_auteurs($id_user) {
-            return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
-        }
+	
+	function get_notes_auteurs($id_user) {
+		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
+	}
 
 	function sous_liste($pays,$magazine) {
 		$l_magazine=new Liste();

@@ -16,7 +16,7 @@ class classique extends Format_liste {
 	function afficher($liste) {
 			$noms_complets_pays=DM_Core::$d->get_noms_complets_pays();
 			foreach($liste as $pays=>$numeros_pays) {
-				$noms_complets_magazines=DM_Core::$d->get_noms_complets_magazines($pays);
+				$noms_complets_magazines=Inducks::get_liste_magazines($pays);
 				?><br /><b><i><?=$noms_complets_pays[$pays]?></i></b><br /><?php
 				foreach($numeros_pays as $magazine=>$numeros) {
 					?><u><?=array_key_exists($magazine,$noms_complets_magazines) ? $noms_complets_magazines[$magazine] : $magazine?></u> <?php

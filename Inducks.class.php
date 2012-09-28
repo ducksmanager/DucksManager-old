@@ -116,20 +116,8 @@ class Inducks {
 		return array($nom_pays,$nom_magazine);
 	}
 
-	static function get_noms_complets_magazines($pays) {
-		$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode LIKE \''.$pays.'\'';
-		$resultat_requete=Inducks::requete_select($requete);
-		$liste=array();
-		foreach($resultat_requete as $magazine) {
-			list($nom_pays,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
-			$liste[$nom_magazine_abrege]=$magazine['title'];$requete_noms_magazines='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet) VALUES ("'.$pays.'","'.$nom_magazine_abrege.'","'.str_replace('"','',$magazine['title']).'")';
-			DM_Core::$d->requete($requete_noms_magazines);
-		}
-		return $liste;
-	}
-
 	static function get_liste_magazines($pays) {
-		$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode LIKE \''.$pays.'\'';
+		$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode = \''.$pays.'\'';
 		$resultat_requete=Inducks::requete_select($requete);
 		$liste_magazines_courte=array();
 		foreach($resultat_requete as $magazine) {

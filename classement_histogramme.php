@@ -36,7 +36,7 @@ foreach($l->collection as $pays=>$numeros_pays) {
 	}
 }
 foreach($counts as $pays=>$magazines) {
-	$liste_magazines=Inducks::get_noms_complets_magazines($pays);
+	$liste_magazines=Inducks::get_liste_magazines($pays);
 	$adresse_publications_pays='http://coa.inducks.org/country.php?xch=1&lg=4&c='.$pays	;
 	$buffer=Util::get_page($url);
         

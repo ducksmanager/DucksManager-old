@@ -67,7 +67,7 @@ $cpt_dispos=0;
 foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	list($pays,$magazine)=explode('/',$infos_numero['publicationcode']);
 	if ($pays != $pays_old) {
-		$noms_complets_magazines=Inducks::get_noms_complets_magazines($pays);
+		$noms_complets_magazines=Inducks::get_liste_magazines($pays);
 	}
 	echo '<br /><br />('.$pays.' '.$magazine.') '.$noms_complets_magazines[$magazine].'<br />';
 	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$infos_numero['publicationcode'].'\'';
