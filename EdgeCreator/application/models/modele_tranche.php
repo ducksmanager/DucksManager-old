@@ -1,6 +1,5 @@
 <?php
 include_once(BASEPATH.'/../../Inducks.class.php');
-Inducks::$use_db=true;
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
 class Modele_tranche extends CI_Model {

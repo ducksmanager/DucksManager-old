@@ -29,8 +29,6 @@ include_once('../Inducks.class.php');
 include_once('../Edge.class.php');
 include_once('../Database.class.php');
 
-Inducks::$use_db=true;
-
 if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
         die ('Valeur du wanted invalide');
