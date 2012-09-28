@@ -1,15 +1,5 @@
 var auteurs_valides=Array();
 
-function toggle_histogramme() {
-	if ($('histogramme').src.endsWith('classement_histogramme.php')) {
-		$('histogramme').src='classement_histogramme.php?pcent=true';
-		$('lien_toggle_histogramme').update('Afficher en nombre de num&eacute;ros');
-		return;
-	}
-	$('histogramme').src='classement_histogramme.php';
-	$('lien_toggle_histogramme').update('Afficher en pourcentages');
-}
-
 function vider_pouces()
 {
 	for (var i=0;;i++) {
