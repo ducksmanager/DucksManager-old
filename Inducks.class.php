@@ -95,7 +95,7 @@ class Inducks {
 	}
 
 	static function get_pays() {
-		$requete='SELECT countrycode, countryname FROM inducks_countryname WHERE languagecode LIKE \''.$_SESSION['lang'].'\' ORDER BY countryname';
+		$requete='SELECT countrycode, countryname FROM inducks_countryname WHERE languagecode = \''.$_SESSION['lang'].'\' ORDER BY countryname';
 		$resultat_requete=Inducks::requete_select($requete);
 		$liste_pays_courte=array();
 		foreach($resultat_requete as $pays) {
@@ -129,6 +129,7 @@ class Inducks {
 						  .'WHERE languagecode=\''.$_SESSION['lang'].'\' '
 						    .'AND countrycode IN ('.implode(',',array_keys($liste_pays)).')';
 		$resultats_noms_pays=Inducks::requete_select($requete_noms_pays);
+		$liste_pays=array();
 		foreach($resultats_noms_pays as $resultat) {
 			$liste_pays[$resultat['countrycode']]=$resultat['countryname'];
 		}
