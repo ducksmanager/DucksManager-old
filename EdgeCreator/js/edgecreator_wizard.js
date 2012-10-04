@@ -598,7 +598,7 @@ function wizard_init(wizard_id) {
 				            					  		 effacer_ajout_etape);
 				            
 				            $('#ajout_etape').click(function() {
-			                	launch_wizard('wizard-ajout-etape');
+				            	verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { launch_wizard('wizard-ajout-etape');});
 				            });
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
@@ -682,6 +682,7 @@ function ouvrir_dialogue_preview(dialogue) {
 		}
 	});
 	section_preview_etape.find('button').button();
+	section_preview_etape.find('.buttonset').buttonset();
 	recuperer_et_alimenter_options_preview(num_etape);
 }
 
@@ -853,8 +854,49 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			    		tester_option_preview(nom_fonction,'Taille_agrafe',ui.element);
 			    	}
 			    });
-	
 		break;
+		
+		case 'Degrade':
+			
+			var pos_x_debut=image.position().left +parseFloat(templatedToVal(valeurs['Pos_x_debut']))*zoom;
+			var pos_x_fin=image.position().left +parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
+			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
+			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
+				
+			classes_farbs['Couleur_debut']='.couleur_debut';
+			classes_farbs['Couleur_fin']='.couleur_fin';
+
+			var rectangle = form_userfriendly.find('.rectangle_degrade');
+
+			rectangle.css({'top':    pos_y_debut 		   +'px', 
+						   'left':   pos_x_debut 		   +'px', 
+						   'width':  (pos_x_fin-pos_x_debut)+'px',
+						   'height': (pos_y_fin-pos_y_debut)+'px'})
+					 .removeClass('cache')
+					 .draggable({//containment:limites_drag, 
+						 stop:function(event, ui) {
+			   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
+			   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
+			   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
+			   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+						 }
+					 })
+					 .resizable({
+						 stop:function(event, ui) {
+							 tester_option_preview(nom_fonction,'Pos_x_fin'); 
+							 tester_option_preview(nom_fonction,'Pos_y_fin');
+				   		 }
+					 });
+			coloriser_rectangle_degrade(rectangle,'#'+valeurs['Couleur_debut'],'#'+valeurs['Couleur_fin'],valeurs['Sens']);
+			
+			var choix = form_userfriendly.find('[name="option-Sens"]');
+			choix.click(function() {
+   		    	tester_option_preview(nom_fonction,'Sens');
+   		    	coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
+			});
+			choix.filter('[value="'+valeurs['Sens']+'"]').click();
+		break;
+		
 		case 'DegradeTrancheAgrafee':
 			var agrafe1=form_userfriendly.find('.premiere.agrafe');
 			var agrafe2=form_userfriendly.find('.deuxieme.agrafe');
@@ -925,12 +967,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 								    'height':(pos_y_fin-pos_y_debut)+'px'})
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag, 
-				  		  stop:function(event, ui) {
-			   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
-			   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
-			   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-			   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
-			   		      }
+					  		  stop:function(event, ui) {
+				   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
+				   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
+				   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
+				   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+				   		      }
 						  })
 						  .resizable({
 								stop:function(event, ui) {
@@ -1217,8 +1259,22 @@ function coloriser_rectangles_degrades(c1) {
 	coloriser_rectangle_degrade(modification_etape.find('.deuxieme.rectangle_degrade'),c2,c1);
 }
 
-function coloriser_rectangle_degrade(element,couleur1,couleur2) {
-	element.css({'background': '-webkit-gradient(linear, left top, right top, from(#'+couleur1+'), to(#'+couleur2+'))'});
+function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
+	sens = sens || 'Horizontal';
+	if (couleur1 == null) {// On garde la même couleur
+		var regex=/, from\(((?:(?!\),).)+)/g;
+		couleur1 = element.css('background').match(regex)[0].replace(regex,'$1');
+	}
+	if (couleur2 == null) {// On garde la même couleur
+		var regex = /, to\(((?:(?!\)\) ).)+)/g;
+		couleur2 = element.css('background').match(regex)[0].replace(regex,'$1');
+	}
+	if (sens == 'Horizontal') {
+		element.css({'background': '-webkit-gradient(linear, left top, right top, from('+couleur1+'), to('+couleur2+'))'});
+	}
+	else {
+		element.css({'background': '-webkit-gradient(linear, left top, left bottom, from('+couleur1+'), to('+couleur2+'))'});
+	}
 }
 
 function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
@@ -1239,10 +1295,11 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 			modal: true,
 			buttons: {
 				"Sauvegarder les changements": function() {
-					fermer_dialogue_preview($('.modif'));
-					$( this ).dialog( "close" );	
-					valider();
-					callback();										
+					$('#wizard-confirmation-annulation').dialog( "close" );
+					valider(function() {
+						fermer_dialogue_preview($('.modif'));
+						callback();
+					});
 				},
 				"Fermer l'etape sans sauvegarder": function() {
 					fermer_dialogue_preview($('.modif'));
@@ -1253,7 +1310,6 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 				},
 				"Revenir a l'edition d'etape": function() {
 					$( this ).dialog( "close" );
-					callback();
 				}
 			}
 		});
@@ -1275,7 +1331,8 @@ function tester(callback, modif_dimensions) {
 	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
 }
 
-function valider() {
+function valider(callback) {
+	callback = callback || function(){};
 	var form_options=$('.modif').find('[name="form_options"]');
 	var parametrage=form_options.serialize();
 	
@@ -1283,7 +1340,7 @@ function valider() {
 	    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
 	    type: 'post',
 	    success:function(data) {
-			reload_current_and_final_previews();
+			reload_current_and_final_previews(callback);
 	    }
 	});
 }
@@ -1294,139 +1351,146 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
 	var image=dialogue.find('.preview_vide');
-	
+
 	var val=null;
-	switch(nom_fonction) {
-		case 'Agrafer':
-			switch(nom_option) {
-				case 'Taille_agrafe':
-					form_userfriendly.find('.agrafe').not(element).height(element.height());
-					val = element.height()/zoom;
-				break;
-				case 'Y1': case 'Y2':
-					val = (element.offset().top-image.offset().top)/zoom;
-				break;
-			}
-		break;
-		case 'DegradeTrancheAgrafee':
-			switch(nom_option) {
-				case 'Couleur':
-					var farb=farbs[nom_option];
-					val=farb.color.replace(/#/g,'');					
-			}
-		break;
-		case 'Remplir':
-			var point_remplissage=dialogue.find('.point_remplissage');
-			switch(nom_option) {
-				case 'Couleur':
-					var farb=farbs[nom_option];
-					val=farb.color.replace(/#/g,'');
-				break;
-				case 'Pos_x':
-					var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-					val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
-				break;
-				case 'Pos_y':
-					var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-					val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
-				break;
-			}
-		break;
-		case 'Rectangle':
-			var positionnement=dialogue.find('.rectangle_position');
-			switch(nom_option) {
-				case 'Couleur':
-					var farb=farbs[nom_option];
-					val=farb.color.replace(/#/g,'');
-				break;
-				case 'Pos_x_debut':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-				break;
-				case 'Pos_y_debut':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().top  - image.offset().top )/zoom));
-				break;
-				case 'Pos_x_fin':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().left + positionnement.width() - image.offset().left)/zoom));
-				break;
-				case 'Pos_y_fin':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom));
-				break;
-				case 'Rempli':
-					val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-				break;
-			}
-		break;
-		case 'Image':
-			var positionnement=dialogue.find('.image_position');
-			switch(nom_option) {
-				case 'Decalage_x':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-				break;
-				case 'Decalage_y':
-					var pos_y_image=positionnement.offset().top - image.offset().top;
-					val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
-					form_options.valeur('Mesure_depuis_haut').val('Oui');
-				break;
-				case 'Compression_x':
-					val = toFloat2Decimals(positionnement.width()/image.width());
-				break;
-				case 'Compression_y':
-					var compression_x=parseFloat(form_options.valeur('Compression_x').val());
-					
-					var image_preview=dialogue.find('.apercu_image');
-					var ratio_image=image_preview.prop('width')/image_preview.prop('height');
-					var ratio_positionnement=positionnement.width()/positionnement.height();
-					val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
-				break;
-				case 'Source':
-					val=$('.gallery img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
-					form_userfriendly.valeur(nom_option).val(val);
-					
-					definir_et_positionner_image(val);
-			}
-		break;
-		case 'TexteMyFonts':
-			var positionnement=dialogue.find('.image_position');
-			switch(nom_option) {
-				case 'Pos_x':
-					val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-				break;
-				case 'Pos_y':
-					var pos_y_rectangle=positionnement.offset().top - image.offset().top;
-					val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
-					form_options.valeur('Mesure_depuis_haut').val('Oui');
-				break;
-				case 'Compression_x':
-					val = toFloat2Decimals(positionnement.width()/image.width());
-				break;
-				case 'Compression_y':
-					var compression_x=parseFloat(form_options.valeur('Compression_x').val());
-					
-					var image_preview_ajustee=dialogue.find('.positionnement .apercu_myfonts img');
-					var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
-					var ratio_positionnement=positionnement.width()/positionnement.height();
-					val = toFloat2Decimals(compression_x*(ratio_image_preview_ajustee/ratio_positionnement));
-				break;
-				case 'Couleur_fond': case 'Couleur_texte':
-					val=farbs[nom_option].color.replace(/#/g,'');
-				break;
-				case 'Chaine': case 'URL':
-					val=form_userfriendly.valeur(nom_option).val();
-				break;
-				case 'Largeur':
-					var largeur_courante=form_options.valeur('Largeur').val();
-					var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
-												-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
-					val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
-				break;
-				case 'Demi_hauteur':
-					val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-				break;
-				case 'Rotation':
-					val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
-				break;
-			}
-		break;
+	if (nom_option.indexOf('Couleur') == 0) {
+		val=farbs[nom_option].color.replace(/#/g,'');	
+	}
+	else {
+		switch(nom_fonction) {
+			case 'Agrafer':
+				switch(nom_option) {
+					case 'Taille_agrafe':
+						form_userfriendly.find('.agrafe').not(element).height(element.height());
+						val = element.height()/zoom;
+					break;
+					case 'Y1': case 'Y2':
+						val = (element.offset().top-image.offset().top)/zoom;
+					break;
+				}
+			break;
+			case 'Degrade':
+				var zone_degrade=dialogue.find('.rectangle_degrade');
+				switch(nom_option) {
+					case 'Pos_x_debut':
+						val = toFloat2Decimals(parseFloat((zone_degrade.offset().left - image.offset().left)/zoom));
+					break;
+					case 'Pos_y_debut':
+						val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  - image.offset().top )/zoom));
+					break;
+					case 'Pos_x_fin':
+						val = toFloat2Decimals(parseFloat((zone_degrade.offset().left + zone_degrade.width() - image.offset().left)/zoom));
+					break;
+					case 'Pos_y_fin':
+						val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  + zone_degrade.height()- image.offset().top )/zoom));
+					break;
+					case 'Sens':
+						val = form_userfriendly.valeur(nom_option).filter(':checked').val();
+					break;
+				}
+			break;
+			case 'Remplir':
+				var point_remplissage=dialogue.find('.point_remplissage');
+				switch(nom_option) {
+					case 'Pos_x':
+						var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+						val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
+					break;
+					case 'Pos_y':
+						var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+						val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
+					break;
+				}
+			break;
+			case 'Rectangle':
+				var positionnement=dialogue.find('.rectangle_position');
+				switch(nom_option) {
+					case 'Pos_x_debut':
+						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+					break;
+					case 'Pos_y_debut':
+						val = toFloat2Decimals(parseFloat((positionnement.offset().top  - image.offset().top )/zoom));
+					break;
+					case 'Pos_x_fin':
+						val = toFloat2Decimals(parseFloat((positionnement.offset().left + positionnement.width() - image.offset().left)/zoom));
+					break;
+					case 'Pos_y_fin':
+						val = toFloat2Decimals(parseFloat((positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom));
+					break;
+					case 'Rempli':
+						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+					break;
+				}
+			break;
+			case 'Image':
+				var positionnement=dialogue.find('.image_position');
+				switch(nom_option) {
+					case 'Decalage_x':
+						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+					break;
+					case 'Decalage_y':
+						var pos_y_image=positionnement.offset().top - image.offset().top;
+						val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
+						form_options.valeur('Mesure_depuis_haut').val('Oui');
+					break;
+					case 'Compression_x':
+						val = toFloat2Decimals(positionnement.width()/image.width());
+					break;
+					case 'Compression_y':
+						var compression_x=parseFloat(form_options.valeur('Compression_x').val());
+						
+						var image_preview=dialogue.find('.apercu_image');
+						var ratio_image=image_preview.prop('width')/image_preview.prop('height');
+						var ratio_positionnement=positionnement.width()/positionnement.height();
+						val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
+					break;
+					case 'Source':
+						val=$('.gallery img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
+						form_userfriendly.valeur(nom_option).val(val);
+						
+						definir_et_positionner_image(val);
+				}
+			break;
+			case 'TexteMyFonts':
+				var positionnement=dialogue.find('.image_position');
+				switch(nom_option) {
+					case 'Pos_x':
+						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+					break;
+					case 'Pos_y':
+						var pos_y_rectangle=positionnement.offset().top - image.offset().top;
+						val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
+						form_options.valeur('Mesure_depuis_haut').val('Oui');
+					break;
+					case 'Compression_x':
+						val = toFloat2Decimals(positionnement.width()/image.width());
+					break;
+					case 'Compression_y':
+						var compression_x=parseFloat(form_options.valeur('Compression_x').val());
+						
+						var image_preview_ajustee=dialogue.find('.positionnement .apercu_myfonts img');
+						var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+						var ratio_positionnement=positionnement.width()/positionnement.height();
+						val = toFloat2Decimals(compression_x*(ratio_image_preview_ajustee/ratio_positionnement));
+					break;
+					case 'Chaine': case 'URL':
+						val=form_userfriendly.valeur(nom_option).val();
+					break;
+					case 'Largeur':
+						var largeur_courante=form_options.valeur('Largeur').val();
+						var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
+													-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
+						val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
+					break;
+					case 'Demi_hauteur':
+						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+					break;
+					case 'Rotation':
+						val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
+					break;
+				}
+			break;
+		}
 	}
 	form_options.valeur(nom_option).val(val);
 }
@@ -1485,6 +1549,12 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 	switch (nom_fonction) {
 		case 'Remplir':
 			coloriser_rectangle_preview(form_options.d().find('.preview_vide'),couleur,true);
+		break;
+		case 'Degrade':
+			if (input_couleur.attr('name').indexOf('Couleur_debut') != -1)
+				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),couleur,null,form_options.valeur('Sens').val());
+			else
+				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),null,couleur,form_options.valeur('Sens').val());
 		break;
 		case 'DegradeTrancheAgrafee':
 			coloriser_rectangles_degrades(couleur.replace(/#/g,''));
@@ -1718,8 +1788,8 @@ function afficher_photo_tranche() {
 
 function templatedToVal(templatedString) {
 	$.each(TEMPLATES,function(nom, regex) {
-		var matches;
-		if ((matches = (templatedString+'').match(regex)) != null) {
+		var matches = (templatedString+'').match(regex);
+		if (matches != null) {
 			templatedString+='';
 			switch(nom) {
 				case 'numero':
