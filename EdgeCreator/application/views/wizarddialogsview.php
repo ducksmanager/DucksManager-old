@@ -214,6 +214,33 @@
 			</p>
 		</div>
 		
+		<div id="options-etape--Degrade" class="options_etape cache">
+			<div class="rectangle_degrade"></div>
+			<p>
+				&gt; D&eacute;placez et redimensionnez la zone de d&eacute;grad&eacute;.<br />
+				
+				&gt; D&eacute;finissez la premi&egrave;re couleur.<br />
+				<div class="picker couleur_debut cache"></div>
+				<label for="option-Couleur_debut">Couleur s&eacute;lectionn&eacute;e : </label>
+				<input type="text" name="option-Couleur_debut" size="4" maxlength="7" readonly="readonly"/>
+				<br />
+				
+				&gt; D&eacute;finissez la deuxi&egrave;me couleur.<br />
+				<div class="picker couleur_fin cache"></div>
+				<label for="option-Couleur_fin">Couleur s&eacute;lectionn&eacute;e : </label>
+				<input type="text" name="option-Couleur_fin" size="4" maxlength="7" readonly="readonly"/>
+				<br />
+				
+				&gt; Indiquez le sens du d&eacute;grad&eacute;.<br />
+				<div style="font-size:16px">
+					<div class="small buttonset">
+						<input type="radio" name="option-Sens" value="Horizontal" id="Horizontal" /><label for="Horizontal">Gauche vers droite</label>
+						<input type="radio" name="option-Sens" value="Vertical" id="Vertical" /><label for="Vertical">Haut vers bas</label>
+					</div>
+				</div>
+			</p>
+		</div>
+		
 		<div id="options-etape--DegradeTrancheAgrafee" class="options_etape cache">
 			<div class="premiere agrafe"></div>
 			<div class="deuxieme agrafe"></div>

@@ -113,6 +113,10 @@ button#connexion, button#deconnexion {
 	position: absolute;
 }
 
+#options-etape--Degrade .rectangle_degrade {
+	cursor: move;
+}
+
 .wizard.preview_etape .image_position img {
 	width: 100%;
 	height: 100%;
@@ -210,7 +214,7 @@ button#connexion, button#deconnexion {
 	z-index: 1000;
 }
 
-button.small .ui-button-text {
+div.small.buttonset .ui-button-text, button.small .ui-button-text {
 	padding: 0px 10px 0px 10px !important;
 	font-size: 0.9em !important;
 }
