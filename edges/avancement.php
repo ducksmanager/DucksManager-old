@@ -76,8 +76,8 @@ foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	foreach($resultat_tranches_pretes_magazine as $tranche_prete_magazine) {
 		$tranches_pretes[]=$tranche_prete_magazine['issuenumber'];
 	}
-	$numeros_inducks=Inducks::get_numeros($pays,$magazine,false,true);
-	foreach($numeros_inducks[0] as $numero_inducks) {
+	$numeros_inducks=Inducks::get_numeros($pays,$magazine,"numeros_seulement",true);
+	foreach($numeros_inducks as $numero_inducks) {
 		$tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes);
 		?><span onmouseover="document.getElementById('num_courant').innerHTML='<?=str_replace("'","",str_replace('"','',$noms_complets_magazines[$magazine])).' '.str_replace("'","",str_replace('"','',$numero_inducks))?>';"
 		class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>">&nbsp;</span><?php

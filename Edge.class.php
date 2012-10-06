@@ -159,6 +159,7 @@ class Edge {
 
 	static function getPourcentageVisible($get_html=false, $regen=false, $user_unique=true) {
 		include_once('Database.class.php');
+		global $numeros_inducks;
 		@session_start();
 		if ($user_unique===true)
 			$ids_users=array(DM_Core::$d->user_to_id($_SESSION['user']));
@@ -177,6 +178,13 @@ class Edge {
 			DM_Core::$d->maintenance_ordre_magazines($id_user);
 			$requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
 			$resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+			$publication_codes=array();
+			foreach($resultat_ordre_magazines as $ordre) {
+				$pays=$ordre['Pays'];
+				$magazine=$ordre['Magazine'];
+				$publication_codes[]=$pays.'/'.$magazine;
+			}
+			$numeros_inducks = Inducks::get_numeros_liste_publications($publication_codes);
 			foreach($resultat_ordre_magazines as $ordre) {
 				$pays=$ordre['Pays'];
 				$magazine=$ordre['Magazine'];
@@ -478,7 +486,7 @@ function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
 	$e->pays=$pays;
 	$e->magazine=$magazine;
 	$e->numero=$numero;
-	$requete_est_visible='SELECT issuenumber FROM tranches_pretes WHERE publicationcode LIKE \''.($pays.'/'.$magazine).'\' AND issuenumber LIKE \''.$numero.'\'';
+	$requete_est_visible='SELECT issuenumber FROM tranches_pretes WHERE publicationcode = \''.($pays.'/'.$magazine).'\' AND issuenumber = \''.$numero.'\'';
 	$e->est_visible=count(DM_Core::$d->requete_select($requete_est_visible)) > 0;
 		
 	if ($get_html)

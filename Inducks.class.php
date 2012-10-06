@@ -54,32 +54,58 @@ class Inducks {
 		}
 		return array($magazine,$numero);
 	}
+	
+	static function get_numeros_liste_publications($publication_codes) {
+		foreach($publication_codes as $i=>$publication_code) {
+			$publication_codes[$i]="'".$publication_code."'";
+		}
+		$requete='SELECT issuenumber, publicationcode FROM inducks_issue '
+				.'WHERE publicationcode IN ('.implode(',',$publication_codes).') '
+				.'ORDER BY publicationcode';
+		$resultat_requete=Inducks::requete_select($requete);
+		$resultat_requete=array_map('nettoyer_numero_base_sans_espace',$resultat_requete);
 		
-	static function get_numeros($pays,$magazine,$get_url=false,$sans_espace=false) {
+		$resultat_final=array();
+		foreach($resultat_requete as $resultat) {
+			if (!array_key_exists($resultat['publicationcode'],$resultat_final))
+				$resultat_final[$resultat['publicationcode']]=array();
+			$resultat_final[$resultat['publicationcode']][]=$resultat['issuenumber'];
+		}
+		return $resultat_final;
+	}
+		
+	static function get_numeros($pays,$magazine,$mode="titres",$sans_espace=false) {
 		$magazine_depart=$magazine;
 		$magazine=Inducks::get_vrai_magazine($pays,$magazine);
 		$fonction_nettoyage=$sans_espace ? 'nettoyer_numero_sans_espace' : 'nettoyer_numero';
 
 		$numeros=array();
-		if ($get_url===true) {
-			$urls=array();
-			$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\'';
-			$resultat_requete=Inducks::requete_select($requete);
-			foreach($resultat_requete as $i=>$numero) {
-				$numeros[$i]=call_user_func($fonction_nettoyage, $numero['issuenumber']);
-				$urls[$i]='issue.php?c='.$pays.'%2F'.$magazine_depart.str_replace(' ','+',$numero['issuenumber']);
-			}
-			return array($numeros,$urls);
-		}
-		else {
-			$titres=array();
-			$requete='SELECT issuenumber, title FROM inducks_issue WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\'';
-			$resultat_requete=Inducks::requete_select($requete);
-			foreach($resultat_requete as $i=>$numero) {
-				$numeros[$i]=call_user_func($fonction_nettoyage, $numero['issuenumber']);
-				$titres[$i]=$numero['title'];
-			}
-			return array($numeros,$titres);
+		switch($mode) {
+			case "urls":
+				$urls=array();
+				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
+				$resultat_requete=Inducks::requete_select($requete);
+				foreach($resultat_requete as $i=>$numero) {
+					$numeros[$i]=call_user_func($fonction_nettoyage, $numero['issuenumber']);
+					$urls[$i]='issue.php?c='.$pays.'%2F'.$magazine_depart.str_replace(' ','+',$numero['issuenumber']);
+				}
+				return array($numeros,$urls);
+			break;
+			case "titres":
+				$titres=array();
+				$requete='SELECT issuenumber, title FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
+				$resultat_requete=Inducks::requete_select($requete);
+				foreach($resultat_requete as $i=>$numero) {
+					$numeros[$i]=call_user_func($fonction_nettoyage, $numero['issuenumber']);
+					$titres[$i]=$numero['title'];
+				}
+				return array($numeros,$titres);
+			break;
+			case "numeros_seulement":
+				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
+				$resultat_requete=Inducks::requete_select($requete);
+				return array_map('nettoyer_numero_base_sans_espace',$resultat_requete);
+			break;
 		}
 	}
 	
@@ -183,7 +209,7 @@ class Inducks {
 	}
 	static function numero_to_page($pays,$magazine,$numero) {
 		$magazine=strtoupper($magazine);
-		list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,true,true);
+		list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,"urls",true);
 		if (false!==($i=array_search($numero, $numeros)))
 			return Util::get_page('http://coa.inducks.org/'.$urls[$i]);
 		else
@@ -307,12 +333,15 @@ function trier_resultats_recherche ($a,$b) {
 }
 		
 function nettoyer_numero($numero) {
-	$numero= str_replace("\n",'',preg_replace('#[+ ]+#is',' ',$numero));
-	return $numero;
+	return str_replace("\n",'',preg_replace('#[+ ]+#is',' ',$numero));
 }
 		
 function nettoyer_numero_sans_espace($numero) {
-	$numero= str_replace("\n",'',preg_replace('#[+ ]+#is','',$numero));
-	return $numero;
+	return str_replace("\n",'',preg_replace('#[+ ]+#is','',$numero));
+}
+
+function nettoyer_numero_base_sans_espace($ligne_resultat) {
+	$ligne_resultat['issuenumber'] = nettoyer_numero_sans_espace($ligne_resultat['issuenumber']);
+	return $ligne_resultat;
 }
 ?>
