@@ -181,7 +181,7 @@ define('ETATS_MAGAZINES','Part des états des magazines dans la collection');
 define('ETATS_NUMEROS','Etats des num&eacute;ros');
 define('ETATS_NUMEROS_COURT','Etats des num&eacute;ros');
 define('EXCELLENT','Excellent');
-define('EXPLICATION_NOTATION_AUTEURS1','D&eacute;placez le curseur puis cliquez pour valider l\'appr&eacute;ciation que vous associez &agrave; chaque auteur.');
+define('EXPLICATION_NOTATION_AUTEURS1','Cliquez sur les pouces pour valider l\'appr&eacute;ciation que vous associez &agrave; chaque auteur.');
 define('EXPLICATION_NOTATION_AUTEURS2','Gr&acirc;ce &agrave; cette notation, DucksManager d&eacute;terminera les magazines les plus susceptibles de vous int&eacute;resser.');
 define('EXPLICATION_ORDRE_MAGAZINES','Par d&eacute;faut, les magazines sont tri&eacute;s par pays et par magazine. Vous pouvez changer cet ordre en d&eacute;pla&ccedil;ant les noms de magazines ci-dessous :');
 define('EXPORTER_INDUCKS','Exporter vers ma collection Inducks');

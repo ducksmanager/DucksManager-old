@@ -181,7 +181,7 @@ define('ETATS_MAGAZINES','Conditions of the issues of your collection');
 define('ETATS_NUMEROS','Comics conditions');
 define('ETATS_NUMEROS_COURT','Conditions of the issues');
 define('EXCELLENT','Excellent');
-define('EXPLICATION_NOTATION_AUTEURS1','Move the cursor then click to validate the appreciation that you associate with each author.');
+define('EXPLICATION_NOTATION_AUTEURS1','Click on the thumbs to validate the appreciation that you associate with each author.');
 define('EXPLICATION_NOTATION_AUTEURS2','Thanks to this scoring, DucksManager will determine which issues you are likely to be interested in.');
 define('EXPLICATION_ORDRE_MAGAZINES','By default, the magazines are ordered by country and by magazine. You can change this order by moving the magazines names hereunder :');
 define('EXPORTER_INDUCKS','Export to my Inducks collection');
