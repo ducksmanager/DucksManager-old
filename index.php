@@ -1071,16 +1071,13 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 	                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
 	                                                    foreach($resultat_auteurs_surveilles as $auteur) {
 	                                                        $i=0;
-	                                                        while ($_POST['auteur'.$i]) {
+	                                                        while (isset($_POST['auteur'.$i])) {
 	                                                            if ($_POST['auteur'.$i] == $auteur['NomAuteurAbrege']) {
-	                                                                $aucune_note=($_POST['aucune_note'.$i]==='on'?1:0);
-	                                                                if (!empty($_POST['notation'.$i]) || $aucune_note) {
-	                                                                    $notation=$aucune_note?-1:$_POST['notation'.$i];
-	                                                                    $requete_notation='UPDATE auteurs_pseudos SET Notation='.$notation.' '
-	                                                                            .'WHERE DateStat LIKE \'0000-00-00\' AND NomAuteurAbrege LIKE \''.$_POST['auteur'.$i].'\' '
-	                                                                            .'AND ID_user='.$id_user;
-	                                                                    DM_Core::$d->requete($requete_notation);
-	                                                                }
+                                                                    $notation=empty($_POST['notation'.$i]) ? -1 : $_POST['notation'.$i];
+                                                                    $requete_notation='UPDATE auteurs_pseudos SET Notation='.$notation.' '
+		                                                                             .'WHERE DateStat = \'0000-00-00\' AND NomAuteurAbrege = \''.$_POST['auteur'.$i].'\' '
+		                                                                             .'AND ID_user='.$id_user;
+                                                                    DM_Core::$d->requete($requete_notation);
 	                                                            }
 	                                                            $i++;
 	                                                        }
