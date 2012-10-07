@@ -87,7 +87,7 @@ class Database {
 
 	function nouveau_user($user,$email,$pass) {
 			date_default_timezone_set('Europe/Paris');
-			$requete='INSERT INTO users(username,password,EMail,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
+			$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
 			if (false===DM_Core::$d->requete($requete)) {
 				echo ERREUR_EXECUTION_REQUETE;
 				return false;
@@ -158,7 +158,7 @@ class Database {
 									    				  .'AND numeros.Magazine = numeros_user_courant.Magazine '
 									    				  .'AND numeros.Numero = numeros_user_courant.Numero) '
   										.'AND numeros.ID_Utilisateur <> '.$id_user.' '
-  										.'AND users.EMail <> \'\' '
+  										.'AND users.Email <> \'\' '
 										.'ORDER BY users.username, numeros.Pays, numeros.Magazine, numeros.Numero';
 		$resultat_ventes_utilisateurs = DM_Core::$d->requete_select($requete_ventes_utilisateurs);
 		if (count($resultat_ventes_utilisateurs) > 0) {
@@ -199,6 +199,8 @@ class Database {
 	}
 	
 	function bloc_envoi_message_achat_vente($username) {
+		date_default_timezone_set('Europe/Paris');
+		
 		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
 		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
