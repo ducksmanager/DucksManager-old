@@ -7,7 +7,7 @@
 <table border="1" style="border-collapse: collapse">
 	<thead>
     <?php
-    include_once('Util.class.php');
+    include_once('../Util.class.php');
     global $regex;
     global $l10n;
     $regex="#'((?:(?!',').)*)','((?:(?!'\)).)*)'\);#";
@@ -44,7 +44,7 @@ function lire_locale($lang) {
 	global $regex;
 	global $l10n;
 	
-	$fic=Util::lire_depuis_fichier('locales/'.$lang.'.php');
+	$fic=Util::lire_depuis_fichier($lang.'.php');
 	preg_match_all($regex,$fic,$matches);
 	for($i=0;$i<count($matches[0]);$i++) {
 		$cle=$matches[1][$i];
