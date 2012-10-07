@@ -10,7 +10,12 @@ require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
 require_once('Util.class.php');
-error_reporting(E_ALL);
+if (Util::isLocalHost() || isset($_GET['dbg'])) {
+	error_reporting(E_ALL);
+}
+else  {
+	error_reporting(E_STRICT | E_WARNING);
+}
 
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 	setCookie('user','',time()-3600);
