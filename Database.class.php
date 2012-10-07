@@ -202,7 +202,12 @@ class Database {
 		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
 		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
-			if (!$message_deja_envoye) {
+			if ($message_deja_envoye) {?>
+				<span class="confirmation">
+					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
+				</span><?php
+			}
+			else {
 				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
 				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
 				if (count($resultat_emails) != 2) {
@@ -225,7 +230,7 @@ class Database {
 					.'<br /><br />Vous pouvez r&eacute;pondre directement &agrave; cet e-mail pour lui proposer un prix et un moyen de lui transmettre vos num&eacute;ros.'
 					.'<br /><br /><br />Bonne vente, et &agrave; bient&ocirc;t sur DucksManager !<br /><br />L\'&eacute;quipe DucksManager';
 					if (mail($email_vendeur, 'Un utilisateur est intéressé par vos numéros en vente sur DucksManager', $contenu_mail,$entete)) {
-						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE_1.$username?></span><?php
+						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);
 					}
@@ -239,7 +244,7 @@ class Database {
 			?><br /><?php
 			if ($message_deja_envoye) {?>
 				<span class="confirmation">
-					<?=CONFIRMATION_ENVOI_MESSAGE_1.$username?>
+					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
 				</span><?php
 			}
 			else {?>
