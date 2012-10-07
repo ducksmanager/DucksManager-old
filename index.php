@@ -699,7 +699,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         }
                                         else {
                                             echo '"'.$resultat_email[0]['Email'].'"';
-                                        }?> /> <?=EMAIL_EXPLICATION?><br /><br />
+                                        }?> /><br /><br />
                                         <input type="checkbox" name="partage"<?php
                                         if ($resultat_partage[0]['AccepterPartage']==1) {?>checked="checked"<?php } ?>/><?=ACTIVER_PARTAGE?><br />
 										
@@ -760,6 +760,12 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                         break;
                                     case 'ajout_suppr':
+                                    	if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
+                                    		?><div class="warning">
+                                    			<?=ATTENTION_VENTE_SANS_EMAIL?>
+                                    			<a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
+                                    		</div><?php
+                                    	}
                                         if ($_SESSION['user'] == 'demo') {
                                         	require_once('init_demo.php');
 											$nb_minutes_avant_reset=60 - strftime('%M',time());
@@ -987,16 +993,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=agrandir');
                                 switch($onglet) {
                                     case 'achat_vente':
-                                        ?>
-                                        <?=INTRO_ACHAT_VENTE?><br />
-                                        <?php
-                                        $accepte=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
-                                        if ($accepte[0]['AccepterPartage']==0) {
-                                            echo COMMENT_PARTAGER_COLLECTION;
-                                            ?>
-                                            <i><a href="?action=gerer&amp;onglet=options"><?=PAGE_OPTIONS?></a></i>
-                                            <?php
-                                        }
+                                        echo INTRO_ACHAT_VENTE;
+                                        ?><br /><?php
                                         DM_Core::$d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':

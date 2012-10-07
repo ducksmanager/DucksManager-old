@@ -168,6 +168,24 @@ a.important:HOVER {
     vertical-align:super;
 }
 
+.warning, .confirmation {
+	margin-right: 10px;
+	margin-bottom: 23px;
+	font-weight: bold;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.warning {
+	color: orange;
+	border-color: orange;
+}
+
+.confirmation {
+	color: green;
+	border-color: green;
+}
+
 .preview {
     float:left;
     margin-top: -2px;
