@@ -71,7 +71,7 @@ $numeros_inducks=Inducks::get_numeros_liste_publications($publicationcodes);
 foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	$publicationcode=$infos_numero['publicationcode'];
 	list($pays,$magazine)=explode('/',$publicationcode);
-	echo '<br /><br />('.$pays.' '.$magazine.') '.$liste_magazines[$publicationcode].'<br />';
+	echo '<br /><br />(<img src="../images/flags/'.$pays.'.png" /> '.$magazine.') '.$liste_magazines[$publicationcode].'<br />';
 	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\'';
 	$resultat_tranches_pretes_magazine=DM_Core::$d->requete_select($requete_tranches_pretes_magazine);
 	$tranches_pretes=array();
