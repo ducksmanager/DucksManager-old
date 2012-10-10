@@ -17,7 +17,7 @@
         </style>
     </head>
     <body>
-    	<div id="num_courant" style="top:0px; left:90%;position:fixed;width:10%;border:1px solid green;text-align:center;background-color:white">
+    	<div id="num_courant" style="top:0px; left:90%;position:fixed;width:10%;border:1px solid black;text-align:center;background-color:white">
     		Aucun num&eacute;ro.
     	</div>
        	<div style="width:90%">
