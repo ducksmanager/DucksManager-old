@@ -105,6 +105,10 @@ class Inducks {
 				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
 				return array_map('nettoyer_numero_base_sans_espace',$resultat_requete);
+				$resultats=array();
+				foreach($resultat_requete as $resultat)
+					$resultats[]=$resultat['issuenumber'];
+				return $resultats;
 			break;
 		}
 	}

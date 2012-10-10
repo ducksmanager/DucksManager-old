@@ -61,30 +61,30 @@ $requete_pays_magazines_tranches_pretes='SELECT DISTINCT publicationcode FROM tr
 
 $resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete_select($requete_pays_magazines_tranches_pretes);
 
-$noms_complets_pays=Inducks::get_pays();
-$pays_old='';
 $cpt_dispos=0;
+$publicationcodes=array();
+foreach($resultat_pays_magazines_tranches_pretes as $publicationcode) {
+	$publicationcodes[]=$publicationcode['publicationcode'];
+}
+list($liste_pays,$liste_magazines)=Inducks::get_noms_complets($publicationcodes);
+$numeros_inducks=Inducks::get_numeros_liste_publications($publicationcodes);
 foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
-	list($pays,$magazine)=explode('/',$infos_numero['publicationcode']);
-	if ($pays != $pays_old) {
-		$noms_complets_magazines=Inducks::get_liste_magazines($pays);
-	}
-	echo '<br /><br />('.$pays.' '.$magazine.') '.$noms_complets_magazines[$magazine].'<br />';
-	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$infos_numero['publicationcode'].'\'';
+	$publicationcode=$infos_numero['publicationcode'];
+	list($pays,$magazine)=explode('/',$publicationcode);
+	echo '<br /><br />('.$pays.' '.$magazine.') '.$liste_magazines[$publicationcode].'<br />';
+	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\'';
 	$resultat_tranches_pretes_magazine=DM_Core::$d->requete_select($requete_tranches_pretes_magazine);
 	$tranches_pretes=array();
 	foreach($resultat_tranches_pretes_magazine as $tranche_prete_magazine) {
 		$tranches_pretes[]=$tranche_prete_magazine['issuenumber'];
 	}
-	$numeros_inducks=Inducks::get_numeros($pays,$magazine,"numeros_seulement",true);
-	foreach($numeros_inducks as $numero_inducks) {
+	foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
 		$tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes);
-		?><span onmouseover="document.getElementById('num_courant').innerHTML='<?=str_replace("'","",str_replace('"','',$noms_complets_magazines[$magazine])).' '.str_replace("'","",str_replace('"','',$numero_inducks))?>';"
+		?><span onmouseover="document.getElementById('num_courant').innerHTML='<?=$liste_magazines[$publicationcode].' '.$numero_inducks?>';"
 		class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>">&nbsp;</span><?php
 		if ($tranche_prete_numero_inducks)
 			$cpt_dispos++;
 	}
-	$pays_old=$pays;
 }
 
 
