@@ -8,7 +8,7 @@ header("Pragma: no-cache"); ?>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.8.20.custom.css" />
+	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.9.0.custom.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/csstabs.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
@@ -17,11 +17,11 @@ header("Pragma: no-cache"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/tipTip.css" />
 	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 	
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.8.2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.tipTip.minified.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.8.20.custom.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.9.0.custom.min.js" ></script>
 	
 	<!-- <script type="text/javascript" src="<?=base_url()?>js/jquery.scrollbarTable.js" ></script>!-->
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>

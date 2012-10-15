@@ -70,7 +70,7 @@ function launch_wizard(id) {
 						url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
 						type: 'post',
 						success:function(data) {
-							$('#wizard-ajout-etape').dialog( "close" );
+							$('#wizard-ajout-etape').dialog().dialog( "close" );
 							$('.dialog-preview-etape').remove();
 							$('#wizard-conception').parent().remove();
 							wizard_goto($(this),'wizard-conception');
@@ -78,14 +78,14 @@ function launch_wizard(id) {
 					});
 				},
 				'Annuler':function() {
-					$( this ).dialog( "close" );
+					$( this ).dialog().dialog( "close" );
 				}
 			};
 		break;
 		default:
 			if (! $('#'+id).hasClass('first')) {
 				buttons["Precedent"]=function() {
-					$( this ).dialog( "close" );
+					$( this ).dialog().dialog( "close" );
 					launch_wizard(id_wizard_precedent);
 				};
 			}
@@ -131,7 +131,7 @@ function wizard_goto(wizard_courant, id_wizard_suivant) {
 	if (can_launch_wizard(id_wizard_suivant)) {
 		wizard_options[wizard_courant.attr('id')]=wizard_courant.find('form').serializeObject();
 		id_wizard_precedent=wizard_courant.attr('id');
-		wizard_courant.dialog( "close" );
+		wizard_courant.dialog().dialog( "close" );
 		launch_wizard(id_wizard_suivant);
 	}
 }
@@ -436,7 +436,7 @@ function wizard_init(wizard_id) {
 			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
 			$('#action_bar').removeClass('cache');
 			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-			$('#'+wizard_id).dialog('option','position',['right','top']);
+			$('#'+wizard_id).dialog().dialog('option','position',['right','top']);
 			$('#'+wizard_id).parent().css({'left':($('#'+wizard_id).parent().offset().left-LARGEUR_DIALOG_TRANCHE_FINALE-20)+'px'});
 			
 			$.ajax({ // Numéros d'étapes
@@ -644,7 +644,7 @@ function wizard_init(wizard_id) {
 function largeur_max_preview_etape_ouverte() {
 	var largeur_autres=0;
 	$.each($('.wizard.preview_etape:not(.initial),#wizard-conception'), function() {
-		largeur_autres+=$(this).dialog('option','width')+LARGEUR_INTER_ETAPES;
+		largeur_autres+=$(this).dialog().dialog('option','width')+LARGEUR_INTER_ETAPES;
 	});
 	return $(window).width()-largeur_autres;
 }
@@ -664,13 +664,13 @@ function ouvrir_dialogue_preview(dialogue) {
 	
 	var section_preview_vide=dialogue.find('.preview_vide');
 	var largeur_tranche=section_preview_vide.width();
-	section_preview_etape.dialog('option', 'width', largeur_max_preview_etape_ouverte());
+	section_preview_etape.dialog().dialog('option', 'width', largeur_max_preview_etape_ouverte());
 	dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
 	section_preview_vide.after($('#options-etape--'+nom_fonction)
 						.removeClass('cache')
 						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px'}));
 
-	section_preview_etape.dialog('option','buttons',{
+	section_preview_etape.dialog().dialog('option','buttons',{
 		'Fermer': function() {
 			verifier_changements_etapes_sauves($(this).d(),'wizard-confirmation-annulation');
 		},
@@ -689,7 +689,6 @@ function ouvrir_dialogue_preview(dialogue) {
 function fermer_dialogue_preview(dialogue) {
 	dialogue.removeClass('modif')
 			.css({'width':'auto'});
-	dialogue.dialog('option', 'width', 'auto');
 	dialogue.find('.ui-dialog-buttonpane').remove();
 	dialogue.find('.ui-dialog-titlebar').find('span').addClass('cache');
 	dialogue.find('.options_etape').addClass('cache');
@@ -1014,7 +1013,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					draggable: true,
 					buttons: {
 						'Annuler':function() {
-							$(this).dialog( "close" );
+							$(this).dialog().dialog( "close" );
 						},
 						'Valider':function() {
 							if ($(this).find('.gallery img.selected').length == 0) {
@@ -1023,7 +1022,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 							}
 							else {
 				   		    	tester_option_preview('Image','Source'); 
-								$(this).dialog( "close" );
+								$(this).dialog().dialog( "close" );
 							}
 						}						
 					},
@@ -1295,7 +1294,7 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 			modal: true,
 			buttons: {
 				"Sauvegarder les changements": function() {
-					$('#wizard-confirmation-annulation').dialog( "close" );
+					$('#wizard-confirmation-annulation').dialog().dialog( "close" );
 					valider(function() {
 						fermer_dialogue_preview($('.modif'));
 						callback();
@@ -1303,20 +1302,19 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 				},
 				"Fermer l'etape sans sauvegarder": function() {
 					fermer_dialogue_preview($('.modif'));
-					$( this ).dialog( "close" );
+					$( this ).dialog().dialog( "close" );
 					chargements=['all']; // Etape finale
 					chargement_courant=0;
 					charger_preview_etape(chargements[0],true,'_',callback);
 				},
 				"Revenir a l'edition d'etape": function() {
-					$( this ).dialog( "close" );
+					$( this ).dialog().dialog( "close" );
 				}
 			}
 		});
 	}
 	else {
 		fermer_dialogue_preview($('.modif'));
-		$( this ).dialog( "close" );
 		callback();
 	}
 }

@@ -152,15 +152,15 @@ class Viewer_wizard extends Viewer {
 		if ($save=='save' && $zoom==1.5) {
 			switch($privilege) {
 				case 'Admin':
-					$liste_photographes=explode(';',$random_ou_username);
-					foreach($liste_photographes as $photographe) {
-						$requete_photographe_existe='SELECT 1 FROM users WHERE username=\''.$photographe.'\'';
-						$resultat_photographe_existe = $this->db->query($requete_photographe_existe);
-						if ($resultat_photographe_existe->num_rows == 0) {
-							echo 'Erreur : l\'utilisateur '.$photographe.' n\'existe pas';
-							return;
-						}
+					$contributeur=$random_ou_username;
+					$requete_contributeur_existe='SELECT 1 FROM users WHERE username=\''.$contributeur.'\'';
+					$resultat_contributeur_existe = $this->db->query($requete_contributeur_existe);
+					if ($resultat_contributeur_existe->num_rows == 0) {
+						echo 'Erreur : l\'utilisateur '.$contributeur.' n\'existe pas';
+						return;
 					}
+					
+					$contributeurs=$contributeur;
 					
 					@mkdir('../edges/'.$pays.'/gen/'.$magazine);
 					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
@@ -174,25 +174,18 @@ class Viewer_wizard extends Viewer {
 					$resultat_tranche_prete = $this->db->query($requete_tranche_deja_prete);
 					if ($resultat_tranche_prete->num_rows== 0) {
 						$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber, photographes, createurs) VALUES '
-								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\',\''.$photographes.'\',\''.$random_ou_username.'\')';
+								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\',NULL,\''.$contributeurs.'\')';
 					}
 					else {
-						$id_utilisateur=$this->Modele_tranche->username_to_id($random_ou_username).';';
+						$id_contributeur=$this->Modele_tranche->username_to_id($random_ou_username).';';
 						$createurs=$resultat_tranche_prete->row()->createurs == null 
-							? $id_utilisateur 
-							: (in_array($utilisateur,explode(';',$resultat_tranche_prete->row()->createurs))
+							? $id_contributeur 
+							: (in_array($contributeur,explode(';',$resultat_tranche_prete->row()->createurs))
 								? $resultat_tranche_prete->row()->createurs
-								: $resultat_tranche_prete->row()->createurs.';'.$id_utilisateur); 
-						$photographes_finaux=is_null($resultat_tranche_prete->row()->photographes) 
-							? array() 
-							: explode(';',$resultat_tranche_prete->row()->photographes);
+								: $resultat_tranche_prete->row()->createurs.';'.$id_contributeur); 
 						
-						foreach($photographes as $photographe)
-							if (!in_array($photographe, $photographes_finaux))
-								$photographes_finaux[]=$photographe;
 						$requete='UPDATE tranches_pretes '
-								.'SET createurs   =\''.$createurs.'\', '
-								.'    photographes=\''.implode(';',$photographes_finaux).'\' '
+								.'SET createurs   =\''.$createurs.'\' '
 								.'WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
 					}
 					$this->db->query($requete);
