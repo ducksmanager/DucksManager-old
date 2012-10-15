@@ -557,6 +557,10 @@ function wizard_init(wizard_id) {
 																				.html('Tranche<br />finale');
 								}
 							});
+							
+							wizard_etape_finale.d().bind('resize',function() {
+								placer_dialogues_preview();
+							});
 
 							charger_previews();
 											            
@@ -589,6 +593,7 @@ function wizard_init(wizard_id) {
 								}
 								ouvrir_dialogue_preview(dialogue);
 							});
+							afficher_photo_tranche();
 						}
 					});
 					
@@ -660,7 +665,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
 								$('.dialog-preview-etape,.wizard.preview_etape:not(.initial)').getElementsWithData('etape',etape).remove();
 								chargements[0]='final';
-								charger_previews(true)
+								charger_previews(true);
 							}
 						});
 					},
@@ -1829,8 +1834,17 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche() {
-	$('#photo_tranche').html($('<img>',{'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo.jpg'})
-							  .height(parseInt($('#Dimension_y').val()) * zoom));
+	var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
+	$('#photo_tranche').html(image);
+	image.attr({'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo.jpg'});
+	image.load(function() {
+		$(this).css({'display':'inline'});
+		$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
+														 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
+	});
+	image.error(function() {
+		$(this).css({'display':'none'});
+	});
 }
 
 function templatedToVal(templatedString) {
