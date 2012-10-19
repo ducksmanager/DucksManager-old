@@ -373,9 +373,10 @@ function init_autocompleter_auteurs() {
 
 
 function ac_return(field, item){
-	$('auteur_nom').value=field.value.replace(/\t| /g,'');
+	var regex_nettoyage_nom=/(?:^[\t ]*)|(?:[\t ]*$)/g
+	$('auteur_nom').value=field.value.replace(regex_nettoyage_nom,'');
     $('auteur_id').value=item.down('[name="nom_auteur"]').readAttribute('title');
-    $('auteur_cherche').value=$('auteur_cherche').value.replace(/\t| /g,'');
+    $('auteur_cherche').value=$('auteur_cherche').value.replace(regex_nettoyage_nom,'');
 }
 
 function ajouter_auteur() {
@@ -388,13 +389,7 @@ function ajouter_auteur() {
 
 
 
-function stats_auteur(/*id_event,*/id_user) {
-    /*$('update_stats').update('<div style="border:1px solid black;width:100px;">'
-			+'<div id="progressbar"
-			
-			 style="background-color:blue;width:0%;">&nbsp;</div>'
-			+'</div>');
-	initProgressBar(id_event);*/
+function stats_auteur(id_user) {
     $('resultat_stats').update(l10n_calculs_auteurs['calcul_en_cours']);
     new Ajax.Request('stats_auteur2.php', {
         method: 'post',
@@ -402,7 +397,6 @@ function stats_auteur(/*id_event,*/id_user) {
         onSuccess:function(transport,json) {
             $('resultat_stats').update(l10n_calculs_auteurs['calcul_termine']);
             window.location.reload();
-        //statAjax.stop();
         }
     });
 }
