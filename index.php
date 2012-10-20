@@ -94,7 +94,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 case 'bibliotheque':
                     $textures=array();
                     for ($i=1;$i<=2;$i++) {
-                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID = \''.$id_user.'\'';
                         $resultat_textures=DM_Core::$d->requete_select($requete_textures);
                         $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
                         $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
@@ -147,7 +147,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         case 'bibliotheque':
             if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
                 if (Util::getBrowser()!=='MSIE<9') {
-                    $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
+                    $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID = \''.$id_user.'\'';
                     $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
                     $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
                     $regen=isset($_GET['regen']) ? 1 : 0;
@@ -382,7 +382,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         echo MOT_DE_PASSE_OUBLIE_ERREUR_VIDE.'<br />';
                                     }
                                     else {
-                                        $requete_verifier_email='SELECT username,password FROM users WHERE Email LIKE \''.$_POST['email'].'\'';
+                                        $requete_verifier_email='SELECT username,password FROM users WHERE Email = \''.$_POST['email'].'\'';
                                         $resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
                                         if (count($resultat_verifier_email) ==0) {
                                             echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
@@ -1013,7 +1013,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         echo PRESENTATION_AUTEURS_FAVORIS;
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
-                                                $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
+                                                $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
                                                 $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                                 ?>
                                                 <br /><br />
@@ -1069,7 +1069,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                                 .'WHERE ID='.$id_user;
                                                         DM_Core::$d->requete($requete_update_recommandations_liste_mags);
                                                     }
-                                                    $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
+                                                    $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
                                                     if (isset($_POST['auteur0'])) {
 	                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
 	                                                    foreach($resultat_auteurs_surveilles as $auteur) {

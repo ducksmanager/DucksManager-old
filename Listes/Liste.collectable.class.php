@@ -51,7 +51,7 @@ class collectable extends Format_liste {
 			foreach($liste as $pays=>$numeros_pays) {
 				ksort($numeros_pays);
 				foreach($numeros_pays as $magazine=>$numeros) {
-				   $requete_get_ne_parait_plus='SELECT NeParaitPlus FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND NomAbrege LIKE \''.$magazine.'\'';
+				   $requete_get_ne_parait_plus='SELECT NeParaitPlus FROM magazines WHERE PaysAbrege = \''.$pays.'\' AND NomAbrege = \''.$magazine.'\'';
 				   $resultat_get_ne_parait_plus=DM_Core::$d->requete_select($requete_get_ne_parait_plus);
 				   $ne_parait_plus=$resultat_get_ne_parait_plus[0]['NeParaitPlus']==1;
 				   $montrer_numeros_inexistants=false;

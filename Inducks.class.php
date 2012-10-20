@@ -33,13 +33,13 @@ class Inducks {
 		}
 
 	static function get_auteur($nom_auteur_abrege) {
-			$requete='SELECT fullname FROM inducks_person WHERE personcode LIKE \''.$nom_auteur_abrege.'\'';
+			$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$nom_auteur_abrege.'\'';
 			$resultat_requete = Inducks::requete_select($requete);
 			return $resultat_requete[0]['fullname']; 
 	}
 
 	static function get_vrai_magazine($pays,$magazine) {
-		$requete_get_redirection='SELECT NomAbrege FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\' AND RedirigeDepuis LIKE \''.$magazine.'\'';
+		$requete_get_redirection='SELECT NomAbrege FROM magazines WHERE PaysAbrege = \''.$pays.'\' AND RedirigeDepuis = \''.$magazine.'\'';
 		$resultat_get_redirection=DM_Core::$d->requete_select($requete_get_redirection);
 		if (count($resultat_get_redirection) > 0)
 			return $resultat_get_redirection[0]['NomAbrege'];
@@ -246,9 +246,9 @@ elseif (isset($_POST['get_cover'])) {
 	$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
 						 .'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
 						 .'INNER JOIN inducks_entryurl ON inducks_entry.entrycode = inducks_entryurl.entrycode '
-						 .'WHERE inducks_issue.publicationcode LIKE \''.$_POST['pays'].'/'.$_POST['magazine'].'\' ' 
-						 .'AND (REPLACE(issuenumber,\' \',\'\') LIKE \''.$_POST['numero'].'\' '.(is_null($numero_alternatif) ? '':'OR REPLACE(issuenumber,\' \',\'\') REGEXP \''.$numero_alternatif.'\'').') '
-						 //.'AND inducks_entryurl.sitecode LIKE \'webusers\' '
+						 .'WHERE inducks_issue.publicationcode = \''.$_POST['pays'].'/'.$_POST['magazine'].'\' ' 
+						 .'AND (REPLACE(issuenumber,\' \',\'\') = \''.$_POST['numero'].'\' '.(is_null($numero_alternatif) ? '':'OR REPLACE(issuenumber,\' \',\'\') REGEXP \''.$numero_alternatif.'\'').') '
+						 //.'AND inducks_entryurl.sitecode = \'webusers\' '
 						 .'GROUP BY inducks_entry.entrycode '
 						 .'ORDER BY position';
 	$resultat_get_extraits=Inducks::requete_select($requete_get_extraits);

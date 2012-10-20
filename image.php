@@ -34,7 +34,7 @@ print_r($possessions);
 echo '</pre>';*/
 
 /*
-$url='http://coa.inducks.org/sql.php?qu='.urlencode('SELECT issuenumber FROM inducks_issue WHERE publicationcode LIKE "fr/'.$_GET['mag'].'"');
+$url='http://coa.inducks.org/sql.php?qu='.urlencode('SELECT issuenumber FROM inducks_issue WHERE publicationcode = "fr/'.$_GET['mag'].'"');
 
 $liste_num_inducks=resultats_inducks($url);
 $regex_numero='#([0-9]+)\^#i';

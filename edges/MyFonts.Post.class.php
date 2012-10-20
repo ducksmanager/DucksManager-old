@@ -40,8 +40,8 @@ class MyFonts extends Post {
             urlencode('i[0]')=>urlencode($this->font.',,720,144')
         );
         $requete_image_existe='SELECT ID FROM images_myfonts '
-                             .'WHERE Font LIKE \''.$this->font.'\' AND Color LIKE \''.$this->color.'\' AND ColorBG LIKE \''.$this->color_bg.'\''
-                             .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$this->text.'\' AND Precision_ LIKE \''.$this->precision.'\'';
+                             .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
+                             .' AND Width = \''.$this->width.'\' AND Texte = \''.$this->text.'\' AND Precision_ = \''.$this->precision.'\'';
         $requete_image_existe_resultat=DM_Core::$d->requete_select($requete_image_existe);
         $image_existe=count($requete_image_existe_resultat) != 0;
         if ($image_existe && !isset($_GET['force_post'])) {

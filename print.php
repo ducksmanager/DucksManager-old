@@ -65,7 +65,7 @@ if ($est_init) {
 }
 else {
     foreach($parametres_generaux->getListeParametresModifiables() as $nom_parametre=>$parametre) {
-        $requete_get_valeur='SELECT Valeur FROM parametres_listes WHERE ID_Utilisateur='.$id_user.' AND Position_Liste = -1 AND Parametre LIKE \''.$nom_parametre.'\'';
+        $requete_get_valeur='SELECT Valeur FROM parametres_listes WHERE ID_Utilisateur='.$id_user.' AND Position_Liste = -1 AND Parametre = \''.$nom_parametre.'\'';
         $resultat_get_valeur=DM_Core::$d->requete_select($requete_get_valeur);
         if (count($resultat_get_valeur) > 0)
             $parametres_generaux->parametres->$nom_parametre->valeur=$resultat_get_valeur[0]['Valeur'];
@@ -79,7 +79,7 @@ else {
             $i=0;
             foreach ($l->collection as $pays => $magazines) {
                 foreach ($magazines as $nom_magazine => $magazine) {
-                    $requete_get_boite='SELECT Pays,Magazine,Type_Liste,Position_Liste FROM parametres_listes WHERE (ID_Utilisateur='.$id_user.' AND Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$nom_magazine.'\') GROUP BY Position_Liste ORDER BY Position_Liste';
+                    $requete_get_boite='SELECT Pays,Magazine,Type_Liste,Position_Liste FROM parametres_listes WHERE (ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$nom_magazine.'\') GROUP BY Position_Liste ORDER BY Position_Liste';
                     $resultat_get_boite=DM_Core::$d->requete_select($requete_get_boite);
                     $est_init_magazine=count($resultat_get_boite) == 0;
                     if ($est_init_magazine) {
@@ -94,7 +94,7 @@ else {
                         include_once('Listes/Liste.'.$type_liste.'.class.php');
                     $o_tmp=new $type_liste;
                     foreach($o_tmp->getListeParametresModifiables() as $nom_parametre=>$parametre) {
-                        $requete_get_parametre='SELECT Valeur FROM parametres_listes WHERE Position_Liste='.$proprietes_boite['Position_Liste'].' AND Parametre LIKE \''.$nom_parametre.'\' AND ID_Utilisateur='.$id_user;
+                        $requete_get_parametre='SELECT Valeur FROM parametres_listes WHERE Position_Liste='.$proprietes_boite['Position_Liste'].' AND Parametre = \''.$nom_parametre.'\' AND ID_Utilisateur='.$id_user;
                         $resultat_get_parametre=DM_Core::$d->requete_select($requete_get_parametre);
                         if (count($resultat_get_parametre) > 0)
                             $o_tmp->parametres->$nom_parametre->valeur=$resultat_get_parametre[0]['Valeur'];

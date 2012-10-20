@@ -91,7 +91,7 @@ $max=0;
 foreach ($liste_mois as $i=>$mois) {
 	$requete='SELECT Count(a.ID_Acquisition) AS cpt, Pays, Magazine '
 			.'FROM numeros n '
-			.'LEFT JOIN achats a ON a.ID_Acquisition = n.ID_Acquisition AND a.Date LIKE \''.$mois.'%\' '
+			.'LEFT JOIN achats a ON a.ID_Acquisition = n.ID_Acquisition AND a.Date = \''.$mois.'%\' '
 			.'WHERE ID_Utilisateur='.$id_user.' '
 			.'GROUP BY Pays,Magazine';
 	$requete_resultat=DM_Core::$d->requete_select($requete);

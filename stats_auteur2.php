@@ -39,7 +39,7 @@ foreach ($auteurs as $auteur) {
 	}
 	
 	if (count($users) != 0) {
-		$requete='SELECT fullname FROM inducks_person WHERE personcode LIKE \''.$auteur.'\'';
+		$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$auteur.'\'';
 		$requete_resultat=Inducks::requete_select($requete);
 		$nom_auteur=$requete_resultat[0]['fullname'];
 	
@@ -120,7 +120,7 @@ foreach ($auteurs as $auteur) {
 		
 		date_default_timezone_set('Europe/Paris');
 		$requete_suppr_stats_existe = 'DELETE FROM auteurs_pseudos '
-									. 'WHERE NomAuteurAbrege LIKE \'' . $auteur . '\' AND ID_User=' . $id_user . ' AND DateStat LIKE \'' . date('Y-m-d') . '\'';
+									. 'WHERE NomAuteurAbrege = \'' . $auteur . '\' AND ID_User=' . $id_user . ' AND DateStat = \'' . date('Y-m-d') . '\'';
 		DM_Core::$d->requete($requete_suppr_stats_existe);
 		$requete_stats = 'INSERT INTO auteurs_pseudos (NomAuteur, NomAuteurAbrege, ID_User, NbNonPossedesFrance, NbNonPossedesEtranger, NbPossedes, DateStat) '
 					   . 'VALUES (\'' . $nom_auteur . '\',\'' . $auteur . '\',' . $id_user . ',' . $publie_france_non_possede . ',' . $publie_etranger_non_possede . ',' . $possedes . ',\'' . date('Y-m-d') . '\')';
