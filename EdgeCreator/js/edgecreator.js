@@ -1838,18 +1838,30 @@ function jqueryui_alert(texte, titre) {
 
 function afficher_dialogue_accueil() {
 	$( "#wizard-accueil" ).dialog({
-		width: 500,
+		width: 850,
 		modal: false,
+		resizable: false,
 		buttons: {
 			"Suivant":function() {
 				$( this ).dialog( "close" );
 				$( "#wizard-accueil2" ).dialog({
 					width: 500,
 					modal: false,
+					resizable: false,
 					buttons: {
 						"Suivant":function() {
 							$( this ).dialog( "close" );
-							jquery_connexion();
+							$( "#wizard-accueil3" ).dialog({
+								width: 500,
+								modal: false,
+								resizable: false,
+								buttons: {
+									"Suivant":function() {
+										$( this ).dialog( "close" );
+										jquery_connexion();
+									}
+								}
+							});
 						}
 					}
 				});
