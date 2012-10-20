@@ -577,7 +577,7 @@ var selecteur_cellules_preview=null;
 function charger_image(type_chargement,src,num,callback) {
 	callback= callback || function(){};
 		
-    var image=$('<img>').addClass('image_preview loading').data(type_chargement,num);
+    var image=$('<img>').addClass('image_preview').data(type_chargement,num);
     var est_visu=src.indexOf('/save') == -1;
     if (est_visu) {
         var random=Math.random();
@@ -599,11 +599,12 @@ function charger_image(type_chargement,src,num,callback) {
     }
     if (type_chargement == 'etape') {
         var etapes_corresp=$(selecteur_cellules_preview).getElementsWithData('etape',num);
-        if (etapes_corresp.length == 0) // Numéro d'étape non trouvé
-        	$(selecteur_cellules_preview).last().html(image);
+        if (etapes_corresp.length == 0) {// Numéro d'étape non trouvé
+        	jqueryui_alert("Num&eacute;ro d'&eacute;tape non trouv&eacute; lors du chargement de la preview : " + num, "Erreur");
+        	charger_image_suivante(null,callback,type_chargement,est_visu);
+    	}
         else {
         	etapes_corresp.html(image);
-        		
         }
     }
     else {
@@ -655,7 +656,6 @@ function charger_image(type_chargement,src,num,callback) {
 
 function charger_image_suivante(image,callback,type_chargement,est_visu) {
 	chargement_courant++;
-    image.removeClass('loading');
     
     if ($(selecteur_cellules_preview).length == 2 && chargement_courant == 1)
         $(selecteur_cellules_preview).last().html(image.clone(false));
@@ -673,6 +673,7 @@ function charger_image_suivante(image,callback,type_chargement,est_visu) {
     }
     else {
     	chargement_courant=0;
+    	chargements=[];
         reload_observers_tranches();
         if (type_chargement=='numero')
         	$('#numero_preview_debut').data('numero',null);

@@ -4,6 +4,8 @@ include_once(BASEPATH.'/../application/controllers/viewer.php');
 class Viewer_wizard extends Viewer {
 	
 	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random_ou_username=null,$debug=false) {
+		if ($etapes_actives=='final')
+			$etapes_actives='all';
 		if ($etapes_actives=='all') {
 			preg_match('#^([0-9]+)\.#is',$parametrage,$matches_num_etape_parametrage);
 			if (count($matches_num_etape_parametrage) == 0)

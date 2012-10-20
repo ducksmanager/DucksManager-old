@@ -53,7 +53,7 @@ function launch_wizard(id) {
 	switch(id) {
 		case 'wizard-conception' :
 			buttons["Soumettre la tranche"]=function() {
-				chargements=['all'];
+				chargements=['final'];
 				
 				numero_chargement=numero;
 				chargement_courant=0;
@@ -69,11 +69,14 @@ function launch_wizard(id) {
 					$.ajax({
 						url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
 						type: 'post',
+						dataType:'json',
 						success:function(data) {
 							$('#wizard-ajout-etape').dialog().dialog( "close" );
-							$('.dialog-preview-etape').remove();
-							$('#wizard-conception').parent().remove();
-							wizard_goto($(this),'wizard-conception');
+							for (var i in data.decalages) {
+								$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
+							}
+							ajouter_preview_etape(formData.etape, formData.nom_fonction);
+							charger_previews(true);
 						}
 					});
 				},
@@ -517,45 +520,7 @@ function wizard_init(wizard_id) {
 								var num_etape=etape.Ordre;
 								if (num_etape != -1) {
 									var nom_fonction=etapes_valides[i].Nom_fonction;
-									
-									var wizard_etape = $('.wizard.preview_etape.initial').clone(true);
-									var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
-									var div_preview_vide=$('<div>')
-										.addClass('preview_vide cache')
-										.css({'width' :$('#Dimension_x').val()*zoom+'px', 
-											  'height':$('#Dimension_y').val()*zoom+'px'});
-									wizard_etape.append(div_preview)
-												.append(div_preview_vide);
-									
-									var posX = $('#wizard-conception').parent().offset().left-(etapes_valides.length-i);
-									wizard_etape.dialog({
-										resizable: false,
-										draggable: false,
-										width: 'auto',
-										minWidth: 0,
-										height: 'auto',
-										position: [posX,0],
-									    closeOnEscape: false,
-										modal: false,
-										open:function(event,ui) {
-											$(this).removeClass('initial');
-											$(this).data('etape',num_etape)
-												   .data('id_etape',i);
-											$(this).d().addClass('dialog-preview-etape')
-																		 .data('etape',num_etape)
-																		 .data('nom_fonction',nom_fonction);
-											$(this).d().find(".ui-dialog-titlebar-close").hide();
-											$(this).d().find('.ui-dialog-titlebar').css({'padding':'.3em .6em;'})
-																		 .html($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
-				  			   	   											    		  'alt':nom_fonction}))
-				  			   	   										 .append($('<span>').addClass('cache ui-dialog-title').html(nom_fonction))
-				  			   	   										 .addClass('logo_option');
-										}
-									});
-									wizard_etape.d().bind('resize',function() {
-										placer_dialogues_preview();
-									});
-									chargements.push(num_etape+'');
+									ajouter_preview_etape(num_etape, nom_fonction);
 								}
 							}
 							
@@ -583,22 +548,18 @@ function wizard_init(wizard_id) {
 								}
 							});
 
-							
-							chargements.push('all'); // On ajoute l'étape finale
-							
-							numero_chargement=numero;
-							chargement_courant=0;
-				            charger_preview_etape(chargements[0],true,'_',function() {
-								if (etapes_valides.length == 1) { // Dimensions seulement
-									placer_dialogues_preview();
-								}
-				            });
-				            
+							charger_previews();
+											            
 				            $('#zone_ajout_etape').hover(indiquer_ajout_etape,
 				            					  		 effacer_ajout_etape);
 				            
 				            $('#ajout_etape').click(function() {
-				            	verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { launch_wizard('wizard-ajout-etape');});
+				            	if (modification_etape == null) {
+				            		launch_wizard('wizard-ajout-etape');
+				            	}
+				            	else {
+				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { launch_wizard('wizard-ajout-etape');});
+				            	}
 				            });
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
@@ -641,6 +602,85 @@ function wizard_init(wizard_id) {
 	}
 }
 
+function ajouter_preview_etape(num_etape, nom_fonction) {
+	var wizard_etape = $('.wizard.preview_etape.initial').clone(true);
+	var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
+	var div_preview_vide=$('<div>')
+		.addClass('preview_vide cache')
+		.css({'width' :$('#Dimension_x').val()*zoom+'px', 
+			  'height':$('#Dimension_y').val()*zoom+'px'});
+	wizard_etape.append(div_preview)
+				.append(div_preview_vide);
+	
+	var posX = $('#wizard-conception').parent().offset().left-(etapes_valides.length);
+	wizard_etape.dialog({
+		resizable: false,
+		draggable: false,
+		width: 'auto',
+		minWidth: 0,
+		height: 'auto',
+		position: [posX,0],
+	    closeOnEscape: false,
+		modal: false,
+		open:function(event,ui) {
+			$(this).removeClass('initial');
+			$(this).data('etape',num_etape);
+			$(this).d().addClass('dialog-preview-etape')
+					   .data('etape',num_etape)
+					   .data('nom_fonction',nom_fonction);
+			$(this).d().find('.ui-dialog-titlebar').addClass('logo_option')
+												   .css({'padding':'.3em .6em;'})
+										 		   .prepend($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
+ 	   											    		     		   'alt':nom_fonction}));
+			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
+		},
+		beforeClose:function(event,ui) {
+			$('#num_etape_a_supprimer').html($(this).data('etape'));
+			$('#wizard-confirmation-suppression').dialog({
+				resizable: false,
+				height:140,
+				modal: true,
+				buttons: {
+					"Supprimer": function() {
+						var etape=$('#num_etape_a_supprimer').html();
+						$.ajax({
+							url: urls['supprimer_wizard']+['index',pays,magazine,numero,etape].join('/'),
+							type: 'post',
+							success:function(data) {
+								$('#wizard-confirmation-suppression').dialog().dialog( "close" );
+								$('.dialog-preview-etape,.wizard.preview_etape:not(.initial)').getElementsWithData('etape',etape).remove();
+								chargements[0]='final';
+								charger_previews(true)
+							}
+						});
+					},
+					"Annuler":function() {
+						$(this).dialog().dialog("close");
+					}
+				}
+			});
+			return false;
+		}
+	});
+	wizard_etape.d().bind('resize',function() {
+		placer_dialogues_preview();
+	});
+	chargements.push(num_etape+'');
+}
+
+function charger_previews(forcer_placement_dialogues) {
+	forcer_placement_dialogues = forcer_placement_dialogues || false;
+	chargements.push('final'); // On ajoute l'étape finale
+	
+	numero_chargement=numero;
+	chargement_courant=0;
+    charger_preview_etape(chargements[0],true,'_',function() {
+		if (etapes_valides.length == 1 || forcer_placement_dialogues) {
+			placer_dialogues_preview();
+		}
+    });
+}
+
 function largeur_max_preview_etape_ouverte() {
 	var largeur_autres=0;
 	$.each($('.wizard.preview_etape:not(.initial),#wizard-conception'), function() {
@@ -665,7 +705,7 @@ function ouvrir_dialogue_preview(dialogue) {
 	var section_preview_vide=dialogue.find('.preview_vide');
 	var largeur_tranche=section_preview_vide.width();
 	section_preview_etape.dialog().dialog('option', 'width', largeur_max_preview_etape_ouverte());
-	dialogue.find('.ui-dialog-titlebar').find('span').removeClass('cache');
+	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').removeClass('cache');
 	section_preview_vide.after($('#options-etape--'+nom_fonction)
 						.removeClass('cache')
 						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px'}));
@@ -690,7 +730,7 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.removeClass('modif')
 			.css({'width':'auto'});
 	dialogue.find('.ui-dialog-buttonpane').remove();
-	dialogue.find('.ui-dialog-titlebar').find('span').addClass('cache');
+	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').addClass('cache');
 	dialogue.find('.options_etape').addClass('cache');
 	dialogue.find('.image_etape img, .preview_vide').toggleClass('cache');
 	dialogue.find('[name="form_options"],[name="form_options_orig"]').remove();
@@ -700,8 +740,8 @@ function fermer_dialogue_preview(dialogue) {
 
 function placer_dialogues_preview() {
 	var dialogues=$('.dialog-preview-etape').add($('#wizard-conception').d());
-	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
-		return $(dialogue2).offset().left - $(dialogue1).offset().left;
+	dialogues.sort(function(dialogue1,dialogue2) { // Triés par numéro d'étape, de droite à gauche
+		return $(dialogue2).data('etape') == 'finale' ? 1 : $(dialogue2).data('etape') - $(dialogue1).data('etape');
 	});
 	var min_marge_gauche=0;
 	$.each(dialogues,function(i,dialogue) {
@@ -893,7 +933,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
    		    	tester_option_preview(nom_fonction,'Sens');
    		    	coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
 			});
-			choix.filter('[value="'+valeurs['Sens']+'"]').click();
 		break;
 		
 		case 'DegradeTrancheAgrafee':
@@ -1303,7 +1342,7 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 				"Fermer l'etape sans sauvegarder": function() {
 					fermer_dialogue_preview($('.modif'));
 					$( this ).dialog().dialog( "close" );
-					chargements=['all']; // Etape finale
+					chargements=['final']; // Etape finale
 					chargement_courant=0;
 					charger_preview_etape(chargements[0],true,'_',callback);
 				},
@@ -1324,7 +1363,7 @@ function tester(callback, modif_dimensions) {
 
 	var form_options=dialogue.find('[name="form_options"]');
 	
-	chargements=['all']; // Etape finale
+	chargements=['final']; // Etape finale
 	chargement_courant=0;
 	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
 }
@@ -1497,7 +1536,7 @@ function reload_current_and_final_previews(callback) {
 	chargements=[modification_etape.data('etape')];
 	fermer_dialogue_preview(modification_etape);
     charger_preview_etape(chargements[0],true, undefined, function() {
-    	chargements=['all'];
+    	chargements=['final'];
         charger_preview_etape(chargements[0],true, undefined, callback);
     });
 }
@@ -1510,7 +1549,7 @@ function reload_all_previews() {
 			if (etapes_valides[i].Ordre != -1)
 				chargements.push(etapes_valides[i].Ordre);
 		}
-		chargements.push('all'); // Etape finale
+		chargements.push('final'); // Etape finale
 		
 		chargement_courant=0;
 		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {

@@ -1,5 +1,10 @@
 <div id="wizard-accueil" class="first wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
+		<img src="../images/logo_petit.png" />
+	</p>
+</div>
+<div id="wizard-accueil2" class="wizard" title="Bienvenue sur EdgeCreator !">
+	<p>
 		L'objectif d'EdgeCreator est de cr&eacute;er des images de tranches.
 		<br />
 		L'image d'une tranche que vous cr&eacute;erez appara&icirc;tra ensuite 
@@ -7,11 +12,10 @@
 		poss&eacute;dant le num&eacute;ro correspondant.
 		<br />
 		<img style="height:300px" src="../images/construction_tranche.png" />
-		
 	</p>
 </div>
 
-<div id="wizard-accueil2" class="wizard" title="Bienvenue sur EdgeCreator !">
+<div id="wizard-accueil3" class="wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
 		Pour cr&eacute;er une tranche, vous aurez besoin :<br />
 		<div style="float: left;width:50%">
@@ -450,4 +454,10 @@
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
 	Vous avez modifi&eacute; l'&eacute;tape que vous souhaitez fermer. 
 	Souhaitez-vous sauvegarder ces modifications ?</p>
+</div>
+
+<div id="wizard-confirmation-suppression" class="wizard" title="Supprimer cette &eacute;tape ?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Cette &eacute;tape va &ecirc;tre supprim&eacute;e. Continuer ?</p>
+	<span id="num_etape_a_supprimer" class="cache"></span>
 </div>

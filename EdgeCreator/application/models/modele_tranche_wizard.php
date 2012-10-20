@@ -16,7 +16,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$requete_modele_magazine_existe='SELECT Count(1) AS cpt FROM edgecreator_modeles2 '
 										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-										   .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.$username.'\'';
+										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
 			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->first_row()->cpt > 0;
 		}
 		return $user_possede_modele;
@@ -71,8 +71,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 				.'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
@@ -108,8 +108,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 			
@@ -153,7 +153,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' AND Ordre='.$ordre.' AND Option_nom IS NOT NULL '
 				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($nom_option))
-			$requete.='AND Option_nom LIKE \''.$nom_option.'\' ';
+			$requete.='AND Option_nom = \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
 		
 		$resultats=$this->db->query($requete)->result();
@@ -194,12 +194,24 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function decaler_etapes_a_partir_de($id_modele,$etape_debut, $inclure_cette_etape) {
+		$decalages=array();
+		$requete_select='SELECT DISTINCT Ordre '
+					   .'FROM tranches_en_cours_valeurs '
+					   .'WHERE ID_Modele = '.$id_modele.' '
+					     .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut.' '
+					   .'ORDER BY Ordre DESC';
+		$resultats=$this->db->query($requete_select)->result();
+		foreach($resultats as $resultat) {
+			$etape=intval($resultat->Ordre);
+			$decalages[]=array('old'=>$etape, 'new'=>$etape+1);
+		}
 		$requete='UPDATE tranches_en_cours_valeurs '
 				.'SET Ordre=Ordre+1 ' 
 				.'WHERE ID_Modele = '.$id_modele.' '
 				  .'AND Ordre'.($inclure_cette_etape ? '>=' : '>').$etape_debut;
-		echo $requete."\n";
+		//echo $requete."\n";
 		$this->db->query($requete);
+		return $decalages;
 	}
 	
 	function valeur_existe($id_valeur) {
@@ -213,7 +225,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		
 		$requete='INSERT INTO tranches_en_cours_valeurs (ID_Modele,Ordre,Nom_fonction,Option_nom,Option_valeur) VALUES '
 				.'('.$id_modele.','.$ordre.',\''.$nom_fonction.'\','.$option_nom.','.$option_valeur.') ';
-		echo $requete."\n";
+		//echo $requete."\n";
 		$this->db->query($requete);
 	}
 	
@@ -243,13 +255,14 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$inclure_avant = $pos==='avant';
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
 		
-		$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
+		$decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
 		
 		foreach($nouvelle_fonction->options as $nom=>$valeur) {
 			$this->insert($id_modele,$inclure_avant ? $etape : $etape+1,$nom_fonction,$nom,$valeur);			
 		}
+		return $decalages;
 	}
 
 	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
@@ -271,7 +284,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs AS valeurs ON edgecreator_modeles2.ID = valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username LIKE \''.self::$username.'\'';
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username = \''.self::$username.'\'';
 		$resultats=$this->db->query($requete)->result();
 		foreach($resultats as $resultat) {
 			$resultat->Ordre=$etape;
@@ -279,14 +292,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->insert_batch('edgecreator_modeles2',$resultats);
 	}
 
-	function delete_ordre($pays,$magazine,$ordre,$numero_debut,$numero_fin,$nom_fonction) {
-		$requete_suppr='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
-					  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-				      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-					  .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Ordre LIKE \''.$ordre.'\' AND username LIKE \''.self::$username.'\'';
-		if ($numero_debut!=null)
-			$requete_suppr.=' AND Nom_Fonction LIKE \''.$nom_fonction.'\' AND Numero_debut LIKE \''.$numero_debut.'\' AND Numero_fin LIKE \''.$numero_fin.'\'';
-		$requete_suppr.=')';
+	function supprimer_etape($pays,$magazine,$numero,$etape) {
+		$requete_suppr='DELETE FROM tranches_en_cours_valeurs '
+					  .'WHERE ID_Modele=(SELECT m.ID FROM tranches_en_cours_modeles m '
+					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\') '
+					  	.'AND Ordre = \''.$etape.'\'';
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
 	}
@@ -296,13 +306,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
 								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
 								  .'AND Ordre='.$etape.' AND Option_nom IS NULL AND username = \''.self::$username.'\'';
 		else
 			$requete_suppr_option='DELETE modeles, valeurs, intervalles FROM edgecreator_modeles2 modeles '
 								  .'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 							      .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							      .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+							      .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
 								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
 		$this->db->query($requete_suppr_option);
 		echo $requete_suppr_option."\n";
@@ -340,7 +350,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 						    .'FROM edgecreator_modeles2 AS modeles '
 							.'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
 					        .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
+							.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
 							.'ORDER BY Ordre';
 		echo $requete_get_options."\n";
 		$resultats=$this->db->query($requete_get_options)->result();
