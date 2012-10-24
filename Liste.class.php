@@ -175,13 +175,13 @@ class Liste {
 					echo AUCUNE_DATE_ACQUISITION;
 				}
 				else {
-					?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe>
+					?><iframe id="iframe_graphique" style="border:0px"></iframe>
 					<br />
-					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">
+					<a href="javascript:void(0)" onclick="afficher_histogramme_achats();">
 						<?=AFFICHER_NOUVELLES_ACQUISITIONS?>
 					</a> 
 					&nbsp;-&nbsp;
-					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">
+					<a href="javascript:void(0)" onclick="afficher_histogramme_achats('progressif');">
 						<?=AFFICHER_POSSESSIONS_TOTALES?>
 					</a>
 					<?php

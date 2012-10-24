@@ -113,6 +113,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         case 'possessions':
                             new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
                         break;
+                        case 'achats':
+                            new JS('js/achats_histogramme.js');
+                        break;
                     }
                 break;
             }
@@ -179,8 +182,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             }
             break;
         case 'stats':
-            if (isset($_GET['onglet']) && $_GET['onglet']=='auteurs') {
-                echo 'init_autocompleter_auteurs();';
+            if (isset($_GET['onglet'])) {
+            	switch($_GET['onglet']) {
+					case 'auteurs':
+						echo 'init_autocompleter_auteurs();';
+					break;
+					case 'achats':
+						echo 'afficher_histogramme_achats();';
+					break;
+				}
             }
             break;
         case 'agrandir':

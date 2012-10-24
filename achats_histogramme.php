@@ -175,6 +175,12 @@ $hauteur_titres_magazines = intval($HAUTEUR_LIGNE_TITRE_MAGAZINE*(count($resulta
 
 $hauteur = $hauteur_barres + $hauteur_titres_magazines;
 
+if ($largeur > $_GET['largeur_max'] -10)
+	$largeur = $_GET['largeur_max'] -10;
+
+if ($hauteur > $_GET['hauteur_max'] -10)
+	$hauteur = $_GET['hauteur_max'] -10;
+
 ?>
 
 <html>
