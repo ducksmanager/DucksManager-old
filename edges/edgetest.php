@@ -7,7 +7,7 @@ include_once('Edge.class.php');
         <?php
         new JS('../js/scriptaculous/lib/prototype.js');
         new JS('../js/scriptaculous/src/scriptaculous.js');
-        new JS('../js/edges.js');
+        new JS('../js/edges2.js');
         ?>
 
     </head>
