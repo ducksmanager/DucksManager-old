@@ -177,9 +177,13 @@ class Liste {
 				else {
 					?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe>
 					<br />
-					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">Afficher les nouvelles acquisitions</a> 
+					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">
+						<?=AFFICHER_NOUVELLES_ACQUISITIONS?>
+					</a> 
 					&nbsp;-&nbsp;
-					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">Afficher les possessions totales</a>
+					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">
+						<?=AFFICHER_POSSESSIONS_TOTALES?>
+					</a>
 					<?php
 				}
 			break;
