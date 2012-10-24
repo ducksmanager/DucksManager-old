@@ -127,10 +127,6 @@ class Database {
 		}
 	}
 
-	function get_nom_complet_magazine($pays,$magazine,$encode=false) {
-		return Inducks::get_nom_complet_magazine($pays,$magazine);
-	}
-
 	function get_noms_complets_pays() {
 		return Inducks::get_pays();
 	}

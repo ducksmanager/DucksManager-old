@@ -178,7 +178,7 @@ else {
 <?php
 function afficher_boite($pays,$nom_magazine,$type_liste,$parametres=null) {
     global $l;
-    list($nom_complet_pays, $nom_complet_magazine) = DM_Core::$d->get_nom_complet_magazine($pays, $nom_magazine);
+    list($nom_complet_pays, $nom_complet_magazine) = Inducks::get_nom_complet_magazine($pays, $nom_magazine);
     $sous_liste = new Liste();
     $sous_liste = $l->sous_liste($pays, $nom_magazine);
     ?><span class="draggable_box widget" id="box_<?= $pays ?>_<?= $nom_magazine ?>">

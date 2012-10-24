@@ -223,7 +223,7 @@ class Edge {
 DM_Core::$d->requete('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
 	include_once ('locales/lang.php');
-	list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=DM_Core::$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+	list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=Inducks::get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
 	?>
 	<div class="titre_magazine"><?=$nom_complet_magazine?></div><br />
 	<div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />

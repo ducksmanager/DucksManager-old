@@ -55,7 +55,7 @@ class dmspiral extends Format_liste {
 			}
 		}
 
-		list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+		list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
 
 		$titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
 		

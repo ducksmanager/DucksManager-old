@@ -508,13 +508,19 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             DM_Core::$d->maintenance_ordre_magazines($id_user);?>
                                             <div id="liste_magazines">
                                                 <?php
-                                                $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
+                                                $requete_ordre_magazines='SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
                                                 $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+                                                $publication_codes=array();
                                                 foreach($resultat_ordre_magazines as $magazine) {
+													$publication_codes[]=$magazine['Pays'].'/'.$magazine['Magazine'];
+												}
+												list($noms_pays,$noms_magazines)=Inducks::get_noms_complets($publication_codes);
+												foreach($resultat_ordre_magazines as $magazine) {
+                                                    $num_ordre=$magazine['Ordre'];
                                                     $nom_pays=$magazine['Pays'];
                                                     $nom_magazine=$magazine['Magazine'];
-                                                    $num_ordre=$magazine['Ordre'];
-                                                    list($pays_complet,$magazine_complet)=DM_Core::$d->get_nom_complet_magazine($nom_pays,$nom_magazine)
+                                                    $pays_complet = $noms_pays[$nom_pays];
+                                                    $magazine_complet = $noms_magazines[$nom_pays.'/'.$nom_magazine];
                                                     ?>
                                                     <div style="margin-top:10px;height:40px;" class="magazine_deplacable" id="<?=$nom_pays?>_<?=$nom_magazine?>">
                                                         <div class="handle" style="float:left;text-align:center;border:1px solid white;width:40px">

@@ -295,14 +295,19 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 				.'WHERE storycode = \''.$code.'\' '
 				.'ORDER BY publicationcode, issuenumber';
 		$resultat_requete=Inducks::requete_select($requete);
+		$publication_codes=array();
+		foreach($resultat_requete as $resultat) {
+			$publication_codes[]=$resultat['publicationcode'];
+		}
+		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
 		foreach($resultat_requete as $resultat) {
 			list($pays,$magazine)=explode('/',$resultat['publicationcode']);
-			list($pays_complet,$magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays,$magazine);
+			$nom_complet_magazine=$noms_magazines[$resultat['publicationcode']];
 			$issuenumber=$resultat['issuenumber'];
 			$liste_magazines[]=array('pays'=>$pays,
 									 'magazine_numero'=>$magazine.'.'.$issuenumber,
-									 'nom_magazine'=>$magazine_complet,
-									 'titre'=>$magazine_complet.' '.$issuenumber);
+									 'nom_magazine'=>$nom_complet_magazine,
+									 'titre'=>$nom_complet_magazine);
 		}
 	}
 	else {

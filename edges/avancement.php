@@ -44,7 +44,7 @@ if (isset($_GET['wanted'])) {
         $e = new Edge($numero['Pays'],$numero['Magazine'],$numero['Numero'],false,true);
 		$est_dispo=$e->est_visible;
 		if (!$est_dispo) {  
-			list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($numero['Pays'], $numero['Magazine'],true);
+			list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($numero['Pays'], $numero['Magazine']);
 			?><br /><u><?=$numero['cpt']?> demandes pour :</u><br />
 			&nbsp;
 				<?=$numero['Pays']?> <?=utf8_decode($nom_magazine_complet)?> n&deg;<?=$numero['Numero']?>
