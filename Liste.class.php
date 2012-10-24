@@ -148,7 +148,6 @@ class Liste {
 				?><iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0px"></iframe><?php
 			break;
 			case 'possessions':
-			include_once('Chargement.class.php');	
 							?>
 								
 								<span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
