@@ -19,6 +19,7 @@ function toNomMoisTraduitComplet($str) {
 	return $str;
 }
 
+date_default_timezone_set('Europe/Paris');
 global $noms_mois;
 $noms_mois=array('Jan'=>'Jan','Feb'=>'Fev','Mar'=>'Mar','Apr'=>'Avr','May'=>'Mai','Juin'=>'Juin',
 				 'Jul'=>'Juil','Aug'=>'Aou','Sep'=>'Sep','Oct'=>'Oct','Nov'=>'Nov','Dec'=>'Dec');
