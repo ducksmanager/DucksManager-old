@@ -62,7 +62,7 @@ class Modele_tranche extends CI_Model {
 			return null;
 		}
 		else {
-			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND (password LIKE \''.$pass.'\' OR md5(password) LIKE \''.$pass.'\')';
+			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND sha1(password) LIKE \''.$pass.'\'';
 			$resultat=$this->db->query($requete);
 			if ($resultat->num_rows==0) {
 				$erreur = 'Identifiants invalides !';

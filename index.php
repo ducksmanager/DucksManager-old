@@ -377,21 +377,34 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         echo MOT_DE_PASSE_OUBLIE_ERREUR_VIDE.'<br />';
                                     }
                                     else {
-                                        $requete_verifier_email='SELECT username,password FROM users WHERE Email LIKE \''.$_POST['email'].'\'';
-                                        $resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
+										$requete_verifier_email='SELECT username, Email FROM users WHERE Email = \''.$_POST['email'].'\'';
+										$resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
                                         if (count($resultat_verifier_email) ==0) {
                                             echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
                                         }
                                         else {
-                                            $entete = "MIME-Version: 1.0\r\n";
+											$chars = "abcdefghijkmnopqrstuvwxyz023456789";
+											srand((double)microtime()*1000000);
+											$mdp_temporaire = '' ;
+											for ($i = 0 ; $i <= 28 ; $i++) {
+												$num = rand() % 33;
+												$tmp = substr($chars, $num, 1);
+												$mdp_temporaire = $mdp_temporaire . $tmp;
+												$i++;
+											}
+											
+											$requete_maj_mdp='UPDATE users SET password=sha1(\''.$mdp_temporaire.'\') WHERE Email = \''.$_POST['email'].'\'';
+											DM_Core::$d->requete($requete_maj_mdp);
+                                            
+											$entete = "MIME-Version: 1.0\r\n";
                                             $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
                                             $entete .= "To: ".$resultat_verifier_email[0]['username']." <".$_POST['email'].">\r\n";
                                             $entete .= "From: DucksManager <admin@ducksmanager.net>\r\n";
                                             $contenu_mail='Bonjour '.$resultat_verifier_email[0]['username'].'<br /><br />'
-                                                         .'Vous recevez cet e-mail &agrave; la suite de votr demande de r&eacute;cup&eacute;ration de mot de passe sur DucksManager.'
-                                                         .'<br /><br />Votre mot de passe est :'.$resultat_verifier_email[0]['password']
+                                                         .'Vous recevez cet e-mail &agrave; la suite de votre demande de r&eacute;initialisation de mot de passe sur DucksManager.'
+                                                         .'<br /><br />Votre mot de passe temporaire est :'.$mdp_temporaire
                                                          .'<br /><br /><br />A bient&ocirc;t sur DucksManager !<br /><br />Le webmaster';
-                                            if (mail($_POST['email'], 'Recuperation de mot de passe DucksManager', $contenu_mail,$entete))
+                                            if (mail($_POST['email'], 'Reinitialisation de mot de passe DucksManager', $contenu_mail,$entete))
                                                 echo MOT_DE_PASSE_OUBLIE_EMAIL_ENVOYE;
                                             else
                                                 echo MOT_DE_PASSE_OUBLIE_ERREUR_ENVOI_EMAIL;
@@ -677,15 +690,47 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=gerer');
                                 switch($onglet) {
                                     case 'compte':
+                                    	$mot_de_passe_ancien_defaut = '**********';
                                         if (isset($_POST['submit_options'])) {
                                         	if ($_SESSION['user'] == 'demo') {
                                         		echo OPERATION_IMPOSSIBLE_MODE_DEMO.'<br />';
                                         	}
                                         	else {
-	                                            echo MODIFICATIONS_OK.'<br />';
-	                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.($_POST['partage']=='on'?'1':'0').', AfficherVideo='.($_POST['video']=='on'?'1':'0').', '
-	                                                                .'Email=\''.$_POST['email'].'\' '
-	                                                                .'WHERE ID='.$id_user);
+												$erreur=null;
+												if ($_POST['ancien_mdp'] != $mot_de_passe_ancien_defaut) {
+													$requete_verif_mot_de_passe='SELECT Email FROM users WHERE ID='.$id_user.' AND password=sha1(\''.$_POST['ancien_mdp'].'\')';
+													$mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
+													if ($mot_de_passe_ok) {
+														$mot_de_passe_nouveau = $_POST['nouveau_mdp'];
+														$mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
+														if (strlen($mot_de_passe_nouveau) < 6) {
+															$erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
+														}
+														elseif ($mot_de_passe_nouveau != $mot_de_passe_nouveau_confirm) {
+															$erreur = MOTS_DE_PASSE_DIFFERENTS;
+														}
+														else {
+															$requete_modif_mdp='UPDATE users SET password=sha1(\''.$mot_de_passe_nouveau.'\') WHERE ID='.$id_user;
+															DM_Core::$d->requete($requete_modif_mdp);
+															echo MOT_DE_PASSE_CHANGE;
+														}
+													}
+													else {
+														$erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
+													}
+													?><br /><br /><?php
+												}
+												if (is_null($erreur)) {
+		                                            echo MODIFICATIONS_OK.'<br />';
+		                                            $est_partage=isset($_POST['partage']) && $_POST['partage']=='on'?'1':'0';
+		                                            $est_video=isset($_POST['video']) && $_POST['video']=='on'?'1':'0';
+		                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.$est_partage.', AfficherVideo='.$est_video.', '
+		                                                                .'Email=\''.$_POST['email'].'\' '
+		                                                                .'WHERE ID='.$id_user);
+		                                        }
+		                                        else {
+													?><span style="color:red"><?=$erreur?></span><?php
+		                                    	}
                                         	}
                                         }
                                         $resultat_partage=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
@@ -693,23 +738,34 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         ?>
                                         <form action="?action=gerer&amp;onglet=compte" method="post">
                                         <br /><?=ADRESSE_EMAIL?> : <br />
-                                        <input type="text" name="email" value=<?php
-                                        if (is_null($resultat_email[0]['Email'])) {
-                                            echo '""';
-                                        }
-                                        else {
-                                            echo '"'.$resultat_email[0]['Email'].'"';
-                                        }?> /> <?=EMAIL_EXPLICATION?><br /><br />
+                                        <input type="text" name="email" style="width: 200px" value="<?php
+                                        if (!is_null($resultat_email[0]['Email'])) {
+											echo $resultat_email[0]['Email'];
+                                        }?>" /><br /><br /><br />
+                                        <span style="text-align: center;text-decoration: underline">
+                                        	<?=MOT_DE_PASSE_CHANGEMENT?>
+                                        </span>
+                                        <br /><?=MOT_DE_PASSE_ACTUEL?> : <br />
+                                        <input type="password" name="ancien_mdp" style="width: 100px" value="<?=$mot_de_passe_ancien_defaut?>" />
+	                                    <br />
+                                        <br /><?=MOT_DE_PASSE_NOUVEAU?> : <br />
+                                        <input type="password" name="nouveau_mdp" style="width: 100px" value="" />
+	                                    <br />
+                                       	<br /><?=MOT_DE_PASSE_NOUVEAU_CONFIRMATION?> : <br />
+                                        <input type="password" name="nouveau_mdp_confirm" style="width: 100px" value="" />
+                                        <br /><br /><br />
                                         <input type="checkbox" name="partage"<?php
-                                        if ($resultat_partage[0]['AccepterPartage']==1) {?>checked="checked"<?php } ?>/><?=ACTIVER_PARTAGE?><br />
-										
+                                        if ($resultat_partage[0]['AccepterPartage']==1) {
+											?>checked="checked"<?php 
+										} ?>/><?=ACTIVER_PARTAGE?>
+										<br />
                                         <br />
                                         <input type="checkbox" name="video"
                                         <?php
-                                        if (DM_Core::$d->user_afficher_video()) {?>
-                                            checked="checked"
-                                        <?php } ?>
-                                         /><?=AFFICHER_VIDEO?><br />
+                                        if (DM_Core::$d->user_afficher_video()) {
+                                            ?>checked="checked"<?php
+                                        } ?> /><?=AFFICHER_VIDEO?>
+                                        <br />
                                         <br />
                                         <input name="submit_options" class="valider" type="submit" value="<?=VALIDER?>" /></form>
                                         <br /><br /><br />
