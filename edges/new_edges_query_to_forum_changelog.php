@@ -78,8 +78,8 @@ if (isset($_POST['query'])) {
 	foreach($numeros as $publicationcode=>$numeros_associes) {
 		list($pays,$magazine)=explode('/',$publicationcode);
 		$code_ajouts[]= '[Biblioth&egrave;que][Tranches][Ajout]'
-					   .utf8_encode($noms_magazines[$publicationcode])
-					   .($pays=='fr' ? '':' ('.utf8_encode($noms_pays[$pays]).')')
+					   .$noms_magazines[$publicationcode]
+					   .($pays=='fr' ? '':' ('.$noms_pays[$pays].')')
 					   .' n&deg; '.implode(', ',$numeros_associes);
 	}
 	echo '[code]'.implode('<br />',$code_ajouts).'[/code]';
