@@ -5,7 +5,7 @@ include_once('../Database.class.php');
 if (!isset($_SESSION['user'])) {
 	$erreur='Identifiez vous.';
 	if (isset($_POST['user'])) {
-		$requete_identifiants_valides='SELECT 1 FROM users WHERE username=\''.$_POST['user'].'\' AND password=\''.$_POST['pass'].'\'';
+		$requete_identifiants_valides='SELECT 1 FROM users WHERE username=\''.$_POST['user'].'\' AND password=sha1(\''.$_POST['pass'].'\')';
 		$identifiants_valides=count(DM_Core::$d->requete_select($requete_identifiants_valides)) == 1;
 		if ($identifiants_valides) {
 			$requete_permission='SELECT 1 FROM edgecreator_droits WHERE username=\''.$_POST['user'].'\' AND privilege=\'Admin\'';

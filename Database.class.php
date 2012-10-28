@@ -32,6 +32,8 @@ class Database {
 
 	function requete_select($requete) {
 			$requete_resultat=mysql_query($requete);
+			if (!is_resource($requete_resultat))
+				return array();
 			$arr=array();
 			while($arr_tmp=mysql_fetch_array($requete_resultat))
 					array_push($arr,$arr_tmp);
@@ -56,7 +58,7 @@ class Database {
 				return false;
 			}
 			else {
-				$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(\''.$pass.'\')';
+				$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
 				return (count(DM_Core::$d->requete_select($requete))>0);
 			}
 	}
@@ -87,7 +89,7 @@ class Database {
 
 	function nouveau_user($user,$email,$pass) {
 			date_default_timezone_set('Europe/Paris');
-			$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
+			$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',sha1(\''.$pass.'\'),\''.$email.'\',\''.date('Y-m-d').'\')';
 			if (false===DM_Core::$d->requete($requete)) {
 				echo ERREUR_EXECUTION_REQUETE;
 				return false;
