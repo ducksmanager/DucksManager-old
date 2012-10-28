@@ -471,6 +471,16 @@ function wizard_init(wizard_id) {
 					            zoom=valeurs_possibles_zoom[ui.value];
 					            $('#zoom_value').html(zoom);
 								reload_all_previews();
+								if (modification_etape != null) {
+									$('.preview_vide')
+										.css({'width' :$('#Dimension_x').val()*zoom+'px', 
+											  'height':$('#Dimension_y').val()*zoom+'px'});
+									
+									var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
+									var section_preview_etape = modification_etape.find('.preview_etape');
+									var nom_fonction=modification_etape.data('nom_fonction');
+							    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
+								}
 							}});
 							
 							var texte="";
@@ -1130,78 +1140,29 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			
 			form_userfriendly.find('.accordion').accordion({
 				active: 0,
-				change:function(event,ui) {
+				activate:function(event,ui) {
 					var section_active_integration=$(this).find('.ui-accordion-content-active').hasClass('finition_texte_genere');
-					if (section_active_integration)
-						placer_extension_largeur_preview();
-					var section_active_positionnement=$(this).find('.ui-accordion-content-active').hasClass('positionnement');
-					if (section_active_positionnement) {
-						$(this).find('.ui-accordion-content-active .chargement').toggleClass('cache');
-						tester(function() {
-							load_myfonts_preview(false,false,true,function() {
-								form_userfriendly.d().find('.ui-accordion-content-active .chargement').toggleClass('cache');
-								
-								var dialogue=form_userfriendly.d();
-								var valeurs=dialogue.find('[name="form_options"]').serializeObject();
-								var image=dialogue.find('.preview_vide');
-								
-								var position_texte=form_userfriendly.find('.image_position');
-								var image_preview_ajustee=$('.positionnement .apercu_myfonts img');
-								var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
-								
-								var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
-								var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image_preview_ajustee);
-								
-								var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
-								var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
-								if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
-									pos_y-=parseFloat(hauteur);
-								}
-	
-								var limites_drag=[(image.offset().left			 -parseFloat(largeur)),
-								                  (image.offset().top 			 -parseFloat(hauteur)),
-								                  (image.offset().left+image.width()),
-								                  (image.offset().top +image.height())];
-								position_texte.css({'left':pos_x+'px', 
-		  										    'top': pos_y+'px',
-		  										    'width':largeur+'px',
-		  										    'height':hauteur+'px'})
-		  									  .removeClass('cache')
-		  									  .draggable({//containment:limites_drag, 
-										  		  stop:function(event, ui) {
-									   		    	tester_option_preview(nom_fonction,'Pos_x'); 
-									   		    	tester_option_preview(nom_fonction,'Pos_y');
-									   		      }
-											  })
-											  .resizable({
-													stop:function(event, ui) {
-										   		    	tester_option_preview(nom_fonction,'Compression_x'); 
-										   		    	tester_option_preview(nom_fonction,'Compression_y');
-										   		    }
-											  })
-											  .html(image_preview_ajustee.clone(false));
-							});
-						});
+					if (section_active_integration) {
+						generer_et_positionner_preview_myfonts(false,true,false);
 					}
-					else
-						form_userfriendly.find('.rectangle_position').addClass('cache');
 				}
 			});
-			form_userfriendly.find('.accordion').accordion().change();
-			load_myfonts_preview(true,true,true);
+			generer_et_positionner_preview_myfonts(true,false,true);
 			
 		break;
 	}
 	
 	for (var nom_option in classes_farbs) {
-		var input=form_userfriendly.valeur(nom_option);
-		ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
-					 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
-		input.click(function() {
-			var this_picker=$(this).prevAll('.picker');
-			$('.picker').not(this_picker).addClass('cache');
-			this_picker.toggleClass('cache');
-		});
+		if (! section_preview_etape.find('.picker'+classes_farbs[nom_option]).hasClass('farbtastic')) {
+			var input=form_userfriendly.valeur(nom_option);
+			ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
+						 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
+			input.click(function() {
+				var this_picker=$(this).prevAll('.picker');
+				$('.picker').not(this_picker).addClass('cache');
+				this_picker.toggleClass('cache');
+			});
+		}
 	}
 	
 	for (var i in checkboxes) {
@@ -1359,13 +1320,13 @@ function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sa
 }
 
 function tester(callback, modif_dimensions) {
-	var dialogue=$('.wizard.preview_etape.modif').d();
+	var dialogue=modification_etape.d();
 
 	var form_options=dialogue.find('[name="form_options"]');
 	
 	chargements=['final']; // Etape finale
 	chargement_courant=0;
-	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize());
+	charger_preview_etape(chargements[0],true,num_etape_courante+"."+form_options.serialize(),callback);
 }
 
 function valider(callback) {
@@ -1505,7 +1466,7 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 					case 'Compression_y':
 						var compression_x=parseFloat(form_options.valeur('Compression_x').val());
 						
-						var image_preview_ajustee=dialogue.find('.positionnement .apercu_myfonts img');
+						var image_preview_ajustee=dialogue.find('body>.apercu_myfonts img');
 						var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
 						var ratio_positionnement=positionnement.width()/positionnement.height();
 						val = toFloat2Decimals(compression_x*(ratio_image_preview_ajustee/ratio_positionnement));
@@ -1526,11 +1487,63 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 						val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
 					break;
 				}
+				if (['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1)
+					generer_et_positionner_preview_myfonts(nom_option == 'Chaine' || nom_option == 'URL',
+														   nom_option == 'Largeur' || nom_option == 'Demi_hauteur',
+														   true);
 			break;
 		}
 	}
 	form_options.valeur(nom_option).val(val);
 }
+
+function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_preview_finition,gen_tranche) {
+	load_myfonts_preview(gen_preview_proprietes,gen_preview_finition,gen_tranche, !gen_tranche ? function() {} : function() {
+		var dialogue=modification_etape.d();
+		var form_userfriendly=dialogue.find('.options_etape');
+		var valeurs=dialogue.find('[name="form_options"]').serializeObject();
+		var image=dialogue.find('.preview_vide');
+		
+		var position_texte=form_userfriendly.find('.image_position');
+		var image_preview_ajustee=$('body>.apercu_myfonts img');
+		var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+		
+		var largeur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_x']));
+		var hauteur=toFloat2Decimals(image.width() * parseFloat(valeurs['Compression_y']) / ratio_image_preview_ajustee);
+		
+		var pos_x=image.position().left+parseFloat(valeurs['Pos_x'])*zoom;
+		var pos_y=image.position().top +parseFloat(valeurs['Pos_y'])*zoom;
+		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
+			pos_y-=parseFloat(hauteur);
+		}
+	
+		var limites_drag=[(image.offset().left-parseFloat(largeur)),
+		                  (image.offset().top -parseFloat(hauteur)),
+		                  (image.offset().left+image.width()),
+		                  (image.offset().top +image.height())];
+		position_texte.css({'left':pos_x+'px', 
+						    'top': pos_y+'px',
+						    'width':largeur+'px',
+						    'height':hauteur+'px'})
+					  .removeClass('cache')
+					  .draggable({//containment:limites_drag, 
+				  		  stop:function(event, ui) {
+			   		    	tester_option_preview('TexteMyFonts','Pos_x'); 
+			   		    	tester_option_preview('TexteMyFonts','Pos_y');
+			   		      }
+					  })
+					  .resizable({
+							stop:function(event, ui) {
+				   		    	tester_option_preview('TexteMyFonts','Compression_x'); 
+				   		    	tester_option_preview('TexteMyFonts','Compression_y');
+				   		    }
+					  })
+					  .html(image_preview_ajustee.clone(false));
+		
+		placer_extension_largeur_preview();
+	});
+}
+
 
 function reload_current_and_final_previews(callback) {
 	chargements=[modification_etape.data('etape')];
@@ -1545,11 +1558,9 @@ function reload_all_previews() {
 	if (etapes_valides.length > 1) {
 		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
     	chargements=new Array();
-		for (var i=0;i<etapes_valides.length;i++) {
-			if (etapes_valides[i].Ordre != -1)
-				chargements.push(etapes_valides[i].Ordre);
-		}
-		chargements.push('final'); // Etape finale
+		$.each($(selecteur_cellules_preview),function(i,element) {
+			chargements.push($(element).data('etape'));
+		});
 		
 		chargement_courant=0;
 		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
@@ -1615,7 +1626,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	if (preview2)
 		selectors.push('.finition_texte_genere .apercu_myfonts');
 	if (preview3)
-		selectors.push('.positionnement .apercu_myfonts');
+		selectors.push('body>.apercu_myfonts');
 	var apercus=$(selectors.join(','));
 	var images=apercus.find('img');
 	if (images.length == 0) {
@@ -1629,14 +1640,14 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		$.each($(['URL','Couleur_texte','Couleur_fond','Largeur','Chaine','Demi_hauteur']),function(i,nom_option) {
 			url_appel+="/"+form_options.valeur(nom_option).val();
 		});
-		if ($(this).closest('.positionnement').length != 0)
+		if ($(this).parent().parent().is('body')) // Preview globale donc avec rotation
 			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
 			url_appel+='/null';
 
 		$(this).attr({'src':url_appel});	
 		$(this).load(function() {
-			$(this).removeClass('loading');
+			$(this).removeClass('loading').removeClass('cache');
 			if ($(this).closest('.finition_texte_genere').length > 0) {
 				var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
 				if (section_active_integration)

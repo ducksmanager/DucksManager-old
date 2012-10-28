@@ -71,17 +71,4 @@ header("Pragma: no-cache"); ?>
 	if (!empty($erreur)) {
 		echo $erreur;
 		?><br /><?php
-	}
-	/*if ($privilege==null) {?>
-		Identifiez-vous<br /><br />
-		<form method="post" action="<?=site_url('edgecreatorg/index/'.$pays.'/'.$magazine)?>">
-			<table border="0">
-				<tr><td>Nom d'utilisateur :</td><td><input type="text" name="user" /></td></tr>
-				<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>
-				<tr><td><input style="float:right" type="checkbox" name="mode_expert" /></td><td>Mode expert</td></tr>
-				<tr><td align="center" colspan="2"><input type="submit" value="Connexion"/></td></tr>
-			</table>
-		</form>
-		</body></html><?php
-		exit(0);
-	}*/?>
+	}?>

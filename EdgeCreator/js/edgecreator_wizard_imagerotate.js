@@ -2,7 +2,7 @@ var imageBeingRotated = false;  // The DOM image currently being rotated (if any
 var mouseStartAngle = false;    // The angle of the mouse relative to the image centre at the start of the rotation
 var imageStartAngle = false;    // The rotation angle of the image at the start of the rotation
 
-
+var currentDegValue;
 // Start rotating an image
 
 function startRotate( e ) {
@@ -35,7 +35,10 @@ function stopRotate( e ) {
   // Remove the event handler that tracked mouse movements during the rotation
   $(document).unbind( 'mousemove' );
 
-  setTimeout( function() { imageBeingRotated = false; }, 10 );
+  setTimeout( function() { 
+	  tester_option_preview("TexteMyFonts","Rotation");
+	  imageBeingRotated = false; 
+  }, 10 );
   return false;
 }
 
@@ -54,8 +57,11 @@ function rotateImage( e ) {
   // Calculate the new rotation angle for the image
   var rotateAngle = mouseAngle - mouseStartAngle + imageStartAngle;
 
-  var degValue=parseFloat(rotateAngle * 180 / Math.PI);
-  rotateImageDegValue(imageBeingRotated, degValue);
+  currentDegValue=parseFloat(rotateAngle * 180 / Math.PI);
+  rotateImageDegValue(imageBeingRotated, currentDegValue);
+  
+  $(imageBeingRotated).val($(imageBeingRotated).val().replace(/\-?[0-9]+\.?[0-9]*/g,
+		  							  						  toFloat2Decimals(currentDegValue)));
   
   return false;
 }
@@ -70,12 +76,9 @@ function rotateImageRadValue(image, rotateAngle) {
 }
 
 function rotateImageDegValue(image, degValue) {
+	  currentDegValue = degValue;
 	  var radValue=parseFloat(degValue * Math.PI / 180);
 	  rotateImageRadValue(image, radValue);
-	  
-	  $(image).val($(image).val().replace(/\-?[0-9]+\.?[0-9]*/g,
-			  							  toFloat2Decimals(degValue)));
-	  tester_option_preview("TexteMyFonts","Rotation");
 }
 
 function radToDeg(rad) {
