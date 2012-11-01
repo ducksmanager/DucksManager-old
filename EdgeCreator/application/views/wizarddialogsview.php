@@ -338,6 +338,7 @@
 								<br />
 								Texte g&eacute;n&eacute;r&eacute; : <br />
 								<div class="apercu_myfonts">
+									<img />
 								</div>
 							</td>
 						</tr>
@@ -356,6 +357,7 @@
 							<tr>
 								<td colspan="2" style="text-align: center">
 									<div class="apercu_myfonts">
+										<img />
 									</div>
 								</td>
 							</tr>
@@ -378,22 +380,6 @@
 									   value="Faites tourner cette zone (Rotation=0.00&deg;)" /></td>
 						</tr>
 					</table>
-				</div>
-				<h3><a href="#">Positionnement</a></h3>
-				<div class="positionnement">
-					<div class="chargement cache">Veuillez patienter...</div>
-					<div class="apres chargement">
-						<ul>
-							<li>
-								D&eacute;placez la zone de texte au niveau de la tranche pour positionner le texte.
-							</li>
-							<li>
-								Tirez les bords de la zone de texte pour &eacute;tirer sa largeur ou sa hauteur.
-							</li>
-						</ul>
-						<div class="apercu_myfonts hidden">
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
