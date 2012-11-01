@@ -48,12 +48,18 @@ class collectable extends Format_liste {
 			global $centaines_utilisees;
 			$centaines_utilisees=array();
 			ksort($liste);
+			
+			$publication_codes=array();
+			foreach($liste as $pays=>$numeros_pays) {
+				foreach(array_keys($numeros_pays) as $magazine) {
+					$publication_codes[]=$pays.'/'.$magazine;
+				}
+			}
+			$magazines_ne_paraissant_plus=Inducks::get_magazines_ne_paraissant_plus($publication_codes);
 			foreach($liste as $pays=>$numeros_pays) {
 				ksort($numeros_pays);
 				foreach($numeros_pays as $magazine=>$numeros) {
-				   $requete_get_ne_parait_plus='SELECT NeParaitPlus FROM magazines WHERE PaysAbrege = \''.$pays.'\' AND NomAbrege = \''.$magazine.'\'';
-				   $resultat_get_ne_parait_plus=DM_Core::$d->requete_select($requete_get_ne_parait_plus);
-				   $ne_parait_plus=$resultat_get_ne_parait_plus[0]['NeParaitPlus']==1;
+				   $ne_parait_plus=in_array($pays.'/'.$magazine, $magazines_ne_paraissant_plus);
 				   $montrer_numeros_inexistants=false;
 				   if ($ne_parait_plus) {
 						list($numeros_inducks,$sous_titres)=Inducks::get_numeros($pays,$magazine);
@@ -116,12 +122,14 @@ class collectable extends Format_liste {
 						for ($j=0;$j<=collectable::$max_centaines;$j++) {
 							if (array_key_exists($j*100+$i,$liste_numeros)) {
 								for ($k=0;$k<$liste_numeros[$j*100+$i];$k++) {
-									$contenu.=number_to_letter($j);
 									if (array_key_exists($j*100+$i, $liste_numeros_doubles)) {
 										if (array_key_exists($j*100+$i+1, $liste_numeros_doubles))
-											$contenu.='&gt;';
+											$contenu.=number_to_letter($j).'&gt;';
 										else
-											$contenu.='&lt;';
+											$contenu.='&lt;'.number_to_letter($j);
+									}
+									else {
+										$contenu.=number_to_letter($j);
 									}
 								}
 							}
@@ -186,13 +194,19 @@ class collectable extends Format_liste {
 				?>
 					<td align="right" style="vertical-align: top">
 						<table style="color:black;font:11px/15px verdana,arial,sans-serif"><?php
+				$publication_codes=array();
+				foreach($liste as $pays=>$numeros_pays) {
+					foreach(array_keys($numeros_pays) as $magazine) {
+						$publication_codes[]=$pays.'/'.$magazine;
+					}
+				}
+				list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
 				foreach($liste as $pays=>$numeros_pays) {
 					ksort($numeros_pays);
 					foreach($numeros_pays as $magazine=>$numeros) {
-						list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
 						?><tr>
 							<td><?=$magazine?></td>
-							<td><?=$nom_magazine_complet?></td>
+							<td><?=$noms_magazines[$pays.'/'.$magazine]?></td>
 						</tr><?php
 					}
 				}?>
