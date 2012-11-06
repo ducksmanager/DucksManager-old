@@ -38,8 +38,13 @@ class collectable extends Format_liste {
 					font: 11px/15px verdana,arial,sans-serif;
 				}
 				
-				table.collectable, table.legende {
+				table.collectable, table.legendes {
 				    width: 90%;
+				}
+				
+				td.legende_numeros, td.legende_magazines {
+					width: 50%;
+					vertical-align: top;
 				}
 				
 				table.collectable {
@@ -47,23 +52,31 @@ class collectable extends Format_liste {
 					border-collapse: collapse;
 				}
 				
-				/*table.collectable td
+				table.collectable tr
+				{
+					height: 15px;
+				}
+				
+				table.collectable tr td
 				{
 				    text-align: left;
 				    border: solid 1px black;
-					height: 15px;
-				}*/
-				
-				table.collectable td.libelle_ligne {
-					
+					vertical-align: top;
+					max-width: 25px;
+					word-wrap: break-word;
 				}
 				
-				table.legende {
-					border: 1px solid black;
+				table.collectable tr td.libelle_ligne, 
+				table.collectable tr td.total_ligne
+				{
+				    text-align: center;
+					vertical-align: middle;
+					max-width: none;
+					white-space: nowrap;
 				}
 				
-				table.noms_magazines {
-					
+				table.collectable tr td.inexistant {
+					background-color: gray;
 				}
 				
 				-->
@@ -137,8 +150,8 @@ class collectable extends Format_liste {
 					}
 					$non_numeriques=count($liste_non_numeriques) > 0;
 					?>
-					<tr style="height: 15px">
-						<td rowspan="<?=$nb_lignes+($non_numeriques?1:0)?>" valign="middle" align="center">
+					<tr>
+						<td class="libelle_ligne" rowspan="<?=$nb_lignes+($non_numeriques?1:0)?>">
 							<img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
 							<br />
 							<?=$magazine?>
@@ -149,15 +162,16 @@ class collectable extends Format_liste {
 					for($i=1;$i<=100;$i++) {
 						if ($i % ($this->p('nb_numeros_ligne')) == 1) {
 							if ($i!=1) {
-							?><tr style="height: 15px"><?php
+							?><tr><?php
 								/*?><td></td><?php*/
 							}
 						}
 						?><td<?php 
 						if ($montrer_numeros_inexistants && !in_array($numero_centaines_min*$this->p('nb_numeros_ligne')+$i,$numeros_inducks)) {
-							?> style="background-color:gray;"<?php
+							?> class="inexistant"<?php
 						}
 						?>><?php
+						global $contenu;
 						$contenu='';
 						for ($j=0;$j<=collectable::$max_centaines;$j++) {
 							if (array_key_exists($j*100+$i,$liste_numeros)) {
@@ -178,7 +192,7 @@ class collectable extends Format_liste {
 						?></td><?php
 						if ($i % $this->p('nb_numeros_ligne') == 0) {
 							if ($i == $this->p('nb_numeros_ligne')) {
-								?><td style="text-align:center" rowspan="<?=$nb_lignes+($non_numeriques?1:0)?>"><?=$total_magazine?></td><?php
+								?><td class="total_ligne" rowspan="<?=$nb_lignes+($non_numeriques?1:0)?>"><?=$total_magazine?></td><?php
 							}
 							?>
 							</tr><?php
@@ -199,9 +213,9 @@ class collectable extends Format_liste {
 			}
 
 			?></table>
-			<table class="legende">
+			<table class="legendes">
 				<tr>
-					<td style="width: 50%"><?php
+					<td class="legende_numeros"><?php
 			if (count($centaines_utilisees)>0) {
 						?><table>
 							<tr>
@@ -209,29 +223,30 @@ class collectable extends Format_liste {
 									<u><?=LEGENDE_NUMEROS?></u>
 								</td>
 							</tr>
-							<tr>
-								<td style="vertical-align:top"><?php
+							<tr><?php
 				for ($i=0;$i<=collectable::$max_centaines;$i++) {
-					if ($i==intval(collectable::$max_centaines/2)+1) {
-						?></td><td style="vertical-align:top"><?php
-					}
-					?><?=number_to_letter($i)?>:<?=($i*100+1)?>-&gt;<?=(($i+1)*100)?><br /><?php
+							?><td>
+								<?=number_to_letter($i)?>:<?=($i*100+1)?>-&gt;<?=(($i+1)*100)?>
+							 </td><?php
+						if ($i%2 == 1) {
+						  ?></tr>
+						    <tr><?php
+						}
 				}
-								?></td>
-							</tr>
-						</table>
-				<?php
+						  ?></tr>
+						</table><?php
 			}
 			?>
 					</td><?php
 			$nb_magazines=0;
-			foreach($liste as $pays=>$numeros_pays)
+			foreach($liste as $numeros_pays) {
 				$nb_magazines+=count($numeros_pays);
+			}
 
 			if ($nb_magazines > 1) {
 				?>
-					<td align="right" style="vertical-align: top;width: 50%"">
-						<table class="noms_magazines"><?php
+					<td class="legende_magazines">
+						<table><?php
 				$publication_codes=array();
 				foreach($liste as $pays=>$numeros_pays) {
 					foreach(array_keys($numeros_pays) as $magazine) {
@@ -239,15 +254,25 @@ class collectable extends Format_liste {
 					}
 				}
 				list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+				$i=0;
+							?><tr><?php
 				foreach($liste as $pays=>$numeros_pays) {
 					ksort($numeros_pays);
 					foreach($numeros_pays as $magazine=>$numeros) {
-						?><tr>
-							<td><img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine?></td>
-							<td><?=$noms_magazines[$pays.'/'.$magazine]?></td>
-						</tr><?php
+						  		?><td>
+						  			<img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
+						  			&nbsp;<?=$magazine?>
+						  		  </td>
+								  <td>
+								 	<?=$noms_magazines[$pays.'/'.$magazine]?>
+								  </td><?php 
+						if($i%2 == 1) {
+							?></tr><tr><?php 
+						}
+						$i++;
 					}
 				}?>
+							</tr>
 						</table>
 					</td>
 	  <?php }?>
