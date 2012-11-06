@@ -30,7 +30,7 @@ class classique extends Format_liste {
 				foreach($numeros as $numero) {
 					$texte[]=urldecode(is_array($numero) ? $numero[0] : $numero);
 				}
-				echo ucfirst(count($numeros)==1 ? NUMERO:NUMEROS).' '.implode(', ',$texte);
+				echo implode(', ',$texte);
 				?><br /><?php
 			}
 		}

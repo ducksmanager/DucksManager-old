@@ -101,6 +101,7 @@ define('COLLECTABLE_PLUS_2','Les doublons peuvent &ecirc;tre repr&eacute;sent&ea
 define('COLLECTABLE_PLUS_3','La date d\'achat peut &ecirc;tre repr&eacute;sent&eacute;e');
 define('COLLECTION_INDUCKS','Collection Inducks');
 define('COLLECTION','Collection');
+define('COLLECTION_DE','Collection de ');
 //define('COMMENT_PARTAGER_COLLECTION','Si vous souhaitez que d\'autres utilisateurs puissent acc&eacute;der &agrave; votre collection, sp&eacute;cifiez cette option sur votre');
 define('COMMENT_S_IDENTIFIER','Cliquez sur "Ouvrir ma collection", dans le menu, pour vous identifier.');
 define('COMMENTAIRES_BOUQUINERIE','Commentaires');
@@ -319,7 +320,7 @@ define('NOMBRE_HISTOIRES','Nombre d\'histoires');
 define('NOM_UTILISATEUR','Nom d\'utilisateur');
 define('NON','Non');
 define('NON_CONNECTE','Non connect&eacute;(e)');
-define('NON_NUMERIQUES','Non-num&eacute;raux');
+define('NON_NUMERIQUES','Non-num&eacute;riques');
 define('NOTATION_MODIFIEE','La notation a ete modifiee');
 define('NOUVEAU','Nouveau!');
 define('NOUVEAU_MAGAZINE','Nouveau magazine');

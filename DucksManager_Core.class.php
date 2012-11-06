@@ -15,6 +15,9 @@ include_once('Util.class.php');
 include_once('Database.class.php');
 
 class DM_Core {
+    /**
+     * @var Database
+     */
     static $d;
     static $corresp=array();
 

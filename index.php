@@ -978,84 +978,39 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 break;
 
                             case 'print':
-                                if (false) {//$_SESSION['user']!='nonoox' && $_SESSION['user']!='brunoperel') {
-                                    ?><img width="300" src="images/travaux.png" /><br />
-                                    <?=TRAVAUX_SECTION?>
-                                    <?php break;
-                                }
-                                ?>
-                                <span style="font-weight: bold; text-decoration: underline;"><?=IMPRESSION_COLLECTION?> : </span><br /><br />
-                                <?=INTRO_IMPRESSION_COLLECTION1?><br />
-                                <?=INTRO_IMPRESSION_COLLECTION2?><br />
-                                <br />
-                                <div style="text-align:center;border:1px solid white;">
-                                    <a target="_blank" href="print.php"><?=CLIC_IMPRESSION?>!</a>
-                                </div><br /><br />
-                                <?=INTRO_IMPRESSION_COLLECTION3?><br /><br />
-                                <table border="1" cellpadding="4" cellspacing="2">
-                                    <tr align="center">
-                                        <td><?=AFFICHAGE_LISTE?></td>
-                                        <td><?=DESCRIPTION?></td>
-                                    </tr>
-                                <?php
-                                $liste_exemple=new Liste();
-                                $liste_exemple->ListeExemple();
-
-                                $rep = "Listes/";
-                                global $types_listes;
-                                $types_listes=array();
-                                $dir = opendir($rep);
-                                $prefixe='Liste.';
-                                $suffixe='.class.php';
-                                while ($f = @readdir($dir)) {
-                                    if (strpos($f,'Debug')!==false)
-                                        continue;
-                                    if(is_file($rep.$f)) {
-                                        if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
-                                            array_push($types_listes,substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe)));
-                                            require_once($rep.$f);
-                                        }
-                                    }
-                                }
-                                
-                                foreach($types_listes as $type) {
-                                    if ($type=='Series') continue;
-                                    $objet =new $type();
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <?php
-                                            if ($type=='DMtable') {
-                                                ?>
-                                                <iframe height="200px" width="100%" src="Liste.class.php?liste_exemple=true&amp;type_liste=<?=$type?>"></iframe>
-                                                <?php
-                                            }
-                                            else
-                                                echo $objet->afficher($liste_exemple->collection);
-                                            ?>
-                                        </td>
-                                        <td>
-                                            <?=$objet->description?><br /><br />
-                                            <img src="plus.png" alt="plus" /><br />
-                                            <?php
-                                            foreach($objet->les_plus as $plus) {
-                                                ?>- <?=$plus?><br /><?php
-                                            }
-                                            ?>
-                                            <br />
-                                            <img src="moins.png" alt="moins"/><br />
-                                            <?php
-                                            foreach($objet->les_moins as $moins) {
-                                                ?>- <?=$moins?><br /><?php
-                                            }
-                                            ?>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
-                                ?>
-                                </table>
-                                <?php
+                                ?>DucksManager propose l'impression de votre liste sous deux formats diff&eacute;rents :
+                                <ul>
+                                	<li style="margin-bottom: 30px">
+                                		Une <b>liste classique</b>, r&eacute;pertoriant pour chaque magazine les num&eacute;ros que vous poss&eacute;dez.
+                                		<br />
+                                		<ul>
+                                			<li>
+                                				Ce type de liste est plus adapt&eacute; pour les collections de moins de 500 num&eacute;ros.
+                                			</li>
+                                			<li>
+                                				Facile &agrave; lire, cette liste ne permet cependant pas d'y ajouter facilement des num&eacute;ros.
+                                			</li>
+                                		</ul> 
+                                		<br />
+                                		<a style="margin-left: 25px" href="impression.php?type=classique" target="_blank">G&eacute;n&eacute;rer un PDF avec la liste classique</a>
+                                	</li>
+                                	<li>
+                                		<span class="exclusif"> Exclusif DucksManager </span>Une <b>liste CollecTable</b>, plus synth&eacute;tique mais demandant un peu d'entra&icirc;nement !
+                                		<ul>
+                                			<li style="margin-top: 5px">
+                                				Adapt&eacute; pour les collections de taille importante.
+                                			</li>
+                                			<li>
+                                				
+                                			</li>
+                                		</ul> 
+                                		<br />
+                                		<a style="margin-left: 25px" href="impression.php?type=collectable" target="_blank">G&eacute;n&eacute;rer un PDF avec la liste CollecTable</a>
+                                	
+                                	</li>
+                                	
+                                </ul>
+                                <?php 
                                 break;
 
                             case 'agrandir':

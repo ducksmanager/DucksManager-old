@@ -22,13 +22,7 @@ class Item {
 				?><span style="font-weight: bold; text-decoration: underline;"><?=$this->texte?></span><?php
 			}
 			else {
-				?>&nbsp;&nbsp;<?php
-				if ($this->nom == 'print') {
-					?><a href="print.php" target="_blank"><?=$this->texte?></a><?php
-  				}
-   				else {
-  					?><a href="?action=<?=$this->nom?>"><?=$this->texte?></a><?php
-    			}
+				?>&nbsp;&nbsp;<a href="?action=<?=$this->nom?>"><?=$this->texte?></a><?php
 			}
    			if ($this->beta && self::$beta_user) {
 		   		?><span class="beta"><?=BETA?></span><?php

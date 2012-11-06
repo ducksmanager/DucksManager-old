@@ -101,6 +101,7 @@ define('COLLECTABLE_PLUS_2','The doublets can be represented');
 define('COLLECTABLE_PLUS_3','The purchase date can be represented');
 define('COLLECTION_INDUCKS','Inducks collection');
 define('COLLECTION','Comics collection');
+define('COLLECTION_DE','Collection of ');
 //define('COMMENT_PARTAGER_COLLECTION','If you want the other users to be able to view your collection, please specify this option on your');
 define('COMMENT_S_IDENTIFIER','Click on "Open my collection", in the left menu, in order to login.');
 define('COMMENTAIRES_BOUQUINERIE','Comments');
