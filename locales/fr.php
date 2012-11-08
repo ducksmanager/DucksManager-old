@@ -101,7 +101,7 @@ define('COLLECTABLE_PLUS_2','Les doublons peuvent &ecirc;tre repr&eacute;sent&ea
 define('COLLECTABLE_PLUS_3','La date d\'achat peut &ecirc;tre repr&eacute;sent&eacute;e');
 define('COLLECTION_INDUCKS','Collection Inducks');
 define('COLLECTION','Collection');
-define('COLLECTION_DE','Collection de ');
+define('COLLECTION_DE','Collection DucksManager de ');
 //define('COMMENT_PARTAGER_COLLECTION','Si vous souhaitez que d\'autres utilisateurs puissent acc&eacute;der &agrave; votre collection, sp&eacute;cifiez cette option sur votre');
 define('COMMENT_S_IDENTIFIER','Cliquez sur "Ouvrir ma collection", dans le menu, pour vous identifier.');
 define('COMMENTAIRES_BOUQUINERIE','Commentaires');
@@ -275,7 +275,7 @@ define('LANCER_CALCUL','Lancer le calcul des statistiques');
 define('LANCER_CALCUL_MANUELLEMENT','Vous pouvez lancer les statistiques manuellement, mais le calcul peut prendre plusieurs minutes.');
 define('LANCER_CALCUL_SUGGESTIONS','Lancer le calcul des suggestions');
 define('LANCER_CALCUL_SUGGESTIONS_MANUELLEMENT','Vous pouvez lancer le calcul des suggestions manuellement, mais il peut prendre plusieurs minutes.');
-define('LEGENDE_NUMEROS','L&eacute;gende num&eacute;ros');
+define('LEGENDE_NUMEROS','L&eacute;gende des num&eacute;ros');
 define('LES','Les');
 define('LICENCE_INDUCKS1','Ce site se base en partie sur les donn&eacute;es du site Inducks.');
 define('LICENCE_INDUCKS2','Cliquez ici pour lire la licence Inducks.');
