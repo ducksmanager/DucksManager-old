@@ -185,7 +185,7 @@ function wizard_check(wizard_id) {
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix == 'to-wizard-clonage-silencieux'
-						  && !$('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').hasClass('tranche_prete')) {
+						  && !$('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete, .cree_par_moi')) {
 						erreur='La tranche de ce num&eacute;ro n\'existe pas.<br />'
 							  +'S&eacute;lectionnez "Cr&eacute;er une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la cr&eacute;er '
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
@@ -419,7 +419,7 @@ function wizard_init(wizard_id) {
 					
 					// Ajout des dimensions en base
 					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,-1,'Dimensions'].join('/'),
+						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
 					    type: 'post',
 					    async: false
 					});
@@ -536,7 +536,7 @@ function wizard_init(wizard_id) {
 							
 							var wizard_etape_finale = $('.wizard.preview_etape.initial').clone(true);
 							var div_preview=$('<div>').data('etape','final').addClass('image_etape finale');
-							wizard_etape_finale.html(div_preview).append($('<span>',{'id':'photo_tranche'}).css({'margin-left':'10px'}));
+							wizard_etape_finale.html(div_preview).append($('<span>',{'id':'photo_tranche'}));
 							
 							wizard_etape_finale.dialog({
 								resizable: false,
@@ -1555,24 +1555,23 @@ function reload_current_and_final_previews(callback) {
 }
 
 function reload_all_previews() {
-	if (etapes_valides.length > 1) {
-		selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
-    	chargements=new Array();
-		$.each($(selecteur_cellules_preview),function(i,element) {
-			chargements.push($(element).data('etape'));
-		});
-		
-		chargement_courant=0;
-		charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
-			var dialogue=image.d();
-			var num_etape=dialogue.data('etape');
+	afficher_photo_tranche();
+	selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
+	chargements=new Array();
+	$.each($(selecteur_cellules_preview),function(i,element) {
+		chargements.push($(element).data('etape'));
+	});
+	
+	chargement_courant=0;
+	charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
+		var dialogue=image.d();
+		var num_etape=dialogue.data('etape');
 
-			if (modification_etape != null) {
-				if (dialogue.data('etape') == modification_etape.data('etape'))
-					recuperer_et_alimenter_options_preview(num_etape);
-			}
-        });
-	}
+		if (modification_etape != null) {
+			if (dialogue.data('etape') == modification_etape.data('etape'))
+				recuperer_et_alimenter_options_preview(num_etape);
+		}
+    });
 }
 
 function callback_change_picked_color(farb, input_couleur) {
@@ -1792,7 +1791,7 @@ function init_action_bar() {
 			                success:function(data) {
 			                	var photo_trouvee=null;
 			                	for (var i in data) {
-			                		if (data[i].match(new RegExp('^'+magazine+'\.'+numero+'\.photo\.(png|jpg)$','g'))) {
+			                		if (data[i].match(new RegExp('^'+magazine+'\.'+numero+'\.photo\.jpg$','g'))) {
 			                			photo_trouvee=data[i];
 			                		}
 			                	}
@@ -1814,6 +1813,7 @@ function init_action_bar() {
 											}
 											else {
 												afficher_photo_tranche();
+												$('#wizard-upload').dialog('close');
 											}								
 										}
 									});
@@ -1829,9 +1829,8 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche() {
-	$('#wizard-upload').css({'display':''});
-	$('#photo_tranche').html($('<img>',{'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.jpg'})
-							  .height(parseInt($('#dimension_y').val()) * zoom));
+	$('#photo_tranche').html($('<img>',{'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo.jpg'})
+							  .height(parseInt($('#Dimension_y').val()) * zoom));
 }
 
 function templatedToVal(templatedString) {

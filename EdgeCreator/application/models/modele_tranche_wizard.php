@@ -252,7 +252,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
-		$inclure_avant = $pos==='avant';
+		$inclure_avant = $pos==='avant' || $pos==='_';
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
 		
 		$decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);

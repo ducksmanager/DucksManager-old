@@ -15,7 +15,8 @@ iframe {
 }
 
 #action_bar img.action[name="photo"].active, #photo_tranche img {
-	outline: 2px solid cyan;
+	/*outline: 2px solid cyan;
+	margin-left: 2px;*/
 }
 
 #status_user {
@@ -35,6 +36,10 @@ button#connexion, button#deconnexion {
 
 .ui-dialog.main {
 	border-width: 2px;
+}
+
+.ui-dialog .ui-dialog-content.final {
+	white-space: nowrap;
 }
 
 #wizard-conception .texte_presentation_tranche_finale {

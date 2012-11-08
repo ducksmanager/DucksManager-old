@@ -5,14 +5,14 @@ $extension = strrchr($_FILES['image']['name'], '.');
 $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
 
 if ($est_photo_tranche) {
-	$fichier=$_POST['magazine'].'.'.$_POST['numero'].'.photo.'.$extension;
+	$fichier=$_POST['magazine'].'.'.$_POST['numero'].'.photo'.$extension;
 }
 else {
 	$fichier = basename($_FILES['image']['name']);
 }
 $taille_maxi = $_POST['MAX_FILE_SIZE'];
 $taille = filesize($_FILES['image']['tmp_name']);
-$extensions = $est_photo_tranche ? array('.jpg','.png') : array('.png');
+$extensions = $est_photo_tranche ? array('.jpg') : array('.png');
 //Début des vérifications de sécurité...
 if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
 {
