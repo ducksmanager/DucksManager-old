@@ -211,6 +211,17 @@ class Inducks {
 		}
 		return $nb_numeros;
 	}
+	
+	static function get_issues_from_storycode($story_code) {
+		$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber '
+				.'FROM inducks_issue '
+				.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
+				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
+				.'WHERE storycode = \''.$story_code.'\' '
+				.'ORDER BY publicationcode, issuenumber';
+		return Inducks::requete_select($requete);
+	}
+	
 	static function numero_to_page($pays,$magazine,$numero) {
 		$magazine=strtoupper($magazine);
 		list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,"urls",true);
@@ -288,13 +299,20 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 	if (strpos($nom_histoire, 'code=') === 0) {
 		$liste_magazines['direct']=true;
 		$code=substr($nom_histoire, strlen('code='));
-		$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber '
-				.'FROM inducks_issue '
-				.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
-				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE storycode = \''.$code.'\' '
-				.'ORDER BY publicationcode, issuenumber';
-		$resultat_requete=Inducks::requete_select($requete);
+		$resultat_requete=Inducks::get_issues_from_storycode($code);
+		if (count($resultat_requete) == 0) {
+			// On réessaie en testant le doublement de chacun des espaces du code d'histoire
+			$i=1;
+			$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
+			while ($code_avec_espaces !== $code) {
+				$resultat_requete = Inducks::get_issues_from_storycode($code_avec_espaces);
+				if (count($resultat_requete) > 0)
+					break;
+				$i++;
+				$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
+			}
+		}
+		
 		$publication_codes=array();
 		foreach($resultat_requete as $resultat) {
 			$publication_codes[]=$resultat['publicationcode'];

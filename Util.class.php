@@ -102,6 +102,12 @@ class Util {
 							"AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn" ) );
 	}
 	
+	static function remplacerNiemeCaractere($n, $caractere, $remplacement, $chaine) {
+		$result = preg_split('#('.$caractere.')#',$chaine,$n,PREG_SPLIT_DELIM_CAPTURE);
+		array_push($result,preg_replace('#'.$caractere.'#',$remplacement,array_pop($result),1));
+		return implode($result);
+	}
+	
 	static function lire_depuis_fichier($nom_fichier) {
 		$inF = fopen($nom_fichier,"r");
 		$str='';
