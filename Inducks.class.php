@@ -293,7 +293,7 @@ elseif (isset($_POST['get_covers'])) {
 	echo header("X-JSON: " . json_encode(Inducks::get_covers($_POST['pays'], $_POST['magazine'])));
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
-	$nom_histoire=Util::supprimerAccents(utf8_decode($_POST['histoire']));
+	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
 	echo $nom_histoire."\n";
 	$liste_magazines=array();
 	if (strpos($nom_histoire, 'code=') === 0) {
@@ -332,7 +332,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		$requete='SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title '
 				.'FROM inducks_entry '
 				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE inducks_entry.title LIKE \'%'.$nom_histoire.'%\' '
+				.'WHERE inducks_entry.title LIKE "%'.$nom_histoire.'%" '
 				.'ORDER BY title';
 		$resultat_requete=Inducks::requete_select($requete);
 		foreach($resultat_requete as $resultat) {
