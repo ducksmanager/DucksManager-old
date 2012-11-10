@@ -1,44 +1,7 @@
 <?header('Content-Type: text/html; charset=utf-8');
 error_reporting(E_ALL);
 include_once('../Database.class.php');
-
-if (!isset($_SESSION['user'])) {
-	$erreur='Identifiez vous.';
-	if (isset($_POST['user'])) {
-		$requete_identifiants_valides='SELECT 1 FROM users WHERE username=\''.$_POST['user'].'\' AND password=sha1(\''.$_POST['pass'].'\')';
-		$identifiants_valides=count(DM_Core::$d->requete_select($requete_identifiants_valides)) == 1;
-		if ($identifiants_valides) {
-			$requete_permission='SELECT 1 FROM edgecreator_droits WHERE username=\''.$_POST['user'].'\' AND privilege=\'Admin\'';
-			$permission_valide=count(DM_Core::$d->requete_select($requete_permission)) == 1;
-			if ($permission_valide) {
-				$_SESSION['user']=$_POST['user'];
-				$erreur='';
-			}
-			else {
-				$erreur = 'Permission non accord&eacute;e';
-			}
-		}
-		else {
-			$erreur = 'Identifiants invalides';
-		}
-	}
-	if (!empty($erreur)) {
-		?>
-		<html>
-			<body>
-				<?=$erreur?>
-				<form method="post" action="">
-					<table border="0">
-						<tr><td>Nom d'utilisateur :</td><td><input type="text" name="user" /></td></tr>
-						<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>
-						<tr><td align="center" colspan="2"><input type="submit" value="Connexion"/></td></tr>
-					</table>
-				</form>
-			</body>
-		</html>
-		<?php exit(0);
-	}
-}
+include_once('../authentification.php');
 ?>
 <form action="" method="post">
 <textarea name="query" rows="20" cols="150"><?php 

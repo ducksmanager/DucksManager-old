@@ -1,5 +1,6 @@
 <?php
 include_once('../Database.class.php');
+include_once('../authentification.php');
 
 if (isset($_GET['contributions'])) {
 	$requete_contributions='SELECT publicationcode, issuenumber FROM tranches_pretes '
