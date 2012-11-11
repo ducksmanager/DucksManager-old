@@ -37,23 +37,31 @@ elseif (isset($_GET['ajouter_contributeur'])) {
 }
 
 function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
-	$requete_contribution_existante='SELECT 1 FROM tranches_pretes '
+	$requete_tranche_prete='SELECT 1 FROM tranches_pretes '
 								   .'WHERE publicationcode=\''.$publicationcode.'\' '
-								     .'AND issuenumber=\''.$issuenumber.'\' '
-								     .'AND createurs REGEXP \'(^|,)('.$contributeur.')($|,)\' ';
-	$contribution_existe=count(DM_Core::$d->requete_select($requete_contribution_existante))> 0;
-	if ($contribution_existe) {
-		echo $contributeur.' est d&eacute;j&agrave; marqu&eacute; '
-			.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
+								     .'AND issuenumber=\''.$issuenumber.'\'';
+	if (count(DM_Core::$d->requete_select($requete_tranche_prete)) == 0) {
+		echo 'La tranche '.$publicationcode.' '.$issuenumber.' n\'est pas pr&ecirc;te'."\n";
 	}
 	else {
-		$requete='UPDATE tranches_pretes '
-				.'SET createurs=CONCAT(createurs, \','.$contributeur.'\') '
-				.'WHERE publicationcode=\''.$publicationcode.'\' '
-				  .'AND issuenumber=\''.$issuenumber.'\'';
-		DM_Core::$d->requete($requete);
-		echo $contributeur.' ajout&eacute; '
-			.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
+		$requete_contribution_existante='SELECT 1 FROM tranches_pretes '
+									   .'WHERE publicationcode=\''.$publicationcode.'\' '
+										 .'AND issuenumber=\''.$issuenumber.'\' '
+										 .'AND createurs REGEXP \'(^|,)('.$contributeur.')($|,)\' ';
+		$contribution_existe=count(DM_Core::$d->requete_select($requete_contribution_existante))> 0;
+		if ($contribution_existe) {
+			echo $contributeur.' est d&eacute;j&agrave; marqu&eacute; '
+				.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
+		}
+		else {
+			$requete='UPDATE tranches_pretes '
+					.'SET createurs=CONCAT(createurs, \','.$contributeur.'\') '
+					.'WHERE publicationcode=\''.$publicationcode.'\' '
+					  .'AND issuenumber=\''.$issuenumber.'\'';
+			DM_Core::$d->requete($requete);
+			echo $contributeur.' ajout&eacute; '
+				.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
+		}
 	}
 }
 
