@@ -42,9 +42,10 @@ class collectable extends Format_liste {
 				    width: 90%;
 				}
 				
-				td.legende_numeros, td.legende_magazines {
-					width: 50%;
+				td.legende_numeros, td.legende_magazines, td.achats {
 					vertical-align: top;
+					border-left: 1px solid gray;
+					padding: 8px;
 				}
 				
 				table.collectable {
@@ -143,9 +144,10 @@ class collectable extends Format_liste {
 						else {
 							if (!(self::est_listable($numero))) {
 								array_push($liste_non_numeriques, urldecode($numero));
-								continue;
 							}
-							ajouter_a_liste($numero, false);
+							else {
+								ajouter_a_liste($numero, false);
+							}
 						}
 					}
 					$non_numeriques=count($liste_non_numeriques) > 0;
@@ -219,11 +221,9 @@ class collectable extends Format_liste {
 			if (count($centaines_utilisees)>0) {
 						?><table>
 							<tr>
-								<td colspan="2" align="center">
-									<u><?=LEGENDE_NUMEROS?></u>
-								</td>
-							</tr>
-							<tr><?php
+								<td align="center" colspan="2">
+									<u><?=ucfirst(NUMEROS)?></u>
+								</td></tr><tr><?php
 				for ($i=0;$i<=collectable::$max_centaines;$i++) {
 							?><td>
 								<?=number_to_letter($i)?>:<?=($i*100+1)?>-&gt;<?=(($i+1)*100)?>
@@ -255,7 +255,10 @@ class collectable extends Format_liste {
 				}
 				list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
 				$i=0;
-							?><tr><?php
+							?><tr>
+								<td align="center" colspan="4">
+									<u><?=MAGAZINES?></u>
+								</td></tr><tr><?php
 				foreach($liste as $pays=>$numeros_pays) {
 					ksort($numeros_pays);
 					foreach($numeros_pays as $magazine=>$numeros) {
@@ -275,6 +278,11 @@ class collectable extends Format_liste {
 							</tr>
 						</table>
 					</td>
+					<td>
+						<table><tr><td align="center" class="achats">
+						<u><?=ACHATS?></u>
+					</td></td></tr></table>
+					
 	  <?php }?>
 				</tr>
 			</table>
