@@ -1062,7 +1062,7 @@ $(window).load(function() {
         return;
     
     $('#connexion,#deconnexion').button();
-    $('.tip').tipTip({delay:0});
+    $('.tip').tooltip();
 	
     $('#tabs').tabs({
     	show:function(event,ui) {

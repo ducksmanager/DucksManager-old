@@ -829,7 +829,7 @@ function indiquer_ajout_etape(e) {
 				   .data('etape',etape)
 				   .data('pos','avant');
 	}
-    $('.tip2').tipTip({delay:0});
+    $('.tip2').tooltip();
 }
 
 function effacer_ajout_etape() {
