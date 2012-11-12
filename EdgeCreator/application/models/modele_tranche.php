@@ -32,7 +32,7 @@ class Modele_tranche extends CI_Model {
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
 		if (isset($_POST['user'])) {
 			self::$just_connected=true;
-			if (!is_null($privilege = $this->user_connects($_POST['user'],sha1($_POST['pass']))))
+			if (!is_null($privilege = $this->user_connects($_POST['user'],$_POST['pass'])))
 				$this->creer_id_session($_POST['user'],sha1($_POST['pass']),$_POST['mode_expert']);
 		}
 		else {
@@ -54,14 +54,14 @@ class Modele_tranche extends CI_Model {
 	
 	function user_connects($user,$pass) {
 		$user=mysql_real_escape_string($user);
-		$pass=mysql_real_escape_string($pass);
+		$pass=mysql_real_escape_string(sha1($pass));
 		global $erreur;
 		if (!$this->user_exists($user)) {
 			$erreur = 'Cet utilisateur n\'existe pas';
 			return null;
 		}
 		else {
-			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND sha1(password) = \''.$pass.'\'';
+			$requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
 			$resultat=$this->db->query($requete);
 			if ($resultat->num_rows==0) {
 				$erreur = 'Identifiants invalides !';
