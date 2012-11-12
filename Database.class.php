@@ -137,69 +137,128 @@ class Database {
 		return Inducks::get_pays();
 	}
 
-	function get_noms_complets_magazines($pays) {
-		$requete_noms_complets='SELECT NomAbrege, RedirigeDepuis, NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$pays.'\'';
-		$resultat_noms_complets=DM_Core::$d->requete_select($requete_noms_complets);
-		$tab=array();
-		foreach($resultat_noms_complets as $resultat) {
-			$tab[$resultat['NomAbrege']]=$resultat['NomComplet'];
-			if (!is_null($resultat['RedirigeDepuis']))
-				$tab[$resultat['RedirigeDepuis']]=$resultat['NomComplet'];
-				
-		}
-		return $tab;
-	}
-
 	function liste_etats() {
-			$etats=array();
-			foreach(self::$etats as $etat_court=>$infos_etat) {
-				if ($etat_court!='indefini') {
-					$etats[]=$infos_etat[0];
-				}
+		$etats=array();
+		foreach(self::$etats as $etat_court=>$infos_etat) {
+			if ($etat_court!='indefini') {
+				$etats[]=$infos_etat[0];
 			}
-			echo implode('~', $etats);
+		}
+		echo implode('~', $etats);
 	}
 
-			function liste_numeros_externes_dispos($id_user) {
-			$requete_numeros_externes = 'SELECT Id_Utilisateur, Pays,Magazine,Numero,Etat,AV FROM numeros WHERE (Id_Utilisateur<>'.$id_user.' AND AV=1) ORDER BY Id_Utilisateur, Pays, Magazine';
-			$numeros_externes = DM_Core::$d->requete_select($requete_numeros_externes);
-			if (count($numeros_externes) != 0) {
-				$requete_pseudos_utilisateurs = 'SELECT ID, username FROM users';
-				$liste_utilisateurs = array();
-				$liste_utilisateurs_resultat = DM_Core::$d->requete_select($requete_pseudos_utilisateurs);
-				foreach ($liste_utilisateurs_resultat as $utilisateur) {
-					$liste_utilisateurs[$utilisateur['ID']] = $utilisateur['username'];
+	function liste_numeros_externes_dispos($id_user) {
+		$resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
+		
+		$requete_ventes_utilisateurs = 'SELECT users.ID, users.username, numeros.Pays, numeros.Magazine, numeros.Numero '
+									  .'FROM users '
+									  .'INNER JOIN numeros ON users.ID = numeros.ID_Utilisateur '
+									  .'WHERE numeros.AV=1 '
+									    .'AND NOT EXISTS (SELECT 1 FROM numeros numeros_user_courant '
+									    				.'WHERE numeros_user_courant.ID_Utilisateur='.$id_user.' '
+									    				  .'AND numeros.Pays = numeros_user_courant.Pays '
+									    				  .'AND numeros.Magazine = numeros_user_courant.Magazine '
+									    				  .'AND numeros.Numero = numeros_user_courant.Numero) '
+  										.'AND numeros.ID_Utilisateur <> '.$id_user.' '
+  										.'AND users.Email <> \'\' '
+										.'ORDER BY users.username, numeros.Pays, numeros.Magazine, numeros.Numero';
+		$resultat_ventes_utilisateurs = DM_Core::$d->requete_select($requete_ventes_utilisateurs);
+		if (count($resultat_ventes_utilisateurs) > 0) {
+			if (empty($resultat_email[0]['Email'])) {
+				?><br />
+				<span class="warning">
+					<?=ATTENTION_EMAIL_VIDE_ACHAT?>
+                  	<a target="_blank" href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
+            	</span><?php
+			}
+			$publication_codes = array();
+			foreach ($resultat_ventes_utilisateurs as $vente) {
+				$publication_codes[]=$vente['Pays'].'/'.$vente['Magazine'];
+			}
+			list($liste_pays,$liste_magazines)=$noms_complets_magazines=Inducks::get_noms_complets($publication_codes);
+			$username_courant = '';
+			foreach ($resultat_ventes_utilisateurs as $vente) {
+				$publicationcode=$vente['Pays'].'/'.$vente['Magazine'];
+				if ($username_courant != $vente['username']) {
+					if (!empty($username_courant)) {
+						$this->bloc_envoi_message_achat_vente($username_courant);?>
+						</ul><br /><?php
+					}
+					$username_courant=utf8_decode($vente['username']);
+					?><ul><b><?=$username_courant?></b> <?=PROPOSE_LES_NUMEROS?>
+				<?php }
+				?>
+				<li>
+					<img src="images/flags/<?=$vente['Pays']?>.png" />&nbsp;<?=$liste_magazines[$publicationcode]?> n&deg;<?=$vente['Numero']?>
+				</li>
+				<?php
+				$id_utilisateur = $vente['username'];
+			}
+			$this->bloc_envoi_message_achat_vente($username_courant);
+		}
+		else
+			echo AUCUN_NUMERO_PROPOSE;
+	}
+	
+	function bloc_envoi_message_achat_vente($username) {
+		date_default_timezone_set('Europe/Paris');
+		
+		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
+		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
+		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
+			if ($message_deja_envoye) {?>
+				<span class="confirmation">
+					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
+				</span><?php
+			}
+			else {
+				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
+				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
+				if (count($resultat_emails) != 2) {
+					?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
 				}
-				$id_utilisateur = '';
-				$pays = '';
-				foreach ($numeros_externes as $numero) {
-					if ($numero['Pays'] != $pays)
-						$liste_magazines = $this->get_noms_complets_magazines($numero['Pays']);
-					$pays = $numero['Pays'];
-					$requete_possede = 'SELECT Count(Numero) AS c FROM numeros WHERE (ID_Utilisateur='
-									  .$id_user.' AND Pays LIKE \'' .$numero['Pays'].'\' AND Magazine LIKE \''
-									  .$numero['Magazine'].'\' AND Numero LIKE \''.$numero['Numero'].'\')';
-					$resultat_possede = DM_Core::$d->requete_select($requete_possede);
-					if ($resultat_possede[0]['c'] == 0) {
-						if ($id_utilisateur != $numero['Id_Utilisateur']) {
-							if (!empty($id_utilisateur)) {
-								?></ul><br /><?php
-							}
-							?><ul><b><?=utf8_decode($liste_utilisateurs[$numero['Id_Utilisateur']])?></b> <?=PROPOSE_LES_NUMEROS?>
-						<?php } 
-						list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($numero['Pays'],$numero['Magazine']);
-						?>
-						<li>
-							<?=$nom_complet_magazine?> (<?=$nom_complet_pays?>) n&deg;<?=$numero['Numero']?>
-						</li><?php
-						$id_utilisateur = $numero['Id_Utilisateur'];
+				else {
+					foreach($resultat_emails as $resultat) {
+						if ($resultat['username'] == $_SESSION['user'])
+							$email_acheteur=$resultat['Email'];
+						else
+							$email_vendeur=$resultat['Email'];	
+					}
+					
+					$entete = "MIME-Version: 1.0\r\n";
+					$entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
+					$entete .= "To: ".$username." <".$email_vendeur.">\r\n";
+					$entete .= "From: ".$_SESSION['user']." de DucksManager <".$email_acheteur.">\r\n";
+					$contenu_mail='Bonjour '.$username.',<br /><br />'
+					.'L\'utilisateur '.$_SESSION['user'].' est int&eacute;ress&eacute; par certains des num&eacute;ros que vous proposez &agrave; la vente sur DucksManager.'
+					.'<br /><br />Vous pouvez r&eacute;pondre directement &agrave; cet e-mail pour lui proposer un prix et un moyen de lui transmettre vos num&eacute;ros.'
+					.'<br /><br /><br />Bonne vente, et &agrave; bient&ocirc;t sur DucksManager !<br /><br />L\'&eacute;quipe DucksManager';
+					if (mail($email_vendeur, 'Un utilisateur est intéressé par vos numéros en vente sur DucksManager', $contenu_mail,$entete)) {
+						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
+						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
+						DM_Core::$d->requete($requete_ajout_message);
+					}
+					else {
+						?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
 					}
 				}
 			}
-			else
-				echo AUCUN_NUMERO_PROPOSE;
 		}
-
+		else {
+			?><br /><?php
+			if ($message_deja_envoye) {?>
+				<span class="confirmation">
+					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
+				</span><?php
+			}
+			else {?>
+				<span style="border: 1px solid white;margin-left: 10px;">
+					&gt; <a href="?action=agrandir&contact=<?=$username?>"><?=ENVOYER_MESSAGE_A.$username?></a>
+				</span><?php
+			}
+		}
+	}
+	
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
 		if ($etat=='possede') $etat='indefini';
 		switch($etat) {
@@ -421,7 +480,7 @@ function ajouter_auteur($id,$nom) {
 			foreach($resultat_numeros_recommandes as $numero) {
 				$pays=$numero['Pays'];
 				if (!array_key_exists($pays,$pays_parcourus))
-					$pays_parcourus[$pays]=DM_Core::$d->get_noms_complets_magazines($pays);
+					$pays_parcourus[$pays]=Inducks::get_liste_magazines($pays);
 				?>
 				<li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br />
 				
@@ -468,9 +527,10 @@ function ajouter_auteur($id,$nom) {
 				echo '0_';
 		}
 	}
-        function get_notes_auteurs($id_user) {
-            return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
-        }
+	
+	function get_notes_auteurs($id_user) {
+		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
+	}
 
 	function sous_liste($pays,$magazine) {
 		$l_magazine=new Liste();
@@ -480,6 +540,14 @@ function ajouter_auteur($id,$nom) {
 			}
 		}
 		return $l_magazine;
+	}
+	
+	function est_utilisateur_vendeur_sans_email() {
+		$id_user=$this->user_to_id($_SESSION['user']);
+		$requete='SELECT 1 FROM users '
+				.'WHERE ID='.$id_user.' AND (Email IS NULL OR Email=\'\') '
+				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
+		return count($this->requete_select($requete)) == 1; 
 	}
 }
 require_once('DucksManager_Core.class.php');

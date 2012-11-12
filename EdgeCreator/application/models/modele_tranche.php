@@ -1,6 +1,5 @@
 <?php
 include_once(BASEPATH.'/../../Inducks.class.php');
-Inducks::$use_db=true;
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
 class Modele_tranche extends CI_Model {
@@ -475,7 +474,7 @@ class Modele_tranche extends CI_Model {
 		$numeros_affiches=array('Aucun'=>'Aucun');
 		if ($get_prets)
 			$tranches_pretes=array();
-		$numeros_soustitres=Inducks::get_numeros($pays, $magazine,false,true);
+		$numeros_soustitres=Inducks::get_numeros($pays, $magazine, "titres",true);
 		$id_user=$this->username_to_id(self::$username);
 		foreach($numeros_soustitres[0] as $i=>$numero) {
 			$numero_affiche=str_replace("\n",'',str_replace('+','',$numero));

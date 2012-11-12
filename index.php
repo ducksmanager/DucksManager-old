@@ -10,7 +10,12 @@ require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
 require_once('Util.class.php');
-error_reporting(E_ALL);
+if (Util::isLocalHost() || isset($_GET['dbg'])) {
+	error_reporting(E_ALL);
+}
+else  {
+	error_reporting(E_STRICT | E_WARNING);
+}
 
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 	setCookie('user','',time()-3600);
@@ -738,6 +743,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         ?>
                                         <form action="?action=gerer&amp;onglet=compte" method="post">
                                         <br /><?=ADRESSE_EMAIL?> : <br />
+                                        }?> /> <?=EMAIL_EXPLICATION?><br /><br />
                                         <input type="text" name="email" style="width: 200px" value="<?php
                                         if (!is_null($resultat_email[0]['Email'])) {
 											echo $resultat_email[0]['Email'];
@@ -816,6 +822,12 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                         break;
                                     case 'ajout_suppr':
+                                    	if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
+                                    		?><div class="warning">
+                                    			<?=ATTENTION_VENTE_SANS_EMAIL?>
+                                    			<a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
+                                    		</div><?php
+                                    	}
                                         if ($_SESSION['user'] == 'demo') {
                                         	require_once('init_demo.php');
 											$nb_minutes_avant_reset=60 - strftime('%M',time());
@@ -842,10 +854,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         <br />
                                         <?=POSSESSION_MAGAZINES_4?><br />
                                         <?php
-
-                                        $onglets_magazines=$l->liste_magazines();
-
-                                        $onglets_pays=$l->liste_pays();
+                                        
+                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines();
                                         if (isset($_POST['magazine'])) {
                                             $onglets_pays[$_POST['pays']]=array($_POST['pays'],NOUVEAU_PAYS);
                                             $onglets_magazines[$_POST['pays'].'/'.$_POST['magazine']]=array($_POST['pays'].'/'.$_POST['magazine'],NOUVEAU_MAGAZINE);
@@ -1045,16 +1055,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=agrandir');
                                 switch($onglet) {
                                     case 'achat_vente':
-                                        ?>
-                                        <?=INTRO_ACHAT_VENTE?><br />
-                                        <?php
-                                        $accepte=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
-                                        if ($accepte[0]['AccepterPartage']==0) {
-                                            echo COMMENT_PARTAGER_COLLECTION;
-                                            ?>
-                                            <i><a href="?action=gerer&amp;onglet=options"><?=PAGE_OPTIONS?></a></i>
-                                            <?php
-                                        }
+                                        echo INTRO_ACHAT_VENTE;
+                                        ?><br /><?php
                                         DM_Core::$d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':
@@ -1113,6 +1115,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             <img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none" />
                             <input type="submit" value="Ajouter" />
                         </form>
+                        <hr />
                         <div id="auteurs_ajoutes">
                             <br /><br />
                                                     <?php
@@ -1124,23 +1127,22 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         DM_Core::$d->requete($requete_update_recommandations_liste_mags);
                                                     }
                                                     $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
-                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
-                                                    foreach($resultat_auteurs_surveilles as $auteur) {
-                                                        $i=0;
-                                                        while ($_POST['auteur'.$i]) {
-                                                            if ($_POST['auteur'.$i] == $auteur['NomAuteurAbrege']) {
-                                                                $aucune_note=($_POST['aucune_note'.$i]==='on'?1:0);
-                                                                if (!empty($_POST['notation'.$i]) || $aucune_note) {
-                                                                    $notation=$aucune_note?-1:$_POST['notation'.$i];
+                                                    if (isset($_POST['auteur0'])) {
+	                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+	                                                    foreach($resultat_auteurs_surveilles as $auteur) {
+	                                                        $i=0;
+	                                                        while (isset($_POST['auteur'.$i])) {
+	                                                            if ($_POST['auteur'.$i] == $auteur['NomAuteurAbrege']) {
+                                                                    $notation=empty($_POST['notation'.$i]) ? -1 : $_POST['notation'.$i];
                                                                     $requete_notation='UPDATE auteurs_pseudos SET Notation='.$notation.' '
-                                                                            .'WHERE DateStat LIKE \'0000-00-00\' AND NomAuteurAbrege LIKE \''.$_POST['auteur'.$i].'\' '
-                                                                            .'AND ID_user='.$id_user;
+		                                                                             .'WHERE DateStat = \'0000-00-00\' AND NomAuteurAbrege = \''.$_POST['auteur'.$i].'\' '
+		                                                                             .'AND ID_user='.$id_user;
                                                                     DM_Core::$d->requete($requete_notation);
-                                                                }
-                                                            }
-                                                            $i++;
-                                                        }
-                                                    }
+	                                                            }
+	                                                            $i++;
+	                                                        }
+	                                                    }
+													}
                                                     $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                                     DM_Core::$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,true);
                                                     ?>

@@ -103,15 +103,21 @@ class Liste {
 	}
 	
 	function liste_magazines() {
-		$tab=array();
+		$publication_codes=array();
 		foreach($this->collection as $pays=>$numeros_pays) {
-			$noms_complets_magazines=Inducks::get_liste_magazines($pays);
 			foreach(array_keys($numeros_pays) as $magazine) {
-				$nom_complet_magazine=array_key_exists($magazine,$noms_complets_magazines) ? $noms_complets_magazines[$magazine] : $magazine;
-				$tab[$pays.'/'.$magazine]=array($pays.'/'.$magazine,$nom_complet_magazine);
+				$publication_codes[]=$pays.'/'.$magazine;
 			}
 		}
-		return $tab;
+		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+		foreach(array_keys($noms_pays) as $nom_abrege) {
+			$noms_pays[$noms_pays[$nom_abrege]]=array($nom_abrege, $noms_pays[$nom_abrege]);
+			unset($noms_pays[$nom_abrege]);
+		}
+		foreach(array_keys($noms_magazines) as $nom_abrege) {
+			$noms_magazines[$nom_abrege]=array($nom_abrege, $noms_magazines[$nom_abrege]);
+		}
+		return array($noms_pays,$noms_magazines);
 	}
 
 	function statistiques($onglet) {

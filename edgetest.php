@@ -5,6 +5,7 @@ include_once('Edge.class.php');
 include_once('Util.class.php');
 include_once('getDimensions.php');
 
+global $numeros_inducks;
 
 $largeur=$_POST['largeur'];
 $hauteur=$_POST['hauteur'];

@@ -31,45 +31,6 @@ if (isset($_POST['id'])) {
         }
         header("X-JSON: " . json_encode($retour));
     }
-    /* Par magazine
-    if (isset($_POST['init_chargement'])) {
-        $liste_magazines=array();
-        foreach($l->collection as $pays=>$numeros_pays) {
-            foreach(array_keys($numeros_pays) as $magazine) {
-                $liste_magazines[]=$pays.'/'.$magazine;
-            }
-        }
-        header("X-JSON: " . json_encode($liste_magazines));
-    }
-    elseif (isset($_POST['element'])) {
-        list($pays_courant,$magazine_courant)=explode('/',$_POST['element']);
-        $retour=array();
-        
-        list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($pays_courant, $magazine_courant);
-        $regex_nb_numeros='#<li><a href="publication.php\?c='.$pays_courant.'/'.$magazine_courant.'">[^<]+</a>&nbsp;<i>\(([^ ]+)#';
-        
-        require_once('Inducks.class.php');
-        list($numeros,$sous_titres)=Inducks::get_numeros($pays_courant,$magazine_courant);
-        $nb=count($numeros);
-        if ($nb==0) {
-            $cpt=0;
-            $retour['possede_pct']=0;
-            $retour['total_pct']=0;
-        }
-        else {
-            $cpt=count($l->collection[$pays_courant][$magazine_courant]);
-            $retour['possede_pct']=round(100*($cpt/$nb));
-            $retour['total_pct']=100-round(100*($cpt/$nb));
-        }
-        $retour['possede']=$cpt;
-        $retour['total']=$nb;
-
-        $retour['pays']=$nom_complet_pays;
-        $retour['nom_magazine_court']=$magazine_courant;
-        $retour['nom_magazine']=$nom_complet_magazine;
-        header("X-JSON: " . json_encode($retour));
-    }
- */
     elseif (isset($_POST['fin'])) {
         include_once ('OpenFlashChart/php-ofc-library/open-flash-chart.php');
         include_once ('locales/lang.php');
@@ -77,9 +38,19 @@ if (isset($_POST['id'])) {
 			$_POST[$key] = str_replace('\\"','"',$_POST[$key]);
         $infos=json_decode($_POST['infos']);
         $donnees=array();
+        
+        $publication_codes=array();
+        foreach(json_decode($_POST['ids']) as $i=>$pays) {
+        	foreach(array_keys(get_object_vars($infos[$i]->total)) as $magazine) {
+        		$publication_codes[]=$pays.'/'.$magazine;
+        	}
+        }
+        list($noms_complets_pays,$noms_complets_magazines)=Inducks::get_noms_complets($publication_codes);
+        
         foreach(json_decode($_POST['ids']) as $i=>$pays) {
             foreach($infos[$i]->total as $magazine=>$total) {
-                list($pays_complet,$magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays,$magazine);
+                $pays_complet = $noms_complets_pays[$pays];
+                $magazine_complet = $noms_complets_magazines[$pays.'/'.$magazine];
                 $donnee=new stdClass ();
                 $donnee->nom_magazine_court=$magazine;
                 $donnee->pays=$pays_complet;
