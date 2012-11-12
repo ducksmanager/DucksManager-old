@@ -231,9 +231,11 @@ function wizard_init(wizard_id) {
 							var label_tranche_en_cours=$('#numero_tranche_en_cours').next('label').clone(true);
 							bouton_tranche_en_cours.attr({'id':str_tranche,'value':str_tranche});
 							label_tranche_en_cours.attr({'for':str_tranche}).html(str_tranche_userfriendly);
-							$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours)
-																  .append(label_tranche_en_cours)
-																  .append($('<br>'));
+							if ($('#'+wizard_id+' #tranches_en_cours').find('[value="'+str_tranche+'"]').length == 0) {
+								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours)
+																	  .append(label_tranche_en_cours)
+																	  .append($('<br>'));
+							}
 						}
 						$('#numero_tranche_en_cours').next('label').remove();
 						$('#numero_tranche_en_cours').remove();
