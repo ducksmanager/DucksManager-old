@@ -94,7 +94,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 case 'bibliotheque':
                     $textures=array();
                     for ($i=1;$i<=2;$i++) {
-                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID LIKE \''.$id_user.'\'';
+                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID = \''.$id_user.'\'';
                         $resultat_textures=DM_Core::$d->requete_select($requete_textures);
                         $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
                         $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
@@ -112,6 +112,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     switch($_GET['onglet']) {
                         case 'possessions':
                             new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
+                        break;
+                        case 'achats':
+                            new JS('js/achats_histogramme.js');
                         break;
                     }
                 break;
@@ -147,7 +150,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         case 'bibliotheque':
             if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
                 if (Util::getBrowser()!=='MSIE<9') {
-                    $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID LIKE \''.$id_user.'\'';
+                    $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID = \''.$id_user.'\'';
                     $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
                     $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
                     $regen=isset($_GET['regen']) ? 1 : 0;
@@ -179,8 +182,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             }
             break;
         case 'stats':
-            if (isset($_GET['onglet']) && $_GET['onglet']=='auteurs') {
-                echo 'init_autocompleter_auteurs();';
+            if (isset($_GET['onglet'])) {
+            	switch($_GET['onglet']) {
+					case 'auteurs':
+						echo 'init_autocompleter_auteurs();';
+					break;
+					case 'achats':
+						echo 'afficher_histogramme_achats();';
+					break;
+				}
             }
             break;
         case 'agrandir':
@@ -521,13 +531,19 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             DM_Core::$d->maintenance_ordre_magazines($id_user);?>
                                             <div id="liste_magazines">
                                                 <?php
-                                                $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
+                                                $requete_ordre_magazines='SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
                                                 $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+                                                $publication_codes=array();
                                                 foreach($resultat_ordre_magazines as $magazine) {
+													$publication_codes[]=$magazine['Pays'].'/'.$magazine['Magazine'];
+												}
+												list($noms_pays,$noms_magazines)=Inducks::get_noms_complets($publication_codes);
+												foreach($resultat_ordre_magazines as $magazine) {
+                                                    $num_ordre=$magazine['Ordre'];
                                                     $nom_pays=$magazine['Pays'];
                                                     $nom_magazine=$magazine['Magazine'];
-                                                    $num_ordre=$magazine['Ordre'];
-                                                    list($pays_complet,$magazine_complet)=DM_Core::$d->get_nom_complet_magazine($nom_pays,$nom_magazine)
+                                                    $pays_complet = $noms_pays[$nom_pays];
+                                                    $magazine_complet = $noms_magazines[$nom_pays.'/'.$nom_magazine];
                                                     ?>
                                                     <div style="margin-top:10px;height:40px;" class="magazine_deplacable" id="<?=$nom_pays?>_<?=$nom_magazine?>">
                                                         <div class="handle" style="float:left;text-align:center;border:1px solid white;width:40px">
@@ -743,7 +759,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         ?>
                                         <form action="?action=gerer&amp;onglet=compte" method="post">
                                         <br /><?=ADRESSE_EMAIL?> : <br />
-                                        }?> /> <?=EMAIL_EXPLICATION?><br /><br />
                                         <input type="text" name="email" style="width: 200px" value="<?php
                                         if (!is_null($resultat_email[0]['Email'])) {
 											echo $resultat_email[0]['Email'];
@@ -1070,7 +1085,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         echo PRESENTATION_AUTEURS_FAVORIS;
                                         switch ($onglet_auteurs) {
                                             case 'resultats':
-                                                $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
+                                                $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
                                                 $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                                 ?>
                                                 <br /><br />
@@ -1126,7 +1141,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                                 .'WHERE ID='.$id_user;
                                                         DM_Core::$d->requete($requete_update_recommandations_liste_mags);
                                                     }
-                                                    $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
+                                                    $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
                                                     if (isset($_POST['auteur0'])) {
 	                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
 	                                                    foreach($resultat_auteurs_surveilles as $auteur) {

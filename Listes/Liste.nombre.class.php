@@ -19,7 +19,7 @@ class Nombre extends Format_liste {
 			}
 			ksort($numeros_pays);
 			foreach ($numeros_pays as $magazine => $numeros) {
-				list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+				list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
 				if (count($numeros_pays) > 1) {
 					?><u><?=$nom_magazine_complet?></u><?php
 				}

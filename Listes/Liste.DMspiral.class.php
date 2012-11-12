@@ -55,7 +55,7 @@ class dmspiral extends Format_liste {
 			}
 		}
 
-		list($nom_pays_complet,$nom_magazine_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+		list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
 
 		$titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
 		
@@ -195,7 +195,7 @@ class dmspiral extends Format_liste {
 			imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')-($i)*$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
 		}
 
-		$requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
+		$requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
 		$resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
 		$i=0;
 		foreach($resultat_numeros_possedes as $numero) {

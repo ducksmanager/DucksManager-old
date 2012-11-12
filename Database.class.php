@@ -48,7 +48,7 @@ class Database {
 			if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
 					$user=$_COOKIE['user'];
 			}
-			$requete='SELECT ID FROM users WHERE username LIKE \''.$user.'\'';
+			$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
 			$resultat=DM_Core::$d->requete_select($requete);
 			return $resultat[0]['ID'];
 	}
@@ -71,7 +71,7 @@ class Database {
 
 	function user_is_beta() {
 		if (isset($_SESSION['user'])) {
-			$requete_beta_user='SELECT BetaUser FROM users WHERE username LIKE \''.$_SESSION['user'].'\'';
+			$requete_beta_user='SELECT BetaUser FROM users WHERE username = \''.$_SESSION['user'].'\'';
 			$resultat_beta=DM_Core::$d->requete_select($requete_beta_user);
 			return $resultat_beta[0]['BetaUser']==1;
 		}
@@ -80,7 +80,7 @@ class Database {
 
 	function user_afficher_video() {
 		if (isset($_SESSION['user'])) {
-			$requete_afficher_video='SELECT AfficherVideo FROM users WHERE username LIKE \''.$_SESSION['user'].'\'';
+			$requete_afficher_video='SELECT AfficherVideo FROM users WHERE username = \''.$_SESSION['user'].'\'';
 			$resultat_afficher_video=DM_Core::$d->requete_select($requete_afficher_video);
 			return $resultat_afficher_video[0]['AfficherVideo']==1;
 		}
@@ -105,7 +105,7 @@ class Database {
 		$l=DM_Core::$d->toList($id_user);
 		foreach($l->collection as $pays=>$magazines) {
 			foreach(array_keys($magazines) as $magazine) {
-				$requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
+				$requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
 				$resultat_verif_ordre_existe=DM_Core::$d->requete_select($requete_verif_ordre_existe);
 				$ordre_existe=count($resultat_verif_ordre_existe) > 0;
 				if (!$ordre_existe) {
@@ -123,14 +123,10 @@ class Database {
 			$pays=$ordre['Pays'];
 			$magazine=$ordre['Magazine'];
 			if (!array_key_exists($pays, $l->collection) || !array_key_exists($magazine, $l->collection[$pays])) {
-				$requete_suppr_ordre='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' AND Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+				$requete_suppr_ordre='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
 				DM_Core::$d->requete($requete_suppr_ordre);
 			}
 		}
-	}
-
-	function get_nom_complet_magazine($pays,$magazine,$encode=false) {
-		return Inducks::get_nom_complet_magazine($pays,$magazine);
 	}
 
 	function get_noms_complets_pays() {
@@ -268,7 +264,7 @@ class Database {
 				foreach($liste as $numero) {
 					if (!$debut)
 						$requete.=' OR ';
-					$requete.='Numero LIKE \''.$numero.'\'';
+					$requete.='Numero = \''.$numero.'\'';
 					$debut=false;
 				}
 				$requete.=')';
@@ -347,12 +343,12 @@ class Database {
 					}
 				}
 
-				$requete_update.=' WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.$this->user_to_id($_SESSION['user']).' AND (';
+				$requete_update.=' WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$this->user_to_id($_SESSION['user']).' AND (';
 				$debut=true;
 				foreach($liste_deja_possedes as $numero) {
 					if (!$debut)
 						$requete_update.='OR ';
-					$requete_update.='Numero LIKE \''.$numero.'\' ';
+					$requete_update.='Numero = \''.$numero.'\' ';
 					$debut=false;
 				}
 				$requete_update.='))';
@@ -394,7 +390,7 @@ class Database {
 	}
 		
 	function get_auteur($nom_abrege) {
-		$requete_auteur_existe='SELECT NomAuteurComplet FROM auteurs WHERE NomAuteurAbrege LIKE \''.$nom_abrege.'\'';
+		$requete_auteur_existe='SELECT NomAuteurComplet FROM auteurs WHERE NomAuteurAbrege = \''.$nom_abrege.'\'';
 		$resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
 		if (count($resultat_auteur_existe)>0) {
 			return $resultat_auteur_existe[0]['NomAuteurComplet'];
@@ -409,7 +405,7 @@ class Database {
 	
 function ajouter_auteur($id,$nom) {
 		$id_user=$this->user_to_id($_SESSION['user']);
-		$requete_auteur_existe='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE NomAuteurAbrege LIKE \''.$id.'\' AND DateStat LIKE \'0000-00-00\' AND ID_User='.$id_user;
+		$requete_auteur_existe='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE NomAuteurAbrege = \''.$id.'\' AND DateStat = \'0000-00-00\' AND ID_User='.$id_user;
 		$resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
 		if (count($resultat_auteur_existe)>0) {
 			echo AUTEUR_DEJA_DANS_LISTE.'<br />';
@@ -529,7 +525,7 @@ function ajouter_auteur($id,$nom) {
 	}
 	
 	function get_notes_auteurs($id_user) {
-		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat LIKE \'0000-00-00\'');
+		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat = \'0000-00-00\'');
 	}
 
 	function sous_liste($pays,$magazine) {
@@ -579,7 +575,7 @@ if (isset($_POST['database'])) {
 		$date_acquisition=$_POST['date_acquisition'];
 		$id_acquisition=$date_acquisition;
 		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
-			$requete_id_acquisition='SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND Date LIKE \''.$date_acquisition.'\' GROUP BY ID_Acquisition';
+			$requete_id_acquisition='SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND Date = \''.$date_acquisition.'\' GROUP BY ID_Acquisition';
 			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
 			//echo $requete_id_acquisition;
 			if ($resultat_acqusitions[0]['cpt'] ==0)
@@ -622,7 +618,7 @@ if (isset($_POST['database'])) {
 		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
 										   .'FROM achats '
-										   .'WHERE ID_User='.$id_user.' AND Date LIKE \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description LIKE \''.$_POST['description'].'\'';
+										   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
 				$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
 		if ($compte_acquisition_date[0]['c']!=0) {
 			echo 'Date';exit(0);
@@ -676,7 +672,7 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
-				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege LIKE \''.$_POST['nom_auteur'].'\'');
+				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
 	}
 elseif (isset($_POST['liste_bouquineries'])) {
 			$requete_bouquineries='SELECT Nom, CONCAT(Adresse, \'<br />\',CodePostal, \' \',Ville) AS Adresse, Pays, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '

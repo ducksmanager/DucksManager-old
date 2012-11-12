@@ -19,6 +19,7 @@ function toNomMoisTraduitComplet($str) {
 	return $str;
 }
 
+date_default_timezone_set('Europe/Paris');
 global $noms_mois;
 $noms_mois=array('Jan'=>'Jan','Feb'=>'Fev','Mar'=>'Mar','Apr'=>'Avr','May'=>'Mai','Juin'=>'Juin',
 				 'Jul'=>'Juil','Aug'=>'Aou','Sep'=>'Sep','Oct'=>'Oct','Nov'=>'Nov','Dec'=>'Dec');
@@ -41,15 +42,17 @@ $l=DM_Core::$d->toList($id_user);
 
 $type=isset($_GET['type']) && $_GET['type'] == 'progressif' ? 'progressif' : 'normal'; 
 
-$requete_liste_pays_magazines='SELECT DISTINCT Pays, Magazine FROM numeros WHERE ID_Utilisateur='.$id_user;
+$requete_liste_pays_magazines='SELECT DISTINCT CONCAT(Pays,\'/\',Magazine) AS publicationcode FROM numeros WHERE ID_Utilisateur='.$id_user;
 $resultat_liste_pays_magazines=DM_Core::$d->requete_select($requete_liste_pays_magazines);
 $couleurs=array();
-foreach($resultat_liste_pays_magazines as $resultat_pays_magazine) {
-	$pays=$resultat_pays_magazine['Pays'];
-	$magazine=$resultat_pays_magazine['Magazine'];
-	$couleurs[$pays.'/'.$magazine]='#'.random_hex_color();
-	$noms_complets[$pays.'/'.$magazine]=implode(' - ',DM_Core::$d->get_nom_complet_magazine($pays,$magazine,true));
+$publication_codes=array();
+foreach($resultat_liste_pays_magazines as $resultat) {
+	$publicationcode=$resultat['publicationcode'];
+	$publication_codes[]=$publicationcode;
+	$couleurs[$publicationcode]='#'.random_hex_color();
 }
+list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+
 $requete_premier_mois='SELECT Date FROM achats WHERE ID_User='.$id_user.' AND Date > \'2000-01-01\' ORDER BY Date LIMIT 1';
 $resultat_premier_mois=DM_Core::$d->requete_select($requete_premier_mois);
 $mois_courant=substr($resultat_premier_mois[0]['Date'], 0,7);
@@ -89,7 +92,7 @@ $bar_stack = new bar_stack();
 $bar_stack_pct = new bar_stack();
 $max=0;
 foreach ($liste_mois as $i=>$mois) {
-	$requete='SELECT Count(a.ID_Acquisition) AS cpt, Pays, Magazine '
+	$requete='SELECT Count(a.ID_Acquisition) AS cpt, CONCAT(Pays,\'/\',Magazine) AS publicationcode '
 			.'FROM numeros n '
 			.'LEFT JOIN achats a ON a.ID_Acquisition = n.ID_Acquisition AND a.Date LIKE \''.$mois.'%\' '
 			.'WHERE ID_Utilisateur='.$id_user.' '
@@ -105,21 +108,22 @@ foreach ($liste_mois as $i=>$mois) {
 		$nb=intval($resultat['cpt']);
 		if ($type == 'normal' && $nb == 0)
 			continue;
-		$nom_magazine=$resultat['Pays'].'/'.$resultat['Magazine'];
-		if (!array_key_exists($nom_magazine,$comptes_totaux_magazines))
-			$comptes_totaux_magazines[$nom_magazine]=0;
-		$comptes_totaux_magazines[$nom_magazine]+=$nb;
+		$publicationcode=$resultat['publicationcode'];
+		$nom_complet_magazine=$noms_magazines[$publicationcode];//.($pays=='fr'?'':' ('.$noms_pays[$pays].')');
+		if (!array_key_exists($publicationcode,$comptes_totaux_magazines))
+			$comptes_totaux_magazines[$publicationcode]=0;
+		$comptes_totaux_magazines[$publicationcode]+=$nb;
 		if ($type == 'progressif') {
-			$section = new bar_stack_value($comptes_totaux_magazines[$nom_magazine],$couleurs[$nom_magazine]);
+			$section = new bar_stack_value($comptes_totaux_magazines[$publicationcode],$couleurs[$publicationcode]);
 			$section->set_tooltip(utf8_encode($liste_mois_affiches_complets[$i]).'<br>'
-								 .$noms_complets[$nom_magazine].'<br>'
-								 .'<i>'.MAGAZINE.'</i> : '.(($nb==0?'' : ('+'.$nb.', ')).TOTAL.' '.$comptes_totaux_magazines[$nom_magazine]).'<br>'
+								 .$nom_complet_magazine.'<br>'
+								 .'<i>'.MAGAZINE.'</i> : '.(($nb==0?'' : ('+'.$nb.', ')).TOTAL.' '.$comptes_totaux_magazines[$publicationcode]).'<br>'
 								 .'<i>'.TOUS_MAGAZINES.'</i> : '.(($cpt_mois==0?'' : ('+'.$cpt_mois.', ')).TOTAL.' '.$cpt_total));
 		}
 		else {
-			$section = new bar_stack_value($nb,$couleurs[$nom_magazine]);
+			$section = new bar_stack_value($nb,$couleurs[$publicationcode]);
 		
-			$section->set_tooltip(utf8_encode($liste_mois_affiches_complets[$i]).'<br>'.$noms_complets[$nom_magazine]
+			$section->set_tooltip(utf8_encode($liste_mois_affiches_complets[$i]).'<br>'.$nom_complet_magazine
 								  .'<br>'.utf8_encode($nb.' '.(($nb==0 || $nb==1) ? ACQUISITION : ACQUISITIONS).'<br>'.TOTAL.' : '.$cpt_mois));
 		}
 		$sections[]=$section;
@@ -130,10 +134,9 @@ foreach ($liste_mois as $i=>$mois) {
 }
 $legendes=array();
 ksort($couleurs);
-foreach($couleurs as $pays_magazine=>$couleur) {
-	list($pays,$magazine)=explode('/',$pays_magazine);
-	$nom_magazine=$noms_complets[$pays.'/'.$magazine];
-	$legendes[]=new bar_stack_key( $couleur, $nom_magazine, 13 );
+foreach($couleurs as $publicationcode=>$couleur) {
+	$nom_complet_magazine=$noms_magazines[$publicationcode];
+	$legendes[]=new bar_stack_key( $couleur, $nom_complet_magazine, 13 );
 }
 $bar_stack->set_keys($legendes);
 
@@ -169,9 +172,15 @@ $largeur_titres_magazines=$LARGEUR_MOYENNE_TITRE_MAGAZINE*$NB_TITRES_MAGAZINE_PA
 $largeur = max($largeur_barres,$largeur_titres_magazines);
 
 $hauteur_barres = max(400,$max * $HAUTEUR_1_NUMERO + 50);
-$hauteur_titres_magazines = intval($HAUTEUR_LIGNE_TITRE_MAGAZINE*(count($noms_complets)/(($largeur/$LARGEUR_MOYENNE_TITRE_MAGAZINE)-0.5)));
+$hauteur_titres_magazines = intval($HAUTEUR_LIGNE_TITRE_MAGAZINE*(count($resultat_liste_pays_magazines)/(($largeur/$LARGEUR_MOYENNE_TITRE_MAGAZINE)-0.5)));
 
 $hauteur = $hauteur_barres + $hauteur_titres_magazines;
+
+if ($largeur > $_GET['largeur_max'] -10)
+	$largeur = $_GET['largeur_max'] -10;
+
+if ($hauteur > $_GET['hauteur_max'] -10)
+	$hauteur = $_GET['hauteur_max'] -10;
 
 ?>
 

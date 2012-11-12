@@ -75,7 +75,7 @@ class Magazine extends DM_Core{
             DM_Core::$d->requete($requete);
         }
         else {
-            $requete_get_nom_complet='SELECT NomComplet FROM magazines WHERE PaysAbrege LIKE \''.$this->pays_abrege.'\' AND NomAbrege LIKE \''.$this->nom_abrege.'\'';
+            $requete_get_nom_complet='SELECT NomComplet FROM magazines WHERE PaysAbrege = \''.$this->pays_abrege.'\' AND NomAbrege = \''.$this->nom_abrege.'\'';
             $resultat_get_nom_complet=DM_Core::$d->requete_select($requete_get_nom_complet);
             $nom_complet=$resultat_get_nom_complet[0]['NomComplet'];
             $requete='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet,RedirigeDepuis) '

@@ -85,7 +85,7 @@ class Edge {
 		if ($numero_reel)
 			return $numero_clean;
 		
-		$requete_recherche_numero_reference='SELECT NumeroReference FROM tranches_doublons WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numero LIKE \''.$numero_clean.'\'';
+		$requete_recherche_numero_reference='SELECT NumeroReference FROM tranches_doublons WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero_clean.'\'';
 		$resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
 		if (count($resultat_numero_reference) ==0)
 			$numero_clean_reference=$numero_clean;
@@ -223,7 +223,7 @@ class Edge {
 DM_Core::$d->requete('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
 	include_once ('locales/lang.php');
-	list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=DM_Core::$d->get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+	list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=Inducks::get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
 	?>
 	<div class="titre_magazine"><?=$nom_complet_magazine?></div><br />
 	<div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
@@ -250,7 +250,7 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
 */
 elseif (isset($_POST['get_texture'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-	$requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
+	$requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
 	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
 	$rep = "edges/textures";
 	$dir = opendir($rep);
@@ -270,7 +270,7 @@ elseif (isset($_POST['get_texture'])) {
 
 elseif (isset($_POST['get_sous_texture'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-	$requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID LIKE \''.$id_user.'\'';
+	$requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
 	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
 
 	$rep = 'edges/textures/'.$_POST['texture'].'/miniatures';

@@ -29,7 +29,7 @@ foreach($l->collection as $pays => $magazines) {
                     if (false !== ($resolution=tentative_resolution_numero($pays,$magazine_dm,$num_dm))) {
                         list($pays_resolution,$magazine_resolution,$numero_resolution)=$resolution;
                         $requete_update='UPDATE numeros SET Pays=\''.$pays_resolution.'\', Magazine=\''.$magazine_resolution.'\', Numero=\''.$numero_resolution.'\' '
-                                       .'WHERE (Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine_dm.'\' AND Numero LIKE \''.$num_dm.'\')';
+                                       .'WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine_dm.'\' AND Numero = \''.$num_dm.'\')';
                         echo $requete_update.'<br />';//DM_Core::$d->requete($requete_update);
                         DM_Core::$d->requete($requete_update);
                         echo '==&gt; R&eacute;solution propos&eacute;e : '.implode('-',$resolution).'<br />';

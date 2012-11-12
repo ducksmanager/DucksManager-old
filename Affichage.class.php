@@ -112,7 +112,7 @@ class Affichage {
 		<span id="magazine" style="display:none"><?=$magazine?></span>
 		<?php
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		list($pays_complet,$nom_complet)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
+		list($pays_complet,$nom_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
 		?>
 		<br />
 		<table border="0" width="100%">

@@ -148,7 +148,6 @@ class Liste {
 				?><iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0px"></iframe><?php
 			break;
 			case 'possessions':
-			include_once('Chargement.class.php');	
 							?>
 								
 								<span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
@@ -176,11 +175,15 @@ class Liste {
 					echo AUCUNE_DATE_ACQUISITION;
 				}
 				else {
-					?><iframe id="iframe_graphique" src="achats_histogramme.php" style="border:0px"></iframe>
+					?><iframe id="iframe_graphique" style="border:0px"></iframe>
 					<br />
-					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php'});">Afficher les nouvelles acquisitions</a> 
+					<a href="javascript:void(0)" onclick="afficher_histogramme_achats();">
+						<?=AFFICHER_NOUVELLES_ACQUISITIONS?>
+					</a> 
 					&nbsp;-&nbsp;
-					<a href="javascript:void(0)" onclick="$('iframe_graphique').writeAttribute({'src':'achats_histogramme.php?type=progressif'});">Afficher les possessions totales</a>
+					<a href="javascript:void(0)" onclick="afficher_histogramme_achats('progressif');">
+						<?=AFFICHER_POSSESSIONS_TOTALES?>
+					</a>
 					<?php
 				}
 			break;
@@ -188,10 +191,10 @@ class Liste {
 				if (isset($_POST['auteur_nom'])) {
 					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
 				}
-				$requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat LIKE \'0000-00-00\'';
+				$requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
 				$resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
 				if (count($resultat_auteurs_surveilles)!=0) {
-					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat NOT LIKE \'0000-00-00\'';
+					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat <> \'0000-00-00\'';
 					$resultat_calcul_effectue=DM_Core::$d->requete_select($requete_calcul_effectue);
 					if ($resultat_calcul_effectue[0]['cpt']==0) {
 						echo CALCULS_PAS_ENCORE_FAITS.'<br />';
@@ -274,7 +277,7 @@ class Liste {
 				foreach($numeros_pays as $magazine=>$numeros) {
 					foreach($numeros as $numero) {
 						$num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
-						$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Numero LIKE \''.$num_final.'\')';
+						$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
 						DM_Core::$d->requete($requete);
 						$cpt++;
 					}
@@ -538,14 +541,14 @@ elseif(isset($_POST['sous_liste'])) {
 			$fusions=explode('-',$_POST['fusions']);
 			foreach($fusions as $fusion) {
 				$pays_et_magazine_fusion=explode('_',$fusion);
-				$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays LIKE \''.$pays_et_magazine_fusion[0].'\' AND Magazine LIKE \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
+				$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays = \''.$pays_et_magazine_fusion[0].'\' AND Magazine = \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
 				$resultat_get_type_liste=DM_Core::$d->requete_select($requete_get_type_liste);
 				if (count($resultat_get_type_liste) > 0) {
 					$type_liste=$resultat_get_type_liste[0]['Type_Liste'];
 
 					if (isset($_POST['type_liste']) && $_POST['type_liste'] != $type_liste) {
 						if (isset($_POST['confirmation_remplacement'])) {
-							$requete_effacer_parametres_courants='DELETE FROM parametres_listes WHERE Pays LIKE \''.$pays_et_magazine_fusion[0].'\' AND Magazine LIKE \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
+							$requete_effacer_parametres_courants='DELETE FROM parametres_listes WHERE Pays = \''.$pays_et_magazine_fusion[0].'\' AND Magazine = \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
 							DM_Core::$d->requete($requete_effacer_parametres_courants);
 						}
 						else {	
@@ -560,7 +563,7 @@ elseif(isset($_POST['sous_liste'])) {
 		}
 	}
 	else {
-		$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\'';
+		$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
 		$resultat_get_type_liste=DM_Core::$d->requete_select($requete_get_type_liste);
 		if (count($resultat_get_type_liste) > 0) {
 			$type_liste=$resultat_get_type_liste[0]['Type_Liste'];
@@ -612,7 +615,7 @@ elseif (isset($_POST['update_list'])) {
 	$l = DM_Core::$d->toList($id_user);
 	foreach($parametres as $parametre=>$valeur) {
 		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
-								   .'WHERE ID_Utilisateur='.$id_user.' AND Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Parametre LIKE \''.$parametre.'\'';
+								   .'WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Parametre = \''.$parametre.'\'';
 		DM_Core::$d->requete($requete_modifier_parametre);
 	}
 	
@@ -626,7 +629,7 @@ elseif (isset($_POST['update_parametres_generaux'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	foreach($parametres as $parametre=>$valeur) {
 		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
-								   .'WHERE ID_Utilisateur='.$id_user.' AND Position_Liste=-1 AND Parametre LIKE \''.$parametre.'\'';
+								   .'WHERE ID_Utilisateur='.$id_user.' AND Position_Liste=-1 AND Parametre = \''.$parametre.'\'';
 		DM_Core::$d->requete($requete_modifier_parametre);
 	}
 }
@@ -634,7 +637,7 @@ elseif (isset($_POST['parametres'])) {
 	@session_start();
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	list($pays,$magazine)=explode('_',$_POST['id_magazine']);
-	$requete_get_parametres='SELECT Type_Liste,Parametre,Valeur FROM parametres_listes WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
+	$requete_get_parametres='SELECT Type_Liste,Parametre,Valeur FROM parametres_listes WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
 	$resultat_get_parametres=DM_Core::$d->requete_select($requete_get_parametres);
 	if (count($resultat_get_parametres) == 0) {
 		$type_liste=$_POST['type_liste'];
@@ -658,7 +661,7 @@ elseif (isset($_POST['parametres'])) {
 	}
 	foreach($parametres as $parametre=>$valeur) {
 		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
-								   .'WHERE ID_Utilisateur='.$id_user.' AND Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Parametre LIKE \''.$parametre.'\'';
+								   .'WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Parametre = \''.$parametre.'\'';
 		DM_Core::$d->requete($requete_modifier_parametre);
 	}
 	header("X-JSON: " . json_encode($liste_courante->getListeParametresModifiables()));

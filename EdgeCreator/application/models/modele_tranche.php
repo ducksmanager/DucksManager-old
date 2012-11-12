@@ -61,7 +61,7 @@ class Modele_tranche extends CI_Model {
 			return null;
 		}
 		else {
-			$requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
+			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND sha1(password) = \''.$pass.'\'';
 			$resultat=$this->db->query($requete);
 			if ($resultat->num_rows==0) {
 				$erreur = 'Identifiants invalides !';

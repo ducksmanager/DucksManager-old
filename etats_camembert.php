@@ -17,7 +17,7 @@ $autres=0;
 $valeurs_magazines=array();
 $cles_magazines=array();
 foreach(Database::$etats as $etat_court=>$infos_etat) {
-	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat LIKE \''.$etat_court.'\'');
+	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat = \''.$etat_court.'\'');
 	$cpt=$resultat[0]['c'];
 	if ($cpt==0) continue;
 	if ($cpt/$total<0.01) {

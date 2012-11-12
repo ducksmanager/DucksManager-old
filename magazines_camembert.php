@@ -14,42 +14,47 @@ $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $l=DM_Core::$d->toList($id_user);
 $counts=array();
 $total=0;
-foreach($l->collection as $pays=>$numeros_pays) {
-	$counts[$pays]=array();
-	foreach($numeros_pays as $magazine=>$numeros) {
-		$counts[$pays][$magazine]=count($numeros);
-		$total+=count($numeros);
-	}
+$requete_cpt_numeros_groupes='SELECT Pays,Magazine,Count(Numero) AS cpt '
+							.'FROM numeros '
+							.'WHERE ID_Utilisateur='.$id_user.' '
+							.'GROUP BY Pays,Magazine '
+							.'ORDER BY cpt';
+$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select($requete_cpt_numeros_groupes);
+
+$publication_codes=array();
+foreach($resultat_cpt_numeros_groupes as $resultat) {
+	$publicationcode=$resultat['Pays'].'/'.$resultat['Magazine'];
+	$cpt=intval($resultat['cpt']);
+	$counts[$publicationcode]=$cpt;
+	$total+=$cpt;
+	$publication_codes[]=$publicationcode;
 }
-$cpt_magazines=array();
+list($noms_pays,$noms_magazines)=Inducks::get_noms_complets($publication_codes);
+
 $autres=0;
 $explode_pays=array();
-$cpt_pays=0;
 $valeurs_magazines=array();
 $cles_magazines=array();
 $nb_magazines_autres=0;
-foreach($counts as $pays=>$magazines) {
-	foreach($magazines as $magazine=>$cpt) {
-	list($nom_complet_pays,$nom_complet_magazine)=DM_Core::$d->get_nom_complet_magazine($pays, $magazine);
-		if ($cpt/$total<0.01) {
-			$autres+=$cpt;
-			$nb_magazines_autres++;
-		}
-		else {
-			$valeur=new pie_value($cpt,$magazine);
-			$valeur->set_tooltip($nom_complet_magazine
-                                            .utf8_encode('<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.intval(100*$cpt/$total).'%)');
-			array_push($valeurs_magazines,$valeur);
-			//$cpt_magazines[$liste_magazines[$magazine].' ('.$cpt.')']=$cpt;
-		}
+foreach($counts as $publicationcode=>$cpt) {
+	$nom_complet_magazine=$noms_magazines[$publicationcode];
+	if ($cpt/$total<0.01) {
+		$autres+=$cpt;
+		$nb_magazines_autres++;
 	}
-	$cpt_pays++;
+	else {
+		list($pays,$magazine)=explode('/',$publicationcode);
+		$valeur=new pie_value($cpt,$nom_complet_magazine);
+		$valeur->set_tooltip($nom_complet_magazine
+                            .utf8_encode('<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.intval(100*$cpt/$total).'%)');
+		array_push($valeurs_magazines,$valeur);
+	}
 }
 if ($autres!=0) {
 	$valeur_autres=new pie_value($autres,AUTRES);
-        $valeur_autres->set_colour('#84359');
+	$valeur_autres->set_colour('#84359');
 	$valeur_autres->set_tooltip(utf8_encode(AUTRES.' ('.$nb_magazines_autres.' '.MAGAZINES__LOWERCASE.')'
-                                    .'<br>'.NUMEROS_POSSEDES.' : '.$autres.' ('.intval(100*$autres/$total).'%)'));
+                               .'<br>'.NUMEROS_POSSEDES.' : '.$autres.' ('.intval(100*$autres/$total).'%)'));
 	array_push($valeurs_magazines,$valeur_autres);
 }
 $title=new title(PART_MAGAZINES_COLLECTION);

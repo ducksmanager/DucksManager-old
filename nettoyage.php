@@ -14,7 +14,7 @@ foreach($resultat as $numero) {
 	echo $num;
 	if ($num!='0') {
 		$num_change=preg_replace('#[0]+([^0]+)#is','$1',$num);
-		$requete_update='UPDATE numeros SET Numéro='.$num_change.' WHERE Numéro LIKE \''.$num.'\'';
+		$requete_update='UPDATE numeros SET Numéro='.$num_change.' WHERE Numéro = \''.$num.'\'';
 		echo $requete_update;
 		$d->requete($requete_update);
 	} 

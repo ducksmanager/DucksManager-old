@@ -15,7 +15,7 @@ $date_dernier_calcul=$resultat_date_dernier_calcul[0]['dernier_calcul'];
 if ($date_dernier_calcul=='0000-00-00')
 	exit(0);
 $requete_auteurs='SELECT NomAuteur, NbNonPossedesFrance, NbNonPossedesEtranger, NbPossedes FROM auteurs_pseudos '
-				.'WHERE ID_User='.$id_user.' AND DateStat LIKE \''.$date_dernier_calcul.'\'';
+				.'WHERE ID_User='.$id_user.' AND DateStat = \''.$date_dernier_calcul.'\'';
 $resultat_auteurs=DM_Core::$d->requete_select($requete_auteurs);
 $non_poss_etr=array();$non_poss_etr_pct=array();
 $non_poss_fr=array();$non_poss_fr_pct=array();
