@@ -1,17 +1,25 @@
 <?php
 class Numerosdispos extends CI_Controller {
 	
-	function index($pays=null,$magazine=null) {
-		
+	function index($pays=null,$magazine=null,$get_tranches_non_pretes=false) {
+		if ($pays == 'null') $pays = null;
+		if ($magazine == 'null') $magazine = null;
+		$get_tranches_non_pretes = $get_tranches_non_pretes === 'true';
 		
 		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
 		if ($pays == null) {
-			$data=array('mode'=>'get_pays');
-			$pays=$this->Modele_tranche->get_pays();
-			$data['pays']=$pays;
+			if ($get_tranches_non_pretes) {
+				$data=array('mode'=>'get_tranches_non_pretes');
+				$data['tranches_non_pretes']=$this->Modele_tranche->get_tranches_non_pretes();
+			}
+			else {
+				$data=array('mode'=>'get_pays');
+				$pays=$this->Modele_tranche->get_pays();
+				$data['pays']=$pays;
+			}			
 		}
 		else if ($magazine == null) {
 			$data=array('mode'=>'get_magazines');

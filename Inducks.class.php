@@ -11,7 +11,7 @@ class Inducks {
 		static $use_local_db=false;
 
 		static function requete_select($requete,$db='coa',$serveur='serveur_virtuel') {
-			if (Inducks::$use_local_db) {
+			if ($serveur=='serveur_virtuel' && Inducks::$use_local_db) {
 				mysql_select_db('coa');
 				$resultat = DM_Core::$d->requete_select($requete);
 				mysql_select_db(DatabasePriv::$nom_db_DM);

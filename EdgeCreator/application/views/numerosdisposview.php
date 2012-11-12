@@ -14,6 +14,9 @@ switch($mode) {
 		$envoi->nb_etapes=$nb_etapes;
 		$envoi->nom_magazine=$nom_magazine;
 	break;
+	case 'get_tranches_non_pretes':
+		$envoi->tranches_non_pretes=$tranches_non_pretes;
+	break;
 }
 echo json_encode($envoi);
 ?>

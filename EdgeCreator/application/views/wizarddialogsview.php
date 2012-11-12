@@ -66,52 +66,82 @@
 </div>
 
 
-	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Cr&eacute;ation de tranche">
 		<p>
-			Choisissez le num&eacute;ro que vous souhaitez mod&eacute;liser.<br />
+			Poss&eacute;dez-vous d&eacute;j&agrave;, dans votre collection DucksManager, 
+			le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche ?
 			<form>
-				<fieldset>
-					<label for="wizard_pays">Pays: </label>
-					<select name="wizard_pays" id="wizard_pays">
-						<option>Chargement...</option>
-					</select><br />
-					<label for="wizard_magazine">Magazine: </label>
-					<select name="wizard_magazine" id="wizard_magazine">
-						<option>Chargement...</option>
-					</select><br />
-					<label for="wizard_numero">Num&eacute;ro: </label>
-					<select name="wizard_numero" id="wizard_numero">
-						<option>Chargement...</option>
-					</select><br />
-					Les tranches sous fond vert sont d&eacute;j&agrave; disponibles. 
-					Si vous souhaitez les modifier, repassez &agrave; l'&eacute;cran pr&eacute;c&eacute;dent
-					et choisissez "Modifier une tranche de magazine".
-				</fieldset>
 				<div class="buttonset">
-					<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
-					<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Mon num&eacute;ro n'est pas dans la liste</label>
+					<input type="radio" checked="checked" name="choix" value="to-wizard-creer-collection" id="to-wizard-creer-collection" /><label for="to-wizard-creer-collection">Oui</label>
+					<input type="radio" name="choix" value="to-wizard-creer-hors-collection" id="to-wizard-creer-hors-collection" /><label for="to-wizard-creer-hors-collection">Non</label>
 				</div>
 			</form>
 		</p>
 	</div>
 	
-		<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager - Conception de la tranche">
+
+
+		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
 			<p>
-				<form name="form_options">
-					<span id="nom_complet_numero"></span>
-					Pour concevoir la tranche du magazine, nous devons connaitre ses dimensions.<br />
-					Indiquez ci-dessous l'<b>&eacute;paisseur</b> et la <b>hauteur</b> de la tranche, en millim&egrave;tres.
-					
-					Dimensions de la tranche : 
-					<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
-					x 
-					<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
+				<span class="cache">S&eacute;lectionnez le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche.</span>
+				<span class="patienter">Veuillez patienter...</span>
+				<form>
+					<div id="tranches_non_pretes" class="buttonset cache">
+						<input type="radio" name="choix_tranche_non_prete" value="numero_tranche_non_prete" id="numero_tranche_non_prete" class="init"/><label for="numero_tranche_non_prete">N&deg;</label>
+					</div>
 					<div class="buttonset cache">
-						<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
 					</div>
 				</form>
 			</p>
 		</div>
+			
+		<div id="to-wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+			<p>
+				Choisissez le num&eacute;ro que vous souhaitez mod&eacute;liser.<br />
+				<form>
+					<fieldset>
+						<label for="wizard_pays">Pays: </label>
+						<select name="wizard_pays" id="wizard_pays">
+							<option>Chargement...</option>
+						</select><br />
+						<label for="wizard_magazine">Magazine: </label>
+						<select name="wizard_magazine" id="wizard_magazine">
+							<option>Chargement...</option>
+						</select><br />
+						<label for="wizard_numero">Num&eacute;ro: </label>
+						<select name="wizard_numero" id="wizard_numero">
+							<option>Chargement...</option>
+						</select><br />
+						Les tranches sous fond vert sont d&eacute;j&agrave; disponibles. 
+						Si vous souhaitez les modifier, repassez &agrave; l'&eacute;cran pr&eacute;c&eacute;dent
+						et choisissez "Modifier une tranche de magazine".
+					</fieldset>
+					<div class="buttonset">
+						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
+						<input type="radio" name="choix" value="to-wizard-numero-inconnu" id="to-wizard-numero-inconnu" /><label for="to-wizard-numero-inconnu">Mon num&eacute;ro n'est pas dans la liste</label>
+					</div>
+				</form>
+			</p>
+		</div>
+	
+			<div id="wizard-dimensions" class="wizard first" title="Assistant DucksManager - Conception de la tranche">
+				<p>
+					<form name="form_options">
+						<span id="nom_complet_numero"></span>
+						Pour concevoir la tranche du magazine, nous devons connaitre ses dimensions.<br />
+						Indiquez ci-dessous l'<b>&eacute;paisseur</b> et la <b>hauteur</b> de la tranche, en millim&egrave;tres.
+						
+						Dimensions de la tranche : 
+						<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
+						x 
+						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
+						<div class="buttonset cache">
+							<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
+						</div>
+					</form>
+				</p>
+			</div>
 	
 	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
 		<p>

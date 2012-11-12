@@ -30,6 +30,8 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
 	            'caracteres_speciaux':/\°/i};
 
+var REGEX_NUMERO=/(.+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
+
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
 		jqueryui_alert('Identifiant d\'assistant invalide : '+id);
@@ -156,7 +158,14 @@ function wizard_check(wizard_id) {
 							  +'Sinon, cliquez sur "Cr&eacute;er une tranche de magazine" ou "Modifier une tranche de magazine".';
 					}
 				break;
-				case 'wizard-creer':
+				case 'wizard-creer-collection':
+					if (chargement_listes)
+						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
+					else if ($('#'+wizard_id+' form [name="choix_tranche_non_prete"]').filter(':checked').length == 0) {
+						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
+					}
+				break;
+				case 'wizard-creer-hors-collection':
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix != 'to-wizard-numero-inconnu'
@@ -252,8 +261,49 @@ function wizard_init(wizard_id) {
 			});
 			
 		break;
-		case 'wizard-creer': case 'wizard-modifier':
-			if (get_option_wizard('wizard-creer', 'wizard_pays') != undefined)
+		
+		case 'wizard-creer-collection':
+			chargement_listes=true;
+			$.ajax({
+				url: urls['numerosdispos']+['index','null','null','true'].join('/'),
+				dataType:'json',
+				type: 'post',
+				success:function(data) {
+					if (typeof(data.erreur) !='undefined')
+						jqueryui_alert(data);
+					else {
+						var tranches = data.tranches_non_pretes;
+						for (var i_tranche in tranches) {
+							var tranche=tranches[i_tranche];
+							var str_tranche_userfriendly=tranche.Magazine_complet+' n&deg;'+tranche.Numero;
+							var str_tranche=str_tranche_userfriendly+'('+tranche.Pays+'_'+tranche.Magazine+'_'+tranche.Numero+')';
+							var bouton_tranche=$('#numero_tranche_non_prete').clone(true).removeClass('init');
+							var label_tranche=$('#numero_tranche_non_prete').next('label').clone(true);
+							bouton_tranche.attr({'id':str_tranche,'value':str_tranche});
+							label_tranche.attr({'for':str_tranche}).html(str_tranche_userfriendly);
+							if ($('#'+wizard_id+' #tranches_non_pretes').find('[value="'+str_tranche+'"]').length == 0) {
+								$('#'+wizard_id+' #tranches_non_pretes').append(bouton_tranche)
+																	  .append(label_tranche)
+																	  .append($('<br>'));
+							}
+						}
+					}
+					$('#'+wizard_id+' #tranches_non_pretes, #'+wizard_id+' span.cache').removeClass('cache');
+					$('#'+wizard_id+' span.patienter').addClass('cache');
+					$('#numero_tranche_non_prete').next('label').remove();
+					$('#numero_tranche_non_prete').remove();
+					$('#'+wizard_id+' #tranches_non_pretes').buttonset();
+					chargement_listes=false;
+				},
+				error:function(data) {
+					jqueryui_alert('Erreur : '+data);
+				}
+			});
+		break;
+		
+		case 'wizard-creer-hors-collection': case 'wizard-modifier':
+			if (get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
+			 || get_option_wizard('wizard-creer-collection', 'wizard_pays') != undefined)
 				break;
 			
 			$('#'+wizard_id+' [name="wizard_pays"]').change(function() {
@@ -274,9 +324,12 @@ function wizard_init(wizard_id) {
 		case 'wizard-proposition-clonage':
 			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
 				break;
-			pays=get_option_wizard('wizard-creer', 'wizard_pays');
-			magazine=get_option_wizard('wizard-creer', 'wizard_magazine');
-			numero=get_option_wizard('wizard-creer', 'wizard_numero');
+			pays=get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
+			  || get_option_wizard('wizard-creer-collection', 'wizard_pays');
+			magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine')
+			  	  || get_option_wizard('wizard-creer-collection', 'wizard_magazine');
+			numero=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero')
+				|| get_option_wizard('wizard-creer-collection', 'wizard_numero');
 			selecteur_cellules_preview='#'+wizard_id+' #tranches_pretes_magazine td';
 			
 			var numero_selectionne=numero;
@@ -407,18 +460,29 @@ function wizard_init(wizard_id) {
 			var numero_complet_userfriendly=null;
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
 				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
-				var regex=/([^\(]+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
-				numero_complet_userfriendly=tranche_en_cours.replace(regex,'$1');
-				pays=tranche_en_cours.replace(regex,'$2');
-				magazine=tranche_en_cours.replace(regex,'$3');
-				numero=tranche_en_cours.replace(regex,'$4');
+				numero_complet_userfriendly=tranche_en_cours.replace(REGEX_NUMERO,'$1');
+				pays=tranche_en_cours.replace(REGEX_NUMERO,'$2');
+				magazine=tranche_en_cours.replace(REGEX_NUMERO,'$3');
+				numero=tranche_en_cours.replace(REGEX_NUMERO,'$4');
 			}
 			else {
-				if (get_option_wizard('wizard-creer','wizard_pays') != undefined) {
-					pays=get_option_wizard('wizard-creer','wizard_pays');
-					magazine=get_option_wizard('wizard-creer','wizard_magazine');
-					numero=get_option_wizard('wizard-creer','wizard_numero');
-					
+				if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete') == undefined
+				 && get_option_wizard('wizard-creer-hors-collection','wizard_pays') == undefined) {
+					numero_complet_userfriendly='';
+				}
+				else {
+					if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete')!= undefined) {
+						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche_non_prete');
+						numero_complet_userfriendly=tranche.replace(REGEX_NUMERO,'$1');
+						pays=tranche.replace(REGEX_NUMERO,'$2');
+						magazine=tranche.replace(REGEX_NUMERO,'$3');
+						numero=tranche.replace(REGEX_NUMERO,'$4');					
+					}
+					else {
+						pays=get_option_wizard('wizard-creer-hors-collection','wizard_pays');
+						magazine=get_option_wizard('wizard-creer-hors-collection','wizard_magazine');
+						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
+					}
 					// Ajout des dimensions en base
 					$.ajax({
 						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
@@ -433,9 +497,6 @@ function wizard_init(wizard_id) {
 					    type: 'post',
 					    async: false
 					});
-				}
-				else {
-					numero_complet_userfriendly='';
 				}
 			}
 			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
