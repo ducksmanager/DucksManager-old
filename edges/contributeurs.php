@@ -26,12 +26,12 @@ elseif (isset($_GET['ajouter_contributeur'])) {
 		}
 		else {
 			for ($numero=$debut;$numero<=$fin;$numero++) {
-				ajouter_contributeur($_GET['publicationcode'], $numero, $_GET['contributeur']);
+				ajouter_contributeur($_GET['publicationcode'], $numero, utf8_encode($_GET['contributeur']));
 			}
 		}
 	}
 	else {	
-		ajouter_contributeur($_GET['publicationcode'], $_GET['issuenumber'], $_GET['contributeur']);
+		ajouter_contributeur($_GET['publicationcode'], $_GET['issuenumber'], utf8_encode($_GET['contributeur']));
 	}
 	exit(0);
 }
