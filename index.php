@@ -979,37 +979,37 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                             case 'print':
                                 ?>DucksManager propose l'impression de votre liste sous deux formats diff&eacute;rents :
-                                <ul>
-                                	<li style="margin-bottom: 30px">
+                                <ul id="choix_impression">
+                                	<li style="background-image: url('Listes/Classique_petit.png')">
                                 		Une <b>liste classique</b>, r&eacute;pertoriant pour chaque magazine les num&eacute;ros que vous poss&eacute;dez.
-                                		<br />
-                                		<ul>
+                                		<br>
+                                		<ul class="caract">
                                 			<li>
                                 				Ce type de liste est plus adapt&eacute; pour les collections de moins de 500 num&eacute;ros.
                                 			</li>
                                 			<li>
-                                				Facile &agrave; lire, cette liste ne permet cependant pas d'y ajouter facilement des num&eacute;ros.
+                                				Facile &agrave; lire, cette liste devient vite illisible lorsqu'il s'agit d'ajouter des num&eacute;ros.
                                 			</li>
                                 		</ul> 
-                                		<br />
-                                		<a style="margin-left: 25px" href="impression.php?type=classique" target="_blank">G&eacute;n&eacute;rer un PDF avec la liste classique</a>
+                                		
+                                		<br><br><a style="margin-top: 5px;" href="impression.php?type=classique" target="_blank">Imprimer ma collection avec la liste classique</a><br>
                                 	</li>
-                                	<li>
+                                	<li style="background-image: url('Listes/CollecTable_petit.png')">
                                 		<span class="exclusif"> Exclusif DucksManager </span>Une <b>liste CollecTable</b>, plus synth&eacute;tique mais demandant un peu d'entra&icirc;nement !
-                                		<ul>
-                                			<li style="margin-top: 5px">
+                                		<ul class="caract">
+                                			<li>
                                 				Adapt&eacute; pour les collections de taille importante.
                                 			</li>
                                 			<li>
                                 				
                                 			</li>
                                 		</ul> 
-                                		<br />
-                                		<a style="margin-left: 25px" href="impression.php?type=collectable" target="_blank">G&eacute;n&eacute;rer un PDF avec la liste CollecTable</a>
+                                		<br>
+                                		<a style="margin-left: 25px" href="impression.php?type=collectable" target="_blank">Imprimer ma collection avec la liste CollecTable</a>
                                 	
                                 	</li>
-                                	
                                 </ul>
+                                
                                 <?php 
                                 break;
 

@@ -250,6 +250,25 @@ td#zone_logo2 {
 	vertical-align: top;
 }
 
+ul#choix_impression {
+	margin-top: 31px;
+}
+
+ul#choix_impression>li {
+	list-style: none;
+	height: 150px;	
+	margin-bottom: 30px;
+	padding-left: 170px;
+	padding-top: 12px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+ul#choix_impression ul.caract li{
+	margin-top: 14px;
+}
+
 .exclusif {
 	border: 1px solid #C88964;
 	padding: 3px;
