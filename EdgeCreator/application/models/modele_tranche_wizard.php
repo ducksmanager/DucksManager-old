@@ -1,7 +1,6 @@
 <?php
 include_once(BASEPATH.'/../../Inducks.class.php');
 include_once(BASEPATH.'/../application/models/modele_tranche.php');
-Inducks::$use_db=true;
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
 class Modele_tranche_Wizard extends Modele_tranche {
@@ -368,6 +367,31 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				$this->db->query($requete_ajout_valeur);
 			}
 		}
+	}
+	
+	function get_tranches_non_pretes() {
+		$username = $this->session->userdata('user');
+		$requete="SELECT Pays,Magazine,Numero "
+				."FROM numeros "
+				."WHERE ID_Utilisateur=(SELECT ID FROM users WHERE username='$username') "
+				."  AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN "
+				."   (SELECT CONCAT(publicationcode,' ',issuenumber) "
+				."  FROM tranches_pretes)";
+
+		$resultats = Inducks::requete_select($requete, DatabasePriv::$nom_db_DM,'ducksmanager.net');
+		
+		$publication_codes=array();
+		foreach($resultats as $resultat) {
+			$publication_codes[]=$resultat['Pays'].'/'.$resultat['Magazine'];
+		}
+		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+		
+		foreach($resultats as $i=>$resultat) {
+			$resultats[$i]['Magazine_complet'] = $noms_magazines[$resultat['Pays'].'/'.$resultat['Magazine']]
+												.' ('.$noms_pays[$resultat['Pays']].')';
+		}
+		
+		return $resultats;
 	}
 	
 	function setNumero($numero) {

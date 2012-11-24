@@ -1083,16 +1083,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			else {
 				arc = section_preview_etape.find('.preview_vide .arc_position');
 			}
-			dessiner(arc, 'Arc_cercle', form_options, function(image) {
-				
-				image.removeClass('cache');
-				
-				pos_x_courante = image.position().left;
-				pos_y_courante = image.position().top;
-				
-				arc.css({'left':(pos_x_courante + parseFloat(valeurs['Pos_x_centre'])*zoom-parseFloat(valeurs['Largeur'])*zoom/2)+'px',
-						 'top' :(pos_y_courante + parseFloat(valeurs['Pos_y_centre'])*zoom-parseFloat(valeurs['Hauteur'])*zoom/2)+'px',});
-			});
+			dessiner(arc, 'Arc_cercle', form_options);
 
 			checkboxes.push('Rempli');
 			form_userfriendly.valeur('Rempli')
@@ -1123,6 +1114,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						 stop: function(event,ui) {
 						   tester_option_preview(nom_fonction,'Largeur'); 
 						   tester_option_preview(nom_fonction,'Hauteur');
+						   tester_option_preview(nom_fonction,'Pos_x_centre'); 
+						   tester_option_preview(nom_fonction,'Pos_y_centre');
 						   dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
 						 }
 					 });
@@ -1303,27 +1296,35 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 }
 
-function dessiner(element, type, form_options, callback) {
-	callback = callback || function() {};
+function dessiner(element, type, form_options) {
 	var url_appel=urls['dessiner']+"index/"+type+"/"+zoom+"/0";
 	var options = [];
 	switch(type) {
 		case 'Arc_cercle':
 			options = ['Couleur','Pos_x_centre','Pos_y_centre','Largeur','Hauteur','Angle_debut','Angle_fin','Rempli'];
+			
+			pos_x_courante = element.parent().position().left;
+			pos_y_courante = element.parent().position().top;
+			
+			element.css({'left':(pos_x_courante + parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
+												- parseFloat(form_options.valeur('Largeur').val())	   *zoom/2)+'px',
+						 'top' :(pos_y_courante + parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
+							 					- parseFloat(form_options.valeur('Hauteur').val())	   *zoom/2)+'px'});
 		break;
 	}
 	$.each($(options),function(i,nom_option) {
 		if (nom_option == 'Pos_x_centre')
-			url_appel+="/"+parseFloat(form_options.valeur('Largeur').val())/2;
+			url_appel+="/"+toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2);
 		else if (nom_option == 'Pos_y_centre')
-			url_appel+="/"+parseFloat(form_options.valeur('Hauteur').val())/2;
+			url_appel+="/"+toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2);
 		else
 			url_appel+="/"+form_options.valeur(nom_option).val();
 	});
-	element.attr({'src':url_appel})
-		   .load(function() {
-			   callback($(this));
-		   });
+	element
+		.attr({'src':url_appel})
+		.load(function() {
+			$(this).removeClass('cache');
+		});
 }
 
 function positionner_image(preview) {
@@ -1559,12 +1560,16 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 				var arc=dialogue.find('.arc_position');
 				switch(nom_option) {
 					case 'Pos_x_centre':
-						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Largeur').val())/2 
-											 + parseFloat(arc.position().left - pos_x_courante)/zoom);
+						val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2 
+											 + parseFloat(arc.position().left 
+													 	+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().left : 0)
+													 	- image.position().left)/zoom);
 					break;
 					case 'Pos_y_centre':
-						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Hauteur').val())/2 
-								 			 + parseFloat(arc.position().top - pos_y_courante)/zoom);
+						val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
+								 			 + parseFloat(arc.position().top 
+								 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
+								 					    - image.position().top)/zoom);
 					break;
 					case 'Largeur':
 						val=arc.width()/zoom;

@@ -8,19 +8,18 @@ header("Pragma: no-cache"); ?>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.9.1.custom.css" />
+	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/sunny/jquery-ui-1.9.2.custom.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
 	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 	
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.8.2.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.8.3.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.9.1.custom.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.9.2.custom.min.js" ></script>
 	
-	<!-- <script type="text/javascript" src="<?=base_url()?>js/jquery.scrollbarTable.js" ></script>!-->
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/farbtastic.js" ></script>
@@ -48,7 +47,8 @@ header("Pragma: no-cache"); ?>
 		var urls=new Array();
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
-		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','upload_wizard','supprimer_wizard','viewer','viewer_wizard','viewer_myfonts');
+		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','upload_wizard','supprimer_wizard','viewer','viewer_wizard','viewer_myfonts',
+						   'dessiner');
 		foreach($controleurs as $controleur) {
 			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
 		}?>

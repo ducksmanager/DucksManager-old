@@ -95,6 +95,14 @@ button#connexion, button#deconnexion {
 	cursor: move;
 }
 
+.wizard.preview_etape .arc_position {
+	position: absolute;
+}
+
+.wizard.preview_etape .arc_position.ui-draggable {
+	cursor: move;
+}
+
 .wizard.preview_etape .rotation input[name="option-Rotation"] {
 	cursor: move;
 }
