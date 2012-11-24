@@ -16,6 +16,9 @@ var id_wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
 
+var pos_x_courante=null,
+	pos_y_courante=null;
+
 zoom=1.5;
 var url_viewer='viewer_wizard';
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
@@ -29,6 +32,8 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
 	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
 	            'caracteres_speciaux':/\°/i};
+
+var REGEX_NUMERO=/(.+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -156,7 +161,14 @@ function wizard_check(wizard_id) {
 							  +'Sinon, cliquez sur "Cr&eacute;er une tranche de magazine" ou "Modifier une tranche de magazine".';
 					}
 				break;
-				case 'wizard-creer':
+				case 'wizard-creer-collection':
+					if (chargement_listes)
+						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
+					else if ($('#'+wizard_id+' form [name="choix_tranche_non_prete"]').filter(':checked').length == 0) {
+						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
+					}
+				break;
+				case 'wizard-creer-hors-collection':
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix != 'to-wizard-numero-inconnu'
@@ -252,8 +264,49 @@ function wizard_init(wizard_id) {
 			});
 			
 		break;
-		case 'wizard-creer': case 'wizard-modifier':
-			if (get_option_wizard('wizard-creer', 'wizard_pays') != undefined)
+		
+		case 'wizard-creer-collection':
+			chargement_listes=true;
+			$.ajax({
+				url: urls['numerosdispos']+['index','null','null','true'].join('/'),
+				dataType:'json',
+				type: 'post',
+				success:function(data) {
+					if (typeof(data.erreur) !='undefined')
+						jqueryui_alert(data);
+					else {
+						var tranches = data.tranches_non_pretes;
+						for (var i_tranche in tranches) {
+							var tranche=tranches[i_tranche];
+							var str_tranche_userfriendly=tranche.Magazine_complet+' n&deg;'+tranche.Numero;
+							var str_tranche=str_tranche_userfriendly+'('+tranche.Pays+'_'+tranche.Magazine+'_'+tranche.Numero+')';
+							var bouton_tranche=$('#numero_tranche_non_prete').clone(true).removeClass('init');
+							var label_tranche=$('#numero_tranche_non_prete').next('label').clone(true);
+							bouton_tranche.attr({'id':str_tranche,'value':str_tranche});
+							label_tranche.attr({'for':str_tranche}).html(str_tranche_userfriendly);
+							if ($('#'+wizard_id+' #tranches_non_pretes').find('[value="'+str_tranche+'"]').length == 0) {
+								$('#'+wizard_id+' #tranches_non_pretes').append(bouton_tranche)
+																	  .append(label_tranche)
+																	  .append($('<br>'));
+							}
+						}
+					}
+					$('#'+wizard_id+' #tranches_non_pretes, #'+wizard_id+' span.cache').removeClass('cache');
+					$('#'+wizard_id+' span.patienter').addClass('cache');
+					$('#numero_tranche_non_prete').next('label').remove();
+					$('#numero_tranche_non_prete').remove();
+					$('#'+wizard_id+' #tranches_non_pretes').buttonset();
+					chargement_listes=false;
+				},
+				error:function(data) {
+					jqueryui_alert('Erreur : '+data);
+				}
+			});
+		break;
+		
+		case 'wizard-creer-hors-collection': case 'wizard-modifier':
+			if (get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
+			 || get_option_wizard('wizard-creer-collection', 'wizard_pays') != undefined)
 				break;
 			
 			$('#'+wizard_id+' [name="wizard_pays"]').change(function() {
@@ -274,9 +327,12 @@ function wizard_init(wizard_id) {
 		case 'wizard-proposition-clonage':
 			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
 				break;
-			pays=get_option_wizard('wizard-creer', 'wizard_pays');
-			magazine=get_option_wizard('wizard-creer', 'wizard_magazine');
-			numero=get_option_wizard('wizard-creer', 'wizard_numero');
+			pays=get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
+			  || get_option_wizard('wizard-creer-collection', 'wizard_pays');
+			magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine')
+			  	  || get_option_wizard('wizard-creer-collection', 'wizard_magazine');
+			numero=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero')
+				|| get_option_wizard('wizard-creer-collection', 'wizard_numero');
 			selecteur_cellules_preview='#'+wizard_id+' #tranches_pretes_magazine td';
 			
 			var numero_selectionne=numero;
@@ -407,18 +463,29 @@ function wizard_init(wizard_id) {
 			var numero_complet_userfriendly=null;
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
 				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
-				var regex=/([^\(]+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
-				numero_complet_userfriendly=tranche_en_cours.replace(regex,'$1');
-				pays=tranche_en_cours.replace(regex,'$2');
-				magazine=tranche_en_cours.replace(regex,'$3');
-				numero=tranche_en_cours.replace(regex,'$4');
+				numero_complet_userfriendly=tranche_en_cours.replace(REGEX_NUMERO,'$1');
+				pays=tranche_en_cours.replace(REGEX_NUMERO,'$2');
+				magazine=tranche_en_cours.replace(REGEX_NUMERO,'$3');
+				numero=tranche_en_cours.replace(REGEX_NUMERO,'$4');
 			}
 			else {
-				if (get_option_wizard('wizard-creer','wizard_pays') != undefined) {
-					pays=get_option_wizard('wizard-creer','wizard_pays');
-					magazine=get_option_wizard('wizard-creer','wizard_magazine');
-					numero=get_option_wizard('wizard-creer','wizard_numero');
-					
+				if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete') == undefined
+				 && get_option_wizard('wizard-creer-hors-collection','wizard_pays') == undefined) {
+					numero_complet_userfriendly='';
+				}
+				else {
+					if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete')!= undefined) {
+						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche_non_prete');
+						numero_complet_userfriendly=tranche.replace(REGEX_NUMERO,'$1');
+						pays=tranche.replace(REGEX_NUMERO,'$2');
+						magazine=tranche.replace(REGEX_NUMERO,'$3');
+						numero=tranche.replace(REGEX_NUMERO,'$4');					
+					}
+					else {
+						pays=get_option_wizard('wizard-creer-hors-collection','wizard_pays');
+						magazine=get_option_wizard('wizard-creer-hors-collection','wizard_magazine');
+						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
+					}
 					// Ajout des dimensions en base
 					$.ajax({
 						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
@@ -433,9 +500,6 @@ function wizard_init(wizard_id) {
 					    type: 'post',
 					    async: false
 					});
-				}
-				else {
-					numero_complet_userfriendly='';
 				}
 			}
 			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
@@ -861,8 +925,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	var classes_farbs={};
 	
 	var form_userfriendly=section_preview_etape.find('.options_etape');
-	if (section_preview_etape.find('[name="form_options"]').length == 0) {
-		var form_options=$('<form>',{'name':'form_options'});
+	var form_options = section_preview_etape.find('[name="form_options"]');
+	if (form_options.length == 0) {
+		form_options=$('<form>',{'name':'form_options'});
 		for(var nom_option in valeurs) {
 			form_options.append($('<input>',{'name':nom_option,'type':'hidden'}).val(templatedToVal(valeurs[nom_option])));
 		}
@@ -1005,6 +1070,66 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 														   		    	tester_option_preview(nom_fonction,'Pos_x'); 
 														   		    	tester_option_preview(nom_fonction,'Pos_y');
 														   		    }});
+		break;
+		case 'Arc_cercle':
+			classes_farbs['Couleur']='';
+			
+			var arc=form_userfriendly.find('.arc_position');
+				
+			if (section_preview_etape.find('.preview_vide .arc_position').length == 0) {
+				arc = arc.clone(true);
+				arc.appendTo(section_preview_etape.find('.preview_vide'));
+			}
+			else {
+				arc = section_preview_etape.find('.preview_vide .arc_position');
+			}
+			dessiner(arc, 'Arc_cercle', form_options, function(image) {
+				
+				image.removeClass('cache');
+				
+				pos_x_courante = image.position().left;
+				pos_y_courante = image.position().top;
+				
+				arc.css({'left':(pos_x_courante + parseFloat(valeurs['Pos_x_centre'])*zoom-parseFloat(valeurs['Largeur'])*zoom/2)+'px',
+						 'top' :(pos_y_courante + parseFloat(valeurs['Pos_y_centre'])*zoom-parseFloat(valeurs['Hauteur'])*zoom/2)+'px',});
+			});
+
+			checkboxes.push('Rempli');
+			form_userfriendly.valeur('Rempli')
+							 .val(valeurs['Rempli'] == 'Oui')
+							 .change(function() {
+								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
+								 tester_option_preview(nom_fonction,nom_option);
+								 dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
+							 });
+			form_userfriendly.valeur('drag-resize').change(function() {
+				var arc = section_preview_etape.find('.preview_vide .arc_position');
+				if ($(this).val()=='deplacement') {
+					if (arc.is('.ui-resizable')) {
+						arc.resizable("destroy");
+					}
+					arc.draggable({
+						stop: function(event,ui) {
+						   tester_option_preview(nom_fonction,'Pos_x_centre'); 
+						   tester_option_preview(nom_fonction,'Pos_y_centre');
+						}
+					});
+				}
+				else {
+					if (arc.is('.ui-draggable')) {
+						arc.draggable("destroy");
+					}
+					arc.resizable({
+						 stop: function(event,ui) {
+						   tester_option_preview(nom_fonction,'Largeur'); 
+						   tester_option_preview(nom_fonction,'Hauteur');
+						   dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
+						 }
+					 });
+				}
+			});
+			form_userfriendly.find('#Arc_deplacement').click();
+		
 		break;
 		case 'Rectangle':
 			classes_farbs['Couleur']='';
@@ -1178,6 +1303,29 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 }
 
+function dessiner(element, type, form_options, callback) {
+	callback = callback || function() {};
+	var url_appel=urls['dessiner']+"index/"+type+"/"+zoom+"/0";
+	var options = [];
+	switch(type) {
+		case 'Arc_cercle':
+			options = ['Couleur','Pos_x_centre','Pos_y_centre','Largeur','Hauteur','Angle_debut','Angle_fin','Rempli'];
+		break;
+	}
+	$.each($(options),function(i,nom_option) {
+		if (nom_option == 'Pos_x_centre')
+			url_appel+="/"+parseFloat(form_options.valeur('Largeur').val())/2;
+		else if (nom_option == 'Pos_y_centre')
+			url_appel+="/"+parseFloat(form_options.valeur('Hauteur').val())/2;
+		else
+			url_appel+="/"+form_options.valeur(nom_option).val();
+	});
+	element.attr({'src':url_appel})
+		   .load(function() {
+			   callback($(this));
+		   });
+}
+
 function positionner_image(preview) {
 	var form_userfriendly=modification_etape.find('.options_etape');
 	var position_image=form_userfriendly.find('.image_position');	
@@ -1223,7 +1371,6 @@ function positionner_image(preview) {
 		   		    	tester_option_preview('Image','Decalage_y');
 		   		      }
 				  })
-				  .resizable('destroy')
 				  .resizable({
 						stop:function(event, ui) {
 			   		    	tester_option_preview('Image','Compression_x'); 
@@ -1353,6 +1500,7 @@ function valider(callback) {
 function tester_option_preview(nom_fonction,nom_option,element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
+	var form_options_orig=dialogue.find('[name="form_options_orig"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
 	var image=dialogue.find('.preview_vide');
@@ -1407,20 +1555,42 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 					break;
 				}
 			break;
+			case 'Arc_cercle':
+				var arc=dialogue.find('.arc_position');
+				switch(nom_option) {
+					case 'Pos_x_centre':
+						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Largeur').val())/2 
+											 + parseFloat(arc.position().left - pos_x_courante)/zoom);
+					break;
+					case 'Pos_y_centre':
+						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Hauteur').val())/2 
+								 			 + parseFloat(arc.position().top - pos_y_courante)/zoom);
+					break;
+					case 'Largeur':
+						val=arc.width()/zoom;
+					break;
+					case 'Hauteur':
+						val=arc.height()/zoom;					
+					break;
+					case 'Rempli':
+						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+					break;
+				}
+			break;
 			case 'Rectangle':
 				var positionnement=dialogue.find('.rectangle_position');
 				switch(nom_option) {
 					case 'Pos_x_debut':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+						val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);
 					break;
 					case 'Pos_y_debut':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().top  - image.offset().top )/zoom));
+						val = toFloat2Decimals(parseFloat(positionnement.offset().top  - image.offset().top )/zoom);
 					break;
 					case 'Pos_x_fin':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().left + positionnement.width() - image.offset().left)/zoom));
+						val = toFloat2Decimals(parseFloat(positionnement.offset().left + positionnement.width() - image.offset().left)/zoom);
 					break;
 					case 'Pos_y_fin':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom));
+						val = toFloat2Decimals(parseFloat(positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom);
 					break;
 					case 'Rempli':
 						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
@@ -1619,6 +1789,8 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 		case 'Rectangle':
 			coloriser_rectangle_preview(couleur,
 										form_options.valeur('Rempli').val()=='Oui');
+		case 'Arc_cercle':
+			dessiner($('.arc_position'), 'Arc_cercle', form_options);
 		break;
 	}
 }
