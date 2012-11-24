@@ -474,14 +474,18 @@ function recherche() {
             while (resultat[i]) {
                 if (resultat.direct) {
                     var magazine=resultat[i];
-                    magazine.magazine_numero=magazine.pays+'/'+magazine.magazine_numero.replace(new RegExp('[+]+','g'),'.');
-                    
+                    magazine.magazine_numero=magazine.pays
+                    					+'/'+magazine.magazine_numero
+                    						.replace(new RegExp('[+]+','g'),'.')
+                    						.replace(new RegExp('[ ]+','g'),'');
+
+                    var numero=magazine.magazine_numero.split(new RegExp('\\.','g'))[1];
                     if ($(magazine.magazine_numero) != null  || !(resultat.direct) || recherche_bibliotheque=='false') {
                         $('recherche_bibliotheque')
                         .insert(new Element('div').writeAttribute({'id':'magazine_'+magazine.magazine_numero})
                                                   .addClassName('magazine_trouve')
                                                   .insert(new Element('img', {'src':'images/flags/'+magazine.pays+'.png','alt':magazine.pays}))
-                                                  .insert(magazine.titre));
+                                                  .insert(magazine.titre+' '+numero));
                     }
                 }
                 else {

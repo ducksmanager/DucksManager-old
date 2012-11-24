@@ -212,6 +212,15 @@ class Inducks {
 		return $nb_numeros;
 	}
 	
+	static function get_issues_from_storycode($story_code) {
+		$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber '
+				.'FROM inducks_issue '
+				.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
+				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
+				.'WHERE storycode = \''.$story_code.'\' '
+				.'ORDER BY publicationcode, issuenumber';
+		return Inducks::requete_select($requete);
+	}
 	static function get_magazines_ne_paraissant_plus($publication_codes) {
 		$liste_magazines=array();
 		foreach($publication_codes as $publicationcode) {
@@ -300,19 +309,26 @@ elseif (isset($_POST['get_covers'])) {
 	echo header("X-JSON: " . json_encode(Inducks::get_covers($_POST['pays'], $_POST['magazine'])));
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
-	$nom_histoire=Util::supprimerAccents(utf8_decode($_POST['histoire']));
+	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
 	echo $nom_histoire."\n";
 	$liste_magazines=array();
 	if (strpos($nom_histoire, 'code=') === 0) {
 		$liste_magazines['direct']=true;
 		$code=substr($nom_histoire, strlen('code='));
-		$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber '
-				.'FROM inducks_issue '
-				.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
-				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE storycode = \''.$code.'\' '
-				.'ORDER BY publicationcode, issuenumber';
-		$resultat_requete=Inducks::requete_select($requete);
+		$resultat_requete=Inducks::get_issues_from_storycode($code);
+		if (count($resultat_requete) == 0) {
+			// On réessaie en testant le doublement de chacun des espaces du code d'histoire
+			$i=1;
+			$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
+			while ($code_avec_espaces !== $code) {
+				$resultat_requete = Inducks::get_issues_from_storycode($code_avec_espaces);
+				if (count($resultat_requete) > 0)
+					break;
+				$i++;
+				$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
+			}
+		}
+		
 		$publication_codes=array();
 		foreach($resultat_requete as $resultat) {
 			$publication_codes[]=$resultat['publicationcode'];
@@ -332,7 +348,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		$requete='SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title '
 				.'FROM inducks_entry '
 				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE inducks_entry.title LIKE \'%'.$nom_histoire.'%\' '
+				.'WHERE inducks_entry.title LIKE "%'.$nom_histoire.'%" '
 				.'ORDER BY title';
 		$resultat_requete=Inducks::requete_select($requete);
 		foreach($resultat_requete as $resultat) {

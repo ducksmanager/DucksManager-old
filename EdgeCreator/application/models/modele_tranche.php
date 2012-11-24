@@ -352,12 +352,6 @@ class Modele_tranche extends CI_Model {
 			echo 'Pas de decalage'."\n";
 		
 	}
-	
-	function get_preview_existe($options_json) {
-		$requete='SELECT ID_Preview FROM tranches_previews WHERE Options LIKE \''.$options_json.'\' AND ID_Session LIKE \''.self::$id_session.'\'';
-		$resultat=$this->db->query($requete)->result();
-		return count($resultat) > 0;
-	}
 
 	function ajouter_preview($options_json) {
 		$requete='INSERT INTO tranches_previews(ID_Session,Options) VALUES (\''.self::$id_session.'\',\''.$options_json.'\')';
