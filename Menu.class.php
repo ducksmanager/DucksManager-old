@@ -5,14 +5,16 @@ class Item {
 	var $est_prive;
 	var $texte;
 	var $beta=false;
+	var $nouveau=false;
 	static $beta_user=false;
 	static $action="";
 	
-	function __construct($nom, $est_prive, $texte, $beta=false) {
+	function __construct($nom, $est_prive, $texte, $beta=false, $nouveau=false) {
 		$this->nom = $nom;
 		$this->est_prive = $est_prive;
 		$this->texte = $texte;
 		$this->beta = $beta;
+		$this->nouveau = $nouveau;
 	}
 	
 	function afficher() {
@@ -22,16 +24,13 @@ class Item {
 				?><span style="font-weight: bold; text-decoration: underline;"><?=$this->texte?></span><?php
 			}
 			else {
-				?>&nbsp;&nbsp;<?php
-				if ($this->nom == 'print') {
-					?><a href="print.php" target="_blank"><?=$this->texte?></a><?php
-  				}
-   				else {
-  					?><a href="?action=<?=$this->nom?>"><?=$this->texte?></a><?php
-    			}
+				?>&nbsp;&nbsp;<a href="?action=<?=$this->nom?>"><?=$this->texte?></a><?php
 			}
    			if ($this->beta && self::$beta_user) {
 		   		?><span class="beta"><?=BETA?></span><?php
+   	        }
+   			if (!$this->beta && $this->nouveau) {
+		   		?><span class="nouveau"><?=NOUVEAU?></span><?php
    	        }
 		}
 	}
@@ -87,8 +86,8 @@ $menus=array(
 				   new Item('gerer', 'always', GERER_COLLECTION),
 				   new Item('stats', 'always', STATISTIQUES_COLLECTION),
 				   new Item('agrandir', 'always', AGRANDIR_COLLECTION),
+				   new Item('print', 'always', IMPRIMER_COLLECTION, false, true),
 				   new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS),
-				   new Item('print', 'always', IMPRIMER_COLLECTION,true),
 				   new Item('logout', 'always', DECONNEXION)
 			)),
 	new Menu(DUCKHUNT_TOUR, 'no',

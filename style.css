@@ -36,6 +36,7 @@ a.important:HOVER {
 }
 
 #contenu {
+	padding: 20px;
 	overflow-x:auto;
 }
 /*
@@ -162,7 +163,7 @@ a.important:HOVER {
     background-color:red;
 }
 
-.beta {
+.beta, .nouveau {
     font-size:smaller;
     color:blue;
     vertical-align:super;
@@ -248,4 +249,30 @@ td#zone_logo2 {
 	background-size: 659px 42px;
 	padding-left:5px;
 	vertical-align: top;
+}
+
+ul#choix_impression {
+	margin-top: 31px;
+}
+
+ul#choix_impression>li {
+	list-style: none;
+	min-height: 150px;	
+	margin-bottom: 30px;
+	padding-left: 170px;
+	padding-top: 12px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+ul#choix_impression ul.caract li{
+	margin-top: 14px;
+}
+
+.exclusif {
+	border: 1px solid #C88964;
+	padding: 3px;
+	margin-right: 5px;
+	color: #C88964;
 }

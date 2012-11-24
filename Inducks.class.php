@@ -221,6 +221,22 @@ class Inducks {
 				.'ORDER BY publicationcode, issuenumber';
 		return Inducks::requete_select($requete);
 	}
+	static function get_magazines_ne_paraissant_plus($publication_codes) {
+		$liste_magazines=array();
+		foreach($publication_codes as $publicationcode) {
+			$liste_magazines[]="'".$publicationcode."'";
+		}
+	   	$requete_get_ne_parait_plus='SELECT CONCAT(PaysAbrege,\'/\',NomAbrege) AS publicationcode, NeParaitPlus FROM magazines WHERE publicationcode IN ('.implode(',',$liste_magazines).')';
+	   	$resultat_get_ne_parait_plus=DM_Core::$d->requete_select($requete_get_ne_parait_plus);
+	   	
+		$magazines_ne_paraissant_plus=array();
+		foreach($resultat_get_ne_parait_plus as $resultat) {
+			if ($resultat['NeParaitPlus']==1) {
+				$magazines_ne_paraissant_plus[]=$resultat['publicationcode'];
+			}
+		}
+	   	return $magazines_ne_paraissant_plus;
+	}
 	
 	static function numero_to_page($pays,$magazine,$numero) {
 		$magazine=strtoupper($magazine);
