@@ -256,7 +256,7 @@ ul#choix_impression {
 
 ul#choix_impression>li {
 	list-style: none;
-	height: 150px;	
+	min-height: 150px;	
 	margin-bottom: 30px;
 	padding-left: 170px;
 	padding-top: 12px;

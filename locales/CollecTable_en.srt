@@ -1,0 +1,72 @@
+1
+00:00:00,000 --> 00:00:04,300
+This short tutorial will explain how to use CollecTable,
+a condensed way to list your issues collection.
+
+2
+00:00:04,301 --> 00:00:17,000
+We possess 8 issues here :
+3 "Mickey Parade" and 5 "Picsou Magazine".
+
+3
+00:00:17,001 --> 00:00:24,001
+Let's see how CollecTable stores these issues.
+Each issue is represented by a letter.
+
+4
+00:00:24,002 --> 00:00:29,002
+Let's see the first issue. Its letter represents its "hundreds" part.
+
+5
+00:00:29,003 --> 00:00:33,003
+The legend gives the correspondance :
+"d" corresponds to issues between 301 and 400.
+
+6
+00:00:33,004 --> 00:00:38,004
+The tens and units of this issue is indicated
+by the header of the column he is under.
+
+7
+00:00:38,005 --> 00:00:44,505
+The first issue is as a consequence the #316. It is followed by issues #317 and #322.
+These are the "Mickey Parade" of the user.
+
+8
+00:00:44,506 --> 00:00:49,006
+Let's see the "Picsou Magazine" issues.
+
+9
+00:00:49,007 --> 00:00:53,007
+The letter, as the legend indicates it, corresponds to issues between 201 and 300.
+
+10
+00:00:53,008 --> 00:00:56,608
+The user has got, as a consequence, issues #214...
+
+11
+00:00:56,609 --> 00:01:01,609
+and #227.
+
+12
+00:01:01,610 --> 00:01:04,210
+Another issue is written under it, on the 2nd row.
+
+13
+00:01:04,211 --> 00:01:12,511
+The principle is the same, excepted that we will consider the 2nd header row.
+So the user has got issue #275.
+
+14
+00:01:12,512 --> 00:01:17,412
+2 last issues are indicated, at the end of the 2nd row :
+
+15
+00:01:17,413 --> 00:01:24,413
+one of them is between 1 and 100 (letter "a"), the other between 201 and 300 ("c").
+
+16
+00:01:24,414 --> 00:01:30,714
+They are located under the column "50-100".
+As they are on the 2nd row, the user has got the issues #100 and #300.
+

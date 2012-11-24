@@ -998,10 +998,16 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 		<span class="exclusif"> Exclusif DucksManager </span>Une <b>liste CollecTable</b>, plus synth&eacute;tique mais demandant un peu d'entra&icirc;nement !
                                 		<ul class="caract">
                                 			<li>
-                                				Adapt&eacute; pour les collections de taille importante.
+                                				Adapt&eacute; pour les collections de taille importante (plus de 200 numéros).
                                 			</li>
                                 			<li>
-                                				
+                                				D&eacute;couvrez comment utiliser la CollecTable en 1 minute 30 chrono gr&acirc;ce &agrave; notre vid&eacute;o d'explication :
+                                				<object width="853" height="280">
+                                					<param name="movie" value="http://www.youtube.com/v/PAg-g1cF148?version=3&amp;hl=fr_FR"></param>
+                                					<param name="allowFullScreen" value="true"></param>
+                                					<param name="allowscriptaccess" value="always"></param>
+                                					<embed src="http://www.youtube.com/v/PAg-g1cF148?version=3&amp;hl=fr_FR" type="application/x-shockwave-flash" width="853" height="280" allowscriptaccess="always" allowfullscreen="true"></embed>
+                                				</object>
                                 			</li>
                                 		</ul> 
                                 		<br>
