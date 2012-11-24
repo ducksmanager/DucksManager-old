@@ -1,5 +1,5 @@
 <?php header('Content-Type: text/html; charset=utf-8');
-require_once('DucksManager_Core.class.php');
+require_once('Inducks.class.php');
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
@@ -14,22 +14,26 @@ class classique extends Format_liste {
 	}
 
 	function afficher($liste) {
-			$noms_complets_pays=DM_Core::$d->get_noms_complets_pays();
-			foreach($liste as $pays=>$numeros_pays) {
-				$noms_complets_magazines=Inducks::get_liste_magazines($pays);
-				?><br /><b><i><?=$noms_complets_pays[$pays]?></i></b><br /><?php
-				foreach($numeros_pays as $magazine=>$numeros) {
-					?><u><?=array_key_exists($magazine,$noms_complets_magazines) ? $noms_complets_magazines[$magazine] : $magazine?></u> <?php
-					$debut=true;
-					sort($numeros);
-					$texte=array();
-					foreach($numeros as $numero) {
-						$texte[]=is_array($numero) ? $numero[0] : $numero;
-					}
-					echo ucfirst(count($numeros)==1 ? NUMERO:NUMEROS).' '.implode(', ',$texte);
-					?><br /><?php
-				}
+		$publication_codes=array();
+		foreach($liste as $pays=>$numeros_pays) {
+			foreach(array_keys($numeros_pays) as $magazine) {
+				$publication_codes[]=$pays.'/'.$magazine;
 			}
+		}
+		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+		foreach($liste as $pays=>$numeros_pays) {
+			?><br /><b><i><?=$noms_pays[$pays]?></i></b><br /><?php
+			foreach($numeros_pays as $magazine=>$numeros) {
+				?><u><?=array_key_exists($pays.'/'.$magazine,$noms_magazines) ? $noms_magazines[$pays.'/'.$magazine] : $magazine?></u> <?php
+				sort($numeros);
+				$texte=array();
+				foreach($numeros as $numero) {
+					$texte[]=urldecode(is_array($numero) ? $numero[0] : $numero);
+				}
+				echo implode(', ',$texte);
+				?><br /><?php
+			}
+		}
 	}
 }
 ?>

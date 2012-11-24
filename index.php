@@ -978,84 +978,39 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 break;
 
                             case 'print':
-                                if (false) {//$_SESSION['user']!='nonoox' && $_SESSION['user']!='brunoperel') {
-                                    ?><img width="300" src="images/travaux.png" /><br />
-                                    <?=TRAVAUX_SECTION?>
-                                    <?php break;
-                                }
-                                ?>
-                                <span style="font-weight: bold; text-decoration: underline;"><?=IMPRESSION_COLLECTION?> : </span><br /><br />
-                                <?=INTRO_IMPRESSION_COLLECTION1?><br />
-                                <?=INTRO_IMPRESSION_COLLECTION2?><br />
-                                <br />
-                                <div style="text-align:center;border:1px solid white;">
-                                    <a target="_blank" href="print.php"><?=CLIC_IMPRESSION?>!</a>
-                                </div><br /><br />
-                                <?=INTRO_IMPRESSION_COLLECTION3?><br /><br />
-                                <table border="1" cellpadding="4" cellspacing="2">
-                                    <tr align="center">
-                                        <td><?=AFFICHAGE_LISTE?></td>
-                                        <td><?=DESCRIPTION?></td>
-                                    </tr>
-                                <?php
-                                $liste_exemple=new Liste();
-                                $liste_exemple->ListeExemple();
-
-                                $rep = "Listes/";
-                                global $types_listes;
-                                $types_listes=array();
-                                $dir = opendir($rep);
-                                $prefixe='Liste.';
-                                $suffixe='.class.php';
-                                while ($f = @readdir($dir)) {
-                                    if (strpos($f,'Debug')!==false)
-                                        continue;
-                                    if(is_file($rep.$f)) {
-                                        if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
-                                            array_push($types_listes,substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe)));
-                                            require_once($rep.$f);
-                                        }
-                                    }
-                                }
+                                ?><?=IMPRESSION_COLLECTION_PRESENTATION_LISTES?>
+                                <ul id="choix_impression">
+                                	<li style="background-image: url('Listes/Classique_petit.png')">
+                                		<?=CLASSIQUE_DESCRIPTION?>
+                                		<br>
+                                		<ul class="caract">
+                                			<li>
+                                				<?=CLASSIQUE_PLUS_1?>
+                                			</li>
+                                			<li>
+                                				<?=CLASSIQUE_MOINS_1?>
+                                			</li>
+                                		</ul> 
+                                		
+                                		<br /><br /><a style="margin-top: 5px;" href="impression.php?type=classique" target="_blank"><?=IMPRESSION_COLLECTION_AVEC?><?=strtolower(CLASSIQUE_NOM)?></a><br>
+                                	</li>
+                                	<li style="background-image: url('Listes/CollecTable_petit.png')">
+                                		<span class="exclusif"> <?=EXCLUSIF_DUCKSMANAGER?> </span><?=COLLECTABLE_DESCRIPTION?>
+                                		<ul class="caract">
+                                			<li>
+                                				<?=COLLECTABLE_PLUS_1?>
+                                			</li>
+                                			<li>
+                                				<a href="http://www.youtube.com/watch?v=PAg-g1cF148&hd=1" target="_blank"><?=CLIQUEZ_ICI?></a> <?=COLLECTABLE_DEMO?>
+                                			</li>
+                                		</ul> 
+                                		<br /><br />
+                                		<a href="impression.php?type=collectable" target="_blank"><?=IMPRESSION_COLLECTION_AVEC?><?=COLLECTABLE_NOM?></a>
+                                	
+                                	</li>
+                                </ul>
                                 
-                                foreach($types_listes as $type) {
-                                    if ($type=='Series') continue;
-                                    $objet =new $type();
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <?php
-                                            if ($type=='DMtable') {
-                                                ?>
-                                                <iframe height="200px" width="100%" src="Liste.class.php?liste_exemple=true&amp;type_liste=<?=$type?>"></iframe>
-                                                <?php
-                                            }
-                                            else
-                                                echo $objet->afficher($liste_exemple->collection);
-                                            ?>
-                                        </td>
-                                        <td>
-                                            <?=$objet->description?><br /><br />
-                                            <img src="plus.png" alt="plus" /><br />
-                                            <?php
-                                            foreach($objet->les_plus as $plus) {
-                                                ?>- <?=$plus?><br /><?php
-                                            }
-                                            ?>
-                                            <br />
-                                            <img src="moins.png" alt="moins"/><br />
-                                            <?php
-                                            foreach($objet->les_moins as $moins) {
-                                                ?>- <?=$moins?><br /><?php
-                                            }
-                                            ?>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
-                                ?>
-                                </table>
-                                <?php
+                                <?php 
                                 break;
 
                             case 'agrandir':
