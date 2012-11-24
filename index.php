@@ -978,40 +978,34 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 break;
 
                             case 'print':
-                                ?>DucksManager propose l'impression de votre liste sous deux formats diff&eacute;rents :
+                                ?><?=IMPRESSION_COLLECTION_PRESENTATION_LISTES?>
                                 <ul id="choix_impression">
                                 	<li style="background-image: url('Listes/Classique_petit.png')">
-                                		Une <b>liste classique</b>, r&eacute;pertoriant pour chaque magazine les num&eacute;ros que vous poss&eacute;dez.
+                                		<?=CLASSIQUE_DESCRIPTION?>
                                 		<br>
                                 		<ul class="caract">
                                 			<li>
-                                				Ce type de liste est plus adapt&eacute; pour les collections de moins de 500 num&eacute;ros.
+                                				<?=CLASSIQUE_PLUS_1?>
                                 			</li>
                                 			<li>
-                                				Facile &agrave; lire, cette liste devient vite illisible lorsqu'il s'agit d'ajouter des num&eacute;ros.
+                                				<?=CLASSIQUE_MOINS_1?>
                                 			</li>
                                 		</ul> 
                                 		
-                                		<br><br><a style="margin-top: 5px;" href="impression.php?type=classique" target="_blank">Imprimer ma collection avec la liste classique</a><br>
+                                		<br /><br /><a style="margin-top: 5px;" href="impression.php?type=classique" target="_blank"><?=IMPRESSION_COLLECTION_AVEC?><?=strtolower(CLASSIQUE_NOM)?></a><br>
                                 	</li>
                                 	<li style="background-image: url('Listes/CollecTable_petit.png')">
-                                		<span class="exclusif"> Exclusif DucksManager </span>Une <b>liste CollecTable</b>, plus synth&eacute;tique mais demandant un peu d'entra&icirc;nement !
+                                		<span class="exclusif"> <?=EXCLUSIF_DUCKSMANAGER?> </span><?=COLLECTABLE_DESCRIPTION?>
                                 		<ul class="caract">
                                 			<li>
-                                				Adapt&eacute; pour les collections de taille importante (plus de 200 numéros).
+                                				<?=COLLECTABLE_PLUS_1?>
                                 			</li>
                                 			<li>
-                                				D&eacute;couvrez comment utiliser la CollecTable en 1 minute 30 chrono gr&acirc;ce &agrave; notre vid&eacute;o d'explication :
-                                				<object width="853" height="280">
-                                					<param name="movie" value="http://www.youtube.com/v/PAg-g1cF148?version=3&amp;hl=fr_FR"></param>
-                                					<param name="allowFullScreen" value="true"></param>
-                                					<param name="allowscriptaccess" value="always"></param>
-                                					<embed src="http://www.youtube.com/v/PAg-g1cF148?version=3&amp;hl=fr_FR" type="application/x-shockwave-flash" width="853" height="280" allowscriptaccess="always" allowfullscreen="true"></embed>
-                                				</object>
+                                				<a href="http://www.youtube.com/watch?v=PAg-g1cF148&hd=1" target="_blank"><?=CLIQUEZ_ICI?></a> <?=COLLECTABLE_DEMO?>
                                 			</li>
                                 		</ul> 
-                                		<br>
-                                		<a style="margin-left: 25px" href="impression.php?type=collectable" target="_blank">Imprimer ma collection avec la liste CollecTable</a>
+                                		<br /><br />
+                                		<a href="impression.php?type=collectable" target="_blank"><?=IMPRESSION_COLLECTION_AVEC?><?=COLLECTABLE_NOM?></a>
                                 	
                                 	</li>
                                 </ul>

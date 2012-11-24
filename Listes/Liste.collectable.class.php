@@ -280,7 +280,7 @@ class collectable extends Format_liste {
 					</td>
 					<td>
 						<table><tr><td align="center" class="achats">
-						<u><?=ACHATS?></u>
+						<!-- <u><?=ACHATS?></u> -->
 					</td></td></tr></table>
 					
 	  <?php }?>

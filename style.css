@@ -36,6 +36,7 @@ a.important:HOVER {
 }
 
 #contenu {
+	padding: 20px;
 	overflow-x:auto;
 }
 /*
@@ -162,7 +163,7 @@ a.important:HOVER {
     background-color:red;
 }
 
-.beta {
+.beta, .nouveau {
     font-size:smaller;
     color:blue;
     vertical-align:super;
