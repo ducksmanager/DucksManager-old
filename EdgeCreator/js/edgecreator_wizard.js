@@ -11,6 +11,14 @@
 	  };
 })(jQuery);
 
+$(window).scroll(function(a,b) {
+	if (modification_etape != null 
+	 && modification_etape.find('#options-etape--Polygone').length != 0) {
+		var options=modification_etape.find('[name="form_options"]');
+		positionner_points_polygone(options);
+	}
+});
+
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
@@ -26,6 +34,8 @@ var LARGEUR_DIALOG_TRANCHE_FINALE=65;
 var LARGEUR_INTER_ETAPES=25;
 var SEPARATION_CONCEPTION_ETAPES=40;
 var MARGE_DROITE_TRANCHE_FINALE=10;
+
+var COTE_CARRE_DEPLACEMENT=10;
 
 var TEMPLATES ={'numero':/\[Numero\]/,
 	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
@@ -1124,6 +1134,34 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			form_userfriendly.find('#Arc_deplacement').click();
 		
 		break;
+		
+		case 'Polygone':
+			classes_farbs['Couleur']='';
+			
+			var polygone=form_userfriendly.find('.polygone_position');
+				
+			if (section_preview_etape.find('.preview_vide .polygone_position').length == 0) {
+				polygone = polygone.clone(true);
+				polygone.appendTo(section_preview_etape.find('.preview_vide'));
+			}
+			else {
+				polygone = section_preview_etape.find('.preview_vide .polygone_position');
+			}
+			dessiner(polygone, 'Polygone', form_options, function() {
+				positionner_points_polygone(form_options);
+				
+			});
+
+			form_userfriendly.valeur('action').change(function() {
+				var action = $(this).val();
+				form_userfriendly.find('#descriptions_actions div').addClass('cache');
+				form_userfriendly.find('#descriptions_actions div#description_'+action).removeClass('cache');
+				positionner_points_polygone(form_options);
+			});
+			
+			form_userfriendly.find('#Point_deplacement').click();
+		
+		break;
 		case 'Rectangle':
 			classes_farbs['Couleur']='';
 
@@ -1296,12 +1334,24 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 }
 
-function dessiner(element, type, form_options) {
+function dessiner(element, type, form_options, callback) {
+	callback = callback || function() {};
 	var url_appel=urls['dessiner']+"index/"+type+"/"+zoom+"/0";
 	var options = [];
 	switch(type) {
 		case 'Arc_cercle':
 			options = ['Couleur','Pos_x_centre','Pos_y_centre','Largeur','Hauteur','Angle_debut','Angle_fin','Rempli'];
+			
+			pos_x_courante = element.parent().position().left;
+			pos_y_courante = element.parent().position().top;
+			
+			element.css({'left':(pos_x_courante + parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
+												- parseFloat(form_options.valeur('Largeur').val())	   *zoom/2)+'px',
+						 'top' :(pos_y_courante + parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
+							 					- parseFloat(form_options.valeur('Hauteur').val())	   *zoom/2)+'px'});
+		break;
+		case 'Polygone':
+			options = ['X','Y','Couleur'];
 			
 			pos_x_courante = element.parent().position().left;
 			pos_y_courante = element.parent().position().top;
@@ -1324,7 +1374,119 @@ function dessiner(element, type, form_options) {
 		.attr({'src':url_appel})
 		.load(function() {
 			$(this).removeClass('cache');
+			callback();
 		});
+}
+
+function positionner_points_polygone(form_options) {
+	var dialogue = $('.wizard.preview_etape.modif');
+	var preview_vide = dialogue.find('.preview_vide');
+	var options_etape = dialogue.find('.options_etape');
+	var polygone = preview_vide.find('.polygone_position');
+
+	var liste_x=form_options.valeur('X').val().split(',');
+	var liste_y=form_options.valeur('Y').val().split(',');
+	
+	var points_a_placer=[];
+	for (var i=0;i<liste_x.length;i++) {
+		var x=zoom*parseFloat(liste_x[i]);
+		var y=zoom*parseFloat(liste_y[i]);
+		points_a_placer.push([i,
+		                      x+preview_vide.offset().left-$(window).scrollLeft()-COTE_CARRE_DEPLACEMENT/2,
+		                      y+preview_vide.offset().top -$(window).scrollTop() -COTE_CARRE_DEPLACEMENT/2]);
+		
+	}
+	
+	options_etape.find('.point_polygone:not(.modele)').remove();
+	for (var i in points_a_placer) {
+		var point = points_a_placer[i];
+		var nouveau_point= options_etape.find('.point_polygone.modele')
+			.clone(true)
+				.removeClass('modele cache')
+			    .attr({'name':'point'+point[0]})
+			    .css({'left':point[1]+'px', 
+			 		  'top': point[2]+'px'})
+			 	.mouseleave(function() {
+			 		$(this).removeClass('focus');
+			 		if ($(this).draggable()) {
+			 			$(this).draggable("destroy");
+					}
+			 		$(this).click(function() {});
+			 	})
+			 	.mouseover(function() {
+			 		$(this).addClass('focus');
+			 		var action = options_etape.valeur('action').filter(':checked').val();
+			 		switch(action) {
+					case 'ajout':
+						$(this).click(function() {
+							var point1=$(this);			
+							var nom_point1=point1.attr('name');
+							var num_point1=parseInt(nom_point1.substring(5,nom_point1.length));
+							var point2=$('.point_polygone[name="point'+(num_point1+1)+'"]');
+							if (point2.length == 0) {
+								point2=$('.point_polygone[name="point0"]');
+							}
+							for (var i=$('.point_polygone:not(.modele)').length -1; i>=num_point1+1; i--) {
+								$('.point_polygone[name="point'+i+'"]').attr({'name':'point'+(i+1)});
+							}
+							var nouveau_point=[(point1.offset().left + point2.offset().left)/2,
+							                   (point1.offset().top  + point2.offset().top )/2];
+							
+							point1.after($('<div>').addClass('point_polygone')
+												   .attr({'name':'point'+(num_point1+1)})
+												   .css({'left':nouveau_point[0]+'px',
+													     'top' :nouveau_point[1]+'px'}));
+							
+				 			tester_option_preview('Polygone','X'); 
+				 			tester_option_preview('Polygone','Y');
+				 			dessiner(polygone, 'Polygone', form_options, function() {
+					 			positionner_points_polygone(form_options);
+				 			});
+						});
+					break;
+					case 'deplacement':
+						$(this).draggable({
+					 		stop: function(event,ui) {
+					 			tester_option_preview('Polygone','X'); 
+					 			tester_option_preview('Polygone','Y');
+					 			
+					 			var form_options = $('[name="form_options"]');
+					 			dessiner(polygone, 'Polygone', form_options, function() {
+						 			positionner_points_polygone(form_options);
+					 			});
+							}
+						});
+					break;
+					case 'suppression':
+						$(this).click(function() {
+							var nom_point=$(this).attr('name');
+							$('#nom_point_a_supprimer').html(nom_point);
+							$('#wizard-confirmation-suppression-point').dialog({
+								resizable: false,
+								height:140,
+								modal: true,
+								buttons: {
+									"Supprimer": function() {
+										$('#wizard-confirmation-suppression-point').dialog().dialog( "close" );
+										var nom_point=$('#nom_point_a_supprimer').html();
+										$('.point_polygone[name="'+nom_point+'"]:not(.modele)').remove();
+					
+							 			tester_option_preview('Polygone','X'); 
+							 			tester_option_preview('Polygone','Y');
+							 			dessiner(polygone, 'Polygone', form_options, function() {
+								 			positionner_points_polygone(form_options);
+							 			});
+									}
+								}
+							});
+						});
+						
+					break;
+				}
+			 });
+		options_etape.append(nouveau_point);
+	}
+	
 }
 
 function positionner_image(preview) {
@@ -1501,7 +1663,6 @@ function valider(callback) {
 function tester_option_preview(nom_fonction,nom_option,element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
-	var form_options_orig=dialogue.find('[name="form_options_orig"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
 	var image=dialogue.find('.preview_vide');
@@ -1579,6 +1740,28 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 					break;
 					case 'Rempli':
 						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+					break;
+				}
+			break;
+			case 'Polygone':
+				switch(nom_option) {
+					case 'X':
+						var x = [];
+						$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
+							point=$(point);
+							x[i] = (point.offset().left + point.scrollLeft() - image.offset().left + COTE_CARRE_DEPLACEMENT/2) / zoom;
+							
+						});
+						val=x.join(',');
+					break;
+					case 'Y':
+						var y = [];
+						$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
+							point=$(point);
+							y[i] = (point.offset().top + point.scrollTop() - image.offset().top + COTE_CARRE_DEPLACEMENT/2) / zoom;
+							
+						});
+						val=y.join(',');
 					break;
 				}
 			break;
@@ -1795,7 +1978,9 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 			coloriser_rectangle_preview(couleur,
 										form_options.valeur('Rempli').val()=='Oui');
 		case 'Arc_cercle':
-			dessiner($('.arc_position'), 'Arc_cercle', form_options);
+			dessiner($('.preview_vide .arc_position'), 'Arc_cercle', form_options);
+		case 'Polygone':
+			dessiner($('.preview_vide .polygone_position'), 'Polygone', form_options);
 		break;
 	}
 }

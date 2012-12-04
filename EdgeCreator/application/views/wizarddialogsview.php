@@ -321,6 +321,37 @@
 			</form>
 		</div>
 		
+		<div id="options-etape--Polygone" class="options_etape cache">
+			<img class="polygone_position cache">
+			<div class="point_polygone modele cache"></div>
+			<p>
+				&gt; Ajoutez et d&eacute;placer les points du polygone.<br />
+				&gt; Indiquez la couleur de remplissage du polygone.<br />
+			</p>
+			<form id="options_etape">
+				<div class="buttonset">
+					<input type="radio" name="option-action" value="ajout" id="Point_ajout" /><label for="Point_ajout">Ajout de point</label>
+					<input type="radio" name="option-action" value="deplacement" id="Point_deplacement" /><label for="Point_deplacement">D&eacute;placement de point</label>
+					<input type="radio" name="option-action" value="suppression" id="Point_suppression" /><label for="Point_suppression">Suppression de point</label>
+				</div>
+				<div id="descriptions_actions">
+					<div id="description_ajout" class="cache">
+						Cliquez sur le point apr&egrave;s lequel le nouveau point sera plac&eacute;.
+					</div>
+					<div id="description_deplacement" class="cache">
+						Glissez-d&eacute;posez le point &agrave; d&eacute;placer.
+					</div>
+					<div id="description_suppression" class="cache">
+						Cliquez sur le point &agrave; supprimer.
+					</div>
+				</div>
+				<div class="picker cache"></div><br />
+				<label for="option-Couleur">Couleur du polygone : </label>
+				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+					
+			</form>
+		</div>
+		
 		<div id="options-etape--Rectangle" class="options_etape cache">
 			<div class="rectangle_position cache"></div>
 			<p>
@@ -496,4 +527,10 @@
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
 	Cette &eacute;tape va &ecirc;tre supprim&eacute;e. Continuer ?</p>
 	<span id="num_etape_a_supprimer" class="cache"></span>
+</div>
+
+<div id="wizard-confirmation-suppression-point" class="wizard" title="Supprimer ce point ?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+	Ce point du polygone va &ecirc;tre supprim&eacute;. Continuer ?</p>
+	<span id="nom_point_a_supprimer" class="cache"></span>
 </div>

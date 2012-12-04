@@ -175,6 +175,18 @@ button#connexion, button#deconnexion {
 	cursor: move;
 }
 
+.wizard.preview_etape .point_polygone {
+	position: fixed;
+	width: 10px;
+	height: 10px;
+	border: 1px solid black;
+}
+
+.wizard.preview_etape .point_polygone.focus {
+	border: 1px solid white;
+	background-color: black;
+}
+
 .wizard.preview_etape .ui-resizable-helper { 
 	border: 2px dotted #00F; 
 }
