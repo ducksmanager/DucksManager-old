@@ -37,6 +37,8 @@ var MARGE_DROITE_TRANCHE_FINALE=10;
 
 var COTE_CARRE_DEPLACEMENT=10;
 
+var PADDING_PARAMETRAGE_ETAPE=10;
+
 var TEMPLATES ={'numero':/\[Numero\]/,
 	            'numero[]':/\[Numero\[([0-9]+)\]\]/ig,
 	            'largeur':/(?:([0-9.]+)(\*))?\[Largeur\](?:(\*)([0-9.]+))?/i,
@@ -636,6 +638,11 @@ function wizard_init(wizard_id) {
 							
 							wizard_etape_finale.d().resize(function() {
 								placer_dialogues_preview();
+								if (modification_etape != null 
+								 && modification_etape.find('#options-etape--Polygone').length != 0) {
+									var options=modification_etape.find('[name="form_options"]');
+									positionner_points_polygone(options);
+								}
 							});
 
 							charger_previews();
@@ -952,6 +959,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 	
 	var image = section_preview_etape.find('.preview_vide');
+	
+	var padding_dialogue = form_userfriendly.d().outerWidth(false)
+						 - form_userfriendly.d().innerWidth();
+	form_userfriendly.css({'margin-left':(padding_dialogue+image.width()+PADDING_PARAMETRAGE_ETAPE)+'px'});
 	
 	var checkboxes=new Array();
 	switch(nom_fonction) {
@@ -1388,6 +1399,10 @@ function positionner_points_polygone(form_options) {
 	var preview_vide = dialogue.find('.preview_vide');
 	var options_etape = dialogue.find('.options_etape');
 	var polygone = preview_vide.find('.polygone_position');
+	
+	if (polygone.length == 0) {
+		return;
+	}
 
 	var liste_x=form_options.valeur('X').val().split(',');
 	var liste_y=form_options.valeur('Y').val().split(',');
