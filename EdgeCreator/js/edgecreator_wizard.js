@@ -634,7 +634,7 @@ function wizard_init(wizard_id) {
 								}
 							});
 							
-							wizard_etape_finale.d().bind('resize',function() {
+							wizard_etape_finale.d().resize(function() {
 								placer_dialogues_preview();
 							});
 
@@ -753,7 +753,12 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			return false;
 		}
 	});
-	wizard_etape.d().bind('resize',function() {
+	wizard_etape.d().resize(function() {
+		if (modification_etape != null 
+		 && modification_etape.find('#options-etape--Polygone').length != 0) {
+			var options=modification_etape.find('[name="form_options"]');
+			positionner_points_polygone(options);
+		}
 		placer_dialogues_preview();
 	});
 	chargements.push(num_etape+'');
