@@ -1872,14 +1872,18 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 						val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
 					break;
 				}
-				if (['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1)
-					generer_et_positionner_preview_myfonts(nom_option == 'Chaine' || nom_option == 'URL',
-														   nom_option == 'Largeur' || nom_option == 'Demi_hauteur',
-														   true);
 			break;
 		}
 	}
 	form_options.valeur(nom_option).val(val);
+
+	if (['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1) {
+		var generer_preview_proprietes = nom_option == 'Chaine'  || nom_option == 'URL',
+			generer_preview_finition = nom_option == 'Largeur' || nom_option == 'Demi_hauteur';
+		generer_et_positionner_preview_myfonts(generer_preview_proprietes,
+											   generer_preview_finition,
+											   true);
+	}
 }
 
 function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_preview_finition,gen_tranche) {

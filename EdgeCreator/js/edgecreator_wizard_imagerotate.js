@@ -76,9 +76,13 @@ function rotateImageRadValue(image, rotateAngle) {
 }
 
 function rotateImageDegValue(image, degValue) {
+	  if ($(image).val() == undefined) return;
 	  currentDegValue = degValue;
+	  $(image).val($(image).val().replace(/\-?[0-9]+\.?[0-9]*/g,
+				  						  toFloat2Decimals(currentDegValue)));
 	  var radValue=parseFloat(degValue * Math.PI / 180);
 	  rotateImageRadValue(image, radValue);
+	  tester_option_preview("TexteMyFonts","Rotation");
 }
 
 function radToDeg(rad) {
