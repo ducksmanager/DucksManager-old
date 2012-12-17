@@ -1,5 +1,5 @@
 <?php
-session_start();
+@session_start();
 $erreur='Identifiez vous.';
 $user=isset($_POST['user']) ? $_POST['user'] : $_SESSION['user'];
 $pass=isset($_POST['pass']) ? sha1($_POST['pass']) : $_SESSION['pass'];
