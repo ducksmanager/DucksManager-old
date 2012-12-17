@@ -1,5 +1,5 @@
 <?php 
-if (!Admin::est_admin() && Admin::est_en_travaux()) {
+if (!Admin::est_admin() && !is_null(Admin::get_heure_fin_travaux())) {
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
@@ -10,9 +10,9 @@ if (!Admin::est_admin() && Admin::est_en_travaux()) {
    <body style="background:transparent url('images/travaux.png') no-repeat top right">
 		<div style="text-align:left; font-size: 15px; width: 70%; margin:auto; position: absolute; left: 150px; top: 200px;">
 		<?=EST_EN_MAINTENANCE?><br />
-		<?=DETAILS_MAINTENANCE_1?><?=A?> 13h<?=DETAILS_MAINTENANCE_2?><br /><br />
+		<?=DETAILS_MAINTENANCE_1.A.' '.Admin::get_heure_fin_travaux().DETAILS_MAINTENANCE_2?><br /><br />
 		<?=MERCI_COMPREHENSION?><br />
-		<?=L_ADMIN?>
+		<?=LE_WEBMASTER?>
 		</div>
 	</body>
 </html>

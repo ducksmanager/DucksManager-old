@@ -277,11 +277,11 @@ define('INTRO_SYNCHRO_INDUCKS_1',' is a website gathering the information about 
 define('INTRO_SYNCHRO_INDUCKS_2','This website, like DucksManager, allows you to manage your Disney issues collection.');
 define('INTRO_SYNCHRO_INDUCKS_3','If you have got an Inducks account, you can synchronize it with your DucksManager account with a few clicks.');
 define('L10N_INTROUVABLE','Localisation not found for ');
-define('L_ADMIN','The administrator.');
 define('LANCER_CALCUL','Launch the statistics calculation');
 define('LANCER_CALCUL_MANUELLEMENT','You can launch the calculation manually, but be warned that it can take several minutes.');
 define('LANCER_CALCUL_SUGGESTIONS','Launch the suggestion calculation');
 define('LANCER_CALCUL_SUGGESTIONS_MANUELLEMENT','You can launch the calculation manually, but be warned that it can take several minutes.');
+define('LE_WEBMASTER','The webmaster.');
 define('LEGENDE_NUMEROS','Issues legend');
 define('LES','The');
 define('LICENCE_INDUCKS1','This website is partially based on the Inducks website data.');
