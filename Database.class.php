@@ -545,7 +545,42 @@ function ajouter_auteur($id,$nom) {
 				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
 		return count($this->requete_select($requete)) == 1; 
 	}
+	
+	function get_niveaux() {
+		$requete_nb_photographies ='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
+								  .'WHERE photographes REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\' '
+								  .'ORDER BY publicationcode';
+		$resultat_nb_photographies=DM_Core::$d->requete_select($requete_nb_photographies);
+
+		$requete_nb_creations =	   'SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
+								  .'WHERE createurs REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\' '
+								  .'ORDER BY createurs';
+		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
+
+		$id_user=$this->user_to_id($_SESSION['user']);
+		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE ID_Utilisateur='.$id_user;
+		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
+		$nb = array('Photographe'=> $resultat_nb_photographies[0]['cpt'],
+					'Concepteur'	=> $resultat_nb_creations[0]['cpt'],
+					'Duckhunter'	=> $resultat_nb_bouquineries[0]['cpt']);
+
+		$limites=array('Photographe'=>array('Avance' => 50, 'Intermediaire' => 10, 'Debutant' => 1),
+					   'Concepteur'	=>array('Avance' => 10, 'Intermediaire' => 3,  'Debutant' => 1),
+					   'Duckhunter' =>array('Avance' =>  5, 'Intermediaire' => 3,  'Debutant' => 1));
+		$cpt_et_niveaux=array();
+		foreach($nb as $type=>$cpt) {
+			$cpt_et_niveaux[$type]=null;
+			foreach ($limites[$type] as $niveau=>$cpt_min) {
+				if ($cpt >= $cpt_min) {
+					$cpt_et_niveaux[$type]=array('Niveau'=>$niveau,'Cpt'=>$cpt);
+					break;
+				}
+			}
+		}	
+		return $cpt_et_niveaux;
+	}
 }
+
 require_once('DucksManager_Core.class.php');
 
 if (isset($_POST['database'])) {

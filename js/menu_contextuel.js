@@ -842,7 +842,6 @@ function update_numeros(liste,etat,date_achat,av) {
     liste_serialized=liste.join();
     var pays=$('pays').innerHTML;
     var magazine=$('magazine').innerHTML;
-    defiler_log(l10n['mise_a_jour']);
     new Ajax.Request('Database.class.php', {
         method: 'post',
         parameters:'database=true&update=true&pays='+pays+'&magazine='+magazine+'&list_to_update='+liste_serialized+'&etat='+etat+'&date_acquisition='+date_achat+'&av='+av,

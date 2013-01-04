@@ -7,7 +7,6 @@ var user_inducks=null;
 var pass_inducks=null;
 var pays_sel=null;
 var magazine_sel=null;
-var log_is_empty=true;
 var myMenuItems;
 var etats_charges=false;
 var tab_achats=new Array();
@@ -192,20 +191,6 @@ function init_observers_gerer_numeros() {
     
 }
 
-function defiler_log (texte) {
-	if (log_is_empty) {
-		var span1=new Element('span',{'id':'log1'});
-		var span2=new Element('span',{'id':'log2'});
-		$('log').update(span1);
-		$('log').insert('<br />');
-		$('log').insert(span2);
-	}
-	else
-		$('log1').update($('log2').innerHTML);
-	$('log2').update(texte);
-	log_is_empty=false;
-}
-
 function griser(caller) {
 	var griser;
 	var checkbox_use_same=$('use_same');
@@ -257,7 +242,6 @@ function connexion(user,pass) {
 		   parameters:'database=true&user='+user+'&pass='+pass+'&connexion=true',
 		   onSuccess:function(transport,json) {
 		    	if (transport.responseText.indexOf('invalides')!=-1) {
-		    		l10n_action('defiler_log','identifiants_incorrects');
 		    		afficher_form_open();
 		    	}
 		   }
@@ -407,13 +391,11 @@ function afficher_numeros(pays,magazine) {
                     return;
             }
         }
-	l10n_action('defiler_log','recuperation_numeros');
 	new Ajax.Request('Database.class.php', {
            method: 'post',
            parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
            onSuccess:function(transport) {
                 $('liste_numeros').update(transport.responseText);
-                l10n_action('defiler_log','termine');
                 init_observers_gerer_numeros();
            }
 	});

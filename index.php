@@ -145,7 +145,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
     <body id="body" style="margin:0" onload="<?php
     switch($action) {
         case 'open':
-            echo 'defiler_log(\'DucksManager\');';
             break;
         case 'bibliotheque':
             if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
@@ -162,7 +161,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             }
         break;
         case 'gerer':
-            echo 'defiler_log(\'DucksManager\');';
             if (isset($_GET['onglet_magazine'])) {
                 $onglet_magazine=$_GET['onglet_magazine'];
                 if ($onglet_magazine=='new') {
@@ -199,7 +197,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 echo 'init_notations();';
             }
             break;
-        default:echo 'defiler_log(\'DucksManager\');';
     }
     ?>">
     <table
@@ -207,31 +204,36 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
-                <td align="center" style="height:45px;padding-left:3px;background-color:rgb(61, 75, 95);width:160px;">
-                    <table width="100%" style="width:100%">
-                        <tr>
-                            <td align="center" id="log" style="height:32px" >&nbsp;</td>
-                            <td align="center" id="loading" style="width:40px;">&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td style="width:120px">
-                                <div style="padding-left:5px;border:2px solid rgb(255, 98, 98);" id="connected">
-                                    <img id="light" 
-                                    <?php
-                                    if (isset($_SESSION['user']) &&!($action=='logout')) {?>
-                                        src="vert.png" alt="O" />&nbsp;<span id="texte_connecte"><?=CONNECTE_EN_TANT_QUE.$_SESSION['user']?></span>
-                                    <?php } else {?>
-                                        src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><?=NON_CONNECTE?></span><br /><br />
-                                    <?php }?>
-                                </div>
-                            </td></tr>
-                    </table>
+                <td id="medailles_et_login" align="center" style="vertical-align: bottom; height:45px;padding-left:3px;background-color:rgb(61, 75, 95)">
+                    <?php
+                    if (isset($_SESSION['user']) &&!($action=='logout')) {
+						$niveaux=DM_Core::$d->get_niveaux();
+						foreach($niveaux as $type=>$cpt_et_niveau) {
+							if (!is_null($cpt_et_niveau)) {
+								$cpt=$cpt_et_niveau['Cpt'];
+								$niveau=$cpt_et_niveau['Niveau'];
+								?><img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" title="<?php
+									echo constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
+										.' '.$cpt.' '
+										.constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');
+								?>"/><?php
+							}
+						}
+                    	?>
+                    	<br />
+                    	<div id="login">
+	                    	<img id="light" src="vert.png" alt="O" />&nbsp;
+	                    	<span id="texte_connecte"><?=$_SESSION['user']?></span>
+	                    </div><?php 
+                    } else {
+                   		?><img id="light" src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><?=NON_CONNECTE?></span><br /><br /><?php 
+                    }?>
                 </td>
                 <td colspan="2" id="zone_logo1" style="">
                 </td>
             </tr>
             <tr style="height:100%">
-                <td style="height: 441px; vertical-align: top; width: 242px; background-color: rgb(200, 137, 100);">
+                <td style="height: 441px; vertical-align: top; width: 300px; background-color: rgb(200, 137, 100);">
                     <table style="height:100%; width:100%" cellspacing="0"><tbody>
                             <tr>
                                 <td id="colonne_gauche" valign="top" style="padding:5px;">

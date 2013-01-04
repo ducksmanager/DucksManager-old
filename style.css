@@ -35,6 +35,16 @@ a.important:HOVER {
 	font-weight: bold;
 }
 
+#medailles_et_login .medaille {
+	height: 120px;
+	margin-left: 5px;
+}
+
+#login {
+	margin-top: 10px;	
+	margin-bottom: 10px;
+}
+
 #contenu {
 	padding: 20px;
 	overflow-x:auto;
