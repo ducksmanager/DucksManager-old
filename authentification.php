@@ -1,9 +1,9 @@
 <?php
 @session_start();
 $erreur='Identifiez vous.';
-$user=isset($_POST['user']) ? $_POST['user'] : $_SESSION['user'];
-$pass=isset($_POST['pass']) ? sha1($_POST['pass']) : $_SESSION['pass'];
-if (isset($user)) {
+$user=isset($_POST['user']) ? $_POST['user'] : (isset($_SESSION['user']) ? $_SESSION['user'] : null);
+$pass=isset($_POST['pass']) ? sha1($_POST['pass']) : (isset($_SESSION['pass']) ? $_SESSION['pass'] : null);
+if (!is_null($user)) {
 	$requete_identifiants_valides='SELECT 1 FROM users WHERE username=\''.$user.'\' AND password=\''.$pass.'\'';
 	$identifiants_valides=count(DM_Core::$d->requete_select($requete_identifiants_valides)) == 1;
 	if ($identifiants_valides) {
