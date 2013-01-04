@@ -4,7 +4,7 @@ include_once('../authentification.php');
 
 if (isset($_GET['contributions'])) {
 	$requete_contributions='SELECT publicationcode, issuenumber FROM tranches_pretes '
-						  .'WHERE createurs REGEXP \'(^|,)('.$_GET['contributeur'].')($|,)\' '
+						  .'WHERE photographes REGEXP \'(^|,)('.$_GET['contributeur'].')($|,)\' '
 						  .'ORDER BY publicationcode';
 	$resultat_contributions=DM_Core::$d->requete_select($requete_contributions);
 
@@ -47,7 +47,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 		$requete_contribution_existante='SELECT 1 FROM tranches_pretes '
 									   .'WHERE publicationcode=\''.$publicationcode.'\' '
 										 .'AND issuenumber=\''.$issuenumber.'\' '
-										 .'AND createurs REGEXP \'(^|,)('.$contributeur.')($|,)\' ';
+										 .'AND photographes REGEXP \'(^|,)('.$contributeur.')($|,)\' ';
 		$contribution_existe=count(DM_Core::$d->requete_select($requete_contribution_existante))> 0;
 		if ($contribution_existe) {
 			echo $contributeur.' est d&eacute;j&agrave; marqu&eacute; '
@@ -55,7 +55,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 		}
 		else {
 			$requete='UPDATE tranches_pretes '
-					.'SET createurs=CONCAT(createurs, \','.$contributeur.'\') '
+					.'SET photographes=CONCAT(photographes, \','.$contributeur.'\') '
 					.'WHERE publicationcode=\''.$publicationcode.'\' '
 					  .'AND issuenumber=\''.$issuenumber.'\'';
 			DM_Core::$d->requete($requete);
@@ -80,7 +80,7 @@ foreach($resultat_utilisateurs as $utilisateur) {
 		vertical-align: top;	
 	}
 </style>
-<script type="text/javascript" src="../EdgeCreator/js/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
 
 <script type="text/javascript">
 	var matches;
@@ -150,7 +150,16 @@ foreach($resultat_utilisateurs as $utilisateur) {
 		<td>
 			<select id="utilisateurs">
 				<?php foreach($utilisateurs as $utilisateur) {
-					?><option><?=$utilisateur?></option><?php
+					$requete_nb_contributions='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
+											  .'WHERE photographes REGEXP \'(^|,)('.$utilisateur.')($|,)\' '
+											  .'ORDER BY publicationcode';
+					$resultat=DM_Core::$d->requete_select($requete_nb_contributions);
+					if (isset($resultat[0])) {
+						?><option title="<?=$resultat[0]['cpt']?> contributions"><?=$utilisateur?></option><?php
+					}
+					else {
+						?><option><?=$utilisateur?></option><?php
+					}
 				}?>
 			</select>
 		</td>
