@@ -102,12 +102,15 @@ class Liste {
 		return $tab;
 	}
 	
-	function liste_magazines() {
+	function liste_magazines($pays_magazine_supplementaire=null) {
 		$publication_codes=array();
 		foreach($this->collection as $pays=>$numeros_pays) {
 			foreach(array_keys($numeros_pays) as $magazine) {
 				$publication_codes[]=$pays.'/'.$magazine;
 			}
+		}
+		if (!is_null($pays_magazine_supplementaire)) {
+			$publication_codes[]=$pays_magazine_supplementaire;
 		}
 		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
 		foreach(array_keys($noms_pays) as $nom_abrege) {

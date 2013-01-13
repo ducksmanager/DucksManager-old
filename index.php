@@ -871,15 +871,14 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         <br />
                                         <?=POSSESSION_MAGAZINES_4?><br />
                                         <?php
-                                        
-                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines();
+
                                         if (isset($_POST['magazine'])) {
-                                            $onglets_pays[$_POST['pays']]=array($_POST['pays'],NOUVEAU_PAYS);
-                                            $onglets_magazines[$_POST['pays'].'/'.$_POST['magazine']]=array($_POST['pays'].'/'.$_POST['magazine'],NOUVEAU_MAGAZINE);
+	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine']);
                                         }
                                         else {
-                                            $onglets_pays[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
+											list($onglets_pays,$onglets_magazines)=$l->liste_magazines();
                                         }
+                                        $onglets_pays[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
                                         if (!isset($_GET['onglet_magazine'])) {
                                             $onglet_pays=null;
                                             $onglet_magazine=null;
