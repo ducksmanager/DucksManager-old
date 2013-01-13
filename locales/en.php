@@ -335,6 +335,7 @@ define('NON_CONNECTE','Not connected');
 define('NON_NUMERIQUES','Not in numeral form');
 define('NOTATION_MODIFIEE','The mark has been updated');
 define('NOUVEAU','New!');
+define('NOUVEAU_MAGAZINE','New magazine');
 define('NOUVEL_ACHAT','New purchase date');
 define('NOUVELLE_ACQUISITION_SAUVEGARDER','Save the new purchase');
 define('NOUVELLE_COLLECTION','New collection (Sign up)');

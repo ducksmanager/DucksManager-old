@@ -335,6 +335,7 @@ define('NON_CONNECTE','Non connect&eacute;(e)');
 define('NON_NUMERIQUES','Non-num&eacute;riques');
 define('NOTATION_MODIFIEE','La notation a ete modifiee');
 define('NOUVEAU','Nouveau!');
+define('NOUVEAU_MAGAZINE','Nouveau magazine');
 define('NOUVEL_ACHAT','Nouvel achat');
 define('NOUVELLE_ACQUISITION_SAUVEGARDER','Sauvegarder la nouvelle acquisition');
 define('NOUVELLE_COLLECTION','Nouvelle collection (Inscription)');
