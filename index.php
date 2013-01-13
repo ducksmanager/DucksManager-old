@@ -1131,6 +1131,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 case 'bouquineries':
                                 	echo INTRO_BOUQUINERIES.'<br />';
                                 	if (isset($_POST['ajouter'])) {
+										foreach (array('nom','adresse','cp','ville','commentaire') as $champ) {
+											$_POST[$champ]=str_replace("'","\\'",$_POST[$champ]);
+										}
                                 		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).')';
                                 		?>
 								<span style="color: red">
