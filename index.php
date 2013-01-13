@@ -1128,7 +1128,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                 break;
                                 case 'bouquineries':
-                                	echo INTRO_BOUQUINERIES.'<br />';
+									?><h2><?=LISTE_BOUQUINERIES?></h2><?php
+                                	echo INTRO_BOUQUINERIES;
+                                	?><br /><br /><?php
                                 	if (isset($_POST['ajouter'])) {
 										foreach (array('nom','adresse','cp','ville','commentaire') as $champ) {
 											$_POST[$champ]=str_replace("'","\\'",$_POST[$champ]);
@@ -1149,9 +1151,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 								<?php
 		                     }
 		                     ?>
-							<h2>
-							<?=LISTE_BOUQUINERIES?>
-							</h2>
 							<iframe src="bouquineries.php" width="70%" height="700px"></iframe>
 							<br /> <br />
 	
