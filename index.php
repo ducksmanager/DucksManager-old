@@ -167,15 +167,21 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     if (isset($_POST['magazine'])) {
                         $pays=$_POST['pays'];
                         $magazine=$_POST['magazine'];
+	                    ?>
+	                    montrer_magazines('<?=$pays?>');
+	                    <?php
                     }
-                    echo 'initPays();charger_recherche();';
+                    else {
+						?>initPays();
+                    	charger_recherche();<?php
+					}
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
-                    echo 'montrer_magazines(\''.$pays.'\');';
+                    ?>montrer_magazines('<?=$pays?>');<?php
                 }
                 if (isset($magazine)) {
-                    echo 'afficher_numeros(\''.$pays.'\',\''.$magazine.'\');';
+                    ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
                 }
             }
             break;
