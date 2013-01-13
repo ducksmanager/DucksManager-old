@@ -106,6 +106,8 @@ define('COLLECTABLE_PLUS_3','La date d\'achat peut &ecirc;tre repr&eacute;sent&e
 define('COLLECTION_INDUCKS','Collection Inducks');
 define('COLLECTION','Collection');
 define('COLLECTION_DE','Collection DucksManager de ');
+define('COLLECTION_VIDE_1','Votre collection est vide.');
+define('COLLECTION_VIDE_2','Cliquez sur "Nouveau magazine" pour ajouter un num&eacute;ro dans votre liste.');
 //define('COMMENT_PARTAGER_COLLECTION','Si vous souhaitez que d\'autres utilisateurs puissent acc&eacute;der &agrave; votre collection, sp&eacute;cifiez cette option sur votre');
 define('COMMENT_S_IDENTIFIER','Cliquez sur "Ouvrir ma collection", dans le menu, pour vous identifier.');
 define('COMMENTAIRES_BOUQUINERIE','Commentaires');

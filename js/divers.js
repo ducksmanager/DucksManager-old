@@ -99,13 +99,23 @@ function supprimer_auteur (nom_auteur) {
 	    	location.reload();
 		}
 	});
-}
+}	
 
+var pays_selectionne=null;
 function montrer_magazines(pays) {
+	if (pays === undefined) {
+		if ($('onglets_pays') === null)
+			pays_selectionne='';
+		else
+			pays_selectionne = $('onglets_pays').down('li.active').down('a').readAttribute('name');
+	}
+	else {
+		pays_selectionne=pays;
+	}
     $$('[name="magazine"]')
         .each(function(element) {
             if (element.href) {
-                if (element.href.indexOf(pays+'/') == -1)
+                if (element.href.indexOf(pays_selectionne+'/') == -1)
                     element.up().setStyle({'display':'none'});
                 else
                     element.up().setStyle({'display':'block'});

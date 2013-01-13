@@ -168,7 +168,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         $pays=$_POST['pays'];
                         $magazine=$_POST['magazine'];
 	                    ?>
-	                    montrer_magazines('<?=$pays?>');
+	                    montrer_magazines();
 	                    <?php
                     }
                     else {
@@ -178,12 +178,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
-                    ?>montrer_magazines('<?=$pays?>');<?php
+                    ?>montrer_magazines();<?php
                 }
                 if (isset($magazine)) {
                     ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
                 }
             }
+            else {
+				?>montrer_magazines();<?php
+			}
             break;
         case 'stats':
             if (isset($_GET['onglet'])) {
@@ -861,22 +864,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         		<?=PRESENTATION_DEMO.$nb_minutes_avant_reset.' '.MINUTES?>
                                         	</div><?php
                                         }
-                                        $l=DM_Core::$d->toList($id_user);
-                                        $nb_numeros=0;
-                                        $nb_magazines=$nb_pays=0;
-                                        foreach($l->collection as $pays=>$numeros_pays) {
-                                            $nb_pays++;
-                                            foreach(array_keys($numeros_pays) as $magazine) {
-                                                $nb_magazines++;
-                                                $nb_numeros+=count($numeros_pays[$magazine]);
-                                            }
-                                        }
-                                        ?>
-                                        <?=POSSESSION_MAGAZINES_1?> <?=$nb_numeros?> <?=NUMEROS?>. 
-                                        <?=POSSESSION_MAGAZINES_2?> <?=$nb_magazines?> <?=POSSESSION_MAGAZINES_3?> <?=$nb_pays?> <?=PAYS?>.
-                                        <br />
-                                        <?=POSSESSION_MAGAZINES_4?><br />
-                                        <?php
 
                                         if (isset($_POST['magazine'])) {
 	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine']);
@@ -886,7 +873,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         }
                                         $onglets_pays[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
                                         if (!isset($_GET['onglet_magazine'])) {
-                                            $onglet_pays=null;
+											reset($onglets_pays);                                            
+											$premier_pays=current($onglets_pays);
+											$onglet_pays=$premier_pays[0];
                                             $onglet_magazine=null;
                                         }
                                         else {
@@ -899,10 +888,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 $onglet_magazine=$_GET['onglet_magazine'];
                                             }
                                         }
-                                        Affichage::onglets($onglet_pays,$onglets_pays,'','',true);
-                                        Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
-                                        ?><span id="nom_magazine_courant" style="visibility:hidden;border:1px solid white;display:table;color:#666666;margin-top:-15px;background-color:#C88964">&nbsp;
-                                        </span><br /><?php
 
                                         if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {
                                             echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
@@ -942,6 +927,33 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             <?php
                                         }
                                         else {
+											$l=DM_Core::$d->toList($id_user);
+											$nb_numeros=0;
+											$nb_magazines=$nb_pays=0;
+											foreach($l->collection as $pays=>$numeros_pays) {
+												$nb_pays++;
+												foreach(array_keys($numeros_pays) as $magazine) {
+													$nb_magazines++;
+													$nb_numeros+=count($numeros_pays[$magazine]);
+												}
+											}
+											if ($nb_numeros == 0) {
+												?>
+												<?=COLLECTION_VIDE_1?><br />
+												<?=COLLECTION_VIDE_2?><br /><br /><?php
+											}
+											else {
+												?>
+		                                        <?=POSSESSION_MAGAZINES_1?> <?=$nb_numeros?> <?=NUMEROS?>. 
+		                                        <?=POSSESSION_MAGAZINES_2?> <?=$nb_magazines?> <?=POSSESSION_MAGAZINES_3?> <?=$nb_pays?> <?=PAYS?>.
+		                                        <br />
+		                                        <?=POSSESSION_MAGAZINES_4?><br />
+		                                        <?php
+		                                    }
+											Affichage::onglets($onglet_pays,$onglets_pays,'','',true);
+											Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
+											?><span id="nom_magazine_courant" style="visibility:hidden;border:1px solid white;display:table;color:#666666;margin-top:-15px;background-color:#C88964">&nbsp;
+											                                        </span><br /><?php
                                             if (isset($onglet_magazine) && isset($pays)) {
                                             ?>
                                                 <?php if (isset($_GET['afficher_video']) && $_GET['afficher_video']==0) {
