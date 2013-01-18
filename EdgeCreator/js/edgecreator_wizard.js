@@ -1547,7 +1547,13 @@ function positionner_image(preview) {
 						'width':largeur+'px',
 						'height':hauteur+'px'})
 				  .removeClass('cache')
-				  .html($('<img>',{'src':preview.attr('src')}))
+				  .html($('<img>')
+					.attr({'src':preview.attr('src')})
+					.error(function() {
+						var src=$(this).attr('src');
+						var nom_image=src.substring(src.lastIndexOf('/')+1,src.length);
+						jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
+					}))
 				  .draggable({//containment:limites_drag, 
 			  		  stop:function(event, ui) {
 		   		    	tester_option_preview('Image','Decalage_x'); 
@@ -1571,6 +1577,9 @@ function definir_et_positionner_image(source) {
 			positionner_image($(this));
 		})
 		.error(function() {
+			var src=$(this).attr('src');
+			var nom_image=src.substring(src.lastIndexOf('/')+1,src.length);
+			jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
 		});
 }
 function coloriser_rectangle_preview(element,couleur,est_rempli) {
