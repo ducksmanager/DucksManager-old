@@ -68,12 +68,12 @@
 
 	<div id="wizard-creer" class="wizard" title="Assistant DucksManager - Cr&eacute;ation de tranche">
 		<p>
-			Poss&eacute;dez-vous d&eacute;j&agrave;, dans votre collection DucksManager, 
-			le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche ?
+			Poss&eacute;dez-vous d&eacute;j&agrave; le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche 
+			dans votre collection DucksManager ?
 			<form>
 				<div class="buttonset">
-					<input type="radio" checked="checked" name="choix" value="to-wizard-creer-collection" id="to-wizard-creer-collection" /><label for="to-wizard-creer-collection">Oui</label>
-					<input type="radio" name="choix" value="to-wizard-creer-hors-collection" id="to-wizard-creer-hors-collection" /><label for="to-wizard-creer-hors-collection">Non</label>
+					<input type="radio" name="choix" value="to-wizard-creer-collection" id="to-wizard-creer-collection" /><label for="to-wizard-creer-collection">Oui</label>
+					<input type="radio" name="choix" checked="checked" value="to-wizard-creer-hors-collection" id="to-wizard-creer-hors-collection" /><label for="to-wizard-creer-hors-collection">Non</label>
 				</div>
 			</form>
 		</p>
@@ -96,7 +96,7 @@
 			</p>
 		</div>
 			
-		<div id="to-wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
+		<div id="wizard-creer-hors-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
 			<p>
 				Choisissez le num&eacute;ro que vous souhaitez mod&eacute;liser.<br />
 				<form>
@@ -136,6 +136,27 @@
 						<input type="text" id="Nouvelle_dimension_x" name="Dimension_x" maxlength="3" size="2"> mm 
 						x 
 						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
+						<div class="buttonset cache">
+							<input type="radio" checked="checked" name="choix" value="to-wizard-photos" id="to-wizard-photos" />
+						</div>
+					</form>
+				</p>
+			</div>
+			
+			<div id="wizard-photos" class="wizard first" title="Assistant DucksManager - Photos de la tranche">
+				<p>
+					<form name="form_options">
+						Afin d'assurer la meilleure conception de tranche possible, au moins une photo de la tranche est requise.<br />
+						Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
+						cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
+						Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
+						
+						<ul class="gallery cache">
+							<li class="template">
+								<img />
+							</li>
+						</ul>
+						
 						<div class="buttonset cache">
 							<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
 						</div>
