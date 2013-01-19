@@ -1260,20 +1260,30 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			                dataType:'json',
 			                type: 'post',
 			                success:function(data) {
+			                	if (data['erreur']) {
+			                		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
+			                					   'Erreur interne');
+			                	}
 			                	var ul=$('#wizard-gallery').find('ul.gallery');
 			                	ul.find('li:not(.template)').remove();
-			                	for (var i in data) {
-			                		var li=ul.find('li.template').clone(true).removeClass('template');
-			                		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-			                		li.find('img').prop({'src':base_url+'../edges/'+pays+'/elements/'+data[i],
-			                							 'title':data[i]});
-			                		ul.append(li);
+			                	if (data.length == 0) {
+			                		$('#wizard-gallery').find('.pas_d_image').removeClass('cache');
 			                	}
-			                	$('#wizard-gallery').find('ul.gallery li img').click(function() {
-			                		$('#wizard-gallery').find('ul.gallery li img').removeClass('selected');
-			                		$(this).addClass('selected');
-			                	});
-			                	$('#wizard-gallery').find('ul.gallery li img[src$="/'+form_userfriendly.valeur('Source').val()+'"]').click();
+			                	else {
+			                		$('#wizard-gallery').find('.pas_d_image').addClass('cache');
+				                	for (var i in data) {
+				                		var li=ul.find('li.template').clone(true).removeClass('template');
+				                		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
+				                		li.find('img').prop({'src':base_url+'../edges/'+pays+'/elements/'+data[i],
+				                							 'title':data[i]});
+				                		ul.append(li);
+				                	}
+				                	$('#wizard-gallery').find('ul.gallery li img').click(function() {
+				                		$('#wizard-gallery').find('ul.gallery li img').removeClass('selected');
+				                		$(this).addClass('selected');
+				                	});
+				                	$('#wizard-gallery').find('ul.gallery li img[src$="/'+form_userfriendly.valeur('Source').val()+'"]').click();
+			                	}
 			                	ul.removeClass('cache');
 			                	$('#wizard-gallery').find('.chargement_images').addClass('cache');
 			                }

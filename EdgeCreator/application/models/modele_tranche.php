@@ -1052,13 +1052,22 @@ class Modele_tranche extends CI_Model {
 				$pays=$arg;
 				$magazine=$arg2;
 				$rep=Fonction_executable::getCheminElements($pays).'/';
-				$dir = opendir($rep);
-				while ($f = readdir($dir)) {
-					if (strpos($f,'.png')===false || strpos($f,$magazine.'.') !== 0)
-						continue;
-					if(is_file($rep.$f)) {
-						$nom=$f;
-						$liste[]=utf8_encode($nom);
+				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
+					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
+						mkdir($rep,0777,true);
+					}
+					else {
+						$liste["erreur"]=$rep;
+					}
+				}
+				else {
+					while ($f = readdir($dir)) {
+						if (strpos($f,'.png')===false || strpos($f,$magazine.'.') !== 0)
+							continue;
+						if(is_file($rep.$f)) {
+							$nom=$f;
+							$liste[]=utf8_encode($nom);
+						}
 					}
 				}
 			case 'Source_photo':

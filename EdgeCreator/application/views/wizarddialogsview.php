@@ -499,6 +499,7 @@
 		S&eacute;lectionnez une image.
 	</p>
 	<p class="chargement_images" >Chargement des images</p>
+	<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
 	<ul class="gallery cache">
 		<li class="template">
 			<img />
