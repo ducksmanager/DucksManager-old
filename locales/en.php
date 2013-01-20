@@ -80,6 +80,8 @@ define('CACHER_AIDE','Hide help panel');
 define('CALCUL_EN_COURS','Calculating...');
 define('CALCUL_TERMINE','Calculations done... The page is going to reload...');
 define('CALCULS_PAS_ENCORE_FAITS','The calculations have not been done yet. Launch the statistics manually or wait until tomorrow!');
+define('CHAMP_OBLIGATOIRE_1','Le champ ');
+define('CHAMP_OBLIGATOIRE_2',' est obligatoire');
 define('CHARGEMENT','Loading');
 define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','Done.');
 define('CLASSIQUE_ABREGE_DESCRIPTION','This displays the number of possessed issues for a magazine');
