@@ -1171,7 +1171,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 											}
 											echo MERCI_CONTRIBUTION;
 											?> </span><br />
-					
+											
 											<?php
 										}
 		                     		}
