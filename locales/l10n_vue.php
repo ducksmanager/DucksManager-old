@@ -2,6 +2,11 @@
 	.manquant {
 		background-color: red;
 	}
+	
+	textarea {
+		border: 0px;
+		width: 300px;
+	}
 </style>
 
 <table border="1" style="border-collapse: collapse">
@@ -26,7 +31,7 @@
 	    ?><tr><td><?=$cle?></td><?php
 	    foreach(array_keys($locales) as $locale_abbr) {
 	    	if (isset($traductions[$locale_abbr])) {
-	    		?><td><?=$traductions[$locale_abbr]?></td><?php
+	    		?><td><textarea readonly="readonly"><?=$traductions[$locale_abbr]?></textarea></td><?php
 	    	}
 	    	else {
 	    		?><td class="manquant"></td><?php
