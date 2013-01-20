@@ -80,6 +80,8 @@ define('CACHER_AIDE','Cacher l\'aide');
 define('CALCUL_EN_COURS','Calcul en cours...');
 define('CALCUL_TERMINE','Calcul termin&eacute;. La page va se recharger...');
 define('CALCULS_PAS_ENCORE_FAITS','Les calculs n\'ont pas encore &eacute;t&eacute; effectu&eacute;s. Lancez les statistiques manuellement ou attendez demain ! Il est &eacute;galement possible que DucksManager n\'ait trouv&eacute; aucun num&eacute;ro &agrave; vous proposer.');
+define('CHAMP_OBLIGATOIRE_1','Le champ ');
+define('CHAMP_OBLIGATOIRE_2',' est obligatoire');
 define('CHARGEMENT','Chargement');
 define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','Chargement termin&eacute;');
 define('CLASSIQUE_ABREGE_DESCRIPTION','Cet affichage permet de consulter le nombre de num&eacute;ros poss&eacute;d&eacute;s pour un magazine.');
