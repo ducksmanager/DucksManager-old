@@ -32,6 +32,10 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 	 $fichier = strtr($fichier,
 		  'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ',
 		  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
+	 
+	 if (@opendir($dossier) === false) {
+	 	mkdir($dossier,0777,true);
+	 }
 	 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
 	 {
 		  if ($est_photo_tranche) {
@@ -49,8 +53,14 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 				$im=imagerotate($im, 90, $fond);
 	  			imagejpeg($im, $dossier . $fichier, 100);	  				
 	  		}
-	  		?><script type="text/javascript">
+	  		?>
+	  		<script type="text/javascript">
+			if (window.parent.document.getElementById('wizard-photos').parentNode.style.display === 'block') {
+				window.parent.lister_images_gallerie('Photos');
+			}
+			else {
 				window.parent.afficher_photo_tranche();
+			}
 	  		</script><?php
 		  }
 		  echo 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';

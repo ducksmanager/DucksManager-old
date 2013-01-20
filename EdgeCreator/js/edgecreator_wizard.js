@@ -223,6 +223,12 @@ function wizard_check(wizard_id) {
 							  +'Sinon, cliquez sur "Cr&eacute;er une tranche originale".';
 					}
 				break;
+				
+				case 'wizard-photos':
+					if ($('#'+wizard_id).find('form ul.gallery li img.selected').length == 0) {
+						erreur='Veuillez s&eacute;lectionner une photo de tranche.';
+					}
+				break;
 			}
 		}
 	}
@@ -469,6 +475,10 @@ function wizard_init(wizard_id) {
 					jqueryui_alert('Erreur : '+data);
 				}
 			});
+		break;
+		
+		case 'wizard-photos':
+			lister_images_gallerie('Photos');
 		break;
 		
 		case 'wizard-conception':
@@ -1255,39 +1265,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						}						
 					},
 					open:function(event,ui) {
-						$.ajax({
-			                url: urls['listerg']+['index','Source',pays,magazine].join('/'),
-			                dataType:'json',
-			                type: 'post',
-			                success:function(data) {
-			                	if (data['erreur']) {
-			                		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
-			                					   'Erreur interne');
-			                	}
-			                	var ul=$('#wizard-gallery').find('ul.gallery');
-			                	ul.find('li:not(.template)').remove();
-			                	if (data.length == 0) {
-			                		$('#wizard-gallery').find('.pas_d_image').removeClass('cache');
-			                	}
-			                	else {
-			                		$('#wizard-gallery').find('.pas_d_image').addClass('cache');
-				                	for (var i in data) {
-				                		var li=ul.find('li.template').clone(true).removeClass('template');
-				                		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-				                		li.find('img').prop({'src':base_url+'../edges/'+pays+'/elements/'+data[i],
-				                							 'title':data[i]});
-				                		ul.append(li);
-				                	}
-				                	$('#wizard-gallery').find('ul.gallery li img').click(function() {
-				                		$('#wizard-gallery').find('ul.gallery li img').removeClass('selected');
-				                		$(this).addClass('selected');
-				                	});
-				                	$('#wizard-gallery').find('ul.gallery li img[src$="/'+form_userfriendly.valeur('Source').val()+'"]').click();
-			                	}
-			                	ul.removeClass('cache');
-			                	$('#wizard-gallery').find('.chargement_images').addClass('cache');
-			                }
-						});
+						lister_images_gallerie('Source');
 					}
 				});
 				event.preventDefault();
@@ -2251,6 +2229,64 @@ function afficher_photo_tranche() {
 	});
 	image.error(function() {
 		$(this).css({'display':'none'});
+	});
+}
+
+function lister_images_gallerie(type_images) {
+	var form;
+	if (type_images === 'Source') {
+		form=modification_etape.find('.options_etape');
+	}
+	else {
+		form=$('#wizard-photos').find('form');
+	}
+	
+	$.ajax({
+        url: urls['listerg']+['index',type_images,pays,magazine].join('/'),
+        dataType:'json',
+        type: 'post',
+        success:function(data) {
+        	if (data['erreur']) {
+        		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
+        					   'Erreur interne');
+        	}
+        	var ul=form.find('ul.gallery');
+        	ul.find('li:not(.template)').remove();
+        	if (data.length == 0) {
+        		form.find('.pas_d_image').removeClass('cache');
+        	}
+        	else {
+        		var sous_repertoire = null;
+        		switch(type_images) {
+        			case 'Source':
+        				sous_repertoire = 'elements';
+        			break;
+        			case 'Photos':
+        				sous_repertoire = 'photos';
+        			break;
+        		}
+        		form.find('.pas_d_image').addClass('cache');
+            	for (var i in data) {
+            		var li=ul.find('li.template').clone(true).removeClass('template');
+            		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
+            		li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
+            							 'title':data[i]});
+            		ul.append(li);
+            	}
+            	form.find('ul.gallery li img').click(function() {
+            		if ($(this).hasClass('selected')) {
+                		$(this).removeClass('selected');
+            		}
+            		form.find('ul.gallery li img').removeClass('selected');
+            		if (! $(this).hasClass('selected')) {
+                		$(this).addClass('selected');
+            		}
+            	});
+            	form.find('ul.gallery li img[src$="/'+form.valeur('Source').val()+'"]').click();
+        	}
+        	ul.removeClass('cache');
+        	form.find('.chargement_images').addClass('cache');
+        }
 	});
 }
 

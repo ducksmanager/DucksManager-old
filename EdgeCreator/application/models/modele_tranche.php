@@ -1048,10 +1048,16 @@ class Modele_tranche extends CI_Model {
 					}
 				}
 			 break;
-			case 'Source':
+			case 'Source': 
+			case 'Photos': 
 				$pays=$arg;
 				$magazine=$arg2;
-				$rep=Fonction_executable::getCheminElements($pays).'/';
+				if ($type === 'Source') {
+					$rep=Fonction_executable::getCheminElements($pays).'/';
+				}
+				if ($type === 'Photos') {
+					$rep=Fonction_executable::getCheminPhotos($pays).'/';
+				}
 				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
 						mkdir($rep,0777,true);

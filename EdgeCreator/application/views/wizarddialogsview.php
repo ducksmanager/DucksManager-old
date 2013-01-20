@@ -143,14 +143,20 @@
 				</p>
 			</div>
 			
-			<div id="wizard-photos" class="wizard first" title="Assistant DucksManager - Photos de la tranche">
+			<div id="wizard-photos" class="wizard" title="Assistant DucksManager - Photos de la tranche">
 				<p>
 					<form name="form_options">
 						Afin d'assurer la meilleure conception de tranche possible, au moins une photo de la tranche est requise.<br />
 						Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
 						cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
 						Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
+						<br />
+						<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
 						
+						S&eacute;lectionnez une photo de tranche pour poursuivre.
+						<br />
+						<p class="chargement_images" >Chargement des images</p>
+						<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
 						<ul class="gallery cache">
 							<li class="template">
 								<img />
