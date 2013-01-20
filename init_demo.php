@@ -25,7 +25,12 @@ if (!$dernier_init_est_recent) {
 	DELETE FROM numeros_recommandes WHERE ID_Utilisateur=".$id_user_demo.";
 	DELETE FROM parametres_listes WHERE ID_Utilisateur=".$id_user_demo.";
 	
-	REPLACE INTO `users` (`username`, `password`, `ID`, `AccepterPartage`, `DateInscription`, `Email`, `RecommandationsListeMags`, `BetaUser`, `AfficherVideo`, `Bibliotheque_Texture1`, `Bibliotheque_Sous_Texture1`, `Bibliotheque_Texture2`, `Bibliotheque_Sous_Texture2`, `Bibliotheque_Grossissement`) VALUES ('demo', sha1('demodemo'), ".$id_user_demo.", 0, '2011-12-15', 'demo@demo.demo', 1, 0, 0, 'bois', 'HONDURAS MAHOGANY', 'bois', 'KNOTTY PINE', 1.5);
+	UPDATE `users` SET `Bibliotheque_Texture1` = 'bois', 
+					   `Bibliotheque_Sous_Texture1` = 'HONDURAS MAHOGANY', 
+					   `Bibliotheque_Texture2` = 'bois', 
+					   `Bibliotheque_Sous_Texture2` = 'KNOTTY PINE', 
+					   `Bibliotheque_Grossissement` = 1.5
+				  WHERE ID_Utilisateur=".$id_user_demo.";
 	
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'CB', 'P 88', 'bon', -2, 0, ".$id_user_demo.");
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'DDD', '3', 'bon', 1003, 0, ".$id_user_demo.");
