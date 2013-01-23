@@ -243,9 +243,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultat->Nom_fonction;
 	}
 	
-	function creer_modele($pays, $magazine, $numero) {
-		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username) '
-				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\')';
+	function creer_modele($pays, $magazine, $numero, $numero_photo_principale) {
+		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, NumeroPhotoPrincipale) '
+				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\','.$numero_photo_principale.')';
 		$this->db->query($requete);
 		echo $requete."\n";
 	}

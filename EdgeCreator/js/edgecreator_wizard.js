@@ -508,9 +508,10 @@ function wizard_init(wizard_id) {
 						magazine=get_option_wizard('wizard-creer-hors-collection','wizard_magazine');
 						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
 					}
+					var numero_photo_principale=get_option_wizard('wizard-photos','numeroPhotoPrincipale') || '_';
 					// Ajout des dimensions en base
 					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
+						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions',numero_photo_principale].join('/'),
 					    type: 'post',
 					    async: false
 					});
@@ -2277,9 +2278,11 @@ function lister_images_gallerie(type_images) {
             		if (! $(this).hasClass('selected')) {
             			form.find('ul.gallery li img').removeClass('selected');
                 		$(this).addClass('selected');
+                		form.find('#NumeroPhotoPrincipale').val($(this).prop('title').replace(/[^_]+(_([0-9]+))?\.jpe?g/ig,'$2'));
             		}
             		else {
             			form.find('ul.gallery li img').removeClass('selected');
+            			form.find('#NumeroPhotoPrincipale').val("");
             		}
             	});
             	form.find('ul.gallery li img[src$="/'+form.valeur('Source').val()+'"]').click();

@@ -162,7 +162,7 @@
 								<img />
 							</li>
 						</ul>
-						
+						<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 						<div class="buttonset cache">
 							<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
 						</div>

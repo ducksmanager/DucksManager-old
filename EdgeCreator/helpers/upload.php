@@ -7,13 +7,11 @@ $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'pho
 
 if ($est_photo_tranche) {
 	$fichier=$_POST['magazine'].'.'.$_POST['numero'].'.photo';
-	if (file_exists($dossier.$fichier.$extension_cible)) {
-		$i=2;
-		while (file_exists($dossier.$fichier.'_'.$i.$extension_cible)) {
-			$i++;
-		}
-		$fichier.='_'.$i;
+	$i=1;
+	while (file_exists($dossier.$fichier.'_'.$i.$extension_cible)) {
+		$i++;
 	}
+	$fichier.='_'.$i;
 	$fichier.=$extension_cible;
 }
 else {
