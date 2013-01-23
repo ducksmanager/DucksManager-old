@@ -152,7 +152,7 @@
 						Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
 						<br />
 						<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
-						
+						<br />
 						S&eacute;lectionnez une photo de tranche pour poursuivre.
 						<br />
 						<p class="chargement_images" >Chargement des images</p>

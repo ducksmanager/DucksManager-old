@@ -2274,12 +2274,12 @@ function lister_images_gallerie(type_images) {
             		ul.append(li);
             	}
             	form.find('ul.gallery li img').click(function() {
-            		if ($(this).hasClass('selected')) {
-                		$(this).removeClass('selected');
-            		}
-            		form.find('ul.gallery li img').removeClass('selected');
             		if (! $(this).hasClass('selected')) {
+            			form.find('ul.gallery li img').removeClass('selected');
                 		$(this).addClass('selected');
+            		}
+            		else {
+            			form.find('ul.gallery li img').removeClass('selected');
             		}
             	});
             	form.find('ul.gallery li img[src$="/'+form.valeur('Source').val()+'"]').click();

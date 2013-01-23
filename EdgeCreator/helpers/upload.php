@@ -1,18 +1,27 @@
 <?php
 $url_root=getcwd();
 $est_photo_tranche = $_POST['photo_tranche'] == 1;
-$extension = strrchr($_FILES['image']['name'], '.');
+$extension = strtolower(strrchr($_FILES['image']['name'], '.'));
+$extension_cible='.jpg';
 $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
 
 if ($est_photo_tranche) {
-	$fichier=$_POST['magazine'].'.'.$_POST['numero'].'.photo'.$extension;
+	$fichier=$_POST['magazine'].'.'.$_POST['numero'].'.photo';
+	if (file_exists($dossier.$fichier.$extension_cible)) {
+		$i=2;
+		while (file_exists($dossier.$fichier.'_'.$i.$extension_cible)) {
+			$i++;
+		}
+		$fichier.='_'.$i;
+	}
+	$fichier.=$extension_cible;
 }
 else {
 	$fichier = basename($_FILES['image']['name']);
 }
 $taille_maxi = $_POST['MAX_FILE_SIZE'];
 $taille = filesize($_FILES['image']['tmp_name']);
-$extensions = $est_photo_tranche ? array('.jpg') : array('.png');
+$extensions = $est_photo_tranche ? array('.jpg','.jpeg') : array('.png');
 //Début des vérifications de sécurité...
 if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
 {
@@ -63,15 +72,25 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 			}
 	  		</script><?php
 		  }
-		  echo 'Envoi r&eacute;alis&eacute; avec succ&egrave;s !';
+		  ?>Envoi r&eacute;alis&eacute; avec succ&egrave;s !<?php 
+		  if ($est_photo_tranche) {
+			afficher_retour();
+		  }	
 	 }
 	 else //Sinon (la fonction renvoie FALSE).
 	 {
 		  echo 'Echec de l\'envoi !';
+	 	  afficher_retour();
 	 }
 }
 else
 {
 	 echo $erreur;
+	 afficher_retour();
+}
+
+function afficher_retour() {
+	?><br /><a href="javascript:void(0)" onclick="location.href=location.href.replace(/\/upload\.php/g,'/image_upload.php')">Autre envoi</a><?php
+	
 }
 ?>
