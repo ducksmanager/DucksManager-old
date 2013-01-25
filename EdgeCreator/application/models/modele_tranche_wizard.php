@@ -249,6 +249,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete);
 		echo $requete."\n";
 	}
+	
+	function get_photo_principale($pays,$magazine,$numero) {
+		$requete='SELECT NumeroPhotoPrincipale FROM tranches_en_cours_modeles '
+				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+		$resultat=$this->db->query($requete)->row(0);
+		return $resultat->NumeroPhotoPrincipale;
+	}
 
 	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
 		$inclure_avant = $pos==='avant' || $pos==='_';

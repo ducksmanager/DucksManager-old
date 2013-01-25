@@ -27,7 +27,7 @@
 		<img class="action tip" name="home" 
 			 title="Revenir &agrave; l'&eacute;cran d'accueil de EdgeCreator" />
 		<img class="action tip" name="photo" style="margin-left: 10px"
-			 title="Placer la photo de la tranche &agrave; c&ocirc;t&eacute; du mod&egrave;le de tranche" />
+			 title="Ins&eacute;rer/S&eacute;lectionner une photo de tranche" />
 	</div>
 	<div id="status_user">
 		<?php

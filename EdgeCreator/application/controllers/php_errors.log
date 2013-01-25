@@ -1,3 +1,0 @@
-[30-Nov-2010 14:22:41] PHP Fatal error:  Class 'Controller' not found in D:\wamp\www\DucksManager\EdgeCreator\system\application\controllers\parametrage.php on line 2
-[30-Nov-2010 14:22:41] PHP Stack trace:
-[30-Nov-2010 14:22:41] PHP   1. {main}() D:\wamp\www\DucksManager\EdgeCreator\system\application\controllers\parametrage.php:0

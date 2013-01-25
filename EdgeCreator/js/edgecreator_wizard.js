@@ -23,6 +23,7 @@ var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
+var num_photo_principale=null;
 
 var pos_x_courante=null,
 	pos_y_courante=null;
@@ -59,10 +60,15 @@ function can_launch_wizard(id) {
 	return true;
 }
 
-function launch_wizard(id) {
-	var buttons={};
-	
+function launch_wizard(id, p) {
 	id_wizard_courant=id;
+	
+	p = p || {}; // Paramètres de surcharge
+	var buttons={},
+		dialogue = $('#'+id),
+		first 	 = dialogue.hasClass('first') 	 || (p.first !== undefined 	  && p.first),
+		dead_end = dialogue.hasClass('dead-end') || (p.dead_end !== undefined && p.dead_end),
+		modal	 = dialogue.hasClass('modal')	 || (p.modal !== undefined 	  && p.modal);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#wizard-1 .buttonset .disabled').button("option", "disabled", true);
@@ -78,8 +84,8 @@ function launch_wizard(id) {
 			};
 		break;
 		case 'wizard-ajout-etape':
-			$('#'+id).find('form input[name="etape"]').val($('#ajout_etape').data('etape'));
-			$('#'+id).find('form input[name="pos"]').val($('#ajout_etape').data('pos'));
+			dialogue.find('form input[name="etape"]').val($('#ajout_etape').data('etape'));
+			dialogue.find('form input[name="pos"]').val($('#ajout_etape').data('pos'));
 			buttons={
 				'OK': function() {
 					var formData=$(this).find('form').serializeObject();
@@ -103,14 +109,14 @@ function launch_wizard(id) {
 			};
 		break;
 		default:
-			if (! $('#'+id).hasClass('first')) {
+			if (!first) {
 				buttons["Precedent"]=function() {
 					$( this ).dialog().dialog( "close" );
 					launch_wizard(id_wizard_precedent);
 				};
 			}
 		
-			if (! $('#'+id).hasClass('dead-end')) {
+			if (!dead_end) {
 				buttons["Suivant"]=function() {
 					var id_wizard_suivant=wizard_check($(this).attr('id'));
 					if (id_wizard_suivant != null) {
@@ -120,12 +126,12 @@ function launch_wizard(id) {
 			}
 		break;
 	}
-	$('#'+id).dialog({
+	dialogue.dialog({
 		width: 475,
 		position: 'top',
-		modal: $('#'+id).hasClass('modal'),
+		modal: modal,
 		autoResize: true,
-		resizable: $('#'+id).hasClass('resizable'),
+		resizable: dialogue.hasClass('resizable'),
 		buttons: buttons,
 		draggable: false,
 		open:function(event,ui) {
@@ -2171,47 +2177,7 @@ function init_action_bar() {
 					location.reload();
 				break;
 				case 'photo':
-					if ($(this).hasClass('active')) {
-						$('#photo_tranche').html('');						
-					}
-					else {
-						$.ajax({
-			                url: urls['listerg']+['index','Source_photo',pays,magazine].join('/'),
-			                dataType:'json',
-			                type: 'post',
-			                success:function(data) {
-			                	var photo_trouvee=null;
-			                	for (var i in data) {
-			                		if (data[i].match(new RegExp('^'+magazine+'\.'+numero+'\.photo\.jpg$','g'))) {
-			                			photo_trouvee=data[i];
-			                		}
-			                	}
-			                	if (photo_trouvee) {
-			    					$('#action_bar .action[name="photo"]').toggleClass('active');
-									afficher_photo_tranche();
-			                	}
-			                	else {
-			                		$.ajax({
-										url: urls['upload_wizard']+['index',pays,magazine,numero].join('/'),
-										type: 'post',
-										dataType: 'json',
-										success:function(data) {
-											if (data === false) {
-												$('#wizard-upload').dialog({
-													modal: true,
-													width: 330
-												});
-											}
-											else {
-												afficher_photo_tranche();
-												$('#wizard-upload').dialog('close');
-											}								
-										}
-									});
-			                	}
-			                }
-						});
-					}
+					launch_wizard('wizard-photos', {modal:true, first: true});
 				break;
 			}
 			
@@ -2220,17 +2186,33 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche() {
-	var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
-	$('#photo_tranche').html(image);
-	image.attr({'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo.jpg'});
-	image.load(function() {
-		$(this).css({'display':'inline'});
-		$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
-														 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
-	});
-	image.error(function() {
-		$(this).css({'display':'none'});
-	});
+	if (num_photo_principale !== null) {
+		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
+		$('#photo_tranche').html(image);
+		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo_'+num_photo_principale+'.jpg'});
+		image.load(function() {
+			$(this).css({'display':'inline'});
+			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
+															 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
+		});
+		image.error(function() {
+			$(this).css({'display':'none'});
+		});
+	}
+	else {
+		$.ajax({ // Détails des étapes
+			url: urls['photo_principale']+['index',pays,magazine,numero].join('/'),
+			type: 'post',
+			dataType:'json',
+			success:function(num_photo) {
+				if (num_photo !== 'null') {
+					num_photo_principale = num_photo;
+					afficher_photo_tranche();				
+				}
+			}
+		});
+	}
+	
 }
 
 function lister_images_gallerie(type_images) {
@@ -2285,7 +2267,9 @@ function lister_images_gallerie(type_images) {
             			form.find('#NumeroPhotoPrincipale').val("");
             		}
             	});
-            	form.find('ul.gallery li img[src$="/'+form.valeur('Source').val()+'"]').click();
+            	if (num_photo_principale !== null) {
+            		form.find('ul.gallery li img[src$="_'+num_photo_principale+'.jpg"]').click();
+            	}
         	}
         	ul.removeClass('cache');
         	form.find('.chargement_images').addClass('cache');
