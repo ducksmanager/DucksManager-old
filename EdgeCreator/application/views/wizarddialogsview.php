@@ -254,10 +254,10 @@
 					Chacune des manipulations permettant de cr&eacute;er la tranche sont appel&eacute;es des <b>&eacute;tapes</b>.
 					<br />
 					&lt; Les &eacute;tapes de votre tranche sont pr&eacute;sent&eacute;es &agrave; gauche, dans leur ordre d'utilisation.<br />
-					&lt; 
-					Cliquez sur une &eacute;tape pour la modifier.<br />
+					&lt; Cliquez sur une &eacute;tape pour la modifier.<br />
+					&lt; Passez la souris entre 2 &eacute;tapes pour en ins&eacute;rer une nouvelle.<br />
 					<p class="texte_presentation_tranche_finale">
-						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; droite. &gt;
+						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; droite de la photo de la tranche. &gt;
 					</p> 
 				</form>
 			</p>

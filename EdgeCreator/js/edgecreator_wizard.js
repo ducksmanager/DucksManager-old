@@ -116,13 +116,28 @@ function launch_wizard(id, p) {
 				};
 			}
 		
-			if (!dead_end) {
-				buttons["Suivant"]=function() {
-					var id_wizard_suivant=wizard_check($(this).attr('id'));
-					if (id_wizard_suivant != null) {
-						wizard_goto($(this),id_wizard_suivant);
+			if (id === 'wizard-photos') {
+				buttons["OK"]=function() {
+					if ($('#wizard-conception').is(':visible')) {
+						$( this ).dialog().dialog( "close" );
 					}
-				};
+					else {
+						var id_wizard_suivant=wizard_check($(this).attr('id'));
+						if (id_wizard_suivant != null) {
+							wizard_goto($(this),id_wizard_suivant);
+						}
+					}
+				}
+			}
+			else {
+				if (!dead_end) {
+					buttons["Suivant"]=function() {
+						var id_wizard_suivant=wizard_check($(this).attr('id'));
+						if (id_wizard_suivant != null) {
+							wizard_goto($(this),id_wizard_suivant);
+						}
+					};
+				}
 			}
 		break;
 	}
@@ -2256,7 +2271,8 @@ function lister_images_gallerie(type_images) {
             							 'title':data[i]});
             		ul.append(li);
             	}
-            	form.find('ul.gallery li img').click(function() {
+    			form.find('ul.gallery li img').removeClass('selected')
+            								  .click(function() {
             		if (! $(this).hasClass('selected')) {
             			form.find('ul.gallery li img').removeClass('selected');
                 		$(this).addClass('selected');
