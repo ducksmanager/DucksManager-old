@@ -416,6 +416,8 @@
 		</div>
 		
 		<div id="options-etape--TexteMyFonts" class="options_etape cache">
+			<input type="hidden" name="original_preview_width" />
+			<input type="hidden" name="original_preview_height" />
 			<div class="image_position cache"></div>
 			<div class="accordion">
 				<h3><a href="#">Propri&eacute;t&eacute;s du texte</a></h3>

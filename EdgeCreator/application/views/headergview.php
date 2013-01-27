@@ -18,7 +18,7 @@ header("Pragma: no-cache"); ?>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.8.3.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.9.2.custom.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.9.2.custom.js" ></script>
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/json2.js" ></script>

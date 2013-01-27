@@ -129,7 +129,7 @@ function launch_wizard(id, p) {
 							wizard_goto($(this),id_wizard_suivant);
 						}
 					}
-				}
+				};
 			}
 			else {
 				if (!dead_end) {
@@ -1712,7 +1712,8 @@ function valider(callback) {
 
 function tester_option_preview(nom_fonction,nom_option,element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
-	var form_options=dialogue.find('[name="form_options"]');
+	var form_options=dialogue.find('[name="form_options"]');;
+	var form_options_orig=dialogue.find('[name="form_options_orig"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
 	var image=dialogue.find('.preview_vide');
@@ -1879,12 +1880,10 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 						val = toFloat2Decimals(positionnement.width()/image.width());
 					break;
 					case 'Compression_y':
-						var compression_x=parseFloat(form_options.valeur('Compression_x').val());
-						
-						var image_preview_ajustee=dialogue.find('body>.apercu_myfonts img');
-						var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
-						var ratio_positionnement=positionnement.width()/positionnement.height();
-						val = toFloat2Decimals(compression_x*(ratio_image_preview_ajustee/ratio_positionnement));
+						var original_width =dialogue.find('[name="original_preview_width"]' ).val();
+						var original_height=dialogue.find('[name="original_preview_height"]').val();
+						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Compression_y').val()) 
+											  /(original_height/positionnement.height()));
 					break;
 					case 'Chaine': case 'URL':
 						val=form_userfriendly.valeur(nom_option).val();
@@ -1935,7 +1934,7 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 		if (valeurs['Mesure_depuis_haut'] == 'Non') { // Le pos_y est mesuré entre le haut de la tranche et le bas du texte
 			pos_y-=parseFloat(hauteur);
 		}
-	
+		
 		var limites_drag=[(image.offset().left-parseFloat(largeur)),
 		                  (image.offset().top -parseFloat(hauteur)),
 		                  (image.offset().left+image.width()),
@@ -1956,8 +1955,19 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 				   		    	tester_option_preview('TexteMyFonts','Compression_x'); 
 				   		    	tester_option_preview('TexteMyFonts','Compression_y');
 				   		    }
-					  })
-					  .html(image_preview_ajustee.clone(false));
+					  });
+		var image_a_positionner = image_preview_ajustee.clone(false);
+		if (position_texte.find('img').length == 0) {
+			position_texte.append(image_a_positionner);
+		}
+		else {
+			position_texte.find('img').replaceWith(image_a_positionner);
+		}
+
+		if (dialogue.find('[name="original_preview_width"]' ).val() === '') {
+			dialogue.find('[name="original_preview_width"]' ).val(largeur);
+			dialogue.find('[name="original_preview_height"]').val(hauteur);
+		}
 		
 		placer_extension_largeur_preview();
 	});
