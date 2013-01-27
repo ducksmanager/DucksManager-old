@@ -499,6 +499,12 @@ function wizard_init(wizard_id) {
 		break;
 		
 		case 'wizard-photos':
+			$('#'+wizard_id).find('.accordion').accordion({
+				active: 1,
+				activate:function(event,ui) {
+					
+				}
+			});
 			lister_images_gallerie('Photos');
 		break;
 		

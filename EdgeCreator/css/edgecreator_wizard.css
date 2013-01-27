@@ -43,7 +43,7 @@ button#connexion, button#deconnexion {
 }
 
 #wizard-conception .texte_presentation_tranche_finale {
-	width: 50%;
+	width: 80%;
 	float: right;
 	text-align: right;
 }

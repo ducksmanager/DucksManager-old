@@ -151,17 +151,23 @@
 						cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
 						Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
 						<br />
-						<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
-						<br />
-						S&eacute;lectionnez une photo de tranche pour poursuivre.
-						<br />
-						<p class="chargement_images" >Chargement des images</p>
-						<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
-						<ul class="gallery cache">
-							<li class="template">
-								<img />
-							</li>
-						</ul>
+						<div class="accordion">
+							<h3><a href="#">Envoyer une photo</a></h3>
+							<div class="envoyer_photo">
+								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
+							</div>
+							<h3><a href="#">S&eacute;lectionner une photo</a></h3>
+							<div class="selectionner_photo">
+								<p class="chargement_images" >Chargement des images</p>
+								<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
+								<ul class="gallery cache">
+									<li class="template">
+										<img />
+									</li>
+								</ul>
+							</div>
+						</div>
+						S&eacute;lectionnez une photo de tranche pour poursuivre.						
 						<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 						<div class="buttonset cache">
 							<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
@@ -257,7 +263,7 @@
 					&lt; Cliquez sur une &eacute;tape pour la modifier.<br />
 					&lt; Passez la souris entre 2 &eacute;tapes pour en ins&eacute;rer une nouvelle.<br />
 					<p class="texte_presentation_tranche_finale">
-						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; droite de la photo de la tranche. &gt;
+						La tranche telle qu'elle sera affich&eacute;e dans la biblioth&egrave;que DucksManager est pr&eacute;sent&eacute;e &agrave; gauche de la photo de la tranche. &gt;
 					</p> 
 				</form>
 			</p>
