@@ -118,12 +118,14 @@ function launch_wizard(id, p) {
 		
 			if (id === 'wizard-photos') {
 				buttons["OK"]=function() {
-					if ($('#wizard-conception').is(':visible')) {
-						$( this ).dialog().dialog( "close" );
-					}
-					else {
-						var id_wizard_suivant=wizard_check($(this).attr('id'));
-						if (id_wizard_suivant != null) {
+					var id_wizard_suivant=wizard_check($(this).attr('id'));
+					if (id_wizard_suivant != null) {
+						if ($('#wizard-conception').is(':visible')) {
+							num_photo_principale=$(this).find('[name="numeroPhotoPrincipale"]').val() || '_';
+							maj_photo_principale();
+							$( this ).dialog().dialog( "close" );
+						}
+						else {
 							wizard_goto($(this),id_wizard_suivant);
 						}
 					}
@@ -535,14 +537,17 @@ function wizard_init(wizard_id) {
 						magazine=get_option_wizard('wizard-creer-hors-collection','wizard_magazine');
 						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
 					}
-					var numero_photo_principale=get_option_wizard('wizard-photos','numeroPhotoPrincipale') || '_';
-					// Ajout des dimensions en base
+					
+					num_photo_principale=get_option_wizard('wizard-photos','numeroPhotoPrincipale') || '_';
+					// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions',numero_photo_principale].join('/'),
+						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
 					    type: 'post',
 					    async: false
 					});
-					// Mise à jour avec les valeurs entrées
+					// Renseignement du numéro de photo principale en base
+					maj_photo_principale();
+					// Mise à jour de la fonction Dimensions avec les valeurs entrées
 					var parametrage_dimensions =  'Dimension_x='+get_option_wizard('wizard-dimensions','Dimension_x')
 												+'&Dimension_y='+get_option_wizard('wizard-dimensions','Dimension_y');
 					$.ajax({
@@ -2221,7 +2226,7 @@ function afficher_photo_tranche() {
 		});
 	}
 	else {
-		$.ajax({ // Détails des étapes
+		$.ajax({
 			url: urls['photo_principale']+['index',pays,magazine,numero].join('/'),
 			type: 'post',
 			dataType:'json',
@@ -2233,7 +2238,16 @@ function afficher_photo_tranche() {
 			}
 		});
 	}
-	
+}
+
+function maj_photo_principale() { 
+	$.ajax({
+		url: urls['update_photo']+['index',pays,magazine,numero,num_photo_principale].join('/'),
+	    type: 'post',
+	    success:function() {
+	    	afficher_photo_tranche();
+	    }
+	});
 }
 
 function lister_images_gallerie(type_images) {
@@ -2270,6 +2284,7 @@ function lister_images_gallerie(type_images) {
         			break;
         		}
         		form.find('.pas_d_image').addClass('cache');
+        		form.find('ul.gallery li:not(.template) img').remove();
             	for (var i in data) {
             		var li=ul.find('li.template').clone(true).removeClass('template');
             		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
@@ -2278,6 +2293,7 @@ function lister_images_gallerie(type_images) {
             		ul.append(li);
             	}
     			form.find('ul.gallery li img').removeClass('selected')
+    										  .unbind('click')
             								  .click(function() {
             		if (! $(this).hasClass('selected')) {
             			form.find('ul.gallery li img').removeClass('selected');

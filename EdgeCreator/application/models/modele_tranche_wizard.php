@@ -243,9 +243,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultat->Nom_fonction;
 	}
 	
-	function creer_modele($pays, $magazine, $numero, $numero_photo_principale) {
-		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, NumeroPhotoPrincipale) '
-				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\','.$numero_photo_principale.')';
+	function creer_modele($pays, $magazine, $numero) {
+		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username) '
+				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\')';
 		$this->db->query($requete);
 		echo $requete."\n";
 	}
@@ -283,6 +283,16 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		foreach($parametrage as $parametre=>$valeur) {
 			$this->insert($id_modele,$etape,$nom_fonction,$parametre,$valeur);			
 		}
+	}
+	
+	function update_photo_principale($pays,$magazine,$numero,$num_photo_principale) {
+		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		
+		$requete_maj='UPDATE tranches_en_cours_modeles '
+					.'SET NumeroPhotoPrincipale='.$num_photo_principale.' '
+					.'WHERE ID='.$id_modele;
+		$this->db->query($requete_maj);
+		echo $requete_maj."\n";
 	}
 
 	function cloner_etape($pays,$magazine,$etape_courante,$etape) {
