@@ -273,6 +273,14 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                         <?php
                         echo $texte_debut;
+                        if (!Inducks::connexion_ok() && isset($_SESSION['user']) &&!($action=='logout')) {
+							?><div class="error"><?=COA_KO_1?><br /><?=COA_KO_2?>
+							<?php if (date('m-Y') === '02-2013') {?>
+								<?=PLUS_D_INFOS?> <a href="http://picsouman.free.fr/forum/forum.php?f=0&view=1443" target="_blank"><?=ICI?></a>.
+							<?php }?> 
+							</div><?php 
+							fin_de_page();
+						}
                         foreach($menus as $i=>$menu) {
                         	if (! isset($menu->items))
                         		continue;

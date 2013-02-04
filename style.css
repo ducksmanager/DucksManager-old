@@ -179,12 +179,17 @@ a.important:HOVER {
     vertical-align:super;
 }
 
-.warning, .confirmation {
+.error, .warning, .confirmation {
 	margin-right: 10px;
 	margin-bottom: 23px;
 	font-weight: bold;
 	border-width: 1px;
 	border-style: solid;
+}
+
+.error {
+	color: red;
+	border-color: red;
 }
 
 .warning {

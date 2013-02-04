@@ -10,6 +10,14 @@ class Inducks {
 	static $noms_complets;
 		static $use_local_db=false;
 
+		static function connexion_ok() {
+			$requete='SELECT COUNT(*) As cpt FROM inducks_country';
+			$resultat=Inducks::requete_select($requete);
+			return is_array($resultat) 
+				&& is_array($resultat[0])
+				&& intval($resultat[0][0]) > 0 ;
+		}
+		
 		static function requete_select($requete,$db='coa',$serveur='serveur_virtuel') {
 			if (Inducks::$use_local_db) {
 				mysql_select_db('coa');
