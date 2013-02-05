@@ -55,7 +55,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 		}
 		else {
 			$requete='UPDATE tranches_pretes '
-					.'SET photographes=CONCAT(photographes, \','.$contributeur.'\') '
+					.'SET photographes=CONCAT(IFNULL(photographes,\'\'), \','.$contributeur.'\') '
 					.'WHERE publicationcode=\''.$publicationcode.'\' '
 					  .'AND issuenumber=\''.$issuenumber.'\'';
 			DM_Core::$d->requete($requete);
