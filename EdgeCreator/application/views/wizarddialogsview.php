@@ -167,6 +167,10 @@
 								</ul>
 							</div>
 						</div>
+						<button class="cache" value="to-wizard-resize">
+							Rogner la photo s&eacute;lectionn&eacute;e
+						</button>
+						<br />
 						S&eacute;lectionnez une photo de tranche pour poursuivre.						
 						<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 						<div class="buttonset cache">
@@ -465,7 +469,7 @@
 				<div class="finition_texte_genere">
 					Faites glisser le bord droit du texte g&eacute;n&eacute;r&eacute; de fa&ccedil;on &agrave; ce qu'il soit enti&egrave;rement visible.
 					<br />
-					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case si le texte apparait sur 2 lignes.</label> 
+					<input type="checkbox" name="option-Demi_hauteur" id="option-Demi_hauteur" />&nbsp;<label for="option-Demi_hauteur">Cochez cette case pour &eacute;viter que le texte apparaisse sur 2 lignes.</label> 
 					<br /><br />
 					<div>
 						<div class="extension_largeur cache">&nbsp;</div>
@@ -542,6 +546,14 @@
 	</ul>
 </div>
 
+<div id="wizard-resize" class="wizard" title="Retouche d'image">
+	<p>
+		Rognez et redimensionnez l'image si n&eacute;cessaire.
+	</p>
+	<img /><br />
+	<div class="error crop_inconsistent cache">Une partie de votre s&eacute;lection est situ&eacute;e en dehors de l'image.</div>
+</div>
+
 <div id="wizard-confirmation-supprimer" class="wizard" title="Supprimer l'&eacute;tape ?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
 	Vous allez supprimer cette &eacute;tape. Continuer ?</p>
@@ -569,4 +581,13 @@
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
 	Ce point du polygone va &ecirc;tre supprim&eacute;. Continuer ?</p>
 	<span id="nom_point_a_supprimer" class="cache"></span>
+</div>
+
+<div id="wizard-confirmation-resize" class="wizard" title="Nom de l'image ?">
+	<p>
+	Une nouvelle image va &ecirc;etre cr&eacute;e. Indiquez le nom que vous souhaitez lui donner.
+	(Exemples : <i>Tete Donald</i> ; <i>Motif arriere plan</i>, etc.</p>
+	<form>
+		<input type="text" name="nom_image" />
+	</form>
 </div>

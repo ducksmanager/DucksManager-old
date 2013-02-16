@@ -1841,6 +1841,32 @@ class Dessiner_contour {
 	}
 }
 
+class Rogner {
+	function Rogner($pays,$magazine,$numero,$nom,$x1,$x2,$y1,$y2) {
+		$extension='.jpg';
+		$nom_image_origine = Fonction_executable::getCheminPhotos($pays)
+							.'/'.$magazine.'.'.$numero.'.photo_'.$nom;
+		$i=1;
+		while (file_exists($nom_image_origine.'_'.$i.$extension)) {
+			$i++;
+		}
+		$nom_image_modifiee = $nom_image_origine.'_'.$i.$extension;
+		$nom_image_origine.=$extension;
+		
+		$img = imagecreatefromjpeg($nom_image_origine);
+		$width=imagesx($img);
+		$height =imagesy($img);
+		$cropped_img=imagecreatetruecolor(($x2-$x1) * $width / 100,($y2-$y1) * $height / 100);
+		imagecopyresampled ($cropped_img , $img , 
+							0, 0, 
+							$x1 * $width / 100 , $y1 * $height / 100 ,
+							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100 , 
+							($x2-$x1) * $width / 100 , ($y2-$y1) * $height / 100);
+		imagejpeg($cropped_img,$nom_image_modifiee);
+		
+	}
+}
+
 
 function z($valeur) {
 	return Viewer::$zoom*$valeur;

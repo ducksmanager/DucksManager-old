@@ -371,3 +371,8 @@ img.loading {
     -ms-filter: "alpha(opacity=20)";
     filter : alpha(opacity=20);
 }
+
+.error {
+	color: red;
+	font-weight: bold;
+}

@@ -13,11 +13,13 @@ header("Pragma: no-cache"); ?>
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_wizard.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/edgecreator_gallery.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/farbtastic.css" />
+	<link rel="stylesheet" type="text/css" href="<?=base_url()?>css/jquery.jrac.css" />
 	<link rel="shortcut icon" href="<?=base_url()?>images/favicon.ico" />
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.8.3.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery.jrac.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.9.2.custom.js" ></script>
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.dataSelector.js" ></script>
@@ -48,7 +50,7 @@ header("Pragma: no-cache"); ?>
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
 		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','upload_wizard','supprimer_wizard','viewer','viewer_wizard','viewer_myfonts',
-						   'dessiner','photo_principale','update_photo');
+						   'dessiner','photo_principale','update_photo','rogner_image');
 		foreach($controleurs as $controleur) {
 			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
 		}?>
