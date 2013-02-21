@@ -289,7 +289,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
 		
 		$requete_maj='UPDATE tranches_en_cours_modeles '
-					.'SET NumeroPhotoPrincipale='.$num_photo_principale.' '
+					.'SET NumeroPhotoPrincipale=\''.$num_photo_principale.'\' '
 					.'WHERE ID='.$id_modele;
 		$this->db->query($requete_maj);
 		echo $requete_maj."\n";

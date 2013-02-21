@@ -121,7 +121,8 @@ function launch_wizard(id, p) {
 				var id_wizard_suivant=wizard_check($(this).attr('id'));
 				if (id_wizard_suivant != null) {
 					if ($('#wizard-conception').is(':visible')) {
-						num_photo_principale=$(this).find('[name="numeroPhotoPrincipale"]').val() || '_';
+						num_photo_principale=$(this).find('.gallery li img.selected').attr('src')
+							.match(/\.photo_([0-9_]+)\.jpg$/)[1];
 						maj_photo_principale();
 						$( this ).dialog().dialog( "close" );
 					}
