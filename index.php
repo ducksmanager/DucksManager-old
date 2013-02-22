@@ -873,6 +873,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         		<?=PRESENTATION_DEMO.$nb_minutes_avant_reset.' '.MINUTES?>
                                         	</div><?php
                                         }
+                                        
+                                        if (Util::getBrowser() == 'Android') {
+											encart_WhatTheDuck();
+											?><br /><br /><?php 
+										}
 
                                         if (isset($_POST['magazine'])) {
 	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine']);
@@ -1369,16 +1374,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 								<a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
 							</h3>
 						</div>
-						<div style="width:300px;margin-top:20px;border:1px solid white">
-							<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
-							<p style="margin-left:10px">
-								<?=PUB_WHATTHEDUCK_1?>
-								<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
-								<?=PUB_WHATTHEDUCK_2?>
-								<br />
-								<?=PUB_WHATTHEDUCK_3?>
-							</p>
-						</div>
+						<?php encart_WhatTheDuck();?>
 						<br />
 						
                                 <?php
@@ -1484,5 +1480,19 @@ function creer_id_session($user,$pass) {
     document.location.replace("index.php?action=gerer");
     // -->
     </script>';
+}
+
+function encart_WhatTheDuck() {
+?>
+	<div style="width:300px;margin-top:20px;border:1px solid white">
+		<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
+		<p style="margin-left:10px">
+			<?=PUB_WHATTHEDUCK_1?>
+			<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
+			<?=PUB_WHATTHEDUCK_2?>
+			<br />
+			<?=PUB_WHATTHEDUCK_3?>
+		</p>
+	</div><?php 
 }
 ?>

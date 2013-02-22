@@ -46,7 +46,9 @@ class Util {
 
 	static function getBrowser() {
 
-		if ((preg_match("#Nav#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Gold#", getenv(
+		if (preg_match("#android#i", getenv("HTTP_USER_AGENT")))
+		  $navigateur = "Android";
+		elseif ((preg_match("#Nav#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Gold#", getenv(
 		"HTTP_USER_AGENT"))) ||
 		(preg_match("#X11#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Mozilla#", getenv(
 		"HTTP_USER_AGENT"))) ||
