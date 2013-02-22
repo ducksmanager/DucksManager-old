@@ -468,7 +468,7 @@ define('TAILLE_TRANCHES','Size of the edges');
 define('TAILLE_REELLE','Real size');
 define('TELECHARGER_FLASH','Get Flash');
 define('TERMINE','Done.');
-define('TEXTE_DUCKHUNT_TOUR_1','The DuckHunt Tour occurs at least once a year.');
+define('TEXTE_DUCKHUNT_TOUR_1','"DuckHunt Tour ? What\'s that ?"');
 define('TEXTE_DUCKHUNT_TOUR_2','The principle : drive on the French roads to find second-hand bookshops in which Disney comic books can potentially be found.');
 define('TEXTE_DUCKHUNT_TOUR_3','The aim of the DuckHunt Tour are :<br />
 								<ul style="padding-left:20px;"><li>From a personal point of view, the Tour allows me to relax while driving in regions I don\'t really know, and to rummage through the bookshops to find things to make my own collection evolve.<br /></li>
@@ -485,6 +485,8 @@ define('TITRE','DucksManager : Your Disney comics collection manager');
 define('TITRE_PAGE_ACCUEIL','Welcome !');
 define('TITRE_PAGE_AGRANDIR','Expand your collection');
 define('TITRE_PAGE_BIBLIOTHEQUE','Your bookcase');
+define('TITRE_PAGE_BOUQUINERIES','Second-hand bookshops');
+define('TITRE_PAGE_DUCKHUNT_TOUR','The DuckHunt Tour');
 define('TITRE_PAGE_GERER','Collection management');
 define('TITRE_PAGE_INDUCKS','Connection to Inducks');
 define('TITRE_PAGE_OPEN','Login to the DucksManager account');

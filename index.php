@@ -40,7 +40,7 @@ $action=isset($_GET['action'])?$_GET['action']:null;
 if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
 else
-    $titre=constant('TITRE_PAGE_ACCUEIL');
+    $titre=TITRE_PAGE_ACCUEIL;
 $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) : null;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
@@ -51,7 +51,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <meta http-equiv="Cache-Control" CONTENT="no-store" />
         <meta http-equiv="Expires" content="0" />
         <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
-        <title><?php echo TITRE.' - '.$titre;?></title>
+        <title><?=$titre.' - DucksManager'?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <!--[if IE]>
               <style type="text/css" media="all">@import "fix-ie.css";</style>

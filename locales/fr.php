@@ -468,7 +468,7 @@ define('TAILLE_TRANCHES','Taille des tranches');
 define('TAILLE_REELLE','Taille r&eacute;elle');
 define('TELECHARGER_FLASH','T&eacute;l&eacute;chargez Flash');
 define('TERMINE','Termin&eacute;.');
-define('TEXTE_DUCKHUNT_TOUR_1','Au moins une fois par an a lieu le DuckHunt Tour.');
+define('TEXTE_DUCKHUNT_TOUR_1','Qu\'est-ce que le DuckHunt Tour ? ');
 define('TEXTE_DUCKHUNT_TOUR_2','Le principe : silloner les routes de France &agrave; la recherche de bouquinistes dans lesquels d&eacute;nicher des magazines Disney.');
 define('TEXTE_DUCKHUNT_TOUR_3','L\'objectif du Duckhunt Tour est multiple :<br />
 								<ul style="padding-left:20px;"><li>D\'un point de vue personnel, il me permet &agrave; la fois de me d&eacute;tendre en conduisant dans des r&eacute;gions que je connais peu, et &agrave; la fois de fouiner dans des bouquineries pour agrandir ma collection.<br /></li>
@@ -481,15 +481,17 @@ define('TEXTE_SELECTIONNER_NUMEROS3','Une fois que vous avez termin&eacute; votr
 define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Texture de l\'&eacute;tag&egrave;re');
 define('TEXTURE__BOIS','Bois');
-define('TITRE','DucksManager : Gestion de votre collection de magazines Disney');
+define('TITRE','DucksManager : Gestion de collection de bandes dessinées Disney');
 define('TITRE_PAGE_ACCUEIL','Bienvenue !');
-define('TITRE_PAGE_AGRANDIR','Agrandir votre collection');
-define('TITRE_PAGE_BIBLIOTHEQUE','Bibliotheque de la collection');
-define('TITRE_PAGE_GERER','Gestion de la collection');
+define('TITRE_PAGE_AGRANDIR','Agrandir ma collection');
+define('TITRE_PAGE_BIBLIOTHEQUE','Ma bibliotheque');
+define('TITRE_PAGE_BOUQUINERIES','Trouver des bouquineries');
+define('TITRE_PAGE_DUCKHUNT_TOUR','Le DuckHunt Tour');
+define('TITRE_PAGE_GERER','Gestion de ma collection');
 define('TITRE_PAGE_INDUCKS','Connexion au compte Inducks');
 define('TITRE_PAGE_OPEN','Connexion');
 define('TITRE_PAGE_PRINT_NOW','Impression de liste');
-define('TITRE_PAGE_STATISTIQUES','Statistiques de la collection');
+define('TITRE_PAGE_STATISTIQUES','Statistiques de ma collection');
 define('TOTAL','Total');
 define('TOUS_MAGAZINES','Tous magazines');
 define('TRANCHE_NON_DISPONIBLE1','Cette tranche n\'est pas visible car nous n\'en poss&eacute;dons pas de photographie...');
