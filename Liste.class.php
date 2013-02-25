@@ -259,11 +259,7 @@ class Liste {
 					continue;
 				foreach($numeros_pays as $magazine=>$numeros) {
 					foreach($numeros as $numero) {
-						$num_final='';
-						//for($i=0;$i<6-strlen($numero);$i++)
-						//	$num_final.='0';
-						$num_final.=$numero;
-						$requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$num_final.'\',\'Indefini\',-1,0,'.$id_user.')';
+						$requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.',current_date())';
 						DM_Core::$d->requete($requete);
 						$cpt++;
 					}
