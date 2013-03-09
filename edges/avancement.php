@@ -36,24 +36,43 @@ if (isset($_GET['wanted'])) {
     echo '--- WANTED ---';
     $requete_plus_demandes='SELECT Count(Numero) as cpt, Pays, Magazine, Numero '
                           .'FROM numeros '
-                          .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero LIMIT 1500';
+                          .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
     $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
+	$publicationcodes=array();
     foreach($resultat_plus_demandes as $numero) {
-        $e = new Edge($numero['Pays'],$numero['Magazine'],$numero['Numero'],$numero['Numero']);
-		$est_dispo=$e->est_visible;
-		if (!$est_dispo) {  
-			list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($numero['Pays'], $numero['Magazine']);
-			?><br /><u><?=$numero['cpt']?> demandes pour :</u><br />
+		$publicationcodes[]=$numero['Pays'].'/'.$numero['Magazine'];
+	}
+	$publicationcodes=array_unique($publicationcodes);
+	list($liste_pays,$liste_magazines)=Inducks::get_noms_complets($publicationcodes);
+	foreach($resultat_plus_demandes as $num) {
+		$pays=$num['Pays'];
+		$magazine=$num['Magazine'];
+		$numero=$num['Numero'];
+		$cpt=$num['cpt'];
+		
+		list($magazine,$numero)=Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
+		$publicationcode = $pays.'/'.$magazine;
+        $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
+        $est_dispo=count(DM_Core::$d->requete_select($requete_est_dispo)) > 0;
+        if (!$est_dispo) {
+			$nom_magazine_complet = $liste_magazines[$publicationcode];
+			if (is_null($nom_magazine_complet)) {
+				$nom_magazine_complet = $publicationcode;
+			}
+			?><br /><u><?=$cpt?> utilisateurs poss&egrave;dent le num&eacute;ro :</u><br />
 			&nbsp;
-				<?=$numero['Pays']?> <?=utf8_decode($nom_magazine_complet)?> n&deg;<?=$numero['Numero']?>
+				<img src="../images/flags/<?=$pays?>.png" /> 
+				<?=$nom_magazine_complet?> n&deg;<?=$numero?>
 			<br /><?php
 			if ($cptwanted++ >= $_GET['wanted'])
 				break;
-			$cpt=$numero['cpt'];
 		}
     }
+}
+else {
+	?><a href="avancement.php?wanted=20">Voir les 20 tranches les plus demand&eacute;es</a><?php
 }
 ?><hr /><?php
 
