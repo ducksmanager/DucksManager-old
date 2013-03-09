@@ -146,30 +146,33 @@ class Inducks {
 	}
 	
 	static function get_noms_complets($publication_codes) {
-		$liste_pays=array();
-		$liste_magazines=array();
-		foreach($publication_codes as $i=>$publication_code) {
-			list($pays,$magazine)=explode('/',$publication_code);
-			if (!in_array($pays,$liste_pays))
-				$liste_pays["'".$pays."'"]='';
-			$publication_codes[$i]="'".$publication_code."'";
-		}
-		$requete_noms_pays='SELECT countrycode, countryname FROM inducks_countryname '
-						  .'WHERE languagecode=\''.$_SESSION['lang'].'\' '
-						    .'AND countrycode IN ('.implode(',',array_keys($liste_pays)).')';
-		$resultats_noms_pays=Inducks::requete_select($requete_noms_pays);
-		$liste_pays=array();
-		foreach($resultats_noms_pays as $resultat) {
-			$liste_pays[$resultat['countrycode']]=$resultat['countryname'];
-		}
+		$liste_pays_complets=array();
+		$liste_magazines_complets=array();
 		
-		$requete_noms_magazines='SELECT publicationcode, title FROM inducks_publication '
-							   .'WHERE publicationcode IN ('.implode(',',$publication_codes).')';
-		$resultats_noms_magazines=Inducks::requete_select($requete_noms_magazines);
-		foreach($resultats_noms_magazines as $resultat) {
-			$liste_magazines[$resultat['publicationcode']]=$resultat['title'];
+		$publication_codes_chunks=array_chunk($publication_codes, 100);
+		foreach($publication_codes_chunks as $publication_codes_chunk) {
+			$liste_pays=array();
+			foreach($publication_codes_chunk as $i=>$publication_code) {
+				list($pays,$magazine)=explode('/',$publication_code);
+				$liste_pays[]="'".$pays."'";
+				$publication_codes_chunk[$i]="'".$publication_code."'";
+			}
+			$requete_noms_pays='SELECT countrycode, countryname FROM inducks_countryname '
+							  .'WHERE languagecode=\''.$_SESSION['lang'].'\' '
+							    .'AND countrycode IN ('.implode(',',$liste_pays).')';
+			$resultats_noms_pays=Inducks::requete_select($requete_noms_pays);
+			foreach($resultats_noms_pays as $resultat) {
+				$liste_pays_complets[$resultat['countrycode']]=$resultat['countryname'];
+			}
+			
+			$requete_noms_magazines='SELECT publicationcode, title FROM inducks_publication '
+								   .'WHERE publicationcode IN ('.implode(',',$publication_codes_chunk).')';
+			$resultats_noms_magazines=Inducks::requete_select($requete_noms_magazines);
+			foreach($resultats_noms_magazines as $resultat) {
+				$liste_magazines_complets[$resultat['publicationcode']]=$resultat['title'];
+			}
 		}
-		return array($liste_pays,$liste_magazines);
+		return array($liste_pays_complets,$liste_magazines_complets);
 	}
 
 	static function get_liste_magazines($pays) {
