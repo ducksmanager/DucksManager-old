@@ -40,12 +40,8 @@ if (isset($_GET['wanted'])) {
     $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
-	$publicationcodes=array();
-    foreach($resultat_plus_demandes as $numero) {
-		$publicationcodes[]=$numero['Pays'].'/'.$numero['Magazine'];
-	}
-	$publicationcodes=array_unique($publicationcodes);
-	list($liste_pays,$liste_magazines)=Inducks::get_noms_complets($publicationcodes);
+    
+	$numeros_demandes=array();
 	foreach($resultat_plus_demandes as $num) {
 		$pays=$num['Pays'];
 		$magazine=$num['Magazine'];
@@ -57,19 +53,34 @@ if (isset($_GET['wanted'])) {
         $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
         $est_dispo=count(DM_Core::$d->requete_select($requete_est_dispo)) > 0;
         if (!$est_dispo) {
-			$nom_magazine_complet = $liste_magazines[$publicationcode];
-			if (is_null($nom_magazine_complet)) {
-				$nom_magazine_complet = $publicationcode;
-			}
-			?><br /><u><?=$cpt?> utilisateurs poss&egrave;dent le num&eacute;ro :</u><br />
-			&nbsp;
-				<img src="../images/flags/<?=$pays?>.png" /> 
-				<?=$nom_magazine_complet?> n&deg;<?=$numero?>
-			<br /><?php
+			$numeros_demandes[]=array('cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero);
 			if ($cptwanted++ >= $_GET['wanted'])
 				break;
 		}
     }
+	$publicationcodes=array();
+    foreach($numeros_demandes as $numero_demande) {
+		$publicationcodes[]=$numero_demande['publicationcode'];
+	}
+	$publicationcodes=array_unique($publicationcodes);
+	list($liste_pays,$liste_magazines)=Inducks::get_noms_complets($publicationcodes);
+
+	foreach($numeros_demandes as $numero_demande) {
+		$publicationcode=$numero_demande['publicationcode'];
+		list($pays,$magazine)=explode('/',$publicationcode);
+		$numero=$numero_demande['numero'];
+		$cpt=$numero_demande['cpt'];
+		
+		$nom_magazine_complet = $liste_magazines[$publicationcode];
+		if (is_null($nom_magazine_complet)) {
+			$nom_magazine_complet = $publicationcode;
+		}
+		?><br /><u><?=$cpt?> utilisateurs poss&egrave;dent le num&eacute;ro :</u><br />
+		&nbsp;
+			<img src="../images/flags/<?=$pays?>.png" /> 
+			<?=$nom_magazine_complet?> n&deg;<?=$numero?>
+		<br /><?php
+	}
 }
 else {
 	?><a href="avancement.php?wanted=20">Voir les 20 tranches les plus demand&eacute;es</a><?php
