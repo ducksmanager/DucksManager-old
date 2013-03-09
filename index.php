@@ -217,6 +217,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 <td id="medailles_et_login" align="center" style="vertical-align: bottom; height:45px;padding-left:3px;background-color:rgb(61, 75, 95)">
                     <?php
                     if (isset($_SESSION['user']) &&!($action=='logout')) {
+						?><div style="white-space: nowrap"><?php						
 						$niveaux=DM_Core::$d->get_niveaux();
 						foreach($niveaux as $type=>$cpt_et_niveau) {
 							if (!is_null($cpt_et_niveau)) {
@@ -230,7 +231,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 							}
 						}
                     	?>
-                    	<br />
+                    	</div><br />
                     	<div id="login">
 	                    	<img id="light" src="vert.png" alt="O" />&nbsp;
 	                    	<span id="texte_connecte"><?=$_SESSION['user']?></span>
