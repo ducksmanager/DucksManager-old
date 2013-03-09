@@ -60,12 +60,12 @@ class Edge {
 if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
     if (!isset($_GET['debug']))
         header('Content-type: image/png');
-    $e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero']);
+    $e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero'],$_GET['numero']);
     $o=$e->o;
     $o->dessiner_tranche();
 }
 
 function getImgHTMLOf($pays,$magazine,$numero) {
-    $e=new Edge($pays, $magazine, $numero);
+    $e=new Edge($pays, $magazine, $numero, $numero);
     return $e->getImgHTML();
 }

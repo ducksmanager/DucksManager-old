@@ -41,7 +41,7 @@ if (isset($_GET['wanted'])) {
     $cpt=-1;
     $cptwanted=0;
     foreach($resultat_plus_demandes as $numero) {
-        $e = new Edge($numero['Pays'],$numero['Magazine'],$numero['Numero'],false,true);
+        $e = new Edge($numero['Pays'],$numero['Magazine'],$numero['Numero'],$numero['Numero']);
 		$est_dispo=$e->est_visible;
 		if (!$est_dispo) {  
 			list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($numero['Pays'], $numero['Magazine']);

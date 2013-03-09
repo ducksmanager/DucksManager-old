@@ -54,15 +54,6 @@ class Inducks {
 		return $magazine;
 	}
 	
-	static function get_vrais_magazine_numero($pays,$magazine,$numero) {
-		$vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
-		if ($vrai_magazine !=$magazine) {
-			$numero=substr($magazine, strlen($vrai_magazine)).$numero;
-			$magazine=$vrai_magazine;
-		}
-		return array($magazine,$numero);
-	}
-	
 	static function get_numeros_liste_publications($publication_codes) {
 		foreach($publication_codes as $i=>$publication_code) {
 			$publication_codes[$i]="'".$publication_code."'";

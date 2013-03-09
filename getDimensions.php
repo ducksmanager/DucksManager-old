@@ -1,27 +1,47 @@
 <?php
-global $liste_magazines_recuperes;
-$liste_magazines_recuperes=array();
-function getDimensionsParDefaut($pays,$magazine,$numeros) {
-	global $liste_magazines_recuperes;
-	if (isset($liste_magazines_recuperes[$pays.'/'.$magazine]))
-		$resultat_dimensions = $liste_magazines_recuperes[$pays.'/'.$magazine];
-	else {
-		include_once('Inducks.class.php');
-		$requete_dimensions='SELECT Numero_debut, Numero_fin, Option_nom, Option_valeur FROM edgecreator_modeles_vue '
-						   .'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Nom_fonction=\'Dimensions\' AND username=\'brunoperel\'';
-		$resultat_dimensions=Inducks::requete_select($requete_dimensions,'db301759616');
-	}
-	$liste_magazines_recuperes[$pays.'/'.$magazine]=$resultat_dimensions;
-	
+global $dimensions;
+
+function getDimensionsParDefaut($publication_codes) {
+	global $dimensions;
 	$dimensions=array();
+	
+	foreach($publication_codes as $i=>$publication_code) {
+		$publication_codes[$i]="'".$publication_code."'";
+	}
+	include_once('Inducks.class.php');
+	$publication_codes_subarrays=array_chunk($publication_codes, 50);
+	foreach($publication_codes_subarrays as $publication_codes) {
+		$requete_dimensions='SELECT Pays,Magazine, Numero_debut, Numero_fin, Option_nom, Option_valeur FROM edgecreator_modeles_vue '
+						   .'WHERE CONCAT(Pays,\'/\',Magazine) IN ('.implode(',', $publication_codes).') '
+						   .'  AND Nom_fonction=\'Dimensions\' AND username=\'brunoperel\'';
+		$resultat_dimensions=Inducks::requete_select($requete_dimensions,'db301759616');
+		foreach($resultat_dimensions as $resultat) {
+			$pays=$resultat['Pays'];
+			$magazine=$resultat['Magazine'];
+			if (!isset($dimensions[$pays.'/'.$magazine])) {
+				$dimensions[$pays.'/'.$magazine]=array();
+			}
+			$dimensions[$pays.'/'.$magazine][]=$resultat;
+		}
+	}
+}
+
+function getDimensionsParDefautMagazine($pays,$magazine,$numeros) {
+	global $dimensions;
+	if (!isset($dimensions)) {
+		return 'null';
+	}
+	
 	foreach($numeros as $numero) {
 		$x=null;
 		$y=null;
-		foreach($resultat_dimensions as $dimension) {
-			if (!is_null($dimension['Option_nom']) && $dimension['Option_nom']=='Dimension_x' && est_dans_intervalle($pays.'/'.$magazine,$numero,$dimension))
-				$x=$dimension['Option_valeur'];
-			if (!is_null($dimension['Option_nom']) && $dimension['Option_nom']=='Dimension_y' && est_dans_intervalle($pays.'/'.$magazine,$numero,$dimension))
-				$y=$dimension['Option_valeur'];
+		if (array_key_exists($pays.'/'.$magazine, $dimensions)) {
+			foreach($dimensions[$pays.'/'.$magazine] as $dimension) {
+				if (!is_null($dimension['Option_nom']) && $dimension['Option_nom']=='Dimension_x' && est_dans_intervalle($pays.'/'.$magazine,$numero,$dimension))
+					$x=$dimension['Option_valeur'];
+				if (!is_null($dimension['Option_nom']) && $dimension['Option_nom']=='Dimension_y' && est_dans_intervalle($pays.'/'.$magazine,$numero,$dimension))
+					$y=$dimension['Option_valeur'];
+			}
 		}
 		$dimensions[$numero]=(is_null($x) || is_null($y)) ? 'null' : ($x.'x'.$y);
 	}
@@ -54,6 +74,6 @@ if (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numeros']))
 	$pays=$_GET['pays'];
 	$magazine=$_GET['magazine'];
 	$numeros=explode(',',$_GET['numeros']);
-	echo getDimensionsParDefaut($pays,$magazine,$numeros);
+	echo getDimensionsParDefautMagazine($pays,$magazine,$numeros);
 	
 }

@@ -27,15 +27,14 @@ class Edge {
 	static $largeur_numeros_precedents=0;
 	static $d;
 	
-	function Edge($pays=null,$magazine=null,$numero=null,$image_seulement=false) {
+	function Edge($pays=null,$magazine=null,$numero=null,$numero_reference=null,$image_seulement=false) {
 		if (is_null($pays))
 			return;
 		$this->magazine_est_inexistant=false;
 		$this->pays=$pays;
 		$this->magazine=$magazine;
-		$this->numero= self::get_numero_clean($this->pays,$this->magazine,$numero, true);
-		$this->numero_reference= self::get_numero_clean($this->pays,$this->magazine,$numero);
-		list($this->magazine,$this->numero_reference)=Inducks::get_vrais_magazine_numero($this->pays, $this->magazine, $this->numero_reference);
+		$this->numero= $numero;
+		$this->numero_reference= $numero_reference;
 		
 		$url_image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero_reference.'.png';
 		if ($image_seulement)
@@ -44,13 +43,14 @@ class Edge {
 			$this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero_reference);
 			
 			$this->image_existe=file_exists($url_image);
-			if ($this->est_visible && $this->image_existe) {
+			if ($this->image_existe) {
 				list($this->largeur,$this->hauteur,$type,$attr)=getimagesize($url_image);
 				$this->largeur=intval( $this->largeur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
 				$this->hauteur=intval( $this->hauteur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
+				
 			}
 			else {
-				$dimensions=getDimensionsParDefaut($this->pays,$this->magazine,array($this->numero_reference));
+				$dimensions=getDimensionsParDefautMagazine($this->pays,$this->magazine,array($this->numero_reference));
 				if (!is_null($dimensions[$this->numero_reference]) && $dimensions[$this->numero_reference]!='null')
 					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
 				
@@ -79,20 +79,44 @@ class Edge {
 			$code.= '<br />';
 		return $code;
 	}
+
+	static function get_numero_clean($numero) {
+		return str_replace('+','',str_replace(' ','',$numero));
+	}
 	
-	static function get_numero_clean($pays,$magazine,$numero, $numero_reel=false) {
-		$numero_clean=str_replace('+','',str_replace(' ','',$numero));
-		if ($numero_reel)
-			return $numero_clean;
+	
+	static function get_numeros_clean($pays,$magazine,$numeros) {
+		$numeros_clean_et_references=array();
+		foreach($numeros as $i=>$numero) {
+			$numero=$numero[0];
+			$numero_clean=self::get_numero_clean($numero);
+			$numeros[$i]="'".$numero_clean."'";
+			$numeros_clean_et_references[$numero]=array('clean'=>$numero_clean,'reference'=>$numero_clean);
+		}
 		
-		$requete_recherche_numero_reference='SELECT NumeroReference FROM tranches_doublons WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero_clean.'\'';
-		$resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
-		if (count($resultat_numero_reference) ==0)
-			$numero_clean_reference=$numero_clean;
-		else
-			$numero_clean_reference=$resultat_numero_reference[0]['NumeroReference'];
+		$numeros_subarrays=array_chunk($numeros, 250);
 		
-		return str_replace('+','',str_replace(' ','',$numero_clean_reference));
+		foreach($numeros_subarrays as $numeros_subarray) {
+			$requete_recherche_numero_reference=
+				'SELECT Numero,NumeroReference '
+			   .'FROM tranches_doublons '
+			   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero IN ('.implode(',', $numeros_subarray).') ';
+			$resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
+			foreach($resultat_numero_reference as $numero_reference) {
+				$numeros_clean_et_references[$numero_reference['Numero']]['reference']
+					=$numero_reference['NumeroReference'];
+			}
+		}
+
+		$vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
+		if ($vrai_magazine != $magazine) {
+			foreach($numeros_clean_et_references as $i=>$numero) {
+				$numeros_clean_et_references[$i]['reference']=substr($magazine, strlen($vrai_magazine)).$numero;
+			}
+			$magazine=$vrai_magazine;
+		}
+
+		return $numeros_clean_et_references;
 	}
 	
 	function getImgHTML($regen=false) {
@@ -185,6 +209,7 @@ class Edge {
 				$publication_codes[]=$pays.'/'.$magazine;
 			}
 			$numeros_inducks = Inducks::get_numeros_liste_publications($publication_codes);
+			getDimensionsParDefaut($publication_codes);
 			foreach($resultat_ordre_magazines as $ordre) {
 				$pays=$ordre['Pays'];
 				$magazine=$ordre['Magazine'];
@@ -192,8 +217,9 @@ class Edge {
 				if ($get_html === true)
 					sort($numeros);
 				$total_numeros+=count($numeros);
-				foreach($numeros as $numero) {
-					$e=new Edge($pays, $magazine, $numero[0]);
+				$numeros_clean_et_references=self::get_numeros_clean($pays, $magazine, $numeros);
+				foreach($numeros_clean_et_references as $numero) {
+					$e=new Edge($pays, $magazine, $numero['clean'],$numero['reference']);
 					
 					if ($get_html) {
 						$texte_final.=$e->html;
@@ -242,7 +268,7 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
 		Edge::$grossissement_affichage=$_GET['grossissement'];
 	if (!isset($_GET['debug']))
 		header('Content-type: image/png');
-	$e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero'],true);
+	$e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero'],$_GET['numero'],true);
 	imagepng($e->image);
 }
 /*
