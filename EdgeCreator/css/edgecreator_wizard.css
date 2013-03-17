@@ -49,7 +49,8 @@ button#connexion, button#deconnexion {
 }
 
 #wizard-1 #tranches_en_cours {
-	margin-left: 20px;
+	margin-left: 120px;
+	top: 0px !important;
 }
 
 #wizard-1 #tranches_en_cours label {
