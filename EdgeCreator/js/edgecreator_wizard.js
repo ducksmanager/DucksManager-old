@@ -341,13 +341,10 @@ function wizard_init(wizard_id) {
 		            }
 		          })
 		          .click(function() {
-		            var menu = $( this ).parent().next().show().position({
+		            $( this ).parent().next().show().position({
 		              my: "right",
 		              at: "right bottom",
 		              of: this
-		            });
-		            $( document ).one( "click", function() {
-		              menu.hide();
 		            });
 		            return false;
 		          })
@@ -368,11 +365,11 @@ function wizard_init(wizard_id) {
 						for (var i_tranche_en_cours in data) {
 							var tranche_en_cours=data[i_tranche_en_cours];
 							var str_tranche_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
-							var str_tranche=str_tranche_userfriendly+'('+tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero+')';
+							var str_tranche=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 							var bouton_tranche_en_cours=$('#numero_tranche_en_cours').clone(true).removeClass('init');
-							bouton_tranche_en_cours.attr({'id':str_tranche}).text(str_tranche);
-							if ($('#'+wizard_id+' #tranches_en_cours :contains(\''+str_tranche+'\')').length == 0) {
-								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours);
+							bouton_tranche_en_cours.attr({'id':str_tranche}).html(str_tranche_userfriendly);
+							if ($('#'+wizard_id+' #tranches_en_cours #'+str_tranche).length == 0) {
+								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours).append($('<br>'));
 							}
 						}
 						$('#numero_tranche_en_cours').remove();
@@ -381,8 +378,10 @@ function wizard_init(wizard_id) {
 						$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
 							$('#'+wizard_id+' #tranches_en_cours .ui-state-active').removeClass('ui-state-active');
 						});
-						$('#'+wizard_id+' #tranches_en_cours label').click(function() {
+						$('#'+wizard_id+' #tranches_en_cours a').click(function() {
+							$(this).addClass('ui-state-active');
 							$('#'+wizard_id+' #to-wizard-conception').click();
+							return false;
 						});
 					}
 				}
