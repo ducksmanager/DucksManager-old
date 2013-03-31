@@ -15,19 +15,27 @@ var nouvel_achat_o;
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
+	get_achats(-1);
+}
+
+function get_achats(continue_id) {
 	new Ajax.Request('Database.class.php', {
 	   method: 'post',
-	   parameters:'database=true&liste_achats=true',
+	   parameters:'database=true&liste_achats=true&continue='+continue_id,
 	   onSuccess:function(transport) {
-	    	var achats=transport.headerJSON;
-	    	for (var i in achats) {
-	    		var achat=achats[i];
+	    	var achats_courants=transport.headerJSON;
+	    	for (var i=0; i< achats_courants.length; i++) {
+	    		if (achats_courants[i]['continue']) {
+	    			get_achats(achat['id']);
+	    			return;
+	    		}
+	    		var achat=achats_courants[i];
 	    		achat['name']='Achat "'+achat.description+'"<br />'+achat.date;
 	    		achat['className']='date2';
 	    		achat['groupName']='achat';
 	    		achat['selected']=false;
 	    		achat['id']=achat.id;
-	    		tab_achats[i]=achat;
+	    		tab_achats[tab_achats.length]=achat;
 	    	}
 			myMenuItems = [
 			  {
@@ -188,7 +196,6 @@ function init_observers_gerer_numeros() {
                     image_checked.src = "checkedbox.png";
 	   }
 	});
-    
 }
 
 function griser(caller) {

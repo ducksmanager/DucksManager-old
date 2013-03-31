@@ -681,14 +681,29 @@ if (isset($_POST['database'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date');
 		$tab_achats=array();
+		$cpt_strlen=0;
 		foreach ($liste_achats as $achat) {
+			$id_achat=$achat['ID_Acquisition'];
+			if ($_POST['continue'] != -1) {
+			 	if ($_POST['continue']==$id_achat) {
+					$_POST['continue'] = -1;
+				}
+				else continue;
+			}
 			$o_achat=new stdClass();
-			$o_achat->id=$achat['ID_Acquisition'];
+			$o_achat->id=$id_achat;
 			$o_achat->description=$achat['Description'];
 			$o_achat->date=$achat['Date'];
 			$tab_achats[]=$o_achat;
+			$cpt_strlen+=strlen(json_encode($o_achat));
+			if ($cpt_strlen > 7000) {
+				$o_continue=new stdClass();
+				$o_continue->continue=$o_achat->id;
+				$tab_achats[]=$o_continue;
+				break;
+			}
 		}
-		echo header("X-JSON: " . json_encode($tab_achats));
+		echo header("X-JSON : ".json_encode($tab_achats));
 	}
 	else if (isset($_POST['liste_etats'])) {
 		DM_Core::$d->liste_etats();
