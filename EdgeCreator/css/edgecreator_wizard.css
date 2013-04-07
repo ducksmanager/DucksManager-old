@@ -1,4 +1,4 @@
-@CHARSET "ISO-8859-1";
+	@CHARSET "ISO-8859-1";
 
 iframe {
 	border: 0;
@@ -53,8 +53,11 @@ button#connexion, button#deconnexion {
 	top: 0px !important;
 }
 
-#wizard-1 #tranches_en_cours label {
-	margin-right: 0.1em;
+#wizard-1 #tranches_en_cours [name="choix_tranche_en_cours"] {
+	padding-left: 32px;
+	background-repeat: no-repeat;
+	background-color: #fece2f;
+	background-position: 10px;
 }
 
 #wizard-proposition-clonage table td {

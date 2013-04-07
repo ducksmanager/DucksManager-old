@@ -367,14 +367,19 @@ function wizard_init(wizard_id) {
 							var str_tranche_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
 							var str_tranche=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 							var bouton_tranche_en_cours=$('#numero_tranche_en_cours').clone(true).removeClass('init');
-							bouton_tranche_en_cours.attr({'id':str_tranche}).html(str_tranche_userfriendly);
+							bouton_tranche_en_cours
+								.attr({'id':str_tranche})
+								.html(str_tranche_userfriendly);
 							if ($('#'+wizard_id+' #tranches_en_cours #'+str_tranche).length == 0) {
 								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours).append($('<br>'));
 							}
 						}
 						$('#numero_tranche_en_cours').remove();
 						$('#'+wizard_id+' #tranches_en_cours').buttonset();
-
+						$.each($('#'+wizard_id+' #tranches_en_cours a'), function() {
+							var pays=$(this).attr('id').match(/^[^_]+/,'$1')[0];
+							$(this).css({'background-image': 'url("../../images/flags/'+pays+'.png")'});
+						});
 						$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
 							$('#'+wizard_id+' #tranches_en_cours .ui-state-active').removeClass('ui-state-active');
 						});
