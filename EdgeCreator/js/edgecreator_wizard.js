@@ -2,7 +2,7 @@
 	  $.fn.d = function(){
 		  return this.closest('.ui-dialog');
 	  };
-
+	
 	  $.fn.valeur = function(nom_option){
 		 if (this.hasClass('options_etape'))
 			 return this.find('[name="option-'+nom_option+'"]');
@@ -333,6 +333,26 @@ function wizard_init(wizard_id) {
 	// Actions à l'initialisation de l'assistant
 	switch(wizard_id) {
 		case 'wizard-1':
+			$('#selectionner_tranche_en_cours')
+		        .button({
+		            text: false,
+		            icons: {
+		              primary: "ui-icon-triangle-1-s"
+		            }
+		          })
+		          .click(function() {
+		            $( this ).parent().next().show().position({
+		              my: "right",
+		              at: "right bottom",
+		              of: this
+		            });
+		            return false;
+		          })
+		          .parent()
+		            .buttonset()
+		            .next()
+		              .hide()
+		              .menu();
 			$.ajax({
 				url: urls['tranchesencours']+['index'].join('/'),
 				dataType:'json',
@@ -345,26 +365,28 @@ function wizard_init(wizard_id) {
 						for (var i_tranche_en_cours in data) {
 							var tranche_en_cours=data[i_tranche_en_cours];
 							var str_tranche_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
-							var str_tranche=str_tranche_userfriendly+'('+tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero+')';
+							var str_tranche=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
 							var bouton_tranche_en_cours=$('#numero_tranche_en_cours').clone(true).removeClass('init');
-							var label_tranche_en_cours=$('#numero_tranche_en_cours').next('label').clone(true);
-							bouton_tranche_en_cours.attr({'id':str_tranche,'value':str_tranche});
-							label_tranche_en_cours.attr({'for':str_tranche}).html(str_tranche_userfriendly);
-							if ($('#'+wizard_id+' #tranches_en_cours').find('[value="'+str_tranche+'"]').length == 0) {
-								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours)
-																	  .append(label_tranche_en_cours)
-																	  .append($('<br>'));
+							bouton_tranche_en_cours
+								.attr({'id':str_tranche})
+								.html(str_tranche_userfriendly);
+							if ($('#'+wizard_id+' #tranches_en_cours #'+str_tranche).length == 0) {
+								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours).append($('<br>'));
 							}
 						}
-						$('#numero_tranche_en_cours').next('label').remove();
 						$('#numero_tranche_en_cours').remove();
 						$('#'+wizard_id+' #tranches_en_cours').buttonset();
-
+						$.each($('#'+wizard_id+' #tranches_en_cours a'), function() {
+							var pays=$(this).attr('id').match(/^[^_]+/,'$1')[0];
+							$(this).css({'background-image': 'url("../../images/flags/'+pays+'.png")'});
+						});
 						$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
 							$('#'+wizard_id+' #tranches_en_cours .ui-state-active').removeClass('ui-state-active');
 						});
-						$('#'+wizard_id+' #tranches_en_cours label').click(function() {
+						$('#'+wizard_id+' #tranches_en_cours a').click(function() {
+							$(this).addClass('ui-state-active');
 							$('#'+wizard_id+' #to-wizard-conception').click();
+							return false;
 						});
 					}
 				}
