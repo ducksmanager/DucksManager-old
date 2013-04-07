@@ -21,10 +21,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $user_possede_modele;
 	}
 	
-	function get_tranches_en_cours() {
-		$requete='SELECT Pays, Magazine, Numero '
+	function get_tranches_en_cours($id=null) {
+		$requete='SELECT ID, Pays, Magazine, Numero '
 				.'FROM tranches_en_cours_modeles '
 				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\'';
+		if (!is_null($id)) {
+			$requete.=' AND ID='.$id;
+		}
 		
 		$query = $this->db->query($requete);
 		$resultats=$query->result();

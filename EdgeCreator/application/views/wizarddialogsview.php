@@ -58,13 +58,14 @@
 				<label for="to-wizard-creer">Cr&eacute;er une tranche de magazine</label><br />
 				<input type="radio" name="choix" value="to-wizard-modifier" id="to-wizard-modifier"/>
 				<label for="to-wizard-modifier">Modifier une tranche de magazine</label><br />
-				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception" class="disabled"/>
+				<input type="radio" name="choix" value="to-wizard-conception" id="to-wizard-conception"/>
 				<label for="to-wizard-conception">Poursuivre une conception de tranche</label>
     			<button id="selectionner_tranche_en_cours">S&eacute;lectionnez une tranche</button>
 			</div>
-			<ul id="tranches_en_cours" class="buttonset cache">
-				<li>
-					<a href="#" name="choix_tranche_en_cours" value="numero_tranche_en_cours" id="numero_tranche_en_cours" class="init"></a>
+			<ul id="tranches_en_cours" class="cache">
+				<li class="init">
+					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
+					<label for="numero_tranche_en_cours">Label</label>
 				</li>
 			</ul>
 		</form>

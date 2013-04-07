@@ -220,7 +220,7 @@ function wizard_do(wizard_courant, action) {
 function wizard_check(wizard_id) {
 	var erreur=null;
 	var choix = $('#'+wizard_id+' form [name="choix"]');
-	var valeur_choix = choix.filter('[checked="checked"]').val();
+	var valeur_choix = $('#'+wizard_id+' form').serializeObject().choix;
 	if (choix.length != 0 && valeur_choix === undefined) {
 		erreur='Le formulaire n\'est pas correctement rempli';
 	}
@@ -231,7 +231,7 @@ function wizard_check(wizard_id) {
 			switch(wizard_id) {
 				case 'wizard-1':
 					if (valeur_choix == 'to-wizard-conception'
-					 && $('#'+wizard_id+' form [name="choix_tranche_en_cours"]').filter(':checked').length == 0) {
+					 && $('#'+wizard_id+' form').serializeObject().choix_tranche_en_cours == 0) {
 						erreur='Si vous souhaitez poursuivre une cr&eacute;ation de tranche, cliquez dessus pour la s&eacute;lectionner.<br />'
 							  +'Sinon, cliquez sur "Cr&eacute;er une tranche de magazine" ou "Modifier une tranche de magazine".';
 					}
@@ -354,39 +354,35 @@ function wizard_init(wizard_id) {
 		              .hide()
 		              .menu();
 			$.ajax({
-				url: urls['tranchesencours']+['index'].join('/'),
+				url: urls['tranchesencours']+['load'].join('/'),
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
-					var tranches_en_cours_existent=typeof(data) == 'object' && data.length > 0;
-					if (tranches_en_cours_existent) {
+					var tranches = traiter_tranches_en_cours(data);
+					if (tranches.length > 0) {
 						$('#'+wizard_id+' #tranches_en_cours').removeClass('cache');
 						$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
-						for (var i_tranche_en_cours in data) {
-							var tranche_en_cours=data[i_tranche_en_cours];
-							var str_tranche_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
-							var str_tranche=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
-							var bouton_tranche_en_cours=$('#numero_tranche_en_cours').clone(true).removeClass('init');
-							bouton_tranche_en_cours
-								.attr({'id':str_tranche})
-								.html(str_tranche_userfriendly);
-							if ($('#'+wizard_id+' #tranches_en_cours #'+str_tranche).length == 0) {
-								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours).append($('<br>'));
+						for (var i_tranche_en_cours in tranches) {
+							var tranche_en_cours=tranches[i_tranche_en_cours];
+							var bouton_tranche_en_cours=$('#tranches_en_cours .init').clone(true).removeClass('init');
+							bouton_tranche_en_cours.find('input')
+								.attr({'id':'tranche'+tranche_en_cours.ID})
+								.val(tranche_en_cours.ID);
+							bouton_tranche_en_cours.find('label')
+								.attr({'for':'tranche'+tranche_en_cours.ID})
+								.css({'background-image': 'url("../../images/flags/'+tranche_en_cours.Pays+'.png")'})
+								.html(tranche_en_cours.str_userfriendly)
+								.click(function() {
+									$('#'+wizard_id+' #to-wizard-conception').click();
+								});
+							if ($('#'+wizard_id+' #tranches_en_cours #'+tranche_en_cours.ID).length == 0) {
+								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours);
 							}
 						}
-						$('#numero_tranche_en_cours').remove();
+						$('#tranches_en_cours .init').remove();
 						$('#'+wizard_id+' #tranches_en_cours').buttonset();
-						$.each($('#'+wizard_id+' #tranches_en_cours a'), function() {
-							var pays=$(this).attr('id').match(/^[^_]+/,'$1')[0];
-							$(this).css({'background-image': 'url("../../images/flags/'+pays+'.png")'});
-						});
 						$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
 							$('#'+wizard_id+' #tranches_en_cours .ui-state-active').removeClass('ui-state-active');
-						});
-						$('#'+wizard_id+' #tranches_en_cours a').click(function() {
-							$(this).addClass('ui-state-active');
-							$('#'+wizard_id+' #to-wizard-conception').click();
-							return false;
 						});
 					}
 				}
@@ -598,11 +594,20 @@ function wizard_init(wizard_id) {
 		case 'wizard-conception':
 			var numero_complet_userfriendly=null;
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
-				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
-				numero_complet_userfriendly=tranche_en_cours.replace(REGEX_NUMERO,'$1');
-				pays=tranche_en_cours.replace(REGEX_NUMERO,'$2');
-				magazine=tranche_en_cours.replace(REGEX_NUMERO,'$3');
-				numero=tranche_en_cours.replace(REGEX_NUMERO,'$4');
+				var id_tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
+				$.ajax({
+					url: urls['tranchesencours']+['load',id_tranche_en_cours].join('/'),
+				    type: 'post',
+					dataType:'json',
+				    async: false,
+				    success: function(data) {
+				    	var tranche=traiter_tranches_en_cours(data)[0];
+						numero_complet_userfriendly=tranche.str_userfriendly;
+						pays=tranche.Pays;
+						magazine=tranche.Magazine;
+						numero=tranche.Numero;
+				    }
+				});
 			}
 			else {
 				if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete') == undefined
@@ -837,6 +842,20 @@ function wizard_init(wizard_id) {
 				});
 		break;
 	}
+}
+
+function traiter_tranches_en_cours(data) {
+	var tranches_en_cours_existent=typeof(data) == 'object' && data.length > 0;
+	if (!tranches_en_cours_existent)
+		return [];
+	var tranches=[];
+	for (var i_tranche_en_cours in data) {
+		var tranche_en_cours=data[i_tranche_en_cours];
+		tranche_en_cours.str=tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
+		tranche_en_cours.str_userfriendly=tranche_en_cours.Magazine_complet+' n&deg;'+tranche_en_cours.Numero;
+		tranches.push(tranche_en_cours);
+	}
+	return tranches;
 }
 
 function ajouter_preview_etape(num_etape, nom_fonction) {

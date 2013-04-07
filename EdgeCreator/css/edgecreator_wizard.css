@@ -53,11 +53,14 @@ button#connexion, button#deconnexion {
 	top: 0px !important;
 }
 
-#wizard-1 #tranches_en_cours [name="choix_tranche_en_cours"] {
+#wizard-1 #tranches_en_cours li label {
 	padding-left: 32px;
 	background-repeat: no-repeat;
-	background-color: #fece2f;
 	background-position: 10px;
+}
+
+#wizard-1 #tranches_en_cours li label .ui-button-text {
+	white-space: nowrap;
 }
 
 #wizard-proposition-clonage table td {
