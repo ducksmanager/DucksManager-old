@@ -71,6 +71,7 @@ function launch_wizard(id, p) {
 		first 	 = dialogue.hasClass('first') 	 || (p.first !== undefined 	  && p.first),
 		dead_end = dialogue.hasClass('dead-end') || (p.dead_end !== undefined && p.dead_end),
 		modal	 = dialogue.hasClass('modal')	 || (p.modal !== undefined 	  && p.modal);
+		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined&& p.closeable);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -165,9 +166,16 @@ function launch_wizard(id, p) {
 									   -dialog.css('top')
 									 )+'px'});
 
-			dialog.find(".ui-dialog-titlebar-close").hide();
+			if (!closeable) {
+				dialog.find(".ui-dialog-titlebar-close").hide();
+			}
 			
 			wizard_init($(this).attr('id'));
+		},
+		close: function(event,ui) {
+			if (closeable) {
+				wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+			}
 		}
 	});
 }
@@ -201,19 +209,15 @@ function wizard_do(wizard_courant, action) {
 							$.ajax({
 								url: urls['rogner_image']+['index',pays,magazine,numero,nom,x1,x2,y1,y2].join('/'),
 								type: 'post',
-								dataType:'json',
-								success:function(data) {
-									wizard_courant.dialog().dialog( "close" );
-								}
+								dataType:'json'
 							});
 						}
-					break;
-					case 'annuler':
-						wizard_courant.dialog().dialog("close");
 					break;
 				}
 			break;
 		}
+		wizard_courant.dialog().dialog("close");
+		wizard_goto(wizard_courant,'wizard-photos');
 	}
 }
 

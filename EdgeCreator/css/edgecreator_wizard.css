@@ -32,6 +32,7 @@ button#connexion, button#deconnexion {
 
 .ui-dialog {
 	top: 70px !important;
+	z-index: 1000;
 }
 
 .ui-dialog.main {

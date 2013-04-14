@@ -553,16 +553,16 @@
 	</ul>
 </div>
 
-<div id="wizard-resize" class="wizard first" title="Retouche d'image">
+<div id="wizard-resize" class="wizard first closeable" title="Retouche d'image">
 	<p>
-		Rognez et redimensionnez l'image si n&eacute;cessaire.
+		Rognez l'image.
 	</p>
 	<img /><br />
 	<div class="error crop_inconsistent cache">Une partie de votre s&eacute;lection est situ&eacute;e en dehors de l'image.</div>
 	<form>
 		<div class="buttonset">
-			<input type="radio" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" /><label for="do-in-wizard-enregistrer">Enregistrer (nouvelle image)</label>
-			<input type="radio" name="choix" value="do-in-wizard-annuler" id="do-in-wizard-annuler" /><label for="do-in-wizard-annuler">Continuer sans changer l'image</label>
+			<input type="hidden" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
+			<input type="hidden" checked="checked" name="onClose" value="to-wizard-photos" id="to-wizard-photos" />
 		</div>
 	</form>
 </div>
