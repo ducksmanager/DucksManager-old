@@ -102,7 +102,7 @@ class Liste {
 		return $tab;
 	}
 	
-	function liste_magazines($pays_magazine_supplementaire=null) {
+	function liste_magazines($pays_magazine_supplementaire=null,$tri_noms_complets=true) {
 		$publication_codes=array();
 		foreach($this->collection as $pays=>$numeros_pays) {
 			foreach(array_keys($numeros_pays) as $magazine) {
@@ -119,6 +119,15 @@ class Liste {
 		}
 		foreach(array_keys($noms_magazines) as $nom_abrege) {
 			$noms_magazines[$nom_abrege]=array($nom_abrege, $noms_magazines[$nom_abrege]);
+		}
+		
+		if ($tri_noms_complets) {
+			uasort($noms_magazines, function($a,$b) {
+				if ($a[1] == $b[1]) {
+					return 0;
+				}
+				return ($a[1] < $b[1]) ? -1 : 1; 
+			});
 		}
 		return array($noms_pays,$noms_magazines);
 	}

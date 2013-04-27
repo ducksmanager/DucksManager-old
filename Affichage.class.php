@@ -5,16 +5,17 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 class Affichage {
 
-	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$drapeaux=false) {
+	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$id=null) {
 			$onmouseover='';
 			$onmouseout='';
 			$cpt=0;
 			$nb_onglets=count($tab_onglets);
+			$id=is_null($id) ? '':$id;
 			$largeur_tab=intval(100/($nb_onglets==0 ? 1 : $nb_onglets));
-			?><ul <?=$drapeaux ? 'id="onglets_pays"':''?> class="tabnav"><?php
+			?><ul <?=empty($id)?'':('id="'.$id.'"')?> class="tabnav"><?php
 			foreach($tab_onglets as $nom_onglet=>$infos_lien) {
-				$pays=$drapeaux ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
-				$contenu_lien_onglet=$nom_onglet;
+				$pays=$id=='onglets_pays' ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
+				$contenu_lien_onglet=$id=='onglets_magazines' ? $infos_lien[1] : $nom_onglet;
 				?><li class="<?php
 				if ($infos_lien[1]==AJOUTER_MAGAZINE) {
 				   echo 'nouveau ';
@@ -48,11 +49,6 @@ class Affichage {
 					case '?';
 						$onclick='toggle_item_menu(this)';
 					break;
-					default:
-						if (strpos($prefixe,'ajout_suppr')) {
-							$onmouseover='montrer_nom_magazine(this)';
-							$onmouseout='cacher_nom_magazine()';
-						}
 				}
 				?>"><a id="<?=$infos_lien[1]?>"
 					   name="<?=$nom?>"
@@ -61,22 +57,23 @@ class Affichage {
 					   <?=(isset($onclick)?'onclick="'.$onclick.'"':'')?>
 					   href="<?=$lien?>">
 				<?php
-				if ($drapeaux && $infos_lien[0]!='new') {
+				if ($id=='onglets_pays' && $infos_lien[0]!='new') {
 					?>
 					<img src="images/flags/<?=$pays?>.png" alt="<?=$pays?>" /><span><?=$infos_lien[1]?></span>
 					<?php
 				}
 				else {
-					if ($argument=='onglet_magazine')
-						echo substr ($contenu_lien_onglet, strpos ($contenu_lien_onglet, '/')+1,strlen($contenu_lien_onglet));
-					else
-						echo $contenu_lien_onglet;
+					echo $contenu_lien_onglet;
 				}
 				?>
 					</a></li>
 				<?php
 		}
-		?></ul><br /><?php
+		?></ul>
+		<?php 
+		if ($id!='onglets_pays') {
+			?><br /><?php
+		}
 	}
 	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
 		$liste->nettoyer_collection();

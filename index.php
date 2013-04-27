@@ -881,10 +881,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 										}
 
                                         if (isset($_POST['magazine'])) {
-	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine']);
+	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine'],true);
                                         }
                                         else {
-											list($onglets_pays,$onglets_magazines)=$l->liste_magazines();
+											list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
                                         }
                                         $onglets_pays[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
                                         if (!isset($_GET['onglet_magazine'])) {
@@ -965,10 +965,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 		                                        <?=POSSESSION_MAGAZINES_4?><br />
 		                                        <?php
 		                                    }
-											Affichage::onglets($onglet_pays,$onglets_pays,'','',true);
-											Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr');
-											?><span id="nom_magazine_courant" style="visibility:hidden;border:1px solid white;display:table;color:#666666;margin-top:-15px;background-color:#C88964">&nbsp;
-											                                        </span><br /><?php
+											Affichage::onglets($onglet_pays,$onglets_pays,'','','onglets_pays');
+											Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr','onglets_magazines');
+											
                                             if (isset($onglet_magazine) && isset($pays)) {
                                             ?>
                                                 <?php if (isset($_GET['afficher_video']) && $_GET['afficher_video']==0) {
