@@ -40,6 +40,26 @@ a.important:HOVER {
 	margin-left: 5px;
 }
 
+#recemment {
+	border: 1px solid black;
+    color: black;
+	padding: 5px 5px 20px 5px;
+}
+
+#recemment h4 {
+	text-align: center;
+    margin-top: 0px;
+}
+
+#recemment div {
+	
+}
+
+#recemment div .date {
+	color: #444;
+	float: right;
+}
+
 #login {
 	margin-top: 10px;	
 	margin-bottom: 10px;

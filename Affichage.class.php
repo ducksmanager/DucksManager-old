@@ -188,5 +188,31 @@ class Affichage {
 				$cpt++;
 		}
 	}
+	
+	static function afficher_evenements_recents($evenements) {
+		foreach($evenements as $date_evenements=>$evenements_date) {
+			foreach($evenements_date as $type=>$evenements_type) {
+				foreach($evenements_type as $user=>$evenement) {
+					switch($type) {
+						case 'ajouts':
+							$numeros=array();
+							foreach($evenement->numeros as $numero) {		
+								$numeros[]='<img src="images/flags/'.$numero->Pays.'.png" />'
+										  .$numero->Magazine.' '.$numero->Numero;
+							}
+							?><div>
+								<b><?=$user?></b> a ajouté <?=implode(', ',$numeros)?> 
+								et <?=$evenement->cpt?> autres numéros à sa collection
+								<span class="date">
+								il y a 3 heures
+								</span>
+							</div>
+							<?php 
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 ?>
