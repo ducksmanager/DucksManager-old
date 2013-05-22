@@ -86,7 +86,7 @@ $menus=array(
 				   new Item('gerer', 'always', GERER_COLLECTION),
 				   new Item('stats', 'always', STATISTIQUES_COLLECTION),
 				   new Item('agrandir', 'always', AGRANDIR_COLLECTION),
-				   new Item('print', 'always', IMPRIMER_COLLECTION, false, true),
+				   new Item('print', 'always', IMPRIMER_COLLECTION),
 				   new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS),
 				   new Item('logout', 'always', DECONNEXION)
 			)),
