@@ -190,21 +190,63 @@ class Affichage {
 	}
 	
 	static function afficher_evenements_recents($evenements) {
-		foreach($evenements as $date_evenements=>$evenements_date) {
+		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
+
+		?>
+		<div id="recemment">
+			<h4><?=NEWS_TITRE?></h4><?php
+		foreach($evenements->evenements as $date_evenements=>$evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $user=>$evenement) {
 					switch($type) {
 						case 'ajouts':
 							$numeros=array();
-							foreach($evenement->numeros as $numero) {		
+							foreach($evenement->numeros as $numero) {	
+								if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
+									$evenement->cpt++;
+									continue;
+								}	
 								$numeros[]='<img src="images/flags/'.$numero->Pays.'.png" />'
-										  .$numero->Magazine.' '.$numero->Numero;
+										  .$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero;
+							}
+							if (count($numeros) === 0) {
+								continue;
 							}
 							?><div>
-								<b><?=$user?></b> a ajouté <?=implode(', ',$numeros)?> 
-								et <?=$evenement->cpt?> autres numéros à sa collection
+								<b><?=$user?></b> <?=NEWS_A_AJOUTE?> 
+								<?=implode($evenement->cpt==0 ? (' '.ET.' ') : ', ',$numeros)?>  
+								<?php 
+								if ($evenement->cpt > 0) {
+									?>
+									<?=ET?> <?=$evenement->cpt?> 
+									<?=$evenement->cpt === 1 ? NEWS_AUTRE_NUMERO : NEWS_AUTRES_NUMEROS?>
+								<?php } ?>
+								<?=NEWS_A_SA_COLLECTION?>
 								<span class="date">
-								il y a 3 heures
+								<?=NEWS_IL_Y_A_PREFIXE?> 
+								<?php 
+									$diff=$evenement->diffsecondes;
+									if ($diff < 60) {
+										?><?=$diff?> <?=NEWS_TEMPS_SECONDE?>s<?php
+									}
+									else {
+										$diff/=60;
+										if ($diff < 60) {
+											?><?=intval($diff)?> <?=NEWS_TEMPS_MINUTE?>s<?php
+										}
+										else {
+											$diff/=60;
+											if ($diff < 24) {
+												?><?=intval($diff)?> <?=NEWS_TEMPS_HEURE?>s<?php
+											}
+											else {
+												$diff/=24;
+												?><?=intval($diff)?> <?=NEWS_TEMPS_JOUR?>s<?php
+											}
+										}
+									}
+								?>
+								 <?=NEWS_IL_Y_A_SUFFIXE?>
 								</span>
 							</div>
 							<?php 
@@ -213,6 +255,7 @@ class Affichage {
 				}
 			}
 		}
+		?></div><?php
 	}
 }
 ?>

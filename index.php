@@ -258,12 +258,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         ?>
                                         <br/>
                                     </div>
-                                    <div id="recemment">
-    									<h4>Récemment sur DucksManager...</h4>
-    									<?php 
-    									Affichage::afficher_evenements_recents(DM_Core::$d->getDernieresActions());
-    									?>
-	    							</div>
+    								<?php 
+    								Affichage::afficher_evenements_recents(DM_Core::$d->getDernieresActions());
+    								?>
                                     <div id="couverture_preview">
                                     </div>
                                 </td>

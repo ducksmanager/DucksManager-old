@@ -333,6 +333,17 @@ define('MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU','Cet e-mail ne correspond &agr
 define('MOT_DE_PASSE_OUBLIE_EXPLICATION','Un mot de passe temporaire va vous &ecirc;tre envoy&eacute; &agrave; l\'adresse e-mail que vous indiquerez ci-dessous :');
 define('MOTS_DE_PASSE_DIFFERENTS','Les deux mots de passe ne correspondent pas !');
 define('MOYEN','Moyen');
+define('NEWS_TITRE','R&eacute;cemment sur DucksManager...');
+define('NEWS_A_AJOUTE','a ajout&eacute;');
+define('NEWS_A_SA_COLLECTION','&agrave; sa collection');
+define('NEWS_AUTRE_NUMERO','autre num&eacute;ro');
+define('NEWS_AUTRES_NUMEROS','autres num&eacute;ros');
+define('NEWS_IL_Y_A_PREFIXE','il y a');
+define('NEWS_IL_Y_A_SUFFIXE','');
+define('NEWS_TEMPS_HEURE','heure');
+define('NEWS_TEMPS_JOUR','jour');
+define('NEWS_TEMPS_MINUTE','minute');
+define('NEWS_TEMPS_SECONDE','seconde');
 define('NOM_BOUQUINERIE','Nom de la bouquinerie');
 define('NOMBRE_HISTOIRES','Nombre d\'histoires');
 define('NOM_UTILISATEUR','Nom d\'utilisateur');

@@ -581,8 +581,10 @@ function ajouter_auteur($id,$nom) {
 	}
 	
 	function getDernieresActions() {
-		$evenements = array();
-		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjout, DateAjout AS DateHeureAjout, count(Numero) AS cpt '
+		$evenements = new stdClass();
+		$evenements->publicationcodes = array();
+		$evenements->evenements = array();
+		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, count(Numero) AS cpt '
 				.'FROM numeros '
 				.'INNER JOIN users ON numeros.ID_Utilisateur=users.ID '
 				.'WHERE DateAjout > date_add(now(), interval -1 month) '
@@ -594,18 +596,23 @@ function ajouter_auteur($id,$nom) {
 		foreach($resultat_derniers_ajouts as $ajout) {
 			$requete_numeros='SELECT Pays, Magazine, Numero '
 							.'FROM numeros '
-							.'WHERE numeros.ID_Utilisateur='.$ajout['ID'].' AND DateAjout> date_add(now(), interval -1 month) '
+							.'WHERE numeros.ID_Utilisateur='.$ajout['ID'].' '
+							  .'AND DATE(DateAjout)= \''.$ajout['DateAjoutJour'].'\' '
 							.'ORDER BY RAND() '
 							.'LIMIT 2';
-			$resultat_numeros = DM_Core::$d->requete_select($requete_numeros);
-			if (!array_key_exists($ajout['DateAjout'], $evenements)) {
-				$evenements[$ajout['DateAjout']]=new stdClass();
-				$evenements[$ajout['DateAjout']]->ajouts=new stdClass();
+			$resultats_numeros = DM_Core::$d->requete_select($requete_numeros);
+			foreach($resultats_numeros as $numero) {
+				$evenements->publicationcodes[]=$numero['Pays'].'/'.$numero['Magazine'];
+			}
+			if (!array_key_exists($ajout['DateAjoutJour'], $evenements->evenements)) {
+				$evenements->evenements[$ajout['DateAjoutJour']]=new stdClass();
+				$evenements->evenements[$ajout['DateAjoutJour']]->ajouts=new stdClass();
 			}
 			
-			$evenements[$ajout['DateAjout']]->ajouts->$ajout['username']=
-				json_decode(json_encode(array('numeros'=>$resultat_numeros,
-					  						  'cpt'=>intval($ajout['cpt'])-count($resultat_numeros))));
+			$evenements->evenements[$ajout['DateAjoutJour']]->ajouts->$ajout['username']=
+				json_decode(json_encode(array('diffsecondes'=>$ajout['DiffSecondes'],
+					  						  'numeros'=>$resultats_numeros,
+					  						  'cpt'=>intval($ajout['cpt'])-count($resultats_numeros))));
 		}
 		
 		return $evenements;
