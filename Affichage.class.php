@@ -198,6 +198,7 @@ class Affichage {
 		foreach($evenements->evenements as $date_evenements=>$evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $user=>$evenement) {
+					?><div><?php
 					switch($type) {
 						case 'ajouts':
 							$numeros=array();
@@ -206,13 +207,13 @@ class Affichage {
 									$evenement->cpt++;
 									continue;
 								}	
-								$numeros[]='<img src="images/flags/'.$numero->Pays.'.png" />'
+								$numeros[]='<img src="images/flags/'.$numero->Pays.'.png" />&nbsp;'
 										  .$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero;
 							}
 							if (count($numeros) === 0) {
 								continue;
 							}
-							?><div>
+							?>
 								<b><?=$user?></b> <?=NEWS_A_AJOUTE?> 
 								<?=implode($evenement->cpt==0 ? (' '.ET.' ') : ', ',$numeros)?>  
 								<?php 
@@ -248,10 +249,10 @@ class Affichage {
 								?>
 								 <?=NEWS_IL_Y_A_SUFFIXE?>
 								</span>
-							</div>
 							<?php 
 						break;
 					}
+					?><div><?php
 				}
 			}
 		}
