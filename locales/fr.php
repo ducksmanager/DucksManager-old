@@ -340,6 +340,7 @@ define('NEWS_AUTRE_NUMERO','autre num&eacute;ro');
 define('NEWS_AUTRES_NUMEROS','autres num&eacute;ros');
 define('NEWS_IL_Y_A_PREFIXE','il y a');
 define('NEWS_IL_Y_A_SUFFIXE','');
+define('NEWS_S_EST_INSCRIT', 's\'est inscrit(e) sur DucksManager. Bienvenue !');
 define('NEWS_TEMPS_HEURE','heure');
 define('NEWS_TEMPS_JOUR','jour');
 define('NEWS_TEMPS_MINUTE','minute');

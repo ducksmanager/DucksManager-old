@@ -582,41 +582,61 @@ function ajouter_auteur($id,$nom) {
 	
 	function getDernieresActions() {
 		$evenements = new stdClass();
-		$evenements->publicationcodes = array();
 		$evenements->evenements = array();
-		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, count(Numero) AS cpt '
-				.'FROM numeros '
-				.'INNER JOIN users ON numeros.ID_Utilisateur=users.ID '
-				.'WHERE DateAjout > date_add(now(), interval -1 month) '
-				.'GROUP BY users.ID, DATE(DateAjout) '
-				.'HAVING COUNT(Numero) > 0 '
-				.'ORDER BY DateAjout DESC '
-				.'LIMIT 15';
-		$resultat_derniers_ajouts = DM_Core::$d->requete_select($requete);
-		foreach($resultat_derniers_ajouts as $ajout) {
-			$requete_numeros='SELECT Pays, Magazine, Numero '
-							.'FROM numeros '
-							.'WHERE numeros.ID_Utilisateur='.$ajout['ID'].' '
-							  .'AND DATE(DateAjout)= \''.$ajout['DateAjoutJour'].'\' '
-							.'ORDER BY RAND() '
-							.'LIMIT 2';
-			$resultats_numeros = DM_Core::$d->requete_select($requete_numeros);
-			foreach($resultats_numeros as $numero) {
-				$evenements->publicationcodes[]=$numero['Pays'].'/'.$numero['Magazine'];
-			}
-			if (!array_key_exists($ajout['DateAjoutJour'], $evenements->evenements)) {
-				$evenements->evenements[$ajout['DateAjoutJour']]=new stdClass();
-				$evenements->evenements[$ajout['DateAjoutJour']]->ajouts=new stdClass();
-			}
-			
-			$evenements->evenements[$ajout['DateAjoutJour']]->ajouts->$ajout['username']=
-				json_decode(json_encode(array('diffsecondes'=>$ajout['DiffSecondes'],
-					  						  'numeros'=>$resultats_numeros,
-					  						  'cpt'=>intval($ajout['cpt'])-count($resultats_numeros))));
+		
+		$requete_inscriptions='SELECT users.ID, users.username, DateInscription, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
+							 .'FROM users '
+							 .'WHERE DateInscription > date_add(now(), interval -1 month)';
+
+		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
+		foreach($resultat_inscriptions as $inscription) {
+			$evenements->evenements = ajouter_evenement(
+					$evenements->evenements,
+					$inscription['DateInscription'],
+					$inscription['DiffSecondes'],
+					'inscriptions',
+					$inscription['username']);
 		}
 		
+		/* Ajouts aux collections */
+		$evenements->publicationcodes = array();
+		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour, 
+				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt, 
+				  		 (SELECT CONCAT(Pays,\'/\',Magazine,\'/\',Numero)
+						  FROM numeros n
+						  WHERE n.ID=numeros.ID
+						  LIMIT 1) AS NumeroExemple
+				  FROM numeros
+				  INNER JOIN users ON numeros.ID_Utilisateur=users.ID
+				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+				  GROUP BY users.ID, DATE(DateAjout)
+				  HAVING COUNT(Numero) > 0
+				  ORDER BY DateAjout DESC';
+		$resultat_derniers_ajouts = DM_Core::$d->requete_select($requete);
+		foreach($resultat_derniers_ajouts as $ajout) {
+			preg_match('#([^/]+/[^/]+)#', $ajout['NumeroExemple'], $publicationcode);
+			$evenements->publicationcodes[]=$publicationcode[0];
+			
+			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
+			$numero_exemple=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+			
+			$evenement = array('numero_exemple'=>$numero_exemple,
+							   'cpt'		   =>intval($ajout['cpt'])-1);
+			
+			$evenements->evenements = ajouter_evenement(
+				$evenements->evenements, 
+				$ajout['DateAjoutJour'],
+				$ajout['DiffSecondes'],
+				'ajouts',
+				$ajout['username'], 
+				$evenement);
+		}
+		
+		/* Fin ajouts aux collections */
+		
+		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
+		
 		return $evenements;
-					
 	}
 }
 
@@ -805,4 +825,21 @@ function note_to_pouces($num,$note) {
 	ob_end_flush();
 }
 
+
+function ajouter_evenement($evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, $evenement=array()) {
+	$evenement['diffsecondes'] = $diff_secondes;
+	if (!array_key_exists($jour_evenement, $evenements)) {
+		$evenements[$jour_evenement]=new stdClass();
+	}
+	if (!array_key_exists($type_evenement, $evenements[$jour_evenement])) {
+		$evenements[$jour_evenement]->$type_evenement=array();
+	}
+	$evenements_type=$evenements[$jour_evenement]->$type_evenement;
+
+	$evenements_type[$utilisateur]=json_decode(json_encode($evenement));
+	
+	$evenements[$jour_evenement]->$type_evenement = $evenements_type;
+	
+	return $evenements;
+}
 ?>
