@@ -32,7 +32,12 @@ ul#onglets_pays {
 	white-space: nowrap;
 }
 
+ul#onglets_magazines {
+	position: absolute;
+}
+
 ul#onglets_magazines.tabnav li {
+	outline: 2px solid rgb(61, 75, 95);
 	float: none;
 	background-color: transparent;
 }
