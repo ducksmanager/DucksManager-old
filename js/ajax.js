@@ -171,30 +171,55 @@ function get_achats(continue_id) {
                 var pays=$('pays').innerHTML;
                 var magazine=$('magazine').innerHTML;
                 var numero=element.up('div').title;
+                if ($('couverture_preview').down('img')) {
+                	$('couverture_preview').down('img').remove();
+                }
                 new Ajax.Request('Inducks.class.php', {
                     method: 'post',
                     parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
                     onSuccess:function(transport) {
                         element.writeAttribute({'src':'images/icones/view.png'});
                         if (transport.headerJSON==null) {
-                            $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
-                            return;
+                            maj_image($('couverture_preview'),'images/cover_not_found.png', numero);
                         }
-                        largeur_image=$('colonne_gauche').scrollWidth;
-                        var fin_menu_gauche=$('colonne_gauche').down('div').cumulativeOffset()['top']+$('colonne_gauche').down('div').scrollHeight;
-                        $('couverture_preview').setStyle({'paddingTop':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top']-fin_menu_gauche)+'px'});
-                        $('couverture_preview').update(new Element('img',{'src':transport.headerJSON['cover']}).setStyle({'width':'100%'}));
+                        else {
+                        	maj_image($('couverture_preview'),transport.headerJSON['cover'], numero);
+                        }
                     },
                     onError:function() {
                         element.writeAttribute({'src':'images/icones/view.png'});
-                        $('couverture_preview').update(new Element('img',{'src':'images/cover_not_found.png'}).setStyle({'width':'100%'}));
+                        maj_image($('couverture_preview'),'images/cover_not_found.png', numero);
                     }
                 });
             });
-                         
+            
+            $('couverture_preview').down('.fermer').observe('click',function() {
+            	$('couverture_preview').down('img').remove();
+            	$('couverture_preview').down('.fermer').addClassName('cache');
+            });
+            
 		    var image_checked= new Image;
-                    image_checked.src = "checkedbox.png";
+            image_checked.src = "checkedbox.png";
 	   }
+	});
+}
+
+function maj_image(element, image, numero) {
+    var largeur_image=$('colonne_gauche').scrollWidth;
+	element.setStyle({'width':largeur_image+'px',
+		  			  'top':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top'])+'px'});
+
+    element.down('.fermer').removeClassName('cache');
+    element.insert(new Element('img').writeAttribute({'src':image}));
+}
+
+function charger_evenements() {
+	new Ajax.Request('Database.class.php', {
+		   method: 'post',
+		   parameters:'database=true&evenements_recents=true',
+		   onSuccess:function(transport) {
+			   $('evenements').innerHTML = transport.responseText;
+		   }
 	});
 }
 

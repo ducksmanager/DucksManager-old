@@ -188,5 +188,69 @@ class Affichage {
 				$cpt++;
 		}
 	}
+	
+	static function afficher_evenements_recents($evenements) {
+		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
+
+		foreach($evenements->evenements as $date_evenements=>$evenements_date) {
+			foreach($evenements_date as $type=>$evenements_type) {
+				foreach($evenements_type as $user=>$evenement) {
+					?><div><?php
+					switch($type) {
+						case 'inscriptions':
+							?><b><?=$user?></b> <?=NEWS_S_EST_INSCRIT?>
+						<?php 
+						break;
+						case 'ajouts':
+							$numeros=array();
+							$numero=$evenement->numero_exemple;
+							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
+								$evenement->cpt++;
+								continue;
+							}	
+							?><b><?=utf8_decode($user)?></b> <?=NEWS_A_AJOUTE?> 
+							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;
+							<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
+							<?php 
+							if ($evenement->cpt > 0) {
+								?>
+								<?=ET?> <?=$evenement->cpt?> 
+								<?=$evenement->cpt === 1 ? NEWS_AUTRE_NUMERO : NEWS_AUTRES_NUMEROS?>
+							<?php } ?>
+							<?=NEWS_A_SA_COLLECTION?><?php
+						break;
+					}?>
+					<span class="date">
+						<?=NEWS_IL_Y_A_PREFIXE?> 
+						<?php 
+							$diff=$evenement->diffsecondes;
+							if ($diff < 60) {
+								?><?=$diff?> <?=NEWS_TEMPS_SECONDE.($diff == 1 ? '':'s')?><?php
+							}
+							else {
+								$diff/=60;
+								if ($diff < 60) {
+									?><?=intval($diff)?> <?=NEWS_TEMPS_MINUTE.($diff == 1 ? '':'s')?><?php
+								}
+								else {
+									$diff/=60;
+									if ($diff < 24) {
+										?><?=intval($diff)?> <?=NEWS_TEMPS_HEURE.($diff == 1 ? '':'s')?><?php
+									}
+									else {
+										$diff/=24;
+										?><?=intval($diff)?> <?=NEWS_TEMPS_JOUR.($diff == 1 ? '':'s')?><?php
+									}
+								}
+							}
+							?>
+						<?=NEWS_IL_Y_A_SUFFIXE?>
+					</span>
+					<?php 
+					?></div><?php
+				}
+			}
+		}
+	}
 }
 ?>

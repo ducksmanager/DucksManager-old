@@ -1,9 +1,4 @@
 <?php
-/**
- * Description of DucksManager_Core
- *
- * @author Bruno
- */
 error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED );
 @session_start();
 ini_set('session.lifetime', 0);
@@ -15,6 +10,9 @@ include_once('Util.class.php');
 include_once('Database.class.php');
 
 class DM_Core {
+    /**
+     * @var Database
+     */
     static $d;
     static $corresp=array();
 

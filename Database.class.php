@@ -579,6 +579,73 @@ function ajouter_auteur($id,$nom) {
 		}	
 		return $cpt_et_niveaux;
 	}
+	
+	function getEvenementsRecents() {
+		$cpt_evenements=0;
+		$evenements = new stdClass();
+		$evenements->evenements = array();
+		
+		$requete_inscriptions='SELECT users.ID, users.username, DateInscription, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
+							 .'FROM users '
+							 .'WHERE DateInscription > date_add(now(), interval -1 month)';
+
+		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
+		foreach($resultat_inscriptions as $inscription) {
+			if (!ajouter_evenement(
+				$evenements->evenements,
+				$inscription['DateInscription'],
+				$inscription['DiffSecondes'],
+				'inscriptions',
+				$inscription['username'],
+				$cpt_evenements)) {
+				
+				break;
+			}
+		}
+		
+		/* Ajouts aux collections */
+		$evenements->publicationcodes = array();
+		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour, 
+				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt, 
+				  		 (SELECT CONCAT(Pays,\'/\',Magazine,\'/\',Numero)
+						  FROM numeros n
+						  WHERE n.ID=numeros.ID
+						  LIMIT 1) AS NumeroExemple
+				  FROM numeros
+				  INNER JOIN users ON numeros.ID_Utilisateur=users.ID
+				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+				  GROUP BY users.ID, DATE(DateAjout)
+				  HAVING COUNT(Numero) > 0
+				  ORDER BY DateAjout DESC';
+		$resultat_derniers_ajouts = DM_Core::$d->requete_select($requete);
+		foreach($resultat_derniers_ajouts as $ajout) {
+			preg_match('#([^/]+/[^/]+)#', $ajout['NumeroExemple'], $publicationcode);
+			$evenements->publicationcodes[]=$publicationcode[0];
+			
+			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
+			$numero_exemple=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+			
+			$evenement = array('numero_exemple'=>$numero_exemple,
+							   'cpt'		   =>intval($ajout['cpt'])-1);
+			
+			if (!ajouter_evenement(
+				$evenements->evenements, 
+				$ajout['DateAjoutJour'],
+				$ajout['DiffSecondes'],
+				'ajouts',
+				$ajout['username'],
+				$cpt_evenements, 
+				$evenement)) {
+				break;
+			}
+		}
+		
+		/* Fin ajouts aux collections */
+		
+		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
+		
+		return $evenements;
+	}
 }
 
 require_once('DucksManager_Core.class.php');
@@ -620,7 +687,9 @@ if (isset($_POST['database'])) {
 		}
 		//$l->update_numeros($pays,$magazine,$etat,$liste,$id_acquisition);
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
-
+	}
+	else if (isset($_POST['evenements_recents'])) {
+		Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);
@@ -629,9 +698,9 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
-				if ($numeros!=false) {
-					Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
-				}
+		if ($numeros!=false) {
+			Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
+		}
 		else {
 					echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
 					?><br /><br /><?php
@@ -766,4 +835,27 @@ function note_to_pouces($num,$note) {
 	ob_end_flush();
 }
 
+
+function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, &$cpt_evenements, $evenement=array()) {
+	$limite_evenements = 25;
+	
+	if ($cpt_evenements >= $limite_evenements) {
+		return false;
+	}
+	
+	$evenement['diffsecondes'] = $diff_secondes;
+	if (!array_key_exists($jour_evenement, $evenements)) {
+		$evenements[$jour_evenement]=new stdClass();
+	}
+	if (!array_key_exists($type_evenement, $evenements[$jour_evenement])) {
+		$evenements[$jour_evenement]->$type_evenement=array();
+	}
+	$evenements_type=$evenements[$jour_evenement]->$type_evenement;
+	$evenements_type[$utilisateur]=json_decode(json_encode($evenement));
+	
+	$evenements[$jour_evenement]->$type_evenement = $evenements_type;
+	
+	$cpt_evenements++;
+	return true;
+}
 ?>
