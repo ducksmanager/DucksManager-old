@@ -209,6 +209,7 @@ define('EXPLICATION_NOTATION_AUTEURS2','Gr&acirc;ce &agrave; cette notation, Duc
 define('EXPLICATION_ORDRE_MAGAZINES','Par d&eacute;faut, les magazines sont tri&eacute;s par pays et par magazine. Vous pouvez changer cet ordre en d&eacute;pla&ccedil;ant les noms de magazines ci-dessous :');
 define('EXPORTER_INDUCKS','Exporter vers ma collection Inducks');
 define('EXTRAIRE','Extraire');
+define('FERMER','Fermer');
 define('FUSIONNER_LES_DEUX','Fusionner les deux');
 define('FUSIONNER_TOUT','Fusionner tout');
 define('GENERAL','G&eacute;n&eacute;ral');

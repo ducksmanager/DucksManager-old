@@ -264,6 +264,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 										<div id="evenements"><?=CHARGEMENT?>...</div>
 									</div>
                                     <div id="couverture_preview">
+                                    	<div class="fermer cache"><?=FERMER?></div>
                                     </div>
                                 </td>
                             </tr></tbody>

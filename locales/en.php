@@ -209,6 +209,7 @@ define('EXPLICATION_NOTATION_AUTEURS2','Thanks to this scoring, DucksManager wil
 define('EXPLICATION_ORDRE_MAGAZINES','By default, the magazines are ordered by country and by magazine. You can change this order by moving the magazines names hereunder :');
 define('EXPORTER_INDUCKS','Export to my Inducks collection');
 define('EXTRAIRE','Extract');
+define('FERMER','Close');
 define('FUSIONNER_LES_DEUX','Merge the two lists');
 define('FUSIONNER_TOUT','Merge all');
 define('GENERAL','Page');
