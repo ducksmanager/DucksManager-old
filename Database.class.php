@@ -580,7 +580,8 @@ function ajouter_auteur($id,$nom) {
 		return $cpt_et_niveaux;
 	}
 	
-	function getDernieresActions() {
+	function getEvenementsRecents() {
+		$cpt_evenements=0;
 		$evenements = new stdClass();
 		$evenements->evenements = array();
 		
@@ -590,12 +591,16 @@ function ajouter_auteur($id,$nom) {
 
 		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
-			$evenements->evenements = ajouter_evenement(
-					$evenements->evenements,
-					$inscription['DateInscription'],
-					$inscription['DiffSecondes'],
-					'inscriptions',
-					$inscription['username']);
+			if (!ajouter_evenement(
+				$evenements->evenements,
+				$inscription['DateInscription'],
+				$inscription['DiffSecondes'],
+				'inscriptions',
+				$inscription['username'],
+				$cpt_evenements)) {
+				
+				break;
+			}
 		}
 		
 		/* Ajouts aux collections */
@@ -623,13 +628,16 @@ function ajouter_auteur($id,$nom) {
 			$evenement = array('numero_exemple'=>$numero_exemple,
 							   'cpt'		   =>intval($ajout['cpt'])-1);
 			
-			$evenements->evenements = ajouter_evenement(
+			if (!ajouter_evenement(
 				$evenements->evenements, 
 				$ajout['DateAjoutJour'],
 				$ajout['DiffSecondes'],
 				'ajouts',
-				$ajout['username'], 
-				$evenement);
+				$ajout['username'],
+				$cpt_evenements, 
+				$evenement)) {
+				break;
+			}
 		}
 		
 		/* Fin ajouts aux collections */
@@ -679,7 +687,9 @@ if (isset($_POST['database'])) {
 		}
 		//$l->update_numeros($pays,$magazine,$etat,$liste,$id_acquisition);
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
-
+	}
+	else if (isset($_POST['evenements_recents'])) {
+		Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);
@@ -688,9 +698,9 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
-				if ($numeros!=false) {
-					Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
-				}
+		if ($numeros!=false) {
+			Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
+		}
 		else {
 					echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
 					?><br /><br /><?php
@@ -826,7 +836,13 @@ function note_to_pouces($num,$note) {
 }
 
 
-function ajouter_evenement($evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, $evenement=array()) {
+function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, &$cpt_evenements, $evenement=array()) {
+	$limite_evenements = 25;
+	
+	if ($cpt_evenements >= $limite_evenements) {
+		return false;
+	}
+	
 	$evenement['diffsecondes'] = $diff_secondes;
 	if (!array_key_exists($jour_evenement, $evenements)) {
 		$evenements[$jour_evenement]=new stdClass();
@@ -835,11 +851,11 @@ function ajouter_evenement($evenements, $jour_evenement, $diff_secondes, $type_e
 		$evenements[$jour_evenement]->$type_evenement=array();
 	}
 	$evenements_type=$evenements[$jour_evenement]->$type_evenement;
-
 	$evenements_type[$utilisateur]=json_decode(json_encode($evenement));
 	
 	$evenements[$jour_evenement]->$type_evenement = $evenements_type;
 	
-	return $evenements;
+	$cpt_evenements++;
+	return true;
 }
 ?>

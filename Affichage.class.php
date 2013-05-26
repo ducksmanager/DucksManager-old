@@ -192,9 +192,6 @@ class Affichage {
 	static function afficher_evenements_recents($evenements) {
 		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
 
-		?>
-		<div id="recemment">
-			<h4><?=NEWS_TITRE?></h4><?php
 		foreach($evenements->evenements as $date_evenements=>$evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $user=>$evenement) {
@@ -211,7 +208,7 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}	
-							?><b><?=$user?></b> <?=NEWS_A_AJOUTE?> 
+							?><b><?=utf8_decode($user)?></b> <?=NEWS_A_AJOUTE?> 
 							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;
 							<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
 							<?php 
@@ -254,7 +251,6 @@ class Affichage {
 				}
 			}
 		}
-		?></div><?php
 	}
 }
 ?>

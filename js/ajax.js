@@ -193,8 +193,18 @@ function get_achats(continue_id) {
             });
                          
 		    var image_checked= new Image;
-                    image_checked.src = "checkedbox.png";
+            image_checked.src = "checkedbox.png";
 	   }
+	});
+}
+
+function charger_evenements() {
+	new Ajax.Request('Database.class.php', {
+		   method: 'post',
+		   parameters:'database=true&evenements_recents=true',
+		   onSuccess:function(transport) {
+			   $('evenements').innerHTML = transport.responseText;
+		   }
 	});
 }
 

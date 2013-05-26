@@ -143,7 +143,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         
     }
     ?>
-    <body id="body" style="margin:0" onload="<?php
+    <body id="body" style="margin:0" onload="charger_evenements();<?php
     switch($action) {
         case 'open':
             break;
@@ -258,9 +258,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         ?>
                                         <br/>
                                     </div>
-    								<?php 
-    								Affichage::afficher_evenements_recents(DM_Core::$d->getDernieresActions());
-    								?>
+                                    
+									<div id="recemment">
+										<h4><?=NEWS_TITRE?></h4>
+										<div id="evenements"><?=CHARGEMENT?>...</div>
+									</div>
                                     <div id="couverture_preview">
                                     </div>
                                 </td>

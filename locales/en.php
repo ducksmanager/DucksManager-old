@@ -338,6 +338,7 @@ define('NEWS_A_AJOUTE','has added');
 define('NEWS_A_SA_COLLECTION','to his/her collection');
 define('NEWS_AUTRE_NUMEROS','other issue');
 define('NEWS_AUTRES_NUMEROS','other issues');
+define('NEWS_EVENEMENTS_PLUS_ANCIENS','Older events');
 define('NEWS_IL_Y_A_PREFIXE','');
 define('NEWS_IL_Y_A_SUFFIXE','ago');
 define('NEWS_S_EST_INSCRIT', 'has signed up on DucksManager. Welcome !');
