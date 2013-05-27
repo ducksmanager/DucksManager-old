@@ -613,7 +613,7 @@ function ajouter_auteur($id,$nom) {
 						  LIMIT 1) AS NumeroExemple
 				  FROM numeros
 				  INNER JOIN users ON numeros.ID_Utilisateur=users.ID
-				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH) AND users.username<>"demo"
 				  GROUP BY users.ID, DATE(DateAjout)
 				  HAVING COUNT(Numero) > 0
 				  ORDER BY DateAjout DESC';
@@ -643,6 +643,7 @@ function ajouter_auteur($id,$nom) {
 		/* Fin ajouts aux collections */
 		
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
+		ksort($evenements->evenements);
 		
 		return $evenements;
 	}
@@ -688,8 +689,8 @@ if (isset($_POST['database'])) {
 		//$l->update_numeros($pays,$magazine,$etat,$liste,$id_acquisition);
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
-	else if (isset($_POST['evenements_recents'])) {
-		Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
+	else if (isset($_POST['evenements_recents'])) {	
+Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);
@@ -837,23 +838,23 @@ function note_to_pouces($num,$note) {
 
 
 function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, &$cpt_evenements, $evenement=array()) {
-	$limite_evenements = 25;
+	$limite_evenements = 20;
 	
 	if ($cpt_evenements >= $limite_evenements) {
 		return false;
 	}
 	
 	$evenement['diffsecondes'] = $diff_secondes;
-	if (!array_key_exists($jour_evenement, $evenements)) {
-		$evenements[$jour_evenement]=new stdClass();
+	if (!array_key_exists($diff_secondes, $evenements)) {
+		$evenements[$diff_secondes]=new stdClass();
 	}
-	if (!array_key_exists($type_evenement, $evenements[$jour_evenement])) {
-		$evenements[$jour_evenement]->$type_evenement=array();
+	if (!array_key_exists($type_evenement, $evenements[$diff_secondes])) {
+		$evenements[$diff_secondes]->$type_evenement=array();
 	}
-	$evenements_type=$evenements[$jour_evenement]->$type_evenement;
+	$evenements_type=$evenements[$diff_secondes]->$type_evenement;
 	$evenements_type[$utilisateur]=json_decode(json_encode($evenement));
 	
-	$evenements[$jour_evenement]->$type_evenement = $evenements_type;
+	$evenements[$diff_secondes]->$type_evenement = $evenements_type;
 	
 	$cpt_evenements++;
 	return true;
