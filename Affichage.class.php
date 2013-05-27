@@ -192,7 +192,7 @@ class Affichage {
 	static function afficher_evenements_recents($evenements) {
 		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
 
-		foreach($evenements->evenements as $date_evenements=>$evenements_date) {
+		foreach($evenements->evenements as $diffsecondes=>$evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $user=>$evenement) {
 					?><div><?php
