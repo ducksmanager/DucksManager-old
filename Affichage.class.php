@@ -194,11 +194,16 @@ class Affichage {
 
 		foreach($evenements->evenements as $diffsecondes=>$evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
-				foreach($evenements_type as $user=>$evenement) {
+				foreach($evenements_type as $evenement) {
 					?><div><?php
 					switch($type) {
 						case 'inscriptions':
-							?><b><?=$user?></b> <?=NEWS_S_EST_INSCRIT?>
+							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_S_EST_INSCRIT?>
+						<?php 
+						break;
+						case 'bouquineries':
+							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE_BOUQUINERIE.' '
+								   ?><i><a href="index.php?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
 						<?php 
 						break;
 						case 'ajouts':
@@ -208,7 +213,7 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}	
-							?><b><?=utf8_decode($user)?></b> <?=NEWS_A_AJOUTE?> 
+							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE?> 
 							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;
 							<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
 							<?php 

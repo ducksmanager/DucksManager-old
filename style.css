@@ -65,6 +65,10 @@ a.important:HOVER {
 	float: right;
 }
 
+#recemment a {
+	color: black;
+}
+
 #couverture_preview {
 	position: absolute;
 	margin-left: -5px;

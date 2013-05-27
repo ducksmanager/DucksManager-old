@@ -581,7 +581,8 @@ function ajouter_auteur($id,$nom) {
 	}
 	
 	function getEvenementsRecents() {
-		$cpt_evenements=0;
+		$limite_evenements = 20;
+
 		$evenements = new stdClass();
 		$evenements->evenements = array();
 		
@@ -591,16 +592,12 @@ function ajouter_auteur($id,$nom) {
 
 		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
-			if (!ajouter_evenement(
+			ajouter_evenement(
 				$evenements->evenements,
 				$inscription['DateInscription'],
 				$inscription['DiffSecondes'],
 				'inscriptions',
-				$inscription['username'],
-				$cpt_evenements)) {
-				
-				break;
-			}
+				$inscription['username']);
 		}
 		
 		/* Ajouts aux collections */
@@ -628,23 +625,62 @@ function ajouter_auteur($id,$nom) {
 			$evenement = array('numero_exemple'=>$numero_exemple,
 							   'cpt'		   =>intval($ajout['cpt'])-1);
 			
-			if (!ajouter_evenement(
+			ajouter_evenement(
 				$evenements->evenements, 
 				$ajout['DateAjoutJour'],
 				$ajout['DiffSecondes'],
 				'ajouts',
 				$ajout['username'],
-				$cpt_evenements, 
-				$evenement)) {
-				break;
-			}
+				$evenement);
 		}
 		
 		/* Fin ajouts aux collections */
 		
+		/* Propositions de bouquineries */
+		
+
+		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes '
+							 .'FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
+							 .'WHERE DateAjout > date_add(now(), interval -1 month)';
+		
+
+		$resultat_bouquineries = DM_Core::$d->requete_select($requete_bouquineries);
+		foreach($resultat_bouquineries as $bouquinerie) {
+			$evenement = array('nom_bouquinerie'=>$bouquinerie['Nom']);
+			ajouter_evenement(
+					$evenements->evenements,
+					$bouquinerie['DateAjout'],
+					$bouquinerie['DiffSecondes'],
+					'bouquineries',
+					$bouquinerie['username'],
+					$evenement);
+		}
+		
+		/* Fin propositions de bouquineries */
+		
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
 		ksort($evenements->evenements);
 		
+		$evenements_slice=array();
+		$cpt=0;
+		
+		// Filtre : les 20 plus récents seulement
+		foreach($evenements->evenements as $diff_secondes=>$evenements_types) {
+			$evenements_slice[$diff_secondes]=new stdClass();
+			foreach($evenements_types as $type=>$evenements_type) {
+				$evenements_slice_type=array();
+				foreach($evenements_type as $evenement) {
+					if ($cpt >= $limite_evenements) {
+						$evenements_slice[$diff_secondes]->$type=$evenements_slice_type;
+						break 3;
+					}
+					$evenements_slice_type[]=$evenement;
+					$cpt++;
+				}
+				$evenements_slice[$diff_secondes]->$type=$evenements_slice_type;
+			}	
+		}
+		$evenements->evenements=$evenements_slice;
 		return $evenements;
 	}
 }
@@ -837,14 +873,9 @@ function note_to_pouces($num,$note) {
 }
 
 
-function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, &$cpt_evenements, $evenement=array()) {
-	$limite_evenements = 20;
-	
-	if ($cpt_evenements >= $limite_evenements) {
-		return false;
-	}
-	
+function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, $evenement=array()) {
 	$evenement['diffsecondes'] = $diff_secondes;
+	$evenement['utilisateur'] = $utilisateur;
 	if (!array_key_exists($diff_secondes, $evenements)) {
 		$evenements[$diff_secondes]=new stdClass();
 	}
@@ -852,11 +883,8 @@ function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_
 		$evenements[$diff_secondes]->$type_evenement=array();
 	}
 	$evenements_type=$evenements[$diff_secondes]->$type_evenement;
-	$evenements_type[$utilisateur]=json_decode(json_encode($evenement));
+	$evenements_type[]=json_decode(json_encode($evenement));
 	
 	$evenements[$diff_secondes]->$type_evenement = $evenements_type;
-	
-	$cpt_evenements++;
-	return true;
 }
 ?>
