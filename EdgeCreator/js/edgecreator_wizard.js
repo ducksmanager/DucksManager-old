@@ -243,7 +243,7 @@ function wizard_check(wizard_id) {
 				case 'wizard-creer-collection':
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
-					else if ($('#'+wizard_id+' form [name="choix_tranche_non_prete"]').filter(':checked').length == 0) {
+					else if ($('#'+wizard_id+' form').serializeObject().choix_tranche == 0) {
 						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
 					}
 				break;
@@ -355,40 +355,13 @@ function wizard_init(wizard_id) {
 		          .parent()
 		            .buttonset()
 		            .next()
-		              .hide()
-		              .menu();
+		              .hide();
 			$.ajax({
 				url: urls['tranchesencours']+['load'].join('/'),
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
-					var tranches = traiter_tranches_en_cours(data);
-					if (tranches.length > 0) {
-						$('#'+wizard_id+' #tranches_en_cours').removeClass('cache');
-						$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
-						for (var i_tranche_en_cours in tranches) {
-							var tranche_en_cours=tranches[i_tranche_en_cours];
-							var bouton_tranche_en_cours=$('#tranches_en_cours .init').clone(true).removeClass('init');
-							bouton_tranche_en_cours.find('input')
-								.attr({'id':'tranche'+tranche_en_cours.ID})
-								.val(tranche_en_cours.ID);
-							bouton_tranche_en_cours.find('label')
-								.attr({'for':'tranche'+tranche_en_cours.ID})
-								.css({'background-image': 'url("../../images/flags/'+tranche_en_cours.Pays+'.png")'})
-								.html(tranche_en_cours.str_userfriendly)
-								.click(function() {
-									$('#'+wizard_id+' #to-wizard-conception').click();
-								});
-							if ($('#'+wizard_id+' #tranches_en_cours #'+tranche_en_cours.ID).length == 0) {
-								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours);
-							}
-						}
-						$('#tranches_en_cours .init').remove();
-						$('#'+wizard_id+' #tranches_en_cours').buttonset();
-						$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
-							$('#'+wizard_id+' #tranches_en_cours .ui-state-active').removeClass('ui-state-active');
-						});
-					}
+					afficher_liste_magazines(wizard_id,'tranches_en_cours',data);
 				}
 			});
 			
@@ -404,27 +377,8 @@ function wizard_init(wizard_id) {
 					if (typeof(data.erreur) !='undefined')
 						jqueryui_alert(data);
 					else {
-						var tranches = data.tranches_non_pretes;
-						for (var i_tranche in tranches) {
-							var tranche=tranches[i_tranche];
-							var str_tranche_userfriendly=tranche.Magazine_complet+' n&deg;'+tranche.Numero;
-							var str_tranche=str_tranche_userfriendly+'('+tranche.Pays+'_'+tranche.Magazine+'_'+tranche.Numero+')';
-							var bouton_tranche=$('#numero_tranche_non_prete').clone(true).removeClass('init');
-							var label_tranche=$('#numero_tranche_non_prete').next('label').clone(true);
-							bouton_tranche.attr({'id':str_tranche,'value':str_tranche});
-							label_tranche.attr({'for':str_tranche}).html(str_tranche_userfriendly);
-							if ($('#'+wizard_id+' #tranches_non_pretes').find('[value="'+str_tranche+'"]').length == 0) {
-								$('#'+wizard_id+' #tranches_non_pretes').append(bouton_tranche)
-																	  .append(label_tranche)
-																	  .append($('<br>'));
-							}
-						}
+						afficher_liste_magazines(wizard_id, 'tranches_non_pretes', data.tranches_non_pretes);
 					}
-					$('#'+wizard_id+' #tranches_non_pretes, #'+wizard_id+' span.cache').removeClass('cache');
-					$('#'+wizard_id+' span.patienter').addClass('cache');
-					$('#numero_tranche_non_prete').next('label').remove();
-					$('#numero_tranche_non_prete').remove();
-					$('#'+wizard_id+' #tranches_non_pretes').buttonset();
 					chargement_listes=false;
 				},
 				error:function(data) {
@@ -456,12 +410,17 @@ function wizard_init(wizard_id) {
 		case 'wizard-proposition-clonage':
 			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
 				break;
-			pays=get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
-			  || get_option_wizard('wizard-creer-collection', 'wizard_pays');
-			magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine')
-			  	  || get_option_wizard('wizard-creer-collection', 'wizard_magazine');
-			numero=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero')
-				|| get_option_wizard('wizard-creer-collection', 'wizard_numero');
+			if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
+				var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
+				pays=tranche[1];
+				magazine=tranche[2];
+				numero=tranche[3];					
+			}
+			else {
+				pays=get_option_wizard('wizard-creer-hors-collection', 	   'wizard_pays');
+				magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
+				numero=get_option_wizard('wizard-creer-hors-collection',   'wizard_numero');
+			}
 			selecteur_cellules_preview='#'+wizard_id+' #tranches_pretes_magazine td';
 			
 			var numero_selectionne=numero;
@@ -598,9 +557,9 @@ function wizard_init(wizard_id) {
 		case 'wizard-conception':
 			var numero_complet_userfriendly=null;
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
-				var id_tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
+				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g);
 				$.ajax({
-					url: urls['tranchesencours']+['load',id_tranche_en_cours].join('/'),
+					url: urls['tranchesencours']+['load','null',tranche_en_cours[1],tranche_en_cours[2],tranche_en_cours[3]].join('/'),
 				    type: 'post',
 					dataType:'json',
 				    async: false,
@@ -848,9 +807,40 @@ function wizard_init(wizard_id) {
 	}
 }
 
+function afficher_liste_magazines(wizard_id, id_element_liste, data) {
+	var tranches = traiter_tranches_en_cours(data);
+	if (tranches.length > 0) {
+		$('#'+wizard_id+' #'+id_element_liste).removeClass('cache');
+		$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
+		for (var i_tranche_en_cours in tranches) {
+			var tranche_en_cours=tranches[i_tranche_en_cours];
+			var bouton_tranche_en_cours=$('#'+id_element_liste+' .init').clone(true).removeClass('init');
+			var id_tranche='tranche_'+tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
+			bouton_tranche_en_cours.find('input')
+				.attr({'id':id_tranche})
+				.val(id_tranche);
+			bouton_tranche_en_cours.find('label')
+				.attr({'for':id_tranche})
+				.css({'background-image': 'url("../../images/flags/'+tranche_en_cours.Pays+'.png")'})
+				.html(tranche_en_cours.str_userfriendly)
+				.click(function() {
+					$('#'+wizard_id+' #to-wizard-conception').click();
+				});
+			if ($('#'+wizard_id+' #'+id_element_liste+' #'+id_tranche).length == 0) {
+				$('#'+wizard_id+' #'+id_element_liste).append(bouton_tranche_en_cours);
+			}
+		}
+		$('#'+id_element_liste+' .init').remove();
+		$('#'+wizard_id+' #'+id_element_liste).buttonset().menu();
+		$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
+			$('#'+wizard_id+' #'+id_element_liste+' .ui-state-active').removeClass('ui-state-active');
+		});
+	}
+}
+
 function traiter_tranches_en_cours(data) {
-	var tranches_en_cours_existent=typeof(data) == 'object' && data.length > 0;
-	if (!tranches_en_cours_existent)
+	var tranches_en_cours_existent=typeof(data) == 'array' && data.length > 0;
+	if (tranches_en_cours_existent)
 		return [];
 	var tranches=[];
 	for (var i_tranche_en_cours in data) {

@@ -54,10 +54,14 @@ button#connexion, button#deconnexion {
 	top: 0px !important;
 }
 
-#wizard-1 #tranches_en_cours li label {
+#tranches_en_cours li label, #tranches_non_pretes li label {
 	padding-left: 32px;
 	background-repeat: no-repeat;
 	background-position: 10px;
+}
+
+#tranches_en_cours li span, #tranches_non_pretes li span {
+	text-align: left;
 }
 
 #wizard-1 #tranches_en_cours li label .ui-button-text {

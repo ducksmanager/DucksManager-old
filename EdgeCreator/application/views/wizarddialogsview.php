@@ -62,7 +62,7 @@
 				<label for="to-wizard-conception">Poursuivre une conception de tranche</label>
     			<button id="selectionner_tranche_en_cours">S&eacute;lectionnez une tranche</button>
 			</div>
-			<ul id="tranches_en_cours" class="cache">
+			<ul id="tranches_en_cours" class="liste_numeros cache">
 				<li class="init">
 					<input type="radio" id="numero_tranche_en_cours" name="choix_tranche_en_cours">
 					<label for="numero_tranche_en_cours">Label</label>
@@ -93,9 +93,12 @@
 				<span class="cache">S&eacute;lectionnez le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche.</span>
 				<span class="patienter">Veuillez patienter...</span>
 				<form>
-					<div id="tranches_non_pretes" class="buttonset cache">
-						<input type="radio" name="choix_tranche_non_prete" value="numero_tranche_non_prete" id="numero_tranche_non_prete" class="init"/><label for="numero_tranche_non_prete">N&deg;</label>
-					</div>
+					<ul id="tranches_non_pretes" class="liste_numeros cache">
+						<li class="init">
+							<input type="radio" id="numero_tranche_non_prete" name="choix_tranche">
+							<label for="numero_tranche_non_prete">Label</label>
+						</li>
+					</ul>
 					<div class="buttonset cache">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
 					</div>
@@ -150,7 +153,7 @@
 				</p>
 			</div>
 			
-			<div id="wizard-photos" class="wizard" title="Assistant DucksManager - Photos de la tranche">
+			<div id="wizard-photos" class="wizard dead-end" title="Assistant DucksManager - Photos de la tranche">
 				<p>
 					<form name="form_options">
 						Afin d'assurer la meilleure conception de tranche possible, au moins une photo de la tranche est requise.<br />
@@ -257,7 +260,7 @@
 			</div>
 			
 			
-		<div id="wizard-conception" class="main wizard" title="Assistant DucksManager - Conception de la tranche">
+		<div id="wizard-conception" class="main wizard dead-end" title="Assistant DucksManager - Conception de la tranche">
 			<p>
 				<div class="chargement">Chargement...</div>
 				<form class="cache" name="form_options">

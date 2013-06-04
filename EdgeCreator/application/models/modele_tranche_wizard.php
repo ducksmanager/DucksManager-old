@@ -21,12 +21,15 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $user_possede_modele;
 	}
 	
-	function get_tranches_en_cours($id=null) {
+	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
 		$requete='SELECT ID, Pays, Magazine, Numero '
 				.'FROM tranches_en_cours_modeles '
 				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\'';
 		if (!is_null($id)) {
 			$requete.=' AND ID='.$id;
+		}
+		elseif (!is_null($pays)) {
+			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
 		
 		$query = $this->db->query($requete);
@@ -391,7 +394,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function get_tranches_non_pretes() {
 		$username = $this->session->userdata('user');
-		$requete="SELECT Pays,Magazine,Numero "
+		$requete="SELECT ID, Pays,Magazine,Numero "
 				."FROM numeros "
 				."WHERE ID_Utilisateur=(SELECT ID FROM users WHERE username='$username') "
 				."  AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN "
