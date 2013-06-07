@@ -410,11 +410,13 @@ function wizard_init(wizard_id) {
 		case 'wizard-proposition-clonage':
 			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
 				break;
+			$('#'+wizard_id+' .chargement').removeClass('cache');
+			$('#tranches_pretes_magazine').addClass('cache');
 			if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
 				var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
 				pays=tranche[1];
 				magazine=tranche[2];
-				numero=tranche[3];					
+				numero=tranche[3];
 			}
 			else {
 				pays=get_option_wizard('wizard-creer-hors-collection', 	   'wizard_pays');
@@ -422,79 +424,82 @@ function wizard_init(wizard_id) {
 				numero=get_option_wizard('wizard-creer-hors-collection',   'wizard_numero');
 			}
 			selecteur_cellules_preview='#'+wizard_id+' #tranches_pretes_magazine td';
-			
 			var numero_selectionne=numero;
-			var index_numero_selectionne=$('#'+wizard_id+' [name="wizard_numero"] option[value="'+numero_selectionne+'"]').prop('index');
-			var tranches_pretes=new Array();
-
-			var nouvelle_tranche_placee=false;
-			var nb_tranches_suivantes=0;
-			$.each($('#'+wizard_id+' [name="wizard_numero"] option.tranche_prete'),function() {
-				var index_numero_courant = $('#'+wizard_id+' [name="wizard_numero"] option[value="'+$(this).val()+'"]').prop('index');
-				if (index_numero_courant > index_numero_selectionne) {
-					if (!nouvelle_tranche_placee) {
-						if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 dernières précédentes
-							tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
-						tranches_pretes.push(numero_selectionne);
-						nouvelle_tranche_placee=true;
+			
+			charger_liste_numeros(pays,magazine, function(data) {
+				var numeros_existants=data.numeros_dispos;
+				
+				var tranches_pretes=new Array();
+				var numero_selectionne_trouve=false;
+				for (var numero_existant in numeros_existants) {
+					if (numero_existant != 'Aucun') {
+						var est_tranche_prete=data.tranches_pretes[numero_existant] !== undefined;
+						if (numero_existant == numero_selectionne) {
+							if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) {// Filtre sur les 5 dernières précédentes
+								tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
+							}
+							tranches_pretes.push(numero_selectionne);
+							numero_selectionne_trouve=true;
+						}
+						else if (est_tranche_prete) {
+							// On arrête après 5x2 tranche similaires + le nouveau numéro
+							if (!numero_selectionne_trouve || tranches_pretes.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
+								tranches_pretes.push(numero_existant);
+							}
+						}
 					}
-					if (nb_tranches_suivantes < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) {
-						tranches_pretes.push($(this).val());
-						nb_tranches_suivantes++;
+				}
+			
+				if (!numero_selectionne_trouve) {
+					// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
+					if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) {// Filtre sur les 5 dernières précédentes
+						tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
 					}
+					tranches_pretes.push(numero_selectionne);
 				}
-				else {
-					tranches_pretes.push($(this).val());
+				
+				// Pas de proposition de tranche
+				if (tranches_pretes.length <= 1) {
+					wizard_do($('#'+wizard_id),'goto_wizard-dimensions');
+					return;
 				}
-			});
-			
-			if (!nouvelle_tranche_placee) {
-				// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
-				if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 dernières précédentes
-					tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
-				tranches_pretes.push(numero_selectionne);
-			}
-			
-			// Pas de proposition de tranche
-			if (tranches_pretes.length <= 1) {
-				$('#'+wizard_id+' #tranches_pretes_magazine').html('Pas de tranche similaire');
-				wizard_do($('#'+wizard_id),'goto_wizard-dimensions');
-				return;
-			}
-			
-			
-			var tableau_tranches_pretes=$('<table>');
-			var ligne_numeros_tranches_pretes1=$('<tr>');
-			var ligne_tranches_pretes=$('<tr>');
-			var ligne_tranche_selectionnee=$('<tr>');
-			var ligne_numeros_tranches_pretes2=$('<tr>');
-			tableau_tranches_pretes.append(ligne_numeros_tranches_pretes1)
-								   .append(ligne_tranches_pretes)
-								   .append(ligne_tranche_selectionnee)
-								   .append(ligne_numeros_tranches_pretes2);
-			$('#'+wizard_id+' #tranches_pretes_magazine').html($('<div>').addClass('buttonset').html(tableau_tranches_pretes));
-
-			for (i in tranches_pretes) {
-				var numero_tranche_prete = tranches_pretes[i];
-				ligne_tranches_pretes.append($('<td>').data('numero',numero_tranche_prete));
-				var td_numero=$('<td>').data('numero',numero_tranche_prete);
-				if (numero_tranche_prete == numero_selectionne) {
-					td_numero.append($('<b>').html('n&deg;'+numero_tranche_prete+'<br />(Votre tranche)'));
-					ligne_tranche_selectionnee.append($('<td>'));
+				
+				
+				var tableau_tranches_pretes=$('<table>');
+				var ligne_numeros_tranches_pretes1=$('<tr>');
+				var ligne_tranches_pretes=$('<tr>');
+				var ligne_tranche_selectionnee=$('<tr>');
+				var ligne_numeros_tranches_pretes2=$('<tr>');
+				tableau_tranches_pretes.append(ligne_numeros_tranches_pretes1)
+									   .append(ligne_tranches_pretes)
+									   .append(ligne_tranche_selectionnee)
+									   .append(ligne_numeros_tranches_pretes2);
+				$('#'+wizard_id+' #tranches_pretes_magazine').html($('<div>').addClass('buttonset').html(tableau_tranches_pretes));
+	
+				for (i in tranches_pretes) {
+					var numero_tranche_prete = tranches_pretes[i];
+					ligne_tranches_pretes.append($('<td>').data('numero',numero_tranche_prete));
+					var td_numero=$('<td>').data('numero',numero_tranche_prete);
+					if (numero_tranche_prete == numero_selectionne) {
+						td_numero.append($('<b>').html('n&deg;'+numero_tranche_prete+'<br />(Votre tranche)'));
+						ligne_tranche_selectionnee.append($('<td>'));
+					}
+					else {
+						td_numero.html('n&deg;'+numero_tranche_prete);
+						ligne_tranche_selectionnee.append($('<td>').html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_prete)));
+						reload_numero(numero_tranche_prete);
+					}
+					ligne_numeros_tranches_pretes1.append(td_numero);
+					ligne_numeros_tranches_pretes2.append(td_numero.clone(true));
 				}
-				else {
-					td_numero.html('n&deg;'+numero_tranche_prete);
-					ligne_tranche_selectionnee.append($('<td>').html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_prete)));
-					reload_numero(numero_tranche_prete);
-				}
-				ligne_numeros_tranches_pretes1.append(td_numero);
-				ligne_numeros_tranches_pretes2.append(td_numero.clone(true));
-			}
-			
-			$('#wizard-proposition-clonage .image_preview').click(function() {
-				$('#wizard-proposition-clonage .image_preview').removeClass('selected');
-				$(this).addClass('selected');
-				$('#wizard-proposition-clonage input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
+				
+				$('#wizard-proposition-clonage .image_preview').click(function() {
+					$('#wizard-proposition-clonage .image_preview').removeClass('selected');
+					$(this).addClass('selected');
+					$('#wizard-proposition-clonage input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
+				});
+				$('#'+wizard_id+' .chargement').addClass('cache');
+				$('#tranches_pretes_magazine').removeClass('cache');
 			});
 		break;
 		
@@ -2265,31 +2270,35 @@ function wizard_charger_liste_magazines(pays_sel) {
 function wizard_charger_liste_numeros(magazine_sel) {
 	magazine=magazine_sel;
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
+	charger_liste_numeros(pays,magazine,function(data) {
+		numeros_dispos=data.numeros_dispos;
+		var tranches_pretes=data.tranches_pretes;
+
+		wizard_numero.html('');
+		for (var numero_dispo in numeros_dispos) {
+			if (numero_dispo != 'Aucun') {
+				var option=$('<option>').val(numero_dispo).html(numero_dispo);
+				var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
+				if (est_dispo) {
+					option.addClass(tranches_pretes[numero_dispo] == 'par_moi'
+									 ? 'cree_par_moi'
+									 : 'tranche_prete');
+				}
+				wizard_numero.append(option);
+			}
+		}
+		if (get_option_wizard('wizard_numero') != undefined)
+			wizard_numero.val(get_option_wizard('wizard_numero'));
+		chargement_listes=false;
+	});
+}
+	
+function charger_liste_numeros(pays_sel,magazine_sel, callback) {
 	$.ajax({
-		url: urls['numerosdispos']+['index',pays,magazine].join('/'),
+		url: urls['numerosdispos']+['index',pays_sel,magazine_sel].join('/'),
 		type: 'post',
 		dataType: 'json',
-		success:function(data) {
-			numeros_dispos=data.numeros_dispos;
-			var tranches_pretes=data.tranches_pretes;
-
-			wizard_numero.html('');
-			for (var numero_dispo in numeros_dispos) {
-				if (numero_dispo != 'Aucun') {
-					var option=$('<option>').val(numero_dispo).html(numero_dispo);
-					var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
-					if (est_dispo) {
-						option.addClass(tranches_pretes[numero_dispo] == 'par_moi'
-										 ? 'cree_par_moi'
-										 : 'tranche_prete');
-					}
-					wizard_numero.append(option);
-				}
-			}
-			if (get_option_wizard('wizard_numero') != undefined)
-				wizard_numero.val(get_option_wizard('wizard_numero'));
-			chargement_listes=false;
-		}
+		success: callback
 	});
 }
 

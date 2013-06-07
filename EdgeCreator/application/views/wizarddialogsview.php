@@ -225,6 +225,9 @@
 				L'une des tranches si-dessous est identique &agrave; la v&ocirc;tre, ou bien seules quelques couleurs ou quelques textes sont diff&eacute;rents ? 
 				Si oui, s&eacute;lectionnez cette tranche. Sinon, cliquez sur "Cr&eacute;er une tranche originale".
 				<form>
+					<div class="chargement">
+						Veuillez patienter...
+					</div>
 					<div id="tranches_pretes_magazine">
 					
 					</div>
