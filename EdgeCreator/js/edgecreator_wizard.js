@@ -46,6 +46,7 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
 	            'caracteres_speciaux':/\°/i};
 
+var REGEX_FICHIER_PHOTO=/\.([^.]+)\.photo_([^.]+?)\.[a-z]+$/;
 var REGEX_NUMERO=/(.+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
@@ -200,14 +201,20 @@ function wizard_do(wizard_courant, action) {
 					case 'enregistrer':
 						if (wizard_check('wizard-resize') !== undefined) {
 							var image = wizard_courant.find('.jrac_viewport img');
-							var nom = image.attr('src').match(/_([^.]+?)\.[a-z]+$/)[1];
-							
+							var decoupage_nom = image.attr('src').match(REGEX_FICHIER_PHOTO);
+							if (!decoupage_nom) {
+								jqueryui_alert("Le nom de l'image est invalide : " + image.attr('src'), "Nom invalide");
+								return;
+							}
+
+							var numero_image = decoupage_nom[1];
+							var nom = decoupage_nom[2];
 							var x1 = parseInt(100 * ($('.jrac_crop').position().left / image.width())),
 								x2 = parseInt(100 * ($('.jrac_crop').position().left + $('.jrac_crop').width()) / image.width()),
 								y1 = parseInt(100 * ($('.jrac_crop').position().top  / image.height())),
 								y2 = parseInt(100 * ($('.jrac_crop').position().top  + $('.jrac_crop').height()) / image.height());
 							$.ajax({
-								url: urls['rogner_image']+['index',pays,magazine,numero,nom,x1,x2,y1,y2].join('/'),
+								url: urls['rogner_image']+['index',pays,magazine,numero_image,nom,x1,x2,y1,y2].join('/'),
 								type: 'post',
 								dataType:'json'
 							});
