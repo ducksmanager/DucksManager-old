@@ -1052,11 +1052,14 @@ class Modele_tranche extends CI_Model {
 			case 'Photos': 
 				$pays=$arg;
 				$magazine=$arg2;
+				$extensions=array();
 				if ($type === 'Source') {
 					$rep=Fonction_executable::getCheminElements($pays).'/';
+					$extensions=array('png');
 				}
 				if ($type === 'Photos') {
 					$rep=Fonction_executable::getCheminPhotos($pays).'/';
+					$extensions=array('jpg','jpeg','png');
 				}
 				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
@@ -1068,12 +1071,13 @@ class Modele_tranche extends CI_Model {
 				}
 				else {
 					while ($f = readdir($dir)) {
-						if (strpos($f,'.png')===false || strpos($f,$magazine.'.') !== 0)
+						if (strpos($f,$magazine.'.') !== 0 || !is_file($rep.$f))
 							continue;
-						if(is_file($rep.$f)) {
-							$nom=$f;
-							$liste[]=utf8_encode($nom);
+						foreach($extensions as $extension) {
+							if (strpos($f,'.'.$extension)===false)
+								continue 2;
 						}
+						$liste[]=utf8_encode($f);
 					}
 				}
 			case 'Source_photo':

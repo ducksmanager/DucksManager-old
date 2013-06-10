@@ -813,9 +813,13 @@ function wizard_init(wizard_id) {
 }
 
 function afficher_liste_magazines(wizard_id, id_element_liste, data) {
+	$('#'+wizard_id+' .explication').addClass('cache');
+	$('#'+wizard_id+' .chargement').removeClass('cache');
 	var tranches = traiter_tranches_en_cours(data);
+	$('#'+wizard_id+' .chargement').addClass('cache');
 	if (tranches.length > 0) {
 		$('#'+wizard_id+' #'+id_element_liste).removeClass('cache');
+		$('#'+wizard_id+' .explication').removeClass('cache');
 		$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
 		for (var i_tranche_en_cours in tranches) {
 			var tranche_en_cours=tranches[i_tranche_en_cours];
@@ -840,6 +844,9 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 		$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
 			$('#'+wizard_id+' #'+id_element_liste+' .ui-state-active').removeClass('ui-state-active');
 		});
+	}
+	else {
+		$('#'+wizard_id+' .pas_de_numero').removeClass('cache');
 	}
 }
 

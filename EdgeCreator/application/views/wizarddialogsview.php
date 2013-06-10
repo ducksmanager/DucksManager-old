@@ -90,8 +90,8 @@
 
 		<div id="wizard-creer-collection" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
 			<p>
-				<span class="cache">S&eacute;lectionnez le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche.</span>
-				<span class="patienter">Veuillez patienter...</span>
+				<span class="explication cache">S&eacute;lectionnez le num&eacute;ro dont vous souhaitez cr&eacute;er la tranche.</span>
+				<span class="chargement">Veuillez patienter...</span>
 				<form>
 					<ul id="tranches_non_pretes" class="liste_numeros cache">
 						<li class="init">
@@ -103,6 +103,7 @@
 						<input type="radio" checked="checked" name="choix" value="to-wizard-proposition-clonage" id="to-wizard-proposition-clonage" /><label for="to-wizard-proposition-clonage">J'ai trouv&eacute; mon num&eacute;ro</label>
 					</div>
 				</form>
+				<p class="pas_de_numero cache">Pas de num&eacute;ro.</p>
 			</p>
 		</div>
 			
@@ -169,7 +170,7 @@
 							<h3><a href="#">S&eacute;lectionner une photo</a></h3>
 							<div class="selectionner_photo">
 								<p class="chargement_images" >Chargement des images</p>
-								<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
+								<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
 								<ul class="gallery cache">
 									<li class="template">
 										<img />
