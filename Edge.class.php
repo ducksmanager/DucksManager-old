@@ -44,7 +44,10 @@ class Edge {
 			
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
-				list($this->largeur,$this->hauteur,$type,$attr)=getimagesize($url_image);
+				if (! (list($this->largeur,$this->hauteur,$type,$attr)=@getimagesize($url_image))) {
+					mail('admin@ducksmanager.net', 'Image de bibliothèque corrompue',$url_image);
+					return;
+				}
 				$this->largeur=intval( $this->largeur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
 				$this->hauteur=intval( $this->hauteur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
 				
