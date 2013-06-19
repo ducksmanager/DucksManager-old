@@ -738,36 +738,33 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 Affichage::onglets($onglet,$onglets,'onglet','?action=gerer');
                                 switch($onglet) {
                                     case 'compte':
-                                    	$mot_de_passe_ancien_defaut = '**********';
                                         if (isset($_POST['submit_options'])) {
                                         	if ($_SESSION['user'] == 'demo') {
                                         		echo OPERATION_IMPOSSIBLE_MODE_DEMO.'<br />';
                                         	}
                                         	else {
 												$erreur=null;
-												if ($_POST['ancien_mdp'] != $mot_de_passe_ancien_defaut) {
-													$requete_verif_mot_de_passe='SELECT Email FROM users WHERE ID='.$id_user.' AND password=sha1(\''.$_POST['ancien_mdp'].'\')';
-													$mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
-													if ($mot_de_passe_ok) {
-														$mot_de_passe_nouveau = $_POST['nouveau_mdp'];
-														$mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
-														if (strlen($mot_de_passe_nouveau) < 6) {
-															$erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
-														}
-														elseif ($mot_de_passe_nouveau != $mot_de_passe_nouveau_confirm) {
-															$erreur = MOTS_DE_PASSE_DIFFERENTS;
-														}
-														else {
-															$requete_modif_mdp='UPDATE users SET password=sha1(\''.$mot_de_passe_nouveau.'\') WHERE ID='.$id_user;
-															DM_Core::$d->requete($requete_modif_mdp);
-															echo MOT_DE_PASSE_CHANGE;
-														}
+												$requete_verif_mot_de_passe='SELECT Email FROM users WHERE ID='.$id_user.' AND password=sha1(\''.$_POST['ancien_mdp'].'\')';
+												$mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
+												if ($mot_de_passe_ok) {
+													$mot_de_passe_nouveau = $_POST['nouveau_mdp'];
+													$mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
+													if (strlen($mot_de_passe_nouveau) < 6) {
+														$erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
+													}
+													elseif ($mot_de_passe_nouveau != $mot_de_passe_nouveau_confirm) {
+														$erreur = MOTS_DE_PASSE_DIFFERENTS;
 													}
 													else {
-														$erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
+														$requete_modif_mdp='UPDATE users SET password=sha1(\''.$mot_de_passe_nouveau.'\') WHERE ID='.$id_user;
+														DM_Core::$d->requete($requete_modif_mdp);
+														echo MOT_DE_PASSE_CHANGE;
 													}
-													?><br /><br /><?php
 												}
+												else {
+													$erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
+												}
+												?><br /><br /><?php
 												if (is_null($erreur)) {
 		                                            echo MODIFICATIONS_OK.'<br />';
 		                                            $est_partage=isset($_POST['partage']) && $_POST['partage']=='on'?'1':'0';
@@ -794,7 +791,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         	<?=MOT_DE_PASSE_CHANGEMENT?>
                                         </span>
                                         <br /><?=MOT_DE_PASSE_ACTUEL?> : <br />
-                                        <input type="password" name="ancien_mdp" style="width: 100px" value="<?=$mot_de_passe_ancien_defaut?>" />
+                                        <input type="password" name="ancien_mdp" style="width: 100px" value="" />
 	                                    <br />
                                         <br /><?=MOT_DE_PASSE_NOUVEAU?> : <br />
                                         <input type="password" name="nouveau_mdp" style="width: 100px" value="" />
