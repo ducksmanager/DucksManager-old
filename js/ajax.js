@@ -193,10 +193,12 @@ function get_achats(continue_id) {
                 });
             });
             
-            $('couverture_preview').down('.fermer').observe('click',function() {
-            	$('couverture_preview').down('img').remove();
-            	$('couverture_preview').down('.fermer').addClassName('cache');
-            });
+            $('couverture_preview').down('.fermer')
+            	.setOpacity(0.5)
+            	.observe('click',function() {
+	            	$('couverture_preview').down('img').remove();
+	            	$('couverture_preview').down('.fermer').addClassName('cache');
+	            });
             
 		    var image_checked= new Image;
             image_checked.src = "checkedbox.png";
