@@ -140,5 +140,5 @@ function montrer_magazines(pays) {
     if (marge_gauche+largeur_max > $('contenu').offsetWidth-20) {
     	marge_gauche-= $('contenu').offsetWidth-20 - marge_gauche-largeur_max;
     }
-    $('onglets_pays').next('ul').setStyle({'margin-left':marge_gauche+'px'});
+    $('onglets_pays').next('ul').setStyle({'marginLeft':marge_gauche+'px'});
 }
