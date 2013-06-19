@@ -802,14 +802,8 @@ Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
 			$o_achat->date=$achat['Date'];
 			$tab_achats[]=$o_achat;
 			$cpt_strlen+=strlen(json_encode($o_achat));
-			if ($cpt_strlen > 7000) {
-				$o_continue=new stdClass();
-				$o_continue->continue=$o_achat->id;
-				$tab_achats[]=$o_continue;
-				break;
-			}
 		}
-		echo header("X-JSON : ".json_encode($tab_achats));
+		echo json_encode($tab_achats);
 	}
 	else if (isset($_POST['liste_etats'])) {
 		DM_Core::$d->liste_etats();

@@ -23,7 +23,7 @@ function get_achats(continue_id) {
 	   method: 'post',
 	   parameters:'database=true&liste_achats=true&continue='+continue_id,
 	   onSuccess:function(transport) {
-	    	var achats_courants=transport.headerJSON;
+	    	var achats_courants=JSON.parse(transport.responseText);
 	    	for (var i=0; i< achats_courants.length; i++) {
 	    		if (achats_courants[i]['continue']) {
 	    			get_achats(achat['id']);
