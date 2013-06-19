@@ -140,5 +140,15 @@ function montrer_magazines(pays) {
     if (marge_gauche+largeur_max > $('contenu').offsetWidth-20) {
     	marge_gauche-= $('contenu').offsetWidth-20 - marge_gauche-largeur_max;
     }
-    $('onglets_pays').next('ul').setStyle({'marginLeft':marge_gauche+'px'});
+    $('onglets_magazines')
+    	.setStyle({'marginLeft':marge_gauche+'px'})
+    	.stopObserving('mouseleave')
+    	.observe('mouseleave',function() {
+    		$$('[name="magazine"]')
+            .each(function(element) {
+                if (element.href) {
+                    element.up().addClassName('cache');
+                }
+            });
+    	});
 }
