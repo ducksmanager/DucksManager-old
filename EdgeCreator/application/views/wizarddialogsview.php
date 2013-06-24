@@ -167,13 +167,14 @@
 							<div class="envoyer_photo">
 								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
 							</div>
-							<h3><a href="#">S&eacute;lectionner une photo</a></h3>
+							<h3><a href="#">S&eacute;lectionner une photo existante</a></h3>
 							<div class="selectionner_photo">
 								<p class="chargement_images" >Chargement des images</p>
 								<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
 								<ul class="gallery cache">
 									<li class="template">
 										<img />
+										<input type="radio" name="numeroPhotoPrincipale" class="cache" />
 									</li>
 								</ul>
 							</div>
@@ -264,7 +265,7 @@
 			</div>
 			
 			
-		<div id="wizard-conception" class="main wizard dead-end" title="Assistant DucksManager - Conception de la tranche">
+		<div id="wizard-conception" class="main first wizard dead-end" title="Assistant DucksManager - Conception de la tranche">
 			<p>
 				<div class="chargement">Chargement...</div>
 				<form class="cache" name="form_options">
@@ -610,4 +611,10 @@
 	<form>
 		<input type="text" name="nom_image" />
 	</form>
+</div>
+
+<div id="wizard-confirmation-suppression-modele" class="wizard" title="Suppression d'un mod&egrave;le EdgeCreator">
+	<p>
+	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre d&eacute;sactiv&eacute. Confirmer ?
+	</p>
 </div>

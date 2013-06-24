@@ -26,8 +26,12 @@
 	<div id="action_bar" class="cache">Mod&eacute;lisation de la tranche du num&eacute;ro <span id="nom_complet_tranche_en_cours"></span><br />
 		<img class="action tip" name="home" 
 			 title="Revenir &agrave; l'&eacute;cran d'accueil de EdgeCreator" />
-		<img class="action tip" name="photo" style="margin-left: 10px"
+		<img class="action tip" name="photo"
 			 title="Ins&eacute;rer/S&eacute;lectionner une photo de tranche" />
+		<img class="action tip" name="supprimer"
+			 title="Supprimer cette conception de tranche" />
+		<img class="action tip" name="valider"
+			 title="Valider cette conception de tranche" />
 	</div>
 	<div id="status_user">
 		<?php

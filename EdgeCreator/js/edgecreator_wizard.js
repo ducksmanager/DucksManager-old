@@ -47,7 +47,7 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'caracteres_speciaux':/\°/i};
 
 var REGEX_FICHIER_PHOTO=/\.([^.]+)\.photo_([^.]+?)\.[a-z]+$/;
-var REGEX_NUMERO=/(.+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
+var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
 
@@ -214,7 +214,7 @@ function wizard_do(wizard_courant, action) {
 								y1 = parseInt(100 * ($('.jrac_crop').position().top  / image.height())),
 								y2 = parseInt(100 * ($('.jrac_crop').position().top  + $('.jrac_crop').height()) / image.height());
 							$.ajax({
-								url: urls['rogner_image']+['index',pays,magazine,numero_image,nom,x1,x2,y1,y2].join('/'),
+								url: urls['rogner_image']+['index',pays,magazine,numero_image,numero,nom,x1,x2,y1,y2].join('/'),
 								type: 'post',
 								dataType:'json'
 							});
@@ -500,10 +500,10 @@ function wizard_init(wizard_id) {
 					ligne_numeros_tranches_pretes2.append(td_numero.clone(true));
 				}
 				
-				$('#wizard-proposition-clonage .image_preview').click(function() {
-					$('#wizard-proposition-clonage .image_preview').removeClass('selected');
+				$('#'+wizard_id+' .image_preview').click(function() {
+					$('#'+wizard_id+' .image_preview').removeClass('selected');
 					$(this).addClass('selected');
-					$('#wizard-proposition-clonage input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
+					$('#'+wizard_id+' input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
 				});
 				$('#'+wizard_id+' .chargement').addClass('cache');
 				$('#tranches_pretes_magazine').removeClass('cache');
@@ -585,17 +585,17 @@ function wizard_init(wizard_id) {
 				});
 			}
 			else {
-				if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete') == undefined
+				if (get_option_wizard('wizard-creer-collection','choix_tranche') == undefined
 				 && get_option_wizard('wizard-creer-hors-collection','wizard_pays') == undefined) {
 					numero_complet_userfriendly='';
 				}
 				else {
-					if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete')!= undefined) {
-						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche_non_prete');
-						numero_complet_userfriendly=tranche.replace(REGEX_NUMERO,'$1');
-						pays=tranche.replace(REGEX_NUMERO,'$2');
-						magazine=tranche.replace(REGEX_NUMERO,'$3');
-						numero=tranche.replace(REGEX_NUMERO,'$4');					
+					if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
+						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').match(REGEX_NUMERO);
+						numero_complet_userfriendly='';
+						pays=tranche[1];
+						magazine=tranche[2];
+						numero=tranche[3];
 					}
 					else {
 						pays=get_option_wizard('wizard-creer-hors-collection','wizard_pays');
@@ -815,6 +815,24 @@ function wizard_init(wizard_id) {
 					else
 						crop_inconsistent_element.removeClass('cache');
 				});
+		break;
+		case 'wizard-confirmation-suppression-modele':
+			$('#wizard-confirmation-suppression-modele').dialog({
+				resizable: false,
+				height:200,
+				modal: true,
+				buttons: {
+					"Supprimer": function() {
+						$.ajax({
+			                url: urls['supprimer_modele']+['index',pays,magazine,numero].join('/'),
+			                type: 'post',
+			                success:function(data) {
+			                	location.reload();
+			                }
+						});
+					}
+				}
+			});
 		break;
 	}
 }
@@ -2347,6 +2365,9 @@ function init_action_bar() {
 				case 'photo':
 					launch_wizard('wizard-photos', {modal:true, first: true});
 				break;
+				case 'supprimer':
+					launch_wizard('wizard-confirmation-suppression-modele', {modal:true, first: true});
+				break;
 			}
 			
 		});
@@ -2431,6 +2452,7 @@ function lister_images_gallerie(type_images) {
             		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
             		li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
             							 'title':data[i]});
+            		li.find('input').val(data[i]);
             		ul.append(li);
             	}
     			form.find('ul.gallery li img').removeClass('selected')

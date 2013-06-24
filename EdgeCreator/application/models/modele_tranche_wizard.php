@@ -24,7 +24,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
 		$requete='SELECT ID, Pays, Magazine, Numero '
 				.'FROM tranches_en_cours_modeles '
-				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\'';
+				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\' AND Active=1';
 		if (!is_null($id)) {
 			$requete.=' AND ID='.$id;
 		}
@@ -236,7 +236,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function getIdModele($pays,$magazine,$numero,$username) {
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
-				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' AND username=\''.$username.'\'';
+				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' AND username=\''.$username.'\' AND Active=1';
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->ID;
 		
@@ -250,8 +250,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function creer_modele($pays, $magazine, $numero) {
-		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username) '
-				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\')';
+		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
+				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\', 1)';
 		$this->db->query($requete);
 		echo $requete."\n";
 	}
@@ -317,7 +317,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function supprimer_etape($pays,$magazine,$numero,$etape) {
 		$requete_suppr='DELETE FROM tranches_en_cours_valeurs '
 					  .'WHERE ID_Modele=(SELECT m.ID FROM tranches_en_cours_modeles m '
-					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\') '
+					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\' AND m.Active=1) '
 					  	.'AND Ordre = \''.$etape.'\'';
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
@@ -361,9 +361,9 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
-		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username) '
+		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
-							 .'\''.mysql_real_escape_string(self::$username).'\')';
+							 .'\''.mysql_real_escape_string(self::$username).'\', 1)';
 		$this->db->query($requete_ajout_modele);
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
@@ -415,6 +415,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		
 		return $resultats;
+	}
+	
+	function supprimer_modele($pays,$magazine,$numero) {
+		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		
+		$requete_maj=' UPDATE tranches_en_cours_modeles '
+					.' SET Active=0'
+					.' WHERE ID='.$id_modele;
+		$this->db->query($requete_maj);
+		echo $requete_maj."\n";
+		
 	}
 	
 	function setNumero($numero) {

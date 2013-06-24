@@ -10,13 +10,8 @@ iframe {
 
 #action_bar img.action {
 	height: 20px;
-	margin-left: 5px;
+	margin-left: 10px;
 	cursor: pointer;
-}
-
-#action_bar img.action[name="photo"].active, #photo_tranche img {
-	/*outline: 2px solid cyan;
-	margin-left: 2px;*/
 }
 
 #status_user {

@@ -1846,16 +1846,18 @@ class Dessiner_contour {
 }
 
 class Rogner {
-	function Rogner($pays,$magazine,$numero,$nom,$x1,$x2,$y1,$y2) {
+	function Rogner($pays,$magazine,$numero_original,$numero,$nom,$x1,$x2,$y1,$y2) {
 		$extension='.jpg';
 		$nom_image_origine = Fonction_executable::getCheminPhotos($pays)
-							.'/'.$magazine.'.'.$numero.'.photo_'.$nom;
+							.'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
+		$nom_image_modifiee= Fonction_executable::getCheminPhotos($pays)
+							.'/'.$magazine.'.'.$numero.'.photo_';
 		$i=1;
-		while (file_exists($nom_image_origine.'_'.$i.$extension)) {
+		while (file_exists($nom_image_modifiee.$i.$extension)) {
 			$i++;
 		}
-		$nom_image_modifiee = $nom_image_origine.'_'.$i.$extension;
-		$nom_image_origine.=$extension;
+		$nom_image_modifiee.=$i.$extension;
+		$nom_image_origine .=	$extension;
 		
 		$img = imagecreatefromjpeg($nom_image_origine);
 		$width=imagesx($img);
