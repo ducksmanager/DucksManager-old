@@ -198,11 +198,6 @@ class Viewer_wizard extends Viewer {
 					$affichage_options=ob_get_contents();
 					ob_end_clean();
 					
-					@mkdir('../edges/'.$pays.'/tmp/');
-					$rand=rand(0,99999);
-					$nom_image='../edges/'.$pays.'/tmp/'.$magazine.'.'.$numero.'_tmp'.$rand.'.png';
-					imagepng(Viewer::$image,$nom_image);
-					
 					$this->email->from('admin@ducksmanager.net', 'DucksManager - '.$username_modele);
 					$this->email->to('admin@ducksmanager.net');
 					
@@ -220,6 +215,12 @@ class Viewer_wizard extends Viewer {
 		}
 		if (self::$is_debug===false)
 			imagepng(Viewer::$image);
+
+
+		@rmdir('../edges/'.$pays.'/tmp/');
+		@mkdir('../edges/'.$pays.'/tmp/');
+		$nom_image='../edges/'.$pays.'/tmp/'.$random_ou_username.'.png';
+		imagepng(Viewer::$image,$nom_image);
 	}
 }
 

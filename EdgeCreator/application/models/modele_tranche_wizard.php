@@ -88,22 +88,24 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultats_o;
 	}
 
-	function get_ordres($pays,$magazine,$numero=null) {
+	function get_ordres($pays,$magazine,$numero=null,$toutes_colonnes=false) {
 		$resultats_ordres=array();
-		$requete='SELECT DISTINCT Ordre, Numero '
-				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' ';
+		$requete=' SELECT DISTINCT '.($toutes_colonnes?'*':'Ordre, Numero')
+				.' FROM tranches_en_cours_modeles_vue'
+			    .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
 		if (!is_null($numero)) {
 			$requete.='AND Numero=\''.$numero.'\' ';
 		}
 		$requete.='AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
-				 .'ORDER BY Ordre';
+				 .'ORDER BY Ordre'; echo $requete;
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		foreach($resultats as $resultat) {
-			$resultats_ordres[]=$resultat->Ordre;
+			$resultats_ordres[]=$toutes_colonnes?$resultat:$resultat->Ordre;
 		}
-		$resultats_ordres=array_unique($resultats_ordres);
+		if (!$toutes_colonnes) {
+			$resultats_ordres=array_unique($resultats_ordres);
+		}
 		return $resultats_ordres;
 	}
 

@@ -834,6 +834,25 @@ function wizard_init(wizard_id) {
 				}
 			});
 		break;
+		case 'wizard-confirmation-validation-modele':
+			$('#wizard-confirmation-validation-modele').dialog({
+				resizable: false,
+				height:200,
+				modal: true,
+				buttons: {
+					"Valider": function() {
+						var nom_image=$('.image_preview').attr('src').match(/[.0-9]+$/g)[0];
+						$.ajax({
+			                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image].join('/'),
+			                type: 'post',
+			                success:function(data) {
+			                	//location.reload();
+			                }
+						});
+					}
+				}
+			});
+		break;
 	}
 }
 
@@ -2367,6 +2386,9 @@ function init_action_bar() {
 				break;
 				case 'supprimer':
 					launch_wizard('wizard-confirmation-suppression-modele', {modal:true, first: true});
+				break;
+				case 'valider':
+					launch_wizard('wizard-confirmation-validation-modele', {modal:true, first: true});
 				break;
 			}
 			

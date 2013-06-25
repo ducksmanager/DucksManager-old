@@ -615,6 +615,12 @@
 
 <div id="wizard-confirmation-suppression-modele" class="wizard" title="Suppression d'un mod&egrave;le EdgeCreator">
 	<p>
-	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre d&eacute;sactiv&eacute. Confirmer ?
+	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre d&eacute;sactiv&eacute;. Confirmer ?
+	</p>
+</div>
+
+<div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un mod&egrave;le EdgeCreator">
+	<p>
+	Le mod&egrave;le EdgeCreator en cours de conception va verrouill&eacute; en attendant sa validation. Confirmer ?
 	</p>
 </div>
