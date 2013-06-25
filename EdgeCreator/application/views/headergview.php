@@ -62,10 +62,8 @@ header("Pragma: no-cache"); ?>
 	<title><?=$title?></title>
 </head>
 <body id="body" style="margin:0;padding:0">
-	<div id="zone_ajout_etape">
-		<img id="ajout_etape" class="tip2 cache"
-			 src="../../images/icones/add.png" title="Ajouter une &eacute;tape ici"/>
-	</div>
+	<img class="ajout_etape tip2 template hidden"
+		 src="../../images/icones/add.png" title="Ajouter une &eacute;tape ici"/>
 	<?php
 	if (!empty($erreur)) {
 		echo $erreur;

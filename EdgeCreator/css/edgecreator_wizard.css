@@ -27,6 +27,11 @@ button#connexion, button#deconnexion {
 
 .ui-dialog {
 	top: 70px !important;
+	z-index: 99;
+}
+
+.ui-widget-overlay + .ui-dialog {
+	z-index: 102;
 }
 
 .ui-dialog.main {
@@ -231,15 +236,10 @@ button#connexion, button#deconnexion {
 	float: left;
 }
 
-#zone_ajout_etape {
-	position: absolute;
-	z-index: 999;
-}
-
-#ajout_etape {
+.ajout_etape {
 	cursor: pointer;
 	position: fixed;
-	z-index: 1000;
+	z-index: 99;
 }
 
 div.small.buttonset .ui-button-text, button.small .ui-button-text {

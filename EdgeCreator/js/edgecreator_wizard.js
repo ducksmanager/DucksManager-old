@@ -25,6 +25,9 @@ var id_wizard_precedent=null;
 var num_etape_courante=null;
 var num_photo_principale=null;
 
+var etape_ajout;
+var etape_ajout_pos;
+
 var pos_x_courante=null,
 	pos_y_courante=null;
 
@@ -96,8 +99,8 @@ function launch_wizard(id, p) {
 			};
 		break;
 		case 'wizard-ajout-etape':
-			dialogue.find('form input[name="etape"]').val($('#ajout_etape').data('etape'));
-			dialogue.find('form input[name="pos"]').val($('#ajout_etape').data('pos'));
+			dialogue.find('form input[name="etape"]').val(etape_ajout);
+			dialogue.find('form input[name="pos"]').val(etape_ajout_pos);
 			buttons={
 				'OK': function() {
 					var formData=$(this).find('form').serializeObject();
@@ -759,16 +762,17 @@ function wizard_init(wizard_id) {
 							});
 
 							charger_previews();
-											            
-				            $('#zone_ajout_etape').hover(indiquer_ajout_etape,
-				            					  		 effacer_ajout_etape);
 				            
-				            $('#ajout_etape').click(function() {
+				            $('.ajout_etape').click(function() {
 				            	if (modification_etape == null) {
+				            		etape_ajout=$(this).data().etape;
+				            		etape_ajout_pos=$(this).data().pos;
 				            		launch_wizard('wizard-ajout-etape');
 				            	}
 				            	else {
-				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { launch_wizard('wizard-ajout-etape');});
+				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
+				            			launch_wizard('wizard-ajout-etape');
+				            		});
 				            	}
 				            });
 				            
@@ -778,7 +782,9 @@ function wizard_init(wizard_id) {
 									if (dialogue.data('etape') == modification_etape.data('etape'))
 										return;
 									else {
-										verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { ouvrir_dialogue_preview(dialogue);});
+										verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
+											ouvrir_dialogue_preview(dialogue);
+										});
 										return;
 									}
 								}
@@ -1083,60 +1089,31 @@ function placer_dialogues_preview() {
 			$(dialogue).css({'left':parseInt($(dialogue).css('left'))-min_marge_gauche+'px'});			
 		});
 	}
-	
-	// Positionnement de la zone d'ajout d'étape
-	var dialogue_droite=$(dialogues[1]); // Avant le dialogue de conception et la tranche finale
-	var dialogue_gauche=$(dialogues[dialogues.size()-1]); // Première étape
-	$('#zone_ajout_etape').css({'left':	 dialogue_gauche.offset().left - LARGEUR_INTER_ETAPES,
-							    'top': 	 dialogue_gauche.offset().top,
-							    'height': dialogue_gauche.height()});
-	$('#zone_ajout_etape').css({'width':dialogue_droite.offset().left - $('#zone_ajout_etape').offset().left});
-}
 
-function indiquer_ajout_etape(e) {
-	var ajout_etape = $('#ajout_etape');
-	if (! ajout_etape.hasClass('cache'))
-		return;
-	var dialogues=$('.dialog-preview-etape:not(.finale)').add($('#wizard-conception').d());
+	$('.ajout_etape:not(.template)').remove();
+	var dialogues=$('.dialog-preview-etape:not(.finale)').d();
 	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
-	var nearestLeftDialog=null,
-		nearestRightDialog=null;
-	var minDistanceToLeftEdge=null,
-		minDistanceToRightEdge=null;
 	$.each(dialogues,function(i,dialogue) {
-		var currentDistanceToLeftEdge = $(dialogue).offset().left - e.pageX;
-		if (currentDistanceToLeftEdge > 0 && (minDistanceToLeftEdge === null || currentDistanceToLeftEdge < minDistanceToLeftEdge )) {
-			minDistanceToLeftEdge = currentDistanceToLeftEdge;
-			nearestRightDialog=$(dialogue);
-		}
-		var currentDistanceToRightEdge = e.pageX - ($(dialogue).offset().left + $(dialogue).width());
-		if (currentDistanceToRightEdge > 0 && (minDistanceToRightEdge === null || currentDistanceToRightEdge < minDistanceToRightEdge )) {
-			minDistanceToRightEdge = currentDistanceToRightEdge;
-			nearestLeftDialog=$(dialogue);
-		}
+		var elDialogue = $(dialogue);
+		var etape = parseInt(elDialogue.data('etape'));
+		var positions = i==dialogues.length-1 ? ['avant','apres']:['apres'];
+		$.each(positions,function(j,pos) {
+			var pos_gauche=elDialogue.offset().left
+				+ (pos==='avant'
+					?(-$('.ajout_etape.template').width()-2)
+					:(+$('.ajout_etape.template').width()+elDialogue.width())
+				);
+			var ajout_etape=$('.ajout_etape.template').clone(true).removeClass('template hidden')
+			   .css({'left':pos_gauche+'px'})
+			   .css({'top':elDialogue.offset().top+'px'})
+			   .data('etape',etape)
+			   .data('pos',pos);
+			$('body').prepend(ajout_etape);
+		});
 	});
-	
-	if (nearestLeftDialog != null) {
-		var etape = parseInt(nearestLeftDialog.data('etape'));
-		ajout_etape.removeClass('cache')
-				   .css({'left':(nearestLeftDialog.offset().left+nearestLeftDialog.width()+8)+'px'})
-				   .data('etape',etape)
-				   .data('pos','apres');
-	}
-	else if (nearestRightDialog != null) {
-		var etape = parseInt(nearestRightDialog.data('etape')) || 0;
-		ajout_etape.removeClass('cache')
-				   .css({'left':(nearestRightDialog.offset().left-ajout_etape.width()-2)+'px'})
-				   .data('etape',etape)
-				   .data('pos','avant');
-	}
-    $('.tip2').tooltip();
-}
-
-function effacer_ajout_etape() {
-	$('#ajout_etape').addClass('cache');
+	$('.tip2').tooltip();
 }
 
 function recuperer_et_alimenter_options_preview(num_etape) {
