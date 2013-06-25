@@ -6,7 +6,7 @@ class Supprimer_Modele extends CI_Controller {
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		
-		$this->Modele_tranche->supprimer_modele($pays,$magazine,$numero);
+		$this->Modele_tranche->desactiver_modele($pays,$magazine,$numero);
 	}
 }
 

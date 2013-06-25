@@ -816,15 +816,15 @@ function wizard_init(wizard_id) {
 						crop_inconsistent_element.removeClass('cache');
 				});
 		break;
-		case 'wizard-confirmation-suppression-modele':
-			$('#wizard-confirmation-suppression-modele').dialog({
+		case 'wizard-confirmation-desactivation-modele':
+			$('#wizard-confirmation-desactivation-modele').dialog({
 				resizable: false,
 				height:200,
 				modal: true,
 				buttons: {
 					"Supprimer": function() {
 						$.ajax({
-			                url: urls['supprimer_modele']+['index',pays,magazine,numero].join('/'),
+			                url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
 			                type: 'post',
 			                success:function(data) {
 			                	location.reload();
@@ -846,7 +846,11 @@ function wizard_init(wizard_id) {
 			                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image].join('/'),
 			                type: 'post',
 			                success:function(data) {
-			                	//location.reload();
+			                	jqueryui_alert("Le mod&egrave;le d'image a &eacute;t&eacute; envoy&eacute; pour validation.", 
+			                				   "Mod&egrave;le envoy&eacute;",
+			                				   function() {
+			                					location.reload();
+			                				   });
 			                }
 						});
 					}
@@ -2385,7 +2389,7 @@ function init_action_bar() {
 					launch_wizard('wizard-photos', {modal:true, first: true});
 				break;
 				case 'supprimer':
-					launch_wizard('wizard-confirmation-suppression-modele', {modal:true, first: true});
+					launch_wizard('wizard-confirmation-desactivation-modele', {modal:true, first: true});
 				break;
 				case 'valider':
 					launch_wizard('wizard-confirmation-validation-modele', {modal:true, first: true});

@@ -24,7 +24,7 @@
 		</div>
 		<div style="float: left;width:50%">
 			<img style="width: 100%" src="../images/appareil_photo.png" />
-			D'un appareil photo (ceux des t&eacute;l&eacute;phones donnent parfois des photos floues)
+			D'un scanner ou un appareil photo (les capteurs photo des t&eacute;l&eacute;phones donnent parfois des photos floues)
 		</div>
 		
 	</p>
@@ -613,7 +613,7 @@
 	</form>
 </div>
 
-<div id="wizard-confirmation-suppression-modele" class="wizard" title="Suppression d'un mod&egrave;le EdgeCreator">
+<div id="wizard-confirmation-desactivation-modele" class="wizard" title="Suppression d'un mod&egrave;le EdgeCreator">
 	<p>
 	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre d&eacute;sactiv&eacute;. Confirmer ?
 	</p>

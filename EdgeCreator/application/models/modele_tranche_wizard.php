@@ -94,10 +94,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				.' FROM tranches_en_cours_modeles_vue'
 			    .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
 		if (!is_null($numero)) {
-			$requete.='AND Numero=\''.$numero.'\' ';
+			$requete.=' AND Numero=\''.$numero.'\'';
 		}
-		$requete.='AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
-				 .'ORDER BY Ordre'; echo $requete;
+		$requete.=' AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\''
+				 .' ORDER BY Ordre'; 
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		foreach($resultats as $resultat) {
@@ -419,7 +419,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $resultats;
 	}
 	
-	function supprimer_modele($pays,$magazine,$numero) {
+	function desactiver_modele($pays,$magazine,$numero) {
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
 		
 		$requete_maj=' UPDATE tranches_en_cours_modeles '

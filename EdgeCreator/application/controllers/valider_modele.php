@@ -22,6 +22,9 @@ class Valider_Modele extends CI_Controller {
 		$src_image='../edges/'.$pays.'/tmp/'.$nom_image.'.png';
 		$this->email->attach($src_image);
 		$this->email->send();
+		
+		$this->Modele_tranche->desactiver_modele($pays,$magazine,$numero);
+		
 		echo $affichage_etapes;
 		echo $this->email->print_debugger();
 	}

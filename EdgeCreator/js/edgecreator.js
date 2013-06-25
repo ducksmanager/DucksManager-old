@@ -1818,9 +1818,9 @@ function remplacer_caracteres_whatthefont() {
                     .append($('<b>').html(nom_police));
 }
 
-function jqueryui_alert(texte, titre) {
-	if (typeof(titre) == 'undefined')
-		titre='DucksManager EdgeCreator';
+function jqueryui_alert(texte, titre, close_callback) {
+	titre=titre || 'DucksManager EdgeCreator';
+	close_callback = close_callback || function(){};
 	var boite=$('<div>',{'title':titre});
 	if (typeof(texte)=='string')
 		boite.append($('<p>').html(texte));
@@ -1834,7 +1834,8 @@ function jqueryui_alert(texte, titre) {
 			OK: function() {
 				$( this ).dialog( "close" );
 			}
-		}
+		},
+		close: close_callback	
 	});
 }
 
