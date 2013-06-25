@@ -69,10 +69,10 @@ function launch_wizard(id, p) {
 	p = p || {}; // Paramètres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
-		first 	 = dialogue.hasClass('first') 	 || (p.first !== undefined 	  && p.first),
-		dead_end = dialogue.hasClass('dead-end') || (p.dead_end !== undefined && p.dead_end),
-		modal	 = dialogue.hasClass('modal')	 || (p.modal !== undefined 	  && p.modal);
-		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined&& p.closeable);
+		first 	 = dialogue.hasClass('first') 	 || (p.first 	 !== undefined	&& p.first),
+		deadend = dialogue.hasClass('deadend') 	 || (p.deadend 	 !== undefined	&& p.deadend),
+		modal	 = dialogue.hasClass('modal')	 || (p.modal 	 !== undefined	&& p.modal);
+		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined	&& p.closeable);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -137,7 +137,7 @@ function launch_wizard(id, p) {
 			};
 		break;
 		default:
-			if (!dead_end) {
+			if (!deadend) {
 				buttons["Suivant"]=function() {
 					var action_suivante=wizard_check($(this).attr('id'));
 					if (action_suivante != null) {
@@ -175,7 +175,10 @@ function launch_wizard(id, p) {
 		},
 		close: function(event,ui) {
 			if (closeable) {
-				wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+				var hasOnClose = $('#'+id+' form').serializeObject().onClose;
+				if (hasOnClose) {
+					wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+				}
 			}
 		}
 	});
@@ -622,7 +625,9 @@ function wizard_init(wizard_id) {
 					});
 				}
 			}
-			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
+			$('#nom_complet_tranche_en_cours')
+				.html($('<img>').attr({src:'../../images/flags/'+pays+'.png'}))
+				.append(' '+numero_complet_userfriendly);
 			$('#action_bar').removeClass('cache');
 			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 			$('#'+wizard_id).dialog().dialog('option','position',['right','top']);
@@ -2388,7 +2393,7 @@ function init_action_bar() {
 				case 'photo':
 					launch_wizard('wizard-photos', {modal:true, first: true});
 				break;
-				case 'supprimer':
+				case 'corbeille':
 					launch_wizard('wizard-confirmation-desactivation-modele', {modal:true, first: true});
 				break;
 				case 'valider':
@@ -2412,6 +2417,7 @@ function afficher_photo_tranche() {
 		});
 		image.error(function() {
 			$(this).css({'display':'none'});
+			launch_wizard('wizard-pas-d-image', {modal:true, first: true, deadend: true, closeable: true});
 		});
 	}
 	else {

@@ -28,7 +28,7 @@
 			 title="Revenir &agrave; l'&eacute;cran d'accueil de EdgeCreator" />
 		<img class="action tip" name="photo"
 			 title="Ins&eacute;rer/S&eacute;lectionner une photo de tranche" />
-		<img class="action tip" name="supprimer"
+		<img class="action tip" name="corbeille"
 			 title="Supprimer cette conception de tranche" />
 		<img class="action tip" name="valider"
 			 title="Valider cette conception de tranche" />

@@ -154,7 +154,7 @@
 				</p>
 			</div>
 			
-			<div id="wizard-photos" class="wizard dead-end" title="Assistant DucksManager - Photos de la tranche">
+			<div id="wizard-photos" class="wizard deadend" title="Assistant DucksManager - Photos de la tranche">
 				<p>
 					<form name="form_options">
 						Afin d'assurer la meilleure conception de tranche possible, au moins une photo de la tranche est requise.<br />
@@ -265,7 +265,7 @@
 			</div>
 			
 			
-		<div id="wizard-conception" class="main first wizard dead-end" title="Assistant DucksManager - Conception de la tranche">
+		<div id="wizard-conception" class="main first wizard deadend" title="Assistant DucksManager - Conception de la tranche">
 			<p>
 				<div class="chargement">Chargement...</div>
 				<form class="cache" name="form_options">
@@ -519,7 +519,7 @@
 			</div>
 		</div>
 	
-		<div id="wizard-numero-inconnu" class="wizard dead-end" title="Num&eacute;ro non r&eacute;f&eacute;renc&eacute;">
+		<div id="wizard-numero-inconnu" class="wizard deadend" title="Num&eacute;ro non r&eacute;f&eacute;renc&eacute;">
 			<p>
 				Les tranches ne peuvent &ecirc;tre reproduites que pour les num&eacute;ros 
 				r&eacute;f&eacute;renc&eacute;s sur la base <a target="_blank" href="http://coa.inducks.org">Inducks</a>.
@@ -622,5 +622,13 @@
 <div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un mod&egrave;le EdgeCreator">
 	<p>
 	Le mod&egrave;le EdgeCreator en cours de conception va verrouill&eacute; en attendant sa validation. Confirmer ?
+	</p>
+</div>
+
+<div id="wizard-pas-d-image" class="wizard" title="Aucune image de tranche sp&eacute;cifi&eacute;e">
+	<p>
+	Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo de la tranche.<br />
+	Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
+	car cela permet de faciliter sa conception.
 	</p>
 </div>
