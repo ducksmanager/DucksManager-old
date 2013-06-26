@@ -111,15 +111,6 @@ function launch_wizard(id, p) {
 	}
 	
 	switch(id) {
-		case 'wizard-conception' :
-			buttons["Soumettre la tranche"]=function() {
-				chargements=['final'];
-				
-				numero_chargement=numero;
-				chargement_courant=0;
-	            charger_preview_etape(chargements[0],false);
-			};
-		break;
 		case 'wizard-ajout-etape':
 			dialogue.find('form input[name="etape"]').val(etape_ajout);
 			dialogue.find('form input[name="pos"]').val(etape_ajout_pos);
