@@ -6,6 +6,7 @@ class Viewer extends CI_Controller {
 	static $pays;
 	static $magazine;
 	static $numero;
+	static $random_id;
 	static $parametrage;
 	static $fond_noir;
 	static $zoom;

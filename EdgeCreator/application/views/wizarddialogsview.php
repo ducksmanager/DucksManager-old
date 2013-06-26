@@ -165,7 +165,7 @@
 						<div class="accordion">
 							<h3><a href="#">Envoyer une photo</a></h3>
 							<div class="envoyer_photo">
-								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
+								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=0'?>"></iframe>
 							</div>
 							<h3><a href="#">S&eacute;lectionner une photo existante</a></h3>
 							<div class="selectionner_photo">
@@ -183,7 +183,7 @@
 							Rogner la photo s&eacute;lectionn&eacute;e
 						</button>
 						<br />
-						S&eacute;lectionnez une photo de tranche pour poursuivre.						
+						S&eacute;lectionnez une photo pour poursuivre.						
 						<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 						<div class="buttonset cache">
 							<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
@@ -545,7 +545,7 @@
 		S&eacute;lectionnez une photo de tranche stock&eacute;e sur votre ordinateur 
 		pour la placer &agrave; c&ocirc;t&eacute; de votre mod&egrave;le de tranche et ainsi pouvoir les comparer facilement.
 	</p>
-	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche'?>"></iframe>
+	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
 </div>
 
 <div id="wizard-gallery" class="wizard" title="Choix d'une image">
@@ -621,14 +621,28 @@
 
 <div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un mod&egrave;le EdgeCreator">
 	<p>
-	Le mod&egrave;le EdgeCreator en cours de conception va verrouill&eacute; en attendant sa validation. Confirmer ?
+	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre verrouill&eacute; en attendant sa validation. Confirmer ?
+	</p>
+</div>
+
+<div id="wizard-confirmation-validation-modele-ok" class="wizard" title="Mod&egrave;le envoy&eacute;">
+	<p>
+	Le mod&egrave;le d'image a &eacute;t&eacute; envoy&eacute; pour validation.
 	</p>
 </div>
 
 <div id="wizard-pas-d-image" class="wizard" title="Aucune image de tranche sp&eacute;cifi&eacute;e">
 	<p>
-	Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo de la tranche.<br />
+	Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo g&eacute;n&eacute;rale de la tranche.<br />
 	Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
 	car cela permet de faciliter sa conception.
+	</p>
+</div>
+
+<div id="wizard-session-expiree" class="wizard" title="Session expir&eacute;e">
+	<p>
+	Votre session a expir&eacute;. 
+	<br />
+	<a href="javascript:void(0)" onclick="location.reload()">Recharger cette page</a>.
 	</p>
 </div>

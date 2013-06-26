@@ -8,6 +8,7 @@ class Modele_tranche extends CI_Model {
 	static $pays;
 	static $magazine;
 	static $username;
+	static $random_id;
 	static $numero_debut;
 	static $numero_fin;
 	static $numeros_dispos;
@@ -975,6 +976,10 @@ class Modele_tranche extends CI_Model {
 		self::$username=$username;
 	}
 
+	function setRandomId($random_id) {
+		self::$random_id=$random_id;
+	}
+
 	function setNumeroDebut($numero_debut) {
 		self::$numero_debut=$numero_debut;
 	}
@@ -1138,6 +1143,20 @@ class Modele_tranche extends CI_Model {
 		return $liste;
 	}
 	
+	static function rendu_image() {
+		if (Viewer::$is_debug===false)
+			header('Content-type: image/png');
+		imagepng(Viewer::$image);
+	
+		@rmdir('../edges/'.Viewer::$pays.'/tmp/');
+		@mkdir('../edges/'.Viewer::$pays.'/tmp/');
+		$nom_image='../edges/'.Viewer::$pays.'/tmp/'.Viewer::$random_id.'.png';
+		echo $nom_image;
+		imagepng(Viewer::$image,$nom_image);
+		
+		exit();
+	} 
+	
 }
 Modele_tranche::$fields=array('Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin');
 Fonction::$valeurs_defaut=array('Remplir'=>array('Pos_x'=>0,'Pos_y'=>0));
@@ -1248,10 +1267,7 @@ class Fonction_executable extends Fonction {
 						 ($i+1)*Viewer::$largeur/3,Viewer::$hauteur,
 						 $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
 		}
-		if (Viewer::$is_debug===false)
-			header('Content-type: image/png');
-		imagepng(Viewer::$image);
-		exit();
+		Modele_tranche::rendu_image();
 	}
 	
 	static function getCheminPhotos($pays=null) {
@@ -1381,7 +1397,7 @@ class Remplir extends Fonction_executable {
 class Image extends Fonction_executable {
 	static $libelle='Ins&eacute;rer une image';
 	static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
-	static $valeurs_nouveau=array('Source'=>'Tete PM.png','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
+	static $valeurs_nouveau=array('Source'=>'','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
 	static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
 	
 	static $descriptions=array('Source'=>'Nom de l\'image', 
@@ -1425,6 +1441,9 @@ class Image extends Fonction_executable {
 	}
 	
 	function verifier_erreurs() {
+		if (empty($this->options->Source)) {
+			self::erreur('Le fichier n\'a pas été défini');
+		}
 		$chemin_reel=Image::get_chemin_reel($this->options->Source);
 		if (!is_file($chemin_reel)) {
 			self::erreur('Le fichier '.$this->options->Source.' n\'existe pas');

@@ -1818,6 +1818,10 @@ function remplacer_caracteres_whatthefont() {
                     .append($('<b>').html(nom_police));
 }
 
+function jqueryui_alert_from_d(element, close_callback) {
+	jqueryui_alert(element.children(), element.attr("title"), close_callback);
+}
+
 function jqueryui_alert(texte, titre, close_callback) {
 	titre=titre || 'DucksManager EdgeCreator';
 	close_callback = close_callback || function(){};

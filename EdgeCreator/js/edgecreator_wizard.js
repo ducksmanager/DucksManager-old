@@ -19,6 +19,28 @@ $(window).scroll(function(a,b) {
 	}
 });
 
+var INTERVAL_CHECK_LOGGED_IN=5;
+(function check_logged_in() {
+	$.ajax({
+		url: urls['check_logged_in'],
+		type: 'post',
+		success:function(data) {
+			if (data === '1') {
+				setTimeout(check_logged_in, 1000*60*INTERVAL_CHECK_LOGGED_IN);
+			}
+			else {
+				if ($('#wizard-conception').is(":visible")) {
+					jqueryui_alert_from_d($('#wizard-session-expiree'),function() { location.reload(); });
+				}
+			}
+		}
+	});
+	$.get('check_logged_in', function(data) {
+	    $('.result').html(data);
+	  });
+})();
+
+
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
@@ -35,7 +57,7 @@ zoom=1.5;
 var url_viewer='viewer_wizard';
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
-var LARGEUR_INTER_ETAPES=25;
+var LARGEUR_INTER_ETAPES=40;
 var SEPARATION_CONCEPTION_ETAPES=40;
 var MARGE_DROITE_TRANCHE_FINALE=10;
 
@@ -610,22 +632,25 @@ function wizard_init(wizard_id) {
 					}
 					
 					num_photo_principale=get_option_wizard('wizard-photos','numeroPhotoPrincipale') || '_';
-					// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
-					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
-					    type: 'post',
-					    async: false
-					});
-					// Renseignement du numéro de photo principale en base
-					maj_photo_principale();
-					// Mise à jour de la fonction Dimensions avec les valeurs entrées
-					var parametrage_dimensions =  'Dimension_x='+get_option_wizard('wizard-dimensions','Dimension_x')
-												+'&Dimension_y='+get_option_wizard('wizard-dimensions','Dimension_y');
-					$.ajax({
-						url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
-					    type: 'post',
-					    async: false
-					});
+					
+					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
+						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
+						$.ajax({
+							url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
+						    type: 'post',
+						    async: false
+						});
+						// Renseignement du numéro de photo principale en base
+						maj_photo_principale();
+						// Mise à jour de la fonction Dimensions avec les valeurs entrées
+						var parametrage_dimensions =  'Dimension_x='+get_option_wizard('wizard-dimensions','Dimension_x')
+													+'&Dimension_y='+get_option_wizard('wizard-dimensions','Dimension_y');
+						$.ajax({
+							url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
+						    type: 'post',
+						    async: false
+						});
+					}
 				}
 			}
 			$('#nom_complet_tranche_en_cours')
@@ -826,47 +851,6 @@ function wizard_init(wizard_id) {
 					else
 						crop_inconsistent_element.removeClass('cache');
 				});
-		break;
-		case 'wizard-confirmation-desactivation-modele':
-			$('#wizard-confirmation-desactivation-modele').dialog({
-				resizable: false,
-				height:200,
-				modal: true,
-				buttons: {
-					"Supprimer": function() {
-						$.ajax({
-			                url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
-			                type: 'post',
-			                success:function(data) {
-			                	location.reload();
-			                }
-						});
-					}
-				}
-			});
-		break;
-		case 'wizard-confirmation-validation-modele':
-			$('#wizard-confirmation-validation-modele').dialog({
-				resizable: false,
-				height:200,
-				modal: true,
-				buttons: {
-					"Valider": function() {
-						var nom_image=$('.image_preview').attr('src').match(/[.0-9]+$/g)[0];
-						$.ajax({
-			                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image].join('/'),
-			                type: 'post',
-			                success:function(data) {
-			                	jqueryui_alert("Le mod&egrave;le d'image a &eacute;t&eacute; envoy&eacute; pour validation.", 
-			                				   "Mod&egrave;le envoy&eacute;",
-			                				   function() {
-			                					location.reload();
-			                				   });
-			                }
-						});
-					}
-				}
-			});
 		break;
 	}
 }
@@ -1092,16 +1076,26 @@ function placer_dialogues_preview() {
 
 	$('.ajout_etape:not(.template)').remove();
 	var dialogues=$('.dialog-preview-etape:not(.finale)').d();
+	if (dialogues.length == 0) { // Aucune étape n'existe. On créé avec le dialogue de conception pour référence
+		dialogues=$('#wizard-conception').d();
+	}
 	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
 	$.each(dialogues,function(i,dialogue) {
 		var elDialogue = $(dialogue);
-		var etape = parseInt(elDialogue.data('etape'));
-		var positions = i==dialogues.length-1 ? ['avant','apres']:['apres'];
+		var estDialogueConception = elDialogue.data('etape') === undefined;
+		if (estDialogueConception) { // Dialogue de conception
+			var etape = -1;
+			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
+		}
+		else {
+			var etape = parseInt(elDialogue.data('etape'));
+			var positions = i==dialogues.length-1 ? ['avant','apres']:['apres'];
+		}
 		$.each(positions,function(j,pos) {
 			var pos_gauche=elDialogue.offset().left
-				+ (pos==='avant'
+				+ (pos==='avant' || estDialogueConception
 					?(-$('.ajout_etape.template').width()-2)
 					:(+$('.ajout_etape.template').width()+elDialogue.width())
 				);
@@ -1741,6 +1735,9 @@ function positionner_image(preview) {
 }
 
 function definir_et_positionner_image(source) {
+	if (source === '') {
+		return;
+	}
 	var form_userfriendly=modification_etape.find('.options_etape');
 	var apercu_image=form_userfriendly.find('.apercu_image');
 	apercu_image
@@ -2371,10 +2368,29 @@ function init_action_bar() {
 					launch_wizard('wizard-photos', {modal:true, first: true});
 				break;
 				case 'corbeille':
-					launch_wizard('wizard-confirmation-desactivation-modele', {modal:true, first: true});
+					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
+						$.ajax({
+			                url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
+			                type: 'post',
+			                success:function(data) {
+			                	location.reload();
+			                }
+						});
+					});
 				break;
 				case 'valider':
-					launch_wizard('wizard-confirmation-validation-modele', {modal:true, first: true});
+					jqueryui_alert_from_d($('#wizard-confirmation-validation-modele'), function() {
+						var nom_image=$('.image_preview').attr('src').match(/[.0-9]+$/g)[0];
+						$.ajax({
+			                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image].join('/'),
+			                type: 'post',
+			                success:function(data) {
+			        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
+			        				location.reload();
+			        			});
+			                }
+						});
+					});
 				break;
 			}
 			
@@ -2422,12 +2438,12 @@ function maj_photo_principale() {
 }
 
 function lister_images_gallerie(type_images) {
-	var form;
+	var container;
 	if (type_images === 'Source') {
-		form=modification_etape.find('.options_etape');
+		container=$('#wizard-gallery');
 	}
 	else {
-		form=$('#wizard-photos').find('form');
+		container=$('#wizard-photos').find('form');
 	}
 	
 	$.ajax({
@@ -2439,10 +2455,10 @@ function lister_images_gallerie(type_images) {
         		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
         					   'Erreur interne');
         	}
-        	var ul=form.find('ul.gallery');
+        	var ul=container.find('ul.gallery');
         	ul.find('li:not(.template)').remove();
         	if (data.length == 0) {
-        		form.find('.pas_d_image').removeClass('cache');
+        		container.find('.pas_d_image').removeClass('cache');
         	}
         	else {
         		var sous_repertoire = null;
@@ -2454,8 +2470,8 @@ function lister_images_gallerie(type_images) {
         				sous_repertoire = 'photos';
         			break;
         		}
-        		form.find('.pas_d_image').addClass('cache');
-        		form.find('ul.gallery li:not(.template) img').remove();
+        		container.find('.pas_d_image').addClass('cache');
+        		container.find('ul.gallery li:not(.template) img').remove();
             	for (var i in data) {
             		var li=ul.find('li.template').clone(true).removeClass('template');
             		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
@@ -2464,27 +2480,27 @@ function lister_images_gallerie(type_images) {
             		li.find('input').val(data[i]);
             		ul.append(li);
             	}
-    			form.find('ul.gallery li img').removeClass('selected')
+    			container.find('ul.gallery li img').removeClass('selected')
     										  .unbind('click')
             								  .click(function() {
             		if ($(this).hasClass('selected')) {
-            			form.find('ul.gallery li img').removeClass('selected');
-            			form.find('button[value="to-wizard-resize"]').addClass('cache');
+            			container.find('ul.gallery li img').removeClass('selected');
+            			container.find('button[value="to-wizard-resize"]').addClass('cache');
             		}
             		else {
-            			form.find('ul.gallery li img').removeClass('selected');
+            			container.find('ul.gallery li img').removeClass('selected');
                 		$(this).addClass('selected');
-                		form.find('button[value="to-wizard-resize"]').removeClass('cache');
+                		container.find('button[value="to-wizard-resize"]').removeClass('cache');
                 		
                 		$('#wizard-resize img').attr({'src':$(this).attr('src')});
                 	}
             	});
             	if (num_photo_principale !== null) {
-            		form.find('ul.gallery li img[src$="photo_'+num_photo_principale+'.jpg"]').click();
+            		container.find('ul.gallery li img[src$="photo_'+num_photo_principale+'.jpg"]').click();
             	}
         	}
         	ul.removeClass('cache');
-        	form.find('.chargement_images').addClass('cache');
+        	container.find('.chargement_images').addClass('cache');
         }
 	});
 }

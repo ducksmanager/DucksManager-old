@@ -63,8 +63,10 @@ class Viewer_wizard extends Viewer {
 		}
 		self::$pays=$pays;
 		self::$magazine=$magazine;
+		self::$random_id=$random_ou_username;
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
+		$this->Modele_tranche->setRandomId($random_ou_username);
 		if (strpos($save,'integrate') !== false) {
 			$username_modele=substr($save,strlen('integrate_'));
 			$this->Modele_tranche->setUsername($username_modele);
@@ -135,9 +137,6 @@ class Viewer_wizard extends Viewer {
 			}
 		}*/
 		new Dessiner_contour($dimensions);
-		
-		if (self::$is_debug===false)
-			header('Content-type: image/png');
 		
 		
 		if (strpos($save,'integrate') !== false && $privilege == 'Admin' && self::$is_debug!==false) {
@@ -213,14 +212,8 @@ class Viewer_wizard extends Viewer {
 				break;
 			}
 		}
-		if (self::$is_debug===false)
-			imagepng(Viewer::$image);
-
-
-		@rmdir('../edges/'.$pays.'/tmp/');
-		@mkdir('../edges/'.$pays.'/tmp/');
-		$nom_image='../edges/'.$pays.'/tmp/'.$random_ou_username.'.png';
-		imagepng(Viewer::$image,$nom_image);
+		
+		$this->Modele_tranche->rendu_image();
 	}
 }
 
