@@ -346,17 +346,6 @@ td.reload {
 	width: 150px;
 }
 
-#dialog_save_png .username {
-	display: block;
-}
-
-#dialog_save_png span {
-	float: left;
-	height: 250px;
-	overflow-y: auto;
-	width: 40%;
-}
-
 .fixed_header {
 	position:fixed;
 }

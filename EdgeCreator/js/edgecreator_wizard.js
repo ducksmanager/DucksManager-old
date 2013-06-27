@@ -152,6 +152,25 @@ function launch_wizard(id, p) {
 				}
 			};
 		break;
+		case 'wizard-confirmation-validation-modele-contributeurs':
+			buttons["OK"]=function() {
+				if (wizard_check(id)) {
+				   	var form=$('#'+id+' form').serializeObject();
+				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',');
+				   	var designers=	 typeof(form.designers)    === "string" ? form.designers 	: form.designers.join(',');
+					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
+					$.ajax({
+		                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
+		                type: 'post',
+		                success:function(data) {
+		        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
+		        				location.reload();
+		        			});
+		                }
+					});
+				}
+			};
+		break;
 		default:
 			if (!deadend) {
 				buttons["Suivant"]=function() {
@@ -326,6 +345,12 @@ function wizard_check(wizard_id) {
 				case 'wizard-resize':
 					if ($('#'+wizard_id).find('.error:not(.cache)').length > 0) {
 						erreur='Veuillez corriger les erreurs avant de continuer.';
+					}
+				break;
+				case 'wizard-confirmation-validation-modele-contributeurs':
+					if (! $('#'+wizard_id+' form').serializeObject().photographes
+					 || ! $('#'+wizard_id+' form').serializeObject().designers) {
+						erreur='Au moins un photographe et un designer doivent &ecirc;tre sp&eacute;cifi&eacute;s.';						
 					}
 				break;
 			}
@@ -842,6 +867,31 @@ function wizard_init(wizard_id) {
 					else
 						crop_inconsistent_element.removeClass('cache');
 				});
+		break;
+		
+		case 'wizard-confirmation-validation-modele-contributeurs':
+			$.ajax({
+		        url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
+		        dataType:'json',
+		        type: 'post',
+		        success:function(data) {
+		           var utilisateur_courant=$('#utilisateur').html();
+		     	   
+		     	   $.each($('#'+wizard_id+' span'),function(i,span) {
+		     		   var div=$('<div>');
+		     		   var type_contribution=$(span).attr('id');
+		     		   for (var username in data) {
+		     			   var option = $('<input>',{'name':$(span).attr('id'),'type':'checkbox'}).val(username);
+		     			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
+							      || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
+							    		  								   || utilisateur_courant===username));
+		     			   option.prop({'checked': coche, 'readOnly': coche});
+		     			   $(div).append($('<div>').css({'font-weight':coche?'bold':'normal'}).append(option).append(username));
+		     		   }
+		     		   $(span).append(div);
+		     	   });
+		        }
+			});
 		break;
 	}
 }
@@ -2377,16 +2427,7 @@ function init_action_bar() {
 				break;
 				case 'valider':
 					jqueryui_alert_from_d($('#wizard-confirmation-validation-modele'), function() {
-						var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
-						$.ajax({
-			                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image].join('/'),
-			                type: 'post',
-			                success:function(data) {
-			        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
-			        				location.reload();
-			        			});
-			                }
-						});
+						launch_wizard('wizard-confirmation-validation-modele-contributeurs', {modal:true, first: true, closeable: true});
 					});
 				break;
 			}

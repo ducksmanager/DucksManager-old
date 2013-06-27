@@ -1127,7 +1127,7 @@ class Modele_tranche extends CI_Model {
 					$est_photographe = in_array($username,$photographes);
 					$est_designer = in_array($username,$createurs);
 					
-					$liste[$username]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
+					$liste[utf8_decode($username)]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
 				}
 			 break;
 			case 'Fonctions':

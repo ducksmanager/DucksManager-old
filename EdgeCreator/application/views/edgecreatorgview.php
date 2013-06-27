@@ -39,7 +39,7 @@
 			?>Non connect&eacute;(e)<?php
 		}
 		else {
-			?>Connect&eacute;(e) en tant que <?=$user?><?php
+			?>Connect&eacute;(e) en tant que <span id="utilisateur"><?=$user?></span><?php
 		}
 		?><br /><?php
 		if ($user!=='demo') {

@@ -1192,55 +1192,7 @@ $(window).load(function() {
     if (privilege == 'Admin' || privilege == 'Edition') {
         $('#save_png').click(function() {
            if (typeof (numero_chargement) != 'undefined') {
-        	   $.ajax({
-                   url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
-                   dataType:'json',
-                   type: 'post',
-                   success:function(data) {
-                	   var boite_save_png=$('<div>',{'id':'dialog_save_png','title':'Enregistrement de la tranche'});
-                	   boite_save_png.append($('<p>').html('Veuillez s&eacute;lectionner les photographes (utilisateurs qui ont photographi&eacute; la tranche) '
-                			   							  +'et les designers (utilisateurs qui ont recr&eacute;&eacute; la tranche via EdgeCreator) :'));
-
-                	   var span_photographes=$('<span>',{'id':'photographes'})
-                	   		.append('Photographes');
-                	   
-                	   var span_designers=$('<span>',{'id':'designers'})
-                	   		.css({'marginLeft':'30px'})
-                	   		.append('Designers');
-                	   
-                	   
-                	   boite_save_png.append($('<form>',{'id':'form_save_png'}).append(span_photographes).append(span_designers));
-                	   
-                	   $.each(boite_save_png.find('span'),function(i,span) {
-                		   var div=$('<div>');
-                		   for (var username in data) {
-                			   var option = $('<input>',{'name':$(span).attr('id'),'type':'checkbox'}).val(username);
-                			   var coche=(data[username].indexOf('p') != -1 && $(span).attr('id') == 'photographes')
-		   					    	  || (data[username].indexOf('d') != -1 && $(span).attr('id') == 'designers');
-                			   option.prop({'checked': coche, 'disabled': coche});
-                			   $(div).append($('<div>').css({'font-weight':coche?'bold':'normal'}).append(option).append(username));
-                		   }
-                		   $(span).append(div);
-                	   });
-                	   
-                	   $('#body').append(boite_save_png);
-                	   boite_save_png.dialog({
-                		   modal:true,
-                		   width: 450,
-                		   buttons: {
-                			   OK:function() {
-                				   var a=$('#form_save_png').serialize();
-                				   var b;
-                			   }
-                		   }
-                	   });
-                   }
-        	   });
-        	   	/*var num_etapes_final=$('.num_etape_preview:not(.final)').getData('etape');
-                chargements=new Array();
-                chargements.push(num_etapes_final);
-                chargement_courant=0;
-                charger_preview_etape(chargements[chargement_courant],false);*/
+        	   afficher_dialogue_contributeurs();
            }
         });
         $('#save_pngs').click(function() {
@@ -1268,6 +1220,11 @@ $(window).load(function() {
 		fixer_regles(false);
 	});
 });
+
+function afficher_dialogue_contributeurs(callback) {
+	callback = callback || function() {};
+	
+}
 
 function charger_liste_magazines(pays_sel) {
     $('#chargement').html('Chargement des magazines...');

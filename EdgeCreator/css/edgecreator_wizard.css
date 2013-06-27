@@ -17,8 +17,12 @@ iframe {
 #status_user {
 	position: fixed;
 	top: 0px;
-	right: 0px;
+	right: 5px;
 	float: right;
+}
+
+#status_user #utilisateur {
+	font-size: 12px;
 }
 
 button#connexion, button#deconnexion {
@@ -229,6 +233,18 @@ button#connexion, button#deconnexion {
 
 .dialog-preview-etape:not(.finale) .image_preview {
 	float: left;
+}
+
+
+#wizard-confirmation-validation-modele-contributeurs .username {
+	display: block;
+}
+
+#wizard-confirmation-validation-modele-contributeurs span {
+	float: left;
+	height: 250px;
+	overflow-y: auto;
+	width: 40%;
 }
 
 .preview_vide {
