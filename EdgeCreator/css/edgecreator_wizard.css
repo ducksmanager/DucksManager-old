@@ -106,7 +106,8 @@ button#connexion, button#deconnexion {
 	cursor: move;
 }
 
-.wizard.preview_etape .arc_position {
+.wizard.preview_etape .arc_position,
+.wizard.preview_etape .polygone_position {
 	position: absolute;
 }
 
@@ -187,7 +188,7 @@ button#connexion, button#deconnexion {
 }
 
 .wizard.preview_etape .point_polygone {
-	position: fixed;
+	position: absolute;
 	width: 10px;
 	height: 10px;
 	border: 1px solid black;
