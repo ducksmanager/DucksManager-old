@@ -24,7 +24,7 @@ if (isset($_POST['query'])) {
 	$lignes=explode(";",$_POST['query']);
 	foreach($lignes as $ligne) {
 		if (!empty($ligne)) {
-			$regex="#INSERT INTO `tranches_pretes` VALUES \\('([^']+)', ?'([^']+)', ?((NULL)|(?:'([^']*)')), ?(?:(?:NULL)|(?:'[^']*'))\\)#";
+			$regex="#INSERT INTO `tranches_pretes` VALUES \\('([^']+)', ?'([^']+)', ?((NULL)|(?:'([^']*)')), ?(?:(?:NULL)|(?:'[^']*')), ?NULL\\)#";
 			preg_match($regex,$ligne,$matches);
 			list($pays,$magazine)=explode('/',$matches[1]);
 			$numero=$matches[2];
