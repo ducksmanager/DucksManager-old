@@ -156,8 +156,8 @@ function launch_wizard(id, p) {
 			buttons["OK"]=function() {
 				if (wizard_check(id)) {
 				   	var form=$('#'+id+' form').serializeObject();
-				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',');
-				   	var designers=	 typeof(form.designers)    === "string" ? form.designers 	: form.designers.join(',');
+				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
+				   	var designers=	 typeof(form.designers)    === "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
 					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
 					$.ajax({
 		                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
@@ -166,6 +166,11 @@ function launch_wizard(id, p) {
 		        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
 		        				location.reload();
 		        			});
+		                },
+		                error:function(data) {
+		                	jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
+		                				  +"Contactez le webmaster", 
+		                				  "Erreur");
 		                }
 					});
 				}
