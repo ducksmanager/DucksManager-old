@@ -20,11 +20,11 @@ if (isset($_POST['query'])) {
 	$code_ajouts=array();
 	for ($i='A';$i<='Z' && strlen($i)==1;$i++)
 		$abc[]=$i;
-	
-	$lignes=explode("\r\n",$_POST['query']);
+	$_POST['query']=str_replace("\r\n","",$_POST['query']);
+	$lignes=explode(";",$_POST['query']);
 	foreach($lignes as $ligne) {
 		if (!empty($ligne)) {
-			$regex="#INSERT INTO `tranches_pretes` VALUES \\('([^']+)', '([^']+)', ((NULL)|(?:'([^']*)')), (?:(?:NULL)|(?:'[^']*')), [^\\)]*\\);#";
+			$regex="#INSERT INTO `tranches_pretes` VALUES \\('([^']+)', ?'([^']+)', ?((NULL)|(?:'([^']*)')), ?(?:(?:NULL)|(?:'[^']*'))\\)#";
 			preg_match($regex,$ligne,$matches);
 			list($pays,$magazine)=explode('/',$matches[1]);
 			$numero=$matches[2];
@@ -36,7 +36,7 @@ if (isset($_POST['query'])) {
 				$numeros[$pays.'/'.$magazine]=array();
 			$numeros[$pays.'/'.$magazine]['numeros'][]=$numero;
 			if (!is_null($photographes)) {
-				$numeros[$pays.'/'.$magazine]['contributeurs'][]=substr($photographes,1);
+				$numeros[$pays.'/'.$magazine]['contributeurs'][]=$photographes;
 			}
 			DM_Core::$d->requete($ligne);
 		}
