@@ -10,7 +10,7 @@ class Valider_Modele extends CI_Controller {
 
 		$etapes=$this->Modele_tranche->get_ordres($pays,$magazine,$numero,true);
 		
-		$message=" INSERT INTO `tranches_pretes` VALUES ('$pays/$magazine', '$numero', '$photographes', '$createurs');";
+		$message=" INSERT INTO `tranches_pretes` VALUES ('$pays/$magazine', '$numero', '$photographes', '$createurs', NULL);";
 		
 		$message.="\n\n";
 		
