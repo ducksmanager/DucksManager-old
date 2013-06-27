@@ -2,7 +2,7 @@
 class MyFonts extends CI_Model {
 	var $p;
 	var $chemin_image;
-	static $regex_source_image='#(http:.*\.gif)#isU';
+	static $regex_source_image='#src=[^"]+"(.*\.gif)#isU';
 	var $font;
 	var $color;
 	var $color_bg;
@@ -76,6 +76,9 @@ class MyFonts extends CI_Model {
 		else {
 			$this->chemin_image=$chemin[1];
 			$this->chemin_image=str_replace('\\','',$this->chemin_image);
+			if (strpos($this->chemin_image,'http') !== 0) {
+				$this->chemin_image='http:'.$this->chemin_image;
+			}
 			
 			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
 					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','

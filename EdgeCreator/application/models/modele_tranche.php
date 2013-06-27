@@ -1151,7 +1151,6 @@ class Modele_tranche extends CI_Model {
 		@rmdir('../edges/'.Viewer::$pays.'/tmp/');
 		@mkdir('../edges/'.Viewer::$pays.'/tmp/');
 		$nom_image='../edges/'.Viewer::$pays.'/tmp/'.Viewer::$random_id.'.png';
-		echo $nom_image;
 		imagepng(Viewer::$image,$nom_image);
 		
 		exit();
@@ -1894,7 +1893,7 @@ class Rogner {
 
 
 function z($valeur) {
-	return Viewer::$zoom*$valeur;
+	return (isset(Viewer::$zoom) ? Viewer::$zoom : 1.5)*$valeur;
 }
 
 function est_dans_intervalle($numero,$intervalle) {
