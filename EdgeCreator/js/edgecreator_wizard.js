@@ -2377,7 +2377,7 @@ function init_action_bar() {
 				break;
 				case 'valider':
 					jqueryui_alert_from_d($('#wizard-confirmation-validation-modele'), function() {
-						var nom_image=$('.image_preview').attr('src').match(/[.0-9]+$/g)[0];
+						var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
 						$.ajax({
 			                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image].join('/'),
 			                type: 'post',
