@@ -162,6 +162,7 @@
 						cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
 						Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
 						<br />
+						Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
 						<div class="accordion">
 							<h3><a href="#">Envoyer une photo</a></h3>
 							<div class="envoyer_photo">

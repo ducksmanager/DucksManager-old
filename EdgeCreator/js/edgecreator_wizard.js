@@ -45,7 +45,7 @@ var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
-var num_photo_principale=null;
+var nom_photo_principale=null;
 
 var etape_ajout;
 var etape_ajout_pos;
@@ -71,7 +71,7 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
 	            'caracteres_speciaux':/\Â°/i};
 
-var REGEX_FICHIER_PHOTO=/\.([^.]+)\.photo_([^.]+?)\.[a-z]+$/;
+var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
 var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
@@ -138,11 +138,12 @@ function launch_wizard(id, p) {
 		break;
 		case 'wizard-photos':
 			buttons["OK"]=function() {
+				nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
+										.match(REGEX_FICHIER_PHOTO)[1];
+				
 				var action_suivante=wizard_check($(this).attr('id'));
 				if (action_suivante != null) {
 					if ($('#wizard-conception').is(':visible')) {
-						num_photo_principale=$(this).find('.gallery li img.selected').attr('src')
-							.match(/\.photo_([0-9_]+)\.jpg$/)[1];
 						maj_photo_principale();
 						$( this ).dialog().dialog( "close" );
 					}
@@ -250,8 +251,8 @@ function wizard_do(wizard_courant, action) {
 								return;
 							}
 
-							var numero_image = decoupage_nom[1];
-							var nom = decoupage_nom[2];
+							var numero_image = decoupage_nom[2];
+							var nom = decoupage_nom[3];
 							var x1 = parseInt(100 * ($('.jrac_crop').position().left / image.width())),
 								x2 = parseInt(100 * ($('.jrac_crop').position().left + $('.jrac_crop').width()) / image.width()),
 								y1 = parseInt(100 * ($('.jrac_crop').position().top  / image.height())),
@@ -616,32 +617,17 @@ function wizard_init(wizard_id) {
 		break;
 		
 		case 'wizard-conception':
-			var numero_complet_userfriendly=null;
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
 				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g);
-				$.ajax({
-					url: urls['tranchesencours']+['load','null',tranche_en_cours[1],tranche_en_cours[2],tranche_en_cours[3]].join('/'),
-				    type: 'post',
-					dataType:'json',
-				    async: false,
-				    success: function(data) {
-				    	var tranche=traiter_tranches_en_cours(data)[0];
-						numero_complet_userfriendly=tranche.str_userfriendly;
-						pays=tranche.Pays;
-						magazine=tranche.Magazine;
-						numero=tranche.Numero;
-				    }
-				});
+				pays=tranche_en_cours[1];
+				magazine=tranche_en_cours[2];
+				numero=tranche_en_cours[3];
 			}
-			else {
-				if (get_option_wizard('wizard-creer-collection','choix_tranche') == undefined
-				 && get_option_wizard('wizard-creer-hors-collection','wizard_pays') == undefined) {
-					numero_complet_userfriendly='';
-				}
-				else {
+			else { // Nouvelle tranche => paramétrage des dimensions, etc.
+				if (get_option_wizard('wizard-creer-collection','choix_tranche') != undefined
+				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') != undefined) {
 					if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
 						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').match(REGEX_NUMERO);
-						numero_complet_userfriendly='';
 						pays=tranche[1];
 						magazine=tranche[2];
 						numero=tranche[3];
@@ -652,7 +638,7 @@ function wizard_init(wizard_id) {
 						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
 					}
 					
-					num_photo_principale=get_option_wizard('wizard-photos','numeroPhotoPrincipale') || '_';
+					maj_photo_principale();
 					
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
 						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
@@ -661,8 +647,6 @@ function wizard_init(wizard_id) {
 						    type: 'post',
 						    async: false
 						});
-						// Renseignement du numéro de photo principale en base
-						maj_photo_principale();
 						// Mise à jour de la fonction Dimensions avec les valeurs entrées
 						var parametrage_dimensions =  'Dimension_x='+get_option_wizard('wizard-dimensions','Dimension_x')
 													+'&Dimension_y='+get_option_wizard('wizard-dimensions','Dimension_y');
@@ -674,9 +658,26 @@ function wizard_init(wizard_id) {
 					}
 				}
 			}
-			$('#nom_complet_tranche_en_cours')
-				.html($('<img>').attr({src:'../../images/flags/'+pays+'.png'}))
-				.append(' '+numero_complet_userfriendly);
+
+			$.ajax({
+				url: urls['tranchesencours']+['load','null',pays,magazine,numero].join('/'),
+			    type: 'post',
+				dataType:'json',
+			    async: false,
+			    success: function(data) {
+			    	var tranche=traiter_tranches_en_cours(data)[0];
+					pays=tranche.Pays;
+					magazine=tranche.Magazine;
+					numero=tranche.Numero;
+
+					$('#nom_complet_tranche_en_cours')
+						.html($('<img>').attr({src:'../../images/flags/'+pays+'.png'}))
+						.append(' '+tranche.str_userfriendly);
+			    }
+			});
+
+			afficher_photo_tranche();
+			
 			$('#action_bar').removeClass('cache');
 			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 			$('#'+wizard_id).dialog().dialog('option','position',['right','top']);
@@ -2442,10 +2443,10 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche() {
-	if (num_photo_principale !== null) {
+	if (nom_photo_principale !== null) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
-		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo_'+num_photo_principale+'.jpg'});
+		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+nom_photo_principale});
 		image.load(function() {
 			$(this).css({'display':'inline'});
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
@@ -2460,9 +2461,9 @@ function afficher_photo_tranche() {
 		$.ajax({
 			url: urls['photo_principale']+['index',pays,magazine,numero].join('/'),
 			type: 'post',
-			success:function(num_photo) {
-				if (num_photo !== 'null') {
-					num_photo_principale = num_photo;
+			success:function(nom_photo) {
+				if (nom_photo !== 'null') {
+					nom_photo_principale = nom_photo;
 					afficher_photo_tranche();				
 				}
 			}
@@ -2470,12 +2471,17 @@ function afficher_photo_tranche() {
 	}
 }
 
-function maj_photo_principale() { 
+function maj_photo_principale() {
+	if (nom_photo_principale === null) {
+		return;
+	}
 	$.ajax({
-		url: urls['update_photo']+['index',pays,magazine,numero,num_photo_principale].join('/'),
+		url: urls['update_photo']+['index',pays,magazine,numero,nom_photo_principale].join('/'),
 	    type: 'post',
-	    success:function() {
-	    	afficher_photo_tranche();
+	    success:function(data) {
+			if ($('#wizard-conception').is(':visible')) {
+				afficher_photo_tranche();
+			}
 	    }
 	});
 }
@@ -2538,8 +2544,8 @@ function lister_images_gallerie(type_images) {
                 		$('#wizard-resize img').attr({'src':$(this).attr('src')});
                 	}
             	});
-            	if (num_photo_principale !== null) {
-            		container.find('ul.gallery li img[src$="photo_'+num_photo_principale+'.jpg"]').click();
+            	if (nom_photo_principale !== null) {
+            		container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
             	}
         	}
         	ul.removeClass('cache');

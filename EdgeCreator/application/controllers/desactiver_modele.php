@@ -1,6 +1,6 @@
 <?php
 
-class Supprimer_Modele extends CI_Controller {
+class Desactiver_Modele extends CI_Controller {
 	
 	function index($pays,$magazine,$numero) {
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');

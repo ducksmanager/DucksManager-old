@@ -259,10 +259,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function get_photo_principale($pays,$magazine,$numero) {
-		$requete='SELECT NumeroPhotoPrincipale FROM tranches_en_cours_modeles '
+		$requete='SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		$resultat=$this->db->query($requete)->row(0);
-		return $resultat->NumeroPhotoPrincipale;
+		return $resultat->NomPhotoPrincipale;
 	}
 
 	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
@@ -293,11 +293,11 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 	}
 	
-	function update_photo_principale($pays,$magazine,$numero,$num_photo_principale) {
+	function update_photo_principale($pays,$magazine,$numero,$nom_photo_principale) {
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
 		
 		$requete_maj='UPDATE tranches_en_cours_modeles '
-					.'SET NumeroPhotoPrincipale=\''.$num_photo_principale.'\' '
+					.'SET NomPhotoPrincipale=\''.$nom_photo_principale.'\' '
 					.'WHERE ID='.$id_modele;
 		$this->db->query($requete_maj);
 		echo $requete_maj."\n";
