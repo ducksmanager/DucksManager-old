@@ -157,12 +157,18 @@
 			<div id="wizard-photos" class="wizard deadend" title="Assistant DucksManager - Photos de la tranche">
 				<p>
 					<form name="form_options">
-						Afin d'assurer la meilleure conception de tranche possible, au moins une photo de la tranche est requise.<br />
-						Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
-						cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
-						Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
+						<span class="photo_principale">
+							Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est requise.<br />
+							Cette photo sera mise &agrave; c&ocirc;t&eacute; de votre tranche en cours de conception.
+						</span> 
+						</span class="autres_photos">
+							Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
+							cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
+							Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
 						<br />
-						Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
+						<!-- <span class="photo_principale">
+							Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
+						</span> -->
 						<div class="accordion">
 							<h3><a href="#">Envoyer une photo</a></h3>
 							<div class="envoyer_photo">
@@ -335,7 +341,7 @@
 			<div class="deuxieme rectangle_degrade"></div>
 			<p>
 				&gt; D&eacute;finissez la couleur de fond de la tranche.<br />
-				<div class="picker cache"></div>
+				<div class="picker"></div>
 				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
 				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
 			</p>
@@ -348,9 +354,9 @@
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage.
 			</p>
 			<form id="options_etape">
-				<div class="picker cache"></div>
+				<div class="picker"></div>
 				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur" size="6" maxlength="6"/>
 			</form>
 		</div>
 		
@@ -365,7 +371,7 @@
 					<input type="radio" name="option-drag-resize" value="deplacement" id="Arc_deplacement" /><label for="Arc_deplacement">D&eacute;placement</label>
 					<input type="radio" name="option-drag-resize" value="redimensionnement"  id="Arc_redimensionnement"/><label for="Arc_redimensionnement">Redimensionnement</label><br /><br />
 				</div>
-				<div class="picker cache"></div>
+				<div class="picker"></div>
 				<label for="option-Couleur">Couleur : </label>
 				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
 				<br />
@@ -398,7 +404,7 @@
 						Cliquez sur le point &agrave; supprimer.
 					</div>
 				</div>
-				<div class="picker cache"></div><br />
+				<div class="picker"></div><br />
 				<label for="option-Couleur">Couleur du polygone : </label>
 				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
 					
@@ -412,7 +418,7 @@
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
 			</p>
 			<form id="options_etape">
-				<div class="picker cache"></div>
+				<div class="picker"></div>
 				<label for="option-Couleur">Couleur : </label>
 				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
 				<br />

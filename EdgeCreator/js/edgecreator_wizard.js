@@ -609,6 +609,7 @@ function wizard_init(wizard_id) {
 		break;
 		
 		case 'wizard-photos':
+			$('#'+wizard_id+' .autres_photos').addClass('cache');
 			$('#'+wizard_id).find('.accordion').accordion({
 				active: 1
 			});
@@ -1547,10 +1548,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var input=form_userfriendly.valeur(nom_option);
 			ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
 						 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
-			input.click(function() {
-				var this_picker=$(this).prevAll('.picker');
-				$('.picker').not(this_picker).addClass('cache');
-				this_picker.toggleClass('cache');
+			input.keyup(function() {
+				farbs[nom_option].setColor('#'+$(this).val());
+				callback_test_picked_color($(farbs[nom_option]), $(this), nom_fonction, nom_option);
 			});
 		}
 	}
@@ -2212,7 +2212,8 @@ function callback_change_picked_color(farb, input_couleur) {
 					  *parseInt(b,16) < 100*100*100;
 	input_couleur
 		.css({'background-color':'#'+couleur, 
-			  'color':couleur_foncee ? '#ffffff' : '#000000'});
+			  'color':couleur_foncee ? '#ffffff' : '#000000'})
+		.val(couleur);
 	
 }
 
