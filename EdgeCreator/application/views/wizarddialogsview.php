@@ -166,7 +166,7 @@
 						<div class="accordion">
 							<h3><a href="#">Envoyer une photo</a></h3>
 							<div class="envoyer_photo">
-								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=0'?>"></iframe>
+								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
 							</div>
 							<h3><a href="#">S&eacute;lectionner une photo existante</a></h3>
 							<div class="selectionner_photo">

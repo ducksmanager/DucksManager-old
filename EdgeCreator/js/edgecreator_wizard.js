@@ -137,12 +137,11 @@ function launch_wizard(id, p) {
 			};
 		break;
 		case 'wizard-photos':
-			buttons["OK"]=function() {
-				nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
-										.match(REGEX_FICHIER_PHOTO)[1];
-				
+			buttons["OK"]=function() {				
 				var action_suivante=wizard_check($(this).attr('id'));
 				if (action_suivante != null) {
+					nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
+						.match(REGEX_FICHIER_PHOTO)[1];
 					if ($('#wizard-conception').is(':visible')) {
 						maj_photo_principale();
 						$( this ).dialog().dialog( "close" );
@@ -638,8 +637,6 @@ function wizard_init(wizard_id) {
 						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
 					}
 					
-					maj_photo_principale();
-					
 					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
 						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
 						$.ajax({
@@ -656,6 +653,7 @@ function wizard_init(wizard_id) {
 						    async: false
 						});
 					}
+					maj_photo_principale();
 				}
 			}
 
