@@ -396,12 +396,13 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	
 	function get_tranches_non_pretes() {
 		$username = $this->session->userdata('user');
-		$requete="SELECT ID, Pays,Magazine,Numero "
-				."FROM numeros "
-				."WHERE ID_Utilisateur=(SELECT ID FROM users WHERE username='$username') "
-				."  AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN "
-				."   (SELECT CONCAT(publicationcode,' ',issuenumber) "
-				."  FROM tranches_pretes)";
+		$requete=" SELECT ID, Pays,Magazine,Numero"
+				." FROM numeros"
+				." WHERE ID_Utilisateur=(SELECT ID FROM users WHERE username='$username')"
+				."   AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN"
+				."    (SELECT CONCAT(publicationcode,' ',issuenumber)"
+				."   FROM tranches_pretes)"
+				." ORDER BY Pays, Magazine, Numero";
 
 		$resultats = Inducks::requete_select($requete, DatabasePriv::$nom_db_DM,'ducksmanager.net');
 		
