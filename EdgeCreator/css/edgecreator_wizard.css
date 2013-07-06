@@ -46,6 +46,11 @@ button#connexion, button#deconnexion {
 	white-space: nowrap;
 }
 
+#wizard-photos.photo_principale .autres_photos,
+#wizard-photos.autres_photos .photo_principale {
+	display: none;
+}
+
 #wizard-conception .texte_presentation_tranche_finale {
 	width: 80%;
 	float: right;
@@ -251,6 +256,7 @@ button#connexion, button#deconnexion {
 	outline: 1px solid black;
 	background-color: white;
 	float: left;
+	position: absolute;
 }
 
 .ajout_etape {

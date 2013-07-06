@@ -148,57 +148,11 @@
 						x 
 						<input type="text" id="Nouvelle_dimension_y" name="Dimension_y" maxlength="3" size="2"> mm
 						<div class="buttonset cache">
-							<input type="radio" checked="checked" name="choix" value="to-wizard-photos" id="to-wizard-photos" />
+							<input type="radio" checked="checked" name="choix" value="to-wizard-images" id="to-wizard-images" />
 						</div>
 					</form>
 				</p>
-			</div>
-			
-			<div id="wizard-photos" class="wizard deadend" title="Assistant DucksManager - Photos de la tranche">
-				<p>
-					<form name="form_options">
-						<span class="photo_principale">
-							Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est requise.<br />
-							Cette photo sera mise &agrave; c&ocirc;t&eacute; de votre tranche en cours de conception.
-						</span> 
-						</span class="autres_photos">
-							Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
-							cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
-							Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
-						<br />
-						<!-- <span class="photo_principale">
-							Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
-						</span> -->
-						<div class="accordion">
-							<h3><a href="#">Envoyer une photo</a></h3>
-							<div class="envoyer_photo">
-								<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
-							</div>
-							<h3><a href="#">S&eacute;lectionner une photo existante</a></h3>
-							<div class="selectionner_photo">
-								<p class="chargement_images" >Chargement des images</p>
-								<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
-								<ul class="gallery cache">
-									<li class="template">
-										<img />
-										<input type="radio" name="numeroPhotoPrincipale" class="cache" />
-									</li>
-								</ul>
-							</div>
-						</div>
-						<button class="cache" value="to-wizard-resize">
-							Rogner la photo s&eacute;lectionn&eacute;e
-						</button>
-						<br />
-						S&eacute;lectionnez une photo pour poursuivre.						
-						<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
-						<div class="buttonset cache">
-							<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
-						</div>
-					</form>
-				</p>
-			</div>
-	
+			</div>	
 	<div id="wizard-modifier" class="wizard" title="Assistant DucksManager - Choix de num&eacute;ro">
 		<p>
 			Choisissez le num&eacute;ro dont vous souhaitez modifier la mod&eacute;lisation.<br />
@@ -555,17 +509,65 @@
 	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
 </div>
 
-<div id="wizard-gallery" class="wizard" title="Choix d'une image">
+<div id="wizard-images" class="wizard deadend" title="Assistant DucksManager - Photos de la tranche">
 	<p>
-		S&eacute;lectionnez une image.
+		<form name="form_options">
+			<span class="photo_principale">
+				Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est requise.<br />
+				Cette photo sera mise &agrave; c&ocirc;t&eacute; de votre tranche en cours de conception.
+			</span> 
+			<span class="autres_photos">
+				Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
+				cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
+				Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
+			</span>
+			<br />
+			<!-- <span class="photo_principale">
+				Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
+			</span> -->
+			<div class="accordion">
+				<h3><a href="#">
+					<span class="photo_principale">Envoyer une photo</span>
+					<span class="autres_photos">Envoyer une image d'&eacute;l&eacute;ment</span>
+				</a></h3>
+				<div class="envoyer_photo">
+					<span class="photo_principale">
+						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=1"></iframe>
+					</span>
+					<span class="autres_photos">
+						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=0"></iframe>
+					</span>
+				</div>
+				<h3><a href="#">
+					<span class="photo_principale">S&eacute;lectionner une photo existante</span>
+					<span class="autres_photos">S&eacute;lectionner une image existante</span>
+				</a></h3>
+				<div class="selectionner_photo">
+					<p class="chargement_images" >Chargement des images</p>
+					<p class="pas_d_image autres_photos cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
+					<p class="pas_d_image photo_principale cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
+					<ul class="gallery cache">
+						<li class="template">
+							<img />
+							<input type="radio" name="numeroPhotoPrincipale" class="cache" />
+						</li>
+					</ul>
+				</div>
+			</div>
+			<button class="cache" value="to-wizard-resize">
+				<span class="photo_principale">Rogner la photo s&eacute;lectionn&eacute;e</span>
+				<span class="autres_photos">Rogner l'image s&eacute;lectionn&eacute;e</span>
+			</button>
+			<br />
+			<span class="photo_principale">S&eacute;lectionnez une photo pour poursuivre.</span>
+			<span class="autres_photos">S&eacute;lectionnez une image pour poursuivre.</span>
+					
+			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
+			<div class="buttonset cache">
+				<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
+			</div>
+		</form>
 	</p>
-	<p class="chargement_images" >Chargement des images</p>
-	<p class="pas_d_image cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
-	<ul class="gallery cache">
-		<li class="template">
-			<img />
-		</li>
-	</ul>
 </div>
 
 <div id="wizard-resize" class="wizard first closeable" title="Retouche d'image">
@@ -577,7 +579,7 @@
 	<form>
 		<div class="buttonset">
 			<input type="hidden" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
-			<input type="hidden" checked="checked" name="onClose" value="to-wizard-photos" id="to-wizard-photos" />
+			<input type="hidden" checked="checked" name="onClose" value="to-wizard-images" id="to-wizard-images" />
 		</div>
 	</form>
 </div>

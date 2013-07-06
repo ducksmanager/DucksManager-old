@@ -1080,11 +1080,12 @@ class Modele_tranche extends CI_Model {
 							continue;
 						foreach($extensions as $extension) {
 							if (strpos($f,'.'.$extension)===false)
-								continue 2;
+								continue;
 						}
 						$liste[]=utf8_encode($f);
 					}
 				}
+			break;
 			case 'Source_photo':
 				$pays=$arg;
 				$magazine=$arg2;

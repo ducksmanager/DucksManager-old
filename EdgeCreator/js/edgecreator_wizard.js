@@ -136,18 +136,25 @@ function launch_wizard(id, p) {
 				}
 			};
 		break;
-		case 'wizard-photos':
+		case 'wizard-images':
 			buttons["OK"]=function() {				
 				var action_suivante=wizard_check($(this).attr('id'));
 				if (action_suivante != null) {
-					nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
-						.match(REGEX_FICHIER_PHOTO)[1];
-					if ($('#wizard-conception').is(':visible')) {
-						maj_photo_principale();
-						$( this ).dialog().dialog( "close" );
+					var type_gallerie = $('#'+id).hasClass('photo_principale') ? 'Photos' : 'Source';
+					if (type_gallerie === 'Photos') {
+						nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
+							.match(REGEX_FICHIER_PHOTO)[1];
+						if ($('#wizard-conception').is(':visible')) {
+							maj_photo_principale();
+							$( this ).dialog().dialog( "close" );
+						}
+						else {
+							wizard_do($(this),action_suivante);
+						}
 					}
 					else {
-						wizard_do($(this),action_suivante);
+		   		    	tester_option_preview('Image','Source'); 
+						$(this).dialog().dialog( "close" );
 					}
 				}
 			};
@@ -267,7 +274,7 @@ function wizard_do(wizard_courant, action) {
 			break;
 		}
 		wizard_courant.dialog().dialog("close");
-		wizard_goto(wizard_courant,'wizard-photos');
+		wizard_goto(wizard_courant,'wizard-images');
 	}
 }
 
@@ -341,7 +348,7 @@ function wizard_check(wizard_id) {
 					}
 				break;
 				
-				case 'wizard-photos':
+				case 'wizard-images':
 					if ($('#'+wizard_id).find('form ul.gallery li img.selected').length == 0) {
 						erreur='Veuillez s&eacute;lectionner une photo de tranche.';
 					}
@@ -608,12 +615,12 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		
-		case 'wizard-photos':
-			$('#'+wizard_id+' .autres_photos').addClass('cache');
+		case 'wizard-images':
 			$('#'+wizard_id).find('.accordion').accordion({
 				active: 1
 			});
-			lister_images_gallerie('Photos');
+			var type_gallerie = $('#'+wizard_id).hasClass('photo_principale') ? 'Photos' : 'Source';
+			lister_images_gallerie(type_gallerie);
 		break;
 		
 		case 'wizard-conception':
@@ -969,7 +976,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		draggable: false,
 		width: 'auto',
 		minWidth: 0,
-		height: 'auto',
+		minHeight: div_preview_vide.height()+'px',
 		position: [posX,0],
 	    closeOnEscape: false,
 		modal: false,
@@ -982,7 +989,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			$(this).d().find('.ui-dialog-titlebar').addClass('logo_option')
 												   .css({'padding':'.3em .6em;'})
 										 		   .prepend($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
- 	   											    		     		   'alt':nom_fonction}));
+ 	   											    		     	   'alt':nom_fonction}));
 			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
 		},
 		beforeClose:function(event,ui) {
@@ -1064,7 +1071,8 @@ function ouvrir_dialogue_preview(dialogue) {
 	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').removeClass('cache');
 	section_preview_vide.after($('#options-etape--'+nom_fonction)
 						.removeClass('cache')
-						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px'}));
+						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px',
+							  'min-height':section_preview_vide.height()+'px'}));
 
 	section_preview_etape.dialog().dialog('option','buttons',{
 		'Fermer': function() {
@@ -1091,6 +1099,8 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.image_etape img, .preview_vide').toggleClass('cache');
 	dialogue.find('[name="form_options"],[name="form_options_orig"]').remove();
 	dialogue.find('.preview_etape').removeClass('modif');
+	dialogue.find('.ui-draggable').draggable('destroy');
+	dialogue.find('.ui-resizable').resizable('destroy');	
 	modification_etape=null;
 }
 
@@ -1468,31 +1478,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				positionner_image(apercu_image);
 
 			form_userfriendly.find('[name="parcourir"],[name="option-Source"]').click(function(event) {
-				$('#wizard-gallery').dialog({
-					width: 475,
-					modal: true,
-					height: $('#body').height(),
-					draggable: true,
-					buttons: {
-						'Annuler':function() {
-							$(this).dialog().dialog( "close" );
-						},
-						'Valider':function() {
-							if ($(this).find('.gallery img.selected').length == 0) {
-								jqueryui_alert('Vous n\'avez s&eacute;lectionn&eacute; aucune image. Cliquez sur l\'une d\'elles ou cliquez sur le bouton "Annuler"',
-											   'Aucune image s&eacute;lectionn&eacute;e');
-							}
-							else {
-				   		    	tester_option_preview('Image','Source'); 
-								$(this).dialog().dialog( "close" );
-							}
-						}						
-					},
-					open:function(event,ui) {
-						lister_images_gallerie('Source');
-					}
-				});
 				event.preventDefault();
+				
+				$('#wizard-images')
+					.addClass('autres_photos')
+					.removeClass('photo_principale');
+				launch_wizard('wizard-images', {modal:true, first: true});
 			});
 
 		break;
@@ -1770,8 +1761,8 @@ function positionner_image(preview) {
 						var src=$(this).attr('src');
 						var nom_image=src.substring(src.lastIndexOf('/')+1,src.length);
 						jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
-					}))
-				  .draggable({//containment:limites_drag, 
+					})) 
+			  	  .draggable({//containment:limites_drag, 
 			  		  stop:function(event, ui) {
 		   		    	tester_option_preview('Image','Decalage_x'); 
 		   		    	tester_option_preview('Image','Decalage_y');
@@ -2417,7 +2408,10 @@ function init_action_bar() {
 					location.reload();
 				break;
 				case 'photo':
-					launch_wizard('wizard-photos', {modal:true, first: true});
+					$('#wizard-images')
+						.addClass('photo_principale')
+						.removeClass('autres_photos');
+					launch_wizard('wizard-images', {modal:true, first: true});
 				break;
 				case 'corbeille':
 					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
@@ -2488,10 +2482,10 @@ function maj_photo_principale() {
 function lister_images_gallerie(type_images) {
 	var container;
 	if (type_images === 'Source') {
-		container=$('#wizard-gallery');
+		container=$('#wizard-images');
 	}
 	else {
-		container=$('#wizard-photos').find('form');
+		container=$('#wizard-images').find('form');
 	}
 	
 	$.ajax({
@@ -2543,7 +2537,7 @@ function lister_images_gallerie(type_images) {
                 		$('#wizard-resize img').attr({'src':$(this).attr('src')});
                 	}
             	});
-            	if (nom_photo_principale !== null) {
+            	if (type_images === 'Photos' && nom_photo_principale !== null) {
             		container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
             	}
         	}
