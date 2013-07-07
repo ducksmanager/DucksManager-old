@@ -1100,7 +1100,7 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('[name="form_options"],[name="form_options_orig"]').remove();
 	dialogue.find('.preview_etape').removeClass('modif');
 	dialogue.find('.ui-draggable').draggable('destroy');
-	dialogue.find('.ui-resizable').resizable('destroy');	
+	dialogue.find('.ui-resizable').resizable('destroy');
 	modification_etape=null;
 }
 
@@ -2175,6 +2175,8 @@ function reload_current_and_final_previews(callback) {
 
 function reload_all_previews() {
 	afficher_photo_tranche();
+	$('.ui-draggable').draggable('destroy');
+	$('.ui-resizable').resizable('destroy');
 	selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 	chargements=new Array();
 	$.each($(selecteur_cellules_preview),function(i,element) {
