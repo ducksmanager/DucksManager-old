@@ -268,15 +268,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
 		$inclure_avant = $pos==='avant' || $pos==='_';
 		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$infos=new stdClass();
 		
-		$decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
+		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
-		
+		$numero_etape=$inclure_avant ? $etape : $etape+1;
 		foreach($nouvelle_fonction->options as $nom=>$valeur) {
-			$this->insert($id_modele,$inclure_avant ? $etape : $etape+1,$nom_fonction,$nom,$valeur);			
+			$this->insert($id_modele,$numero_etape,$nom_fonction,$nom,$valeur);			
 		}
-		return $decalages;
+		$infos->numero_etape=$numero_etape;
+		return $infos;
 	}
 
 	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {

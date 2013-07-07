@@ -123,10 +123,10 @@ function launch_wizard(id, p) {
 						dataType:'json',
 						success:function(data) {
 							$('#wizard-ajout-etape').dialog().dialog( "close" );
-							for (var i in data.decalages) {
+							for (var i in data.infos_insertion.decalages) {
 								$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
 							}
-							ajouter_preview_etape(formData.etape, formData.nom_fonction);
+							ajouter_preview_etape(data.infos_insertion.numero_etape, formData.nom_fonction);
 							charger_previews(true);
 						}
 					});
