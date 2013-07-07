@@ -46,8 +46,8 @@ button#connexion, button#deconnexion {
 	white-space: nowrap;
 }
 
-#wizard-photos.photo_principale .autres_photos,
-#wizard-photos.autres_photos .photo_principale {
+#wizard-images.photo_principale .autres_photos,
+#wizard-images.autres_photos .photo_principale {
 	display: none;
 }
 
