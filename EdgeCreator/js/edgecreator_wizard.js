@@ -1020,7 +1020,10 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			return false;
 		}
 	});
-	wizard_etape.d().resize(function() {
+	wizard_etape.d().resize(function(e) {
+		if (!($(e.target).hasClass('wizard') || $(e.target).hasClass('ui-dialog'))) {
+			return;
+		}
 		if (modification_etape != null 
 		 && modification_etape.find('#options-etape--Polygone').length != 0) {
 			var options=modification_etape.find('[name="form_options"]');
