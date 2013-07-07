@@ -1140,7 +1140,12 @@ class Modele_tranche extends CI_Model {
 				}
 			 break;
 		}
-		uksort($liste,"strnatcasecmp");
+		if ($type === 'Fonctions') {
+			asort($liste);
+		}
+		else {
+			uksort($liste,"strnatcasecmp");
+		}
 		return $liste;
 	}
 	
