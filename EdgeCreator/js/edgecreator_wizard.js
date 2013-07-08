@@ -831,6 +831,9 @@ function wizard_init(wizard_id) {
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
 								var dialogue=$(this).d();
+								if (dialog.hasClass('cloneable')) {
+									return;
+								}
 								if (modification_etape != null) {
 									if (dialogue.data('etape') == modification_etape.data('etape'))
 										return;
@@ -856,6 +859,9 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		case 'wizard-ajout-etape':
+			$('#'+wizard_id).find('.accordion').accordion({
+				active: 1
+			});
         	$.ajax({
                 url: urls['listerg']+['index','Fonctions'].join('/'),
                 dataType:'json',
@@ -867,6 +873,20 @@ function wizard_init(wizard_id) {
                 	}
                 	$('#liste_fonctions').html(select);
                 }
+        	});
+        	$('#selectionner_etape_base').click(function() {
+				$('#'+wizard_id).dialog().dialog("close");
+        		$('.dialog-preview-etape')
+        			.addClass('cloneable')
+        			.click(function() {
+        				$('#section_etape_a_cloner')
+    						.removeClass('cache');
+        				$('#etape_a_cloner')
+        					.text($(this).data('etape'))
+        				$('#'+wizard_id).dialog().dialog("open");
+        				$('.dialog-preview-etape')
+            				.removeClass('cloneable');
+        			});
         	});
         break;
 		case 'wizard-resize':

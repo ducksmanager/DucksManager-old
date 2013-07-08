@@ -492,11 +492,25 @@
 
 <div id="wizard-ajout-etape" class="first wizard modal" title="Ajouter une &eacute;tape">
 	<p>
-		Que souhaitez-vous faire ? 
 		<form>
-			<div id="liste_fonctions"></div>
-			<input type="hidden" name="etape" />
-			<input type="hidden" name="pos" />
+			<div class="accordion">
+				<h3><a href="#">Cr&eacute;er une &eacute;tape &agrave; partir de z&eacute;ro</a></h3>
+				<div>
+					Que souhaitez-vous faire ? 
+					<div id="liste_fonctions"></div>
+					<input type="hidden" name="etape" />
+					<input type="hidden" name="pos" />
+				</div>
+				<h3><a href="#">Cr&eacute;er une &eacute;tape &agrave; partir d'une &eacute;tape similaire</a></h3>
+				<div>
+					<a id="selectionner_etape_base" style="text-decoration:underline" href="#">
+						S&eacute;lectionner l'&eacute;tape de base
+					</a>
+					<span id="section_etape_a_cloner" class="cache">
+						Etape <span id="etape_a_cloner"></span> s&eacute;lectionn&eacute;e pour le clonage
+					</span>
+				</div>
+			</div>
 		</form>
 	</p>
 </div>
