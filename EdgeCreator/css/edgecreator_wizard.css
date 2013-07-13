@@ -98,10 +98,9 @@ button#connexion, button#deconnexion {
 	padding-left: 30px;
 }
 
-#wizard-ajout-etape span {
-	font-size: 10px;
+#wizard-ajout-etape input {
+	width: 20px;
 }
-
 
 .wizard.preview_etape:not(.final):not(.modif) {
 	cursor: pointer;
@@ -133,7 +132,7 @@ button#connexion, button#deconnexion {
 }
 
 
-.wizard.preview_etape .rectangle_position, 
+.wizard.preview_etape #rectangle_position, 
 .wizard.preview_etape .image_position,
 .wizard.preview_etape .agrafe {
 	position: absolute;
@@ -160,7 +159,7 @@ button#connexion, button#deconnexion {
 	height: 100%;
 }
 
-.wizard.preview_etape .rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
+.wizard.preview_etape #rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
 	outline-width: 1px;
 	outline-style: solid;
 }

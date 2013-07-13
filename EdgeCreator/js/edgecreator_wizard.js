@@ -117,19 +117,37 @@ function launch_wizard(id, p) {
 			buttons={
 				'OK': function() {
 					var formData=$(this).find('form').serializeObject();
-					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
-						type: 'post',
-						dataType:'json',
-						success:function(data) {
-							$('#wizard-ajout-etape').dialog().dialog( "close" );
-							for (var i in data.infos_insertion.decalages) {
-								$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
-							}
-							ajouter_preview_etape(data.infos_insertion.numero_etape, formData.nom_fonction);
-							charger_previews(true);
-						}
-					});
+					var panelOuvert = $('#wizard-ajout-etape .accordion').accordion('option','active');
+					switch(panelOuvert) {
+						case 0: // A partir de zéro
+							$.ajax({
+								url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
+								type: 'post',
+								dataType:'json',
+								success:function(data) {
+									$('#wizard-ajout-etape').dialog().dialog( "close" );
+									for (var i in data.infos_insertion.decalages) {
+										$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
+									}
+									ajouter_preview_etape(data.infos_insertion.numero_etape, formData.nom_fonction);
+									charger_previews(true);
+								}
+							});
+						break;
+						case 1: // Clonage
+							$.ajax({
+								url: urls['cloner']+['index',pays,magazine,numero,formData.pos,formData.etape_a_cloner].join('/'),
+								type: 'post',
+								dataType:'json',
+								success:function(data) {
+									$('#wizard-ajout-etape').dialog().dialog( "close" );
+									ajouter_preview_etape(data.infos_insertion.numero_etape, data.infos_insertion.nom_fonction);
+									charger_previews(true);
+								}
+							});
+							
+						break;
+					}
 				},
 				'Annuler':function() {
 					$( this ).dialog().dialog( "close" );
@@ -831,7 +849,7 @@ function wizard_init(wizard_id) {
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
 								var dialogue=$(this).d();
-								if (dialog.hasClass('cloneable')) {
+								if (dialogue.hasClass('cloneable')) {
 									return;
 								}
 								if (modification_etape != null) {
@@ -882,7 +900,7 @@ function wizard_init(wizard_id) {
         				$('#section_etape_a_cloner')
     						.removeClass('cache');
         				$('#etape_a_cloner')
-        					.text($(this).data('etape'))
+        					.val($(this).data('etape'));
         				$('#'+wizard_id).dialog().dialog("open");
         				$('.dialog-preview-etape')
             				.removeClass('cloneable');
@@ -1448,7 +1466,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		case 'Rectangle':
 			classes_farbs['Couleur']='';
 
-			var position_texte=form_userfriendly.find('.rectangle_position');
+			var position_texte=$('#rectangle_position');
 
 			var pos_x_debut=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_debut']))*zoom;
 			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
@@ -1481,10 +1499,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 							 .change(function() {
 								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
 								 tester_option_preview(nom_fonction,nom_option);
-								 coloriser_rectangle_preview($('.modif .rectangle_position'),valeurs['Couleur'],$(this).prop('checked'));
+								 coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
 							 });
 			
-			coloriser_rectangle_preview($('.modif .rectangle_position'),valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
+			coloriser_rectangle_preview(valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
 
 		break;
 		case 'Image':
@@ -1816,14 +1834,16 @@ function definir_et_positionner_image(source) {
 			jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
 		});
 }
-function coloriser_rectangle_preview(element,couleur,est_rempli) {
+function coloriser_rectangle_preview(couleur,est_rempli) {
 	if (est_rempli) {
-		element.css({'background-color': couleur})
-			   .removeClass('outlined');
+		$('#rectangle_position')
+			.css({'background-color': couleur})
+			.removeClass('outlined');
 	}
 	else {
-		element.addClass('outlined')
-			   .css({'outline-color':couleur,'background-color':''});
+		$('#rectangle_position')
+			.css({'outline-color':couleur,'background-color':''})
+			.addClass('outlined');
 	}
 }
 
@@ -2030,7 +2050,7 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 				}
 			break;
 			case 'Rectangle':
-				var positionnement=dialogue.find('.rectangle_position');
+				var positionnement=$('#rectangle_position');
 				switch(nom_option) {
 					case 'Pos_x_debut':
 						val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);
@@ -2257,8 +2277,10 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 		case 'Rectangle':
 			coloriser_rectangle_preview(couleur,
 										form_options.valeur('Rempli').val()=='Oui');
+		break;
 		case 'Arc_cercle':
 			dessiner($('.preview_vide .arc_position'), 'Arc_cercle', form_options);
+		break;
 		case 'Polygone':
 			dessiner($('.preview_vide .polygone_position'), 'Polygone', form_options);
 		break;

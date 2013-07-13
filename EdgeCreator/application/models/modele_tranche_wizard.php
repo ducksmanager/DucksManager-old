@@ -236,15 +236,17 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete);
 	}
 	
-	function getIdModele($pays,$magazine,$numero,$username) {
+	function get_id_modele($pays,$magazine,$numero,$username=null) {
+		if (is_null($username)) {
+			$username = self::$username;
+		}
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' AND username=\''.$username.'\' AND Active=1';
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->ID;
-		
 	}
 	
-	function getNomFonction($id_modele,$ordre) {
+	function get_nom_fonction($id_modele,$ordre) {
 		$requete='SELECT Nom_fonction FROM tranches_en_cours_valeurs '
 				.'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
 		$resultat=$this->db->query($requete)->row(0);
@@ -267,7 +269,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
 		$inclure_avant = $pos==='avant' || $pos==='_';
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		$infos=new stdClass();
 		
 		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
@@ -282,8 +284,8 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
-		$nom_fonction=$this->getNomFonction($id_modele,$etape);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		$nom_fonction=$this->get_nom_fonction($id_modele,$etape);
 		
 		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
 					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
@@ -296,7 +298,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function update_photo_principale($pays,$magazine,$numero,$nom_photo_principale) {
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		
 		$requete_maj='UPDATE tranches_en_cours_modeles '
 					.'SET NomPhotoPrincipale=\''.$nom_photo_principale.'\' '
@@ -305,17 +307,27 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		echo $requete_maj."\n";
 	}
 
-	function cloner_etape($pays,$magazine,$etape_courante,$etape) {
-		$requete='SELECT '.implode(', ', self::$fields).' '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs AS valeurs ON edgecreator_modeles2.ID = valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username = \''.self::$username.'\'';
+	function cloner_etape($pays,$magazine,$numero,$pos,$etape_courante) {
+		$inclure_avant = $pos==='avant' || $pos==='_';
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		$infos=new stdClass();
+		
+		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape_courante, $inclure_avant);
+		
+		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;		
+		$requete=' SELECT Nom_fonction, Option_nom, Option_valeur, ID_Modele'
+				.' FROM tranches_en_cours_valeurs '
+				.' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape_courante;
 		$resultats=$this->db->query($requete)->result();
-		foreach($resultats as $resultat) {
-			$resultat->Ordre=$etape;
+		foreach($resultats as $i=>$resultat) {
+			$resultat->Ordre=$nouvelle_etape;
+			$infos->nom_fonction=$resultat->Nom_fonction;
+			$resultats[$i]=(array) $resultats[$i];
 		}
-		$this->db->insert_batch('edgecreator_modeles2',$resultats);
+		$this->db->insert_batch('tranches_en_cours_valeurs',$resultats);
+		
+		$infos->numero_etape=$nouvelle_etape;
+		return $infos;
 	}
 
 	function supprimer_etape($pays,$magazine,$numero,$etape) {
@@ -423,7 +435,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function desactiver_modele($pays,$magazine,$numero) {
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		
 		$requete_maj=' UPDATE tranches_en_cours_modeles '
 					.' SET Active=0'

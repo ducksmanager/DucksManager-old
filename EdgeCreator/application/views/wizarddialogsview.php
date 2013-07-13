@@ -366,7 +366,7 @@
 		</div>
 		
 		<div id="options-etape--Rectangle" class="options_etape cache">
-			<div class="rectangle_position cache"></div>
+			<div id="rectangle_position" class="cache"></div>
 			<p>
 				&gt; D&eacute;placez et redimensionnez le rectangle.<br />
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
@@ -507,7 +507,7 @@
 						S&eacute;lectionner l'&eacute;tape de base
 					</a>
 					<span id="section_etape_a_cloner" class="cache">
-						Etape <span id="etape_a_cloner"></span> s&eacute;lectionn&eacute;e pour le clonage
+						Etape <input id="etape_a_cloner" name="etape_a_cloner" readonly="readonly" /> s&eacute;lectionn&eacute;e pour le clonage
 					</span>
 				</div>
 			</div>
