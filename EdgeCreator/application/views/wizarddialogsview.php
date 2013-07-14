@@ -409,7 +409,11 @@
 						</tr>
 						<tr>
 							<td>Police de caract&egrave;res : </td>
-							<td><input name="option-URL" type="text" maxlength="90" size="30" /></td>
+							<td style="white-space:nowrap"><input name="option-URL" type="text" maxlength="90" size="19" />
+								<button class="small" value="to-wizard-resize">
+									<span class="modifier_police">Modifier</span>
+								</button>
+							</td>
 						</tr>
 						<tr>
 							<td>
@@ -535,6 +539,12 @@
 				cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
 				Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
 			</span>
+			<span class="photos_texte">
+				S&eacute;lectionnez une image contenant le texte, et <u>uniquement</u> le texte. <br />
+				Le texte doit &ecirc;tre horizontal et net sur la photo. Pour des r&eacute;sultats optimaux,
+				modifiez manuellement l'image pour en retirer tout &eacute;l&eacute;ment pouvant nuire &agrave; 
+				la d&eacute;tection de la police de caract&egrave;res.
+			</span>
 			<br />
 			<!-- <span class="photo_principale">
 				Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
@@ -542,23 +552,23 @@
 			<div class="accordion">
 				<h3><a href="#">
 					<span class="photo_principale">Envoyer une photo</span>
-					<span class="autres_photos">Envoyer une image d'&eacute;l&eacute;ment</span>
+					<span class="autres_photos photos_texte">Envoyer une image d'&eacute;l&eacute;ment</span>
 				</a></h3>
 				<div class="envoyer_photo">
 					<span class="photo_principale">
 						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=1"></iframe>
 					</span>
-					<span class="autres_photos">
+					<span class="autres_photos photos_texte">
 						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=0"></iframe>
 					</span>
 				</div>
 				<h3><a href="#">
 					<span class="photo_principale">S&eacute;lectionner une photo existante</span>
-					<span class="autres_photos">S&eacute;lectionner une image existante</span>
+					<span class="autres_photos photos_texte">S&eacute;lectionner une image existante</span>
 				</a></h3>
 				<div class="selectionner_photo">
 					<p class="chargement_images" >Chargement des images</p>
-					<p class="pas_d_image autres_photos cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
+					<p class="pas_d_image autres_photos photos_texte cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
 					<p class="pas_d_image photo_principale cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
 					<ul class="gallery cache">
 						<li class="template">
@@ -570,11 +580,11 @@
 			</div>
 			<button class="cache" value="to-wizard-resize">
 				<span class="photo_principale">Rogner la photo s&eacute;lectionn&eacute;e</span>
-				<span class="autres_photos">Rogner l'image s&eacute;lectionn&eacute;e</span>
+				<span class="autres_photos photos_texte">Rogner l'image s&eacute;lectionn&eacute;e</span>
 			</button>
 			<br />
 			<span class="photo_principale">S&eacute;lectionnez une photo pour poursuivre.</span>
-			<span class="autres_photos">S&eacute;lectionnez une image pour poursuivre.</span>
+			<span class="autres_photos photos_texte">S&eacute;lectionnez une image pour poursuivre.</span>
 					
 			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 			<div class="buttonset cache">
@@ -672,6 +682,13 @@
 	Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo g&eacute;n&eacute;rale de la tranche.<br />
 	Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
 	car cela permet de faciliter sa conception.
+	</p>
+</div>
+
+<div id="wizard-erreur-image-myfonts" class="wizard" title="Param&egrave;tres de texte invalides">
+	<p>
+		Les param&egrave;tres du texte &agrave; g&eacute;n&eacute;rer sont invalides. <br />
+		V&eacute;rifiez notamment que la police de caract&egrave;res sp&eacute;cifi&eacute;e est valide.
 	</p>
 </div>
 

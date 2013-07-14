@@ -158,21 +158,31 @@ function launch_wizard(id, p) {
 			buttons["OK"]=function() {				
 				var action_suivante=wizard_check($(this).attr('id'));
 				if (action_suivante != null) {
-					var type_gallerie = $('#'+id).hasClass('photo_principale') ? 'Photos' : 'Source';
-					if (type_gallerie === 'Photos') {
-						nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
-							.match(REGEX_FICHIER_PHOTO)[1];
-						if ($('#wizard-conception').is(':visible')) {
-							maj_photo_principale();
-							$( this ).dialog().dialog( "close" );
+					var type_gallerie='';
+					$.each(['photo_principale','autres_photos','photos_texte'], function(i,classe) {
+						if ($('#'+id).hasClass(classe)) {
+							type_gallerie=classe;
 						}
-						else {
-							wizard_do($(this),action_suivante);
-						}
-					}
-					else {
-		   		    	tester_option_preview('Image','Source'); 
-						$(this).dialog().dialog( "close" );
+					});
+					switch (type_gallerie) {
+						case 'photo_principale' :
+							nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
+								.match(REGEX_FICHIER_PHOTO)[1];
+							if ($('#wizard-conception').is(':visible')) {
+								maj_photo_principale();
+								$( this ).dialog().dialog( "close" );
+							}
+							else {
+								wizard_do($(this),action_suivante);
+							}
+						break;
+						case 'autres_photos':
+			   		    	tester_option_preview('Image','Source'); 
+							$(this).dialog().dialog( "close" );
+						break;
+						case 'photos_texte':
+							
+						break;
 					}
 				}
 			};
@@ -1523,7 +1533,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				
 				$('#wizard-images')
 					.addClass('autres_photos')
-					.removeClass('photo_principale');
+					.removeClass('photo_principale photos_texte');
 				launch_wizard('wizard-images', {modal:true, first: true});
 			});
 
@@ -1540,6 +1550,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
 				tester_option_preview(nom_fonction,nom_option);
 				load_myfonts_preview(true,true,true);
+			});
+			
+			form_userfriendly.find('.modifier_police').click(function() {
+				$('#wizard-images')
+					.addClass('photos_texte')
+					.removeClass('photo_principale autres_photos');
+				launch_wizard('wizard-images', {modal:true, first: true});
 			});
 			
 			checkboxes.push('Demi_hauteur');
@@ -2287,6 +2304,7 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 	}
 }
 
+var isMyFontsError = false;
 function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
@@ -2325,6 +2343,14 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 			}
 			if (callback != undefined)
 				callback();
+		});
+		$(this).error(function() {
+			if (!isMyFontsError) {
+				jqueryui_alert_from_d($('#wizard-erreur-image-myfonts'), function() {
+					isMyFontsError = false;
+				});
+			}
+			isMyFontsError=true;
 		});
 	});
 }
@@ -2457,7 +2483,7 @@ function init_action_bar() {
 				case 'photo':
 					$('#wizard-images')
 						.addClass('photo_principale')
-						.removeClass('autres_photos');
+						.removeClass('autres_photos photos_texte');
 					launch_wizard('wizard-images', {modal:true, first: true});
 				break;
 				case 'corbeille':

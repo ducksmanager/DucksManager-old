@@ -46,8 +46,9 @@ button#connexion, button#deconnexion {
 	white-space: nowrap;
 }
 
-#wizard-images.photo_principale .autres_photos,
-#wizard-images.autres_photos .photo_principale {
+#wizard-images.photo_principale span:not(.photo_principale),
+#wizard-images.autres_photos span:not(.autres_photos),
+#wizard-images.photos_texte span:not(.photos_texte) {
 	display: none;
 }
 
@@ -100,6 +101,10 @@ button#connexion, button#deconnexion {
 
 #wizard-ajout-etape input {
 	width: 20px;
+}
+
+#wizard-ajout-etape .ui-accordion-content {
+	height: auto !important;
 }
 
 .wizard.preview_etape:not(.final):not(.modif) {
