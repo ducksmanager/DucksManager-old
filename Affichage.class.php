@@ -214,8 +214,7 @@ class Affichage {
 								continue;
 							}	
 							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE?> 
-							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;
-							<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
+							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
 							<?php 
 							if ($evenement->cpt > 0) {
 								?>
@@ -228,23 +227,23 @@ class Affichage {
 					<span class="date">
 						<?=NEWS_IL_Y_A_PREFIXE?> 
 						<?php 
-							$diff=$evenement->diffsecondes;
+							$diff=intval($evenement->diffsecondes);
 							if ($diff < 60) {
-								?><?=$diff?> <?=NEWS_TEMPS_SECONDE.($diff == 1 ? '':'s')?><?php
+								?><?=$diff.' '.NEWS_TEMPS_SECONDE.($diff == 1 ? '':'s')?><?php
 							}
 							else {
-								$diff/=60;
+								$diff=intval($diff/60);
 								if ($diff < 60) {
-									?><?=intval($diff)?> <?=NEWS_TEMPS_MINUTE.($diff == 1 ? '':'s')?><?php
+									?><?=$diff.' '.NEWS_TEMPS_MINUTE.($diff == 1 ? '':'s')?><?php
 								}
 								else {
-									$diff/=60;
+									$diff=intval($diff/60);
 									if ($diff < 24) {
-										?><?=intval($diff)?> <?=NEWS_TEMPS_HEURE.($diff == 1 ? '':'s')?><?php
+										?><?=$diff.' '.NEWS_TEMPS_HEURE.($diff == 1 ? '':'s')?><?php
 									}
 									else {
-										$diff/=24;
-										?><?=intval($diff)?> <?=NEWS_TEMPS_JOUR.($diff == 1 ? '':'s')?><?php
+										$diff=intval($diff/24);
+										?><?=$diff.' '.NEWS_TEMPS_JOUR.(intval($diff) == 1 ? '':'s')?><?php
 									}
 								}
 							}

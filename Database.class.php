@@ -726,7 +726,7 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
 	else if (isset($_POST['evenements_recents'])) {	
-Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
+		Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);
