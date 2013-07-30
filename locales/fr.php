@@ -515,6 +515,7 @@ define('TRANCHE_NON_DISPONIBLE3',' pour nous aider !');
 define('TRAVAUX_SECTION','Cette section est en travaux !');
 define('TYPE_LISTE','Type de liste');
 define('TYPE_LISTE_GLOBAL','Type de liste global');
+define('UTILISATEUR_3_CHAR_ERREUR','Choisissez un nom d\'utilisateur d\'au moins 3 caract&egrave;res.');
 define('UTILISATEUR_EXISTANT','Ce nom d\'utilisateur est d&eacute;j&agrave; utilis&eacute; !');
 define('UTILISATEUR_INDUCKS','Nom d\'utilisateur Inducks');
 define('UTILISATEUR_VALIDE','Utilisateur valide');

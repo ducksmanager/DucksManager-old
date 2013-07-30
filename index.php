@@ -1436,6 +1436,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
 function formulaire_inscription() {
     if (isset($_POST['user'])) {
+		if (strlen($_POST['user']) <3) {
+			$erreur=UTILISATEUR_3_CHAR_ERREUR;
+		}
         if (strlen($_POST['pass']) <6) {
             $erreur=MOT_DE_PASSE_6_CHAR_ERREUR;
         }
