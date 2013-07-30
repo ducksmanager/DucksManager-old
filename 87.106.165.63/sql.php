@@ -1,21 +1,11 @@
 <?php
 ob_start('ob_gzhandler');
-
+if (isset($_GET['dbg'])) {
+	error_reporting(E_ALL);
+}
 $database=isset($_GET['db']) ? $_GET['db'] : 'coa';
 
-include_once('_priv/Database.priv.class.php');
-DatabasePriv::connect($database);
-if (isset($_GET['debug']))
-	echo 'Serveur : '.DatabasePriv::getProfilCourant()->server
-	  .', User : '.DatabasePriv::getProfilCourant()->user
-	  .', BD : '.$database."\n";
-
-if (!isset($_GET['mdp']) || !DatabasePriv::verifPassword($_GET['mdp'])) {
-	echo 'Erreur d\'authentification';
-	exit();
-}
-
-mysql_query('SET NAMES UTF8');
+include_once('auth.php');
 
 if (isset($_GET['req'])) {
 	$requete=str_replace("\'","'",$_GET['req']);

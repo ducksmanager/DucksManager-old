@@ -18,6 +18,9 @@ class Util {
 		}
 		else {
 			$handle = @fopen($url, "r");
+			if (isset($_GET['dbg'])) {
+				echo $url;
+			}
 			if ($handle) {
 				$buffer="";
 				while (!feof($handle)) {

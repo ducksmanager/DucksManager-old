@@ -1435,30 +1435,24 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 }
 
 function formulaire_inscription() {
-    if (isset($_POST['user'])) {
-		if (strlen($_POST['user']) <3) {
-			$erreur=UTILISATEUR_3_CHAR_ERREUR;
-		}
-        if (strlen($_POST['pass']) <6) {
-            $erreur=MOT_DE_PASSE_6_CHAR_ERREUR;
-        }
-        elseif ($_POST['pass'] != $_POST['pass2']) {
-            $erreur=MOTS_DE_PASSE_DIFFERENTS;
-        }
-        else {
-            if (DM_Core::$d->user_exists($_POST['user']))
-                $erreur=UTILISATEUR_EXISTANT;
-        }
-        if (isset($erreur)) {
+	$user= $_POST['user' ];
+	$pass= $_POST['pass' ];
+	$pass2=$_POST['pass2'];
+	$email=$_POST['email'];
+	$rawData=$_POST['rawData'];
+	$erreur=null;
+    if (isset($user)) {
+		$erreur=Affichage::valider_formulaire_inscription($user, $pass, $pass2);
+        if (!is_null($erreur)) {
             ?><span style="color:red"><?=$erreur?></span><?php
         }
     }
-    if (!isset($_POST['user']) || isset($erreur)) {
+    if (!isset($user) || !is_null($erreur)) {
         ?>
         <form method="post" action="index.php?action=new">
         <?php
-        if (isset($_POST['rawData'])) {
-            ?><input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" /><?php
+        if (isset($rawData)) {
+            ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
         }?>
         <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text">&nbsp;</td></tr>
             <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="" /></td></tr>
@@ -1469,12 +1463,12 @@ function formulaire_inscription() {
         <?php
     }
     else {
-        DM_Core::$d->nouveau_user($_POST['user'], $_POST['email'],$_POST['pass']);
-        if (isset($_POST['rawData'])) {
-            $l = new Liste($_POST['rawData']);
-            $l->add_to_database(DM_Core::$d, DM_Core::$d->user_to_id($_POST['user']));
+        DM_Core::$d->nouveau_user($user, $email,$pass);
+        if (isset($rawData)) {
+            $l = new Liste($rawData);
+            $l->add_to_database(DM_Core::$d, DM_Core::$d->user_to_id($user));
         }
-        creer_id_session($_POST['user'], $_POST['pass']);
+        creer_id_session($user, $pass);
     }
 }
 

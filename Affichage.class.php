@@ -256,5 +256,26 @@ class Affichage {
 			}
 		}
 	}
+	
+	static function valider_formulaire_inscription($user, $pass, $pass2) {
+		$erreur=null;
+		if (isset($user)) {
+			if (strlen($user) <3) {
+				$erreur=UTILISATEUR_3_CHAR_ERREUR;
+			}
+			if (strlen($pass) <6) {
+				$erreur=MOT_DE_PASSE_6_CHAR_ERREUR;
+			}
+			elseif ($pass !== $pass2) {
+				$erreur=MOTS_DE_PASSE_DIFFERENTS;
+			}
+			else {
+				if (DM_Core::$d->user_exists($user)) {
+					$erreur=UTILISATEUR_EXISTANT;
+				}
+			}
+		}
+		return $erreur;
+	}
 }
 ?>
