@@ -588,7 +588,7 @@ function ajouter_auteur($id,$nom) {
 		
 		$requete_inscriptions='SELECT users.ID, users.username, DateInscription, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
 							 .'FROM users '
-							 .'WHERE DateInscription > date_add(now(), interval -1 month)';
+							 .'WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE "test%"';
 
 		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
