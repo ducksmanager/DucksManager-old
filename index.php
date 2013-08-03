@@ -1463,7 +1463,7 @@ function formulaire_inscription() {
         <?php
     }
     else {
-        DM_Core::$d->nouveau_user($user, $email,$pass);
+        DM_Core::$d->nouveau_user($user, $email, sha1($pass));
         if (isset($rawData)) {
             $l = new Liste($rawData);
             $l->add_to_database(DM_Core::$d, DM_Core::$d->user_to_id($user));

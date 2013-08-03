@@ -31,6 +31,10 @@ class Database {
 	}
 
 	function requete_select($requete) {
+		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel) {
+			return Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+		}
+		else {
 			$requete_resultat=mysql_query($requete);
 			if (!is_resource($requete_resultat))
 				return array();
@@ -38,10 +42,16 @@ class Database {
 			while($arr_tmp=mysql_fetch_array($requete_resultat))
 					array_push($arr,$arr_tmp);
 			return $arr;
+		}
 	}
 
 	function requete($requete) {
+		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel) {
+			return Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+		}
+		else {
 			return mysql_query($requete);
+		}
 	}
 	
 	function user_to_id($user) {
@@ -89,7 +99,7 @@ class Database {
 
 	function nouveau_user($user,$email,$pass) {
 			date_default_timezone_set('Europe/Paris');
-			$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',sha1(\''.$pass.'\'),\''.$email.'\',\''.date('Y-m-d').'\')';
+			$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
 			if (false===DM_Core::$d->requete($requete)) {
 				echo ERREUR_EXECUTION_REQUETE;
 				return false;
