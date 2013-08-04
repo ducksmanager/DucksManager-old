@@ -585,7 +585,8 @@
 			<br />
 			<span class="photo_principale">S&eacute;lectionnez une photo pour poursuivre.</span>
 			<span class="autres_photos photos_texte">S&eacute;lectionnez une image pour poursuivre.</span>
-					
+			
+			<input type="hidden" name="selected" />
 			<input type="hidden" id="numeroPhotoPrincipale" name="numeroPhotoPrincipale" value=""/>
 			<div class="buttonset cache">
 				<input type="radio" checked="checked" name="choix" value="to-wizard-conception" id="to-wizard-conception" />
@@ -606,6 +607,23 @@
 			<input type="hidden" checked="checked" name="onClose" value="to-wizard-images" id="to-wizard-images" />
 		</div>
 	</form>
+</div>
+
+<div id="wizard-myfonts" class="wizard first closeable" title="Recherche d'une police de caract&egrave;res">
+	<div class="explication">
+		Suivez l'assistant ci-dessous : le site MyFonts permet de retrouver la police de caract&egrave;res d'un texte.
+		<br />
+		Une fois que vous parvenez &agrave; la page de proposition de polices de caract&egrave;res 
+		(vous verrez l'image <img class="exemple_resultats" src="../images/whatthefont_results.png" />en haut de la page),
+		<br />
+		faites un clic droit sur la police ressemblant le plus &agrave; celle de votre image, puis un clic gauche sur "Copier l'adresse du lien" 
+		(<a class="exemple_cache toggle_exemple" href="#">Voir un exemple</a>
+		 <a class="exemple_affiche toggle_exemple cache" href="#">Cacher l'exemple</a>).
+		<br />
+		<img src="../images/whatthefont_selection_exemple.png" class="exemple_affiche cache" /><br />
+		Collez ce lien (Ctrl+V ou Cmd+V sur Mac) dans le champ ci-apr&egrave;s : <input type="text" name="url_police" />
+	</div>
+	<iframe></iframe>
 </div>
 
 <div id="wizard-confirmation-supprimer" class="wizard" title="Supprimer l'&eacute;tape ?">

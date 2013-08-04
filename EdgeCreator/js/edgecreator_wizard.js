@@ -181,6 +181,10 @@ function launch_wizard(id, p) {
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
+							wizard_goto($('#'+id), 'wizard-myfonts', 
+										{height: $(window).height()-60, width: $(window).width()-40,
+										 modal:true, first: true});
+							$(this).dialog().dialog( "close" );
 							
 						break;
 					}
@@ -223,7 +227,8 @@ function launch_wizard(id, p) {
 		break;
 	}
 	dialogue.dialog({
-		width: p.width || 475,
+		width:  p.width || 475,
+		height: p.height|| 'auto',
 		position: 'top',
 		modal: modal,
 		autoResize: true,
@@ -259,12 +264,12 @@ function launch_wizard(id, p) {
 	});
 }
 
-function wizard_goto(wizard_courant, id_wizard_suivant) {
+function wizard_goto(wizard_courant, id_wizard_suivant, p) {
 	if (can_launch_wizard(id_wizard_suivant)) {
 		wizard_options[wizard_courant.attr('id')]=wizard_courant.find('form').serializeObject();
 		id_wizard_precedent=wizard_courant.attr('id');
 		wizard_courant.dialog().dialog( "close" );
-		launch_wizard(id_wizard_suivant);
+		launch_wizard(id_wizard_suivant, p);
 	}
 }
 
@@ -951,6 +956,13 @@ function wizard_init(wizard_id) {
 		     		   $(span).append(div);
 		     	   });
 		        }
+			});
+		break;
+		case 'wizard-myfonts':
+			var image_selectionnee = $('#wizard-images input[name="selected"]').val();
+			$('#'+wizard_id+' iframe').attr({src:'http://www.myfonts.com/WhatTheFont/upload?url='+image_selectionnee});
+			$('.toggle_exemple').click(function() {
+				$('.exemple_cache, .exemple_affiche').toggleClass('cache');
 			});
 		break;
 	}
@@ -2606,7 +2618,8 @@ function lister_images_gallerie(type_images) {
             			container.find('ul.gallery li img').removeClass('selected');
                 		$(this).addClass('selected');
                 		container.find('button[value="to-wizard-resize"]').removeClass('cache');
-                		
+            			container.find('[name="selected"]').val($(this).attr('src'));
+            			
                 		$('#wizard-resize img').attr({'src':$(this).attr('src')});
                 	}
             	});

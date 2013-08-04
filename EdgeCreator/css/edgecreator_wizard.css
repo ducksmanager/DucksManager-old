@@ -285,3 +285,14 @@ div.small.buttonset .ui-button-text, button.small .ui-button-text {
 div.picker ~ input[type="text"] {
 	margin-left: 68px;
 }
+
+#wizard-myfonts div.explication .exemple_resultats {
+	height: 30px;
+	vertical-align: middle;
+}
+
+#wizard-myfonts iframe {
+	width: 100%;
+	min-height: 500px;
+	overflow: auto;
+}
