@@ -75,6 +75,7 @@ var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
 var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
+var REGEX_POLICE_MYFONTS=/(?:http:\/\/)?(?:www\.)?(?:new\.)?myfonts.com\/fonts\/(.*)\//g;
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -212,6 +213,22 @@ function launch_wizard(id, p) {
 		                				  "Erreur");
 		                }
 					});
+				}
+			};
+		break;
+		case 'wizard-myfonts':
+			buttons={
+				'OK': function() {
+					var police=$(this).find('form').serializeObject().url_police
+						.replace(REGEX_POLICE_MYFONTS,'$1')
+						.replace(/\//g,'.');
+					$(modification_etape).find('[name="option-URL"]').val(police);
+					tester_option_preview($(modification_etape).data('nom_fonction'),'URL');
+					load_myfonts_preview(true,true,true);
+					$( this ).dialog().dialog( "close" );
+				},
+				'Annuler':function() {
+					$( this ).dialog().dialog( "close" );
 				}
 			};
 		break;
@@ -415,7 +432,7 @@ function wizard_check(wizard_id) {
 }
 
 var chargement_listes=false;
-modification_etape=null;
+var modification_etape=null;
 function wizard_init(wizard_id) {
 	// Transfert vers un autre assistant
 	$('#'+wizard_id+' button[value^="to-wizard-"]').click(function() {
@@ -959,7 +976,12 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		case 'wizard-myfonts':
-			var image_selectionnee = $('#wizard-images input[name="selected"]').val();
+			if (window.location.host === 'localhost') {
+				var image_selectionnee = 'http://www.google.co.uk/images/srpr/logo4w.png';
+			}
+			else {
+				var image_selectionnee = $('#wizard-images input[name="selected"]').val();
+			}
 			$('#'+wizard_id+' iframe').attr({src:'http://www.myfonts.com/WhatTheFont/upload?url='+image_selectionnee});
 			$('.toggle_exemple').click(function() {
 				$('.exemple_cache, .exemple_affiche').toggleClass('cache');
@@ -1974,7 +1996,7 @@ function valider(callback) {
 
 function tester_option_preview(nom_fonction,nom_option,element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
-	var form_options=dialogue.find('[name="form_options"]');;
+	var form_options=dialogue.find('[name="form_options"]');
 	var form_options_orig=dialogue.find('[name="form_options_orig"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
