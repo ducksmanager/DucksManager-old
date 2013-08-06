@@ -2365,7 +2365,7 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		if ($(this).parent().parent().is('body')) // Preview globale donc avec rotation
 			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
-			url_appel+='/null';
+			url_appel+='/0.01';
 
 		$(this).attr({'src':url_appel});	
 		$(this).load(function() {

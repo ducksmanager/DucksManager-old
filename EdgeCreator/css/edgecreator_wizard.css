@@ -162,6 +162,7 @@ button#connexion, button#deconnexion {
 .wizard.preview_etape .image_position img {
 	width: 100%;
 	height: 100%;
+	outline: 1px dashed black;
 }
 
 .wizard.preview_etape #rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
