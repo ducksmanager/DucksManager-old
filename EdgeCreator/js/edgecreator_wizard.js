@@ -40,6 +40,35 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 	  });
 })();
 
+$(function() {
+	// Déplacement des objets
+	$('body').on('keydown', function(e) {
+	    var position, 
+	        draggable = $('.ui-draggable:visible');
+	        distance = 1; // Distance in pixels the draggable should be moved
+	    
+	    if ($(':focus').prop('tagName') === 'IMG' && draggable.length  == 0) {
+	    	return false;
+	    }
+	    position = draggable.position();
+	
+	    // Reposition if one of the directional keys is pressed
+	    switch (e.keyCode) {
+	        case 37: position.left -= distance; break; // Left
+	        case 38: position.top  -= distance; break; // Up
+	        case 39: position.left += distance; break; // Right
+	        case 40: position.top  += distance; break; // Down
+	        default: return true; // Exit and bubble
+	    }
+	    draggable
+	    	.css(position)
+	    	.trigger('mouseup');
+
+	    // Don't scroll page
+	    e.preventDefault();
+	});
+});
+
 
 var wizard_options={};
 var id_wizard_courant=null;
@@ -1421,7 +1450,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		case 'Remplir':
 			classes_farbs['Couleur']='';
 			
-			coloriser_rectangle_preview(form_userfriendly.d().find('.preview_vide'),valeurs['Couleur'],true);
+			coloriser_rectangle_preview(valeurs['Couleur'],true);
 			
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
 			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
@@ -2175,10 +2204,12 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 						val = toFloat2Decimals(positionnement.width()/image.width());
 					break;
 					case 'Compression_y':
-						var original_width =dialogue.find('[name="original_preview_width"]' ).val();
-						var original_height=dialogue.find('[name="original_preview_height"]').val();
-						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Compression_y').val()) 
-											  /(original_height/positionnement.height()));
+						var image_preview_ajustee=$('body>.apercu_myfonts img');
+						var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+						var hauteur_image=dialogue.find('.image_position').height();
+						var largeur_preview=dialogue.find('.preview_vide').width();
+						
+						val = hauteur_image * ratio_image_preview_ajustee / largeur_preview;
 					break;
 					case 'Chaine': case 'URL':
 						val=form_userfriendly.valeur(nom_option).val();
@@ -2243,6 +2274,7 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 				  		  stop:function(event, ui) {
 			   		    	tester_option_preview('TexteMyFonts','Pos_x'); 
 			   		    	tester_option_preview('TexteMyFonts','Pos_y');
+			   		    	tester();
 			   		      }
 					  })
 					  .resizable({
@@ -2322,7 +2354,7 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 	var couleur = farb[0].color;
 	switch (nom_fonction) {
 		case 'Remplir':
-			coloriser_rectangle_preview(form_options.d().find('.preview_vide'),couleur,true);
+			coloriser_rectangle_preview(couleur,true);
 		break;
 		case 'Degrade':
 			if (input_couleur.attr('name').indexOf('Couleur_debut') != -1)

@@ -267,15 +267,15 @@
 				&gt; D&eacute;placez et redimensionnez la zone de d&eacute;grad&eacute;.<br />
 				
 				&gt; D&eacute;finissez la premi&egrave;re couleur.<br />
-				<div class="picker couleur_debut cache"></div>
+				<div class="picker couleur_debut"></div>
 				<label for="option-Couleur_debut">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur_debut" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur_debut" size="4" maxlength="7"/>
 				<br />
 				
 				&gt; D&eacute;finissez la deuxi&egrave;me couleur.<br />
-				<div class="picker couleur_fin cache"></div>
+				<div class="picker couleur_fin"></div>
 				<label for="option-Couleur_fin">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur_fin" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur_fin" size="4" maxlength="7"/>
 				<br />
 				
 				&gt; Indiquez le sens du d&eacute;grad&eacute;.<br />
@@ -297,7 +297,7 @@
 				&gt; D&eacute;finissez la couleur de fond de la tranche.<br />
 				<div class="picker"></div>
 				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
 			</p>
 		</div>
 		
@@ -327,7 +327,7 @@
 				</div>
 				<div class="picker"></div>
 				<label for="option-Couleur">Couleur : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
 				<br />
 				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir l'arc</label> 
 					
@@ -360,7 +360,7 @@
 				</div>
 				<div class="picker"></div><br />
 				<label for="option-Couleur">Couleur du polygone : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
 					
 			</form>
 		</div>
@@ -374,7 +374,7 @@
 			<form id="options_etape">
 				<div class="picker"></div>
 				<label for="option-Couleur">Couleur : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7" readonly="readonly"/>
+				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
 				<br />
 				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir le rectangle</label> 
 					
@@ -420,8 +420,8 @@
 								<label for="option-Couleur_texte">Couleur du texte : </label>
 							</td>
 							<td>
-								<div class="picker texte cache"></div>
-								<input type="text" name="option-Couleur_texte" size="4" maxlength="7" readonly="readonly"/>
+								<div class="picker texte"></div>
+								<input type="text" name="option-Couleur_texte" size="4" maxlength="7"/>
 							</td>
 						</tr>
 						<tr>
@@ -429,8 +429,8 @@
 								<label for="option-Couleur_fond">Couleur du fond : </label>
 							</td>
 							<td>
-								<div class="picker fond cache"></div>
-								<input type="text" name="option-Couleur_fond" size="4" maxlength="7" readonly="readonly"/>
+								<div class="picker fond"></div>
+								<input type="text" name="option-Couleur_fond" size="4" maxlength="7"/>
 							</td>
 						</tr>
 						<tr>

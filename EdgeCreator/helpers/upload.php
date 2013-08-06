@@ -71,9 +71,7 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 	  		</script><?php
 		  }
 		  ?>Envoi r&eacute;alis&eacute; avec succ&egrave;s !<?php 
-		  if ($est_photo_tranche) {
-			afficher_retour();
-		  }	
+		  afficher_retour();
 	 }
 	 else //Sinon (la fonction renvoie FALSE).
 	 {
