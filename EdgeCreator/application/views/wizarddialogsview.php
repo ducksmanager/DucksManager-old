@@ -550,7 +550,7 @@
 				Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
 			</span> -->
 			<div class="accordion">
-				<h3><a href="#">
+				<h3 id="upload"><a href="#">
 					<span class="photo_principale">Envoyer une photo</span>
 					<span class="autres_photos photos_texte">Envoyer une image d'&eacute;l&eacute;ment</span>
 				</a></h3>
@@ -562,7 +562,7 @@
 						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=0"></iframe>
 					</span>
 				</div>
-				<h3><a href="#">
+				<h3 id="gallery"><a href="#">
 					<span class="photo_principale">S&eacute;lectionner une photo existante</span>
 					<span class="autres_photos photos_texte">S&eacute;lectionner une image existante</span>
 				</a></h3>

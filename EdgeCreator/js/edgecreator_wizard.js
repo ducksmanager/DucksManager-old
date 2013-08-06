@@ -156,7 +156,8 @@ function launch_wizard(id, p) {
 			};
 		break;
 		case 'wizard-images':
-			buttons["OK"]=function() {				
+			buttons= {
+			  'OK': function() {	
 				var action_suivante=wizard_check($(this).attr('id'));
 				if (action_suivante != null) {
 					var type_gallerie='';
@@ -190,7 +191,11 @@ function launch_wizard(id, p) {
 						break;
 					}
 				}
-			};
+			},
+			'Annuler':function() {
+				$( this ).dialog().dialog( "close" );
+			}
+		};
 		break;
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			buttons["OK"]=function() {
@@ -667,7 +672,13 @@ function wizard_init(wizard_id) {
 		
 		case 'wizard-images':
 			$('#'+wizard_id).find('.accordion').accordion({
-				active: 1
+				active: 1,
+				activate: function( event, ui ) {
+					if ($(ui.newHeader).attr('id') === 'gallery') {
+						var type_gallerie = $('#'+wizard_id).hasClass('photo_principale') ? 'Photos' : 'Source';
+						lister_images_gallerie(type_gallerie);
+					}
+				}
 			});
 			var type_gallerie = $('#'+wizard_id).hasClass('photo_principale') ? 'Photos' : 'Source';
 			lister_images_gallerie(type_gallerie);
@@ -977,7 +988,7 @@ function wizard_init(wizard_id) {
 		break;
 		case 'wizard-myfonts':
 			if (window.location.host === 'localhost') {
-				var image_selectionnee = 'http://www.google.co.uk/images/srpr/logo4w.png';
+				var image_selectionnee = prompt('URL image ?');
 			}
 			else {
 				var image_selectionnee = $('#wizard-images input[name="selected"]').val();
