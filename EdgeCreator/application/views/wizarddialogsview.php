@@ -267,15 +267,13 @@
 				&gt; D&eacute;placez et redimensionnez la zone de d&eacute;grad&eacute;.<br />
 				
 				&gt; D&eacute;finissez la premi&egrave;re couleur.<br />
-				<div class="picker couleur_debut"></div>
 				<label for="option-Couleur_debut">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur_debut" size="4" maxlength="7"/>
+				<input class="couleur" type="text" name="option-Couleur_debut" maxlength="7"/>
 				<br />
 				
 				&gt; D&eacute;finissez la deuxi&egrave;me couleur.<br />
-				<div class="picker couleur_fin"></div>
 				<label for="option-Couleur_fin">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur_fin" size="4" maxlength="7"/>
+				<input class="couleur" type="text" name="option-Couleur_fin" maxlength="7"/>
 				<br />
 				
 				&gt; Indiquez le sens du d&eacute;grad&eacute;.<br />
@@ -295,9 +293,8 @@
 			<div class="deuxieme rectangle_degrade"></div>
 			<p>
 				&gt; D&eacute;finissez la couleur de fond de la tranche.<br />
-				<div class="picker"></div>
 				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
+				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 			</p>
 		</div>
 		
@@ -308,9 +305,8 @@
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage.
 			</p>
 			<form id="options_etape">
-				<div class="picker"></div>
 				<label for="option-Couleur">Couleur s&eacute;lectionn&eacute;e : </label>
-				<input type="text" name="option-Couleur" size="6" maxlength="6"/>
+				<input class="couleur" type="text" name="option-Couleur" maxlength="6"/>
 			</form>
 		</div>
 		
@@ -325,9 +321,8 @@
 					<input type="radio" name="option-drag-resize" value="deplacement" id="Arc_deplacement" /><label for="Arc_deplacement">D&eacute;placement</label>
 					<input type="radio" name="option-drag-resize" value="redimensionnement"  id="Arc_redimensionnement"/><label for="Arc_redimensionnement">Redimensionnement</label><br /><br />
 				</div>
-				<div class="picker"></div>
 				<label for="option-Couleur">Couleur : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
+				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 				<br />
 				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir l'arc</label> 
 					
@@ -358,9 +353,8 @@
 						Cliquez sur le point &agrave; supprimer.
 					</div>
 				</div>
-				<div class="picker"></div><br />
 				<label for="option-Couleur">Couleur du polygone : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
+				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 					
 			</form>
 		</div>
@@ -372,9 +366,8 @@
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
 			</p>
 			<form id="options_etape">
-				<div class="picker"></div>
 				<label for="option-Couleur">Couleur : </label>
-				<input type="text" name="option-Couleur" size="4" maxlength="7"/>
+				<input class="couleur" type="text" name="option-Couleur" maxlength="7"/>
 				<br />
 				<input type="checkbox" name="option-Rempli" id="option-Rempli" />&nbsp;<label for="option-Rempli">Remplir le rectangle</label> 
 					
@@ -420,8 +413,7 @@
 								<label for="option-Couleur_texte">Couleur du texte : </label>
 							</td>
 							<td>
-								<div class="picker texte"></div>
-								<input type="text" name="option-Couleur_texte" size="4" maxlength="7"/>
+								<input class="couleur" type="text" name="option-Couleur_texte" maxlength="7"/>
 							</td>
 						</tr>
 						<tr>
@@ -429,8 +421,7 @@
 								<label for="option-Couleur_fond">Couleur du fond : </label>
 							</td>
 							<td>
-								<div class="picker fond"></div>
-								<input type="text" name="option-Couleur_fond" size="4" maxlength="7"/>
+								<input class="couleur" type="text" name="option-Couleur_fond" maxlength="7"/>
 							</td>
 						</tr>
 						<tr>
@@ -719,4 +710,9 @@
 	<br />
 	<a href="javascript:void(0)" onclick="location.reload()">Recharger cette page</a>.
 	</p>
+</div>
+
+<div id="picker_container" class="cache">
+	S&eacute;lectionnez une couleur <button class="small" id="fermer_picker" name="fermer_picker">Fermer</button>
+	<div id="picker"></div>
 </div>

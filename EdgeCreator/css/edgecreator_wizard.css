@@ -29,6 +29,15 @@ button#connexion, button#deconnexion {
 	float: right;
 }
 
+#picker_container {
+	position: fixed;
+	z-index: 1010;
+	left: 50%;
+	bottom: 0;
+	background: white;
+	border: 1px solid black;
+}
+
 .ui-dialog {
 	top: 70px !important;
 	z-index: 99;
@@ -283,8 +292,12 @@ div.small.buttonset .ui-button-text, button.small .ui-button-text {
 	font-size: 0.9em !important;
 }
 
-div.picker ~ input[type="text"] {
-	margin-left: 68px;
+input.couleur {
+	width: 60px;
+}
+
+input.couleur.selected {
+	outline: 2px dashed red;
 }
 
 #wizard-myfonts div.explication .exemple_resultats {

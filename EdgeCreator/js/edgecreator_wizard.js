@@ -40,6 +40,8 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 	  });
 })();
 
+var farb;
+var input_farb;
 $(function() {
 	// Déplacement des objets
 	$('body').on('keydown', function(e) {
@@ -67,6 +69,21 @@ $(function() {
 	    // Don't scroll page
 	    e.preventDefault();
 	});
+	
+	farb=$.farbtastic($('#picker'))
+		.linkTo(
+			function() { // mousedrag
+				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
+			},
+			function() { // mouseup
+				callback_test_picked_color();
+			}
+		);
+	$('#fermer_picker')
+		.button()
+		.click(function() {
+			$('#picker_container').addClass('cache');
+		});
 });
 
 
@@ -105,6 +122,7 @@ var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
 var REGEX_POLICE_MYFONTS=/(?:http:\/\/)?(?:www\.)?(?:new\.)?myfonts.com\/fonts\/(.*)\//g;
+var REGEX_OPTION=/option\-(.*)/g;
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -1226,6 +1244,7 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.preview_etape').removeClass('modif');
 	dialogue.find('.ui-draggable').draggable('destroy');
 	dialogue.find('.ui-resizable').resizable('destroy');
+	$('#picker_container').addClass('cache');
 	modification_etape=null;
 }
 
@@ -1310,10 +1329,7 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	});
 }
 
-var farbs;
 function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction) {
-	farbs={};
-	var classes_farbs={};
 	
 	var form_userfriendly=section_preview_etape.find('.options_etape');
 	var form_options = section_preview_etape.find('[name="form_options"]');
@@ -1378,9 +1394,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_x_fin=image.position().left +parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
 			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
 			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
-				
-			classes_farbs['Couleur_debut']='.couleur_debut';
-			classes_farbs['Couleur_fin']='.couleur_fin';
 
 			var rectangle = form_userfriendly.find('.rectangle_degrade');
 
@@ -1430,8 +1443,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					  'height': hauteur	  	+'px'})
 			    .removeClass('cache');
 
-			classes_farbs['Couleur']='';
-
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
 			
@@ -1448,7 +1459,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	
 		break;
 		case 'Remplir':
-			classes_farbs['Couleur']='';
 			
 			coloriser_rectangle_preview(valeurs['Couleur'],true);
 			
@@ -1467,7 +1477,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 														   		    }});
 		break;
 		case 'Arc_cercle':
-			classes_farbs['Couleur']='';
 			
 			var arc=form_userfriendly.find('.arc_position');
 				
@@ -1521,7 +1530,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 		
 		case 'Polygone':
-			classes_farbs['Couleur']='';
 			
 			var polygone=form_userfriendly.find('.polygone_position');
 				
@@ -1548,7 +1556,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		
 		break;
 		case 'Rectangle':
-			classes_farbs['Couleur']='';
 
 			var position_texte=$('#rectangle_position');
 
@@ -1613,8 +1620,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 
 		break;
 		case 'TexteMyFonts':
-			classes_farbs['Couleur_texte']='.texte';
-			classes_farbs['Couleur_fond']='.fond';
 			
 			$.each($(['Chaine','URL','Largeur']),function(i,option_nom) {
 				form_userfriendly.valeur(option_nom).val(valeurs[option_nom]);				
@@ -1666,17 +1671,28 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 	}
 	
-	for (var nom_option in classes_farbs) {
-		if (! section_preview_etape.find('.picker'+classes_farbs[nom_option]).hasClass('farbtastic')) {
-			var input=form_userfriendly.valeur(nom_option);
-			ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
-						 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
-			input.keyup(function() {
-				farbs[nom_option].setColor('#'+$(this).val());
-				callback_test_picked_color($(farbs[nom_option]), $(this), nom_fonction, nom_option);
+	form_userfriendly.find('.couleur').each(function() {
+		var input=$(this);
+		input
+			.click(function() {
+				input_farb=$(this);
+				$('#picker_container').removeClass('cache');
+				farb.setColor('#'+input_farb.val());
+				
+				$('.couleur.selected').removeClass('selected');
+				$(this).addClass('selected');
+			})
+			.blur(function() {
+				$(this).removeClass('selected');
+			})
+			.keyup(function() {
+				farb.setColor('#'+$(this).val());
+				callback_test_picked_color();
 			});
-		}
-	}
+		
+		var nom_option=input.attr('name').replace(REGEX_OPTION,'$1');
+		affecter_couleur_input(input, valeurs[nom_option]);
+	});
 	
 	for (var i in checkboxes) {
 		form_userfriendly.valeur(checkboxes[i])
@@ -1967,14 +1983,6 @@ function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
 	}
 }
 
-function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
-	farbs[nom_option]=$.farbtastic(picker)
-					  .linkTo(function() {callback_change_picked_color($(this),input);},
-							  function() {callback_test_picked_color  ($(this),input,nom_fonction,nom_option);})
-					  .setColor(valeur);
-	
-}
-
 function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sauvegarde, callback) {
 	callback=callback || function() {};
 	if (dialogue.find('[name="form_options"]').serialize() 
@@ -2044,7 +2052,7 @@ function tester_option_preview(nom_fonction,nom_option,element) {
 
 	var val=null;
 	if (nom_option.indexOf('Couleur') == 0) {
-		val=farbs[nom_option].color.replace(/#/g,'');	
+		val=form_userfriendly.valeur(nom_option).val().replace(/#/g,'');	
 	}
 	else {
 		switch(nom_fonction) {
@@ -2332,8 +2340,7 @@ function reload_all_previews() {
     });
 }
 
-function callback_change_picked_color(farb, input_couleur) {
-	var couleur=farb[0].color.replace(/#/g,'');
+function affecter_couleur_input(input_couleur, couleur) {
 	var r=couleur.substring(0,2),
 		g=couleur.substring(2,4),
 		b=couleur.substring(4,6);
@@ -2348,16 +2355,19 @@ function callback_change_picked_color(farb, input_couleur) {
 }
 
 
-function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
+function callback_test_picked_color() {
+	var nom_option=input_farb.attr('name').replace(REGEX_OPTION,'$1');
+	var nom_fonction=input_farb.closest('.ui-dialog').data('nom_fonction');
+	
 	tester_option_preview(nom_fonction,nom_option);
-	var form_options=input_couleur.d().find('[name="form_options"]');
-	var couleur = farb[0].color;
+	var form_options=input_farb.d().find('[name="form_options"]');
+	var couleur = farb.color;
 	switch (nom_fonction) {
 		case 'Remplir':
 			coloriser_rectangle_preview(couleur,true);
 		break;
 		case 'Degrade':
-			if (input_couleur.attr('name').indexOf('Couleur_debut') != -1)
+			if (input_farb.attr('name').indexOf('Couleur_debut') != -1)
 				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),couleur,null,form_options.valeur('Sens').val());
 			else
 				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),null,couleur,form_options.valeur('Sens').val());
