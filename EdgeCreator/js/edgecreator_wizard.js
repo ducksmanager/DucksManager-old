@@ -1021,12 +1021,21 @@ function wizard_init(wizard_id) {
 		     		   var div=$('<div>');
 		     		   var type_contribution=$(span).attr('id');
 		     		   for (var username in data) {
-		     			   var option = $('<input>',{'name':$(span).attr('id'),'type':'checkbox'}).val(username);
+		     			   var id = $(span).attr('id')+'_'+username;
+		     			   var option = $('<input>',{
+		     				   id:   id,
+		     				   name: $(span).attr('id'),
+		     				   type: 'checkbox'
+		     			   }).val(username);
 		     			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
 							      || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
 							    		  								   || utilisateur_courant===username));
 		     			   option.prop({'checked': coche, 'readOnly': coche});
-		     			   $(div).append($('<div>').css({'font-weight':coche?'bold':'normal'}).append(option).append(username));
+		     			   $(div).append(
+		     					$('<div>')
+		     					   	.css({'font-weight':coche?'bold':'normal'})
+		     					   	.append(option)
+		     					   	.append($('<label>',{'for': id}).text(username)));
 		     		   }
 		     		   $(span).append(div);
 		     	   });
