@@ -518,7 +518,7 @@
 	<iframe src="<?=base_url().'index.php/helper/index/image_upload.php?photo_tranche=1'?>"></iframe>
 </div>
 
-<div id="wizard-images" class="wizard deadend" title="Assistant DucksManager - Photos de la tranche">
+<div id="wizard-images" class="wizard deadend photo_principale" title="Assistant DucksManager - Photos de la tranche">
 	<p>
 		<form name="form_options">
 			<span class="photo_principale">
