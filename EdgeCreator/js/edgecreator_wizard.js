@@ -828,8 +828,10 @@ function wizard_init(wizard_id) {
 								reload_all_previews();
 								if (modification_etape != null) {
 									$('.preview_vide')
-										.css({'width' :$('#Dimension_x').val()*zoom+'px', 
-											  'height':$('#Dimension_y').val()*zoom+'px'});
+										.width ($('#Dimension_x').val()*zoom)
+										.height($('#Dimension_y').val()*zoom);
+									modification_etape.find('.preview_etape')
+										.css({'min-height': $('.preview_vide').height()});
 									
 									var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
 									var section_preview_etape = modification_etape.find('.preview_etape');
@@ -1902,6 +1904,10 @@ function positionner_image(preview) {
 	                  (image.offset().top -parseFloat(hauteur)),
 	                  (image.offset().left+image.width()),
 	                  (image.offset().top +image.height())];
+	
+	if (position_image.hasClass('ui-resizable')) {
+		position_image.resizable('destroy');
+	}
 	
 	position_image.addClass('outlined')
 				  .css({'outline-color':'#000000',
