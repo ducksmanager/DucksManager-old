@@ -21,7 +21,12 @@ class MyFonts extends CI_Model {
 		$this->font=$font;
 		$this->color=$color;
 		$this->color_bg=$color_bg;
-		$this->width=$width;
+		if (preg_match('#^[.0-9]+$#',$width)) {
+			$this->width=preg_replace('#^(.*\...).*#','$1',$width);
+		}
+		else {
+			$this->width=$width;
+		}
 		$this->text=$text;
 		$this->precision=$precision;
 
@@ -43,11 +48,10 @@ class MyFonts extends CI_Model {
 		);
 		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
 		$requete_image_existe='SELECT ID FROM images_myfonts '
-							 .'WHERE Font LIKE \''.$this->font.'\' AND Color LIKE \''.$this->color.'\' AND ColorBG LIKE \''.$this->color_bg.'\''
-							 .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$texte_clean.'\' AND Precision_ LIKE \''.$this->precision.'\'';
+							 .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
+							 .' AND Width = \''.$this->width.'\' AND Texte = \''.$texte_clean.'\' AND Precision_ = \''.$this->precision.'\'';
 		$requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
 		$image_existe=count($requete_image_existe_resultat) != 0;
-		
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
