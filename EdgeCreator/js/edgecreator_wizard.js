@@ -122,7 +122,8 @@ var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
 var REGEX_POLICE_MYFONTS=/(?:http:\/\/)?(?:www\.)?(?:new\.)?myfonts.com\/fonts\/(.*)\//g;
-var REGEX_OPTION=/option\-(.*)/g;
+var REGEX_OPTION=/option\-([A-Za-z0-9]+)/g;
+var REGEX_DECIMAL=/\-?[0-9]+\.?[0-9]*/g;
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -226,7 +227,7 @@ function launch_wizard(id, p) {
 							}
 						break;
 						case 'autres_photos':
-			   		    	tester_option_preview('Image','Source'); 
+			   		    	tester_options_preview('Image',['Source']); 
 							$(this).dialog().dialog( "close" );
 						break;
 						case 'photos_texte':
@@ -275,7 +276,7 @@ function launch_wizard(id, p) {
 						.replace(REGEX_POLICE_MYFONTS,'$1')
 						.replace(/\//g,'.');
 					$(modification_etape).find('[name="option-URL"]').val(police);
-					tester_option_preview($(modification_etape).data('nom_fonction'),'URL');
+					tester_options_preview($(modification_etape).data('nom_fonction'),['URL']);
 					load_myfonts_preview(true,true,true);
 					$( this ).dialog().dialog( "close" );
 				},
@@ -1232,9 +1233,6 @@ function ouvrir_dialogue_preview(dialogue) {
 		'Fermer': function() {
 			verifier_changements_etapes_sauves($(this).d(),'wizard-confirmation-annulation');
 		},
-		'Tester': function() {
-			tester();
-		},
 		'Valider': function() {
 			valider();		
 		}
@@ -1322,6 +1320,7 @@ function placer_dialogues_preview() {
 }
 
 function recuperer_et_alimenter_options_preview(num_etape) {
+	$('.preview_vide').css({'background-color':''});
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
@@ -1383,18 +1382,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			    	axis: 'y',
 			    	stop:function(event, ui) {
 			    		var element=$(event.target);
-			    		if (element.hasClass('premiere')) {
-			    			tester_option_preview(nom_fonction,'Y1',element);
-			    		}
-			    		else {
-			    			tester_option_preview(nom_fonction,'Y2',element);
-			    		}
+			    		tester_options_preview(nom_fonction,[element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
 			    	}
 			    })
 			    .resizable({
 			    	handles:'s',
 			    	resize:function(event, ui) {
-			    		tester_option_preview(nom_fonction,'Taille_agrafe',ui.element);
+			    		tester_options_preview(nom_fonction,['Taille_agrafe'],ui.element);
 			    	}
 			    });
 		break;
@@ -1415,23 +1409,19 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					 .removeClass('cache')
 					 .draggable({//containment:limites_drag, 
 						 stop:function(event, ui) {
-			   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
-			   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
-			   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-			   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+			   		    	tester_options_preview(nom_fonction, ['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 						 }
 					 })
 					 .resizable({
 						 stop:function(event, ui) {
-							 tester_option_preview(nom_fonction,'Pos_x_fin'); 
-							 tester_option_preview(nom_fonction,'Pos_y_fin');
+							 tester_options_preview(nom_fonction, ['Pos_x_fin', 'Pos_y_fin']);
 				   		 }
 					 });
 			coloriser_rectangle_degrade(rectangle,'#'+valeurs['Couleur_debut'],'#'+valeurs['Couleur_fin'],valeurs['Sens']);
 			
 			var choix = form_userfriendly.find('[name="option-Sens"]');
 			choix.click(function() {
-   		    	tester_option_preview(nom_fonction,'Sens');
+   		    	tester_options_preview(nom_fonction,['Sens']);
    		    	coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
 			});
 		break;
@@ -1470,8 +1460,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	
 		break;
 		case 'Remplir':
-			
-			coloriser_rectangle_preview(valeurs['Couleur'],true);
+			$('.preview_vide').css({'background-color': '#'+valeurs['Couleur']});
 			
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
 			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
@@ -1483,8 +1472,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 										 				.removeClass('cache')
 													    .draggable({containment:limites_drag,
 														   		    stop:function(event, ui) {
-														   		    	tester_option_preview(nom_fonction,'Pos_x'); 
-														   		    	tester_option_preview(nom_fonction,'Pos_y');
+														   		    	tester_options_preview(nom_fonction,['Pos_x', 'Pos_y']);
 														   		    }});
 		break;
 		case 'Arc_cercle':
@@ -1504,8 +1492,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			form_userfriendly.valeur('Rempli')
 							 .val(valeurs['Rempli'] == 'Oui')
 							 .change(function() {
-								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-								 tester_option_preview(nom_fonction,nom_option);
+								 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+								 tester_options_preview(nom_fonction,[nom_option]);
 								 dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
 							 });
 			form_userfriendly.valeur('drag-resize').change(function() {
@@ -1516,8 +1504,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					}
 					arc.draggable({
 						stop: function(event,ui) {
-						   tester_option_preview(nom_fonction,'Pos_x_centre'); 
-						   tester_option_preview(nom_fonction,'Pos_y_centre');
+						   tester_options_preview(nom_fonction,['Pos_x_centre', 'Pos_y_centre']);
 						}
 					});
 				}
@@ -1527,10 +1514,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					}
 					arc.resizable({
 						 stop: function(event,ui) {
-						   tester_option_preview(nom_fonction,'Largeur'); 
-						   tester_option_preview(nom_fonction,'Hauteur');
-						   tester_option_preview(nom_fonction,'Pos_x_centre'); 
-						   tester_option_preview(nom_fonction,'Pos_y_centre');
+						   tester_options_preview(nom_fonction,['Largeur','Hauteur','Pos_x_centre','Pos_y_centre']);
 						   dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
 						 }
 					 });
@@ -1582,16 +1566,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag, 
 					  		  stop:function(event, ui) {
-				   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
-				   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
-				   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-				   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+				   		    	tester_options_preview(nom_fonction,['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 				   		      }
 						  })
 						  .resizable({
 								stop:function(event, ui) {
-					   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-					   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+					   		    	tester_options_preview(nom_fonction,['Pos_x_fin','Pos_y_fin']);
 					   		    }
 						  });
 			
@@ -1599,8 +1579,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			form_userfriendly.valeur('Rempli')
 							 .val(valeurs['Rempli'] == 'Oui')
 							 .change(function() {
-								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-								 tester_option_preview(nom_fonction,nom_option);
+								 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+								 tester_options_preview(nom_fonction,[nom_option]);
 								 coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
 							 });
 			
@@ -1637,8 +1617,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			});
 			
 			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]').blur(function() {
-				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-				tester_option_preview(nom_fonction,nom_option);
+				var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+				tester_options_preview(nom_fonction,[nom_option]);
 				load_myfonts_preview(true,true,true);
 			});
 			
@@ -1652,8 +1632,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			checkboxes.push('Demi_hauteur');
 			form_userfriendly.valeur('Demi_hauteur')
 								.change(function() {
-									var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-									tester_option_preview(nom_fonction,nom_option);
+									var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+									tester_options_preview(nom_fonction,[nom_option]);
 									load_myfonts_preview(true,true,true);
 								});
 
@@ -1824,8 +1804,7 @@ function positionner_points_polygone(form_options) {
 												   .attr({'name':'point'+(num_point1+1)})
 												   .css(nouveau_point));
 							
-				 			tester_option_preview('Polygone','X'); 
-				 			tester_option_preview('Polygone','Y');
+				 			tester_options_preview('Polygone',['X','Y']);
 				 			dessiner(polygone, 'Polygone', form_options, function() {
 					 			positionner_points_polygone(form_options);
 				 			});
@@ -1834,8 +1813,7 @@ function positionner_points_polygone(form_options) {
 					case 'deplacement':
 						$(this).draggable({
 					 		stop: function(event,ui) {
-					 			tester_option_preview('Polygone','X'); 
-					 			tester_option_preview('Polygone','Y');
+					 			tester_options_preview('Polygone',['X','Y']);
 					 			
 					 			var form_options = $('[name="form_options"]');
 					 			dessiner(polygone, 'Polygone', form_options, function() {
@@ -1858,8 +1836,7 @@ function positionner_points_polygone(form_options) {
 										var nom_point=$('#nom_point_a_supprimer').html();
 										$('.point_polygone[name="'+nom_point+'"]:not(.modele)').remove();
 										
-							 			tester_option_preview('Polygone','X'); 
-							 			tester_option_preview('Polygone','Y');
+							 			tester_options_preview('Polygone',['X','Y']);
 							 			dessiner(polygone, 'Polygone', form_options, function() {
 								 			positionner_points_polygone(form_options);
 							 			});
@@ -1927,14 +1904,12 @@ function positionner_image(preview) {
 					})) 
 			  	  .draggable({//containment:limites_drag, 
 			  		  stop:function(event, ui) {
-		   		    	tester_option_preview('Image','Decalage_x'); 
-		   		    	tester_option_preview('Image','Decalage_y');
+		   		    	tester_options_preview('Image',['Decalage_x','Decalage_y']);
 		   		      }
 				  })
 				  .resizable({
 						stop:function(event, ui) {
-			   		    	tester_option_preview('Image','Compression_x'); 
-			   		    	tester_option_preview('Image','Compression_y');
+			   		    	tester_options_preview('Image',['Compression_x','Compression_y']);
 			   		    }
 				  });
 }
@@ -2057,214 +2032,223 @@ function valider(callback) {
 	});
 }
 
-function tester_option_preview(nom_fonction,nom_option,element) {
+function tester_options_preview(nom_fonction, noms_options, element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
-	var form_options_orig=dialogue.find('[name="form_options_orig"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
 	var image=dialogue.find('.preview_vide');
-
-	var val=null;
-	if (nom_option.indexOf('Couleur') == 0) {
-		val=form_userfriendly.valeur(nom_option).val().replace(/#/g,'');	
-	}
-	else {
-		switch(nom_fonction) {
-			case 'Agrafer':
-				switch(nom_option) {
-					case 'Taille_agrafe':
-						form_userfriendly.find('.agrafe').not(element).height(element.height());
-						val = element.height()/zoom;
-					break;
-					case 'Y1': case 'Y2':
-						val = (element.offset().top-image.offset().top)/zoom;
-					break;
-				}
-			break;
-			case 'Degrade':
-				var zone_degrade=dialogue.find('.rectangle_degrade');
-				switch(nom_option) {
-					case 'Pos_x_debut':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().left - image.offset().left)/zoom));
-					break;
-					case 'Pos_y_debut':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  - image.offset().top )/zoom));
-					break;
-					case 'Pos_x_fin':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().left + zone_degrade.width() - image.offset().left)/zoom));
-					break;
-					case 'Pos_y_fin':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  + zone_degrade.height()- image.offset().top )/zoom));
-					break;
-					case 'Sens':
-						val = form_userfriendly.valeur(nom_option).filter(':checked').val();
-					break;
-				}
-			break;
-			case 'Remplir':
-				var point_remplissage=dialogue.find('.point_remplissage');
-				switch(nom_option) {
-					case 'Pos_x':
-						var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-						val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
-					break;
-					case 'Pos_y':
-						var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-						val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
-					break;
-				}
-			break;
-			case 'Arc_cercle':
-				var arc=dialogue.find('.arc_position');
-				switch(nom_option) {
-					case 'Pos_x_centre':
-						val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2 
-											 + parseFloat(arc.position().left 
-													 	+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().left : 0)
-													 	- image.position().left)/zoom);
-					break;
-					case 'Pos_y_centre':
-						val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
-								 			 + parseFloat(arc.position().top 
-								 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
-								 					    - image.position().top)/zoom);
-					break;
-					case 'Largeur':
-						val=arc.width()/zoom;
-					break;
-					case 'Hauteur':
-						val=arc.height()/zoom;					
-					break;
-					case 'Rempli':
-						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-					break;
-				}
-			break;
-			case 'Polygone':
-				switch(nom_option) {
-					case 'X':
-						var x = [];
-						$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
-							point=$(point);
-							x[i] = (point.offset().left + point.scrollLeft() - image.offset().left + COTE_CARRE_DEPLACEMENT/2) / zoom;
-							
-						});
-						val=x.join(',');
-					break;
-					case 'Y':
-						var y = [];
-						$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
-							point=$(point);
-							y[i] = (point.offset().top + point.scrollTop() - image.offset().top + COTE_CARRE_DEPLACEMENT/2) / zoom;
-							
-						});
-						val=y.join(',');
-					break;
-				}
-			break;
-			case 'Rectangle':
-				var positionnement=$('#rectangle_position');
-				switch(nom_option) {
-					case 'Pos_x_debut':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);
-					break;
-					case 'Pos_y_debut':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().top  - image.offset().top )/zoom);
-					break;
-					case 'Pos_x_fin':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().left + positionnement.width() - image.offset().left)/zoom);
-					break;
-					case 'Pos_y_fin':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom);
-					break;
-					case 'Rempli':
-						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-					break;
-				}
-			break;
-			case 'Image':
-				var positionnement=dialogue.find('.image_position');
-				switch(nom_option) {
-					case 'Decalage_x':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-					break;
-					case 'Decalage_y':
-						var pos_y_image=positionnement.offset().top - image.offset().top;
-						val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
-						form_options.valeur('Mesure_depuis_haut').val('Oui');
-					break;
-					case 'Compression_x':
-						val = toFloat2Decimals(positionnement.width()/image.width());
-					break;
-					case 'Compression_y':
-						var compression_x=parseFloat(form_options.valeur('Compression_x').val());
-						
-						var image_preview=dialogue.find('.apercu_image');
-						var ratio_image=image_preview.prop('width')/image_preview.prop('height');
-						var ratio_positionnement=positionnement.width()/positionnement.height();
-						val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
-					break;
-					case 'Source':
-						val=$('.gallery img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
-						form_userfriendly.valeur(nom_option).val(val);
-						
-						definir_et_positionner_image(val);
-				}
-			break;
-			case 'TexteMyFonts':
-				var positionnement=dialogue.find('.image_position');
-				switch(nom_option) {
-					case 'Pos_x':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-					break;
-					case 'Pos_y':
-						var pos_y_rectangle=positionnement.offset().top - image.offset().top;
-						val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
-						form_options.valeur('Mesure_depuis_haut').val('Oui');
-					break;
-					case 'Compression_x':
-						val = toFloat2Decimals(positionnement.width()/image.width());
-					break;
-					case 'Compression_y':
-						var image_preview_ajustee=$('body>.apercu_myfonts img');
-						var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
-						var hauteur_image=dialogue.find('.image_position').height();
-						var largeur_preview=dialogue.find('.preview_vide').width();
-						
-						val = hauteur_image * ratio_image_preview_ajustee / largeur_preview;
-					break;
-					case 'Chaine': case 'URL':
-						val=form_userfriendly.valeur(nom_option).val();
-					break;
-					case 'Largeur':
-						var largeur_courante=form_options.valeur('Largeur').val();
-						var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
-													-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
-						val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
-					break;
-					case 'Demi_hauteur':
-						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-					break;
-					case 'Rotation':
-						val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
-					break;
-				}
-			break;
+	
+	var tester_apres = false;
+	
+	$.each(noms_options,function(i, nom_option) {
+		var val=null;
+		if (nom_option.indexOf('Couleur') == 0) {
+			val=form_userfriendly.valeur(nom_option).val().replace(/#/g,'');	
 		}
-	}
-	form_options.valeur(nom_option).val(val);
-
-	if (['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1) {
-		var generer_preview_proprietes = nom_option == 'Chaine'  || nom_option == 'URL',
-			generer_preview_finition = nom_option == 'Largeur' || nom_option == 'Demi_hauteur';
-		generer_et_positionner_preview_myfonts(generer_preview_proprietes,
-											   generer_preview_finition,
-											   true);
+		else {
+			switch(nom_fonction) {
+				case 'Agrafer':
+					switch(nom_option) {
+						case 'Taille_agrafe':
+							form_userfriendly.find('.agrafe').not(element).height(element.height());
+							val = element.height()/zoom;
+						break;
+						case 'Y1': case 'Y2':
+							val = (element.offset().top-image.offset().top)/zoom;
+						break;
+					}
+				break;
+				case 'Degrade':
+					var zone_degrade=dialogue.find('.rectangle_degrade');
+					switch(nom_option) {
+						case 'Pos_x_debut':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().left - image.offset().left)/zoom));
+						break;
+						case 'Pos_y_debut':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  - image.offset().top )/zoom));
+						break;
+						case 'Pos_x_fin':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().left + zone_degrade.width() - image.offset().left)/zoom));
+						break;
+						case 'Pos_y_fin':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  + zone_degrade.height()- image.offset().top )/zoom));
+						break;
+						case 'Sens':
+							val = form_userfriendly.valeur(nom_option).filter(':checked').val();
+						break;
+					}
+				break;
+				case 'Remplir':
+					var point_remplissage=dialogue.find('.point_remplissage');
+					switch(nom_option) {
+						case 'Pos_x':
+							var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+							val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
+						break;
+						case 'Pos_y':
+							var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+							val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
+						break;
+					}
+				break;
+				case 'Arc_cercle':
+					var arc=dialogue.find('.arc_position');
+					switch(nom_option) {
+						case 'Pos_x_centre':
+							val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2 
+												 + parseFloat(arc.position().left 
+														 	+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().left : 0)
+														 	- image.position().left)/zoom);
+						break;
+						case 'Pos_y_centre':
+							val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
+									 			 + parseFloat(arc.position().top 
+									 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
+									 					    - image.position().top)/zoom);
+						break;
+						case 'Largeur':
+							val=arc.width()/zoom;
+						break;
+						case 'Hauteur':
+							val=arc.height()/zoom;					
+						break;
+						case 'Rempli':
+							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+						break;
+					}
+				break;
+				case 'Polygone':
+					switch(nom_option) {
+						case 'X':
+							var x = [];
+							$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
+								point=$(point);
+								x[i] = (point.offset().left + point.scrollLeft() - image.offset().left + COTE_CARRE_DEPLACEMENT/2) / zoom;
+								
+							});
+							val=x.join(',');
+						break;
+						case 'Y':
+							var y = [];
+							$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
+								point=$(point);
+								y[i] = (point.offset().top + point.scrollTop() - image.offset().top + COTE_CARRE_DEPLACEMENT/2) / zoom;
+								
+							});
+							val=y.join(',');
+						break;
+					}
+				break;
+				case 'Rectangle':
+					var positionnement=$('#rectangle_position');
+					switch(nom_option) {
+						case 'Pos_x_debut':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);
+						break;
+						case 'Pos_y_debut':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().top  - image.offset().top )/zoom);
+						break;
+						case 'Pos_x_fin':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().left + positionnement.width() - image.offset().left)/zoom);
+						break;
+						case 'Pos_y_fin':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom);
+						break;
+						case 'Rempli':
+							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+						break;
+					}
+				break;
+				case 'Image':
+					var positionnement=dialogue.find('.image_position');
+					switch(nom_option) {
+						case 'Decalage_x':
+							val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+						break;
+						case 'Decalage_y':
+							var pos_y_image=positionnement.offset().top - image.offset().top;
+							val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
+							form_options.valeur('Mesure_depuis_haut').val('Oui');
+						break;
+						case 'Compression_x':
+							val = toFloat2Decimals(positionnement.width()/image.width());
+						break;
+						case 'Compression_y':
+							var compression_x=parseFloat(form_options.valeur('Compression_x').val());
+							
+							var image_preview=dialogue.find('.apercu_image');
+							var ratio_image=image_preview.prop('width')/image_preview.prop('height');
+							var ratio_positionnement=positionnement.width()/positionnement.height();
+							val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
+						break;
+						case 'Source':
+							val=$('.gallery img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
+							form_userfriendly.valeur(nom_option).val(val);
+							
+							definir_et_positionner_image(val);
+					}
+				break;
+				case 'TexteMyFonts':
+					var positionnement=dialogue.find('.image_position');
+					switch(nom_option) {
+						case 'Pos_x':
+							val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+						break;
+						case 'Pos_y':
+							var pos_y_rectangle=positionnement.offset().top - image.offset().top;
+							val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
+							form_options.valeur('Mesure_depuis_haut').val('Oui');
+						break;
+						case 'Compression_x':
+							val = toFloat2Decimals(positionnement.width()/image.width());
+						break;
+						case 'Compression_y':
+							var image_preview_ajustee=$('body>.apercu_myfonts img');
+							var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+							var hauteur_image=dialogue.find('.image_position').height();
+							var largeur_preview=dialogue.find('.preview_vide').width();
+							
+							val = hauteur_image * ratio_image_preview_ajustee / largeur_preview;
+						break;
+						case 'Chaine': case 'URL':
+							val=form_userfriendly.valeur(nom_option).val();
+						break;
+						case 'Largeur':
+							var largeur_courante=form_options.valeur('Largeur').val();
+							var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
+														-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
+							val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
+						break;
+						case 'Demi_hauteur':
+							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+						break;
+						case 'Rotation':
+							val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
+						break;
+					}
+				break;
+			}
+		}
+		form_options.valeur(nom_option).val(val);
+	
+		if (['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1) {
+			var generer_preview_proprietes = nom_option == 'Chaine'  || nom_option == 'URL',
+				generer_preview_finition = nom_option == 'Largeur' || nom_option == 'Demi_hauteur';
+			generer_et_positionner_preview_myfonts(generer_preview_proprietes,
+												   generer_preview_finition,
+												   true);
+		}
+		else {
+			tester_apres=true;
+		}
+	});
+	if (tester_apres) {
+		tester();
 	}
 }
 
-function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_preview_finition,gen_tranche) {
+function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_preview_finition, gen_tranche) {
 	load_myfonts_preview(gen_preview_proprietes,gen_preview_finition,gen_tranche, !gen_tranche ? function() {} : function() {
 		var dialogue=modification_etape.d();
 		var form_userfriendly=dialogue.find('.options_etape');
@@ -2295,15 +2279,13 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 					  .removeClass('cache')
 					  .draggable({//containment:limites_drag, 
 				  		  stop:function(event, ui) {
-			   		    	tester_option_preview('TexteMyFonts','Pos_x'); 
-			   		    	tester_option_preview('TexteMyFonts','Pos_y');
+			   		    	tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
 			   		    	tester();
 			   		      }
 					  })
 					  .resizable({
 							stop:function(event, ui) {
-				   		    	tester_option_preview('TexteMyFonts','Compression_x'); 
-				   		    	tester_option_preview('TexteMyFonts','Compression_y');
+				   		    	tester_options_preview('TexteMyFonts',['Compression_x','Compression_y']);
 				   		    }
 					  });
 		var image_a_positionner = image_preview_ajustee.clone(false);
@@ -2320,6 +2302,7 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 		}
 		
 		placer_extension_largeur_preview();
+		tester();
 	});
 }
 
@@ -2374,12 +2357,12 @@ function callback_test_picked_color() {
 	var nom_option=input_farb.attr('name').replace(REGEX_OPTION,'$1');
 	var nom_fonction=input_farb.closest('.ui-dialog').data('nom_fonction');
 	
-	tester_option_preview(nom_fonction,nom_option);
+	tester_options_preview(nom_fonction,[nom_option]);
 	var form_options=input_farb.d().find('[name="form_options"]');
 	var couleur = farb.color;
 	switch (nom_fonction) {
 		case 'Remplir':
-			coloriser_rectangle_preview(couleur,true);
+			$('.preview_vide').css({'background-color': '#'+couleur});
 		break;
 		case 'Degrade':
 			if (input_farb.attr('name').indexOf('Couleur_debut') != -1)
@@ -2471,7 +2454,7 @@ function placer_extension_largeur_preview() {
 			.draggable({
 				axis: 'x',
 				stop:function(event,ui) {
-					tester_option_preview('TexteMyFonts','Largeur');
+					tester_options_preview('TexteMyFonts',['Largeur']);
 					load_myfonts_preview(false,true,false);	
 				}
 			});

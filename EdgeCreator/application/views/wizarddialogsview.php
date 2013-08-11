@@ -299,6 +299,7 @@
 		</div>
 		
 		<div id="options-etape--Remplir" class="options_etape cache">
+			<div id="rectangle_position" class="cache"></div>
 			<img class="point_remplissage cache" src="../images/cross.png" />
 			<p>
 				&gt; D&eacute;placez le curseur en forme de croix pour modifier le point de remplissage.<br />

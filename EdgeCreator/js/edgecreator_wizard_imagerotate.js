@@ -36,7 +36,7 @@ function stopRotate( e ) {
   $(document).unbind( 'mousemove' );
 
   setTimeout( function() { 
-	  tester_option_preview("TexteMyFonts","Rotation");
+	  tester_options_preview("TexteMyFonts",["Rotation"]);
 	  imageBeingRotated = false; 
   }, 10 );
   return false;
@@ -60,7 +60,7 @@ function rotateImage( e ) {
   currentDegValue=parseFloat(rotateAngle * 180 / Math.PI);
   rotateImageDegValue(imageBeingRotated, currentDegValue);
   
-  $(imageBeingRotated).val($(imageBeingRotated).val().replace(/\-?[0-9]+\.?[0-9]*/g,
+  $(imageBeingRotated).val($(imageBeingRotated).val().replace(REGEX_DECIMAL,
 		  							  						  toFloat2Decimals(currentDegValue)));
   
   return false;
@@ -78,11 +78,10 @@ function rotateImageRadValue(image, rotateAngle) {
 function rotateImageDegValue(image, degValue) {
 	  if ($(image).val() == undefined) return;
 	  currentDegValue = degValue;
-	  $(image).val($(image).val().replace(/\-?[0-9]+\.?[0-9]*/g,
+	  $(image).val($(image).val().replace(REGEX_DECIMAL,
 				  						  toFloat2Decimals(currentDegValue)));
 	  var radValue=parseFloat(degValue * Math.PI / 180);
 	  rotateImageRadValue(image, radValue);
-	  tester_option_preview("TexteMyFonts","Rotation");
 }
 
 function radToDeg(rad) {
