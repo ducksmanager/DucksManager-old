@@ -338,7 +338,7 @@ define('NEWS_A_AJOUTE_BOUQUINERIE','has indicated the second-hand bookshop');
 define('NEWS_TITRE','Recently on DucksManager...');
 define('NEWS_A_AJOUTE','has added');
 define('NEWS_A_SA_COLLECTION','to his/her collection');
-define('NEWS_AUTRE_NUMEROS','other issue');
+define('NEWS_AUTRE_NUMERO','other issue');
 define('NEWS_AUTRES_NUMEROS','other issues');
 define('NEWS_EVENEMENTS_PLUS_ANCIENS','Older events');
 define('NEWS_IL_Y_A_PREFIXE','');
