@@ -76,7 +76,7 @@ if (count($tranches_a_ajouter) > 0) {
 						   .'VALUES ';
 	$mini_requetes_ajout=array();
 	foreach($tranches_a_ajouter as $numero)
-		$mini_requetes_ajout[]="('fr/JM','$numero',NULL,152,NOW())";
+		$mini_requetes_ajout[]="('fr/JM','$numero',NULL,NULL,NOW())";
 	
 	$requete_ajout_tranches.=implode(',',$mini_requetes_ajout);
 	
