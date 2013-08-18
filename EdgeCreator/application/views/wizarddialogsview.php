@@ -184,9 +184,8 @@
 		<div id="wizard-proposition-clonage" class="wizard" title="Assistant DucksManager - Cr&eacute;ation">
 			<p>
 				Certaines tranches ont d&eacute;j&agrave; &eacute;t&eacute; con&ccedil;ues pour le magazine s&eacute;lectionn&eacute;. 
-				Si la v&ocirc;tre ressemble &agrave; l'une d'elles, sa cr&eacute;ation sera facilit&eacute;e.<br />
-				L'une des tranches si-dessous est identique &agrave; la v&ocirc;tre, ou bien seules quelques couleurs ou quelques textes sont diff&eacute;rents ? 
-				Si oui, s&eacute;lectionnez cette tranche. Sinon, cliquez sur "Cr&eacute;er une tranche originale".
+				Si l'une des tranches si-dessous est identique &agrave; la v&ocirc;tre, ou bien que seules quelques couleurs ou quelques textes sont diff&eacute;rents, s&eacute;lectionnez cette tranche. 
+				Sinon, cliquez sur "Cr&eacute;er une tranche originale".
 				<form>
 					<div class="chargement">
 						Veuillez patienter...
@@ -690,14 +689,6 @@
 	</p>
 </div>
 
-<div id="wizard-pas-d-image" class="wizard" title="Aucune image de tranche sp&eacute;cifi&eacute;e">
-	<p>
-	Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo g&eacute;n&eacute;rale de la tranche.<br />
-	Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
-	car cela permet de faciliter sa conception.
-	</p>
-</div>
-
 <div id="wizard-erreur-image-myfonts" class="wizard" title="Param&egrave;tres de texte invalides">
 	<p>
 		Les param&egrave;tres du texte &agrave; g&eacute;n&eacute;rer sont invalides. <br />
@@ -716,4 +707,20 @@
 <div id="picker_container" class="cache">
 	S&eacute;lectionnez une couleur <button class="small" id="fermer_picker" name="fermer_picker">Fermer</button>
 	<div id="picker"></div>
+</div>
+
+<div id="libelles-messages" class="cache">
+	<div id="message-aucune-image-de-tranche">
+		<div class="titre">
+			Aucune photo g&eacute;n&eacute;rale de tranche.
+		</div>
+		<div class="libelle">
+			Le mod&egrave;le EdgeCreator en cours de conception ne contient aucune photo g&eacute;n&eacute;rale 
+			de la tranche. <br />
+			Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
+			car cela permet de faciliter sa conception. <br />
+			Cliquez sur l'ic&ocirc;ne <img src="../images/photo.png" /> de la barre de menu 
+			pour s&eacute;lectionner une photo de tranche.
+		</div>
+	</div>
 </div>

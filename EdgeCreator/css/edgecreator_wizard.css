@@ -14,11 +14,33 @@ iframe {
 	cursor: pointer;
 }
 
+#status {
+	width: 300px;
+	right: 205px;
+}
+
+#status .ui-icon {
+	float: left;
+	margin-right: .3em;
+	margin-top: 4px;
+}
+
+#status .message-label {
+	font-size: 11px;
+}
+
 #status_user {
+	width: 200px;	
+	right: 5px;
+	text-align: right;
+}
+
+#status, #status_user {
 	position: fixed;
 	top: 0px;
-	right: 5px;
 	float: right;
+	height: inherit;
+	overflow-y: auto;
 }
 
 #status_user #utilisateur {

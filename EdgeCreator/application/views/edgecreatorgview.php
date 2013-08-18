@@ -33,6 +33,10 @@
 		<img class="action tip" name="valider"
 			 title="Valider cette conception de tranche" />
 	</div>
+	
+	<div id="status">
+	</div>
+	
 	<div id="status_user">
 		<?php
 		if ($privilege=='Affichage') {
@@ -46,6 +50,12 @@
 			?><button class="small" id="deconnexion" onclick="logout()">D&eacute;connexion</button><?php					
 		}
 		?>
+	</div>
+	<div id="template-warning" class="ui-widget cache">
+	    <div class="ui-state-warning ui-corner-all" style="padding: 0 .7em;">
+            <span class="ui-icon ui-icon-alert"></span>
+            <strong>Attention:</strong> <span class="message-label"></span>
+	    </div>
 	</div>
 </div>
 <?php

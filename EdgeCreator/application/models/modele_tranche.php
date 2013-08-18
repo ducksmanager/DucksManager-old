@@ -471,6 +471,40 @@ class Modele_tranche extends CI_Model {
 		return Inducks::get_liste_magazines($pays);
 	}
 	
+	function get_createurs_tranche($pays, $magazine, $numero) {
+		$createurs_tranche_edgecreator_v1 = $this->get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero);
+		$createurs_tranche_edgecreator_v2 = $this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero);
+		if (!is_null($createurs_tranche_edgecreator_v1)) {
+			return $createurs_tranche_edgecreator_v1;
+		}
+		else {
+			return $createurs_tranche_edgecreator_v2;
+		}
+	}
+	
+	function get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero) {
+		$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
+						  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') = \''.$numero.'\'';
+		$resultat_get_prets=$this->db->query($requete_get_prets);
+		if (count($resultat_get_prets->result()) > 0) {
+			$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
+			return $createurs;
+		}
+		return null;
+	}
+	
+	function get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero) {
+		$requete_get_prets='SELECT Numero AS issuenumber, username FROM tranches_en_cours_modeles '
+						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\' '
+				 		    .'AND Active=0';
+		$resultat_get_prets=$this->db->query($requete_get_prets);
+		if (count($resultat_get_prets->result()) > 0) {
+			$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
+			return $createurs;
+		}
+		return null;
+	}
+	
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
 		$numeros_affiches=array('Aucun'=>'Aucun');
 		if ($get_prets)
@@ -482,14 +516,10 @@ class Modele_tranche extends CI_Model {
 			$numeros_affiches[$numero_affiche]=$numero_affiche;
 
 			if ($get_prets) {
-				$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
-						.'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero_affiche.'\'';
-				$resultat_get_prets=$this->db->query($requete_get_prets)->result();
-				if (count($resultat_get_prets) > 0) {
-					$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
-					$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs) ? 'par_moi' : 'global';
+				$createurs_tranche = $this->get_createurs_tranche($pays, $magazine, $numero_affiche);
+				if (!is_null($createurs_tranche)) {
+					$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs_tranche) ? 'par_moi' : 'global';
 				}
-
 			}
 		}
 		if ($get_prets) {

@@ -11,6 +11,14 @@
 	  };
 })(jQuery);
 
+$.widget("ui.tooltip", $.ui.tooltip, {
+    options: {
+        content: function () {
+            return $(this).prop('title');
+        }
+    }
+});
+
 $(window).scroll(function(a,b) {
 	if (modification_etape != null 
 	 && modification_etape.find('#options-etape--Polygone').length != 0) {
@@ -44,7 +52,10 @@ var farb;
 var input_farb;
 $(function() {
 	// Déplacement des objets
-	$('body').on('keydown', function(e) {
+	$('body').on('keyup', function(e) {
+	    // Don't scroll page
+	    e.preventDefault();
+	    
 	    var position, 
 	        draggable = $('.ui-draggable:visible');
 	        distance = 1; // Distance in pixels the draggable should be moved
@@ -63,11 +74,9 @@ $(function() {
 	        default: return true; // Exit and bubble
 	    }
 	    draggable
-	    	.css(position)
-	    	.trigger('mouseup');
+	    	.css(position);
 
-	    // Don't scroll page
-	    e.preventDefault();
+	    tester();
 	});
 	
 	farb=$.farbtastic($('#picker'))
@@ -2602,10 +2611,11 @@ function afficher_photo_tranche() {
 			$(this).css({'display':'inline'});
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
 															 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
+			jqueryui_clear_message('aucune-image-de-tranche');
 		});
 		image.error(function() {
 			$(this).css({'display':'none'});
-			launch_wizard('wizard-pas-d-image', {modal:true, first: true, deadend: true, closeable: true});
+			jqueryui_message('warning','aucune-image-de-tranche');
 		});
 	}
 	else {
@@ -2758,6 +2768,29 @@ function templatedToVal(templatedString) {
 		}
 	});
 	return templatedString;
+}
+
+
+function jqueryui_clear_message(id) {
+	var id_message = 'message-'+id;
+	$('#status [name="'+id_message+'"]').remove();
+}
+
+function jqueryui_message(type, id) {
+	var id_message = 'message-'+id;
+	if ($('#status [name="'+id_message+'"]').length == 0) {
+		var libelles = $('#'+id_message);
+		var element_message=$('#template-'+type)
+			.clone(true)
+				.removeAttr('id')
+				.removeClass('cache')
+				.attr({name: id_message, title: libelles.find('.libelle').html(), rel: 'tooltip'})
+				.tooltip();
+		var element_texte_message=element_message.find('.message-label');
+		element_texte_message
+			.html(libelles.find('.titre').html());
+		$('#status').append(element_message);
+	}
 }
 
 function hex2rgb(hex) {

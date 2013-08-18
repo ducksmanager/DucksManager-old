@@ -383,26 +383,35 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete_ajout_modele);
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
+		$est_tranche_edgecreator_v2 = !is_null($this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero));
 		
-		$requete_get_options='SELECT '.implode(', ', self::$fields).',username '
-						    .'FROM edgecreator_modeles2 AS modeles '
-							.'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-					        .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-							.'ORDER BY Ordre';
+		if ($est_tranche_edgecreator_v2) {
+			$requete_get_options='SELECT '.implode(', ', self::$content_fields).' '
+								.'FROM tranches_en_cours_modeles_vue '
+								.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
+								.'  AND username=\''.mysql_real_escape_string(self::$username).'\' AND Active=0';
+		}
+		else {
+			$requete_get_options='SELECT '.implode(', ', self::$fields).',username '
+							    .'FROM edgecreator_modeles2 AS modeles '
+								.'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+						        .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+								.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+								.'ORDER BY Ordre';
+		}
 		echo $requete_get_options."\n";
 		$resultats=$this->db->query($requete_get_options)->result();
 		foreach($resultats as $resultat) {
-			$modifs=array();
-			$modifs_requete=array();
 			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
 			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
-			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
-			if (est_dans_intervalle($numero,$intervalle)) {
+			if ($est_tranche_edgecreator_v2 
+			 || est_dans_intervalle(
+			 		$numero,
+			 		$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))) {
+				
 				$requete_ajout_valeur='INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur) '
-									 .'VALUES ('.$id_modele.',\''.$resultat->Ordre.'\',\''.$resultat->Nom_fonction.'\', '
-											  .(is_null($resultat->Option_nom) ? 'NULL' : '\''.mysql_real_escape_string($resultat->Option_nom).'\'').','
-											  .(is_null($resultat->Option_valeur) ? 'NULL' : '\''.mysql_real_escape_string($resultat->Option_valeur).'\'').')';
+									 .'VALUES ('.$id_modele .',\''.$resultat->Ordre.'\',\''.$resultat->Nom_fonction.'\', '
+											    .$option_nom.','.$option_valeur.')';
 				$this->db->query($requete_ajout_valeur);
 			}
 		}
