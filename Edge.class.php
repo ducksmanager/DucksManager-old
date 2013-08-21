@@ -406,7 +406,7 @@ elseif (isset($_POST['generer_images_etageres'])) {
 		imagedestroy($im);
 	}
 	
-	?><a style="float:left;border-bottom:1px dashed white" target="_blank" href="http://87.106.165.63/Merge.class.php?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>&nb=<?=count($pos->etageres->etageres)?>&largeur=<?=$largeur?>">
+	?><a style="float:left;border-bottom:1px dashed white" target="_blank" href="http://62.210.239.25/ci/DM/Merge.class.php?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>&nb=<?=count($pos->etageres->etageres)?>&largeur=<?=$largeur?>">
 		<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
 	</a>
    	<?php
