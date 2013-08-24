@@ -1,6 +1,6 @@
 #!/bin/sh
 sh_dir="$PWD"
-. ~/ducksmanager/inducks.properties
+. /home/ducksmanager/inducks.properties
 cd $isv_path
 rm *.isv
 rm *.sql
