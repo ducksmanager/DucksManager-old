@@ -489,9 +489,9 @@ class Modele_tranche extends CI_Model {
 	function get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero) {
 		$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
 						  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') = \''.$numero.'\'';
-		$resultat_get_prets=$this->db->query($requete_get_prets);
-		if (count($resultat_get_prets->result()) > 0) {
-			$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
+		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
+		if (count($resultat_get_prets) > 0) {
+			$createurs=explode(';',$resultat_get_prets[0]['createurs']);
 			return $createurs;
 		}
 		return null;
@@ -501,9 +501,9 @@ class Modele_tranche extends CI_Model {
 		$requete_get_prets='SELECT Numero AS issuenumber, username FROM tranches_en_cours_modeles '
 						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\' '
 				 		    .'AND Active=0';
-		$resultat_get_prets=$this->db->query($requete_get_prets);
-		if (count($resultat_get_prets->result()) > 0) {
-			$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
+		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
+		if (count($resultat_get_prets) > 0) {
+			$createurs=explode(';',$resultat_get_prets[0]['createurs']);
 			return $createurs;
 		}
 		return null;
@@ -1151,9 +1151,9 @@ class Modele_tranche extends CI_Model {
 			case 'Utilisateurs':
 				list($pays,$magazine,$numero)=explode('_',$arg);
 				$requete_contributeurs_tranche='SELECT photographes, createurs FROM tranches_pretes WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
-				$resultat_contributeurs_tranche=$this->db->query($requete_contributeurs_tranche)->first_row();
-				$photographes=explode(';',$resultat_contributeurs_tranche->photographes);
-				$createurs=explode(';',$resultat_contributeurs_tranche->createurs);
+				$resultat_contributeurs_tranche=$this->requete_select_dm($requete_contributeurs_tranche);
+				$photographes=explode(';',$resultat_contributeurs_tranche[0]['photographes']);
+				$createurs=explode(';',$resultat_contributeurs_tranche[0]['createurs']);
 				
 				$requete_utilisateurs='SELECT username FROM users ORDER BY username';
 				$resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
