@@ -1102,7 +1102,10 @@ class Modele_tranche extends CI_Model {
 				}
 				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
-						mkdir($rep,0777,true);
+						if (!@mkdir($rep,0777,true)) {
+							$liste["erreur"]=$rep;
+						}
+							
 					}
 					else {
 						$liste["erreur"]=$rep;
