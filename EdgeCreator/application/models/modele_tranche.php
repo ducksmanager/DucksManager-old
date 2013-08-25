@@ -28,6 +28,10 @@ class Modele_tranche extends CI_Model {
 		return self::$just_connected;
 	}
 	
+	function requete_select_dm($requete) {
+		return Inducks::requete_select($requete, DatabasePriv::$nom_db_DM,'ducksmanager.net');
+	}
+	
 	function get_privilege() {
 		$privilege=null;
 		$_POST['mode_expert']=isset($_POST['mode_expert']) && $_POST['mode_expert'] === 'true' ? true : false;
@@ -63,31 +67,31 @@ class Modele_tranche extends CI_Model {
 		}
 		else {
 			$requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
-			$resultat=$this->db->query($requete);
-			if ($resultat->num_rows==0) {
+			$resultat = $this->requete_select_dm($requete);
+			if (count($resultat)==0) {
 				$erreur = 'Identifiants invalides !';
 				return null;
 			}
 			else {
 				$requete='SELECT privilege FROM edgecreator_droits WHERE username =\''.$user.'\'';
-				$resultat= $this->db->query($requete);
-				if ($resultat->num_rows()==0) {
+				$resultat = $this->requete_select_dm($requete);
+				if (count($resultat)==0) {
 					return 'Affichage';
 				}
-				return $resultat->row()->privilege;
+				return $resultat[0]['privilege'];
 			}
 		}
 	}
 	
 	function username_to_id($username) {
 		$requete='SELECT ID FROM users WHERE username = \''.$username.'\'';
-		$resultat=$this->db->query($requete);
-		return $resultat->row()->ID;
+		$resultat = $this->requete_select_dm($requete);
+		return $resultat[0]['ID'];
 	}
 
 	function user_exists($user) {
 		$requete='SELECT username FROM users WHERE username =\''.$user.'\'';
-		return ($this->db->query($requete)->num_rows > 0);
+		return count($this->requete_select_dm($requete)) > 0;
 	}
 	
 	
@@ -1152,9 +1156,9 @@ class Modele_tranche extends CI_Model {
 				$createurs=explode(';',$resultat_contributeurs_tranche->createurs);
 				
 				$requete_utilisateurs='SELECT username FROM users ORDER BY username';
-				$resultats_utilisateurs=$this->db->query($requete_utilisateurs)->result();
+				$resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
 				foreach($resultats_utilisateurs as $resultat_utilisateur) {
-					$username = $resultat_utilisateur->username;
+					$username = $resultat_utilisateur['username'];
 					$est_photographe = in_array($username,$photographes);
 					$est_designer = in_array($username,$createurs);
 					
