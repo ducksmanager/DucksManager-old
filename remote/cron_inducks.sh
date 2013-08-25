@@ -1,5 +1,5 @@
 #!/bin/sh
-. /home/ducksmanager/inducks.properties
+. /home/ducksmanager/ducksmanager.properties
 cd $isv_path
 rm *.isv
 rm *.sql
