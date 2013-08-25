@@ -15,7 +15,12 @@ if ($est_photo_tranche) {
 	$fichier.=$extension_cible;
 }
 else {
-	$fichier = basename($_POST['magazine'].'.'.$_FILES['image']['name']);
+	if (strpos($_FILES['image']['name'], $_POST['magazine']) === 0) {
+		$fichier = basename($_FILES['image']['name']);
+	}
+	else {
+		$fichier = basename($_POST['magazine'].'.'.$_FILES['image']['name']);
+	}
 }
 $taille_maxi = $_POST['MAX_FILE_SIZE'];
 $taille = filesize($_FILES['image']['tmp_name']);
