@@ -19,8 +19,8 @@ class Valider_Modele extends CI_Controller {
 		$message.=ob_get_contents();
 		ob_end_clean();
 			
-		$this->email->from('admin@ducksmanager.net', 'DucksManager - '.$username);
-		$this->email->to('admin@ducksmanager.net');
+		$this->email->from(get_admin_email(), 'DucksManager - '.$username);
+		$this->email->to(get_admin_email());
 			
 		$this->email->subject('Proposition de modele de tranche de '.$username);
 		$this->email->message($message);

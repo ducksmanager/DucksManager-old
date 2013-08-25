@@ -412,12 +412,12 @@ class Modele_tranche extends CI_Model {
 			$resultat_get_options=$this->db->query($requete_get_options)->result();
 			foreach($resultat_get_options as $option) {
 				foreach(array_keys($numeros_disponibles) as $numero) {
-					Viewer::$numero=$numero;
+					Viewer_wizard::$numero=$numero;
 					if (!isset($dimensions[$numero]))
 						$dimensions[$numero]=array();
 					if (isset($dimensions[$numero]['x']) && isset($dimensions[$numero]['y'])) {
-						Viewer::$largeur=$dimensions[$numero]['x'];
-						Viewer::$hauteur=$dimensions[$numero]['y'];
+						Viewer_wizard::$largeur=$dimensions[$numero]['x'];
+						Viewer_wizard::$hauteur=$dimensions[$numero]['y'];
 					}
 					$intervalle=$option->Numero_debut.'~'.$option->Numero_fin;
 					if (est_dans_intervalle($numero,$intervalle)) {
@@ -1184,14 +1184,14 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	static function rendu_image() {
-		if (Viewer::$is_debug===false)
+		if (Viewer_wizard::$is_debug===false)
 			header('Content-type: image/png');
-		imagepng(Viewer::$image);
+		imagepng(Viewer_wizard::$image);
 	
-		@rmdir('../edges/'.Viewer::$pays.'/tmp/');
-		@mkdir('../edges/'.Viewer::$pays.'/tmp/');
-		$nom_image='../edges/'.Viewer::$pays.'/tmp/'.Viewer::$random_id.'.png';
-		imagepng(Viewer::$image,$nom_image);
+		@rmdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
+		@mkdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
+		$nom_image='../edges/'.Viewer_wizard::$pays.'/tmp/'.Viewer_wizard::$random_id.'.png';
+		imagepng(Viewer_wizard::$image,$nom_image);
 		
 		exit();
 	} 
@@ -1280,7 +1280,7 @@ class Fonction_executable extends Fonction {
 		if ($modele_tranche->get_preview_existe($this->getJSONOptions())) {
 			$session_id=$modele_tranche->id_session;
 			header('Content-type: image/png');
-			imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.Viewer::$pays.'_'.Viewer::$magazine.'_'.Viewer::$numero.'_'.Viewer::$etape_en_cours->num_etape.'_'.z(1).'.png'));
+			imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.Viewer_wizard::$pays.'_'.Viewer_wizard::$magazine.'_'.Viewer_wizard::$numero.'_'.Viewer_wizard::$etape_en_cours->num_etape.'_'.z(1).'.png'));
 			exit(0);
 		}
 	}
@@ -1289,21 +1289,21 @@ class Fonction_executable extends Fonction {
 		return json_encode($this->options);
 	}
 	static function erreur($erreur) {
-		if (!is_resource(Viewer::$image)) {
-			Viewer::$largeur=z(20);
-			Viewer::$hauteur=z(220);
-			Viewer::$image=imagecreatetruecolor(Viewer::$largeur, Viewer::$hauteur);
+		if (!is_resource(Viewer_wizard::$image)) {
+			Viewer_wizard::$largeur=z(20);
+			Viewer_wizard::$hauteur=z(220);
+			Viewer_wizard::$image=imagecreatetruecolor(Viewer_wizard::$largeur, Viewer_wizard::$hauteur);
 		}
-		imagefilledrectangle(Viewer::$image, 0, 0, Viewer::$largeur, Viewer::$hauteur, imagecolorallocate(Viewer::$image, 255, 255, 255));
-		$noir=imagecolorallocate(Viewer::$image,0,0,0);
+		imagefilledrectangle(Viewer_wizard::$image, 0, 0, Viewer_wizard::$largeur, Viewer_wizard::$hauteur, imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
+		$noir=imagecolorallocate(Viewer_wizard::$image,0,0,0);
 		$lignes_erreur=explode(';', $erreur);
 		foreach($lignes_erreur as $i=>$ligne) {
 			if ($i==0)
-				$texte_erreur='Erreur etape '.Viewer::$etape_en_cours->num_etape.' (Fonction '.Viewer::$etape_en_cours->nom_fonction.') : '.$ligne;
+				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours->num_etape.' (Fonction '.Viewer_wizard::$etape_en_cours->nom_fonction.') : '.$ligne;
 			else
 				$texte_erreur=$ligne;
-			imagettftext(Viewer::$image,z(3),90,
-						 ($i+1)*Viewer::$largeur/3,Viewer::$hauteur,
+			imagettftext(Viewer_wizard::$image,z(3),90,
+						 ($i+1)*Viewer_wizard::$largeur/3,Viewer_wizard::$hauteur,
 						 $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
 		}
 		Modele_tranche::rendu_image();
@@ -1337,10 +1337,10 @@ class Fonction_executable extends Fonction {
 				if (!$actif) return true;
 				switch($nom) {
 					case 'numero':
-						$str=preg_replace($regex, Viewer::$numero, $str);
+						$str=preg_replace($regex, Viewer_wizard::$numero, $str);
 					break;
 					case 'numero[]':
-						$spl=str_split(Viewer::$numero);
+						$spl=str_split(Viewer_wizard::$numero);
 						if (0!=preg_match_all($regex, $str, $matches)) {
 							foreach($matches[1] as $i=>$num_caractere) {
 								if (!array_key_exists($num_caractere, $spl))
@@ -1351,12 +1351,12 @@ class Fonction_executable extends Fonction {
 						}
 					break;
 					case 'largeur':
-						$str=preg_replace($regex, Viewer::$largeur, $str);
+						$str=preg_replace($regex, Viewer_wizard::$largeur, $str);
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;
 					case 'hauteur':
-						$str=preg_replace($regex, Viewer::$hauteur, $str);
+						$str=preg_replace($regex, Viewer_wizard::$hauteur, $str);
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;
@@ -1385,11 +1385,11 @@ class Dimensions extends Fonction_executable {
 		if (!$executer)
 			return;
 		$this->verifier_erreurs();
-		Viewer::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
-		//imageantialias(Viewer::$image, true);
-		Viewer::$largeur=z($this->options->Dimension_x);
-		Viewer::$hauteur=z($this->options->Dimension_y);
-		imagefill(Viewer::$image,0,0,  imagecolorallocate(Viewer::$image, 255, 255, 255));
+		Viewer_wizard::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
+		//imageantialias(Viewer_wizard::$image, true);
+		Viewer_wizard::$largeur=z($this->options->Dimension_x);
+		Viewer_wizard::$hauteur=z($this->options->Dimension_y);
+		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
 	}
 	
 	function verifier_erreurs() {
@@ -1419,16 +1419,16 @@ class Remplir extends Fonction_executable {
 		$this->options->Pos_y=z(self::toTemplatedString($this->options->Pos_y));
 		$this->verifier_erreurs();
 		$this->afficher_si_existant();
-		list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
-		$couleur=imagecolorallocate(Viewer::$image, $r,$g,$b);
-		imagefill(Viewer::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
-		//imageline(Viewer::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
+		list($r,$g,$b)=$this->getRGB(Viewer_wizard::$pays,Viewer_wizard::$magazine,Viewer_wizard::$numero,$this->options->Couleur);
+		$couleur=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
+		imagefill(Viewer_wizard::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
+		//imageline(Viewer_wizard::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
 	}
 	
 	function verifier_erreurs() {
-		if ($this->options->Pos_x >= Viewer::$largeur || $this->options->Pos_y >= Viewer::$hauteur
+		if ($this->options->Pos_x >= Viewer_wizard::$largeur || $this->options->Pos_y >= Viewer_wizard::$hauteur
 		 || $this->options->Pos_x < 0 || $this->options->Pos_y < 0) {
-			self::erreur('Point de remplissage hors de l\'image : ('.$this->options->Pos_x.','.$this->options->Pos_y.') vers ('.Viewer::$largeur.','.Viewer::$hauteur.')');
+			self::erreur('Point de remplissage hors de l\'image : ('.$this->options->Pos_x.','.$this->options->Pos_y.') vers ('.Viewer_wizard::$largeur.','.Viewer_wizard::$hauteur.')');
 		}
 	}
 }
@@ -1460,13 +1460,13 @@ class Image extends Fonction_executable {
 		$chemin_reel=Image::get_chemin_reel($this->options->Source);
 		$sous_image=call_user_func($fonction_creation_image,$chemin_reel);
 		list($width,$height)=array(imagesx($sous_image),imagesy($sous_image));
-		$hauteur_sous_image=Viewer::$largeur*($height/$width);
+		$hauteur_sous_image=Viewer_wizard::$largeur*($height/$width);
 		if ($this->options->Position=='bas') {
-			$this->options->Decalage_y=Viewer::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
+			$this->options->Decalage_y=Viewer_wizard::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
 		}
 		else
 			$this->options->Decalage_y=z($this->options->Decalage_y);
-		imagecopyresampled (Viewer::$image, $sous_image, z($this->options->Decalage_x), $this->options->Decalage_y, 0, 0, Viewer::$largeur*$this->options->Compression_x, $hauteur_sous_image*$this->options->Compression_y, $width, $height);
+		imagecopyresampled (Viewer_wizard::$image, $sous_image, z($this->options->Decalage_x), $this->options->Decalage_y, 0, 0, Viewer_wizard::$largeur*$this->options->Compression_x, $hauteur_sous_image*$this->options->Compression_y, $width, $height);
 	}
 
 	static function get_chemin_reel($source) {
@@ -1576,14 +1576,14 @@ class TexteMyFonts extends Fonction_executable {
 		
 			$width=imagesx($texte);
 			$height=imagesy($texte);
-			$nouvelle_largeur=Viewer::$largeur*$this->options->Compression_x;
-			$nouvelle_hauteur=Viewer::$largeur*($height/$width)*$this->options->Compression_y;
+			$nouvelle_largeur=Viewer_wizard::$largeur*$this->options->Compression_x;
+			$nouvelle_hauteur=Viewer_wizard::$largeur*($height/$width)*$this->options->Compression_y;
 			if ($this->options->Mesure_depuis_haut=='Non')
 				$this->options->Pos_y-=$nouvelle_hauteur/z(1);
-			imagecopyresampled (Viewer::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+			imagecopyresampled (Viewer_wizard::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 		}
 		else
-			Viewer::$image=$texte;
+			Viewer_wizard::$image=$texte;
 
 	}
 	
@@ -1617,21 +1617,21 @@ class TexteTTF extends Fonction_executable {
 		if (!$executer)
 			return;
 		$this->options->Chaine=self::toTemplatedString($this->options->Chaine);
-		list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
-		$couleur_texte=imagecolorallocate(Viewer::$image, $r,$g,$b);
+		list($r,$g,$b)=$this->getRGB(Viewer_wizard::$pays,Viewer_wizard::$magazine,Viewer_wizard::$numero,$this->options->Couleur);
+		$couleur_texte=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		
 		$centrage_auto_x=$this->options->Pos_x == -1;
 		$centrage_auto_y=$this->options->Pos_y == -1;
 		$p=calculateTextBox($this->options->Chaine, BASEPATH.'fonts/'.$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
 		if ($centrage_auto_x || $centrage_auto_y) {
 			if ($centrage_auto_x)
-				$this->options->Pos_x=(Viewer::$largeur-$p['width']*$this->options->Compression_x)/z(2);
+				$this->options->Pos_x=(Viewer_wizard::$largeur-$p['width']*$this->options->Compression_x)/z(2);
 			if ($centrage_auto_y)
-				$this->options->Pos_y=(Viewer::$hauteur-$p['height']*$this->options->Compression_y)/z(2);
+				$this->options->Pos_y=(Viewer_wizard::$hauteur-$p['height']*$this->options->Compression_y)/z(2);
 		}
 		if ($this->options->Compression_x != 1 || $this->options->Compression_y != 1) {
-			$largeur_tmp=max($p['width'],Viewer::$largeur)+z(1);
-			$hauteur_tmp=max($p['height'],Viewer::$hauteur)+z(1);
+			$largeur_tmp=max($p['width'],Viewer_wizard::$largeur)+z(1);
+			$hauteur_tmp=max($p['height'],Viewer_wizard::$hauteur)+z(1);
 			$image2=imagecreatetruecolor($largeur_tmp,$hauteur_tmp);
 			imagefill($image2, 0,0, imagecolorallocatealpha($image2, 255, 255, 255, 127));
 			if ($this->options->Rotation > 45 && $this->options->Rotation <135) {
@@ -1644,11 +1644,11 @@ class TexteTTF extends Fonction_executable {
 						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
 			imagepng($image2, BASEPATH.'../../edges/tmp/ttfcomp.png');
 			
-			imagecopyresampled(Viewer::$image, $image2, z($this->options->Pos_x)*(Viewer::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer::$hauteur/$hauteur_tmp), 0,0, Viewer::$largeur*$this->options->Compression_x, Viewer::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
+			imagecopyresampled(Viewer_wizard::$image, $image2, z($this->options->Pos_x)*(Viewer_wizard::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer_wizard::$hauteur/$hauteur_tmp), 0,0, Viewer_wizard::$largeur*$this->options->Compression_x, Viewer_wizard::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
 
 		}
 		else {
-			imagettftext(Viewer::$image,z($this->options->Taille),$this->options->Rotation,
+			imagettftext(Viewer_wizard::$image,z($this->options->Taille),$this->options->Rotation,
 						 z($this->options->Pos_x),z($this->options->Pos_y),
 						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
 		}
@@ -1674,7 +1674,7 @@ class Polygone extends Fonction_executable {
 		}
 		$this->options->X=explode(',',str_replace(' ','',$this->options->X));
 		$this->options->Y=explode(',',str_replace(' ','',$this->options->Y));
-		$args=array(Viewer::$image);
+		$args=array(Viewer_wizard::$image);
 		$coord=array();
 		foreach(array_keys($this->options->X) as $i) {
 			$this->options->X[$i]=self::toTemplatedString($this->options->X[$i]);
@@ -1685,7 +1685,7 @@ class Polygone extends Fonction_executable {
 		$args[]=$coord;
 		$args[]=count($this->options->X);
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
-		$args[]=imagecolorallocate(Viewer::$image, $r,$g,$b);
+		$args[]=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		call_user_func_array('imagefilledpolygon', $args);
 
 	}
@@ -1708,9 +1708,9 @@ class Agrafer extends Fonction_executable {
 		$this->options->Y1=self::toTemplatedString($this->options->Y1);
 		$this->options->Y2=self::toTemplatedString($this->options->Y2);
 		$this->options->Taille_agrafe=self::toTemplatedString($this->options->Taille_agrafe);
-		$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
-		imagefilledrectangle(Viewer::$image, Viewer::$largeur/2 -z(.25), z($this->options->Y1), Viewer::$largeur/2 +z(.25), z($this->options->Y1+$this->options->Taille_agrafe), $noir);
-		imagefilledrectangle(Viewer::$image, Viewer::$largeur/2 -z(.25), z($this->options->Y2), Viewer::$largeur/2 +z(.25), z($this->options->Y2+$this->options->Taille_agrafe), $noir);
+		$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
+		imagefilledrectangle(Viewer_wizard::$image, Viewer_wizard::$largeur/2 -z(.25), z($this->options->Y1), Viewer_wizard::$largeur/2 +z(.25), z($this->options->Y1+$this->options->Taille_agrafe), $noir);
+		imagefilledrectangle(Viewer_wizard::$image, Viewer_wizard::$largeur/2 -z(.25), z($this->options->Y2), Viewer_wizard::$largeur/2 +z(.25), z($this->options->Y2+$this->options->Taille_agrafe), $noir);
 	}
 }
 
@@ -1746,16 +1746,16 @@ class Degrade extends Fonction_executable {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_x_debut-$this->options->Pos_x_fin));
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer::$image, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_debut, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_fin, $couleur_allouee);
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_debut, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_fin, $couleur_allouee);
 				}
 			}
 			else {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_y_debut-$this->options->Pos_y_fin));
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->$fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->$fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
 				}
 			}
 		}
@@ -1764,15 +1764,15 @@ class Degrade extends Fonction_executable {
 			if ($this->options->Pos_y_debut < $this->options->Pos_y_fin) {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_debut)+$i, $this->options->Pos_x_fin, ($this->options->Pos_y_debut)+$i, $couleur_allouee);
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_debut)+$i, $this->options->Pos_x_fin, ($this->options->Pos_y_debut)+$i, $couleur_allouee);
 				}
 			}
 			else {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					if (false == imageline(Viewer::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee)) {
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					if (false == imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee)) {
 						$a=1;
 					}
 				}
@@ -1812,18 +1812,18 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 		list($r2,$g2,$b2)=array(round($r1/$coef_degrade),round($g1/$coef_degrade),round($b1/$coef_degrade));
 		$couleur1=array($r1,$g1,$b1);
 		$couleur2=array($r2,$g2,$b2);
-		$milieu=round(Viewer::$largeur/2);
+		$milieu=round(Viewer_wizard::$largeur/2);
 		$couleurs_inter=Degrade::getMidColors($couleur1, $couleur2, $milieu);
-		imageline(Viewer::$image, $milieu, 0, $milieu, Viewer::$hauteur, imagecolorallocate(Viewer::$image, $r1,$g1,$b1));
+		imageline(Viewer_wizard::$image, $milieu, 0, $milieu, Viewer_wizard::$hauteur, imagecolorallocate(Viewer_wizard::$image, $r1,$g1,$b1));
 		foreach($couleurs_inter as $i=>$couleur) {
 			list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-			$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-			imageline(Viewer::$image, $milieu+$i, 0, $milieu+$i, Viewer::$hauteur, $couleur_allouee);
-			imageline(Viewer::$image, $milieu-$i, 0, $milieu-$i, Viewer::$hauteur, $couleur_allouee);
+			$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+			imageline(Viewer_wizard::$image, $milieu+$i, 0, $milieu+$i, Viewer_wizard::$hauteur, $couleur_allouee);
+			imageline(Viewer_wizard::$image, $milieu-$i, 0, $milieu-$i, Viewer_wizard::$hauteur, $couleur_allouee);
 		}
-		$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
-		imagefilledrectangle(Viewer::$image, $milieu -z(.25), Viewer::$hauteur*0.2, $milieu +z(.25), Viewer::$hauteur*0.2+Viewer::$hauteur*0.05, $noir);
-		imagefilledrectangle(Viewer::$image, $milieu -z(.25), Viewer::$hauteur*0.8, $milieu +z(.25), Viewer::$hauteur*0.8+Viewer::$hauteur*0.05, $noir);
+		$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
+		imagefilledrectangle(Viewer_wizard::$image, $milieu -z(.25), Viewer_wizard::$hauteur*0.2, $milieu +z(.25), Viewer_wizard::$hauteur*0.2+Viewer_wizard::$hauteur*0.05, $noir);
+		imagefilledrectangle(Viewer_wizard::$image, $milieu -z(.25), Viewer_wizard::$hauteur*0.8, $milieu +z(.25), Viewer_wizard::$hauteur*0.8+Viewer_wizard::$hauteur*0.05, $noir);
 	}
 }
 
@@ -1850,11 +1850,11 @@ class Rectangle extends Fonction_executable {
 		$this->options->Pos_y_fin=z(self::toTemplatedString($this->options->Pos_y_fin));
 
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
-		$couleur=imagecolorallocate(Viewer::$image, $r, $g, $b);
+		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
 		if ($this->options->Rempli=='Oui')
-			imagefilledrectangle(Viewer::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
+			imagefilledrectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
 		else
-			imagerectangle(Viewer::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
+			imagerectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
 	}
 }
 
@@ -1883,22 +1883,22 @@ class Arc_cercle extends Fonction_executable {
 		$this->options->Hauteur=z(self::toTemplatedString($this->options->Hauteur));
 
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
-		$couleur=imagecolorallocate(Viewer::$image, $r, $g, $b);
+		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
 		if ($this->options->Rempli=='Oui')
-			imagefilledarc(Viewer::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur,IMG_ARC_PIE);
+			imagefilledarc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur,IMG_ARC_PIE);
 		else
-			imagearc(Viewer::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur);
+			imagearc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur);
 	}
 }
 
 class Dessiner_contour {
 	function Dessiner_contour($dimensions) {
-		if (is_null(Viewer::$image))
+		if (is_null(Viewer_wizard::$image))
 			Fonction_executable::erreur('Pas d\'infos sur cette tranche');
 		else {
-			$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
+			$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
 			for ($i=0;$i<z(0.15);$i++)
-				imagerectangle(Viewer::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
+				imagerectangle(Viewer_wizard::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
 		}
 	}
 }
@@ -1933,7 +1933,7 @@ class Rogner {
 
 
 function z($valeur) {
-	return (isset(Viewer::$zoom) ? Viewer::$zoom : 1.5)*$valeur;
+	return (isset(Viewer_wizard::$zoom) ? Viewer_wizard::$zoom : 1.5)*$valeur;
 }
 
 function est_dans_intervalle($numero,$intervalle) {

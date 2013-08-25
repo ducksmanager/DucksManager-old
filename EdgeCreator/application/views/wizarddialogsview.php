@@ -696,6 +696,16 @@
 	</p>
 </div>
 
+
+<div id="wizard-erreur-generation-image" class="wizard" title="Erreur de g&eacute;n&eacute;ration d'image">
+	<p>
+		La g&eacute;n&eacute;ration de l'image pour l'&eacute;tape <span name="etape"></span> a &eacute;chou&eacute;. <br />
+		La g&eacute;n&eacute;ration des images des &eacute;tapes suivantes a &eacute;t&eacute; annul&eacute;e. <br /><br />
+		Merci de reporter ce probl&egrave;me au webmaster en indiquant le message d'erreur suivant : <br /><br />
+		<iframe></iframe>
+	</p>
+</div>
+
 <div id="wizard-session-expiree" class="wizard" title="Session expir&eacute;e">
 	<p>
 	Votre session a expir&eacute;. 

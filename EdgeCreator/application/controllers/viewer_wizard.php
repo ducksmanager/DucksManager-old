@@ -1,7 +1,19 @@
 <?php
-include_once(BASEPATH.'/../application/controllers/viewer.php');
 
-class Viewer_wizard extends Viewer {
+class Viewer_wizard extends CI_Controller {
+	static $image;
+	static $largeur;
+	static $hauteur;
+	static $pays;
+	static $magazine;
+	static $numero;
+	static $random_id;
+	static $parametrage;
+	static $fond_noir;
+	static $zoom;
+	static $etapes_actives=array();
+	static $is_debug=false;
+	static $etape_en_cours;
 	
 	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random_ou_username=null,$debug=false) {
 		if ($etapes_actives=='final')
@@ -151,65 +163,23 @@ class Viewer_wizard extends Viewer {
 		}
 		
 		if ($save=='save' && $zoom==1.5) {
-			switch($privilege) {
-				case 'Admin':
-					$contributeur=$random_ou_username;
-					$requete_contributeur_existe='SELECT 1 FROM users WHERE username=\''.$contributeur.'\'';
-					$resultat_contributeur_existe = $this->db->query($requete_contributeur_existe);
-					if ($resultat_contributeur_existe->num_rows == 0) {
-						echo 'Erreur : l\'utilisateur '.$contributeur.' n\'existe pas';
-						return;
-					}
-					
-					$contributeurs=$contributeur;
-					
-					@mkdir('../edges/'.$pays.'/gen/'.$magazine);
-					imagepng(Viewer::$image,'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png');
-					
-					if (self::$is_debug!==false)
-						echo 'Image enregistree dans '.getcwd().'../edges/'.$pays.'/gen/'.$magazine.'.'.$numero.'.png';
-					
-					$requete_tranche_deja_prete='SELECT createurs, photographes, issuenumber '
-											   .'FROM tranches_pretes '
-											   .'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero.'\'';
-					$resultat_tranche_prete = $this->db->query($requete_tranche_deja_prete);
-					if ($resultat_tranche_prete->num_rows== 0) {
-						$requete='INSERT INTO tranches_pretes(publicationcode,issuenumber, photographes, createurs) VALUES '
-								.'(\''.$pays.'/'.$magazine.'\',\''.$numero.'\',NULL,\''.$contributeurs.'\')';
-					}
-					else {
-						$id_contributeur=$this->Modele_tranche->username_to_id($random_ou_username).';';
-						$createurs=$resultat_tranche_prete->row()->createurs == null 
-							? $id_contributeur 
-							: (in_array($contributeur,explode(';',$resultat_tranche_prete->row()->createurs))
-								? $resultat_tranche_prete->row()->createurs
-								: $resultat_tranche_prete->row()->createurs.';'.$id_contributeur); 
-						
-						$requete='UPDATE tranches_pretes '
-								.'SET createurs   =\''.$createurs.'\' '
-								.'WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
-					}
-					$this->db->query($requete);
-				break;
-				case 'Edition':
-					ob_start();
-					print_r($options_preview);
-					$affichage_options=ob_get_contents();
-					ob_end_clean();
-					
-					$this->email->from('admin@ducksmanager.net', 'DucksManager - '.$username_modele);
-					$this->email->to('admin@ducksmanager.net');
-					
-					$this->email->subject('Proposition de modele de tranche de '.$username_modele);
-					$this->email->message($affichage_options);
-					$this->email->attach($nom_image);
-					$this->email->send();
-					$this->email->print_debugger();
-					
-				break;
-				default:
-					echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';
-				break;
+			if($privilege == 'Edition') {
+				ob_start();
+				print_r($options_preview);
+				$affichage_options=ob_get_contents();
+				ob_end_clean();
+				
+				$this->email->from(get_admin_email(), 'DucksManager - '.$username_modele);
+				$this->email->to(get_admin_email());
+				
+				$this->email->subject('Proposition de modele de tranche de '.$username_modele);
+				$this->email->message($affichage_options);
+				$this->email->attach($nom_image);
+				$this->email->send();
+				$this->email->print_debugger();
+			}
+			else {
+				echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';
 			}
 		}
 		

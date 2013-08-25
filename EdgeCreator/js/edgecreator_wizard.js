@@ -1024,7 +1024,6 @@ function wizard_init(wizard_id) {
 		case 'wizard-confirmation-validation-modele-contributeurs':
 			$.ajax({
 		        url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
-		        dataType:'json',
 		        type: 'post',
 		        success:function(data) {
 		           var utilisateur_courant=$('#utilisateur').html();

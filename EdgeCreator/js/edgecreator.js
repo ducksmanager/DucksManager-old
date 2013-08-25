@@ -28,7 +28,6 @@ var zoom=2;
 var numeros_dispos;
 var selecteur_cellules='#table_numeros tr:not(.ligne_entete)>td:not(.intitule_numero):not(.cloner)';
 var colonne_ouverte=false;
-var url_viewer='viewer';
 var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
 
 function element_to_numero(elements) {
@@ -640,17 +639,10 @@ function charger_image(type_chargement,src,num,callback) {
     image.error(function() {
     	var num_etape=chargements[chargement_courant];
     	if (num_etape != 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
-	        var texte_erreur=$('<p>')
-	        	.append($('<p>').html("La g&eacute;n&eacute;ration de l'image pour l'&eacute;tape "+num_etape+" a &eacute;chou&eacute;"))
-	        	.append($('<br>'))
-	        	.append($('<p>').html("La g&eacute;n&eacute;ration des images des &eacute;tapes suivantes a &eacute;t&eacute; annul&eacute;e."))
-	        	.append($('<p>').html("Merci de reporter ce probl&egrave;me au webmaster en indiquant le message d'erreur suivant :"))
-	        	.append($('<br>'))
-	        	.append($('<iframe>',{'src':$(this).attr('src')+'/debug'}));
-	        jqueryui_alert(texte_erreur, "Erreur de g&eacute;n&eacute;ration d'image");
+			$('#wizard-erreur-generation-image').find('[name="etape"]').text(num_etape);
+			$('#wizard-erreur-generation-image').find('iframe').attr({src: $(this).attr('src')+'/debug'});
+    		jqueryui_alert_from_d($('#wizard-erreur-generation-image'));
     	}
-        charger_image_suivante($(this),callback,type_chargement,est_visu);
-        callback(image);
     });
     image.attr({'src':src});
 }
@@ -1776,6 +1768,7 @@ function remplacer_caracteres_whatthefont() {
 }
 
 function jqueryui_alert_from_d(element, close_callback) {
+	close_callback = close_callback || function() {}
 	jqueryui_alert(element.children(), element.attr("title"), close_callback);
 }
 
