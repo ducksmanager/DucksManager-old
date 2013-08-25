@@ -71,22 +71,22 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 	  		</script><?php
 		  }
 		  ?>Envoi r&eacute;alis&eacute; avec succ&egrave;s !<?php 
-		  afficher_retour();
+		  afficher_retour($est_photo_tranche);
 	 }
 	 else //Sinon (la fonction renvoie FALSE).
 	 {
 		  echo 'Echec de l\'envoi !';
-	 	  afficher_retour();
+	 	  afficher_retour($est_photo_tranche);
 	 }
 }
 else
 {
 	 echo $erreur;
-	 afficher_retour();
+	 afficher_retour($est_photo_tranche);
 }
 
-function afficher_retour() {
-	?><br /><a href="javascript:void(0)" onclick="location.href=location.href.replace(/\/upload\.php/g,'/image_upload.php')">Autre envoi</a><?php
+function afficher_retour($est_photo_tranche) {
+	?><br /><a href="<?=$_SERVER['REQUEST_URI'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
 	
 }
 ?>

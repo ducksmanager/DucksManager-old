@@ -12,10 +12,11 @@ class Viewer_wizard extends CI_Controller {
 	static $fond_noir;
 	static $zoom;
 	static $etapes_actives=array();
+	static $externe=false;
 	static $is_debug=false;
 	static $etape_en_cours;
 	
-	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$random_ou_username=null,$debug=false) {
+	function index($pays=null,$magazine=null,$numero=null,$zoom=1,$etapes_actives='1',$parametrage='',$save='false',$fond_noir=false,$externe=false,$random_ou_username=null,$debug=false) {
 		if ($etapes_actives=='final')
 			$etapes_actives='all';
 		if ($etapes_actives=='all') {
@@ -33,10 +34,10 @@ class Viewer_wizard extends CI_Controller {
 			$zoom=1.5;
 		self::$is_debug=$debug;
 		self::$zoom=$zoom;
+		self::$externe=$externe;
 		$this->load->library('email');
 		$this->load->helper('url');
 		$session_id = $this->session->userdata('session_id');
-		
 		
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		
@@ -76,6 +77,7 @@ class Viewer_wizard extends CI_Controller {
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		self::$random_id=$random_ou_username;
+		
 		$this->Modele_tranche->setPays(self::$pays);
 		$this->Modele_tranche->setMagazine(self::$magazine);
 		$this->Modele_tranche->setRandomId($random_ou_username);
@@ -94,96 +96,103 @@ class Viewer_wizard extends CI_Controller {
 		//print_r($ordres);
 		$dimensions=array();
 		self::$etape_en_cours=new stdClass();
-		
-		
-		$num_ordre=-2;
-		$fond_noir_fait=false;
-		$options_preview=array();
-		try {
-		foreach($num_ordres as $num_ordre) {
-			if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
-				$options=new stdClass();
-				$options->Pos_x=$options->Pos_y=0;
-				$options->Couleur='000000';
-				new Remplir($options);
-				$fond_noir_fait=true;
+		if ($externe === 'true') {
+			if (!self::$is_debug) {
+				header('Content-type: image/png');
 			}
-				
-			if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives==array('all')) {
-				$ordres[$num_ordre]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_ordre,$numero);
-				self::$etape_en_cours->num_etape=$num_ordre;
-				self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
-				$fonction=$ordres[$num_ordre];
-				$options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,self::$numero,$fonction->Nom_fonction,false);
-				if ($num_ordre==-1)
-					$dimensions=$options2;
-				if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
-				 || self::$etapes_actives!=array('all')) {
-					foreach(self::$parametrage as $parametre=>$valeur) {
-						$options2->$parametre=$valeur;
+			$image_externe=imagecreatefrompng('http://www.ducksmanager.net/edges/'.self::$pays.'/gen/'.self::$magazine.'.'.self::$numero.'.png');
+			imagepng($image_externe);
+		}
+		else {
+			$num_ordre=-2;
+			$fond_noir_fait=false;
+			$options_preview=array();
+			try {
+			foreach($num_ordres as $num_ordre) {
+				if ($num_ordre>-1 && $fond_noir && !$fond_noir_fait) {
+					$options=new stdClass();
+					$options->Pos_x=$options->Pos_y=0;
+					$options->Couleur='000000';
+					new Remplir($options);
+					$fond_noir_fait=true;
+				}
+					
+				if ($num_ordre<0 || in_array($num_ordre,self::$etapes_actives) || self::$etapes_actives==array('all')) {
+					$ordres[$num_ordre]=$this->Modele_tranche->get_fonction($pays,$magazine,$num_ordre,$numero);
+					self::$etape_en_cours->num_etape=$num_ordre;
+					self::$etape_en_cours->nom_fonction=$ordres[$num_ordre]->Nom_fonction;
+					$fonction=$ordres[$num_ordre];
+					$options2=$this->Modele_tranche->get_options($pays,$magazine,$num_ordre,self::$numero,$fonction->Nom_fonction,false);
+					if ($num_ordre==-1)
+						$dimensions=$options2;
+					if ((self::$etapes_actives==array('all') && ($num_etape_parametrage == $num_ordre || is_null($num_etape_parametrage)))
+					 || self::$etapes_actives!=array('all')) {
+						foreach(self::$parametrage as $parametre=>$valeur) {
+							$options2->$parametre=$valeur;
+						}
 					}
+					new $ordres[$num_ordre]->Nom_fonction(clone $options2);
+					$options_preview[$num_ordre]=$options2;
 				}
-				new $ordres[$num_ordre]->Nom_fonction(clone $options2);
-				$options_preview[$num_ordre]=$options2;
 			}
-		}
-		}
-		catch(Exception $e) {
-	    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
-	    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
-		}
-		// Nouvelles étapes
-		/*foreach(self::$parametrage as $parametres=>$options) {
-			list($num_ordre_param_ajout,$nom_fonction_param)=explode('~', $parametres);
-			self::$etape_en_cours->num_etape=$num_ordre_param_ajout;
-			self::$etape_en_cours->nom_fonction=$nom_fonction_param;
-			if ($num_ordre_param_ajout > $num_ordre && is_array($options)) { // Numéro d'étape supérieure à la maximale existante
-				foreach($options as $option_nom=>$option_valeur) {
-					$ordres[$num_ordre_param_ajout][0]->options->$option_nom=urldecode(str_replace('^','%',
-											   str_replace('!amp!','&',
-											   str_replace('!slash!','/',
-											   str_replace('!sharp!','#',$option_valeur)))));
+			}
+			catch(Exception $e) {
+		    	echo 'Exception reçue : ',  $e->getMessage(), "\n";
+		    	echo '<pre>';print_r($e->getTrace());echo '</pre>';
+			}
+			// Nouvelles étapes
+			/*foreach(self::$parametrage as $parametres=>$options) {
+				list($num_ordre_param_ajout,$nom_fonction_param)=explode('~', $parametres);
+				self::$etape_en_cours->num_etape=$num_ordre_param_ajout;
+				self::$etape_en_cours->nom_fonction=$nom_fonction_param;
+				if ($num_ordre_param_ajout > $num_ordre && is_array($options)) { // Numéro d'étape supérieure à la maximale existante
+					foreach($options as $option_nom=>$option_valeur) {
+						$ordres[$num_ordre_param_ajout][0]->options->$option_nom=urldecode(str_replace('^','%',
+												   str_replace('!amp!','&',
+												   str_replace('!slash!','/',
+												   str_replace('!sharp!','#',$option_valeur)))));
+					}
+					if (isset($ordres[$num_ordre_param_ajout][0]->options))
+						new $nom_fonction_param($ordres[$num_ordre_param_ajout][0]->options);
 				}
-				if (isset($ordres[$num_ordre_param_ajout][0]->options))
-					new $nom_fonction_param($ordres[$num_ordre_param_ajout][0]->options);
+			}*/
+			new Dessiner_contour($dimensions);
+			
+			
+			if (strpos($save,'integrate') !== false && $privilege == 'Admin' && self::$is_debug!==false) {
+				$data = array(
+					'pays'=>$pays,
+					'magazine'=>$magazine,
+					'numero'=>$numero,
+					'options'=>$options_preview,
+					'username'=>$username_modele
+				);
+				$this->load->view('integrateview',$data);
 			}
-		}*/
-		new Dessiner_contour($dimensions);
-		
-		
-		if (strpos($save,'integrate') !== false && $privilege == 'Admin' && self::$is_debug!==false) {
-			$data = array(
-				'pays'=>$pays,
-				'magazine'=>$magazine,
-				'numero'=>$numero,
-				'options'=>$options_preview,
-				'username'=>$username_modele
-			);
-			$this->load->view('integrateview',$data);
+			
+			if ($save=='save' && $zoom==1.5) {
+				if($privilege == 'Edition') {
+					ob_start();
+					print_r($options_preview);
+					$affichage_options=ob_get_contents();
+					ob_end_clean();
+					
+					$this->email->from(get_admin_email(), 'DucksManager - '.$username_modele);
+					$this->email->to(get_admin_email());
+					
+					$this->email->subject('Proposition de modele de tranche de '.$username_modele);
+					$this->email->message($affichage_options);
+					$this->email->attach($nom_image);
+					$this->email->send();
+					$this->email->print_debugger();
+				}
+				else {
+					echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';
+				}
+			}
+			
+			$this->Modele_tranche->rendu_image();
 		}
-		
-		if ($save=='save' && $zoom==1.5) {
-			if($privilege == 'Edition') {
-				ob_start();
-				print_r($options_preview);
-				$affichage_options=ob_get_contents();
-				ob_end_clean();
-				
-				$this->email->from(get_admin_email(), 'DucksManager - '.$username_modele);
-				$this->email->to(get_admin_email());
-				
-				$this->email->subject('Proposition de modele de tranche de '.$username_modele);
-				$this->email->message($affichage_options);
-				$this->email->attach($nom_image);
-				$this->email->send();
-				$this->email->print_debugger();
-			}
-			else {
-				echo 'Vous n\'avez pas les privil&egrave;ges n&eacute;cessaires pour cette op&eacute;ration';
-			}
-		}
-		
-		$this->Modele_tranche->rendu_image();
 	}
 }
 

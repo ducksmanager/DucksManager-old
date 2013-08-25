@@ -662,7 +662,7 @@ function wizard_init(wizard_id) {
 					else {
 						td_numero.html('n&deg;'+numero_tranche_prete);
 						ligne_tranche_selectionnee.append($('<td>').html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_prete)));
-						reload_numero(numero_tranche_prete);
+						reload_numero(numero_tranche_prete, true);
 					}
 					ligne_numeros_tranches_pretes1.append(td_numero);
 					ligne_numeros_tranches_pretes2.append(td_numero.clone(true));
