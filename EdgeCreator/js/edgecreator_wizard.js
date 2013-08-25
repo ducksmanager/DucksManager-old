@@ -1560,17 +1560,17 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 		case 'Rectangle':
 
-			var position_texte=$('#rectangle_position');
+			var position_rectangle=form_userfriendly.find('.rectangle_position');
 
 			var pos_x_debut=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_debut']))*zoom;
 			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
 			var pos_x_fin=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
 			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
 
-			position_texte.css({	'left':			    pos_x_debut+'px', 
-								    'top': 			    pos_y_debut+'px',
-								    'width': (pos_x_fin-pos_x_debut)+'px',
-								    'height':(pos_y_fin-pos_y_debut)+'px'})
+			position_rectangle.css({left:			  pos_x_debut +'px', 
+									top: 			  pos_y_debut +'px',
+									width: (pos_x_fin-pos_x_debut)+'px',
+									height:(pos_y_fin-pos_y_debut)+'px'})
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag, 
 					  		  stop:function(event, ui) {
@@ -1941,12 +1941,12 @@ function definir_et_positionner_image(source) {
 }
 function coloriser_rectangle_preview(couleur,est_rempli) {
 	if (est_rempli) {
-		$('#rectangle_position')
+		modification_etape.find('.rectangle_position')
 			.css({'background-color': couleur})
 			.removeClass('outlined');
 	}
 	else {
-		$('#rectangle_position')
+		modification_etape.find('.rectangle_position')
 			.css({'outline-color':couleur,'background-color':''})
 			.addClass('outlined');
 	}
@@ -2149,7 +2149,7 @@ function tester_options_preview(nom_fonction, noms_options, element) {
 					}
 				break;
 				case 'Rectangle':
-					var positionnement=$('#rectangle_position');
+					var positionnement= modification_etape.find('.rectangle_position');
 					switch(nom_option) {
 						case 'Pos_x_debut':
 							val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);

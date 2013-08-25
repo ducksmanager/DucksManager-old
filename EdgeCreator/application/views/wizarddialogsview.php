@@ -298,7 +298,7 @@
 		</div>
 		
 		<div id="options-etape--Remplir" class="options_etape cache">
-			<div id="rectangle_position" class="cache"></div>
+			<div class="rectangle_position" class="cache"></div>
 			<img class="point_remplissage cache" src="../images/cross.png" />
 			<p>
 				&gt; D&eacute;placez le curseur en forme de croix pour modifier le point de remplissage.<br />
@@ -360,7 +360,7 @@
 		</div>
 		
 		<div id="options-etape--Rectangle" class="options_etape cache">
-			<div id="rectangle_position" class="cache"></div>
+			<div class="rectangle_position" class="cache"></div>
 			<p>
 				&gt; D&eacute;placez et redimensionnez le rectangle.<br />
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage ou de contour.<br />
