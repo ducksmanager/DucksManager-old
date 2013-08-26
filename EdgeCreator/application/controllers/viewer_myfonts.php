@@ -1,7 +1,7 @@
 <?php
-include_once(BASEPATH.'/../application/controllers/viewer.php');
+include_once(BASEPATH.'/../application/controllers/viewer_wizard.php');
 
-class Viewer_myfonts extends Viewer {
+class Viewer_myfonts extends Viewer_wizard {
 	
 	function index($url,$couleur_texte,$couleur_fond,$largeur,$chaine,$demi_hauteur,$rotation,$debug=false) {
 		self::$is_debug = $debug === 'true';
@@ -22,7 +22,7 @@ class Viewer_myfonts extends Viewer {
 		
 		if (self::$is_debug===false) {
 			header('Content-type: image/png');
-			imagepng(Viewer::$image);
+			imagepng(Viewer_wizard::$image);
 		}
 	}
 }
