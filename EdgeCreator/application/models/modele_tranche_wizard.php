@@ -241,7 +241,10 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$username = self::$username;
 		}
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
-				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' AND username=\''.$username.'\' AND Active=1';
+				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+		if (!is_null($username)) {
+			$requete.=' AND username=\''.$username.'\' AND Active=1';
+		}
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->ID;
 	}
@@ -452,7 +455,18 @@ class Modele_tranche_Wizard extends Modele_tranche {
 					.' WHERE ID='.$id_modele;
 		$this->db->query($requete_maj);
 		echo $requete_maj."\n";
-		
+	}
+	
+	function get_couleurs_frequentes($id_modele) {
+		$couleurs=array();
+		$requete= ' SELECT DISTINCT Option_valeur'
+				 .' FROM tranches_en_cours_modeles_vue'
+				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
+		$resultats=$this->db->query($requete)->result();
+		foreach($resultats as $i=>$resultat) {
+			$couleurs[]=$resultat->Option_valeur;
+		}
+		return $couleurs;
 	}
 	
 	function setNumero($numero) {

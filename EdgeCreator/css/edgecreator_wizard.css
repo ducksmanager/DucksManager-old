@@ -51,13 +51,46 @@ button#connexion, button#deconnexion {
 	float: right;
 }
 
-#picker_container {
+#conteneur_selecteur_couleur {
 	position: fixed;
 	z-index: 1010;
-	left: 50%;
-	bottom: 0;
-	background: white;
-	border: 1px solid black;
+	bottom: 1;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
+
+#selecteur_couleur {
+	min-height: 300px;
+	width: 30%;
+	display: inline-block;
+	text-align: left;
+}
+
+#selecteur_couleur ul {
+	margin-top: 20px;
+}
+
+#fermer_selecteur_couleur {
+	float: right;
+}
+
+#picker_container {
+	float: left;
+}
+
+#couleurs_frequentes {
+	float: left;
+	height: 100%;
+}
+
+.couleur_frequente.template {
+	display: none;
+}
+
+.couleur_frequente {
+	margin: 4px;
+	cursor: pointer;
 }
 
 .ui-dialog {

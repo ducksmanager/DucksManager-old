@@ -51,6 +51,8 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 var farb;
 var input_farb;
 $(function() {
+	$('#selecteur_couleur').tabs();
+	
 	// Déplacement des objets
 	$('body').on('keyup', function(e) {
 	    // Don't scroll page
@@ -83,15 +85,16 @@ $(function() {
 		.linkTo(
 			function() { // mousedrag
 				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
+				callback_test_picked_color();
 			},
 			function() { // mouseup
 				callback_test_picked_color();
 			}
 		);
-	$('#fermer_picker')
+	$('#fermer_selecteur_couleur')
 		.button()
 		.click(function() {
-			$('#picker_container').addClass('cache');
+			$('#conteneur_selecteur_couleur').addClass('cache');
 		});
 });
 
@@ -825,7 +828,27 @@ function wizard_init(wizard_id) {
 							return 1;
 						return 0;
 					});
-					
+
+					$.ajax({ // Couleur utilisées
+						url: urls['couleurs_frequentes']+['index',pays,magazine,numero].join('/'),
+						type: 'post',
+						dataType:'json',
+						success:function(data) {
+							var template = $('.couleur_frequente.template');
+							$.each(data, function(i, couleur) {
+								var nouvel_element = 
+									template
+										.clone(true)
+										.removeClass('template')
+										.click(function() {
+											$('#picker')[0].farbtastic.setColor('#'+$(this).val());
+											$('#selecteur_couleur').tabs( "option", "active", 0);
+										});
+								affecter_couleur_input(nouvel_element, couleur);
+								$('#couleurs_frequentes').append(nouvel_element);
+							});
+						}
+					});
 					$.ajax({ // Détails des étapes
 						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null','null'].join('/'),
 						type: 'post',
@@ -1261,7 +1284,7 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.preview_etape').removeClass('modif');
 	dialogue.find('.ui-draggable').draggable('destroy');
 	dialogue.find('.ui-resizable').resizable('destroy');
-	$('#picker_container').addClass('cache');
+	$('#conteneur_selecteur_couleur').addClass('cache');
 	modification_etape=null;
 }
 
@@ -1675,7 +1698,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		input
 			.click(function() {
 				input_farb=$(this);
-				$('#picker_container').removeClass('cache');
+				$('#conteneur_selecteur_couleur').removeClass('cache');
 				farb.setColor('#'+input_farb.val());
 				
 				$('.couleur.selected').removeClass('selected');
@@ -1686,7 +1709,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			})
 			.keyup(function() {
 				farb.setColor('#'+$(this).val());
-				callback_test_picked_color();
 			});
 		
 		var nom_option=input.attr('name').replace(REGEX_OPTION,'$1');

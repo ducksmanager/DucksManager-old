@@ -49,8 +49,8 @@ header("Pragma: no-cache"); ?>
 		var urls=new Array();
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
-		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer','viewer_wizard','viewer_myfonts',
-						   'dessiner','photo_principale','update_photo','rogner_image','desactiver_modele','valider_modele','check_logged_in');
+		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',
+						   'dessiner','photo_principale','update_photo','rogner_image','desactiver_modele','valider_modele','check_logged_in','couleurs_frequentes');
 		foreach($controleurs as $controleur) {
 			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
 		}?>

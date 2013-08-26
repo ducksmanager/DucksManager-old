@@ -714,9 +714,21 @@
 	</p>
 </div>
 
-<div id="picker_container" class="cache">
-	S&eacute;lectionnez une couleur <button class="small" id="fermer_picker" name="fermer_picker">Fermer</button>
-	<div id="picker"></div>
+<div id="conteneur_selecteur_couleur" class="cache">
+	<div id="selecteur_couleur">
+		<button class="small" id="fermer_selecteur_couleur" name="fermer_selecteur_couleur">Fermer</button>
+		<ul>
+	    	<li><a href="#picker_container">S&eacute;lection de couleur</a></li>
+	    	<li><a href="#couleurs_frequentes">Couleurs fr&eacute;quemment utilis&eacute;es</a></li>
+	  	</ul>
+		<div id="picker_container">
+			S&eacute;lectionnez une couleur
+			<div id="picker"></div>
+		</div>
+		<div id="couleurs_frequentes">
+			<input type="text" readonly="readonly" class="couleur_frequente template"></div>
+		</div>
+	</div>
 </div>
 
 <div id="libelles-messages" class="cache">
