@@ -201,7 +201,7 @@ button#connexion, button#deconnexion {
 }
 
 
-.wizard.preview_etape #rectangle_position, 
+.wizard.preview_etape .rectangle_position, 
 .wizard.preview_etape .image_position,
 .wizard.preview_etape .agrafe {
 	position: absolute;
@@ -229,7 +229,7 @@ button#connexion, button#deconnexion {
 	outline: 1px dashed black;
 }
 
-.wizard.preview_etape #rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
+.wizard.preview_etape .rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
 	outline-width: 1px;
 	outline-style: solid;
 }
