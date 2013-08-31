@@ -190,9 +190,7 @@
 					<div class="chargement">
 						Veuillez patienter...
 					</div>
-					<div id="tranches_pretes_magazine">
-					
-					</div>
+					<div class="tranches_pretes_magazine"></div>
 					<br />
 					<div class="buttonset">
 						<input type="radio" checked="checked" name="choix" value="to-wizard-clonage" id="to-wizard-clonage" /><label for="to-wizard-clonage">J'ai trouv&eacute; une tranche similaire</label>
@@ -666,7 +664,16 @@
 
 <div id="wizard-confirmation-validation-modele" class="wizard" title="Validation d'un mod&egrave;le EdgeCreator">
 	<p>
-	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre verrouill&eacute; en attendant sa validation. Confirmer ?
+	Votre tranche appara&icirc;tra aux c&ocirc;t&eacute;s des tranches suivantes dans la biblioth&egrave;que DucksManager : <br />
+	
+	<div class="tranches_pretes_magazine"></div>
+	
+	Le mod&egrave;le EdgeCreator en cours de conception va &ecirc;tre verrouill&eacute; en attendant sa validation. <br />
+	<br /><br />
+	Confirmer ?
+	<form>
+		<input type="hidden" checked="checked" name="choix" value="wizard-confirmation-validation-modele-contributeurs" id="wizard-confirmation-validation-modele-contributeurs" />
+    </form>
 	</p>
 </div>
 
