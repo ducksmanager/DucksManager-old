@@ -308,10 +308,13 @@ button#connexion, button#deconnexion {
 	margin-left: 13px;	
 }
 
+.dialog-preview-etape.finale {
+	width: auto !important;
+}
+
 .dialog-preview-etape.finale .ui-dialog-titlebar {
 	line-height: 11px;
 }
-
 
 .dialog-preview-etape:not(.finale) .image_preview {
 	float: left;
