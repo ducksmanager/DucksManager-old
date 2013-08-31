@@ -35,6 +35,10 @@ option.cree_par_moi {
 	background-color:#5EDF88;
 }
 
+option.en_cours {
+	background-color: orange;
+}
+
 #viewer h2 {
 	margin-top:-10px;
 }
@@ -258,6 +262,10 @@ tr.tranche_prete {
 
 tr.cree_par_moi {
 	background-color:#98EBB2;
+}
+
+tr.en_cours {
+	background-color: orange;
 }
 
 tr.tranche_en_validation {

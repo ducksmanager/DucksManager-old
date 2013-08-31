@@ -15,6 +15,7 @@ class Modele_tranche extends CI_Model {
 	static $dropdown_numeros;
 	static $fields;
 	static $user_possede_modele=null;
+	static $utilisateurs = array();
 
 	function Modele_tranche($tab=array())
 	{
@@ -55,6 +56,14 @@ class Modele_tranche extends CI_Model {
 			}
 		}
 		return $privilege;
+	}
+	
+	function setUtilisateurs() {
+		$requete_utilisateurs='SELECT ID, username FROM users';
+		$resultat_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
+		foreach ($resultat_utilisateurs as $utilisateur) {
+			self::$utilisateurs[$utilisateur['ID']]=$utilisateur['username'];
+		}
 	}
 	
 	function user_connects($user,$pass) {
@@ -477,12 +486,11 @@ class Modele_tranche extends CI_Model {
 	
 	function get_createurs_tranche($pays, $magazine, $numero) {
 		$createurs_tranche_edgecreator_v1 = $this->get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero);
-		$createurs_tranche_edgecreator_v2 = $this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero);
 		if (!is_null($createurs_tranche_edgecreator_v1)) {
 			return $createurs_tranche_edgecreator_v1;
 		}
 		else {
-			return $createurs_tranche_edgecreator_v2;
+			return $this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero);
 		}
 	}
 	
@@ -498,13 +506,15 @@ class Modele_tranche extends CI_Model {
 	}
 	
 	function get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero) {
-		$requete_get_prets='SELECT Numero AS issuenumber, username FROM tranches_en_cours_modeles '
-						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\' '
-				 		    .'AND Active=0';
+		if (count(self::$utilisateurs) == 0) {
+			self::setUtilisateurs();
+		}
+		$requete_get_prets='SELECT username AS createur, Active FROM tranches_en_cours_modeles '
+						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\'';
 		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
-		if (count($resultat_get_prets) > 0) {
-			$createurs=explode(';',$resultat_get_prets[0]['createurs']);
-			return $createurs;
+		$resultat_get_prets=$this->db->query($requete_get_prets)->result();
+		foreach($resultat_get_prets as $resultat) {
+			return $resultat->Active == 1 ? array() : array(array_search($resultat->createur, self::$utilisateurs));
 		}
 		return null;
 	}
@@ -522,7 +532,12 @@ class Modele_tranche extends CI_Model {
 			if ($get_prets) {
 				$createurs_tranche = $this->get_createurs_tranche($pays, $magazine, $numero_affiche);
 				if (!is_null($createurs_tranche)) {
-					$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs_tranche) ? 'par_moi' : 'global';
+					if ($createurs_tranche === array()) {
+						$tranches_pretes[$numero_affiche]='en_cours';
+					}
+					else {
+						$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs_tranche) ? 'par_moi' : 'global';
+					}
 				}
 			}
 		}

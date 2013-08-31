@@ -423,8 +423,8 @@ function wizard_check(wizard_id) {
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix != 'to-wizard-numero-inconnu'
-						  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').hasClass('tranche_prete')) {
-						erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible.<br />'
+						  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
+						erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
 							  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
 					}
@@ -448,7 +448,7 @@ function wizard_check(wizard_id) {
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix == 'to-wizard-clonage-silencieux'
-						  && !$('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete, .cree_par_moi')) {
+						  && !$('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete, .cree_par_moi, .en_cours')) {
 						erreur='La tranche de ce num&eacute;ro n\'existe pas.<br />'
 							  +'S&eacute;lectionnez "Cr&eacute;er une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la cr&eacute;er '
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
@@ -2545,9 +2545,20 @@ function wizard_charger_liste_numeros(magazine_sel) {
 				var option=$('<option>').val(numero_dispo).html(numero_dispo);
 				var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
 				if (est_dispo) {
-					option.addClass(tranches_pretes[numero_dispo] == 'par_moi'
-									 ? 'cree_par_moi'
-									 : 'tranche_prete');
+					var classe='';
+					switch(tranches_pretes[numero_dispo]) {
+						case 'par_moi': 
+							classe = 'cree_par_moi';
+						break;
+						case 'en_cours': 
+							classe = 'en_cours';
+						break;
+						default:
+							classe='tranche_prete';
+					}
+					option
+						.addClass(classe)
+						.attr({title: classe.replace(/_/g, ' ')});
 				}
 				wizard_numero.append(option);
 			}
