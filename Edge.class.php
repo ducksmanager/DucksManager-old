@@ -114,12 +114,14 @@ class Edge {
 		$vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
 		if ($vrai_magazine != $magazine) {
 			foreach($numeros_clean_et_references as $i=>$numero) {
-				$numeros_clean_et_references[$i]['reference']=substr($magazine, strlen($vrai_magazine)).$numero;
+				$numero_clean = is_array($numero) ? $numero['clean'] : $numero;
+				list($vrai_magazine,$vrai_numero) = Inducks::get_vrais_magazine_et_numero($pays,$magazine,$numero_clean);
+				$numeros_clean_et_references[$numero_clean]['reference']=$vrai_numero;
 			}
 			$magazine=$vrai_magazine;
 		}
 
-		return $numeros_clean_et_references;
+		return array($vrai_magazine, $numeros_clean_et_references);
 	}
 	
 	function getImgHTML($regen=false) {
@@ -220,7 +222,7 @@ class Edge {
 				if ($get_html === true)
 					sort($numeros);
 				$total_numeros+=count($numeros);
-				$numeros_clean_et_references=self::get_numeros_clean($pays, $magazine, $numeros);
+				list($magazine, $numeros_clean_et_references) = self::get_numeros_clean($pays, $magazine, $numeros);
 				foreach($numeros_clean_et_references as $numero) {
 					$e=new Edge($pays, $magazine, $numero['clean'],$numero['reference']);
 					
