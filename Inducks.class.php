@@ -27,10 +27,21 @@ class Inducks {
 			}
 			else {
 				$ip_serveur=$serveur=='serveur_virtuel' ? DatabasePriv::$url_serveur_virtuel : 'http://www.ducksmanager.net';
-				$output=unserialize(Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)));
+				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
+				if (isset($_GET['dbg'])) {
+					echo $ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password).'<br /><br />';
+				}
+				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
+				if (isset($_GET['brut'])) {
+					echo 'Requête : '.$requete.'<br />'
+						.'Retour brut : <pre>'.Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)).'</pre>'
+						.'Stacktrace : <pre>';
+					debug_print_backtrace();
+					echo '</pre>';
+				}
 				if ($output == '') // Cas des requetes hors SELECT
 					return array();
-				list($champs,$resultats)=$output;
+				list($champs,$resultats)=unserialize($output);
 				foreach($champs as $i_champ=>$nom_champ) {
 					foreach($resultats as $i=>$resultat) {
 						$resultats[$i][$nom_champ]=$resultat[$i_champ];

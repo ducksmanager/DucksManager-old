@@ -31,7 +31,7 @@ class Database {
 	}
 
 	function requete_select($requete) {
-		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel) {
+		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel && mysql_current_db() !== 'coa') {
 			return Inducks::requete_select($requete,'db301759616','ducksmanager.net');
 		}
 		else {
@@ -46,6 +46,7 @@ class Database {
 	}
 
 	function requete($requete) {
+		require_once('Inducks.class.php');
 		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel) {
 			return Inducks::requete_select($requete,'db301759616','ducksmanager.net');
 		}
@@ -693,6 +694,11 @@ function ajouter_auteur($id,$nom) {
 		$evenements->evenements=$evenements_slice;
 		return $evenements;
 	}
+}
+
+function mysql_current_db() {
+	$r = mysql_query("SELECT DATABASE()") or die(mysql_error());
+	return mysql_result($r,0);
 }
 
 require_once('DucksManager_Core.class.php');
