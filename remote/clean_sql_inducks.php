@@ -1,7 +1,7 @@
 <?php
 $no_database=true;
 include_once('../Util.class.php');
-$properties=parse_ni_file('/home/ducksmanager/ducksmanager.properties');
+$properties=parse_ini_file('/home/ducksmanager/ducksmanager.properties');
 $sql=Util::lire_depuis_fichier($properties['isv_path'].'/createtables.sql');
 $sql=  preg_replace('#DROP TABLE IF EXISTS induckspriv[^;]+;#is', '', $sql);
 $sql=  preg_replace('#RENAME TABLE induckspriv[^;]+;#is', '', $sql);
