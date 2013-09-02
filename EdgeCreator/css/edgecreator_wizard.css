@@ -368,3 +368,12 @@ input.couleur.selected {
 	min-height: 500px;
 	overflow: auto;
 }
+
+.tranches_pretes_magazine table {
+	border-spacing: 0px;
+	border-collapse: 
+}
+
+.tranches_pretes_magazine table tr td {
+	padding: 0px;
+}

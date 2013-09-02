@@ -672,7 +672,7 @@
 	<br /><br />
 	Confirmer ?
 	<form>
-		<input type="hidden" checked="checked" name="choix" value="wizard-confirmation-validation-modele-contributeurs" id="wizard-confirmation-validation-modele-contributeurs" />
+		<input type="hidden" checked="checked" name="choix" value="to-wizard-confirmation-validation-modele-contributeurs" id="wizard-confirmation-validation-modele-contributeurs" />
     </form>
 	</p>
 </div>

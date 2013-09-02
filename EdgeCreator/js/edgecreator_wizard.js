@@ -978,6 +978,7 @@ function wizard_init(wizard_id) {
 			$.ajax({
 		        url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
 		        type: 'post',
+			    dataType:'json',
 		        success:function(data) {
 		           var utilisateur_courant=$('#utilisateur').html();
 		     	   

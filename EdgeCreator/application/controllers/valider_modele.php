@@ -5,6 +5,7 @@ class Valider_Modele extends CI_Controller {
 	function index($pays,$magazine,$numero,$nom_image,$createurs,$photographes) {
 		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		$this->load->library('email');
+		$this->load->helper('email');
 		$username=$this->session->userdata('user');
 		$this->Modele_tranche->setUsername($username);
 
@@ -31,7 +32,6 @@ class Valider_Modele extends CI_Controller {
 		$this->Modele_tranche->desactiver_modele($pays,$magazine,$numero);
 		
 		echo $affichage_etapes;
-		echo $this->email->print_debugger();
 	}
 }
 
