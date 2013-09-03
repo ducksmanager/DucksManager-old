@@ -927,9 +927,14 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		case 'wizard-ajout-etape':
-			$('#'+wizard_id).find('.accordion').accordion({
-				active: 1
+    		var etape_existe = $('.wizard.preview_etape:not(".initial"):not(".final")').length > 0;
+    		var accordeon = $('#'+wizard_id).find('.accordion');
+    		accordeon.accordion({
+				active: etape_existe ? 1 : 0
 			});
+    		$('#'+wizard_id+' .aucune_etape').toggle(!etape_existe);
+    		$('#'+wizard_id+' .etape_existante').toggle(etape_existe);
+    		
         	$.ajax({
                 url: urls['listerg']+['index','Fonctions'].join('/'),
                 dataType:'json',

@@ -496,12 +496,15 @@
 				</div>
 				<h3><a href="#">Cr&eacute;er une &eacute;tape &agrave; partir d'une &eacute;tape similaire</a></h3>
 				<div>
-					<a id="selectionner_etape_base" style="text-decoration:underline" href="#">
-						S&eacute;lectionner l'&eacute;tape de base
-					</a>
-					<span id="section_etape_a_cloner" class="cache">
-						Etape <input id="etape_a_cloner" name="etape_a_cloner" readonly="readonly" /> s&eacute;lectionn&eacute;e pour le clonage
-					</span>
+					<div class="aucune_etape">Aucune &eacute;tape n'a &eacute;t&eacute; cr&eacute;&eacute;e pour le moment.</div>
+					<div class="etape_existante">
+						<a id="selectionner_etape_base" style="text-decoration:underline" href="#">
+							S&eacute;lectionner l'&eacute;tape de base
+						</a>
+						<span id="section_etape_a_cloner" class="cache">
+							Etape <input id="etape_a_cloner" name="etape_a_cloner" readonly="readonly" /> s&eacute;lectionn&eacute;e pour le clonage
+						</span>
+					</div>
 				</div>
 			</div>
 		</form>
