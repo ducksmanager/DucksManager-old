@@ -236,7 +236,6 @@ define('IE_NON_SUPPORTE', 'D&eacute;sol&eacute;, Internet Explorer n\'est pas su
 define('IMPORTATION_EN_COURS','L\'importation depuis Inducks est en cours...');
 define('IMPORTATION_NUMEROS','Importation des num&eacute;ros...');
 define('IMPORTER','Importer');
-define('IMPORT_DANS_NOUVEAU_COMPTE','Les num&eacute;ros s&eacute;lectionn&eacute;s seront import&eacute;s une fois votre inscription sur DucksManager termin&eacute;e.');
 define('IMPORT_IMPOSSIBLE_SI_CONNECTE1','Pour l\'instant, cette fonctionnalit&eacute; ne peut pas &ecirc;tre ex&eacute;cut&eacute;e lorsque vous &ecirc;tes connect&eacute;...');
 define('IMPORT_IMPOSSIBLE_SI_CONNECTE2','Pour utiliser l\'import de num&eacute;ros, d&eacute;connectez-vous puis cliquez sur "Importer ma collection Inducks", &agrave; partir du menu.');
 define('IMPORT_IMPOSSIBLE_SI_CONNECTE3','Vous aurez alors la possibilit&eacute; de vous r&eacute;inscrire.');

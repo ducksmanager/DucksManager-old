@@ -318,22 +318,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             case 'inducks':
                                 if (isset($_POST['rawData'])) {
                                     if (isset($_POST['valider_importer'])) {
-                                        if (isset($_SESSION['user'])) {
-                                            $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
-                                            $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
-                                            $l=new Liste($_POST['rawData']);
-                                            $l->synchro_to_database(DM_Core::$d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);
-                                        }
-                                        else {
-                                            if ($_POST['valider_importer']=='Oui') {
-                                                echo IMPORT_DANS_NOUVEAU_COMPTE;
-                                                formulaire_inscription();
-                                            }
-                                            else {
-                                                header('index.php');
-                                            }
-                                        }
-                                        
+                                    	$ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
+                                        $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
+                                        $l=new Liste($_POST['rawData']);
+                                        $l->synchro_to_database(DM_Core::$d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);   
                                     }
                                     else {
                                         $rawdata_valide=(Inducks::liste_numeros_valide($_POST['rawData']));

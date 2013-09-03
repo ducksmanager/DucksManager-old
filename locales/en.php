@@ -236,7 +236,6 @@ define('IE_NON_SUPPORTE', 'Sorry, Internet Explorer is not supported for this fu
 define('IMPORTATION_EN_COURS','DucksManager is now importing from Inducks...');
 define('IMPORTATION_NUMEROS','Importating issues...');
 define('IMPORTER','Import');
-define('IMPORT_DANS_NOUVEAU_COMPTE','The selected issues will be importedonce your signing up on DucksManager, hereunder, is done.');
 define('IMPORT_IMPOSSIBLE_SI_CONNECTE1','For the moment, this functionnality is not available if you are already logged in...');
 define('IMPORT_IMPOSSIBLE_SI_CONNECTE2','In order to use the Inducks collection importation, log out then click on "Import my Inducks collection" from the left menu.');
 define('IMPORT_IMPOSSIBLE_SI_CONNECTE3','You will then bbe able to sign up again.');

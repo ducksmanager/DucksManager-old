@@ -268,7 +268,8 @@ class Liste {
 					continue;
 				foreach($numeros_pays as $magazine=>$numeros) {
 					foreach($numeros as $numero) {
-						$requete='INSERT INTO numeros VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.',current_date())';
+						$requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
+								.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
 						DM_Core::$d->requete($requete);
 						$cpt++;
 					}
