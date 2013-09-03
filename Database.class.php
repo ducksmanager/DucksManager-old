@@ -621,7 +621,7 @@ function ajouter_auteur($id,$nom) {
 						  LIMIT 1) AS NumeroExemple
 				  FROM numeros
 				  INNER JOIN users ON numeros.ID_Utilisateur=users.ID
-				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH) AND users.username<>"demo"
+				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH) AND users.username<>"demo" AND users.username NOT LIKE "test%"
 				  GROUP BY users.ID, DATE(DateAjout)
 				  HAVING COUNT(Numero) > 0
 				  ORDER BY DateAjout DESC';
