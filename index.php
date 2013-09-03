@@ -74,6 +74,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             <script type="text/javascript">
             try {
             var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+            piwikTracker.setCustomVariable(1, "Utilisateur", "<?=$_SESSION['user']?>", "visit"); 
             piwikTracker.trackPageView();
             piwikTracker.enableLinkTracking();
             } catch( err ) {}
