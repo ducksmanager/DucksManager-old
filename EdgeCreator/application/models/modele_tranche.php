@@ -1242,6 +1242,9 @@ class Fonction_executable extends Fonction {
 	static $descriptions=array();
 	
 	function Fonction_executable($options,$creation=false,$get_options_defaut=true) {
+		if (!is_object($options)) {
+			$options=new stdClass();
+		}
 		$this->options=$options;
 		$classe=get_class($this);
 		if ($creation) {
