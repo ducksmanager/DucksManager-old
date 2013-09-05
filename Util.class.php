@@ -116,9 +116,14 @@ class Util {
 	static function lire_depuis_fichier($nom_fichier) {
 		$inF = fopen($nom_fichier,"r");
 		$str='';
-		while (!feof($inF)) {
-			$str.=fgets($inF, 4096);
-		} 
+		if ($inF === false) {
+			echo 'Le fichier '.$nom_fichier.' n\'existe pas';
+		}
+		else {
+			while (!feof($inF)) {
+				$str.=fgets($inF, 4096);
+			} 
+		}
 		return $str;
 	}
 	
