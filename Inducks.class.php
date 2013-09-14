@@ -333,7 +333,6 @@ elseif (isset($_POST['get_covers'])) {
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
 	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
-	echo $nom_histoire."\n";
 	$liste_magazines=array();
 	if (strpos($nom_histoire, 'code=') === 0) {
 		$liste_magazines['direct']=true;
