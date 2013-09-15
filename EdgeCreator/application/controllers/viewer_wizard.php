@@ -131,7 +131,13 @@ class Viewer_wizard extends CI_Controller {
 							$options2->$parametre=$valeur;
 						}
 					}
-					new $ordres[$num_ordre]->Nom_fonction(clone $options2);
+					
+					$nom_classe = $ordres[$num_ordre]->Nom_fonction;
+					if (!class_exists($nom_classe)) {
+						echo 'Etape '.$num_ordre.' : La classe '.$nom_classe.' n\'existe pas';
+						exit;
+					}
+					new $nom_classe(clone $options2);
 					$options_preview[$num_ordre]=$options2;
 				}
 			}
