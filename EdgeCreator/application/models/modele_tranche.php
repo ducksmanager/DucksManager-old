@@ -1,4 +1,5 @@
 <?php
+$no_database=true; // Ne pas utiliser les paramètres de connexion classiques
 include_once(BASEPATH.'/../../Inducks.class.php');
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
