@@ -667,7 +667,8 @@ function ajouter_auteur($id,$nom) {
 		/* Ajouts de tranches */
 		$requete_tranches='SELECT publicationcode, issuenumber, photographes, createurs, dateajout DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes '
 						 .'FROM tranches_pretes '
-						 .'WHERE DateAjout > date_add(now(), interval -1 month)';
+						 .'WHERE DateAjout > date_add(now(), interval -1 month) '
+						 .'AND NOT (publicationcode = \'fr/JM\' AND issuenumber REGEXP \'^[0-9]+$\')';
 		
 		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
 		foreach($resultat_tranches as $tranche_prete) {
