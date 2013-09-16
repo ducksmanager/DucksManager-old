@@ -779,26 +779,8 @@ function wizard_init(wizard_id) {
 						return 0;
 					});
 
-					$.ajax({ // Couleur utilisées
-						url: urls['couleurs_frequentes']+['index',pays,magazine,numero].join('/'),
-						type: 'post',
-						dataType:'json',
-						success:function(data) {
-							var template = $('.couleur_frequente.template');
-							$.each(data, function(i, couleur) {
-								var nouvel_element = 
-									template
-										.clone(true)
-										.removeClass('template')
-										.click(function() {
-											$('#picker')[0].farbtastic.setColor('#'+$(this).val());
-											$('#selecteur_couleur').tabs( "option", "active", 0);
-										});
-								affecter_couleur_input(nouvel_element, couleur);
-								$('#couleurs_frequentes').append(nouvel_element);
-							});
-						}
-					});
+					charger_couleurs_frequentes();
+					
 					$.ajax({ // Détails des étapes
 						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null','null'].join('/'),
 						type: 'post',
@@ -2101,17 +2083,22 @@ function tester(callback, modif_dimensions) {
 }
 
 function valider(callback) {
-	callback = callback || function(){};
-	var form_options=$('.modif').find('[name="form_options"]');
-	var parametrage=form_options.serialize();
-	
-	$.ajax({
-	    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
-	    type: 'post',
-	    success:function(data) {
-			reload_current_and_final_previews(callback);
-	    }
-	});
+	var parametrage=$('.modif').find('[name="form_options"]').serialize();
+	var parametrage_orig=$('.modif').find('[name="form_options_orig"]').serialize();
+	if (parametrage === parametrage_orig) {
+		fermer_dialogue_preview(modification_etape);
+	}
+	else {
+		callback = callback || function(){};
+		$.ajax({
+		    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
+		    type: 'post',
+		    success:function(data) {
+		    	charger_couleurs_frequentes();
+				reload_current_and_final_previews(callback);
+		    }
+		});
+	}
 }
 
 function tester_options_preview(nom_fonction, noms_options, element) {
@@ -2418,6 +2405,30 @@ function reload_all_previews() {
 				recuperer_et_alimenter_options_preview(num_etape);
 		}
     });
+}
+
+function charger_couleurs_frequentes() {
+	$.ajax({ // Couleurs utilisées dans l'ensemble des étapes de la conception de tranche
+		url: urls['couleurs_frequentes']+['index',pays,magazine,numero].join('/'),
+		type: 'post',
+		dataType:'json',
+		success:function(data) {
+			var template = $('.couleur_frequente.template');
+			$('.couleur_frequente').not(template).remove();
+			$.each(data, function(i, couleur) {
+				var nouvel_element = 
+					template
+						.clone(true)
+						.removeClass('template')
+						.click(function() {
+							$('#picker')[0].farbtastic.setColor('#'+$(this).val());
+							$('#selecteur_couleur').tabs( "option", "active", 0);
+						});
+				affecter_couleur_input(nouvel_element, couleur);
+				$('#couleurs_frequentes').append(nouvel_element);
+			});
+		}
+	});
 }
 
 function affecter_couleur_input(input_couleur, couleur) {

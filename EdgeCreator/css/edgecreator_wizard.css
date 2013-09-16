@@ -62,7 +62,7 @@ button#connexion, button#deconnexion {
 
 #selecteur_couleur {
 	min-height: 300px;
-	width: 33%;
+	width: 550px;
 	display: inline-block;
 	text-align: left;
 }
