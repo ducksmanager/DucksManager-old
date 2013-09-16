@@ -342,6 +342,8 @@ define('NEWS_AUTRES_NUMEROS','other issues');
 define('NEWS_EVENEMENTS_PLUS_ANCIENS','Older events');
 define('NEWS_IL_Y_A_PREFIXE','');
 define('NEWS_IL_Y_A_SUFFIXE','ago');
+define('NEWS_ONT_CREE_TRANCHE','have create the edge of issue ');
+define('NEWS_ONT_CREE_TRANCHE_2','for the DucksManager bookcase');
 define('NEWS_S_EST_INSCRIT', 'has signed up on DucksManager. Welcome !');
 define('NEWS_TEMPS_HEURE','hour');
 define('NEWS_TEMPS_JOUR','day');

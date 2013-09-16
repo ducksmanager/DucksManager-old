@@ -596,7 +596,8 @@ function ajouter_auteur($id,$nom) {
 
 		$evenements = new stdClass();
 		$evenements->evenements = array();
-		
+
+		/* Inscriptions */
 		$requete_inscriptions='SELECT users.ID, users.username, DateInscription, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
 							 .'FROM users '
 							 .'WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE "test%"';
@@ -645,11 +646,7 @@ function ajouter_auteur($id,$nom) {
 				$evenement);
 		}
 		
-		/* Fin ajouts aux collections */
-		
 		/* Propositions de bouquineries */
-		
-
 		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes '
 							 .'FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 							 .'WHERE DateAjout > date_add(now(), interval -1 month)';
@@ -667,7 +664,28 @@ function ajouter_auteur($id,$nom) {
 					$evenement);
 		}
 		
-		/* Fin propositions de bouquineries */
+		/* Ajouts de tranches */
+		$requete_tranches='SELECT publicationcode, issuenumber, photographes, createurs, dateajout DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes '
+						 .'FROM tranches_pretes '
+						 .'WHERE DateAjout > date_add(now(), interval -1 month)';
+		
+		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
+		foreach($resultat_tranches as $tranche_prete) {
+			$publicationcode = $tranche_prete['publicationcode'];
+			$evenements->publicationcodes[]=$publicationcode;
+			list($pays,$magazine)=explode('/', $publicationcode);
+			$numero=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$tranche_prete['issuenumber']);
+
+			$evenement = array('numero'=>$numero);
+			ajouter_evenement(
+					$evenements->evenements,
+					$tranche_prete['DateAjout'],
+					$tranche_prete['DiffSecondes'],
+					'tranches pretes',
+					array_merge(explode(',',$tranche_prete['photographes']),
+								explode(',',$tranche_prete['createurs'])),
+					$evenement);
+		}
 		
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
 		ksort($evenements->evenements);

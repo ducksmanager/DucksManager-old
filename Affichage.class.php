@@ -223,6 +223,17 @@ class Affichage {
 							<?php } ?>
 							<?=NEWS_A_SA_COLLECTION?><?php
 						break;
+						case 'tranches pretes':
+							$numero=$evenement->numero;
+							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
+								$evenement->cpt++;
+								continue;
+							}
+							?><b><?=utf8_decode(implode('</b> '.ET.' <b>',$evenement->utilisateur))?></b> <?=NEWS_ONT_CREE_TRANCHE?>
+							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
+							<?=NEWS_ONT_CREE_TRANCHE_2?>
+							<?php 
+						break;
 					}?>
 					<span class="date">
 						<?=NEWS_IL_Y_A_PREFIXE?> 
