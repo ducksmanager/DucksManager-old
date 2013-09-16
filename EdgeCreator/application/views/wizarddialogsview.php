@@ -730,13 +730,21 @@
 		<ul>
 	    	<li><a href="#picker_container">S&eacute;lection de couleur</a></li>
 	    	<li><a href="#couleurs_frequentes">Couleurs fr&eacute;quemment utilis&eacute;es</a></li>
+	    	<li><a href="#depuis_photo">Depuis la photo de tranche</a></li>
 	  	</ul>
 		<div id="picker_container">
 			S&eacute;lectionnez une couleur
 			<div id="picker"></div>
 		</div>
 		<div id="couleurs_frequentes">
-			<input type="text" readonly="readonly" class="couleur_frequente template"></div>
+			<input type="text" readonly="readonly" class="couleur_frequente template" />
+		</div>
+		<div id="depuis_photo">
+			<div name="description_selection_couleur">
+				D&eacute;placez le curseur de la souris vers votre photo de tranche et cliquez
+				&agrave; l'endroit o&ugrave; se situe la couleur d&eacute;sir&eacute;e.
+			</div>
+			<div name="pas_de_photo_tranche" id="pas_de_photo_tranche"></div>
 		</div>
 	</div>
 </div>

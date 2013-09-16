@@ -469,6 +469,25 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		return $couleurs;
 	}
 	
+	function get_couleur_point_photo($pays,$magazine,$numero,$frac_x,$frac_y) {
+		$id_modele=$this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
+		$requete_nom_photo = ' SELECT NomPhotoPrincipale'
+							.' FROM tranches_en_cours_modeles'
+							.' WHERE ID='.$id_modele;
+		$resultat_nom_photo = $this->db->query($requete_nom_photo)->row();
+		
+		$chemin_photos = Fonction_executable::getCheminPhotos($pays);
+		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomPhotoPrincipale;
+		$image = imagecreatefromjpeg($chemin_photo_tranche);
+		list($width, $height) = getimagesize($chemin_photo_tranche);
+		
+		$rgb = imagecolorat($image, $frac_x*$width, $frac_y*$height);
+		$r = ($rgb >> 16) & 0xFF;
+		$g = ($rgb >> 8) & 0xFF;
+		$b = $rgb & 0xFF;
+		return rgb2hex($r,$g,$b);
+	}
+	
 	function setNumero($numero) {
 		self::$numero=$numero;
 	}

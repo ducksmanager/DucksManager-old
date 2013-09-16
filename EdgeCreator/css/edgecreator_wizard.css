@@ -55,14 +55,14 @@ button#connexion, button#deconnexion {
 	position: fixed;
 	z-index: 1010;
 	bottom: 1;
-	left: 0;
-	right: 0;
+	left: 150px;
+	right: 150px;
 	text-align: center;
 }
 
 #selecteur_couleur {
 	min-height: 300px;
-	width: 30%;
+	width: 33%;
 	display: inline-block;
 	text-align: left;
 }
@@ -178,6 +178,10 @@ button#connexion, button#deconnexion {
 .wizard.preview_etape .image_etape.finale {
 	text-align: center;
 	display: inline;
+}
+
+.wizard.preview_etape #photo_tranche img.cross {
+	cursor: crosshair;
 }
 
 .wizard.preview_etape .point_remplissage {

@@ -51,7 +51,29 @@ var INTERVAL_CHECK_LOGGED_IN=5;
 var farb;
 var input_farb;
 $(function() {
-	$('#selecteur_couleur').tabs();
+	$('#selecteur_couleur').tabs({
+		activate: function(event, ui) {
+			if ($(ui.newPanel).attr('id') === 'depuis_photo') {
+				if ($('[name="description_selection_couleur"]:visible').length > 0) {
+					$('#photo_tranche img')
+						.addClass('cross')
+						.click(function(e) {
+							var frac = [ e.offsetX / $(this).width(),
+							             e.offsetY / $(this).height() ];
+							$.ajax({
+								url: urls['couleur_point_photo']+['index',pays,magazine,numero,frac[0],frac[1]].join('/'),
+								type: 'post',
+								success:function(data) {
+									$('#picker')[0].farbtastic.setColor('#'+data);
+									$('#selecteur_couleur').tabs( "option", "active", 0);
+								}
+							});
+						});
+				}
+			}
+		}
+	});
+	$('#pas_de_photo_tranche').html($('#message-aucune-image-de-tranche .libelle').clone(true));
 	
 	// Déplacement des objets
 	$('body').on('keyup', function(e) {
@@ -95,6 +117,9 @@ $(function() {
 		.button()
 		.click(function() {
 			$('#conteneur_selecteur_couleur').addClass('cache');
+			$('#photo_tranche img')
+				.removeClass('cross')
+				.off('click');
 		});
 });
 
@@ -1725,7 +1750,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		input
 			.click(function() {
 				input_farb=$(this);
-				$('#conteneur_selecteur_couleur').removeClass('cache');
+				$('#conteneur_selecteur_couleur').removeClass('cache');				
 				farb.setColor('#'+input_farb.val());
 				
 				$('.couleur.selected').removeClass('selected');
@@ -2669,10 +2694,14 @@ function afficher_photo_tranche() {
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
 															 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
 			jqueryui_clear_message('aucune-image-de-tranche');
+			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(true);
+			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(false);
 		});
 		image.error(function() {
 			$(this).css({'display':'none'});
 			jqueryui_message('warning','aucune-image-de-tranche');
+			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(false);
+			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(true);
 		});
 	}
 	else {
