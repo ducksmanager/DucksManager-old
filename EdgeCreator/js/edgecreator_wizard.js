@@ -2394,6 +2394,7 @@ function reload_all_previews() {
 	$.each($(selecteur_cellules_preview),function(i,element) {
 		chargements.push($(element).data('etape'));
 	});
+	chargements.sort();
 	
 	chargement_courant=0;
 	charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
@@ -2511,17 +2512,20 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		else
 			url_appel+='/0.01';
 
-		$(this).attr({'src':url_appel});	
-		$(this).load(function() {
-			$(this).removeClass('loading').removeClass('cache');
-			if ($(this).closest('.finition_texte_genere').length > 0) {
-				var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
-				if (section_active_integration)
-					placer_extension_largeur_preview();
-			}
-			if (callback != undefined)
-				callback();
-		});
+		$(this)
+			.attr({'src':url_appel})
+			.off('load')	
+			.load(function() {
+				$(this).removeClass('loading').removeClass('cache');
+				if ($(this).closest('.finition_texte_genere').length > 0) {
+					var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
+					if (section_active_integration)
+						placer_extension_largeur_preview();
+				}
+				if (callback != undefined) {
+					callback();
+				}
+			});
 		$(this).error(function() {
 			if (!isMyFontsError) {
 				jqueryui_alert_from_d($('#wizard-erreur-image-myfonts'), function() {

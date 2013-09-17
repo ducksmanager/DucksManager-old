@@ -110,6 +110,10 @@ button#connexion, button#deconnexion {
 	white-space: nowrap;
 }
 
+.ui-dialog .ui-dialog-content {
+	overflow: visible;
+}
+
 #wizard-images.photo_principale span:not(.photo_principale),
 #wizard-images.autres_photos span:not(.autres_photos),
 #wizard-images.photos_texte span:not(.photos_texte) {
