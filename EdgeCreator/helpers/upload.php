@@ -1,6 +1,6 @@
 <?php
 $url_root=getcwd();
-$est_photo_tranche = $_POST['photo_tranche'] == 1;
+$est_photo_tranche = $_POST['photo_tranche'] == 1 || $_GET['photo_tranche'] == 1 ? 1 : 0;
 $extension = strtolower(strrchr($_FILES['image']['name'], '.'));
 $extension_cible='.jpg';
 $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
@@ -22,6 +22,8 @@ else {
 		$fichier = basename($_POST['magazine'].'.'.$_FILES['image']['name']);
 	}
 }
+$fichier=str_replace(' ','_',$fichier);
+
 $taille_maxi = $_POST['MAX_FILE_SIZE'];
 $taille = filesize($_FILES['image']['tmp_name']);
 $extensions = $est_photo_tranche ? array('.jpg','.jpeg') : array('.png');
@@ -91,7 +93,7 @@ else
 }
 
 function afficher_retour($est_photo_tranche) {
-	?><br /><a href="<?=$_SERVER['REQUEST_URI'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
+	?><br /><a href="<?=$_SERVER['SCRIPT_NAME'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
 	
 }
 ?>

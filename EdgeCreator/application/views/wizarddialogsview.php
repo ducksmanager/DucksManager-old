@@ -395,16 +395,16 @@
 				<div class="proprietes_texte">
 					<table style="border:0" cellspacing="0" cellpadding="1">
 						<tr>
-							<td>Texte : </td>
-							<td><input name="option-Chaine" type="text" maxlength="90" size="30" /></td>
-						</tr>
-						<tr>
 							<td>Police de caract&egrave;res : </td>
 							<td style="white-space:nowrap"><input name="option-URL" type="text" maxlength="90" size="19" />
 								<button class="small" value="to-wizard-resize">
 									<span class="modifier_police">Modifier</span>
 								</button>
 							</td>
+						</tr>
+						<tr>
+							<td>Texte : </td>
+							<td><input name="option-Chaine" type="text" maxlength="90" size="30" /></td>
 						</tr>
 						<tr>
 							<td>
