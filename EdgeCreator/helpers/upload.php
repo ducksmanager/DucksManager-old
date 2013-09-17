@@ -1,6 +1,11 @@
 <?php
-$url_root=getcwd();
 $est_photo_tranche = $_POST['photo_tranche'] == 1 || $_GET['photo_tranche'] == 1 ? 1 : 0;
+
+if (!isset($_POST['MAX_FILE_SIZE'])) {
+	header('Location: '.preg_replace('#/[^/]+\?#','/image_upload.php?',$_SERVER['REQUEST_URI']));
+	exit;
+}
+$url_root=getcwd();
 $extension = strtolower(strrchr($_FILES['image']['name'], '.'));
 $extension_cible='.jpg';
 $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
@@ -93,7 +98,7 @@ else
 }
 
 function afficher_retour($est_photo_tranche) {
-	?><br /><a href="<?=$_SERVER['SCRIPT_NAME'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
+	?><br /><a href="<?=$_SERVER['REDIRECT_URL'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
 	
 }
 ?>
