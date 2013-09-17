@@ -792,9 +792,6 @@ function wizard_init(wizard_id) {
 					            $('#zoom_value').html(zoom);
 								reload_all_previews();
 								if (modification_etape != null) {
-									$('.preview_vide')
-										.width ($('#Dimension_x').val()*zoom)
-										.height($('#Dimension_y').val()*zoom);
 									modification_etape.find('.preview_etape')
 										.css({'min-height': $('.preview_vide').height()});
 									
@@ -1419,6 +1416,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 	
 	var image = section_preview_etape.find('.preview_vide');
+	image
+		.width ($('#Dimension_x').val()*zoom)
+		.height($('#Dimension_y').val()*zoom);
 	
 	var padding_dialogue = form_userfriendly.d().outerWidth(false)
 						 - form_userfriendly.d().innerWidth();
