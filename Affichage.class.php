@@ -229,7 +229,9 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}
-							?><b><?=utf8_decode(implode('</b> '.ET.' <b>',$evenement->utilisateur))?></b> <?=NEWS_ONT_CREE_TRANCHE?>
+							$contributeurs = array_unique($evenement->utilisateur);
+							?><b><?=utf8_decode(implode('</b> '.ET.' <b>', $contributeurs))?></b> 
+							<?=count($contributeurs) === 1 ? NEWS_ONT_CREE_TRANCHE_SING : NEWS_ONT_CREE_TRANCHE_PLUR?>
 							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
