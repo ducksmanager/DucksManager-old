@@ -99,7 +99,8 @@ $(function() {
 	    }
 	    draggable
 	    	.css(position);
-
+	    	
+	    tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
 	    tester();
 	});
 	
@@ -800,6 +801,7 @@ function wizard_init(wizard_id) {
 									var nom_fonction=modification_etape.data('nom_fonction');
 							    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
 								}
+								$('#zoom_slider .ui-slider-handle').blur();
 							}});
 							
 							var texte="";
@@ -1106,7 +1108,7 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		
 		// Pas de proposition de tranche
 		if (tranches_pretes.length <= 1) {
-			wizard_do(wizard_courant,'goto_wizard-dimensions');
+			wizard_do(wizard_courant,'goto_wizard-confirmation-validation-modele-contributeurs');
 			return;
 		}
 		

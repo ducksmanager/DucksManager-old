@@ -512,7 +512,6 @@ class Modele_tranche extends CI_Model {
 		}
 		$requete_get_prets='SELECT username AS createur, Active FROM tranches_en_cours_modeles '
 						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\'';
-		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
 		$resultat_get_prets=$this->db->query($requete_get_prets)->result();
 		foreach($resultat_get_prets as $resultat) {
 			return $resultat->Active == 1 ? array() : array(array_search($resultat->createur, self::$utilisateurs));
