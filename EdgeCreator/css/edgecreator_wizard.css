@@ -384,4 +384,5 @@ input.couleur.selected {
 
 .tranches_pretes_magazine table tr td {
 	padding: 0px;
+	vertical-align: bottom;
 }
