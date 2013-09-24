@@ -17,6 +17,8 @@ class Modele_tranche extends CI_Model {
 	static $fields;
 	static $user_possede_modele=null;
 	static $utilisateurs = array();
+	static $noms_fonctions = array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
+								   'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
 
 	function Modele_tranche($tab=array())
 	{
@@ -521,27 +523,44 @@ class Modele_tranche extends CI_Model {
 	
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
 		$numeros_affiches=array('Aucun'=>'Aucun');
-		if ($get_prets)
+		if ($get_prets) {
 			$tranches_pretes=array();
-		$numeros_soustitres=Inducks::get_numeros($pays, $magazine, "titres",true);
+		}
+
+		$numeros=Inducks::get_numeros($pays, $magazine, "numeros_et_createurs_tranche", true);
 		$id_user=$this->username_to_id(self::$username);
-		foreach($numeros_soustitres[0] as $i=>$numero) {
-			$numero_affiche=str_replace("\n",'',str_replace('+','',$numero));
+		if (count(self::$utilisateurs) == 0) {
+			self::setUtilisateurs();
+		}		
+		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
+		
+		foreach($numeros as $numero) {
+			$numero_affiche=$numero['issuenumber'];
 			$numeros_affiches[$numero_affiche]=$numero_affiche;
 
-			if ($get_prets) {
-				$createurs_tranche = $this->get_createurs_tranche($pays, $magazine, $numero_affiche);
-				if (!is_null($createurs_tranche)) {
-					if ($createurs_tranche === array()) {
-						$tranches_pretes[$numero_affiche]='en_cours';
-					}
-					else {
-						$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs_tranche) ? 'par_moi' : 'global';
-					}
+			if ($get_prets && !is_null($numero['contributeurs'])) {
+				if ($numero['en_cours'] == 1) {
+					$tranches_pretes[$numero_affiche]='en_cours';
+				}
+				else {
+					$id_createur = array_search($resultat['contributeurs'], self::$utilisateurs);
+					$tranches_pretes[$numero_affiche]=$id_createur == $id_user ? 'par_moi' : 'global';
 				}
 			}
 		}
 		if ($get_prets) {
+			$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
+							  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
+			$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
+				
+			foreach($resultat_get_prets as $tranche_prete) {
+				$createurs=explode(';',$tranche_prete['createurs']);
+				$ids_createurs = array();
+				foreach($createurs as $contributeur) {
+					$ids_createurs[] = array_search($contributeur, self::$utilisateurs);
+				}
+				$tranches_pretes[$tranche_prete['issuenumber']]=in_array($id_user, $ids_createurs) ? 'par_moi' : 'global';
+			}
 			return array($numeros_affiches, $tranches_pretes);
 		}
 		return $numeros_affiches;
@@ -1183,11 +1202,8 @@ class Modele_tranche extends CI_Model {
 					$liste[$username]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
 				}
 			 break;
-			case 'Fonctions':
-				$noms_fonctions=array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
-									  'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
-				
-				foreach($noms_fonctions as $nom) {
+			case 'Fonctions':				
+				foreach(self::$noms_fonctions as $nom) {
 					$liste[$nom]=$nom::$libelle;
 				}
 			 break;
@@ -1378,6 +1394,7 @@ class Fonction_executable extends Fonction {
 					break;
 					case 'hauteur':
 						$str=preg_replace($regex, Viewer_wizard::$hauteur, $str);
+						echo "\$str=".$str.";";
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;

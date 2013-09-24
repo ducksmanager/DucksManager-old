@@ -162,7 +162,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		if (!is_null($nom_option))
 			$requete.='AND Option_nom = \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
-		
+
 		$resultats=$this->db->query($requete)->result();
 		$resultats_options=new stdClass();
 		foreach($resultats as $resultat) {
@@ -418,6 +418,37 @@ class Modele_tranche_Wizard extends Modele_tranche {
 				$this->db->query($requete_ajout_valeur);
 			}
 		}
+		
+		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
+		
+		foreach(self::$noms_fonctions as $nom_fonction) {
+			$champs_obligatoires = array_diff(array_keys($nom_fonction::$champs), array_keys($nom_fonction::$valeurs_defaut));
+			
+			$requete_nettoyage = ' SELECT Ordre, Option_nom'
+								.' FROM tranches_en_cours_modeles_vue'
+								.' WHERE ID_Modele='.$id_modele.' AND Nom_fonction=\''.$nom_fonction.'\''
+								.' ORDER BY Ordre';
+			$resultats=$this->db->query($requete_nettoyage)->result();
+			$etapes_et_options=array();
+			foreach($resultats as $resultat) {
+				if (!array_key_exists($resultat->Ordre, $etapes_et_options)) {
+					$etapes_et_options[$resultat->Ordre]=array();
+				}
+				$etapes_et_options[$resultat->Ordre][]=$resultat->Option_nom;
+				echo "Etape ".$resultat->Ordre.', option '.$resultat->Option_nom."\n";
+			}
+			
+			foreach($etapes_et_options as $etape=>$options) {
+				$champs_obligatoires_manquants = array_diff($champs_obligatoires, $options);
+				if (count($champs_obligatoires_manquants) > 0) {
+					echo utf8_encode("\nEtape $etape : l'étape sera supprimée car les champs suivants ne sont pas renseignés : "
+									 .implode(', ', $champs_obligatoires_manquants)."\n");
+					$requete_suppression_etape=' DELETE FROM tranches_en_cours_valeurs'
+											  .' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
+					$this->db->query($requete_suppression_etape);
+				}
+			}
+		}		
 	}
 	
 	function get_tranches_non_pretes() {

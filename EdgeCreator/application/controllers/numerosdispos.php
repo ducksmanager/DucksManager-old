@@ -30,7 +30,7 @@ class Numerosdispos extends CI_Controller {
 		else {
 			$data=array('mode'=>'get_numeros');
 			list($numeros_dispos,$tranches_pretes)=$this->Modele_tranche->get_numeros_disponibles($pays,$magazine,true);
-		
+
 			$nb_etapes=$this->Modele_tranche->get_nb_etapes($pays,$magazine);
 	
 			list($noms_complets_pays, $noms_complets_magazines) = Inducks::get_noms_complets(array($pays.'/'.$magazine));

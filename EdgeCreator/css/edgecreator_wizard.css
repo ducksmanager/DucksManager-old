@@ -120,6 +120,10 @@ button#connexion, button#deconnexion {
 	display: none;
 }
 
+#wizard-proposition-clonage, #wizard-confirmation-validation-modele {
+	overflow-x: auto !important;
+}
+
 #wizard-conception .texte_presentation_tranche_finale {
 	width: 80%;
 	float: right;
