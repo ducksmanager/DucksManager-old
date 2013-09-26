@@ -749,7 +749,7 @@ function wizard_init(wizard_id) {
 					numero=tranche.Numero;
 
 					$('#nom_complet_tranche_en_cours')
-						.html($('<img>').attr({src:'../../images/flags/'+pays+'.png'}))
+						.html($('<img>').attr({src:'../images/flags/'+pays+'.png'}))
 						.append(' '+tranche.str_userfriendly);
 			    }
 			});
@@ -1051,7 +1051,7 @@ function afficher_liste_magazines(wizard_id, id_element_liste, data) {
 				.val(id_tranche);
 			bouton_tranche_en_cours.find('label')
 				.attr({'for':id_tranche})
-				.css({'background-image': 'url("../../images/flags/'+tranche_en_cours.Pays+'.png")'})
+				.css({'background-image': 'url("../images/flags/'+tranche_en_cours.Pays+'.png")'})
 				.html(tranche_en_cours.str_userfriendly)
 				.click(function() {
 					$('#'+wizard_id+' #to-wizard-conception').click();
@@ -2667,7 +2667,7 @@ function toFloat2Decimals(floatVal) {
 function init_action_bar() {
 	$.each($('#action_bar img.action'), function() {
 		var nom=$(this).attr('name');
-		$(this).attr({'src':'../images/'+nom+'.png'});
+		$(this).attr({'src':'images/'+nom+'.png'});
 		
 		$(this).click(function() {
 			var nom=$(this).attr('name');

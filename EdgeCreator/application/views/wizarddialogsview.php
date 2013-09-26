@@ -1,6 +1,6 @@
 <div id="wizard-accueil" class="first wizard" title="Bienvenue sur EdgeCreator !">
 	<p>
-		<img src="../images/logo_petit.png" />
+		<img src="images/logo_petit.png" />
 	</p>
 </div>
 <div id="wizard-accueil2" class="wizard" title="Bienvenue sur EdgeCreator !">
@@ -11,7 +11,7 @@
 		dans la section "Ma biblioth&egrave;que" de tous les utilisateurs de DucksManager 
 		poss&eacute;dant le num&eacute;ro correspondant.
 		<br />
-		<img style="height:300px" src="../images/construction_tranche.png" />
+		<img style="height:300px" src="images/construction_tranche.png" />
 	</p>
 </div>
 
@@ -19,11 +19,11 @@
 	<p>
 		Pour cr&eacute;er une tranche, vous aurez besoin :<br />
 		<div style="float: left;width:50%">
-			<img style="width: 100%" src="../images/regle.png" />
+			<img style="width: 100%" src="images/regle.png" />
 			D'une r&egrave;gle
 		</div>
 		<div style="float: left;width:50%">
-			<img style="width: 100%" src="../images/appareil_photo.png" />
+			<img style="width: 100%" src="images/appareil_photo.png" />
 			D'un scanner ou un appareil photo (les capteurs photo des t&eacute;l&eacute;phones donnent parfois des photos floues)
 		</div>
 		
@@ -297,7 +297,7 @@
 		
 		<div id="options-etape--Remplir" class="options_etape cache">
 			<div class="rectangle_position" class="cache"></div>
-			<img class="point_remplissage cache" src="../images/cross.png" />
+			<img class="point_remplissage cache" src="images/cross.png" />
 			<p>
 				&gt; D&eacute;placez le curseur en forme de croix pour modifier le point de remplissage.<br />
 				&gt; S&eacute;lectionnez une couleur pour modifier la couleur de remplissage.
@@ -607,13 +607,13 @@
 			Suivez l'assistant ci-dessous : le site MyFonts permet de retrouver la police de caract&egrave;res d'un texte.
 			<br />
 			Une fois que vous parvenez &agrave; la page de proposition de polices de caract&egrave;res 
-			(vous verrez l'image <img class="exemple_resultats" src="../images/whatthefont_results.png" />en haut de la page),
+			(vous verrez l'image <img class="exemple_resultats" src="images/whatthefont_results.png" />en haut de la page),
 			<br />
 			faites un clic droit sur la police ressemblant le plus &agrave; celle de votre image, puis un clic gauche sur "Copier l'adresse du lien" 
 			(<a class="exemple_cache toggle_exemple" href="#">Voir un exemple</a>
 			 <a class="exemple_affiche toggle_exemple cache" href="#">Cacher l'exemple</a>).
 			<br />
-			<img src="../images/whatthefont_selection_exemple.png" class="exemple_affiche cache" /><br />
+			<img src="images/whatthefont_selection_exemple.png" class="exemple_affiche cache" /><br />
 			Collez ce lien (Ctrl+V ou Cmd+V sur Mac) dans le champ ci-apr&egrave;s : 
 			<input type="text" name="url_police" size="100"/>
 		</div>
@@ -759,7 +759,7 @@
 			de la tranche. <br />
 			Sp&eacute;cifier une photo g&eacute;n&eacute;rale de tranche est fortement recommand&eacute;
 			car cela permet de faciliter sa conception. <br />
-			Cliquez sur l'ic&ocirc;ne <img src="../images/photo.png" /> de la barre de menu 
+			Cliquez sur l'ic&ocirc;ne <img src="images/photo.png" /> de la barre de menu 
 			pour s&eacute;lectionner une photo de tranche.
 		</div>
 	</div>
