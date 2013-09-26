@@ -1108,7 +1108,12 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 		
 		// Pas de proposition de tranche
 		if (tranches_pretes.length <= 1) {
-			wizard_do(wizard_courant,'goto_wizard-confirmation-validation-modele-contributeurs');
+			if (est_contexte_clonage) {
+				wizard_do(wizard_courant,'goto_wizard-dimensions');
+			}
+			else {
+				wizard_do(wizard_courant,'goto_wizard-confirmation-validation-modele-contributeurs');
+			}
 			return;
 		}
 		

@@ -524,6 +524,7 @@
 		<form name="form_options">
 			<span class="photo_principale">
 				Afin d'assurer la meilleure conception de tranche possible, une photo de la tranche est requise.<br />
+				La photo doit contenir uniquement la tranche souhait&eacute;e, en position verticale.
 				Cette photo sera mise &agrave; c&ocirc;t&eacute; de votre tranche en cours de conception.
 			</span> 
 			<span class="autres_photos">
