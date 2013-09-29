@@ -121,6 +121,7 @@ $(function() {
 		});
 });
 
+var dimensions = {};
 
 var wizard_options={};
 var id_wizard_courant=null;
@@ -728,13 +729,16 @@ function wizard_init(wizard_id) {
 						    async: false
 						});
 						// Mise à jour de la fonction Dimensions avec les valeurs entrées
-						var parametrage_dimensions =  'Dimension_x='+get_option_wizard('wizard-dimensions','Dimension_x')
-													+'&Dimension_y='+get_option_wizard('wizard-dimensions','Dimension_y');
+						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
+						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
+						var parametrage_dimensions =  'Dimension_x='+dimension_x
+													+'&Dimension_y='+dimension_y;
 						$.ajax({
 							url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
 						    type: 'post',
 						    async: false
 						});
+						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
 					}
 					maj_photo_principale();
 				}
@@ -820,9 +824,12 @@ function wizard_init(wizard_id) {
 								switch(option_nom) {
 									case 'Dimension_x':
 										$('#Dimension_x').val(texte);
+										
+										dimensions.x = parseInt(texte);
 									break;
 									case 'Dimension_y':
 										$('#Dimension_y').val(texte);
+										dimensions.y = parseInt(texte);
 									break;
 								}
 							}
@@ -1189,8 +1196,8 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 	var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
 	var div_preview_vide=$('<div>')
 		.addClass('preview_vide cache')
-		.css({'width' :$('#Dimension_x').val()*zoom+'px', 
-			  'height':$('#Dimension_y').val()*zoom+'px'});
+		.width (dimensions.x *zoom)
+		.height(dimensions.y *zoom);
 	wizard_etape.append(div_preview)
 				.append(div_preview_vide);
 	
@@ -1426,9 +1433,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 	
 	var image = section_preview_etape.find('.preview_vide');
-	image
-		.width ($('#Dimension_x').val()*zoom)
-		.height($('#Dimension_y').val()*zoom);
+	$.merge(image, $('.image_etape.finale'))
+		.width (dimensions.x*zoom)
+		.height(dimensions.y*zoom);
 	
 	var padding_dialogue = form_userfriendly.d().outerWidth(false)
 						 - form_userfriendly.d().innerWidth();
@@ -2716,8 +2723,11 @@ function afficher_photo_tranche() {
 		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+nom_photo_principale});
 		image.load(function() {
 			$(this).css({'display':'inline'});
+			$('.image_etape.finale')
+				.width (dimensions.x*zoom)
+				.height(dimensions.y*zoom);
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
-															 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
+													dimensions.x * zoom+$(this).width() + 14));
 			jqueryui_clear_message('aucune-image-de-tranche');
 			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(true);
 			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(false);
@@ -2811,7 +2821,7 @@ function afficher_gallerie(type_images, data, container) {
 				
 	    		if (selected) {
 	        		$(this).addClass('selected');
-	    			container.find('[name="selected"]').val($(this).attr('src'));
+	        		$('#wizard-images [name="selected"]').val($(this).attr('src'));
 
 	    			var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
 	    			$('#wizard-resize [name="destination"]').val(destination_rognage);
@@ -2851,12 +2861,12 @@ function templatedToVal(templatedString) {
 						var autre_nombre= matches[1] || matches[4];
 						switch(operation) {
 							case '*':
-								templatedString= $('#Dimension_x').val()*autre_nombre;
+								templatedString= dimensions.x*autre_nombre;
 							break;
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, $('#Dimension_x').val());
+						templatedString=templatedString.replace(regex, dimensions.x.val());
 				break;
 				case 'hauteur':
 					if (matches[2] || matches[3]) {
@@ -2864,12 +2874,12 @@ function templatedToVal(templatedString) {
 						var autre_nombre= matches[1] || matches[4];
 						switch(operation) {
 							case '*':
-								templatedString= $('#Dimension_y').val()*autre_nombre;
+								templatedString= dimensions.y.val()*autre_nombre;
 							break;
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, $('#Dimension_y').val());
+						templatedString=templatedString.replace(regex, dimensions.y.val());
 				break;
 				case 'caracteres_speciaux':
 					templatedString=templatedString.replace(/Â°/,'°');

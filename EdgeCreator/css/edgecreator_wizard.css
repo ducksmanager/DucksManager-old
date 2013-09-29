@@ -185,7 +185,7 @@ button#connexion, button#deconnexion {
 
 .wizard.preview_etape .image_etape.finale {
 	text-align: center;
-	display: inline;
+	display: inline-block;
 }
 
 .wizard.preview_etape #photo_tranche img.cross {
