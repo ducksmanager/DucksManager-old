@@ -1492,11 +1492,18 @@ class Image extends Fonction_executable {
 		$this->options->Decalage_y=self::toTemplatedString($this->options->Decalage_y);
 		$this->options->Source=self::toTemplatedString($this->options->Source);
 		$this->verifier_erreurs();
-		$extension_image=strtolower(substr($this->options->Source, strrpos($this->options->Source, '.')+1,strlen($this->options->Source)-strrpos($this->options->Source, '.')-1));
-		$fonction_creation_image='imagecreatefrom'.$extension_image;
-
+		
+		$src = $this->options->Source;
+		$extension_image=strtolower(substr($src, strrpos($src, '.')+1,strlen($src)-strrpos($src, '.')-1));
 		$chemin_reel=Image::get_chemin_reel($this->options->Source);
-		$sous_image=call_user_func($fonction_creation_image,$chemin_reel);
+		switch ($extension_image) {
+			case 'jpg':
+				$sous_image=imagecreatefromjpeg($chemin_reel);
+			break;
+			case 'png':
+				$sous_image=imagecreatefrompng($chemin_reel);
+			break;
+		}
 		list($width,$height)=array(imagesx($sous_image),imagesy($sous_image));
 		$hauteur_sous_image=Viewer_wizard::$largeur*($height/$width);
 		if ($this->options->Position=='bas') {
@@ -1942,11 +1949,11 @@ class Dessiner_contour {
 }
 
 class Rogner {
-	function Rogner($pays,$magazine,$numero_original,$numero,$nom,$x1,$x2,$y1,$y2) {
+	function Rogner($pays,$magazine,$numero_original,$numero,$nom,$destination,$x1,$x2,$y1,$y2) {
 		$extension='.jpg';
 		$nom_image_origine = Fonction_executable::getCheminPhotos($pays)
 							.'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
-		$nom_image_modifiee= Fonction_executable::getCheminPhotos($pays)
+		$nom_image_modifiee= ($destination === 'photos' ? Fonction_executable::getCheminPhotos($pays) : Fonction_executable::getCheminElements($pays))
 							.'/'.$magazine.'.'.$numero.'.photo_';
 		$i=1;
 		while (file_exists($nom_image_modifiee.$i.$extension)) {
@@ -1954,6 +1961,8 @@ class Rogner {
 		}
 		$nom_image_modifiee.=$i.$extension;
 		$nom_image_origine .=	$extension;
+		
+		echo "$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
 		
 		$img = imagecreatefromjpeg($nom_image_origine);
 		$width=imagesx($img);

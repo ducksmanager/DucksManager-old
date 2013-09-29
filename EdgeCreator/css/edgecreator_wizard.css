@@ -114,9 +114,9 @@ button#connexion, button#deconnexion {
 	overflow: visible;
 }
 
-#wizard-images.photo_principale span:not(.photo_principale),
-#wizard-images.autres_photos span:not(.autres_photos),
-#wizard-images.photos_texte span:not(.photos_texte) {
+#wizard-images.photo_principale span:not(.ui-button-text):not(.photo_principale),
+#wizard-images.autres_photos span:not(.ui-button-text):not(.autres_photos),
+#wizard-images.photos_texte span:not(.ui-button-text):not(.photos_texte) {
 	display: none;
 }
 

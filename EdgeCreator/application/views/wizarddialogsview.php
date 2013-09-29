@@ -397,7 +397,7 @@
 						<tr>
 							<td>Police de caract&egrave;res : </td>
 							<td style="white-space:nowrap"><input name="option-URL" type="text" maxlength="90" size="19" />
-								<button class="small" value="to-wizard-resize">
+								<button class="small">
 									<span class="modifier_police">Modifier</span>
 								</button>
 							</td>
@@ -528,8 +528,8 @@
 				Cette photo sera mise &agrave; c&ocirc;t&eacute; de votre tranche en cours de conception.
 			</span> 
 			<span class="autres_photos">
-				Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
-				cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br />
+				<!-- Si certaines parties de la tranche (des logos par exemple) ne sont pas assez visibles depuis cette photo, 
+				cela peut &ecirc;tre une bonne id&eacute;e de les photographier &agrave; part.<br /> -->
 				Les photos doivent &ecirc;tre nettes, bien &eacute;clair&eacute;es, et les couleurs fid&egrave;les &agrave; la tranche originale.
 			</span>
 			<span class="photos_texte">
@@ -543,11 +543,13 @@
 				Vous pourrez revenir &agrave; cet &eacute;cran &agrave; tout moment lors de la conception de la tranche.<br />
 			</span> -->
 			<div class="accordion">
-				<h3 id="upload"><a href="#">
-					<span class="photo_principale">Envoyer une photo</span>
-					<span class="autres_photos photos_texte">Envoyer une image d'&eacute;l&eacute;ment</span>
-				</a></h3>
-				<div class="envoyer_photo">
+				<h3 id="upload">
+					<a href="#">
+						<span class="photo_principale">Envoyer une photo</span>
+						<span class="autres_photos photos_texte">Envoyer une image d'&eacute;l&eacute;ment</span>
+					</a>
+				</h3>
+				<div name="upload" class="envoyer_photo">
 					<span class="photo_principale">
 						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=1"></iframe>
 					</span>
@@ -555,11 +557,27 @@
 						<iframe src="<?=base_url()?>index.php/helper/index/image_upload.php?photo_tranche=0"></iframe>
 					</span>
 				</div>
-				<h3 id="gallery"><a href="#">
-					<span class="photo_principale">S&eacute;lectionner une photo existante</span>
-					<span class="autres_photos photos_texte">S&eacute;lectionner une image existante</span>
-				</a></h3>
-				<div class="selectionner_photo">
+				
+				<h3 id="section_photo" class="autres_photos photos_texte">
+					<a href="#">
+						<span class="autres_photos photos_texte">A partir de la photo de tranche</span>
+					</a>
+				</h3>
+				<div name="section_photo" class="selectionner_photo_tranche autres_photos photos_texte">
+					<ul class="gallery cache">
+						<li class="template">
+							<img />
+						</li>
+					</ul>
+				</div>
+				
+				<h3 id="gallery">
+					<a href="#">
+						<span class="photo_principale">S&eacute;lectionner une photo existante</span>
+						<span class="autres_photos photos_texte">S&eacute;lectionner une image existante</span>
+					</a>
+				</h3>
+				<div name="gallery" class="selectionner_photo">
 					<p class="chargement_images" >Chargement des images</p>
 					<p class="pas_d_image autres_photos photos_texte cache" >Aucune image r&eacute;pertori&eacute;e pour ce pays</p>
 					<p class="pas_d_image photo_principale cache" >Aucune image r&eacute;pertori&eacute;e pour ce magazine</p>
@@ -571,7 +589,7 @@
 					</ul>
 				</div>
 			</div>
-			<button class="cache" value="to-wizard-resize">
+			<button id="to-wizard-resize" class="cache" value="to-wizard-resize">
 				<span class="photo_principale">Rogner la photo s&eacute;lectionn&eacute;e</span>
 				<span class="autres_photos photos_texte">Rogner l'image s&eacute;lectionn&eacute;e</span>
 			</button>
@@ -595,6 +613,7 @@
 	<img /><br />
 	<div class="error crop_inconsistent cache">Une partie de votre s&eacute;lection est situ&eacute;e en dehors de l'image.</div>
 	<form>
+		<input type="hidden" name="destination" />
 		<div class="buttonset">
 			<input type="hidden" checked="checked" name="choix" value="do-in-wizard-enregistrer" id="do-in-wizard-enregistrer" />
 			<input type="hidden" checked="checked" name="onClose" value="to-wizard-images" id="to-wizard-images" />
@@ -721,7 +740,7 @@
 	<p>
 	Votre session a expir&eacute;. 
 	<br />
-	<a href="javascript:void(0)" onclick="location.reload()">Recharger cette page</a>.
+	Retour &agrave; la page d'accueil d'EdgeCreator.
 	</p>
 </div>
 
