@@ -1,7 +1,7 @@
 <?php
 /*
  * Developpement : Bruno Perel (admin[at]ducksmanager[dot]net)
- * (c)2003-2012 Cette classe est soumise à copyright
+ * (c)2003-2013 Cette classe est soumise Ã  copyright
  */
 @session_start();
 if (isset($_GET['lang'])) {
