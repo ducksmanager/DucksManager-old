@@ -1,4 +1,7 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: X-Requested-With, Content-Type');
+
 $no_database=true; // Ne pas utiliser les paramètres de connexion classiques
 include_once(BASEPATH.'/../../Inducks.class.php');
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
@@ -120,7 +123,7 @@ class Modele_tranche extends CI_Model {
 			$requete_modele_magazine_existe='SELECT Count(1) AS cpt FROM edgecreator_modeles2 '
 										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-										   .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.$username.'\'';
+										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
 			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->first_row()->cpt > 0;
 		}
 		return $user_possede_modele;
@@ -146,8 +149,8 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 				.'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
@@ -193,8 +196,8 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 			
@@ -735,8 +738,6 @@ class Modele_tranche extends CI_Model {
 										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.mysql_real_escape_string($resultat->username).'\')';
 						echo $req_ajout_nouvel_intervalle."\n";
 						$this->db->query($req_ajout_nouvel_intervalle);
-							
-		
 					}
 				}
 			}

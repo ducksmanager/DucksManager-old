@@ -7,20 +7,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields;
 	static $numero;
 
-	function user_possede_modele($pays=null,$magazine=null,$username=null) {
-		if (is_null($pays)) $pays=self::$pays;
-		if (is_null($magazine)) $magazine=self::$magazine;
-		if (is_null($username)) $username=self::$username;
-		if (is_null(self::$user_possede_modele)) {
-			$requete_modele_magazine_existe='SELECT Count(1) AS cpt FROM edgecreator_modeles2 '
-										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
-			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->first_row()->cpt > 0;
-		}
-		return $user_possede_modele;
-	}
-	
 	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
 		$requete='SELECT ID, Pays, Magazine, Numero '
 				.'FROM tranches_en_cours_modeles '
@@ -55,39 +41,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		return $resultats;
 	}
-
-	function dupliquer_modele_magazine_si_besoin($pays,$magazine) {
-		if (!$this->user_possede_modele($pays,$magazine,self::$username)) {
-			$options=$this->get_modeles_magazine($pays,$magazine);
-			$ordre_courant=null;
-			$nom_option_courant=null;
-			$valeur_option_courante=null;
-			foreach($options as $option) {
-				$this->insert($option->Pays,$option->Magazine,$option->Ordre,$option->Nom_fonction,$option->Option_nom,$option->Option_valeur,$option->Numero_debut,$option->Numero_fin,self::$username,null);
-				
-			}
-		}
-	}
 	
-	function get_modeles_magazine($pays,$magazine,$ordre=null)
-	{
-		$resultats_o=array();
-		$requete='SELECT '.implode(', ', self::$fields).' '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-				.'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		if (!is_null($ordre))
-			$requete.='AND Ordre='.$ordre.' ';
-		$requete.='ORDER BY Ordre';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
-		foreach($resultats as $resultat)
-			$resultats_o[]=new Modele_tranche ($resultat);
-		return $resultats_o;
-	}
-
 	function get_ordres($pays,$magazine,$numero=null,$toutes_colonnes=false) {
 		$resultats_ordres=array();
 		$requete=' SELECT DISTINCT '.($toutes_colonnes?'*':'Ordre, Numero')
@@ -107,22 +61,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 			$resultats_ordres=array_unique($resultats_ordres);
 		}
 		return $resultats_ordres;
-	}
-
-	function get_nb_etapes($pays,$magazine) {
-		$resultats_etapes=array();
-		$requete='SELECT Count(Nom_fonction) AS cpt '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
-			
-		foreach($resultats as $resultat) {
-			return $resultat->cpt;
-		}
 	}
 
 	function get_etapes_simple($pays,$magazine,$numero,$num_etape=null) {
@@ -357,16 +295,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 								  .'AND Ordre='.$etape.' AND Option_nom = \''.$nom_option.'\' AND username = \''.self::$username.'\'';
 		$this->db->query($requete_suppr_option);
 		echo $requete_suppr_option."\n";
-	}
-
-	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,$id_valeur=null) {
-		$valeur=mysql_real_escape_string($valeur);
-		if ($option_nom=='Actif') {
-			$this->insert($pays,$magazine,$etape,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username,$id_valeur);
-			
-		}
-		else
-			$this->insert($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,self::$username,$id_valeur);
 	}
 	
 	function get_id_modele_tranche_en_cours_max() {
