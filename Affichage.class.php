@@ -198,7 +198,7 @@ class Affichage {
 					?><div><?php
 					switch($type) {
 						case 'inscriptions':
-							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_S_EST_INSCRIT?>
+							?><b><?=$evenement->utilisateur?></b> <?=NEWS_S_EST_INSCRIT?>
 						<?php 
 						break;
 						case 'bouquineries':
@@ -213,7 +213,7 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}	
-							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE?> 
+							?><b><?=$evenement->utilisateur?></b> <?=NEWS_A_AJOUTE?> 
 							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
 							<?php 
 							if ($evenement->cpt > 0) {
