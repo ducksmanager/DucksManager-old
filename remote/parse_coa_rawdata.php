@@ -21,9 +21,10 @@ if (isset($_GET['rawData_file'])) {
     $contenu=Util::get_page('http://www.ducksmanager.net/_tmp/rawdata_'.$rawdatafile.'.txt');
 	if (isset($_GET['dbg']))
 		echo 'Contenu en entree : '.$contenu.'<br /><br />';
-    $lignes=explode("\r\n",$contenu);
+    $lignes=explode("\n",$contenu);
 	$collection=array(); 
 	foreach($lignes as $i=>$ligne) {
+		$ligne=str_replace("\r", '', $ligne);
 		if ($i==0)
 			continue;
 		$infos_ligne=explode('^',$ligne);
@@ -34,25 +35,31 @@ if (isset($_GET['rawData_file'])) {
 			$requete='SELECT publicationcode, issuenumber FROM inducks_issue WHERE issuecode=\''.$pays.'/'.$magazine_numero.'\'';
 			if (isset($_GET['dbg']))
 				echo $requete;
-			$resultats=DM_Core::$d->requete_select($requete);
+			$resultats=Inducks::requete_select($requete);
 			if (count($resultats) == 0 && isset($_GET['dbg'])) {
 				echo 'Pas de correspondance trouvee pour '.$pays.'/'.$magazine_numero.'<br />';
 			}
 			else {
-				$pays_magazine=explode('/',$resultats[0]['publicationcode']);
-				$magazine=$pays_magazine[1];
-				$numero=$resultats[0]['issuenumber'];
-				if (!array_key_exists($pays,$collection)) {
-					$arr_temp=array($magazine=>array(0=>$numero));
-					$collection[$pays]=$arr_temp;
+				if (isset($_GET['dbg']) && !array_key_exists(0, $resultats)) {
+					echo 'L\'index 0 n\'existe pas pour '.print_r($resultats, true).' : '.$requete;
+					break;
 				}
 				else {
-					if (!array_key_exists($magazine,$collection[$pays])) {
-						$collection[$pays][$magazine]=array($numero);
+					$pays_magazine=explode('/',$resultats[0]['publicationcode']);
+					$magazine=$pays_magazine[1];
+					$numero=$resultats[0]['issuenumber'];
+					if (!array_key_exists($pays,$collection)) {
+						$arr_temp=array($magazine=>array(0=>$numero));
+						$collection[$pays]=$arr_temp;
 					}
-					else
-						if (!array_push($collection[$pays][$magazine],$numero))
-							echo '<b>'.$magazine.$numero.'</b>';
+					else {
+						if (!array_key_exists($magazine,$collection[$pays])) {
+							$collection[$pays][$magazine]=array($numero);
+						}
+						else
+							if (!array_push($collection[$pays][$magazine],$numero))
+								echo '<b>'.$magazine.$numero.'</b>';
+					}
 				}
 			}
 		}

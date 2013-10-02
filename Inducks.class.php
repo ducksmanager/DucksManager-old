@@ -270,6 +270,9 @@ class Inducks {
 			return ERREUR_CONNEXION_INDUCKS;
 	}
 }
+
+Inducks::$use_local_db = $_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel;
+
 if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();
 
