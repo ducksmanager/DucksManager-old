@@ -4,7 +4,7 @@ global $debug;
 $debug=isset($_GET['debug']);
 $no_database=true;
 error_reporting(E_ALL);
-require_once('Util.class.php');
+require_once('../Util.class.php');
 if (isset($_GET['user'])) {
     $nom_fichier_data='edges/_tmp/'.$_GET['user'].'.json';
     $nom_image='edges/_tmp/'.$_GET['user'].'.png';
@@ -55,8 +55,10 @@ if (isset($_GET['user'])) {
         }
         imagedestroy($image_tranche);
     }
-    //echo $nom_image;
-    if (!$debug) {
+    if ($debug) {
+		echo $nom_image;
+	}
+	else {
         header('Content-type: image/png');
         imagepng($im);
     }

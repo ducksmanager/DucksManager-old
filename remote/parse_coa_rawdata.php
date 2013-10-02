@@ -2,8 +2,8 @@
 ob_start('ob_gzhandler');
 $database='coa';
 
-include_once('_priv/Database.priv.class.php');
-include_once('Util.class.php');
+include_once('../_priv/Database.priv.class.php');
+include_once('../Util.class.php');
 DatabasePriv::connect($database);
 if (isset($_GET['dbg']))
 	echo 'Serveur : '.DatabasePriv::getProfilCourant()->server

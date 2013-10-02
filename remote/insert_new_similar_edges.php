@@ -1,5 +1,5 @@
 <?php
-include_once('Inducks.class.php');
+include_once('../Inducks.class.php');
 Inducks::$use_local_db=false;
 DatabasePriv::connect('coa');
 
@@ -54,7 +54,6 @@ if (count($doublons_a_ajouter) > 0) {
 	if (isset($_GET['dbg']))
 		echo $requete_ajout_doublons.'<br />';
 	Inducks::requete_select($requete_ajout_doublons,'db301759616','ducksmanager.net');
-	//echo $requete_ajout_doublons.'<br />';
 }
 
 $requete_tranches_deja_pretes="SELECT issuenumber FROM tranches_pretes "
@@ -83,5 +82,4 @@ if (count($tranches_a_ajouter) > 0) {
 	if (isset($_GET['dbg']))
 		echo $requete_ajout_tranches.'<br />';
 	Inducks::requete_select($requete_ajout_tranches,'db301759616','ducksmanager.net');
-	//echo $requete_ajout_tranches;
 }

@@ -337,7 +337,7 @@ class Liste {
 		Util::ecrire_dans_fichier('_tmp/'.$nom_fichier_tmp,$this->texte);
 		
 		$serveur='serveur_virtuel';
-		$reponse=Util::get_page(DatabasePriv::$url_serveur_virtuel.'/parse_coa_rawdata.php?rawData_file='.$id_fichier_tmp.'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
+		$reponse=Util::get_page(Database::get_remote_url('parse_coa_rawdata.php').'?rawData_file='.$id_fichier_tmp.'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
 		$this->collection=unserialize($reponse);
 		@unlink('_tmp/'.$nom_fichier_tmp);
 	}

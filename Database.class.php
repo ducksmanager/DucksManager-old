@@ -55,6 +55,10 @@ class Database {
 		}
 	}
 	
+	static function get_remote_url($page) {
+		return DatabasePriv::$url_serveur_virtuel.'/'.DatabasePriv::$root_serveur_virtuel.'/'.$page;
+	}
+	
 	function user_to_id($user) {
 			if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
 					$user=$_COOKIE['user'];

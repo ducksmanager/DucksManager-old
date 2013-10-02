@@ -26,7 +26,7 @@ class Inducks {
 				return $resultat;
 			}
 			else {
-				$ip_serveur=$serveur=='serveur_virtuel' ? DatabasePriv::$url_serveur_virtuel : 'http://www.ducksmanager.net';
+				$ip_serveur=$serveur=='serveur_virtuel' ? Database::get_remote_url('') : 'http://www.ducksmanager.net';
 				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
 				if (isset($_GET['dbg'])) {
 					echo $ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password).'<br /><br />';
