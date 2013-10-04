@@ -576,7 +576,7 @@ class Modele_tranche extends CI_Model {
 					if (!array_key_exists($numero, $options)) {
 						$options[$numero]=array();
 					}
-					$options[$numero][]=$option;
+					$options[$numero][$option->Ordre.$option->Option_nom]=$option;
 				}
 			}
 		}

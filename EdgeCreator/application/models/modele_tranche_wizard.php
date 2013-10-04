@@ -311,7 +311,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 
 		$options = $this->get_valeurs_options($pays,$magazine, array($numero));
 		
-		if (count($options) > 0) {
+		if (count($options[$numero]) === 0) {
 			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
 			return;
 		}
