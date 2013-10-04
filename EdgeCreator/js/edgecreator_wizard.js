@@ -1,14 +1,14 @@
 (function($,undefined){
-	  $.fn.d = function(){
-		  return this.closest('.ui-dialog');
-	  };
+	$.fn.d = function(){
+		return this.closest('.ui-dialog');
+	};
 	
-	  $.fn.valeur = function(nom_option){
-		 if (this.hasClass('options_etape'))
-			 return this.find('[name="option-'+nom_option+'"]');
+	$.fn.valeur = function(nom_option){
+		if (this.hasClass('options_etape'))
+			return this.find('[name="option-'+nom_option+'"]');
 		 else
-			 return this.find('[name="'+nom_option+'"]');
-	  };
+			return this.find('[name="'+nom_option+'"]');
+	};
 })(jQuery);
 
 $.widget("ui.tooltip", $.ui.tooltip, {
@@ -1125,6 +1125,23 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 				wizard_do(wizard_courant,'goto_wizard-confirmation-validation-modele-contributeurs');
 			}
 			return;
+		}
+		
+		if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
+			var tranches_clonables = $.ajax({
+				url: urls['cloner']+['est_clonable',pays,magazine,tranches_pretes.join(',')].join('/'),
+			    type: 'post',
+			    async: false
+			}).responseText.replace(/[\[\]]/g,'').split(/,/);
+			
+			var tranches_pretes_clonables = [];
+			for (var i in tranches_pretes) {
+				var tranche_prete = tranches_pretes[i];
+				if (tranches_clonables.indexOf(tranche_prete) !== -1 || tranche_prete === numero) {
+					tranches_pretes_clonables.push(tranche_prete);
+				}
+			}
+			tranches_pretes = tranches_pretes_clonables;
 		}
 		
 		var tableau_tranches_pretes=$('<table>');

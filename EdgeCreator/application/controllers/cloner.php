@@ -24,6 +24,23 @@ class Cloner extends CI_Controller {
 		$this->load->view('insertview',$data);
 		
 	}
+	
+	function est_clonable($pays=null,$magazine=null,$numeros=null) {
+		if (in_array(null,array($pays,$magazine,$numeros))) {
+			$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
+			exit();
+		}
+		
+		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
+		$this->Modele_tranche->setUsername($this->session->userdata('user'));
+		
+		$numeros_clonables = $this->Modele_tranche->get_numeros_clonables($pays,$magazine,explode(',',$numeros));
+		
+		$this->load->view('listergview', array(
+			'liste'=>$numeros_clonables,
+			'format'=>'json'
+		));
+	}
 }
 
 ?>

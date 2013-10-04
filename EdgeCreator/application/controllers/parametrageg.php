@@ -21,7 +21,7 @@ class ParametrageG extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
-		$this->load->model('Modele_tranche');
+		$this->load->model('Modele_tranche_wizard','Modele_tranche');
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		

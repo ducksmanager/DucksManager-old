@@ -308,43 +308,25 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
+
+		$options = $this->get_valeurs_options($pays,$magazine, array($numero));
+		
+		if (count($options) > 0) {
+			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
+			return;
+		}
+		
 		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
 							 .'\''.mysql_real_escape_string(self::$username).'\', 1)';
 		$this->db->query($requete_ajout_modele);
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
-		$est_tranche_edgecreator_v2 = !is_null($this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero));
-		
-		if ($est_tranche_edgecreator_v2) {
-			$requete_get_options='SELECT '.implode(', ', self::$content_fields).' '
-								.'FROM tranches_en_cours_modeles_vue '
-								.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$numero.'\' '
-								.'  AND username=\''.mysql_real_escape_string(self::$username).'\' AND Active=0';
-		}
-		else {
-			$requete_get_options='SELECT '.implode(', ', self::$fields).',username '
-							    .'FROM edgecreator_modeles2 AS modeles '
-								.'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-						        .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-								.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-								.'ORDER BY Ordre';
-		}
-		echo $requete_get_options."\n";
-		$resultats=$this->db->query($requete_get_options)->result();
-		foreach($resultats as $resultat) {
-			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
-			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
-			if ($est_tranche_edgecreator_v2 
-			 || est_dans_intervalle(
-			 		$numero,
-			 		$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))) {
-				
-				$requete_ajout_valeur='INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur) '
-									 .'VALUES ('.$id_modele .',\''.$resultat->Ordre.'\',\''.$resultat->Nom_fonction.'\', '
-											    .$option_nom.','.$option_valeur.')';
-				$this->db->query($requete_ajout_valeur);
-			}
+		foreach($options[$numero] as $option) {
+			$requete_ajout_valeur=' INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur)'
+								 .' VALUES ('.$id_modele .',\''.$option->Ordre.'\',\''.$option->Nom_fonction.'\','
+								 .' '.$option->Option_nom.','.$option->Option_valeur.')';
+			$this->db->query($requete_ajout_valeur);
 		}
 		
 		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini

@@ -6,7 +6,7 @@ class Numerosdispos extends CI_Controller {
 		if ($magazine == 'null') $magazine = null;
 		$get_tranches_non_pretes = $get_tranches_non_pretes === 'true';
 		
-		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
+		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		

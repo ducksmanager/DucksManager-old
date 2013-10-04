@@ -524,19 +524,86 @@ class Modele_tranche extends CI_Model {
 		return null;
 	}
 	
+	function get_valeurs_options($pays,$magazine,$numeros=array()) {
+		$numeros_esc=array();
+		foreach($numeros as $numero) {
+			$numeros_esc[]='\''.$numero.'\'';
+		}
+		
+		if (count($numeros) === 0) {
+			$resultats = array();
+		}
+		else {
+			$requete_get_options=
+				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
+				.' FROM tranches_en_cours_modeles_vue '
+				.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
+				.' AND Numero IN ('.implode(',', $numeros_esc).') '
+				.' AND username=\''.mysql_real_escape_string(self::$username).'\' AND Active=0'
+				.' ORDER BY Ordre';
+// 			echo $requete_get_options."\n";
+			$resultats=$this->db->query($requete_get_options)->result();
+		}
+		
+		$requete_get_options=
+			 ' SELECT 0 AS EC_v2, '.implode(', ', self::$fields).',username '
+			.' FROM edgecreator_modeles2 AS modeles '
+			.' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+			.' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+			.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+			.' ORDER BY Ordre';
+// 		echo $requete_get_options."\n";
+		
+		$resultats=array_merge($resultats, $this->db->query($requete_get_options)->result());
+		$options=array();
+		
+		foreach($resultats as $resultat) {
+			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
+			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
+			$est_ec_v2 = $resultat->EC_v2 == 1;
+			
+			foreach($numeros as $numero) {
+				if ($est_ec_v2
+				 || est_dans_intervalle(
+						$numero,
+						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))) {
+					$option = new stdClass();
+					$option->Ordre=$resultat->Ordre;
+					$option->Nom_fonction=$resultat->Nom_fonction;
+					$option->Option_nom=$option_nom;
+					$option->Option_valeur=$option_valeur;
+					
+					if (!array_key_exists($numero, $options)) {
+						$options[$numero]=array();
+					}
+					$options[$numero][]=$option;
+				}
+			}
+		}
+		return $options;
+	}
+	
+	function get_numeros_clonables($pays,$magazine,$numeros=array()) {
+		self::$pays = $pays;
+		self::$magazine = $magazine;
+		
+		$valeurs_options = $this->get_valeurs_options($pays, $magazine, $numeros);
+		return array_keys($valeurs_options);		
+	}
+	
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
+		self::$pays = $pays;
+		self::$magazine = $magazine;
+		
 		$numeros_affiches=array('Aucun'=>'Aucun');
 		if ($get_prets) {
 			$tranches_pretes=array();
 		}
-
 		$numeros=Inducks::get_numeros($pays, $magazine, "numeros_et_createurs_tranche", true);
 		$id_user=$this->username_to_id(self::$username);
 		if (count(self::$utilisateurs) == 0) {
 			self::setUtilisateurs();
-		}		
-		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
-		
+		}
 		foreach($numeros as $numero) {
 			$numero_affiche=$numero['issuenumber'];
 			$numeros_affiches[$numero_affiche]=$numero_affiche;
@@ -555,7 +622,7 @@ class Modele_tranche extends CI_Model {
 			$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
 							  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
 			$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
-				
+			
 			foreach($resultat_get_prets as $tranche_prete) {
 				$createurs=explode(';',$tranche_prete['createurs']);
 				$ids_createurs = array();
@@ -564,6 +631,7 @@ class Modele_tranche extends CI_Model {
 				}
 				$tranches_pretes[$tranche_prete['issuenumber']]=in_array($id_user, $ids_createurs) ? 'par_moi' : 'global';
 			}
+			
 			return array($numeros_affiches, $tranches_pretes);
 		}
 		return $numeros_affiches;
