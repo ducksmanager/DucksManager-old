@@ -1641,12 +1641,13 @@ class TexteMyFonts extends Fonction_executable {
 
 		$ci =& get_instance();
 		$ci->load->model('MyFonts','MyFonts',true);
-
 		$post=new MyFonts($this->options->URL,
 						  $this->options->Couleur_texte,
 						  $this->options->Couleur_fond,
 						  $this->options->Largeur,
-						  $this->options->Chaine.'                                    .');
+						  $this->options->Chaine.'                                    .',
+						  intval((Viewer_wizard::$largeur/1.5)/0.35) // Précision
+						 );
 		$texte=$post->im;
 		if ($this->options->Demi_hauteur == 'Oui') {
 			$width=imagesx($texte);
@@ -1656,7 +1657,6 @@ class TexteMyFonts extends Fonction_executable {
 			imagecopyresampled($texte2, $texte, 0, 0, 0, 0, $width, $height/2, $width, $height/2);
 			$texte=$texte2;
 		}
-		
 		
 		$width=imagesx($texte);
 		$height=imagesy($texte);

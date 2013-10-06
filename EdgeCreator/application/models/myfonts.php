@@ -14,7 +14,6 @@ class MyFonts extends CI_Model {
 	var $im;
 
 	function MyFonts($font=null,$color=null,$color_bg=null, $width=null, $text=null,$precision=18) {
-		
 		parent::__construct();
 		if (is_null($font))
 			return;
@@ -108,12 +107,13 @@ class Post extends CI_Model {
 			$data[] = ($n).'='.($v);
 		}
 		$data = implode('&', $data);
-		// format --> test1=a&test2=b etc.
 
 		$this->url=$url.'?'.$data;
 		$this->content = Util::get_page($this->url);
 		
 		return;
+		
+		// For POST only
 		
 		// parse the given URL
 		$url = parse_url($url);

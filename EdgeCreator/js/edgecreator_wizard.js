@@ -2321,7 +2321,7 @@ function tester_options_preview(nom_fonction, noms_options, element) {
 							var largeur_courante=form_options.valeur('Largeur').val();
 							var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
 														-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
-							val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
+							val=parseInt(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
 						break;
 						case 'Demi_hauteur':
 							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
@@ -2545,6 +2545,8 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
 			url_appel+='/0.01';
+		
+		url_appel+='/'+dimensions.x;
 
 		$(this)
 			.attr({'src':url_appel})
