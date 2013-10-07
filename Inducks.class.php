@@ -112,17 +112,9 @@ class Inducks {
 					foreach(array('issuenumber', 'contributeurs', 'en_cours') as $champ) {
 						$element_numero[$champ] = $numero[$champ];
 					}
+					$element_numero['issuenumber'] = $fonction_nettoyage($element_numero['issuenumber']);
 					$resultats[]=$element_numero;
 				}
-				return $resultats;
-			break;
-			case "numeros_seulement":
-				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
-				$resultat_requete=Inducks::requete_select($requete);
-				return array_map('nettoyer_numero_base_sans_espace',$resultat_requete);
-				$resultats=array();
-				foreach($resultat_requete as $resultat)
-					$resultats[]=$resultat['issuenumber'];
 				return $resultats;
 			break;
 		}

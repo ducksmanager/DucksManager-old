@@ -48,7 +48,7 @@ class MyFonts extends CI_Model {
 		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
 		$requete_image_existe='SELECT ID FROM images_myfonts '
 							 .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
-							 .' AND Width = \''.$this->width.'\' AND Texte = \''.$texte_clean.'\' AND Precision_ = \''.$this->precision.'\'';
+							 .' AND Width = \''.$this->width.'\' AND Texte = \''.$texte_clean.'\'';
 		$requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
 		$image_existe=count($requete_image_existe_resultat) != 0;
 		if ($image_existe && !isset($_GET['force_post'])) {

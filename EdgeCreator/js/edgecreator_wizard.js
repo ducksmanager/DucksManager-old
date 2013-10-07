@@ -81,7 +81,7 @@ $(function() {
 	        draggable = $('.ui-draggable:visible');
 	        distance = 1; // Distance in pixels the draggable should be moved
 	    
-	    if ($(':focus').prop('tagName') === 'IMG' && draggable.length  == 0) {
+	    if (draggable.length  == 0) {
 	    	return false;
 	    }
 	    position = draggable.position();
@@ -1132,7 +1132,7 @@ function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage)
 				url: urls['cloner']+['est_clonable',pays,magazine,tranches_pretes.join(',')].join('/'),
 			    type: 'post',
 			    async: false
-			}).responseText.replace(/[\[\]]/g,'').split(/,/);
+			}).responseText.replace(/[\[\]"]/g,'').split(/,/);
 			
 			var tranches_pretes_clonables = [];
 			for (var i in tranches_pretes) {
