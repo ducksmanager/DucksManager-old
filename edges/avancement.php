@@ -23,7 +23,6 @@
        	<div style="width:90%">
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . '..');
-$a=get_include_path();
 include_once('../IntervalleValidite.class.php');
 include_once('../Inducks.class.php');
 include_once('../Edge.class.php');
