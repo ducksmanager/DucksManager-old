@@ -117,8 +117,8 @@ foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 }
 
 
-?><br  />
-		<?=$cpt_dispos?> tranches pr&ecirc;tes.<br />
+	?><br  />
+	<?=$cpt_dispos?> tranches pr&ecirc;tes.<br />
         <br /><br />
         <u>L&eacute;gende : </u><br />
         <span class="num">&nbsp;</span> Nous avons besoin d'une photo de cette tranche !<br />
