@@ -8,10 +8,10 @@ class Insert_Wizard extends CI_Controller {
 		if ($nom_fonction == 'Dimensions') { // Créer aussi le modèle
 			$this->Modele_tranche->creer_modele($pays,$magazine,$numero);
 		}
-		$decalages_etapes=$this->Modele_tranche->insert_etape($pays,$magazine,$numero,$pos,$etape ,$nom_fonction);
+		$infos_insertion=$this->Modele_tranche->insert_etape($pays,$magazine,$numero,$pos,$etape ,$nom_fonction);
 
 		$data = array(
-			'decalages'=>$decalages_etapes
+			'infos_insertion'=>$infos_insertion
 		);
 		
 		$this->load->view('insertview',$data);

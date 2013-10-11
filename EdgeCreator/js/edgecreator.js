@@ -28,7 +28,6 @@ var zoom=2;
 var numeros_dispos;
 var selecteur_cellules='#table_numeros tr:not(.ligne_entete)>td:not(.intitule_numero):not(.cloner)';
 var colonne_ouverte=false;
-var url_viewer='viewer';
 var valeurs_possibles_zoom = [1, 1.5, 2, 4, 6, 8];
 
 function element_to_numero(elements) {
@@ -529,20 +528,21 @@ function reload_etape(num_etape,recharger_finale) {
     charger_preview_etape(chargements[chargement_courant],true);
 }
 
-function reload_numero(numero) {
+function reload_numero(numero, est_externe) {
+	est_externe = est_externe || false;
     chargements=new Array();
     chargements.push(numero);
     chargement_courant=0;
-    charger_previews_numeros(chargements[chargement_courant],true);
+    charger_previews_numeros(chargements[chargement_courant],true, est_externe);
 }
 
-function charger_previews_numeros(numero,est_visu) {
+function charger_previews_numeros(numero,est_visu,est_externe) {
     numero_chargement=numero;
     var parametrage=new Object();
     var zoom_utilise= est_visu ? zoom : 1.5;
         
     $('#chargement').html('Chargement de la preview de la tranche');
-    charger_image('numero',urls[url_viewer]+['index',pays,magazine,numero,zoom_utilise,'all',URLEncode(JSON.stringify(parametrage)),(est_visu?'false':'save'),'false'].join('/'),numero);
+    charger_image('numero',urls[url_viewer]+['index',pays,magazine,numero,zoom_utilise,'all',URLEncode(JSON.stringify(parametrage)),(est_visu?'false':'save'),'false',est_externe].join('/'),numero);
 }
 
 function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
@@ -566,7 +566,7 @@ function charger_preview_etape(etapes_preview,est_visu, parametrage, callback) {
         if (typeof(etapes_preview) == 'string')
             etapes_preview=etapes_preview.split(/,/g);
     }
-    charger_image('etape',urls[url_viewer]+['index',pays,magazine,numero_chargement,zoom_utilise,etapes_preview.join("-"),parametrage,(est_visu?'false':'save'),fond_noir].join('/'),etapes_preview.join("-"),callback);
+    charger_image('etape',urls[url_viewer]+['index',pays,magazine,numero_chargement,zoom_utilise,etapes_preview.join("-"),parametrage,(est_visu?'false':'save'),fond_noir,'false'].join('/'),etapes_preview.join("-"),callback);
 }
 
 var selecteur_cellules_preview=null;
@@ -640,17 +640,10 @@ function charger_image(type_chargement,src,num,callback) {
     image.error(function() {
     	var num_etape=chargements[chargement_courant];
     	if (num_etape != 'all') { // Si erreur sur l'étape finale c'est qu'il y a eu erreur sur une étape intermédiaire ; on ne l'affiche pas de nouveau
-	        var texte_erreur=$('<p>')
-	        	.append($('<p>').html("La g&eacute;n&eacute;ration de l'image pour l'&eacute;tape "+num_etape+" a &eacute;chou&eacute;"))
-	        	.append($('<br>'))
-	        	.append($('<p>').html("La g&eacute;n&eacute;ration des images des &eacute;tapes suivantes a &eacute;t&eacute; annul&eacute;e."))
-	        	.append($('<p>').html("Merci de reporter ce probl&egrave;me au webmaster en indiquant le message d'erreur suivant :"))
-	        	.append($('<br>'))
-	        	.append($('<iframe>',{'src':$(this).attr('src')+'/debug'}));
-	        jqueryui_alert(texte_erreur, "Erreur de g&eacute;n&eacute;ration d'image");
+			$('#wizard-erreur-generation-image').find('[name="etape"]').text(num_etape);
+			$('#wizard-erreur-generation-image').find('iframe').attr({src: $(this).attr('src')+'/debug'});
+    		jqueryui_alert_from_d($('#wizard-erreur-generation-image'));
     	}
-        charger_image_suivante($(this),callback,type_chargement,est_visu);
-        callback(image);
     });
     image.attr({'src':src});
 }
@@ -1192,55 +1185,7 @@ $(window).load(function() {
     if (privilege == 'Admin' || privilege == 'Edition') {
         $('#save_png').click(function() {
            if (typeof (numero_chargement) != 'undefined') {
-        	   $.ajax({
-                   url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
-                   dataType:'json',
-                   type: 'post',
-                   success:function(data) {
-                	   var boite_save_png=$('<div>',{'id':'dialog_save_png','title':'Enregistrement de la tranche'});
-                	   boite_save_png.append($('<p>').html('Veuillez s&eacute;lectionner les photographes (utilisateurs qui ont photographi&eacute; la tranche) '
-                			   							  +'et les designers (utilisateurs qui ont recr&eacute;&eacute; la tranche via EdgeCreator) :'));
-
-                	   var span_photographes=$('<span>',{'id':'photographes'})
-                	   		.append('Photographes');
-                	   
-                	   var span_designers=$('<span>',{'id':'designers'})
-                	   		.css({'marginLeft':'30px'})
-                	   		.append('Designers');
-                	   
-                	   
-                	   boite_save_png.append($('<form>',{'id':'form_save_png'}).append(span_photographes).append(span_designers));
-                	   
-                	   $.each(boite_save_png.find('span'),function(i,span) {
-                		   var div=$('<div>');
-                		   for (var username in data) {
-                			   var option = $('<input>',{'name':$(span).attr('id'),'type':'checkbox'}).val(username);
-                			   var coche=(data[username].indexOf('p') != -1 && $(span).attr('id') == 'photographes')
-		   					    	  || (data[username].indexOf('d') != -1 && $(span).attr('id') == 'designers');
-                			   option.prop({'checked': coche, 'disabled': coche});
-                			   $(div).append($('<div>').css({'font-weight':coche?'bold':'normal'}).append(option).append(username));
-                		   }
-                		   $(span).append(div);
-                	   });
-                	   
-                	   $('#body').append(boite_save_png);
-                	   boite_save_png.dialog({
-                		   modal:true,
-                		   width: 450,
-                		   buttons: {
-                			   OK:function() {
-                				   var a=$('#form_save_png').serialize();
-                				   var b;
-                			   }
-                		   }
-                	   });
-                   }
-        	   });
-        	   	/*var num_etapes_final=$('.num_etape_preview:not(.final)').getData('etape');
-                chargements=new Array();
-                chargements.push(num_etapes_final);
-                chargement_courant=0;
-                charger_preview_etape(chargements[chargement_courant],false);*/
+        	   afficher_dialogue_contributeurs();
            }
         });
         $('#save_pngs').click(function() {
@@ -1268,6 +1213,11 @@ $(window).load(function() {
 		fixer_regles(false);
 	});
 });
+
+function afficher_dialogue_contributeurs(callback) {
+	callback = callback || function() {};
+	
+}
 
 function charger_liste_magazines(pays_sel) {
     $('#chargement').html('Chargement des magazines...');
@@ -1818,9 +1768,14 @@ function remplacer_caracteres_whatthefont() {
                     .append($('<b>').html(nom_police));
 }
 
-function jqueryui_alert(texte, titre) {
-	if (typeof(titre) == 'undefined')
-		titre='DucksManager EdgeCreator';
+function jqueryui_alert_from_d(element, close_callback) {
+	close_callback = close_callback || function() {}
+	jqueryui_alert(element.children(), element.attr("title"), close_callback);
+}
+
+function jqueryui_alert(texte, titre, close_callback) {
+	titre=titre || 'DucksManager EdgeCreator';
+	close_callback = close_callback || function(){};
 	var boite=$('<div>',{'title':titre});
 	if (typeof(texte)=='string')
 		boite.append($('<p>').html(texte));
@@ -1834,7 +1789,8 @@ function jqueryui_alert(texte, titre) {
 			OK: function() {
 				$( this ).dialog( "close" );
 			}
-		}
+		},
+		close: close_callback	
 	});
 }
 

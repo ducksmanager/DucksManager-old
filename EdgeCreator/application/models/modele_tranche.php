@@ -1,4 +1,8 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: X-Requested-With, Content-Type');
+
+$no_database=true; // Ne pas utiliser les paramètres de connexion classiques
 include_once(BASEPATH.'/../../Inducks.class.php');
 Inducks::$use_local_db=true;//strpos($_SERVER['SERVER_ADDR'],'localhost') === false && strpos($_SERVER['SERVER_ADDR'],'127.0.0.1') === false;
 		
@@ -8,12 +12,16 @@ class Modele_tranche extends CI_Model {
 	static $pays;
 	static $magazine;
 	static $username;
+	static $random_id;
 	static $numero_debut;
 	static $numero_fin;
 	static $numeros_dispos;
 	static $dropdown_numeros;
 	static $fields;
 	static $user_possede_modele=null;
+	static $utilisateurs = array();
+	static $noms_fonctions = array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
+								   'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
 
 	function Modele_tranche($tab=array())
 	{
@@ -25,6 +33,10 @@ class Modele_tranche extends CI_Model {
 	
 	function get_just_connected() {
 		return self::$just_connected;
+	}
+	
+	function requete_select_dm($requete) {
+		return Inducks::requete_select($requete, DatabasePriv::$nom_db_DM,'ducksmanager.net');
 	}
 	
 	function get_privilege() {
@@ -52,6 +64,14 @@ class Modele_tranche extends CI_Model {
 		return $privilege;
 	}
 	
+	function setUtilisateurs() {
+		$requete_utilisateurs='SELECT ID, username FROM users';
+		$resultat_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
+		foreach ($resultat_utilisateurs as $utilisateur) {
+			self::$utilisateurs[$utilisateur['ID']]=$utilisateur['username'];
+		}
+	}
+	
 	function user_connects($user,$pass) {
 		$user=mysql_real_escape_string($user);
 		$pass=mysql_real_escape_string(sha1($pass));
@@ -62,31 +82,31 @@ class Modele_tranche extends CI_Model {
 		}
 		else {
 			$requete='SELECT username FROM users WHERE username =\''.$user.'\' AND password = \''.$pass.'\'';
-			$resultat=$this->db->query($requete);
-			if ($resultat->num_rows==0) {
+			$resultat = $this->requete_select_dm($requete);
+			if (count($resultat)==0) {
 				$erreur = 'Identifiants invalides !';
 				return null;
 			}
 			else {
 				$requete='SELECT privilege FROM edgecreator_droits WHERE username =\''.$user.'\'';
-				$resultat= $this->db->query($requete);
-				if ($resultat->num_rows()==0) {
+				$resultat = $this->requete_select_dm($requete);
+				if (count($resultat)==0) {
 					return 'Affichage';
 				}
-				return $resultat->row()->privilege;
+				return $resultat[0]['privilege'];
 			}
 		}
 	}
 	
 	function username_to_id($username) {
 		$requete='SELECT ID FROM users WHERE username = \''.$username.'\'';
-		$resultat=$this->db->query($requete);
-		return $resultat->row()->ID;
+		$resultat = $this->requete_select_dm($requete);
+		return $resultat[0]['ID'];
 	}
 
 	function user_exists($user) {
 		$requete='SELECT username FROM users WHERE username =\''.$user.'\'';
-		return ($this->db->query($requete)->num_rows > 0);
+		return count($this->requete_select_dm($requete)) > 0;
 	}
 	
 	
@@ -103,7 +123,7 @@ class Modele_tranche extends CI_Model {
 			$requete_modele_magazine_existe='SELECT Count(1) AS cpt FROM edgecreator_modeles2 '
 										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-										   .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND username LIKE \''.$username.'\'';
+										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
 			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->first_row()->cpt > 0;
 		}
 		return $user_possede_modele;
@@ -129,8 +149,8 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 				.'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
+				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
 		if (!is_null($ordre))
 			$requete.='AND Ordre='.$ordre.' ';
 		$requete.='ORDER BY Ordre';
@@ -176,8 +196,8 @@ class Modele_tranche extends CI_Model {
 				.'FROM edgecreator_modeles2 '
 				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
 			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-			    .'WHERE Pays LIKE \''.$pays.'\' AND Magazine LIKE \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND username LIKE \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
+			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
+				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 			
@@ -401,12 +421,12 @@ class Modele_tranche extends CI_Model {
 			$resultat_get_options=$this->db->query($requete_get_options)->result();
 			foreach($resultat_get_options as $option) {
 				foreach(array_keys($numeros_disponibles) as $numero) {
-					Viewer::$numero=$numero;
+					Viewer_wizard::$numero=$numero;
 					if (!isset($dimensions[$numero]))
 						$dimensions[$numero]=array();
 					if (isset($dimensions[$numero]['x']) && isset($dimensions[$numero]['y'])) {
-						Viewer::$largeur=$dimensions[$numero]['x'];
-						Viewer::$hauteur=$dimensions[$numero]['y'];
+						Viewer_wizard::$largeur=$dimensions[$numero]['x'];
+						Viewer_wizard::$hauteur=$dimensions[$numero]['y'];
 					}
 					$intervalle=$option->Numero_debut.'~'.$option->Numero_fin;
 					if (est_dans_intervalle($numero,$intervalle)) {
@@ -464,28 +484,148 @@ class Modele_tranche extends CI_Model {
 		return Inducks::get_liste_magazines($pays);
 	}
 	
+	function get_createurs_tranche($pays, $magazine, $numero) {
+		$createurs_tranche_edgecreator_v1 = $this->get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero);
+		if (!is_null($createurs_tranche_edgecreator_v1)) {
+			return $createurs_tranche_edgecreator_v1;
+		}
+		else {
+			return $this->get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero);
+		}
+	}
+	
+	function get_createurs_tranche_edgecreator_v1($pays, $magazine, $numero) {
+		$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
+						  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') = \''.$numero.'\'';
+		$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
+		if (count($resultat_get_prets) > 0) {
+			$createurs=explode(';',$resultat_get_prets[0]['createurs']);
+			return $createurs;
+		}
+		return null;
+	}
+	
+	function get_createurs_tranche_edgecreator_v2($pays, $magazine, $numero) {
+		if (count(self::$utilisateurs) == 0) {
+			self::setUtilisateurs();
+		}
+		$requete_get_prets='SELECT username AS createur, Active FROM tranches_en_cours_modeles '
+						  .'WHERE Pays = \''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero = \''.$numero.'\'';
+		$resultat_get_prets=$this->db->query($requete_get_prets)->result();
+		foreach($resultat_get_prets as $resultat) {
+			return $resultat->Active == 1 ? array() : array(array_search($resultat->createur, self::$utilisateurs));
+		}
+		return null;
+	}
+	
+	function get_valeurs_options($pays,$magazine,$numeros=array()) {
+		$numeros_esc=array();
+		foreach($numeros as $numero) {
+			$numeros_esc[]='\''.$numero.'\'';
+		}
+		
+		if (count($numeros) === 0) {
+			$resultats = array();
+		}
+		else {
+			$requete_get_options=
+				 ' SELECT 1 AS EC_v2, '.implode(', ', Modele_tranche_Wizard::$content_fields).' '
+				.' FROM tranches_en_cours_modeles_vue '
+				.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\''
+				.' AND Numero IN ('.implode(',', $numeros_esc).') '
+				.' AND username=\''.mysql_real_escape_string(self::$username).'\' AND Active=0'
+				.' ORDER BY Ordre';
+// 			echo $requete_get_options."\n";
+			$resultats=$this->db->query($requete_get_options)->result();
+		}
+		
+		$requete_get_options=
+			 ' SELECT 0 AS EC_v2, '.implode(', ', self::$fields).',username '
+			.' FROM edgecreator_modeles2 AS modeles '
+			.' INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
+			.' INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
+			.' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
+			.' ORDER BY Ordre';
+// 		echo $requete_get_options."\n";
+		
+		$resultats=array_merge($resultats, $this->db->query($requete_get_options)->result());
+		$options=array();
+		
+		foreach($resultats as $resultat) {
+			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
+			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
+			$est_ec_v2 = $resultat->EC_v2 == 1;
+			
+			foreach($numeros as $numero) {
+				if ($est_ec_v2
+				 || est_dans_intervalle(
+						$numero,
+						$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin)))) {
+					$option = new stdClass();
+					$option->Ordre=$resultat->Ordre;
+					$option->Nom_fonction=$resultat->Nom_fonction;
+					$option->Option_nom=$option_nom;
+					$option->Option_valeur=$option_valeur;
+					
+					if (!array_key_exists($numero, $options)) {
+						$options[$numero]=array();
+					}
+					$options[$numero][$option->Ordre.$option->Option_nom]=$option;
+				}
+			}
+		}
+		return $options;
+	}
+	
+	function get_numeros_clonables($pays,$magazine,$numeros=array()) {
+		self::$pays = $pays;
+		self::$magazine = $magazine;
+		
+		$valeurs_options = $this->get_valeurs_options($pays, $magazine, $numeros);
+		return array_keys($valeurs_options);		
+	}
+	
 	function get_numeros_disponibles($pays,$magazine,$get_prets=false) {
+		self::$pays = $pays;
+		self::$magazine = $magazine;
+		
 		$numeros_affiches=array('Aucun'=>'Aucun');
-		if ($get_prets)
+		if ($get_prets) {
 			$tranches_pretes=array();
-		$numeros_soustitres=Inducks::get_numeros($pays, $magazine, "titres",true);
+		}
+		$numeros=Inducks::get_numeros($pays, $magazine, "numeros_et_createurs_tranche", true);
 		$id_user=$this->username_to_id(self::$username);
-		foreach($numeros_soustitres[0] as $i=>$numero) {
-			$numero_affiche=str_replace("\n",'',str_replace('+','',$numero));
+		if (count(self::$utilisateurs) == 0) {
+			self::setUtilisateurs();
+		}
+		foreach($numeros as $numero) {
+			$numero_affiche=$numero['issuenumber'];
 			$numeros_affiches[$numero_affiche]=$numero_affiche;
 
-			if ($get_prets) {
-				$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
-						.'WHERE publicationcode LIKE \''.$pays.'/'.$magazine.'\' AND replace(issuenumber,\' \',\'\') LIKE \''.$numero_affiche.'\'';
-				$resultat_get_prets=$this->db->query($requete_get_prets)->result();
-				if (count($resultat_get_prets) > 0) {
-					$createurs=explode(';',$this->db->query($requete_get_prets)->row()->createurs);
-					$tranches_pretes[$numero_affiche]=in_array($id_user,$createurs) ? 'par_moi' : 'global';
+			if ($get_prets && !is_null($numero['contributeurs'])) {
+				if ($numero['en_cours'] == 1) {
+					$tranches_pretes[$numero_affiche]='en_cours';
 				}
-
+				else {
+					$id_createur = array_search($resultat['contributeurs'], self::$utilisateurs);
+					$tranches_pretes[$numero_affiche]=$id_createur == $id_user ? 'par_moi' : 'global';
+				}
 			}
 		}
 		if ($get_prets) {
+			$requete_get_prets='SELECT issuenumber, createurs FROM tranches_pretes '
+							  .'WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
+			$resultat_get_prets=$this->requete_select_dm($requete_get_prets);
+			
+			foreach($resultat_get_prets as $tranche_prete) {
+				$createurs=explode(';',$tranche_prete['createurs']);
+				$ids_createurs = array();
+				foreach($createurs as $contributeur) {
+					$ids_createurs[] = array_search($contributeur, self::$utilisateurs);
+				}
+				$tranches_pretes[$tranche_prete['issuenumber']]=in_array($id_user, $ids_createurs) ? 'par_moi' : 'global';
+			}
+			
 			return array($numeros_affiches, $tranches_pretes);
 		}
 		return $numeros_affiches;
@@ -660,8 +800,6 @@ class Modele_tranche extends CI_Model {
 										    .'VALUES ('.$id_valeur.',\''.$numero_debut.'\',\''.$numero_fin.'\',\''.mysql_real_escape_string($resultat->username).'\')';
 						echo $req_ajout_nouvel_intervalle."\n";
 						$this->db->query($req_ajout_nouvel_intervalle);
-							
-		
 					}
 				}
 			}
@@ -969,6 +1107,10 @@ class Modele_tranche extends CI_Model {
 		self::$username=$username;
 	}
 
+	function setRandomId($random_id) {
+		self::$random_id=$random_id;
+	}
+
 	function setNumeroDebut($numero_debut) {
 		self::$numero_debut=$numero_debut;
 	}
@@ -1046,15 +1188,21 @@ class Modele_tranche extends CI_Model {
 			case 'Photos': 
 				$pays=$arg;
 				$magazine=$arg2;
+				$extensions=array();
 				if ($type === 'Source') {
 					$rep=Fonction_executable::getCheminElements($pays).'/';
+					$extensions=array('png');
 				}
 				if ($type === 'Photos') {
 					$rep=Fonction_executable::getCheminPhotos($pays).'/';
+					$extensions=array('jpg','jpeg','png');
 				}
 				if (($dir = @opendir($rep)) === false) { // Sans doute un nouveau pays, on crée le sous-dossier
 					if (@opendir(preg_replace('#[^/]+/[^/]+/$#','',$rep))) {
-						mkdir($rep,0777,true);
+						if (!@mkdir($rep,0777,true)) {
+							$liste["erreur"]=$rep;
+						}
+							
 					}
 					else {
 						$liste["erreur"]=$rep;
@@ -1062,14 +1210,16 @@ class Modele_tranche extends CI_Model {
 				}
 				else {
 					while ($f = readdir($dir)) {
-						if (strpos($f,'.png')===false || strpos($f,$magazine.'.') !== 0)
+						if (strpos($f,$magazine.'.') !== 0 || !is_file($rep.$f))
 							continue;
-						if(is_file($rep.$f)) {
-							$nom=$f;
-							$liste[]=utf8_encode($nom);
+						foreach($extensions as $extension) {
+							if (strpos($f,'.'.$extension)===false)
+								continue;
 						}
+						$liste[]=utf8_encode($f);
 					}
 				}
+			break;
 			case 'Source_photo':
 				$pays=$arg;
 				$magazine=$arg2;
@@ -1101,32 +1251,47 @@ class Modele_tranche extends CI_Model {
 			case 'Utilisateurs':
 				list($pays,$magazine,$numero)=explode('_',$arg);
 				$requete_contributeurs_tranche='SELECT photographes, createurs FROM tranches_pretes WHERE publicationcode=\''.$pays.'/'.$magazine.'\' AND issuenumber=\''.$numero.'\'';
-				$resultat_contributeurs_tranche=$this->db->query($requete_contributeurs_tranche)->first_row();
-				$photographes=explode(';',$resultat_contributeurs_tranche->photographes);
-				$createurs=explode(';',$resultat_contributeurs_tranche->createurs);
+				$resultat_contributeurs_tranche=$this->requete_select_dm($requete_contributeurs_tranche);
+				$photographes=explode(';',$resultat_contributeurs_tranche[0]['photographes']);
+				$createurs=explode(';',$resultat_contributeurs_tranche[0]['createurs']);
 				
 				$requete_utilisateurs='SELECT username FROM users ORDER BY username';
-				$resultats_utilisateurs=$this->db->query($requete_utilisateurs)->result();
+				$resultats_utilisateurs=$this->requete_select_dm($requete_utilisateurs);
 				foreach($resultats_utilisateurs as $resultat_utilisateur) {
-					$username = $resultat_utilisateur->username;
+					$username = $resultat_utilisateur['username'];
 					$est_photographe = in_array($username,$photographes);
 					$est_designer = in_array($username,$createurs);
 					
 					$liste[$username]=($est_photographe ? 'p':'').($est_designer ? 'd':'');
 				}
 			 break;
-			case 'Fonctions':
-				$noms_fonctions=array('Agrafer','Arc_cercle','Degrade','DegradeTrancheAgrafee',
-									  'Image','Polygone','Rectangle','Remplir','TexteMyFonts');
-				
-				foreach($noms_fonctions as $nom) {
+			case 'Fonctions':				
+				foreach(self::$noms_fonctions as $nom) {
 					$liste[$nom]=$nom::$libelle;
 				}
 			 break;
 		}
-		uksort($liste,"strnatcasecmp");
+		if ($type === 'Fonctions') {
+			asort($liste);
+		}
+		else {
+			uksort($liste,"strnatcasecmp");
+		}
 		return $liste;
 	}
+	
+	static function rendu_image() {
+		if (Viewer_wizard::$is_debug===false)
+			header('Content-type: image/png');
+		imagepng(Viewer_wizard::$image);
+	
+		@rmdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
+		@mkdir('../edges/'.Viewer_wizard::$pays.'/tmp/');
+		$nom_image='../edges/'.Viewer_wizard::$pays.'/tmp/'.Viewer_wizard::$random_id.'.png';
+		imagepng(Viewer_wizard::$image,$nom_image);
+		
+		exit();
+	} 
 	
 }
 Modele_tranche::$fields=array('Pays', 'Magazine', 'Ordre', 'Nom_fonction', 'Option_nom', 'Option_valeur', 'Numero_debut', 'Numero_fin');
@@ -1156,6 +1321,9 @@ class Fonction_executable extends Fonction {
 	static $descriptions=array();
 	
 	function Fonction_executable($options,$creation=false,$get_options_defaut=true) {
+		if (!is_object($options)) {
+			$options=new stdClass();
+		}
 		$this->options=$options;
 		$classe=get_class($this);
 		if ($creation) {
@@ -1212,7 +1380,7 @@ class Fonction_executable extends Fonction {
 		if ($modele_tranche->get_preview_existe($this->getJSONOptions())) {
 			$session_id=$modele_tranche->id_session;
 			header('Content-type: image/png');
-			imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.Viewer::$pays.'_'.Viewer::$magazine.'_'.Viewer::$numero.'_'.Viewer::$etape_en_cours->num_etape.'_'.z(1).'.png'));
+			imagepng(imagecreatefrompng('../edges/tmp_previews/'.$session_id.'/'.Viewer_wizard::$pays.'_'.Viewer_wizard::$magazine.'_'.Viewer_wizard::$numero.'_'.Viewer_wizard::$etape_en_cours->num_etape.'_'.z(1).'.png'));
 			exit(0);
 		}
 	}
@@ -1221,27 +1389,24 @@ class Fonction_executable extends Fonction {
 		return json_encode($this->options);
 	}
 	static function erreur($erreur) {
-		if (!is_resource(Viewer::$image)) {
-			Viewer::$largeur=z(20);
-			Viewer::$hauteur=z(220);
-			Viewer::$image=imagecreatetruecolor(Viewer::$largeur, Viewer::$hauteur);
+		if (!is_resource(Viewer_wizard::$image)) {
+			Viewer_wizard::$largeur=z(20);
+			Viewer_wizard::$hauteur=z(220);
+			Viewer_wizard::$image=imagecreatetruecolor(Viewer_wizard::$largeur, Viewer_wizard::$hauteur);
 		}
-		imagefilledrectangle(Viewer::$image, 0, 0, Viewer::$largeur, Viewer::$hauteur, imagecolorallocate(Viewer::$image, 255, 255, 255));
-		$noir=imagecolorallocate(Viewer::$image,0,0,0);
+		imagefilledrectangle(Viewer_wizard::$image, 0, 0, Viewer_wizard::$largeur, Viewer_wizard::$hauteur, imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
+		$noir=imagecolorallocate(Viewer_wizard::$image,0,0,0);
 		$lignes_erreur=explode(';', $erreur);
 		foreach($lignes_erreur as $i=>$ligne) {
 			if ($i==0)
-				$texte_erreur='Erreur etape '.Viewer::$etape_en_cours->num_etape.' (Fonction '.Viewer::$etape_en_cours->nom_fonction.') : '.$ligne;
+				$texte_erreur='Erreur etape '.Viewer_wizard::$etape_en_cours->num_etape.' (Fonction '.Viewer_wizard::$etape_en_cours->nom_fonction.') : '.$ligne;
 			else
 				$texte_erreur=$ligne;
-			imagettftext(Viewer::$image,z(3),90,
-						 ($i+1)*Viewer::$largeur/3,Viewer::$hauteur,
+			imagettftext(Viewer_wizard::$image,z(3),90,
+						 ($i+1)*Viewer_wizard::$largeur/3,Viewer_wizard::$hauteur,
 						 $noir,BASEPATH.'fonts/Arial.ttf',$texte_erreur);
 		}
-		if (Viewer::$is_debug===false)
-			header('Content-type: image/png');
-		imagepng(Viewer::$image);
-		exit();
+		Modele_tranche::rendu_image();
 	}
 	
 	static function getCheminPhotos($pays=null) {
@@ -1272,10 +1437,10 @@ class Fonction_executable extends Fonction {
 				if (!$actif) return true;
 				switch($nom) {
 					case 'numero':
-						$str=preg_replace($regex, Viewer::$numero, $str);
+						$str=preg_replace($regex, Viewer_wizard::$numero, $str);
 					break;
 					case 'numero[]':
-						$spl=str_split(Viewer::$numero);
+						$spl=str_split(Viewer_wizard::$numero);
 						if (0!=preg_match_all($regex, $str, $matches)) {
 							foreach($matches[1] as $i=>$num_caractere) {
 								if (!array_key_exists($num_caractere, $spl))
@@ -1286,12 +1451,13 @@ class Fonction_executable extends Fonction {
 						}
 					break;
 					case 'largeur':
-						$str=preg_replace($regex, Viewer::$largeur, $str);
+						$str=preg_replace($regex, Viewer_wizard::$largeur, $str);
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;
 					case 'hauteur':
-						$str=preg_replace($regex, Viewer::$hauteur, $str);
+						$str=preg_replace($regex, Viewer_wizard::$hauteur, $str);
+						echo "\$str=".$str.";";
 						eval("\$str=".$str.";");
 						$str/=z(1);
 					break;
@@ -1320,11 +1486,11 @@ class Dimensions extends Fonction_executable {
 		if (!$executer)
 			return;
 		$this->verifier_erreurs();
-		Viewer::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
-		//imageantialias(Viewer::$image, true);
-		Viewer::$largeur=z($this->options->Dimension_x);
-		Viewer::$hauteur=z($this->options->Dimension_y);
-		imagefill(Viewer::$image,0,0,  imagecolorallocate(Viewer::$image, 255, 255, 255));
+		Viewer_wizard::$image=imagecreatetruecolor(z($this->options->Dimension_x), z($this->options->Dimension_y));
+		//imageantialias(Viewer_wizard::$image, true);
+		Viewer_wizard::$largeur=z($this->options->Dimension_x);
+		Viewer_wizard::$hauteur=z($this->options->Dimension_y);
+		imagefill(Viewer_wizard::$image,0,0,  imagecolorallocate(Viewer_wizard::$image, 255, 255, 255));
 	}
 	
 	function verifier_erreurs() {
@@ -1354,16 +1520,16 @@ class Remplir extends Fonction_executable {
 		$this->options->Pos_y=z(self::toTemplatedString($this->options->Pos_y));
 		$this->verifier_erreurs();
 		$this->afficher_si_existant();
-		list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
-		$couleur=imagecolorallocate(Viewer::$image, $r,$g,$b);
-		imagefill(Viewer::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
-		//imageline(Viewer::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
+		list($r,$g,$b)=$this->getRGB(Viewer_wizard::$pays,Viewer_wizard::$magazine,Viewer_wizard::$numero,$this->options->Couleur);
+		$couleur=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
+		imagefill(Viewer_wizard::$image, $this->options->Pos_x, $this->options->Pos_y, $couleur);
+		//imageline(Viewer_wizard::$image, $this->options->Pos_x, ($this->options->Pos_y-5), ($this->options->Pos_x+5), ($this->options->Pos_y+5), $couleur);
 	}
 	
 	function verifier_erreurs() {
-		if ($this->options->Pos_x >= Viewer::$largeur || $this->options->Pos_y >= Viewer::$hauteur
+		if ($this->options->Pos_x >= Viewer_wizard::$largeur || $this->options->Pos_y >= Viewer_wizard::$hauteur
 		 || $this->options->Pos_x < 0 || $this->options->Pos_y < 0) {
-			self::erreur('Point de remplissage hors de l\'image : ('.$this->options->Pos_x.','.$this->options->Pos_y.') vers ('.Viewer::$largeur.','.Viewer::$hauteur.')');
+			self::erreur('Point de remplissage hors de l\'image : ('.$this->options->Pos_x.','.$this->options->Pos_y.') vers ('.Viewer_wizard::$largeur.','.Viewer_wizard::$hauteur.')');
 		}
 	}
 }
@@ -1371,7 +1537,7 @@ class Remplir extends Fonction_executable {
 class Image extends Fonction_executable {
 	static $libelle='Ins&eacute;rer une image';
 	static $champs=array('Source'=>'fichier_ou_texte','Decalage_x'=>'quantite','Decalage_y'=>'quantite','Compression_x'=>'quantite','Compression_y'=>'quantite','Position'=>'liste');
-	static $valeurs_nouveau=array('Source'=>'Tete PM.png','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
+	static $valeurs_nouveau=array('Source'=>'','Decalage_x'=>'5','Decalage_y'=>'5','Compression_x'=>'0.6','Compression_y'=>'0.6','Position'=>'haut');
 	static $valeurs_defaut=array('Decalage_x'=>0,'Decalage_y'=>0,'Compression_x'=>1,'Compression_y'=>1,'Position'=>'haut');
 	
 	static $descriptions=array('Source'=>'Nom de l\'image', 
@@ -1389,19 +1555,26 @@ class Image extends Fonction_executable {
 		$this->options->Decalage_y=self::toTemplatedString($this->options->Decalage_y);
 		$this->options->Source=self::toTemplatedString($this->options->Source);
 		$this->verifier_erreurs();
-		$extension_image=strtolower(substr($this->options->Source, strrpos($this->options->Source, '.')+1,strlen($this->options->Source)-strrpos($this->options->Source, '.')-1));
-		$fonction_creation_image='imagecreatefrom'.$extension_image;
-
+		
+		$src = $this->options->Source;
+		$extension_image=strtolower(substr($src, strrpos($src, '.')+1,strlen($src)-strrpos($src, '.')-1));
 		$chemin_reel=Image::get_chemin_reel($this->options->Source);
-		$sous_image=call_user_func($fonction_creation_image,$chemin_reel);
+		switch ($extension_image) {
+			case 'jpg':
+				$sous_image=imagecreatefromjpeg($chemin_reel);
+			break;
+			case 'png':
+				$sous_image=imagecreatefrompng($chemin_reel);
+			break;
+		}
 		list($width,$height)=array(imagesx($sous_image),imagesy($sous_image));
-		$hauteur_sous_image=Viewer::$largeur*($height/$width);
+		$hauteur_sous_image=Viewer_wizard::$largeur*($height/$width);
 		if ($this->options->Position=='bas') {
-			$this->options->Decalage_y=Viewer::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
+			$this->options->Decalage_y=Viewer_wizard::$hauteur-$hauteur_sous_image-z($this->options->Decalage_y);
 		}
 		else
 			$this->options->Decalage_y=z($this->options->Decalage_y);
-		imagecopyresampled (Viewer::$image, $sous_image, z($this->options->Decalage_x), $this->options->Decalage_y, 0, 0, Viewer::$largeur*$this->options->Compression_x, $hauteur_sous_image*$this->options->Compression_y, $width, $height);
+		imagecopyresampled (Viewer_wizard::$image, $sous_image, z($this->options->Decalage_x), $this->options->Decalage_y, 0, 0, Viewer_wizard::$largeur*$this->options->Compression_x, $hauteur_sous_image*$this->options->Compression_y, $width, $height);
 	}
 
 	static function get_chemin_reel($source) {
@@ -1415,6 +1588,9 @@ class Image extends Fonction_executable {
 	}
 	
 	function verifier_erreurs() {
+		if (empty($this->options->Source)) {
+			self::erreur('Le fichier n\'a pas été défini');
+		}
 		$chemin_reel=Image::get_chemin_reel($this->options->Source);
 		if (!is_file($chemin_reel)) {
 			self::erreur('Le fichier '.$this->options->Source.' n\'existe pas');
@@ -1459,12 +1635,13 @@ class TexteMyFonts extends Fonction_executable {
 
 		$ci =& get_instance();
 		$ci->load->model('MyFonts','MyFonts',true);
-
 		$post=new MyFonts($this->options->URL,
 						  $this->options->Couleur_texte,
 						  $this->options->Couleur_fond,
 						  $this->options->Largeur,
-						  $this->options->Chaine.'                                    .');
+						  $this->options->Chaine.'                                    .',
+						  intval((Viewer_wizard::$largeur/1.5)/0.35) // Précision
+						 );
 		$texte=$post->im;
 		if ($this->options->Demi_hauteur == 'Oui') {
 			$width=imagesx($texte);
@@ -1474,7 +1651,6 @@ class TexteMyFonts extends Fonction_executable {
 			imagecopyresampled($texte2, $texte, 0, 0, 0, 0, $width, $height/2, $width, $height/2);
 			$texte=$texte2;
 		}
-		
 		
 		$width=imagesx($texte);
 		$height=imagesy($texte);
@@ -1508,14 +1684,14 @@ class TexteMyFonts extends Fonction_executable {
 		
 			$width=imagesx($texte);
 			$height=imagesy($texte);
-			$nouvelle_largeur=Viewer::$largeur*$this->options->Compression_x;
-			$nouvelle_hauteur=Viewer::$largeur*($height/$width)*$this->options->Compression_y;
+			$nouvelle_largeur=Viewer_wizard::$largeur*$this->options->Compression_x;
+			$nouvelle_hauteur=Viewer_wizard::$largeur*($height/$width)*$this->options->Compression_y;
 			if ($this->options->Mesure_depuis_haut=='Non')
 				$this->options->Pos_y-=$nouvelle_hauteur/z(1);
-			imagecopyresampled (Viewer::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
+			imagecopyresampled (Viewer_wizard::$image, $texte, z($this->options->Pos_x), z($this->options->Pos_y), 0, 0, $nouvelle_largeur, $nouvelle_hauteur, $width, $height);
 		}
 		else
-			Viewer::$image=$texte;
+			Viewer_wizard::$image=$texte;
 
 	}
 	
@@ -1549,21 +1725,21 @@ class TexteTTF extends Fonction_executable {
 		if (!$executer)
 			return;
 		$this->options->Chaine=self::toTemplatedString($this->options->Chaine);
-		list($r,$g,$b)=$this->getRGB(Viewer::$pays,Viewer::$magazine,Viewer::$numero,$this->options->Couleur);
-		$couleur_texte=imagecolorallocate(Viewer::$image, $r,$g,$b);
+		list($r,$g,$b)=$this->getRGB(Viewer_wizard::$pays,Viewer_wizard::$magazine,Viewer_wizard::$numero,$this->options->Couleur);
+		$couleur_texte=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		
 		$centrage_auto_x=$this->options->Pos_x == -1;
 		$centrage_auto_y=$this->options->Pos_y == -1;
 		$p=calculateTextBox($this->options->Chaine, BASEPATH.'fonts/'.$this->options->Police.'.ttf', z($this->options->Taille), $this->options->Rotation);
 		if ($centrage_auto_x || $centrage_auto_y) {
 			if ($centrage_auto_x)
-				$this->options->Pos_x=(Viewer::$largeur-$p['width']*$this->options->Compression_x)/z(2);
+				$this->options->Pos_x=(Viewer_wizard::$largeur-$p['width']*$this->options->Compression_x)/z(2);
 			if ($centrage_auto_y)
-				$this->options->Pos_y=(Viewer::$hauteur-$p['height']*$this->options->Compression_y)/z(2);
+				$this->options->Pos_y=(Viewer_wizard::$hauteur-$p['height']*$this->options->Compression_y)/z(2);
 		}
 		if ($this->options->Compression_x != 1 || $this->options->Compression_y != 1) {
-			$largeur_tmp=max($p['width'],Viewer::$largeur)+z(1);
-			$hauteur_tmp=max($p['height'],Viewer::$hauteur)+z(1);
+			$largeur_tmp=max($p['width'],Viewer_wizard::$largeur)+z(1);
+			$hauteur_tmp=max($p['height'],Viewer_wizard::$hauteur)+z(1);
 			$image2=imagecreatetruecolor($largeur_tmp,$hauteur_tmp);
 			imagefill($image2, 0,0, imagecolorallocatealpha($image2, 255, 255, 255, 127));
 			if ($this->options->Rotation > 45 && $this->options->Rotation <135) {
@@ -1576,11 +1752,11 @@ class TexteTTF extends Fonction_executable {
 						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
 			imagepng($image2, BASEPATH.'../../edges/tmp/ttfcomp.png');
 			
-			imagecopyresampled(Viewer::$image, $image2, z($this->options->Pos_x)*(Viewer::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer::$hauteur/$hauteur_tmp), 0,0, Viewer::$largeur*$this->options->Compression_x, Viewer::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
+			imagecopyresampled(Viewer_wizard::$image, $image2, z($this->options->Pos_x)*(Viewer_wizard::$largeur/$largeur_tmp), z($this->options->Pos_y)*(Viewer_wizard::$hauteur/$hauteur_tmp), 0,0, Viewer_wizard::$largeur*$this->options->Compression_x, Viewer_wizard::$hauteur*$this->options->Compression_y, $largeur_tmp, $hauteur_tmp);
 
 		}
 		else {
-			imagettftext(Viewer::$image,z($this->options->Taille),$this->options->Rotation,
+			imagettftext(Viewer_wizard::$image,z($this->options->Taille),$this->options->Rotation,
 						 z($this->options->Pos_x),z($this->options->Pos_y),
 						 $couleur_texte,BASEPATH.'fonts/'.$this->options->Police.'.ttf',$this->options->Chaine);
 		}
@@ -1606,7 +1782,7 @@ class Polygone extends Fonction_executable {
 		}
 		$this->options->X=explode(',',str_replace(' ','',$this->options->X));
 		$this->options->Y=explode(',',str_replace(' ','',$this->options->Y));
-		$args=array(Viewer::$image);
+		$args=array(Viewer_wizard::$image);
 		$coord=array();
 		foreach(array_keys($this->options->X) as $i) {
 			$this->options->X[$i]=self::toTemplatedString($this->options->X[$i]);
@@ -1617,7 +1793,7 @@ class Polygone extends Fonction_executable {
 		$args[]=$coord;
 		$args[]=count($this->options->X);
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
-		$args[]=imagecolorallocate(Viewer::$image, $r,$g,$b);
+		$args[]=imagecolorallocate(Viewer_wizard::$image, $r,$g,$b);
 		call_user_func_array('imagefilledpolygon', $args);
 
 	}
@@ -1640,9 +1816,9 @@ class Agrafer extends Fonction_executable {
 		$this->options->Y1=self::toTemplatedString($this->options->Y1);
 		$this->options->Y2=self::toTemplatedString($this->options->Y2);
 		$this->options->Taille_agrafe=self::toTemplatedString($this->options->Taille_agrafe);
-		$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
-		imagefilledrectangle(Viewer::$image, Viewer::$largeur/2 -z(.25), z($this->options->Y1), Viewer::$largeur/2 +z(.25), z($this->options->Y1+$this->options->Taille_agrafe), $noir);
-		imagefilledrectangle(Viewer::$image, Viewer::$largeur/2 -z(.25), z($this->options->Y2), Viewer::$largeur/2 +z(.25), z($this->options->Y2+$this->options->Taille_agrafe), $noir);
+		$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
+		imagefilledrectangle(Viewer_wizard::$image, Viewer_wizard::$largeur/2 -z(.25), z($this->options->Y1), Viewer_wizard::$largeur/2 +z(.25), z($this->options->Y1+$this->options->Taille_agrafe), $noir);
+		imagefilledrectangle(Viewer_wizard::$image, Viewer_wizard::$largeur/2 -z(.25), z($this->options->Y2), Viewer_wizard::$largeur/2 +z(.25), z($this->options->Y2+$this->options->Taille_agrafe), $noir);
 	}
 }
 
@@ -1678,16 +1854,16 @@ class Degrade extends Fonction_executable {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_x_debut-$this->options->Pos_x_fin));
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer::$image, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_debut, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_fin, $couleur_allouee);
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_debut, ($this->options->Pos_x_debut)+$i, $this->options->Pos_y_fin, $couleur_allouee);
 				}
 			}
 			else {
 				$couleurs_inter=self::getMidColors($couleur1, $couleur2, abs($this->options->Pos_y_debut-$this->options->Pos_y_fin));
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->$fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					imageline(Viewer_wizard::$image, ($this->options->Pos_x_debut)-$i, $this->options->Pos_y_debut, ($this->options->$fin)-$i, $this->options->Pos_y_debut, $couleur_allouee);
 				}
 			}
 		}
@@ -1696,15 +1872,15 @@ class Degrade extends Fonction_executable {
 			if ($this->options->Pos_y_debut < $this->options->Pos_y_fin) {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					imageline(Viewer::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_debut)+$i, $this->options->Pos_x_fin, ($this->options->Pos_y_debut)+$i, $couleur_allouee);
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_debut)+$i, $this->options->Pos_x_fin, ($this->options->Pos_y_debut)+$i, $couleur_allouee);
 				}
 			}
 			else {
 				foreach($couleurs_inter as $i=>$couleur) {
 					list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-					$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-					if (false == imageline(Viewer::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee)) {
+					$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+					if (false == imageline(Viewer_wizard::$image, $this->options->Pos_x_debut, ($this->options->Pos_y_fin)-$i, $this->options->Pos_x_fin, ($this->options->Pos_y_fin)-$i, $couleur_allouee)) {
 						$a=1;
 					}
 				}
@@ -1744,18 +1920,18 @@ class DegradeTrancheAgrafee extends Fonction_executable {
 		list($r2,$g2,$b2)=array(round($r1/$coef_degrade),round($g1/$coef_degrade),round($b1/$coef_degrade));
 		$couleur1=array($r1,$g1,$b1);
 		$couleur2=array($r2,$g2,$b2);
-		$milieu=round(Viewer::$largeur/2);
+		$milieu=round(Viewer_wizard::$largeur/2);
 		$couleurs_inter=Degrade::getMidColors($couleur1, $couleur2, $milieu);
-		imageline(Viewer::$image, $milieu, 0, $milieu, Viewer::$hauteur, imagecolorallocate(Viewer::$image, $r1,$g1,$b1));
+		imageline(Viewer_wizard::$image, $milieu, 0, $milieu, Viewer_wizard::$hauteur, imagecolorallocate(Viewer_wizard::$image, $r1,$g1,$b1));
 		foreach($couleurs_inter as $i=>$couleur) {
 			list($rouge_inter,$vert_inter,$bleu_inter)=$couleur;
-			$couleur_allouee=imagecolorallocate(Viewer::$image, $rouge_inter,$vert_inter,$bleu_inter);
-			imageline(Viewer::$image, $milieu+$i, 0, $milieu+$i, Viewer::$hauteur, $couleur_allouee);
-			imageline(Viewer::$image, $milieu-$i, 0, $milieu-$i, Viewer::$hauteur, $couleur_allouee);
+			$couleur_allouee=imagecolorallocate(Viewer_wizard::$image, $rouge_inter,$vert_inter,$bleu_inter);
+			imageline(Viewer_wizard::$image, $milieu+$i, 0, $milieu+$i, Viewer_wizard::$hauteur, $couleur_allouee);
+			imageline(Viewer_wizard::$image, $milieu-$i, 0, $milieu-$i, Viewer_wizard::$hauteur, $couleur_allouee);
 		}
-		$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
-		imagefilledrectangle(Viewer::$image, $milieu -z(.25), Viewer::$hauteur*0.2, $milieu +z(.25), Viewer::$hauteur*0.2+Viewer::$hauteur*0.05, $noir);
-		imagefilledrectangle(Viewer::$image, $milieu -z(.25), Viewer::$hauteur*0.8, $milieu +z(.25), Viewer::$hauteur*0.8+Viewer::$hauteur*0.05, $noir);
+		$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
+		imagefilledrectangle(Viewer_wizard::$image, $milieu -z(.25), Viewer_wizard::$hauteur*0.2, $milieu +z(.25), Viewer_wizard::$hauteur*0.2+Viewer_wizard::$hauteur*0.05, $noir);
+		imagefilledrectangle(Viewer_wizard::$image, $milieu -z(.25), Viewer_wizard::$hauteur*0.8, $milieu +z(.25), Viewer_wizard::$hauteur*0.8+Viewer_wizard::$hauteur*0.05, $noir);
 	}
 }
 
@@ -1782,11 +1958,11 @@ class Rectangle extends Fonction_executable {
 		$this->options->Pos_y_fin=z(self::toTemplatedString($this->options->Pos_y_fin));
 
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
-		$couleur=imagecolorallocate(Viewer::$image, $r, $g, $b);
+		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
 		if ($this->options->Rempli=='Oui')
-			imagefilledrectangle(Viewer::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
+			imagefilledrectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
 		else
-			imagerectangle(Viewer::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
+			imagerectangle(Viewer_wizard::$image, $this->options->Pos_x_debut, $this->options->Pos_y_debut, $this->options->Pos_x_fin, $this->options->Pos_y_fin, $couleur);
 	}
 }
 
@@ -1815,37 +1991,41 @@ class Arc_cercle extends Fonction_executable {
 		$this->options->Hauteur=z(self::toTemplatedString($this->options->Hauteur));
 
 		list($r,$g,$b)=$this->getRGB(null, null, null, $this->options->Couleur);
-		$couleur=imagecolorallocate(Viewer::$image, $r, $g, $b);
+		$couleur=imagecolorallocate(Viewer_wizard::$image, $r, $g, $b);
 		if ($this->options->Rempli=='Oui')
-			imagefilledarc(Viewer::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur,IMG_ARC_PIE);
+			imagefilledarc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur,IMG_ARC_PIE);
 		else
-			imagearc(Viewer::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur);
+			imagearc(Viewer_wizard::$image, $this->options->Pos_x_centre, $this->options->Pos_y_centre, $this->options->Largeur, $this->options->Hauteur, $this->options->Angle_debut, $this->options->Angle_fin, $couleur);
 	}
 }
 
 class Dessiner_contour {
 	function Dessiner_contour($dimensions) {
-		if (is_null(Viewer::$image))
+		if (is_null(Viewer_wizard::$image))
 			Fonction_executable::erreur('Pas d\'infos sur cette tranche');
 		else {
-			$noir=imagecolorallocate(Viewer::$image, 0, 0, 0);
+			$noir=imagecolorallocate(Viewer_wizard::$image, 0, 0, 0);
 			for ($i=0;$i<z(0.15);$i++)
-				imagerectangle(Viewer::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
+				imagerectangle(Viewer_wizard::$image, $i, $i, z($dimensions->Dimension_x)-1-$i, z($dimensions->Dimension_y)-1-$i, $noir);
 		}
 	}
 }
 
 class Rogner {
-	function Rogner($pays,$magazine,$numero,$nom,$x1,$x2,$y1,$y2) {
+	function Rogner($pays,$magazine,$numero_original,$numero,$nom,$destination,$x1,$x2,$y1,$y2) {
 		$extension='.jpg';
 		$nom_image_origine = Fonction_executable::getCheminPhotos($pays)
-							.'/'.$magazine.'.'.$numero.'.photo_'.$nom;
+							.'/'.$magazine.'.'.$numero_original.'.photo_'.$nom;
+		$nom_image_modifiee= ($destination === 'photos' ? Fonction_executable::getCheminPhotos($pays) : Fonction_executable::getCheminElements($pays))
+							.'/'.$magazine.'.'.$numero.'.photo_';
 		$i=1;
-		while (file_exists($nom_image_origine.'_'.$i.$extension)) {
+		while (file_exists($nom_image_modifiee.$i.$extension)) {
 			$i++;
 		}
-		$nom_image_modifiee = $nom_image_origine.'_'.$i.$extension;
-		$nom_image_origine.=$extension;
+		$nom_image_modifiee.=$i.$extension;
+		$nom_image_origine .=	$extension;
+		
+		echo "$nom_image_origine : Rognage vers $nom_image_modifiee : ($x1,$y1) -> ($x2,$y2)";
 		
 		$img = imagecreatefromjpeg($nom_image_origine);
 		$width=imagesx($img);
@@ -1863,7 +2043,7 @@ class Rogner {
 
 
 function z($valeur) {
-	return Viewer::$zoom*$valeur;
+	return (isset(Viewer_wizard::$zoom) ? Viewer_wizard::$zoom : 1.5)*$valeur;
 }
 
 function est_dans_intervalle($numero,$intervalle) {

@@ -26,22 +26,36 @@
 	<div id="action_bar" class="cache">Mod&eacute;lisation de la tranche du num&eacute;ro <span id="nom_complet_tranche_en_cours"></span><br />
 		<img class="action tip" name="home" 
 			 title="Revenir &agrave; l'&eacute;cran d'accueil de EdgeCreator" />
-		<img class="action tip" name="photo" style="margin-left: 10px"
+		<img class="action tip" name="photo"
 			 title="Ins&eacute;rer/S&eacute;lectionner une photo de tranche" />
+		<img class="action tip" name="corbeille"
+			 title="Supprimer cette conception de tranche" />
+		<img class="action tip" name="valider"
+			 title="Valider cette conception de tranche" />
 	</div>
+	
+	<div id="status">
+	</div>
+	
 	<div id="status_user">
 		<?php
 		if ($privilege=='Affichage') {
 			?>Non connect&eacute;(e)<?php
 		}
 		else {
-			?>Connect&eacute;(e) en tant que <?=$user?><?php
+			?>Connect&eacute;(e) en tant que <span id="utilisateur"><?=$user?></span><?php
 		}
 		?><br /><?php
 		if ($user!=='demo') {
 			?><button class="small" id="deconnexion" onclick="logout()">D&eacute;connexion</button><?php					
 		}
 		?>
+	</div>
+	<div id="template-warning" class="ui-widget cache">
+	    <div class="ui-state-warning ui-corner-all" style="padding: 0 .7em;">
+            <span class="ui-icon ui-icon-alert"></span>
+            <strong>Attention:</strong> <span class="message-label"></span>
+	    </div>
 	</div>
 </div>
 <?php

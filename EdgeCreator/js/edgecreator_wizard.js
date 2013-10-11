@@ -1,15 +1,23 @@
 (function($,undefined){
-	  $.fn.d = function(){
-		  return this.closest('.ui-dialog');
-	  };
+	$.fn.d = function(){
+		return this.closest('.ui-dialog');
+	};
 	
-	  $.fn.valeur = function(nom_option){
-		 if (this.hasClass('options_etape'))
-			 return this.find('[name="option-'+nom_option+'"]');
+	$.fn.valeur = function(nom_option){
+		if (this.hasClass('options_etape'))
+			return this.find('[name="option-'+nom_option+'"]');
 		 else
-			 return this.find('[name="'+nom_option+'"]');
-	  };
+			return this.find('[name="'+nom_option+'"]');
+	};
 })(jQuery);
+
+$.widget("ui.tooltip", $.ui.tooltip, {
+    options: {
+        content: function () {
+            return $(this).prop('title');
+        }
+    }
+});
 
 $(window).scroll(function(a,b) {
 	if (modification_etape != null 
@@ -19,11 +27,110 @@ $(window).scroll(function(a,b) {
 	}
 });
 
+var INTERVAL_CHECK_LOGGED_IN=5;
+(function check_logged_in() {
+	$.ajax({
+		url: urls['check_logged_in'],
+		type: 'post',
+		success:function(data) {
+			if (data === '1') {
+				setTimeout(check_logged_in, 1000*60*INTERVAL_CHECK_LOGGED_IN);
+			}
+			else {
+				if ($('#wizard-conception').is(":visible")) {
+					jqueryui_alert_from_d($('#wizard-session-expiree'),function() { location.reload(); });
+				}
+			}
+		}
+	});
+})();
+
+var farb;
+var input_farb;
+$(function() {
+	$('#selecteur_couleur').tabs({
+		activate: function(event, ui) {
+			if ($(ui.newPanel).attr('id') === 'depuis_photo') {
+				if ($('[name="description_selection_couleur"]:visible').length > 0) {
+					$('#photo_tranche img')
+						.addClass('cross')
+						.click(function(e) {
+							var frac = [ e.offsetX / $(this).width(),
+							             e.offsetY / $(this).height() ];
+							$.ajax({
+								url: urls['couleur_point_photo']+['index',pays,magazine,numero,frac[0],frac[1]].join('/'),
+								type: 'post',
+								success:function(data) {
+									$('#picker')[0].farbtastic.setColor('#'+data);
+									$('#selecteur_couleur').tabs( "option", "active", 0);
+								}
+							});
+						});
+				}
+			}
+		}
+	});
+	$('#pas_de_photo_tranche').html($('#message-aucune-image-de-tranche .libelle').clone(true));
+	
+	// Déplacement des objets
+	$('body').on('keyup', function(e) {
+	    // Don't scroll page
+	    e.preventDefault();
+	    
+	    var position, 
+	        draggable = $('.ui-draggable:visible');
+	        distance = 1; // Distance in pixels the draggable should be moved
+	    
+	    if (draggable.length  == 0) {
+	    	return false;
+	    }
+	    position = draggable.position();
+	
+	    // Reposition if one of the directional keys is pressed
+	    switch (e.keyCode) {
+	        case 37: position.left -= distance; break; // Left
+	        case 38: position.top  -= distance; break; // Up
+	        case 39: position.left += distance; break; // Right
+	        case 40: position.top  += distance; break; // Down
+	        default: return true; // Exit and bubble
+	    }
+	    draggable
+	    	.css(position);
+	    	
+	    tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
+	    tester();
+	});
+	
+	farb=$.farbtastic($('#picker'))
+		.linkTo(
+			function() { // mousedrag
+				affecter_couleur_input(input_farb, farb.color.replace(/#/g,''));
+				callback_test_picked_color();
+			},
+			function() { // mouseup
+				callback_test_picked_color();
+			}
+		);
+	$('#fermer_selecteur_couleur')
+		.button()
+		.click(function() {
+			$('#conteneur_selecteur_couleur').addClass('cache');
+			$('#photo_tranche img')
+				.removeClass('cross')
+				.off('click');
+		});
+});
+
+var dimensions = {};
+
 var wizard_options={};
 var id_wizard_courant=null;
 var id_wizard_precedent=null;
 var num_etape_courante=null;
-var num_photo_principale=null;
+var nom_photo_principale=null;
+
+var etape_ajout;
+var etape_ajout_pos;
 
 var pos_x_courante=null,
 	pos_y_courante=null;
@@ -32,7 +139,7 @@ zoom=1.5;
 var url_viewer='viewer_wizard';
 var NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES=10/2;
 var LARGEUR_DIALOG_TRANCHE_FINALE=65;
-var LARGEUR_INTER_ETAPES=25;
+var LARGEUR_INTER_ETAPES=40;
 var SEPARATION_CONCEPTION_ETAPES=40;
 var MARGE_DROITE_TRANCHE_FINALE=10;
 
@@ -46,9 +153,13 @@ var TEMPLATES ={'numero':/\[Numero\]/,
 	            'hauteur':/(?:([0-9.]+)(\*))?\[Hauteur\](?:(\*)([0-9.]+))?/i,
 	            'caracteres_speciaux':/\Â°/i};
 
-var REGEX_NUMERO=/(.+)\(([^_]+)_([^_]+)_([^\(]+)\)/g;
+var REGEX_FICHIER_PHOTO=/\/([^\/]+\.([^.]+)\.photo_([^.]+?)\.[a-z]+)$/;
+var REGEX_NUMERO=/tranche_([^_]+)_([^_]+)_([^_]+)/;
 var REGEX_TO_WIZARD=/to\-(wizard\-[0-9]*)/g;
 var REGEX_DO_IN_WIZARD=/do\-in\-wizard\-(.*)/g;
+var REGEX_POLICE_MYFONTS=/(?:http:\/\/)?(?:www\.)?(?:new\.)?myfonts.com\/fonts\/(.*)\//g;
+var REGEX_OPTION=/option\-([A-Za-z0-9]+)/g;
+var REGEX_DECIMAL=/\-?[0-9]+\.?[0-9]*/g;
 
 function can_launch_wizard(id) {
 	if (! (id.match(/^wizard\-[a-z0-9-]+$/g))) {
@@ -68,10 +179,10 @@ function launch_wizard(id, p) {
 	p = p || {}; // Paramètres de surcharge
 	var buttons={},
 		dialogue = $('#'+id),
-		first 	 = dialogue.hasClass('first') 	 || (p.first !== undefined 	  && p.first),
-		dead_end = dialogue.hasClass('dead-end') || (p.dead_end !== undefined && p.dead_end),
-		modal	 = dialogue.hasClass('modal')	 || (p.modal !== undefined 	  && p.modal);
-		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined&& p.closeable);
+		first 	 = dialogue.hasClass('first') 	 || (p.first 	 !== undefined	&& p.first),
+		deadend = dialogue.hasClass('deadend') 	 || (p.deadend 	 !== undefined	&& p.deadend),
+		modal	 = dialogue.hasClass('modal')	 || (p.modal 	 !== undefined	&& p.modal);
+		closeable= dialogue.hasClass('closeable')|| (p.closeable !== undefined	&& p.closeable);
 	
 	$('#'+id+' .buttonset').buttonset();
 	$('#'+id+' .button').button();
@@ -85,58 +196,133 @@ function launch_wizard(id, p) {
 	}
 	
 	switch(id) {
-		case 'wizard-conception' :
-			buttons["Soumettre la tranche"]=function() {
-				chargements=['final'];
-				
-				numero_chargement=numero;
-				chargement_courant=0;
-	            charger_preview_etape(chargements[0],false);
-			};
-		break;
 		case 'wizard-ajout-etape':
-			dialogue.find('form input[name="etape"]').val($('#ajout_etape').data('etape'));
-			dialogue.find('form input[name="pos"]').val($('#ajout_etape').data('pos'));
+			dialogue.find('form input[name="etape"]').val(etape_ajout);
+			dialogue.find('form input[name="pos"]').val(etape_ajout_pos);
 			buttons={
 				'OK': function() {
 					var formData=$(this).find('form').serializeObject();
-					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
-						type: 'post',
-						dataType:'json',
-						success:function(data) {
-							$('#wizard-ajout-etape').dialog().dialog( "close" );
-							for (var i in data.decalages) {
-								$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
-							}
-							ajouter_preview_etape(formData.etape, formData.nom_fonction);
-							charger_previews(true);
-						}
-					});
+					var panelOuvert = $('#wizard-ajout-etape .accordion').accordion('option','active');
+					switch(panelOuvert) {
+						case 0: // A partir de zéro
+							$.ajax({
+								url: urls['insert_wizard']+['index',pays,magazine,numero,formData.pos,formData.etape,formData.nom_fonction].join('/'),
+								type: 'post',
+								dataType:'json',
+								success:function(data) {
+									$('#wizard-ajout-etape').dialog().dialog( "close" );
+									for (var i in data.infos_insertion.decalages) {
+										$('*').getElementsWithData('etape',data.decalages[i]['old']).data('etape',data.decalages[i]['new']);
+									}
+									ajouter_preview_etape(data.infos_insertion.numero_etape, formData.nom_fonction);
+									charger_previews(true);
+								}
+							});
+						break;
+						case 1: // Clonage
+							$.ajax({
+								url: urls['cloner']+['index',pays,magazine,numero,formData.pos,formData.etape_a_cloner].join('/'),
+								type: 'post',
+								dataType:'json',
+								success:function(data) {
+									$('#wizard-ajout-etape').dialog().dialog( "close" );
+									ajouter_preview_etape(data.infos_insertion.numero_etape, data.infos_insertion.nom_fonction);
+									charger_previews(true);
+								}
+							});
+							
+						break;
+					}
 				},
 				'Annuler':function() {
 					$( this ).dialog().dialog( "close" );
 				}
 			};
 		break;
-		case 'wizard-photos':
-			buttons["OK"]=function() {
+		case 'wizard-images':
+			buttons= {
+			  'OK': function() {	
 				var action_suivante=wizard_check($(this).attr('id'));
 				if (action_suivante != null) {
-					if ($('#wizard-conception').is(':visible')) {
-						num_photo_principale=$(this).find('.gallery li img.selected').attr('src')
-							.match(/\.photo_([0-9_]+)\.jpg$/)[1];
-						maj_photo_principale();
-						$( this ).dialog().dialog( "close" );
+					var type_gallerie='';
+					$.each(['photo_principale','autres_photos','photos_texte'], function(i,classe) {
+						if ($('#'+id).hasClass(classe)) {
+							type_gallerie=classe;
+						}
+					});
+					switch (type_gallerie) {
+						case 'photo_principale' :
+							nom_photo_principale=$(this).find('.gallery li img.selected').attr('src')
+								.match(REGEX_FICHIER_PHOTO)[1];
+							if ($('#wizard-conception').is(':visible')) {
+								maj_photo_principale();
+								$( this ).dialog().dialog( "close" );
+							}
+							else {
+								wizard_do($(this),action_suivante);
+							}
+						break;
+						case 'autres_photos':
+			   		    	tester_options_preview('Image',['Source']); 
+							$(this).dialog().dialog( "close" );
+						break;
+						case 'photos_texte':
+							wizard_goto($('#'+id), 'wizard-myfonts', 
+										{height: $(window).height()-60, width: $(window).width()-40,
+										 modal:true, first: true});
+							$(this).dialog().dialog( "close" );
+							
+						break;
 					}
-					else {
-						wizard_do($(this),action_suivante);
-					}
+				}
+			},
+			'Annuler':function() {
+				$( this ).dialog().dialog( "close" );
+			}
+		};
+		break;
+		case 'wizard-confirmation-validation-modele-contributeurs':
+			buttons["OK"]=function() {
+				if (wizard_check(id)) {
+				   	var form=$('#'+id+' form').serializeObject();
+				   	var photographes=typeof(form.photographes) === "string" ? form.photographes : form.photographes.join(',') .replace(/ /g, "+");
+				   	var designers=	 typeof(form.designers)    === "string" ? form.designers 	: form.designers.join(',') .replace(/ /g, "+");
+					var nom_image=$('.image_etape.finale .image_preview').attr('src').match(/[.0-9]+$/g)[0];
+					$.ajax({
+		                url: urls['valider_modele']+['index',pays,magazine,numero,nom_image,designers,photographes].join('/'),
+		                type: 'post',
+		                success:function(data) {
+		        			jqueryui_alert_from_d($('#wizard-confirmation-validation-modele-ok'), function() {
+		        				location.reload();
+		        			});
+		                },
+		                error:function(data) {
+		                	jqueryui_alert("Une erreur est survenue pendant la validation de la tranche.<br />"
+		                				  +"Contactez le webmaster", 
+		                				  "Erreur");
+		                }
+					});
+				}
+			};
+		break;
+		case 'wizard-myfonts':
+			buttons={
+				'OK': function() {
+					var police=$(this).find('form').serializeObject().url_police
+						.replace(REGEX_POLICE_MYFONTS,'$1')
+						.replace(/\//g,'.');
+					$(modification_etape).find('[name="option-URL"]').val(police);
+					tester_options_preview($(modification_etape).data('nom_fonction'),['URL']);
+					load_myfonts_preview(true,true,true);
+					$( this ).dialog().dialog( "close" );
+				},
+				'Annuler':function() {
+					$( this ).dialog().dialog( "close" );
 				}
 			};
 		break;
 		default:
-			if (!dead_end) {
+			if (!deadend) {
 				buttons["Suivant"]=function() {
 					var action_suivante=wizard_check($(this).attr('id'));
 					if (action_suivante != null) {
@@ -147,7 +333,8 @@ function launch_wizard(id, p) {
 		break;
 	}
 	dialogue.dialog({
-		width: p.width || 475,
+		width:  p.width || 475,
+		height: p.height|| 'auto',
 		position: 'top',
 		modal: modal,
 		autoResize: true,
@@ -174,18 +361,21 @@ function launch_wizard(id, p) {
 		},
 		close: function(event,ui) {
 			if (closeable) {
-				wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+				var hasOnClose = $('#'+id+' form').serializeObject().onClose;
+				if (hasOnClose) {
+					wizard_goto($('#id'), $('#'+id+' form').serializeObject().onClose.replace(REGEX_TO_WIZARD,'$1'));
+				}
 			}
 		}
 	});
 }
 
-function wizard_goto(wizard_courant, id_wizard_suivant) {
+function wizard_goto(wizard_courant, id_wizard_suivant, p) {
 	if (can_launch_wizard(id_wizard_suivant)) {
 		wizard_options[wizard_courant.attr('id')]=wizard_courant.find('form').serializeObject();
 		id_wizard_precedent=wizard_courant.attr('id');
 		wizard_courant.dialog().dialog( "close" );
-		launch_wizard(id_wizard_suivant);
+		launch_wizard(id_wizard_suivant, p);
 	}
 }
 
@@ -200,14 +390,21 @@ function wizard_do(wizard_courant, action) {
 					case 'enregistrer':
 						if (wizard_check('wizard-resize') !== undefined) {
 							var image = wizard_courant.find('.jrac_viewport img');
-							var nom = image.attr('src').match(/_([^.]+?)\.[a-z]+$/)[1];
-							
+							var destination = wizard_courant.find('[name="destination"]').val();
+							var decoupage_nom = image.attr('src').match(REGEX_FICHIER_PHOTO);
+							if (!decoupage_nom) {
+								jqueryui_alert("Le nom de l'image est invalide : " + image.attr('src'), "Nom invalide");
+								return;
+							}
+
+							var numero_image = decoupage_nom[2];
+							var nom = decoupage_nom[3];
 							var x1 = parseInt(100 * ($('.jrac_crop').position().left / image.width())),
 								x2 = parseInt(100 * ($('.jrac_crop').position().left + $('.jrac_crop').width()) / image.width()),
 								y1 = parseInt(100 * ($('.jrac_crop').position().top  / image.height())),
 								y2 = parseInt(100 * ($('.jrac_crop').position().top  + $('.jrac_crop').height()) / image.height());
 							$.ajax({
-								url: urls['rogner_image']+['index',pays,magazine,numero,nom,x1,x2,y1,y2].join('/'),
+								url: urls['rogner_image']+['index',pays,magazine,numero_image,numero,nom,destination,x1,x2,y1,y2].join('/'),
 								type: 'post',
 								dataType:'json'
 							});
@@ -217,7 +414,7 @@ function wizard_do(wizard_courant, action) {
 			break;
 		}
 		wizard_courant.dialog().dialog("close");
-		wizard_goto(wizard_courant,'wizard-photos');
+		wizard_goto(wizard_courant,'wizard-images');
 	}
 }
 
@@ -243,7 +440,7 @@ function wizard_check(wizard_id) {
 				case 'wizard-creer-collection':
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
-					else if ($('#'+wizard_id+' form [name="choix_tranche_non_prete"]').filter(':checked').length == 0) {
+					else if ($('#'+wizard_id+' form').serializeObject().choix_tranche == 0) {
 						erreur='Veuillez s&eacute;lectionner un num&eacute;ro.';
 					}
 				break;
@@ -251,8 +448,8 @@ function wizard_check(wizard_id) {
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix != 'to-wizard-numero-inconnu'
-						  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').hasClass('tranche_prete')) {
-						erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible.<br />'
+						  && $('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete,.cree_par_moi,.en_cours')) {
+						erreur='La tranche de ce num&eacute;ro est d&eacute;j&agrave; disponible ou en cours de conception.<br />'
 							  +'S&eacute;lectionnez "Modifier une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la modifier '
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
 					}
@@ -276,7 +473,7 @@ function wizard_check(wizard_id) {
 					if (chargement_listes)
 						erreur='Veuillez attendre que la liste des num&eacute;ros soit charg&eacute;e';
 					else if (valeur_choix == 'to-wizard-clonage-silencieux'
-						  && !$('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete, .cree_par_moi')) {
+						  && !$('#'+wizard_id+' [name="wizard_numero"]').find('option:selected').is('.tranche_prete, .cree_par_moi, .en_cours')) {
 						erreur='La tranche de ce num&eacute;ro n\'existe pas.<br />'
 							  +'S&eacute;lectionnez "Cr&eacute;er une tranche de magazine" dans l\'&eacute;cran pr&eacute;c&eacute;dent pour la cr&eacute;er '
 							  +'ou s&eacute;lectionnez un autre num&eacute;ro.';
@@ -291,7 +488,7 @@ function wizard_check(wizard_id) {
 					}
 				break;
 				
-				case 'wizard-photos':
+				case 'wizard-images':
 					if ($('#'+wizard_id).find('form ul.gallery li img.selected').length == 0) {
 						erreur='Veuillez s&eacute;lectionner une photo de tranche.';
 					}
@@ -300,6 +497,12 @@ function wizard_check(wizard_id) {
 				case 'wizard-resize':
 					if ($('#'+wizard_id).find('.error:not(.cache)').length > 0) {
 						erreur='Veuillez corriger les erreurs avant de continuer.';
+					}
+				break;
+				case 'wizard-confirmation-validation-modele-contributeurs':
+					if (! $('#'+wizard_id+' form').serializeObject().photographes
+					 || ! $('#'+wizard_id+' form').serializeObject().designers) {
+						erreur='Au moins un photographe et un designer doivent &ecirc;tre sp&eacute;cifi&eacute;s.';						
 					}
 				break;
 			}
@@ -319,7 +522,7 @@ function wizard_check(wizard_id) {
 }
 
 var chargement_listes=false;
-modification_etape=null;
+var modification_etape=null;
 function wizard_init(wizard_id) {
 	// Transfert vers un autre assistant
 	$('#'+wizard_id+' button[value^="to-wizard-"]').click(function() {
@@ -355,40 +558,13 @@ function wizard_init(wizard_id) {
 		          .parent()
 		            .buttonset()
 		            .next()
-		              .hide()
-		              .menu();
+		              .hide();
 			$.ajax({
 				url: urls['tranchesencours']+['load'].join('/'),
 				dataType:'json',
 				type: 'post',
 				success:function(data) {
-					var tranches = traiter_tranches_en_cours(data);
-					if (tranches.length > 0) {
-						$('#'+wizard_id+' #tranches_en_cours').removeClass('cache');
-						$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
-						for (var i_tranche_en_cours in tranches) {
-							var tranche_en_cours=tranches[i_tranche_en_cours];
-							var bouton_tranche_en_cours=$('#tranches_en_cours .init').clone(true).removeClass('init');
-							bouton_tranche_en_cours.find('input')
-								.attr({'id':'tranche'+tranche_en_cours.ID})
-								.val(tranche_en_cours.ID);
-							bouton_tranche_en_cours.find('label')
-								.attr({'for':'tranche'+tranche_en_cours.ID})
-								.css({'background-image': 'url("../../images/flags/'+tranche_en_cours.Pays+'.png")'})
-								.html(tranche_en_cours.str_userfriendly)
-								.click(function() {
-									$('#'+wizard_id+' #to-wizard-conception').click();
-								});
-							if ($('#'+wizard_id+' #tranches_en_cours #'+tranche_en_cours.ID).length == 0) {
-								$('#'+wizard_id+' #tranches_en_cours').append(bouton_tranche_en_cours);
-							}
-						}
-						$('#tranches_en_cours .init').remove();
-						$('#'+wizard_id+' #tranches_en_cours').buttonset();
-						$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
-							$('#'+wizard_id+' #tranches_en_cours .ui-state-active').removeClass('ui-state-active');
-						});
-					}
+					afficher_liste_magazines(wizard_id,'tranches_en_cours',data);
 				}
 			});
 			
@@ -404,27 +580,8 @@ function wizard_init(wizard_id) {
 					if (typeof(data.erreur) !='undefined')
 						jqueryui_alert(data);
 					else {
-						var tranches = data.tranches_non_pretes;
-						for (var i_tranche in tranches) {
-							var tranche=tranches[i_tranche];
-							var str_tranche_userfriendly=tranche.Magazine_complet+' n&deg;'+tranche.Numero;
-							var str_tranche=str_tranche_userfriendly+'('+tranche.Pays+'_'+tranche.Magazine+'_'+tranche.Numero+')';
-							var bouton_tranche=$('#numero_tranche_non_prete').clone(true).removeClass('init');
-							var label_tranche=$('#numero_tranche_non_prete').next('label').clone(true);
-							bouton_tranche.attr({'id':str_tranche,'value':str_tranche});
-							label_tranche.attr({'for':str_tranche}).html(str_tranche_userfriendly);
-							if ($('#'+wizard_id+' #tranches_non_pretes').find('[value="'+str_tranche+'"]').length == 0) {
-								$('#'+wizard_id+' #tranches_non_pretes').append(bouton_tranche)
-																	  .append(label_tranche)
-																	  .append($('<br>'));
-							}
-						}
+						afficher_liste_magazines(wizard_id, 'tranches_non_pretes', data.tranches_non_pretes);
 					}
-					$('#'+wizard_id+' #tranches_non_pretes, #'+wizard_id+' span.cache').removeClass('cache');
-					$('#'+wizard_id+' span.patienter').addClass('cache');
-					$('#numero_tranche_non_prete').next('label').remove();
-					$('#numero_tranche_non_prete').remove();
-					$('#'+wizard_id+' #tranches_non_pretes').buttonset();
 					chargement_listes=false;
 				},
 				error:function(data) {
@@ -456,87 +613,22 @@ function wizard_init(wizard_id) {
 		case 'wizard-proposition-clonage':
 			if (get_option_wizard('wizard-proposition-clonage', 'tranche_similaire') != undefined)
 				break;
-			pays=get_option_wizard('wizard-creer-hors-collection', 'wizard_pays') 
-			  || get_option_wizard('wizard-creer-collection', 'wizard_pays');
-			magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine')
-			  	  || get_option_wizard('wizard-creer-collection', 'wizard_magazine');
-			numero=get_option_wizard('wizard-creer-hors-collection', 'wizard_numero')
-				|| get_option_wizard('wizard-creer-collection', 'wizard_numero');
-			selecteur_cellules_preview='#'+wizard_id+' #tranches_pretes_magazine td';
-			
-			var numero_selectionne=numero;
-			var index_numero_selectionne=$('#'+wizard_id+' [name="wizard_numero"] option[value="'+numero_selectionne+'"]').prop('index');
-			var tranches_pretes=new Array();
-
-			var nouvelle_tranche_placee=false;
-			var nb_tranches_suivantes=0;
-			$.each($('#'+wizard_id+' [name="wizard_numero"] option.tranche_prete'),function() {
-				var index_numero_courant = $('#'+wizard_id+' [name="wizard_numero"] option[value="'+$(this).val()+'"]').prop('index');
-				if (index_numero_courant > index_numero_selectionne) {
-					if (!nouvelle_tranche_placee) {
-						if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 dernières précédentes
-							tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
-						tranches_pretes.push(numero_selectionne);
-						nouvelle_tranche_placee=true;
-					}
-					if (nb_tranches_suivantes < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) {
-						tranches_pretes.push($(this).val());
-						nb_tranches_suivantes++;
-					}
-				}
-				else {
-					tranches_pretes.push($(this).val());
-				}
-			});
-			
-			if (!nouvelle_tranche_placee) {
-				// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
-				if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) // Filtre sur les 5 dernières précédentes
-					tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
-				tranches_pretes.push(numero_selectionne);
+			$('#'+wizard_id+' .chargement').removeClass('cache');
+			$('#'+wizard_id+' .tranches_pretes_magazine').addClass('cache');
+			if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
+				var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').split(/_/g);
+				pays=	 tranche[1];
+				magazine=tranche[2];
+				numero=	 tranche[3];
 			}
-			
-			// Pas de proposition de tranche
-			if (tranches_pretes.length <= 1) {
-				$('#'+wizard_id+' #tranches_pretes_magazine').html('Pas de tranche similaire');
-				wizard_do($('#'+wizard_id),'goto_wizard-dimensions');
-				return;
+			else {
+				pays=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_pays');
+				magazine=get_option_wizard('wizard-creer-hors-collection', 'wizard_magazine');
+				numero=	 get_option_wizard('wizard-creer-hors-collection', 'wizard_numero');
 			}
+			selecteur_cellules_preview='#'+wizard_id+' .tranches_pretes_magazine td';
 			
-			
-			var tableau_tranches_pretes=$('<table>');
-			var ligne_numeros_tranches_pretes1=$('<tr>');
-			var ligne_tranches_pretes=$('<tr>');
-			var ligne_tranche_selectionnee=$('<tr>');
-			var ligne_numeros_tranches_pretes2=$('<tr>');
-			tableau_tranches_pretes.append(ligne_numeros_tranches_pretes1)
-								   .append(ligne_tranches_pretes)
-								   .append(ligne_tranche_selectionnee)
-								   .append(ligne_numeros_tranches_pretes2);
-			$('#'+wizard_id+' #tranches_pretes_magazine').html($('<div>').addClass('buttonset').html(tableau_tranches_pretes));
-
-			for (i in tranches_pretes) {
-				var numero_tranche_prete = tranches_pretes[i];
-				ligne_tranches_pretes.append($('<td>').data('numero',numero_tranche_prete));
-				var td_numero=$('<td>').data('numero',numero_tranche_prete);
-				if (numero_tranche_prete == numero_selectionne) {
-					td_numero.append($('<b>').html('n&deg;'+numero_tranche_prete+'<br />(Votre tranche)'));
-					ligne_tranche_selectionnee.append($('<td>'));
-				}
-				else {
-					td_numero.html('n&deg;'+numero_tranche_prete);
-					ligne_tranche_selectionnee.append($('<td>').html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_prete)));
-					reload_numero(numero_tranche_prete);
-				}
-				ligne_numeros_tranches_pretes1.append(td_numero);
-				ligne_numeros_tranches_pretes2.append(td_numero.clone(true));
-			}
-			
-			$('#wizard-proposition-clonage .image_preview').click(function() {
-				$('#wizard-proposition-clonage .image_preview').removeClass('selected');
-				$(this).addClass('selected');
-				$('#wizard-proposition-clonage input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
-			});
+			afficher_tranches_proches(pays, magazine, numero, true);
 		break;
 		
 		case 'wizard-clonage':
@@ -588,43 +680,40 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		
-		case 'wizard-photos':
+		case 'wizard-images':
 			$('#'+wizard_id).find('.accordion').accordion({
-				active: 1
+				activate: function( event, ui ) {
+        			$('#to-wizard-resize').addClass('cache');
+					switch ($(ui.newHeader).attr('id')) {
+						case 'gallery':
+							var type_gallerie = $('#'+wizard_id).hasClass('photo_principale') ? 'Photos' : 'Source';
+							lister_images_gallerie(type_gallerie);
+						break;
+						case 'section_photo':
+		        			$('#to-wizard-resize').removeClass('cache');
+		        			var nom_fichier_photo = $('#photo_tranche img').attr('src').match(/\/([^\/]+$)/)[1];
+		        			afficher_gallerie('Photos', [nom_fichier_photo], $('#wizard-images .selectionner_photo_tranche'));
+						break;
+					}
+				}
 			});
-			lister_images_gallerie('Photos');
 		break;
 		
 		case 'wizard-conception':
-			var numero_complet_userfriendly=null;
 			if (get_option_wizard('wizard-1','choix_tranche_en_cours') != undefined) {
-				var id_tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours');
-				$.ajax({
-					url: urls['tranchesencours']+['load',id_tranche_en_cours].join('/'),
-				    type: 'post',
-					dataType:'json',
-				    async: false,
-				    success: function(data) {
-				    	var tranche=traiter_tranches_en_cours(data)[0];
-						numero_complet_userfriendly=tranche.str_userfriendly;
-						pays=tranche.Pays;
-						magazine=tranche.Magazine;
-						numero=tranche.Numero;
-				    }
-				});
+				var tranche_en_cours=get_option_wizard('wizard-1','choix_tranche_en_cours').split(/_/g);
+				pays=tranche_en_cours[1];
+				magazine=tranche_en_cours[2];
+				numero=tranche_en_cours[3];
 			}
-			else {
-				if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete') == undefined
-				 && get_option_wizard('wizard-creer-hors-collection','wizard_pays') == undefined) {
-					numero_complet_userfriendly='';
-				}
-				else {
-					if (get_option_wizard('wizard-creer-collection','choix_tranche_non_prete')!= undefined) {
-						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche_non_prete');
-						numero_complet_userfriendly=tranche.replace(REGEX_NUMERO,'$1');
-						pays=tranche.replace(REGEX_NUMERO,'$2');
-						magazine=tranche.replace(REGEX_NUMERO,'$3');
-						numero=tranche.replace(REGEX_NUMERO,'$4');					
+			else { // Nouvelle tranche => paramétrage des dimensions, etc.
+				if (get_option_wizard('wizard-creer-collection','choix_tranche') != undefined
+				 || get_option_wizard('wizard-creer-hors-collection','wizard_pays') != undefined) {
+					if (get_option_wizard('wizard-creer-collection','choix_tranche')!= undefined) {
+						var tranche=get_option_wizard('wizard-creer-collection','choix_tranche').match(REGEX_NUMERO);
+						pays=tranche[1];
+						magazine=tranche[2];
+						numero=tranche[3];
 					}
 					else {
 						pays=get_option_wizard('wizard-creer-hors-collection','wizard_pays');
@@ -632,26 +721,48 @@ function wizard_init(wizard_id) {
 						numero=get_option_wizard('wizard-creer-hors-collection','wizard_numero');
 					}
 					
-					num_photo_principale=get_option_wizard('wizard-photos','numeroPhotoPrincipale') || '_';
-					// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
-					$.ajax({
-						url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
-					    type: 'post',
-					    async: false
-					});
-					// Renseignement du numéro de photo principale en base
+					if (get_option_wizard('wizard-clonage','choix')=== undefined) { // S'il n'y a pas eu clonage, on ne connait pas les dimensions de la tranche
+						// Ajout du modèle de tranche et de la fonction Dimensions avec les paramètres par défaut
+						$.ajax({
+							url: urls['insert_wizard']+['index',pays,magazine,numero,'_',-1,'Dimensions'].join('/'),
+						    type: 'post',
+						    async: false
+						});
+						// Mise à jour de la fonction Dimensions avec les valeurs entrées
+						var dimension_x = get_option_wizard('wizard-dimensions','Dimension_x');
+						var dimension_y = get_option_wizard('wizard-dimensions','Dimension_y');
+						var parametrage_dimensions =  'Dimension_x='+dimension_x
+													+'&Dimension_y='+dimension_y;
+						$.ajax({
+							url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
+						    type: 'post',
+						    async: false
+						});
+						dimensions = {x: parseInt(dimension_x), y: parseInt(dimension_y)};
+					}
 					maj_photo_principale();
-					// Mise à jour de la fonction Dimensions avec les valeurs entrées
-					var parametrage_dimensions =  'Dimension_x='+get_option_wizard('wizard-dimensions','Dimension_x')
-												+'&Dimension_y='+get_option_wizard('wizard-dimensions','Dimension_y');
-					$.ajax({
-						url: urls['update_wizard']+['index',pays,magazine,numero,-1,parametrage_dimensions].join('/'),
-					    type: 'post',
-					    async: false
-					});
 				}
 			}
-			$('#nom_complet_tranche_en_cours').html(numero_complet_userfriendly);
+
+			$.ajax({
+				url: urls['tranchesencours']+['load','null',pays,magazine,numero].join('/'),
+			    type: 'post',
+				dataType:'json',
+			    async: false,
+			    success: function(data) {
+			    	var tranche=traiter_tranches_en_cours(data)[0];
+					pays=tranche.Pays;
+					magazine=tranche.Magazine;
+					numero=tranche.Numero;
+
+					$('#nom_complet_tranche_en_cours')
+						.html($('<img>').attr({src:'../images/flags/'+pays+'.png'}))
+						.append(' '+tranche.str_userfriendly);
+			    }
+			});
+
+			afficher_photo_tranche();
+			
 			$('#action_bar').removeClass('cache');
 			selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 			$('#'+wizard_id).dialog().dialog('option','position',['right','top']);
@@ -675,6 +786,8 @@ function wizard_init(wizard_id) {
 							return 1;
 						return 0;
 					});
+
+					charger_couleurs_frequentes();
 					
 					$.ajax({ // Détails des étapes
 						url: urls['parametrageg_wizard']+['index',pays,magazine,numero,-1,'null','null'].join('/'),
@@ -687,15 +800,15 @@ function wizard_init(wizard_id) {
 					            $('#zoom_value').html(zoom);
 								reload_all_previews();
 								if (modification_etape != null) {
-									$('.preview_vide')
-										.css({'width' :$('#Dimension_x').val()*zoom+'px', 
-											  'height':$('#Dimension_y').val()*zoom+'px'});
+									modification_etape.find('.preview_etape')
+										.css({'min-height': $('.preview_vide').height()});
 									
 									var valeurs=modification_etape.find('[name="form_options"]').serializeObject();
 									var section_preview_etape = modification_etape.find('.preview_etape');
 									var nom_fonction=modification_etape.data('nom_fonction');
 							    	alimenter_options_preview(valeurs, section_preview_etape, nom_fonction);
 								}
+								$('#zoom_slider .ui-slider-handle').blur();
 							}});
 							
 							var texte="";
@@ -711,9 +824,12 @@ function wizard_init(wizard_id) {
 								switch(option_nom) {
 									case 'Dimension_x':
 										$('#Dimension_x').val(texte);
+										
+										dimensions.x = parseInt(texte);
 									break;
 									case 'Dimension_y':
 										$('#Dimension_y').val(texte);
+										dimensions.y = parseInt(texte);
 									break;
 								}
 							}
@@ -783,26 +899,32 @@ function wizard_init(wizard_id) {
 							});
 
 							charger_previews();
-											            
-				            $('#zone_ajout_etape').hover(indiquer_ajout_etape,
-				            					  		 effacer_ajout_etape);
 				            
-				            $('#ajout_etape').click(function() {
+				            $('.ajout_etape').click(function() {
 				            	if (modification_etape == null) {
+				            		etape_ajout=$(this).data().etape;
+				            		etape_ajout_pos=$(this).data().pos;
 				            		launch_wizard('wizard-ajout-etape');
 				            	}
 				            	else {
-				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { launch_wizard('wizard-ajout-etape');});
+				            		verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
+				            			launch_wizard('wizard-ajout-etape');
+				            		});
 				            	}
 				            });
 				            
 							$('.wizard.preview_etape:not(.final)').click(function() {
 								var dialogue=$(this).d();
+								if (dialogue.hasClass('cloneable')) {
+									return;
+								}
 								if (modification_etape != null) {
 									if (dialogue.data('etape') == modification_etape.data('etape'))
 										return;
 									else {
-										verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { ouvrir_dialogue_preview(dialogue);});
+										verifier_changements_etapes_sauves(modification_etape,'wizard-confirmation-annulation', function() { 
+											ouvrir_dialogue_preview(dialogue);
+										});
 										return;
 									}
 								}
@@ -821,6 +943,14 @@ function wizard_init(wizard_id) {
 			});
 		break;
 		case 'wizard-ajout-etape':
+    		var etape_existe = $('.wizard.preview_etape:not(".initial"):not(".final")').length > 0;
+    		var accordeon = $('#'+wizard_id).find('.accordion');
+    		accordeon.accordion({
+				active: etape_existe ? 1 : 0
+			});
+    		$('#'+wizard_id+' .aucune_etape').toggle(!etape_existe);
+    		$('#'+wizard_id+' .etape_existante').toggle(etape_existe);
+    		
         	$.ajax({
                 url: urls['listerg']+['index','Fonctions'].join('/'),
                 dataType:'json',
@@ -832,6 +962,20 @@ function wizard_init(wizard_id) {
                 	}
                 	$('#liste_fonctions').html(select);
                 }
+        	});
+        	$('#selectionner_etape_base').click(function() {
+				$('#'+wizard_id).dialog().dialog("close");
+        		$('.dialog-preview-etape')
+        			.addClass('cloneable')
+        			.click(function() {
+        				$('#section_etape_a_cloner')
+    						.removeClass('cache');
+        				$('#etape_a_cloner')
+        					.val($(this).data('etape'));
+        				$('#'+wizard_id).dialog().dialog("open");
+        				$('.dialog-preview-etape')
+            				.removeClass('cloneable');
+        			});
         	});
         break;
 		case 'wizard-resize':
@@ -845,12 +989,214 @@ function wizard_init(wizard_id) {
 						crop_inconsistent_element.removeClass('cache');
 				});
 		break;
+		
+		case 'wizard-confirmation-validation-modele':
+			selecteur_cellules_preview='#'+wizard_id+' .tranches_pretes_magazine td';
+			afficher_tranches_proches(pays, magazine, numero, false);
+		break;
+		
+		case 'wizard-confirmation-validation-modele-contributeurs':
+			$.ajax({
+		        url: urls['listerg']+['index','Utilisateurs',[pays,magazine,numero_chargement].join('_')].join('/'),
+		        type: 'post',
+			    dataType:'json',
+		        success:function(data) {
+		           var utilisateur_courant=$('#utilisateur').html();
+		     	   
+		     	   $.each($('#'+wizard_id+' span'),function(i,span) {
+		     		   var div=$('<div>');
+		     		   var type_contribution=$(span).attr('id');
+		     		   for (var username in data) {
+		     			   var id = $(span).attr('id')+'_'+username;
+		     			   var option = $('<input>',{
+		     				   id:   id,
+		     				   name: $(span).attr('id'),
+		     				   type: 'checkbox'
+		     			   }).val(username);
+		     			   var coche=(type_contribution == 'photographes' &&  data[username].indexOf('p') != -1)
+							      || (type_contribution == 'designers' 	  && (data[username].indexOf('d') != -1
+							    		  								   || utilisateur_courant===username));
+		     			   option.prop({'checked': coche, 'readOnly': coche});
+		     			   $(div).append(
+		     					$('<div>')
+		     					   	.css({'font-weight':coche?'bold':'normal'})
+		     					   	.append(option)
+		     					   	.append($('<label>',{'for': id}).text(username)));
+		     		   }
+		     		   $(span).append(div);
+		     	   });
+		        }
+			});
+		break;
+		case 'wizard-myfonts':
+			if (window.location.host === 'localhost') {
+				var image_selectionnee = prompt('URL image ?');
+			}
+			else {
+				var image_selectionnee = $('#wizard-images input[name="selected"]').val();
+			}
+			$('#'+wizard_id+' iframe').attr({src:'http://www.myfonts.com/WhatTheFont/upload?url='+image_selectionnee});
+			$('.toggle_exemple').click(function() {
+				$('.exemple_cache, .exemple_affiche').toggleClass('cache');
+			});
+		break;
 	}
 }
 
+function afficher_liste_magazines(wizard_id, id_element_liste, data) {
+	$('#'+wizard_id+' .explication').addClass('cache');
+	$('#'+wizard_id+' .chargement').removeClass('cache');
+	var tranches = traiter_tranches_en_cours(data);
+	$('#'+wizard_id+' .chargement').addClass('cache');
+	if (tranches.length > 0) {
+		$('#'+wizard_id+' #'+id_element_liste).removeClass('cache');
+		$('#'+wizard_id+' .explication').removeClass('cache');
+		$('#'+wizard_id+' #to-wizard-conception').button('option','disabled',false);
+		for (var i_tranche_en_cours in tranches) {
+			var tranche_en_cours=tranches[i_tranche_en_cours];
+			var bouton_tranche_en_cours=$('#'+id_element_liste+' .init').clone(true).removeClass('init');
+			var id_tranche='tranche_'+tranche_en_cours.Pays+'_'+tranche_en_cours.Magazine+'_'+tranche_en_cours.Numero;
+			bouton_tranche_en_cours.find('input')
+				.attr({'id':id_tranche})
+				.val(id_tranche);
+			bouton_tranche_en_cours.find('label')
+				.attr({'for':id_tranche})
+				.css({'background-image': 'url("../images/flags/'+tranche_en_cours.Pays+'.png")'})
+				.html(tranche_en_cours.str_userfriendly)
+				.click(function() {
+					$('#'+wizard_id+' #to-wizard-conception').click();
+				});
+			if ($('#'+wizard_id+' #'+id_element_liste+' #'+id_tranche).length == 0) {
+				$('#'+wizard_id+' #'+id_element_liste).append(bouton_tranche_en_cours);
+			}
+		}
+		$('#'+id_element_liste+' .init').remove();
+		$('#'+wizard_id+' #'+id_element_liste).buttonset().menu();
+		$('#'+wizard_id+' #to-wizard-creer, #'+wizard_id+' #to-wizard-modifier').click(function() {
+			$('#'+wizard_id+' #'+id_element_liste+' .ui-state-active').removeClass('ui-state-active');
+		});
+	}
+	else {
+		$('#'+wizard_id+' .pas_de_numero').removeClass('cache');
+	}
+}
+
+function afficher_tranches_proches(pays, magazine, numero, est_contexte_clonage) {
+	charger_liste_numeros(pays,magazine, function(data) {
+		var wizard_courant = $('#'+id_wizard_courant);
+		
+		var numeros_existants=data.numeros_dispos;
+		
+		var tranches_pretes=new Array();
+		var numero_selectionne_trouve=false;
+		for (var numero_existant in numeros_existants) {
+			if (numero_existant != 'Aucun') {
+				var est_tranche_prete=data.tranches_pretes[numero_existant] !== undefined;
+				if (numero_existant == numero) {
+					if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) {// Filtre sur les 5 dernières précédentes
+						tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
+					}
+					tranches_pretes.push(numero);
+					numero_selectionne_trouve=true;
+				}
+				else if (est_tranche_prete) {
+					// On arrête après 5x2 tranches similaires + le nouveau numéro
+					if (!numero_selectionne_trouve || tranches_pretes.length < NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES*2 + 1) {
+						tranches_pretes.push(numero_existant);
+					}
+				}
+			}
+		}
+	
+		if (!numero_selectionne_trouve) {
+			// Entrer ici signifie qu'il n'y a pas de tranches prêtes après le numéro sélectionné
+			if (tranches_pretes.length > NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES) {// Filtre sur les 5 dernières précédentes
+				tranches_pretes=tranches_pretes.slice(tranches_pretes.length-NB_MAX_TRANCHES_SIMILAIRES_PROPOSEES, tranches_pretes.length);
+			}
+			tranches_pretes.push(numero);
+		}
+		
+		// Pas de proposition de tranche
+		if (tranches_pretes.length <= 1) {
+			if (est_contexte_clonage) {
+				wizard_do(wizard_courant,'goto_wizard-dimensions');
+			}
+			else {
+				wizard_do(wizard_courant,'goto_wizard-confirmation-validation-modele-contributeurs');
+			}
+			return;
+		}
+		
+		if (est_contexte_clonage) { // Filtrage des tranches qui sont prêtes mais sans modèle
+			var tranches_clonables = $.ajax({
+				url: urls['cloner']+['est_clonable',pays,magazine,tranches_pretes.join(',')].join('/'),
+			    type: 'post',
+			    async: false
+			}).responseText.replace(/[\[\]"]/g,'').split(/,/);
+			
+			var tranches_pretes_clonables = [];
+			for (var i in tranches_pretes) {
+				var tranche_prete = tranches_pretes[i];
+				if (tranches_clonables.indexOf(tranche_prete) !== -1 || tranche_prete === numero) {
+					tranches_pretes_clonables.push(tranche_prete);
+				}
+			}
+			tranches_pretes = tranches_pretes_clonables;
+		}
+		
+		var tableau_tranches_pretes=$('<table>');
+		var ligne_numeros_tranches_pretes1=$('<tr>');
+		var ligne_tranches_pretes=$('<tr>');
+		var ligne_tranche_selectionnee=$('<tr>');
+		var ligne_numeros_tranches_pretes2=$('<tr>');
+		tableau_tranches_pretes
+			.append(ligne_numeros_tranches_pretes1)
+			.append(ligne_tranches_pretes)
+			.append(ligne_tranche_selectionnee)
+			.append(ligne_numeros_tranches_pretes2);
+		wizard_courant
+			.find('.tranches_pretes_magazine')
+				.html($('<div>').addClass('buttonset').html(tableau_tranches_pretes));
+
+		for (i in tranches_pretes) {
+			var numero_tranche_prete = tranches_pretes[i];
+			var td_tranche=$('<td>').data('numero',numero_tranche_prete);
+			var td_numero= $('<td>').data('numero',numero_tranche_prete);
+			var td_radio = $('<td>');
+			ligne_tranches_pretes.append(td_tranche); // On insère ce <td> avant les autres pour qu'il soit trouvé par le chargeur d'image
+			if (numero_tranche_prete == numero) {
+				td_numero.append($('<b>').html('n&deg;'+numero_tranche_prete+'<br />(Votre tranche)'));
+				if (!est_contexte_clonage) { // Contexte validation de tranche
+					td_tranche.append($('.preview_etape.final img.image_preview').clone(true));
+				}
+			}
+			else {
+				td_numero.html('n&deg;'+numero_tranche_prete);
+				td_radio.html($('<input>',{'type':'radio', 'name':'tranche_similaire','readonly':'readonly'}).val(numero_tranche_prete));
+				reload_numero(numero_tranche_prete, true);
+			}
+			if (est_contexte_clonage) {
+				ligne_tranche_selectionnee.append(td_radio);
+			}
+			ligne_numeros_tranches_pretes1.append(td_numero);
+			ligne_numeros_tranches_pretes2.append(td_numero.clone(true));
+		}
+		
+		if (est_contexte_clonage) {
+			wizard_courant.find('.image_preview').click(function() {
+				wizard_courant.find('.image_preview').removeClass('selected');
+				$(this).addClass('selected');
+				wizard_courant.find('input[type="radio"][value="'+$(this).data('numero')+'"]').prop('checked',true);
+			});
+		}
+		wizard_courant.find('.chargement').addClass('cache');
+		wizard_courant.find('.tranches_pretes_magazine').removeClass('cache');
+	});
+}
+
 function traiter_tranches_en_cours(data) {
-	var tranches_en_cours_existent=typeof(data) == 'object' && data.length > 0;
-	if (!tranches_en_cours_existent)
+	var tranches_en_cours_existent=typeof(data) == 'array' && data.length > 0;
+	if (tranches_en_cours_existent)
 		return [];
 	var tranches=[];
 	for (var i_tranche_en_cours in data) {
@@ -867,8 +1213,8 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 	var div_preview=$('<div>').data('etape',num_etape+'').addClass('image_etape');
 	var div_preview_vide=$('<div>')
 		.addClass('preview_vide cache')
-		.css({'width' :$('#Dimension_x').val()*zoom+'px', 
-			  'height':$('#Dimension_y').val()*zoom+'px'});
+		.width (dimensions.x *zoom)
+		.height(dimensions.y *zoom);
 	wizard_etape.append(div_preview)
 				.append(div_preview_vide);
 	
@@ -878,7 +1224,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 		draggable: false,
 		width: 'auto',
 		minWidth: 0,
-		height: 'auto',
+		minHeight: div_preview_vide.height()+'px',
 		position: [posX,0],
 	    closeOnEscape: false,
 		modal: false,
@@ -891,7 +1237,7 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			$(this).d().find('.ui-dialog-titlebar').addClass('logo_option')
 												   .css({'padding':'.3em .6em;'})
 										 		   .prepend($('<img>',{'height':18,'src':base_url+'images/fonctions/'+nom_fonction+'.png',
- 	   											    		     		   'alt':nom_fonction}));
+ 	   											    		     	   'alt':nom_fonction}));
 			$(this).d().find('.ui-dialog-title').addClass('cache').html(nom_fonction);
 		},
 		beforeClose:function(event,ui) {
@@ -922,7 +1268,10 @@ function ajouter_preview_etape(num_etape, nom_fonction) {
 			return false;
 		}
 	});
-	wizard_etape.d().resize(function() {
+	wizard_etape.d().resize(function(e) {
+		if (!($(e.target).hasClass('wizard') || $(e.target).hasClass('ui-dialog'))) {
+			return;
+		}
 		if (modification_etape != null 
 		 && modification_etape.find('#options-etape--Polygone').length != 0) {
 			var options=modification_etape.find('[name="form_options"]');
@@ -973,14 +1322,12 @@ function ouvrir_dialogue_preview(dialogue) {
 	dialogue.find('.ui-dialog-titlebar .ui-dialog-title').removeClass('cache');
 	section_preview_vide.after($('#options-etape--'+nom_fonction)
 						.removeClass('cache')
-						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px'}));
+						.css({'margin-left':(section_preview_vide.position().left+largeur_tranche+5*zoom)+'px',
+							  'min-height':section_preview_vide.height()+'px'}));
 
 	section_preview_etape.dialog().dialog('option','buttons',{
 		'Fermer': function() {
 			verifier_changements_etapes_sauves($(this).d(),'wizard-confirmation-annulation');
-		},
-		'Tester': function() {
-			tester();
 		},
 		'Valider': function() {
 			valider();		
@@ -1000,6 +1347,9 @@ function fermer_dialogue_preview(dialogue) {
 	dialogue.find('.image_etape img, .preview_vide').toggleClass('cache');
 	dialogue.find('[name="form_options"],[name="form_options_orig"]').remove();
 	dialogue.find('.preview_etape').removeClass('modif');
+	dialogue.find('.ui-draggable').draggable('destroy');
+	dialogue.find('.ui-resizable').resizable('destroy');
+	$('#conteneur_selecteur_couleur').addClass('cache');
 	modification_etape=null;
 }
 
@@ -1028,63 +1378,45 @@ function placer_dialogues_preview() {
 			$(dialogue).css({'left':parseInt($(dialogue).css('left'))-min_marge_gauche+'px'});			
 		});
 	}
-	
-	// Positionnement de la zone d'ajout d'étape
-	var dialogue_droite=$(dialogues[1]); // Avant le dialogue de conception et la tranche finale
-	var dialogue_gauche=$(dialogues[dialogues.size()-1]); // Première étape
-	$('#zone_ajout_etape').css({'left':	 dialogue_gauche.offset().left - LARGEUR_INTER_ETAPES,
-							    'top': 	 dialogue_gauche.offset().top,
-							    'height': dialogue_gauche.height()});
-	$('#zone_ajout_etape').css({'width':dialogue_droite.offset().left - $('#zone_ajout_etape').offset().left});
-}
 
-function indiquer_ajout_etape(e) {
-	var ajout_etape = $('#ajout_etape');
-	if (! ajout_etape.hasClass('cache'))
-		return;
-	var dialogues=$('.dialog-preview-etape:not(.finale)').add($('#wizard-conception').d());
+	$('.ajout_etape:not(.template)').remove();
+	var dialogues=$('.dialog-preview-etape:not(.finale)').d();
+	if (dialogues.length == 0) { // Aucune étape n'existe. On créé avec le dialogue de conception pour référence
+		dialogues=$('#wizard-conception').d();
+	}
 	dialogues.sort(function(dialogue1,dialogue2) { // Triés par offset gauche, de droite à gauche
 		return $(dialogue2).offset().left - $(dialogue1).offset().left;
 	});
-	var nearestLeftDialog=null,
-		nearestRightDialog=null;
-	var minDistanceToLeftEdge=null,
-		minDistanceToRightEdge=null;
 	$.each(dialogues,function(i,dialogue) {
-		var currentDistanceToLeftEdge = $(dialogue).offset().left - e.pageX;
-		if (currentDistanceToLeftEdge > 0 && (minDistanceToLeftEdge === null || currentDistanceToLeftEdge < minDistanceToLeftEdge )) {
-			minDistanceToLeftEdge = currentDistanceToLeftEdge;
-			nearestRightDialog=$(dialogue);
+		var elDialogue = $(dialogue);
+		var estDialogueConception = elDialogue.data('etape') === undefined;
+		if (estDialogueConception) { // Dialogue de conception
+			var etape = -1;
+			var positions = ['apres']; // L'étape sera positionnée après l'étape -1 (=dimensions de tranche)
 		}
-		var currentDistanceToRightEdge = e.pageX - ($(dialogue).offset().left + $(dialogue).width());
-		if (currentDistanceToRightEdge > 0 && (minDistanceToRightEdge === null || currentDistanceToRightEdge < minDistanceToRightEdge )) {
-			minDistanceToRightEdge = currentDistanceToRightEdge;
-			nearestLeftDialog=$(dialogue);
+		else {
+			var etape = parseInt(elDialogue.data('etape'));
+			var positions = i==dialogues.length-1 ? ['avant','apres']:['apres'];
 		}
+		$.each(positions,function(j,pos) {
+			var pos_gauche=elDialogue.offset().left
+				+ (pos==='avant' || estDialogueConception
+					?(-$('.ajout_etape.template').width()-2)
+					:(+$('.ajout_etape.template').width()+elDialogue.width())
+				);
+			var ajout_etape=$('.ajout_etape.template').clone(true).removeClass('template hidden')
+			   .css({'left':pos_gauche+'px'})
+			   .css({'top':elDialogue.offset().top+'px'})
+			   .data('etape',etape)
+			   .data('pos',pos);
+			$('body').prepend(ajout_etape);
+		});
 	});
-	
-	if (nearestLeftDialog != null) {
-		var etape = parseInt(nearestLeftDialog.data('etape'));
-		ajout_etape.removeClass('cache')
-				   .css({'left':(nearestLeftDialog.offset().left+nearestLeftDialog.width()+8)+'px'})
-				   .data('etape',etape)
-				   .data('pos','apres');
-	}
-	else if (nearestRightDialog != null) {
-		var etape = parseInt(nearestRightDialog.data('etape')) || 0;
-		ajout_etape.removeClass('cache')
-				   .css({'left':(nearestRightDialog.offset().left-ajout_etape.width()-2)+'px'})
-				   .data('etape',etape)
-				   .data('pos','avant');
-	}
-    $('.tip2').tooltip();
-}
-
-function effacer_ajout_etape() {
-	$('#ajout_etape').addClass('cache');
+	$('.tip2').tooltip();
 }
 
 function recuperer_et_alimenter_options_preview(num_etape) {
+	$('.preview_vide').css({'background-color':''});
 	var section_preview_etape=$('.wizard.preview_etape').getElementsWithData('etape',num_etape);
 	var nom_fonction=section_preview_etape.d().data('nom_fonction');
 	$.ajax({
@@ -1103,10 +1435,7 @@ function recuperer_et_alimenter_options_preview(num_etape) {
 	});
 }
 
-var farbs;
 function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction) {
-	farbs={};
-	var classes_farbs={};
 	
 	var form_userfriendly=section_preview_etape.find('.options_etape');
 	var form_options = section_preview_etape.find('[name="form_options"]');
@@ -1121,6 +1450,9 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	}
 	
 	var image = section_preview_etape.find('.preview_vide');
+	$.merge(image, $('.image_etape.finale'))
+		.width (dimensions.x*zoom)
+		.height(dimensions.y*zoom);
 	
 	var padding_dialogue = form_userfriendly.d().outerWidth(false)
 						 - form_userfriendly.d().innerWidth();
@@ -1149,18 +1481,13 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			    	axis: 'y',
 			    	stop:function(event, ui) {
 			    		var element=$(event.target);
-			    		if (element.hasClass('premiere')) {
-			    			tester_option_preview(nom_fonction,'Y1',element);
-			    		}
-			    		else {
-			    			tester_option_preview(nom_fonction,'Y2',element);
-			    		}
+			    		tester_options_preview(nom_fonction,[element.hasClass('premiere') ? 'Y1' : 'Y2'],element);
 			    	}
 			    })
 			    .resizable({
 			    	handles:'s',
 			    	resize:function(event, ui) {
-			    		tester_option_preview(nom_fonction,'Taille_agrafe',ui.element);
+			    		tester_options_preview(nom_fonction,['Taille_agrafe'],ui.element);
 			    	}
 			    });
 		break;
@@ -1171,9 +1498,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			var pos_x_fin=image.position().left +parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
 			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
 			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
-				
-			classes_farbs['Couleur_debut']='.couleur_debut';
-			classes_farbs['Couleur_fin']='.couleur_fin';
 
 			var rectangle = form_userfriendly.find('.rectangle_degrade');
 
@@ -1184,23 +1508,19 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					 .removeClass('cache')
 					 .draggable({//containment:limites_drag, 
 						 stop:function(event, ui) {
-			   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
-			   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
-			   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-			   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+			   		    	tester_options_preview(nom_fonction, ['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 						 }
 					 })
 					 .resizable({
 						 stop:function(event, ui) {
-							 tester_option_preview(nom_fonction,'Pos_x_fin'); 
-							 tester_option_preview(nom_fonction,'Pos_y_fin');
+							 tester_options_preview(nom_fonction, ['Pos_x_fin', 'Pos_y_fin']);
 				   		 }
 					 });
 			coloriser_rectangle_degrade(rectangle,'#'+valeurs['Couleur_debut'],'#'+valeurs['Couleur_fin'],valeurs['Sens']);
 			
 			var choix = form_userfriendly.find('[name="option-Sens"]');
 			choix.click(function() {
-   		    	tester_option_preview(nom_fonction,'Sens');
+   		    	tester_options_preview(nom_fonction,['Sens']);
    		    	coloriser_rectangle_degrade(rectangle,null,null,$(this).val());
 			});
 		break;
@@ -1223,8 +1543,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					  'height': hauteur	  	+'px'})
 			    .removeClass('cache');
 
-			classes_farbs['Couleur']='';
-
 			var rectangle1 = form_userfriendly.find('.premier.rectangle_degrade');
 			var rectangle2 = form_userfriendly.find('.deuxieme.rectangle_degrade');
 			
@@ -1241,9 +1559,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 	
 		break;
 		case 'Remplir':
-			classes_farbs['Couleur']='';
-			
-			coloriser_rectangle_preview(form_userfriendly.d().find('.preview_vide'),valeurs['Couleur'],true);
+			$('.preview_vide').css({'background-color': '#'+valeurs['Couleur']});
 			
 			var largeur_croix=form_userfriendly.find('.point_remplissage').width()/2;
 			var limites_drag=[(image.offset().left			 	 -largeur_croix+1),
@@ -1255,12 +1571,10 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 										 				.removeClass('cache')
 													    .draggable({containment:limites_drag,
 														   		    stop:function(event, ui) {
-														   		    	tester_option_preview(nom_fonction,'Pos_x'); 
-														   		    	tester_option_preview(nom_fonction,'Pos_y');
+														   		    	tester_options_preview(nom_fonction,['Pos_x', 'Pos_y']);
 														   		    }});
 		break;
 		case 'Arc_cercle':
-			classes_farbs['Couleur']='';
 			
 			var arc=form_userfriendly.find('.arc_position');
 				
@@ -1277,8 +1591,8 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			form_userfriendly.valeur('Rempli')
 							 .val(valeurs['Rempli'] == 'Oui')
 							 .change(function() {
-								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-								 tester_option_preview(nom_fonction,nom_option);
+								 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+								 tester_options_preview(nom_fonction,[nom_option]);
 								 dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
 							 });
 			form_userfriendly.valeur('drag-resize').change(function() {
@@ -1289,8 +1603,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					}
 					arc.draggable({
 						stop: function(event,ui) {
-						   tester_option_preview(nom_fonction,'Pos_x_centre'); 
-						   tester_option_preview(nom_fonction,'Pos_y_centre');
+						   tester_options_preview(nom_fonction,['Pos_x_centre', 'Pos_y_centre']);
 						}
 					});
 				}
@@ -1300,10 +1613,7 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 					}
 					arc.resizable({
 						 stop: function(event,ui) {
-						   tester_option_preview(nom_fonction,'Largeur'); 
-						   tester_option_preview(nom_fonction,'Hauteur');
-						   tester_option_preview(nom_fonction,'Pos_x_centre'); 
-						   tester_option_preview(nom_fonction,'Pos_y_centre');
+						   tester_options_preview(nom_fonction,['Largeur','Hauteur','Pos_x_centre','Pos_y_centre']);
 						   dessiner(arc, 'Arc_cercle', $('[name="form_options"]'));
 						 }
 					 });
@@ -1314,7 +1624,6 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 		
 		case 'Polygone':
-			classes_farbs['Couleur']='';
 			
 			var polygone=form_userfriendly.find('.polygone_position');
 				
@@ -1341,32 +1650,27 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		
 		break;
 		case 'Rectangle':
-			classes_farbs['Couleur']='';
 
-			var position_texte=form_userfriendly.find('.rectangle_position');
+			var position_rectangle=form_userfriendly.find('.rectangle_position');
 
 			var pos_x_debut=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_debut']))*zoom;
 			var pos_y_debut=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_debut']))*zoom;
 			var pos_x_fin=image.position().left+parseFloat(templatedToVal(valeurs['Pos_x_fin']))*zoom;
 			var pos_y_fin=image.position().top +parseFloat(templatedToVal(valeurs['Pos_y_fin']))*zoom;
 
-			position_texte.css({	'left':			    pos_x_debut+'px', 
-								    'top': 			    pos_y_debut+'px',
-								    'width': (pos_x_fin-pos_x_debut)+'px',
-								    'height':(pos_y_fin-pos_y_debut)+'px'})
+			position_rectangle.css({left:			  pos_x_debut +'px', 
+									top: 			  pos_y_debut +'px',
+									width: (pos_x_fin-pos_x_debut)+'px',
+									height:(pos_y_fin-pos_y_debut)+'px'})
 						  .removeClass('cache')
 						  .draggable({//containment:limites_drag, 
 					  		  stop:function(event, ui) {
-				   		    	tester_option_preview(nom_fonction,'Pos_x_debut'); 
-				   		    	tester_option_preview(nom_fonction,'Pos_y_debut');
-				   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-				   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+				   		    	tester_options_preview(nom_fonction,['Pos_x_debut','Pos_y_debut','Pos_x_fin','Pos_y_fin']);
 				   		      }
 						  })
 						  .resizable({
 								stop:function(event, ui) {
-					   		    	tester_option_preview(nom_fonction,'Pos_x_fin'); 
-					   		    	tester_option_preview(nom_fonction,'Pos_y_fin');
+					   		    	tester_options_preview(nom_fonction,['Pos_x_fin','Pos_y_fin']);
 					   		    }
 						  });
 			
@@ -1374,12 +1678,12 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 			form_userfriendly.valeur('Rempli')
 							 .val(valeurs['Rempli'] == 'Oui')
 							 .change(function() {
-								 var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-								 tester_option_preview(nom_fonction,nom_option);
-								 coloriser_rectangle_preview($('.modif .rectangle_position'),valeurs['Couleur'],$(this).prop('checked'));
+								 var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+								 tester_options_preview(nom_fonction,[nom_option]);
+								 coloriser_rectangle_preview(valeurs['Couleur'],$(this).prop('checked'));
 							 });
 			
-			coloriser_rectangle_preview($('.modif .rectangle_position'),valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
+			coloriser_rectangle_preview(valeurs['Couleur'],valeurs['Rempli'] == 'Oui');
 
 		break;
 		case 'Image':
@@ -1396,53 +1700,39 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 				positionner_image(apercu_image);
 
 			form_userfriendly.find('[name="parcourir"],[name="option-Source"]').click(function(event) {
-				$('#wizard-gallery').dialog({
-					width: 475,
-					modal: true,
-					height: $('#body').height(),
-					draggable: true,
-					buttons: {
-						'Annuler':function() {
-							$(this).dialog().dialog( "close" );
-						},
-						'Valider':function() {
-							if ($(this).find('.gallery img.selected').length == 0) {
-								jqueryui_alert('Vous n\'avez s&eacute;lectionn&eacute; aucune image. Cliquez sur l\'une d\'elles ou cliquez sur le bouton "Annuler"',
-											   'Aucune image s&eacute;lectionn&eacute;e');
-							}
-							else {
-				   		    	tester_option_preview('Image','Source'); 
-								$(this).dialog().dialog( "close" );
-							}
-						}						
-					},
-					open:function(event,ui) {
-						lister_images_gallerie('Source');
-					}
-				});
 				event.preventDefault();
+				
+				$('#wizard-images')
+					.addClass('autres_photos')
+					.removeClass('photo_principale photos_texte');
+				launch_wizard('wizard-images', {modal:true, first: true});
 			});
 
 		break;
 		case 'TexteMyFonts':
-			classes_farbs['Couleur_texte']='.texte';
-			classes_farbs['Couleur_fond']='.fond';
 			
 			$.each($(['Chaine','URL','Largeur']),function(i,option_nom) {
 				form_userfriendly.valeur(option_nom).val(valeurs[option_nom]);				
 			});
 			
 			form_userfriendly.find('input[name="option-Chaine"],input[name="option-URL"],input[name="option-Largeur"]').blur(function() {
-				var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-				tester_option_preview(nom_fonction,nom_option);
+				var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+				tester_options_preview(nom_fonction,[nom_option]);
 				load_myfonts_preview(true,true,true);
+			});
+			
+			form_userfriendly.find('.modifier_police').click(function() {
+				$('#wizard-images')
+					.addClass('photos_texte')
+					.removeClass('photo_principale autres_photos');
+				launch_wizard('wizard-images', {modal:true, first: true});
 			});
 			
 			checkboxes.push('Demi_hauteur');
 			form_userfriendly.valeur('Demi_hauteur')
 								.change(function() {
-									var nom_option=$(this).attr('name').replace(/option\-([A-Za-z0-9]+)/g,'$1');
-									tester_option_preview(nom_fonction,nom_option);
+									var nom_option=$(this).attr('name').replace(REGEX_OPTION,'$1');
+									tester_options_preview(nom_fonction,[nom_option]);
 									load_myfonts_preview(true,true,true);
 								});
 
@@ -1471,18 +1761,27 @@ function alimenter_options_preview(valeurs, section_preview_etape, nom_fonction)
 		break;
 	}
 	
-	for (var nom_option in classes_farbs) {
-		if (! section_preview_etape.find('.picker'+classes_farbs[nom_option]).hasClass('farbtastic')) {
-			var input=form_userfriendly.valeur(nom_option);
-			ajouter_farb(section_preview_etape.find('.picker'+classes_farbs[nom_option]), 
-						 input, nom_fonction, nom_option, '#'+valeurs[nom_option]);
-			input.click(function() {
-				var this_picker=$(this).prevAll('.picker');
-				$('.picker').not(this_picker).addClass('cache');
-				this_picker.toggleClass('cache');
+	form_userfriendly.find('.couleur').each(function() {
+		var input=$(this);
+		input
+			.click(function() {
+				input_farb=$(this);
+				$('#conteneur_selecteur_couleur').removeClass('cache');				
+				farb.setColor('#'+input_farb.val());
+				
+				$('.couleur.selected').removeClass('selected');
+				$(this).addClass('selected');
+			})
+			.blur(function() {
+				$(this).removeClass('selected');
+			})
+			.keyup(function() {
+				farb.setColor('#'+$(this).val());
 			});
-		}
-	}
+		
+		var nom_option=input.attr('name').replace(REGEX_OPTION,'$1');
+		affecter_couleur_input(input, valeurs[nom_option]);
+	});
 	
 	for (var i in checkboxes) {
 		form_userfriendly.valeur(checkboxes[i])
@@ -1509,13 +1808,10 @@ function dessiner(element, type, form_options, callback) {
 		case 'Polygone':
 			options = ['X','Y','Couleur'];
 			
-			pos_x_courante = element.parent().position().left;
-			pos_y_courante = element.parent().position().top;
-			
-			element.css({'left':(pos_x_courante + parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
-												- parseFloat(form_options.valeur('Largeur').val())	   *zoom/2)+'px',
-						 'top' :(pos_y_courante + parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
-							 					- parseFloat(form_options.valeur('Hauteur').val())	   *zoom/2)+'px'});
+			element.css({'left':(parseFloat(form_options.valeur('Pos_x_centre').val())*zoom
+							   - parseFloat(form_options.valeur('Largeur').val())	  *zoom/2)+'px',
+						 'top' :(parseFloat(form_options.valeur('Pos_y_centre').val())*zoom
+							   - parseFloat(form_options.valeur('Hauteur').val())	  *zoom/2)+'px'});
 		break;
 	}
 	$.each($(options),function(i,nom_option) {
@@ -1534,6 +1830,8 @@ function dessiner(element, type, form_options, callback) {
 		});
 }
 
+var INTERVALLE_AJOUT_POINT_POLYGONE=2;
+var derniere_demande_ajout_point=0;
 function positionner_points_polygone(form_options) {
 	var dialogue = $('.wizard.preview_etape.modif');
 	var preview_vide = dialogue.find('.preview_vide');
@@ -1552,20 +1850,20 @@ function positionner_points_polygone(form_options) {
 		var x=zoom*parseFloat(liste_x[i]);
 		var y=zoom*parseFloat(liste_y[i]);
 		points_a_placer.push([i,
-		                      x+preview_vide.offset().left-$(window).scrollLeft()-COTE_CARRE_DEPLACEMENT/2,
-		                      y+preview_vide.offset().top -$(window).scrollTop() -COTE_CARRE_DEPLACEMENT/2]);
+		                      x-COTE_CARRE_DEPLACEMENT/2,
+		                      y-COTE_CARRE_DEPLACEMENT/2]);
 		
 	}
 	
-	options_etape.find('.point_polygone:not(.modele)').remove();
+	preview_vide.find('.point_polygone:not(.modele)').remove();
 	for (var i in points_a_placer) {
 		var point = points_a_placer[i];
 		var nouveau_point= options_etape.find('.point_polygone.modele')
 			.clone(true)
 				.removeClass('modele cache')
 			    .attr({'name':'point'+point[0]})
-			    .css({'left':point[1]+'px', 
-			 		  'top': point[2]+'px'})
+			    .css({'margin-left':point[1]+'px', 
+			 		  'margin-top': point[2]+'px'})
 			 	.mouseleave(function() {
 			 		$(this).removeClass('focus');
 			 		if ($(this).draggable()) {
@@ -1579,6 +1877,12 @@ function positionner_points_polygone(form_options) {
 			 		switch(action) {
 					case 'ajout':
 						$(this).click(function() {
+							var millis=new Date().getTime();
+							if (millis - derniere_demande_ajout_point < INTERVALLE_AJOUT_POINT_POLYGONE*1000) {
+								return;
+							}
+							derniere_demande_ajout_point=millis;
+							
 							var point1=$(this);			
 							var nom_point1=point1.attr('name');
 							var num_point1=parseInt(nom_point1.substring(5,nom_point1.length));
@@ -1589,16 +1893,16 @@ function positionner_points_polygone(form_options) {
 							for (var i=$('.point_polygone:not(.modele)').length -1; i>=num_point1+1; i--) {
 								$('.point_polygone[name="point'+i+'"]').attr({'name':'point'+(i+1)});
 							}
-							var nouveau_point=[(point1.offset().left + point2.offset().left)/2,
-							                   (point1.offset().top  + point2.offset().top )/2];
+							var nouveau_point={'margin-left':(parseFloat(point1.css('margin-left').replace(/px$/,''))
+							                   				 +parseFloat(point2.css('margin-left').replace(/px$/,'')))/2,
+							                   'margin-top': (parseFloat(point1.css('margin-top' ).replace(/px$/,''))
+							                		   		 +parseFloat(point2.css('margin-top' ).replace(/px$/,'')))/2};
 							
 							point1.after($('<div>').addClass('point_polygone')
 												   .attr({'name':'point'+(num_point1+1)})
-												   .css({'left':nouveau_point[0]+'px',
-													     'top' :nouveau_point[1]+'px'}));
+												   .css(nouveau_point));
 							
-				 			tester_option_preview('Polygone','X'); 
-				 			tester_option_preview('Polygone','Y');
+				 			tester_options_preview('Polygone',['X','Y']);
 				 			dessiner(polygone, 'Polygone', form_options, function() {
 					 			positionner_points_polygone(form_options);
 				 			});
@@ -1607,8 +1911,7 @@ function positionner_points_polygone(form_options) {
 					case 'deplacement':
 						$(this).draggable({
 					 		stop: function(event,ui) {
-					 			tester_option_preview('Polygone','X'); 
-					 			tester_option_preview('Polygone','Y');
+					 			tester_options_preview('Polygone',['X','Y']);
 					 			
 					 			var form_options = $('[name="form_options"]');
 					 			dessiner(polygone, 'Polygone', form_options, function() {
@@ -1623,16 +1926,15 @@ function positionner_points_polygone(form_options) {
 							$('#nom_point_a_supprimer').html(nom_point);
 							$('#wizard-confirmation-suppression-point').dialog({
 								resizable: false,
-								height:140,
+								height:250,
 								modal: true,
 								buttons: {
 									"Supprimer": function() {
 										$('#wizard-confirmation-suppression-point').dialog().dialog( "close" );
 										var nom_point=$('#nom_point_a_supprimer').html();
 										$('.point_polygone[name="'+nom_point+'"]:not(.modele)').remove();
-					
-							 			tester_option_preview('Polygone','X'); 
-							 			tester_option_preview('Polygone','Y');
+										
+							 			tester_options_preview('Polygone',['X','Y']);
 							 			dessiner(polygone, 'Polygone', form_options, function() {
 								 			positionner_points_polygone(form_options);
 							 			});
@@ -1644,7 +1946,7 @@ function positionner_points_polygone(form_options) {
 					break;
 				}
 			 });
-		options_etape.append(nouveau_point);
+		preview_vide.append(nouveau_point);
 	}
 	
 }
@@ -1678,6 +1980,10 @@ function positionner_image(preview) {
 	                  (image.offset().left+image.width()),
 	                  (image.offset().top +image.height())];
 	
+	if (position_image.hasClass('ui-resizable')) {
+		position_image.resizable('destroy');
+	}
+	
 	position_image.addClass('outlined')
 				  .css({'outline-color':'#000000',
 					    'background-image':'',
@@ -1693,22 +1999,23 @@ function positionner_image(preview) {
 						var src=$(this).attr('src');
 						var nom_image=src.substring(src.lastIndexOf('/')+1,src.length);
 						jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
-					}))
-				  .draggable({//containment:limites_drag, 
+					})) 
+			  	  .draggable({//containment:limites_drag, 
 			  		  stop:function(event, ui) {
-		   		    	tester_option_preview('Image','Decalage_x'); 
-		   		    	tester_option_preview('Image','Decalage_y');
+		   		    	tester_options_preview('Image',['Decalage_x','Decalage_y']);
 		   		      }
 				  })
 				  .resizable({
 						stop:function(event, ui) {
-			   		    	tester_option_preview('Image','Compression_x'); 
-			   		    	tester_option_preview('Image','Compression_y');
+			   		    	tester_options_preview('Image',['Compression_x','Compression_y']);
 			   		    }
 				  });
 }
 
 function definir_et_positionner_image(source) {
+	if (source === '') {
+		return;
+	}
 	var form_userfriendly=modification_etape.find('.options_etape');
 	var apercu_image=form_userfriendly.find('.apercu_image');
 	apercu_image
@@ -1722,14 +2029,16 @@ function definir_et_positionner_image(source) {
 			jqueryui_alert('L\'image '+nom_image+' n\'existe pas');
 		});
 }
-function coloriser_rectangle_preview(element,couleur,est_rempli) {
+function coloriser_rectangle_preview(couleur,est_rempli) {
 	if (est_rempli) {
-		element.css({'background-color': couleur})
-			   .removeClass('outlined');
+		modification_etape.find('.rectangle_position')
+			.css({'background-color': couleur})
+			.removeClass('outlined');
 	}
 	else {
-		element.addClass('outlined')
-			   .css({'outline-color':couleur,'background-color':''});
+		modification_etape.find('.rectangle_position')
+			.css({'outline-color':couleur,'background-color':''})
+			.addClass('outlined');
 	}
 }
 
@@ -1762,21 +2071,13 @@ function coloriser_rectangle_degrade(element,couleur1,couleur2, sens) {
 	}
 }
 
-function ajouter_farb(picker, input, nom_fonction, nom_option, valeur) {
-	farbs[nom_option]=$.farbtastic(picker)
-					  .linkTo(function() {callback_change_picked_color($(this),input);},
-							  function() {callback_test_picked_color  ($(this),input,nom_fonction,nom_option);})
-					  .setColor(valeur);
-	
-}
-
 function verifier_changements_etapes_sauves(dialogue, id_dialogue_proposition_sauvegarde, callback) {
 	callback=callback || function() {};
 	if (dialogue.find('[name="form_options"]').serialize() 
 	 != dialogue.find('[name="form_options_orig"]').serialize()) {
 		$("#"+id_dialogue_proposition_sauvegarde).dialog({
 			resizable: false,
-			height:140,
+			height:300,
 			modal: true,
 			buttons: {
 				"Sauvegarder les changements": function() {
@@ -1816,225 +2117,241 @@ function tester(callback, modif_dimensions) {
 }
 
 function valider(callback) {
-	callback = callback || function(){};
-	var form_options=$('.modif').find('[name="form_options"]');
-	var parametrage=form_options.serialize();
-	
-	$.ajax({
-	    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
-	    type: 'post',
-	    success:function(data) {
-			reload_current_and_final_previews(callback);
-	    }
-	});
+	var parametrage=$('.modif').find('[name="form_options"]').serialize();
+	var parametrage_orig=$('.modif').find('[name="form_options_orig"]').serialize();
+	if (parametrage === parametrage_orig) {
+		fermer_dialogue_preview(modification_etape);
+	}
+	else {
+		callback = callback || function(){};
+		$.ajax({
+		    url: urls['update_wizard']+['index',pays,magazine,numero,num_etape_courante,parametrage].join('/'),
+		    type: 'post',
+		    success:function(data) {
+		    	charger_couleurs_frequentes();
+				reload_current_and_final_previews(callback);
+		    }
+		});
+	}
 }
 
-function tester_option_preview(nom_fonction,nom_option,element) {
+function tester_options_preview(nom_fonction, noms_options, element) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
-	var form_options=dialogue.find('[name="form_options"]');;
-	var form_options_orig=dialogue.find('[name="form_options_orig"]');
+	var form_options=dialogue.find('[name="form_options"]');
 	var form_userfriendly=dialogue.find('.options_etape');
 	var nom_fonction=dialogue.data('nom_fonction');
 	var image=dialogue.find('.preview_vide');
-
-	var val=null;
-	if (nom_option.indexOf('Couleur') == 0) {
-		val=farbs[nom_option].color.replace(/#/g,'');	
-	}
-	else {
-		switch(nom_fonction) {
-			case 'Agrafer':
-				switch(nom_option) {
-					case 'Taille_agrafe':
-						form_userfriendly.find('.agrafe').not(element).height(element.height());
-						val = element.height()/zoom;
-					break;
-					case 'Y1': case 'Y2':
-						val = (element.offset().top-image.offset().top)/zoom;
-					break;
-				}
-			break;
-			case 'Degrade':
-				var zone_degrade=dialogue.find('.rectangle_degrade');
-				switch(nom_option) {
-					case 'Pos_x_debut':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().left - image.offset().left)/zoom));
-					break;
-					case 'Pos_y_debut':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  - image.offset().top )/zoom));
-					break;
-					case 'Pos_x_fin':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().left + zone_degrade.width() - image.offset().left)/zoom));
-					break;
-					case 'Pos_y_fin':
-						val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  + zone_degrade.height()- image.offset().top )/zoom));
-					break;
-					case 'Sens':
-						val = form_userfriendly.valeur(nom_option).filter(':checked').val();
-					break;
-				}
-			break;
-			case 'Remplir':
-				var point_remplissage=dialogue.find('.point_remplissage');
-				switch(nom_option) {
-					case 'Pos_x':
-						var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-						val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
-					break;
-					case 'Pos_y':
-						var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
-						val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
-					break;
-				}
-			break;
-			case 'Arc_cercle':
-				var arc=dialogue.find('.arc_position');
-				switch(nom_option) {
-					case 'Pos_x_centre':
-						val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2 
-											 + parseFloat(arc.position().left 
-													 	+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().left : 0)
-													 	- image.position().left)/zoom);
-					break;
-					case 'Pos_y_centre':
-						val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
-								 			 + parseFloat(arc.position().top 
-								 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
-								 					    - image.position().top)/zoom);
-					break;
-					case 'Largeur':
-						val=arc.width()/zoom;
-					break;
-					case 'Hauteur':
-						val=arc.height()/zoom;					
-					break;
-					case 'Rempli':
-						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-					break;
-				}
-			break;
-			case 'Polygone':
-				switch(nom_option) {
-					case 'X':
-						var x = [];
-						$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
-							point=$(point);
-							x[i] = (point.offset().left + point.scrollLeft() - image.offset().left + COTE_CARRE_DEPLACEMENT/2) / zoom;
-							
-						});
-						val=x.join(',');
-					break;
-					case 'Y':
-						var y = [];
-						$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
-							point=$(point);
-							y[i] = (point.offset().top + point.scrollTop() - image.offset().top + COTE_CARRE_DEPLACEMENT/2) / zoom;
-							
-						});
-						val=y.join(',');
-					break;
-				}
-			break;
-			case 'Rectangle':
-				var positionnement=dialogue.find('.rectangle_position');
-				switch(nom_option) {
-					case 'Pos_x_debut':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);
-					break;
-					case 'Pos_y_debut':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().top  - image.offset().top )/zoom);
-					break;
-					case 'Pos_x_fin':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().left + positionnement.width() - image.offset().left)/zoom);
-					break;
-					case 'Pos_y_fin':
-						val = toFloat2Decimals(parseFloat(positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom);
-					break;
-					case 'Rempli':
-						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-					break;
-				}
-			break;
-			case 'Image':
-				var positionnement=dialogue.find('.image_position');
-				switch(nom_option) {
-					case 'Decalage_x':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-					break;
-					case 'Decalage_y':
-						var pos_y_image=positionnement.offset().top - image.offset().top;
-						val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
-						form_options.valeur('Mesure_depuis_haut').val('Oui');
-					break;
-					case 'Compression_x':
-						val = toFloat2Decimals(positionnement.width()/image.width());
-					break;
-					case 'Compression_y':
-						var compression_x=parseFloat(form_options.valeur('Compression_x').val());
-						
-						var image_preview=dialogue.find('.apercu_image');
-						var ratio_image=image_preview.prop('width')/image_preview.prop('height');
-						var ratio_positionnement=positionnement.width()/positionnement.height();
-						val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
-					break;
-					case 'Source':
-						val=$('.gallery img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
-						form_userfriendly.valeur(nom_option).val(val);
-						
-						definir_et_positionner_image(val);
-				}
-			break;
-			case 'TexteMyFonts':
-				var positionnement=dialogue.find('.image_position');
-				switch(nom_option) {
-					case 'Pos_x':
-						val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
-					break;
-					case 'Pos_y':
-						var pos_y_rectangle=positionnement.offset().top - image.offset().top;
-						val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
-						form_options.valeur('Mesure_depuis_haut').val('Oui');
-					break;
-					case 'Compression_x':
-						val = toFloat2Decimals(positionnement.width()/image.width());
-					break;
-					case 'Compression_y':
-						var original_width =dialogue.find('[name="original_preview_width"]' ).val();
-						var original_height=dialogue.find('[name="original_preview_height"]').val();
-						val = toFloat2Decimals(parseFloat(form_options_orig.valeur('Compression_y').val()) 
-											  /(original_height/positionnement.height()));
-					break;
-					case 'Chaine': case 'URL':
-						val=form_userfriendly.valeur(nom_option).val();
-					break;
-					case 'Largeur':
-						var largeur_courante=form_options.valeur('Largeur').val();
-						var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
-													-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
-						val=parseFloat(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
-					break;
-					case 'Demi_hauteur':
-						val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
-					break;
-					case 'Rotation':
-						val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
-					break;
-				}
-			break;
+	
+	var tester_apres = false;
+	
+	$.each(noms_options,function(i, nom_option) {
+		var val=null;
+		if (nom_option.indexOf('Couleur') == 0) {
+			val=form_userfriendly.valeur(nom_option).val().replace(/#/g,'');	
 		}
-	}
-	form_options.valeur(nom_option).val(val);
-
-	if (['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1) {
-		var generer_preview_proprietes = nom_option == 'Chaine'  || nom_option == 'URL',
-			generer_preview_finition = nom_option == 'Largeur' || nom_option == 'Demi_hauteur';
-		generer_et_positionner_preview_myfonts(generer_preview_proprietes,
-											   generer_preview_finition,
-											   true);
+		else {
+			switch(nom_fonction) {
+				case 'Agrafer':
+					switch(nom_option) {
+						case 'Taille_agrafe':
+							form_userfriendly.find('.agrafe').not(element).height(element.height());
+							val = element.height()/zoom;
+						break;
+						case 'Y1': case 'Y2':
+							val = (element.offset().top-image.offset().top)/zoom;
+						break;
+					}
+				break;
+				case 'Degrade':
+					var zone_degrade=dialogue.find('.rectangle_degrade');
+					switch(nom_option) {
+						case 'Pos_x_debut':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().left - image.offset().left)/zoom));
+						break;
+						case 'Pos_y_debut':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  - image.offset().top )/zoom));
+						break;
+						case 'Pos_x_fin':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().left + zone_degrade.width() - image.offset().left)/zoom));
+						break;
+						case 'Pos_y_fin':
+							val = toFloat2Decimals(parseFloat((zone_degrade.offset().top  + zone_degrade.height()- image.offset().top )/zoom));
+						break;
+						case 'Sens':
+							val = form_userfriendly.valeur(nom_option).filter(':checked').val();
+						break;
+					}
+				break;
+				case 'Remplir':
+					var point_remplissage=dialogue.find('.point_remplissage');
+					switch(nom_option) {
+						case 'Pos_x':
+							var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+							val = toFloat2Decimals(parseFloat((point_remplissage.offset().left - limites_drag_point_remplissage[0])/zoom));
+						break;
+						case 'Pos_y':
+							var limites_drag_point_remplissage=point_remplissage.draggable('option','containment');
+							val = toFloat2Decimals(parseFloat((point_remplissage.offset().top - limites_drag_point_remplissage[1])/zoom));
+						break;
+					}
+				break;
+				case 'Arc_cercle':
+					var arc=dialogue.find('.arc_position');
+					switch(nom_option) {
+						case 'Pos_x_centre':
+							val = toFloat2Decimals(parseFloat(form_options.valeur('Largeur').val())/2 
+												 + parseFloat(arc.position().left 
+														 	+ ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().left : 0)
+														 	- image.position().left)/zoom);
+						break;
+						case 'Pos_y_centre':
+							val = toFloat2Decimals(parseFloat(form_options.valeur('Hauteur').val())/2 
+									 			 + parseFloat(arc.position().top 
+									 					    + ($('.ui-wrapper').length > 0 ? $('.ui-wrapper').position().top : 0)
+									 					    - image.position().top)/zoom);
+						break;
+						case 'Largeur':
+							val=arc.width()/zoom;
+						break;
+						case 'Hauteur':
+							val=arc.height()/zoom;					
+						break;
+						case 'Rempli':
+							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+						break;
+					}
+				break;
+				case 'Polygone':
+					switch(nom_option) {
+						case 'X':
+							var x = [];
+							$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
+								point=$(point);
+								x[i] = (point.offset().left + point.scrollLeft() - image.offset().left + COTE_CARRE_DEPLACEMENT/2) / zoom;
+								
+							});
+							val=x.join(',');
+						break;
+						case 'Y':
+							var y = [];
+							$.each(dialogue.find('.point_polygone:not(.modele)'),function(i,point) {
+								point=$(point);
+								y[i] = (point.offset().top + point.scrollTop() - image.offset().top + COTE_CARRE_DEPLACEMENT/2) / zoom;
+								
+							});
+							val=y.join(',');
+						break;
+					}
+				break;
+				case 'Rectangle':
+					var positionnement= modification_etape.find('.rectangle_position');
+					switch(nom_option) {
+						case 'Pos_x_debut':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().left - image.offset().left)/zoom);
+						break;
+						case 'Pos_y_debut':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().top  - image.offset().top )/zoom);
+						break;
+						case 'Pos_x_fin':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().left + positionnement.width() - image.offset().left)/zoom);
+						break;
+						case 'Pos_y_fin':
+							val = toFloat2Decimals(parseFloat(positionnement.offset().top  + positionnement.height()- image.offset().top )/zoom);
+						break;
+						case 'Rempli':
+							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+						break;
+					}
+				break;
+				case 'Image':
+					var positionnement=dialogue.find('.image_position');
+					switch(nom_option) {
+						case 'Decalage_x':
+							val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+						break;
+						case 'Decalage_y':
+							var pos_y_image=positionnement.offset().top - image.offset().top;
+							val = toFloat2Decimals(parseFloat((pos_y_image)/zoom));
+							form_options.valeur('Mesure_depuis_haut').val('Oui');
+						break;
+						case 'Compression_x':
+							val = toFloat2Decimals(positionnement.width()/image.width());
+						break;
+						case 'Compression_y':
+							var compression_x=parseFloat(form_options.valeur('Compression_x').val());
+							
+							var image_preview=dialogue.find('.apercu_image');
+							var ratio_image=image_preview.prop('width')/image_preview.prop('height');
+							var ratio_positionnement=positionnement.width()/positionnement.height();
+							val = toFloat2Decimals(compression_x*(ratio_image/ratio_positionnement));
+						break;
+						case 'Source':
+							val=$('.gallery:visible li:not(.template) img.selected').attr('src').replace(/.*\/([^\/]+)/,'$1');
+							form_userfriendly.valeur(nom_option).val(val);
+							
+							definir_et_positionner_image(val);
+					}
+				break;
+				case 'TexteMyFonts':
+					var positionnement=dialogue.find('.image_position');
+					switch(nom_option) {
+						case 'Pos_x':
+							val = toFloat2Decimals(parseFloat((positionnement.offset().left - image.offset().left)/zoom));
+						break;
+						case 'Pos_y':
+							var pos_y_rectangle=positionnement.offset().top - image.offset().top;
+							val = toFloat2Decimals(parseFloat((pos_y_rectangle)/zoom));
+							form_options.valeur('Mesure_depuis_haut').val('Oui');
+						break;
+						case 'Compression_x':
+							val = toFloat2Decimals(positionnement.width()/image.width());
+						break;
+						case 'Compression_y':
+							var image_preview_ajustee=$('body>.apercu_myfonts img');
+							var ratio_image_preview_ajustee=image_preview_ajustee.prop('width')/image_preview_ajustee.prop('height');
+							var hauteur_image=dialogue.find('.image_position').height();
+							var largeur_preview=dialogue.find('.preview_vide').width();
+							
+							val = hauteur_image * ratio_image_preview_ajustee / largeur_preview;
+						break;
+						case 'Chaine': case 'URL':
+							val=form_userfriendly.valeur(nom_option).val();
+						break;
+						case 'Largeur':
+							var largeur_courante=form_options.valeur('Largeur').val();
+							var largeur_physique_preview=dialogue.find('div.extension_largeur').offset().left
+														-dialogue.find('.finition_texte_genere .apercu_myfonts img').offset().left;
+							val=parseInt(largeur_courante)* (largeur_physique_preview/largeur_physique_preview_initiale);
+						break;
+						case 'Demi_hauteur':
+							val=form_userfriendly.valeur(nom_option).prop('checked') ? 'Oui' : 'Non';					
+						break;
+						case 'Rotation':
+							val=-1*radToDeg(form_userfriendly.valeur(nom_option).data('currentRotation'));
+						break;
+					}
+				break;
+			}
+		}
+		form_options.valeur(nom_option).val(val);
+	
+		if (nom_fonction === 'MyFonts' && ['Chaine','URL','Largeur','Demi_hauteur','Rotation'].indexOf(nom_option) != -1) {
+			var generer_preview_proprietes = nom_option == 'Chaine'  || nom_option == 'URL',
+				generer_preview_finition = nom_option == 'Largeur' || nom_option == 'Demi_hauteur';
+			generer_et_positionner_preview_myfonts(generer_preview_proprietes,
+												   generer_preview_finition,
+												   true);
+		}
+		else {
+			tester_apres=true;
+		}
+	});
+	if (tester_apres) {
+		tester();
 	}
 }
 
-function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_preview_finition,gen_tranche) {
+function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_preview_finition, gen_tranche) {
 	load_myfonts_preview(gen_preview_proprietes,gen_preview_finition,gen_tranche, !gen_tranche ? function() {} : function() {
 		var dialogue=modification_etape.d();
 		var form_userfriendly=dialogue.find('.options_etape');
@@ -2065,14 +2382,13 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 					  .removeClass('cache')
 					  .draggable({//containment:limites_drag, 
 				  		  stop:function(event, ui) {
-			   		    	tester_option_preview('TexteMyFonts','Pos_x'); 
-			   		    	tester_option_preview('TexteMyFonts','Pos_y');
+			   		    	tester_options_preview('TexteMyFonts',['Pos_x','Pos_y']);
+			   		    	tester();
 			   		      }
 					  })
 					  .resizable({
 							stop:function(event, ui) {
-				   		    	tester_option_preview('TexteMyFonts','Compression_x'); 
-				   		    	tester_option_preview('TexteMyFonts','Compression_y');
+				   		    	tester_options_preview('TexteMyFonts',['Compression_x','Compression_y']);
 				   		    }
 					  });
 		var image_a_positionner = image_preview_ajustee.clone(false);
@@ -2089,6 +2405,7 @@ function generer_et_positionner_preview_myfonts(gen_preview_proprietes, gen_prev
 		}
 		
 		placer_extension_largeur_preview();
+		tester();
 	});
 }
 
@@ -2104,11 +2421,14 @@ function reload_current_and_final_previews(callback) {
 
 function reload_all_previews() {
 	afficher_photo_tranche();
+	$('.ui-draggable').draggable('destroy');
+	$('.ui-resizable').resizable('destroy');
 	selecteur_cellules_preview='.wizard.preview_etape div.image_etape';
 	chargements=new Array();
 	$.each($(selecteur_cellules_preview),function(i,element) {
 		chargements.push($(element).data('etape'));
 	});
+	chargements.sort();
 	
 	chargement_courant=0;
 	charger_preview_etape(chargements[0],true,undefined /*<-- Parametrage */,function(image) {
@@ -2122,8 +2442,31 @@ function reload_all_previews() {
     });
 }
 
-function callback_change_picked_color(farb, input_couleur) {
-	var couleur=farb[0].color.replace(/#/g,'');
+function charger_couleurs_frequentes() {
+	$.ajax({ // Couleurs utilisées dans l'ensemble des étapes de la conception de tranche
+		url: urls['couleurs_frequentes']+['index',pays,magazine,numero].join('/'),
+		type: 'post',
+		dataType:'json',
+		success:function(data) {
+			var template = $('.couleur_frequente.template');
+			$('.couleur_frequente').not(template).remove();
+			$.each(data, function(i, couleur) {
+				var nouvel_element = 
+					template
+						.clone(true)
+						.removeClass('template')
+						.click(function() {
+							$('#picker')[0].farbtastic.setColor('#'+$(this).val());
+							$('#selecteur_couleur').tabs( "option", "active", 0);
+						});
+				affecter_couleur_input(nouvel_element, couleur);
+				$('#couleurs_frequentes').append(nouvel_element);
+			});
+		}
+	});
+}
+
+function affecter_couleur_input(input_couleur, couleur) {
 	var r=couleur.substring(0,2),
 		g=couleur.substring(2,4),
 		b=couleur.substring(4,6);
@@ -2132,21 +2475,25 @@ function callback_change_picked_color(farb, input_couleur) {
 					  *parseInt(b,16) < 100*100*100;
 	input_couleur
 		.css({'background-color':'#'+couleur, 
-			  'color':couleur_foncee ? '#ffffff' : '#000000'});
+			  'color':couleur_foncee ? '#ffffff' : '#000000'})
+		.val(couleur);
 	
 }
 
 
-function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option) {
-	tester_option_preview(nom_fonction,nom_option);
-	var form_options=input_couleur.d().find('[name="form_options"]');
-	var couleur = farb[0].color;
+function callback_test_picked_color() {
+	var nom_option=input_farb.attr('name').replace(REGEX_OPTION,'$1');
+	var nom_fonction=input_farb.closest('.ui-dialog').data('nom_fonction');
+	
+	tester_options_preview(nom_fonction,[nom_option]);
+	var form_options=input_farb.d().find('[name="form_options"]');
+	var couleur = farb.color;
 	switch (nom_fonction) {
 		case 'Remplir':
-			coloriser_rectangle_preview(form_options.d().find('.preview_vide'),couleur,true);
+			$('.preview_vide').css({'background-color': '#'+couleur});
 		break;
 		case 'Degrade':
-			if (input_couleur.attr('name').indexOf('Couleur_debut') != -1)
+			if (input_farb.attr('name').indexOf('Couleur_debut') != -1)
 				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),couleur,null,form_options.valeur('Sens').val());
 			else
 				coloriser_rectangle_degrade(form_options.d().find('.rectangle_degrade'),null,couleur,form_options.valeur('Sens').val());
@@ -2160,14 +2507,17 @@ function callback_test_picked_color(farb, input_couleur,nom_fonction,nom_option)
 		case 'Rectangle':
 			coloriser_rectangle_preview(couleur,
 										form_options.valeur('Rempli').val()=='Oui');
+		break;
 		case 'Arc_cercle':
 			dessiner($('.preview_vide .arc_position'), 'Arc_cercle', form_options);
+		break;
 		case 'Polygone':
 			dessiner($('.preview_vide .polygone_position'), 'Polygone', form_options);
 		break;
 	}
 }
 
+var isMyFontsError = false;
 function load_myfonts_preview(preview1, preview2, preview3, callback) {
 	var dialogue=$('.wizard.preview_etape.modif').d();
 	var form_options=dialogue.find('[name="form_options"]');
@@ -2194,18 +2544,31 @@ function load_myfonts_preview(preview1, preview2, preview3, callback) {
 		if ($(this).parent().parent().is('body')) // Preview globale donc avec rotation
 			url_appel+="/"+form_options.valeur('Rotation').val();
 		else
-			url_appel+='/null';
+			url_appel+='/0.01';
+		
+		url_appel+='/'+dimensions.x;
 
-		$(this).attr({'src':url_appel});	
-		$(this).load(function() {
-			$(this).removeClass('loading').removeClass('cache');
-			if ($(this).closest('.finition_texte_genere').length > 0) {
-				var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
-				if (section_active_integration)
-					placer_extension_largeur_preview();
+		$(this)
+			.attr({'src':url_appel})
+			.off('load')	
+			.load(function() {
+				$(this).removeClass('loading').removeClass('cache');
+				if ($(this).closest('.finition_texte_genere').length > 0) {
+					var section_active_integration=$(this).closest('.ui-accordion-content-active').length > 0;
+					if (section_active_integration)
+						placer_extension_largeur_preview();
+				}
+				if (callback != undefined) {
+					callback();
+				}
+			});
+		$(this).error(function() {
+			if (!isMyFontsError) {
+				jqueryui_alert_from_d($('#wizard-erreur-image-myfonts'), function() {
+					isMyFontsError = false;
+				});
 			}
-			if (callback != undefined)
-				callback();
+			isMyFontsError=true;
 		});
 	});
 }
@@ -2224,7 +2587,7 @@ function placer_extension_largeur_preview() {
 			.draggable({
 				axis: 'x',
 				stop:function(event,ui) {
-					tester_option_preview('TexteMyFonts','Largeur');
+					tester_options_preview('TexteMyFonts',['Largeur']);
 					load_myfonts_preview(false,true,false);	
 				}
 			});
@@ -2275,31 +2638,46 @@ function wizard_charger_liste_magazines(pays_sel) {
 function wizard_charger_liste_numeros(magazine_sel) {
 	magazine=magazine_sel;
 	var wizard_numero=$('#'+id_wizard_courant+' [name="wizard_numero"]');
+	charger_liste_numeros(pays,magazine,function(data) {
+		numeros_dispos=data.numeros_dispos;
+		var tranches_pretes=data.tranches_pretes;
+
+		wizard_numero.html('');
+		for (var numero_dispo in numeros_dispos) {
+			if (numero_dispo != 'Aucun') {
+				var option=$('<option>').val(numero_dispo).html(numero_dispo);
+				var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
+				if (est_dispo) {
+					var classe='';
+					switch(tranches_pretes[numero_dispo]) {
+						case 'par_moi': 
+							classe = 'cree_par_moi';
+						break;
+						case 'en_cours': 
+							classe = 'en_cours';
+						break;
+						default:
+							classe='tranche_prete';
+					}
+					option
+						.addClass(classe)
+						.attr({title: classe.replace(/_/g, ' ')});
+				}
+				wizard_numero.append(option);
+			}
+		}
+		if (get_option_wizard('wizard_numero') != undefined)
+			wizard_numero.val(get_option_wizard('wizard_numero'));
+		chargement_listes=false;
+	});
+}
+	
+function charger_liste_numeros(pays_sel,magazine_sel, callback) {
 	$.ajax({
-		url: urls['numerosdispos']+['index',pays,magazine].join('/'),
+		url: urls['numerosdispos']+['index',pays_sel,magazine_sel].join('/'),
 		type: 'post',
 		dataType: 'json',
-		success:function(data) {
-			numeros_dispos=data.numeros_dispos;
-			var tranches_pretes=data.tranches_pretes;
-
-			wizard_numero.html('');
-			for (var numero_dispo in numeros_dispos) {
-				if (numero_dispo != 'Aucun') {
-					var option=$('<option>').val(numero_dispo).html(numero_dispo);
-					var est_dispo=typeof(tranches_pretes[numero_dispo]) != 'undefined';
-					if (est_dispo) {
-						option.addClass(tranches_pretes[numero_dispo] == 'par_moi'
-										 ? 'cree_par_moi'
-										 : 'tranche_prete');
-					}
-					wizard_numero.append(option);
-				}
-			}
-			if (get_option_wizard('wizard_numero') != undefined)
-				wizard_numero.val(get_option_wizard('wizard_numero'));
-			chargement_listes=false;
-		}
+		success: callback
 	});
 }
 
@@ -2323,7 +2701,7 @@ function toFloat2Decimals(floatVal) {
 function init_action_bar() {
 	$.each($('#action_bar img.action'), function() {
 		var nom=$(this).attr('name');
-		$(this).attr({'src':'../images/'+nom+'.png'});
+		$(this).attr({'src':'images/'+nom+'.png'});
 		
 		$(this).click(function() {
 			var nom=$(this).attr('name');
@@ -2332,7 +2710,24 @@ function init_action_bar() {
 					location.reload();
 				break;
 				case 'photo':
-					launch_wizard('wizard-photos', {modal:true, first: true});
+					$('#wizard-images')
+						.addClass('photo_principale')
+						.removeClass('autres_photos photos_texte');
+					launch_wizard('wizard-images', {modal:true, first: true});
+				break;
+				case 'corbeille':
+					jqueryui_alert_from_d($('#wizard-confirmation-desactivation-modele'), function() {
+						$.ajax({
+			                url: urls['desactiver_modele']+['index',pays,magazine,numero].join('/'),
+			                type: 'post',
+			                success:function(data) {
+			                	location.reload();
+			                }
+						});
+					});
+				break;
+				case 'valider':
+					launch_wizard('wizard-confirmation-validation-modele', {modal:true, first: true, closeable: true});
 				break;
 			}
 			
@@ -2341,26 +2736,35 @@ function init_action_bar() {
 }
 
 function afficher_photo_tranche() {
-	if (num_photo_principale !== null) {
+	if (nom_photo_principale !== null) {
 		var image = $('<img>').height(parseInt($('#Dimension_y').val()) * zoom);
 		$('#photo_tranche').html(image);
-		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+magazine+'.'+numero+'.photo_'+num_photo_principale+'.jpg'});
+		image.attr({'src':base_url+'../edges/'+pays+'/photos/'+nom_photo_principale});
 		image.load(function() {
 			$(this).css({'display':'inline'});
+			$('.image_etape.finale')
+				.width (dimensions.x*zoom)
+				.height(dimensions.y*zoom);
 			$('.dialog-preview-etape.finale').width(Math.max(LARGEUR_DIALOG_TRANCHE_FINALE,
-															 parseInt($('#Dimension_x').val()) * zoom+$(this).width() + 14));
+													dimensions.x * zoom+$(this).width() + 14));
+			jqueryui_clear_message('aucune-image-de-tranche');
+			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(true);
+			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(false);
 		});
 		image.error(function() {
 			$(this).css({'display':'none'});
+			jqueryui_message('warning','aucune-image-de-tranche');
+			$('#selecteur_couleur #depuis_photo [name="description_selection_couleur"]').toggle(false);
+			$('#selecteur_couleur #depuis_photo [name="pas_de_photo_tranche"]').toggle(true);
 		});
 	}
 	else {
 		$.ajax({
 			url: urls['photo_principale']+['index',pays,magazine,numero].join('/'),
 			type: 'post',
-			success:function(num_photo) {
-				if (num_photo !== 'null') {
-					num_photo_principale = num_photo;
+			success:function(nom_photo) {
+				if (nom_photo !== 'null') {
+					nom_photo_principale = nom_photo;
 					afficher_photo_tranche();				
 				}
 			}
@@ -2368,81 +2772,88 @@ function afficher_photo_tranche() {
 	}
 }
 
-function maj_photo_principale() { 
+function maj_photo_principale() {
+	if (nom_photo_principale === null) {
+		return;
+	}
 	$.ajax({
-		url: urls['update_photo']+['index',pays,magazine,numero,num_photo_principale].join('/'),
+		url: urls['update_photo']+['index',pays,magazine,numero,nom_photo_principale].join('/'),
 	    type: 'post',
-	    success:function() {
-	    	afficher_photo_tranche();
+	    success:function(data) {
+			if ($('#wizard-conception').is(':visible')) {
+				afficher_photo_tranche();
+			}
 	    }
 	});
 }
 
-function lister_images_gallerie(type_images) {
-	var form;
-	if (type_images === 'Source') {
-		form=modification_etape.find('.options_etape');
-	}
-	else {
-		form=$('#wizard-photos').find('form');
-	}
-	
+function lister_images_gallerie(type_images) {	
 	$.ajax({
         url: urls['listerg']+['index',type_images,pays,magazine].join('/'),
         dataType:'json',
         type: 'post',
-        success:function(data) {
-        	if (data['erreur']) {
-        		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
-        					   'Erreur interne');
-        	}
-        	var ul=form.find('ul.gallery');
-        	ul.find('li:not(.template)').remove();
-        	if (data.length == 0) {
-        		form.find('.pas_d_image').removeClass('cache');
-        	}
-        	else {
-        		var sous_repertoire = null;
-        		switch(type_images) {
-        			case 'Source':
-        				sous_repertoire = 'elements';
-        			break;
-        			case 'Photos':
-        				sous_repertoire = 'photos';
-        			break;
-        		}
-        		form.find('.pas_d_image').addClass('cache');
-        		form.find('ul.gallery li:not(.template) img').remove();
-            	for (var i in data) {
-            		var li=ul.find('li.template').clone(true).removeClass('template');
-            		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
-            		li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
-            							 'title':data[i]});
-            		ul.append(li);
-            	}
-    			form.find('ul.gallery li img').removeClass('selected')
-    										  .unbind('click')
-            								  .click(function() {
-            		if ($(this).hasClass('selected')) {
-            			form.find('ul.gallery li img').removeClass('selected');
-            			form.find('button[value="to-wizard-resize"]').addClass('cache');
-            		}
-            		else {
-            			form.find('ul.gallery li img').removeClass('selected');
-                		$(this).addClass('selected');
-                		form.find('button[value="to-wizard-resize"]').removeClass('cache');
-                		
-                		$('#wizard-resize img').attr({'src':$(this).attr('src')});
-                	}
-            	});
-            	if (num_photo_principale !== null) {
-            		form.find('ul.gallery li img[src$="photo_'+num_photo_principale+'.jpg"]').click();
-            	}
-        	}
-        	ul.removeClass('cache');
-        	form.find('.chargement_images').addClass('cache');
+        success: function(data) {
+        	afficher_gallerie(type_images, data);
         }
 	});
+}
+
+function afficher_gallerie(type_images, data, container) {
+	if (data['erreur']) {
+		jqueryui_alert('Le r&eacute;pertoire d\'images '+data['erreur']+' n\'existe pas',
+					   'Erreur interne');
+	}
+	else {
+		container = container || $('#wizard-images form .selectionner_photo');
+		var ul=container.find('ul.gallery');
+		ul.find('li:not(.template)').remove();
+		if (data.length == 0) {
+			container.find('.pas_d_image').removeClass('cache');
+		}
+		else {
+			var sous_repertoire = null;
+			switch(type_images) {
+				case 'Source':
+					sous_repertoire = 'elements';
+				break;
+				case 'Photos':
+					sous_repertoire = 'photos';
+				break;
+			}
+			container.find('.pas_d_image').addClass('cache');
+			container.find('ul.gallery li:not(.template) img').remove();
+	    	for (var i in data) {
+	    		var li=ul.find('li.template').clone(true).removeClass('template');
+	    		li.find('em').html(data[i].replace(/[^\.]+\./g,''));
+	    		li.find('img').prop({'src':base_url+'../edges/'+pays+'/'+sous_repertoire+'/'+data[i],
+	    							 'title':data[i]});
+	    		li.find('input').val(data[i]);
+	    		ul.append(li);
+	    	}
+			container.find('ul.gallery li img').removeClass('selected')
+										  .unbind('click')
+	    								  .click(function() {
+	    		var selected = !$(this).hasClass('selected');
+	    		
+				container.find('ul.gallery li img').removeClass('selected');
+				container.find('#to-wizard-resize').toggleClass('cache', !selected);
+				
+	    		if (selected) {
+	        		$(this).addClass('selected');
+	        		$('#wizard-images [name="selected"]').val($(this).attr('src'));
+
+	    			var destination_rognage = container.attr('name') === 'section_photo' ? 'elements' : 'photos';
+	    			$('#wizard-resize [name="destination"]').val(destination_rognage);
+	        		$('#wizard-resize img').attr({'src':$(this).attr('src')});
+	        	}
+	    	});
+	    	if (type_images === 'Photos' && nom_photo_principale !== null) {
+	    		container.find('ul.gallery li img[src$="'+nom_photo_principale+'"]').click();
+	    	}
+		}
+		ul.removeClass('cache');
+		container.find('.chargement_images').addClass('cache');
+	}
 }
 
 function templatedToVal(templatedString) {
@@ -2469,12 +2880,12 @@ function templatedToVal(templatedString) {
 						var autre_nombre= matches[1] || matches[4];
 						switch(operation) {
 							case '*':
-								templatedString= $('#Dimension_x').val()*autre_nombre;
+								templatedString= dimensions.x*autre_nombre;
 							break;
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, $('#Dimension_x').val());
+						templatedString=templatedString.replace(regex, dimensions.x.val());
 				break;
 				case 'hauteur':
 					if (matches[2] || matches[3]) {
@@ -2482,12 +2893,12 @@ function templatedToVal(templatedString) {
 						var autre_nombre= matches[1] || matches[4];
 						switch(operation) {
 							case '*':
-								templatedString= $('#Dimension_y').val()*autre_nombre;
+								templatedString= dimensions.y.val()*autre_nombre;
 							break;
 						}
 					}
 					else
-						templatedString=templatedString.replace(regex, $('#Dimension_y').val());
+						templatedString=templatedString.replace(regex, dimensions.y.val());
 				break;
 				case 'caracteres_speciaux':
 					templatedString=templatedString.replace(/Â°/,'°');
@@ -2497,6 +2908,29 @@ function templatedToVal(templatedString) {
 		}
 	});
 	return templatedString;
+}
+
+
+function jqueryui_clear_message(id) {
+	var id_message = 'message-'+id;
+	$('#status [name="'+id_message+'"]').remove();
+}
+
+function jqueryui_message(type, id) {
+	var id_message = 'message-'+id;
+	if ($('#status [name="'+id_message+'"]').length == 0) {
+		var libelles = $('#'+id_message);
+		var element_message=$('#template-'+type)
+			.clone(true)
+				.removeAttr('id')
+				.removeClass('cache')
+				.attr({name: id_message, title: libelles.find('.libelle').html(), rel: 'tooltip'})
+				.tooltip();
+		var element_texte_message=element_message.find('.message-label');
+		element_texte_message
+			.html(libelles.find('.titre').html());
+		$('#status').append(element_message);
+	}
 }
 
 function hex2rgb(hex) {

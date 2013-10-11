@@ -18,7 +18,7 @@ header("Pragma: no-cache"); ?>
 	
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-1.9.1.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.serializeObject.js" ></script>
-	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.min.js" ></script>
+	<script type="text/javascript" src="<?=base_url()?>js/jquery.ba-resize.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery.jrac.js" ></script>
 	<script type="text/javascript" src="<?=base_url()?>js/jquery-ui-1.10.2.custom.js" ></script>
 	
@@ -49,8 +49,8 @@ header("Pragma: no-cache"); ?>
 		var urls=new Array();
 		<?php
 		$controleurs=array('update_wizard','edgecreatorg','tranchesencours','numerosdispos','parametrageg','parametrageg_wizard',
-		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','upload_wizard','supprimer_wizard','viewer','viewer_wizard','viewer_myfonts',
-						   'dessiner','photo_principale','update_photo','rogner_image');
+		   				   'modifierg','supprimerg','listerg','etendre','insert_wizard','cloner','upload_wizard','supprimer_wizard','viewer_wizard','viewer_myfonts',
+						   'dessiner','photo_principale','update_photo','rogner_image','desactiver_modele','valider_modele','check_logged_in','couleurs_frequentes','couleur_point_photo');
 		foreach($controleurs as $controleur) {
 			?>urls['<?=$controleur?>']='<?=site_url($controleur)?>/';<?php
 		}?>
@@ -62,10 +62,8 @@ header("Pragma: no-cache"); ?>
 	<title><?=$title?></title>
 </head>
 <body id="body" style="margin:0;padding:0">
-	<div id="zone_ajout_etape">
-		<img id="ajout_etape" class="tip2 cache"
-			 src="../../images/icones/add.png" title="Ajouter une &eacute;tape ici"/>
-	</div>
+	<img class="ajout_etape tip2 template hidden"
+		 src="<?=base_url()?>../images/icones/add.png" title="Ajouter une &eacute;tape ici"/>
 	<?php
 	if (!empty($erreur)) {
 		echo $erreur;

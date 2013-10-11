@@ -98,7 +98,7 @@ class Inducks {
 		$magazine_depart=$magazine;
 		$magazine=Inducks::get_vrai_magazine($pays,$magazine);
 		$fonction_nettoyage=$sans_espace ? 'nettoyer_numero_sans_espace' : 'nettoyer_numero';
-
+		$nom_db_non_coa = DatabasePriv::$nom_db_DM;
 		$numeros=array();
 		switch($mode) {
 			case "urls":
@@ -121,13 +121,20 @@ class Inducks {
 				}
 				return array($numeros,$titres);
 			break;
-			case "numeros_seulement":
-				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
+			case "numeros_et_createurs_tranche":
+				$requete=' SELECT i.issuenumber, tp2.username contributeurs, IF(tp2.Active=0, 1, 0) en_cours'
+						.' FROM inducks_issue i'
+						.' LEFT JOIN '.$nom_db_non_coa.'.tranches_en_cours_modeles tp2 ON CONCAT(tp2.Pays,"/", tp2.Magazine) = i.publicationcode AND tp2.Numero = i.issuenumber AND tp2.Active = 0'
+						.' WHERE i.publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
-				return array_map('nettoyer_numero_base_sans_espace',$resultat_requete);
-				$resultats=array();
-				foreach($resultat_requete as $resultat)
-					$resultats[]=$resultat['issuenumber'];
+				foreach($resultat_requete as $numero) {
+					$element_numero = array();
+					foreach(array('issuenumber', 'contributeurs', 'en_cours') as $champ) {
+						$element_numero[$champ] = $numero[$champ];
+					}
+					$element_numero['issuenumber'] = $fonction_nettoyage($element_numero['issuenumber']);
+					$resultats[]=$element_numero;
+				}
 				return $resultats;
 			break;
 		}

@@ -22,7 +22,7 @@ span, td, th {
 	width:100%;
 	border-bottom:1px solid gray;
 	position: fixed;
-	z-index: 1100;
+	z-index: 101;
 	background-color: white;
 	padding-right:10px;
 }
@@ -33,6 +33,10 @@ option.tranche_prete {
 
 option.cree_par_moi {
 	background-color:#5EDF88;
+}
+
+option.en_cours {
+	background-color: orange;
 }
 
 #viewer h2 {
@@ -260,6 +264,10 @@ tr.cree_par_moi {
 	background-color:#98EBB2;
 }
 
+tr.en_cours {
+	background-color: orange;
+}
+
 tr.tranche_en_validation {
 	background-color: #5983FF;!important
 }
@@ -344,17 +352,6 @@ td.reload {
 #zoom_slider {
 	margin-right: 10px;
 	width: 150px;
-}
-
-#dialog_save_png .username {
-	display: block;
-}
-
-#dialog_save_png span {
-	float: left;
-	height: 250px;
-	overflow-y: auto;
-	width: 40%;
 }
 
 .fixed_header {

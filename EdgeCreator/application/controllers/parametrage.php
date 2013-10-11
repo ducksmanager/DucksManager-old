@@ -26,7 +26,7 @@ class Parametrage extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
-		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
+		$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 		$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 		$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);
 		if ($appliquer) {
