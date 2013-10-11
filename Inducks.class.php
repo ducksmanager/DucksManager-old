@@ -102,9 +102,9 @@ class Inducks {
 				return array($numeros,$titres);
 			break;
 			case "numeros_et_createurs_tranche":
-				$requete=' SELECT i.issuenumber, tp2.username contributeurs, IFNULL(tp2.Active, 0) en_cours'
+				$requete=' SELECT i.issuenumber, tp2.username contributeurs, IF(tp2.Active=0, 1, 0) en_cours'
 						.' FROM inducks_issue i'
-						.' LEFT JOIN '.$nom_db_non_coa.'.tranches_en_cours_modeles tp2 ON CONCAT(tp2.Pays,"/", tp2.Magazine) = i.issuenumber AND tp2.Numero = i.issuenumber AND tp2.Active = 0'
+						.' LEFT JOIN '.$nom_db_non_coa.'.tranches_en_cours_modeles tp2 ON CONCAT(tp2.Pays,"/", tp2.Magazine) = i.publicationcode AND tp2.Numero = i.issuenumber AND tp2.Active = 0'
 						.' WHERE i.publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
 				foreach($resultat_requete as $numero) {
