@@ -1,0 +1,3 @@
+[submodule "EdgeCreator"]
+	path = EdgeCreator
+	url = https://github.com/ducksmanager/EdgeCreator.git

@@ -1,3 +1,0 @@
-[27-Mar-2011 16:06:23] PHP Notice:  Undefined variable: texte in D:\wamp\www\DucksManager\EdgeCreator\system\fonts\ttflist.php on line 16
-[27-Mar-2011 16:06:23] PHP Stack trace:
-[27-Mar-2011 16:06:23] PHP   1. {main}() D:\wamp\www\DucksManager\EdgeCreator\system\fonts\ttflist.php:0
