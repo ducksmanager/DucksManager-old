@@ -7,26 +7,15 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	static $content_fields;
 	static $numero;
 
-	function user_possede_modele($pays=null,$magazine=null,$username=null) {
-		if (is_null($pays)) $pays=self::$pays;
-		if (is_null($magazine)) $magazine=self::$magazine;
-		if (is_null($username)) $username=self::$username;
-		if (is_null(self::$user_possede_modele)) {
-			$requete_modele_magazine_existe='SELECT Count(1) AS cpt FROM edgecreator_modeles2 '
-										   .'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-										   .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-										   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND username = \''.$username.'\'';
-			$user_possede_modele = $this->db->query($requete_modele_magazine_existe)->first_row()->cpt > 0;
-		}
-		return $user_possede_modele;
-	}
-	
-	function get_tranches_en_cours($id=null) {
+	function get_tranches_en_cours($id=null,$pays=null,$magazine=null,$numero=null) {
 		$requete='SELECT ID, Pays, Magazine, Numero '
 				.'FROM tranches_en_cours_modeles '
-				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\'';
+				.'WHERE username=\''.mysql_real_escape_string(self::$username).'\' AND Active=1';
 		if (!is_null($id)) {
 			$requete.=' AND ID='.$id;
+		}
+		elseif (!is_null($pays)) {
+			$requete.=' AND Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		}
 		
 		$query = $this->db->query($requete);
@@ -52,72 +41,26 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		return $resultats;
 	}
-
-	function dupliquer_modele_magazine_si_besoin($pays,$magazine) {
-		if (!$this->user_possede_modele($pays,$magazine,self::$username)) {
-			$options=$this->get_modeles_magazine($pays,$magazine);
-			$ordre_courant=null;
-			$nom_option_courant=null;
-			$valeur_option_courante=null;
-			foreach($options as $option) {
-				$this->insert($option->Pays,$option->Magazine,$option->Ordre,$option->Nom_fonction,$option->Option_nom,$option->Option_valeur,$option->Numero_debut,$option->Numero_fin,self::$username,null);
-				
-			}
-		}
-	}
 	
-	function get_modeles_magazine($pays,$magazine,$ordre=null)
-	{
-		$resultats_o=array();
-		$requete='SELECT '.implode(', ', self::$fields).' '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-				.'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' ';
-		if (!is_null($ordre))
-			$requete.='AND Ordre='.$ordre.' ';
-		$requete.='ORDER BY Ordre';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
-		foreach($resultats as $resultat)
-			$resultats_o[]=new Modele_tranche ($resultat);
-		return $resultats_o;
-	}
-
-	function get_ordres($pays,$magazine,$numero=null) {
+	function get_ordres($pays,$magazine,$numero=null,$toutes_colonnes=false) {
 		$resultats_ordres=array();
-		$requete='SELECT DISTINCT Ordre, Numero '
-				.'FROM tranches_en_cours_modeles_vue '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' ';
+		$requete=' SELECT DISTINCT '.($toutes_colonnes?'*':'Ordre, Numero')
+				.' FROM tranches_en_cours_modeles_vue'
+			    .' WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
 		if (!is_null($numero)) {
-			$requete.='AND Numero=\''.$numero.'\' ';
+			$requete.=' AND Numero=\''.$numero.'\'';
 		}
-		$requete.='AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\' '
-				 .'ORDER BY Ordre';
+		$requete.=' AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\''
+				 .' ORDER BY Ordre'; 
 		$query = $this->db->query($requete);
 		$resultats=$query->result();
 		foreach($resultats as $resultat) {
-			$resultats_ordres[]=$resultat->Ordre;
+			$resultats_ordres[]=$toutes_colonnes?$resultat:$resultat->Ordre;
 		}
-		$resultats_ordres=array_unique($resultats_ordres);
+		if (!$toutes_colonnes) {
+			$resultats_ordres=array_unique($resultats_ordres);
+		}
 		return $resultats_ordres;
-	}
-
-	function get_nb_etapes($pays,$magazine) {
-		$resultats_etapes=array();
-		$requete='SELECT Count(Nom_fonction) AS cpt '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs ON edgecreator_modeles2.ID = edgecreator_valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles ON edgecreator_valeurs.ID = edgecreator_intervalles.ID_Valeur '
-			    .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Option_nom IS NULL '
-				.'AND username = \''.($this->user_possede_modele() ? self::$username : 'brunoperel').'\'';
-		$query = $this->db->query($requete);
-		$resultats=$query->result();
-			
-		foreach($resultats as $resultat) {
-			return $resultat->cpt;
-		}
 	}
 
 	function get_etapes_simple($pays,$magazine,$numero,$num_etape=null) {
@@ -157,7 +100,7 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		if (!is_null($nom_option))
 			$requete.='AND Option_nom = \''.$nom_option.'\' ';
 		$requete.='ORDER BY Option_nom ASC';
-		
+
 		$resultats=$this->db->query($requete)->result();
 		$resultats_options=new stdClass();
 		foreach($resultats as $resultat) {
@@ -231,15 +174,20 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete);
 	}
 	
-	function getIdModele($pays,$magazine,$numero,$username) {
+	function get_id_modele($pays,$magazine,$numero,$username=null) {
+		if (is_null($username)) {
+			$username = self::$username;
+		}
 		$requete='SELECT ID FROM tranches_en_cours_modeles '
-				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\' AND username=\''.$username.'\'';
+				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
+		if (!is_null($username)) {
+			$requete.=' AND username=\''.$username.'\' AND Active=1';
+		}
 		$resultat=$this->db->query($requete)->row(0);
 		return $resultat->ID;
-		
 	}
 	
-	function getNomFonction($id_modele,$ordre) {
+	function get_nom_fonction($id_modele,$ordre) {
 		$requete='SELECT Nom_fonction FROM tranches_en_cours_valeurs '
 				.'WHERE ID_Modele='.$id_modele.' AND Ordre='.$ordre;
 		$resultat=$this->db->query($requete)->row(0);
@@ -247,36 +195,38 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 	
 	function creer_modele($pays, $magazine, $numero) {
-		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username) '
-				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\')';
+		$requete='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
+				.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\''.self::$username.'\', 1)';
 		$this->db->query($requete);
 		echo $requete."\n";
 	}
 	
 	function get_photo_principale($pays,$magazine,$numero) {
-		$requete='SELECT NumeroPhotoPrincipale FROM tranches_en_cours_modeles '
+		$requete='SELECT NomPhotoPrincipale FROM tranches_en_cours_modeles '
 				.'WHERE Pays=\''.$pays.'\' AND Magazine=\''.$magazine.'\' AND Numero=\''.$numero.'\'';
 		$resultat=$this->db->query($requete)->row(0);
-		return $resultat->NumeroPhotoPrincipale;
+		return $resultat->NomPhotoPrincipale;
 	}
 
 	function insert_etape($pays,$magazine,$numero,$pos,$etape,$nom_fonction) {
 		$inclure_avant = $pos==='avant' || $pos==='_';
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		$infos=new stdClass();
 		
-		$decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
+		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape, $inclure_avant);
 		
 		$nouvelle_fonction=new $nom_fonction(false, null, true);
-		
+		$numero_etape=$inclure_avant ? $etape : $etape+1;
 		foreach($nouvelle_fonction->options as $nom=>$valeur) {
-			$this->insert($id_modele,$inclure_avant ? $etape : $etape+1,$nom_fonction,$nom,$valeur);			
+			$this->insert($id_modele,$numero_etape,$nom_fonction,$nom,$valeur);			
 		}
-		return $decalages;
+		$infos->numero_etape=$numero_etape;
+		return $infos;
 	}
 
 	function update_etape($pays,$magazine,$numero,$etape,$parametrage) {
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
-		$nom_fonction=$this->getNomFonction($id_modele,$etape);
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		$nom_fonction=$this->get_nom_fonction($id_modele,$etape);
 		
 		$requete_suppr='DELETE valeurs FROM tranches_en_cours_valeurs AS valeurs '
 					  .'WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
@@ -288,33 +238,43 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 	}
 	
-	function update_photo_principale($pays,$magazine,$numero,$num_photo_principale) {
-		$id_modele=$this->getIdModele($pays,$magazine,$numero,self::$username);
+	function update_photo_principale($pays,$magazine,$numero,$nom_photo_principale) {
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
 		
 		$requete_maj='UPDATE tranches_en_cours_modeles '
-					.'SET NumeroPhotoPrincipale=\''.$num_photo_principale.'\' '
+					.'SET NomPhotoPrincipale=\''.$nom_photo_principale.'\' '
 					.'WHERE ID='.$id_modele;
 		$this->db->query($requete_maj);
 		echo $requete_maj."\n";
 	}
 
-	function cloner_etape($pays,$magazine,$etape_courante,$etape) {
-		$requete='SELECT '.implode(', ', self::$fields).' '
-				.'FROM edgecreator_modeles2 '
-				.'INNER JOIN edgecreator_valeurs AS valeurs ON edgecreator_modeles2.ID = valeurs.ID_Option '
-			    .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-				.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Ordre='.$etape_courante.' AND username = \''.self::$username.'\'';
+	function cloner_etape($pays,$magazine,$numero,$pos,$etape_courante) {
+		$inclure_avant = $pos==='avant' || $pos==='_';
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		$infos=new stdClass();
+		
+		$infos->decalages=$this->decaler_etapes_a_partir_de($id_modele,$etape_courante, $inclure_avant);
+		
+		$nouvelle_etape=$inclure_avant ? $etape_courante : $etape_courante+1;		
+		$requete=' SELECT Nom_fonction, Option_nom, Option_valeur, ID_Modele'
+				.' FROM tranches_en_cours_valeurs '
+				.' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape_courante;
 		$resultats=$this->db->query($requete)->result();
-		foreach($resultats as $resultat) {
-			$resultat->Ordre=$etape;
+		foreach($resultats as $i=>$resultat) {
+			$resultat->Ordre=$nouvelle_etape;
+			$infos->nom_fonction=$resultat->Nom_fonction;
+			$resultats[$i]=(array) $resultats[$i];
 		}
-		$this->db->insert_batch('edgecreator_modeles2',$resultats);
+		$this->db->insert_batch('tranches_en_cours_valeurs',$resultats);
+		
+		$infos->numero_etape=$nouvelle_etape;
+		return $infos;
 	}
 
 	function supprimer_etape($pays,$magazine,$numero,$etape) {
 		$requete_suppr='DELETE FROM tranches_en_cours_valeurs '
 					  .'WHERE ID_Modele=(SELECT m.ID FROM tranches_en_cours_modeles m '
-					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\') '
+					  				   .'WHERE m.Pays = \''.$pays.'\' AND m.Magazine = \''.$magazine.'\' AND m.Numero = \''.$numero.'\' AND m.Active=1) '
 					  	.'AND Ordre = \''.$etape.'\'';
 		$this->db->query($requete_suppr);
 		echo $requete_suppr."\n";
@@ -336,16 +296,6 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		$this->db->query($requete_suppr_option);
 		echo $requete_suppr_option."\n";
 	}
-
-	function insert_valeur_option($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,$id_valeur=null) {
-		$valeur=mysql_real_escape_string($valeur);
-		if ($option_nom=='Actif') {
-			$this->insert($pays,$magazine,$etape,$nom_fonction,null,null,$numero_debut,$numero_fin,self::$username,$id_valeur);
-			
-		}
-		else
-			$this->insert($pays,$magazine,$etape,$nom_fonction,$option_nom,$valeur,$numero_debut,$numero_fin,self::$username,$id_valeur);
-	}
 	
 	function get_id_modele_tranche_en_cours_max() {
 		$requete='SELECT MAX(ID) AS Max FROM tranches_en_cours_modeles';
@@ -358,47 +308,71 @@ class Modele_tranche_Wizard extends Modele_tranche {
 	}
 
 	function etendre_numero ($pays,$magazine,$numero,$nouveau_numero) {
-		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username) '
+
+		$options = $this->get_valeurs_options($pays,$magazine, array($numero));
+		
+		if (count($options[$numero]) === 0) {
+			echo 'Aucune option d\'étape pour '.$pays.'/'.$magazine.' '.$numero;
+			return;
+		}
+		
+		$requete_ajout_modele='INSERT INTO tranches_en_cours_modeles (Pays, Magazine, Numero, username, Active) '
 							 .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$nouveau_numero.'\','
-							 .'\''.mysql_real_escape_string(self::$username).'\')';
+							 .'\''.mysql_real_escape_string(self::$username).'\', 1)';
 		$this->db->query($requete_ajout_modele);
 		$id_modele=$this->get_id_modele_tranche_en_cours_max();
 		
-		
-		$requete_get_options='SELECT '.implode(', ', self::$fields).',username '
-						    .'FROM edgecreator_modeles2 AS modeles '
-							.'INNER JOIN edgecreator_valeurs AS valeurs ON modeles.ID = valeurs.ID_Option '
-					        .'INNER JOIN edgecreator_intervalles AS intervalles ON valeurs.ID = intervalles.ID_Valeur '
-							.'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' '
-							.'ORDER BY Ordre';
-		echo $requete_get_options."\n";
-		$resultats=$this->db->query($requete_get_options)->result();
-		foreach($resultats as $resultat) {
-			$modifs=array();
-			$modifs_requete=array();
-			$option_nom=is_null($resultat->Option_nom) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_nom).'\'');
-			$option_valeur=is_null($resultat->Option_valeur) ? 'NULL' : ('\''.mysql_real_escape_string($resultat->Option_valeur).'\'');
-			$intervalle=$this->getIntervalleShort($this->getIntervalle($resultat->Numero_debut, $resultat->Numero_fin));
-			if (est_dans_intervalle($numero,$intervalle)) {
-				$requete_ajout_valeur='INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur) '
-									 .'VALUES ('.$id_modele.',\''.$resultat->Ordre.'\',\''.$resultat->Nom_fonction.'\', '
-											  .(is_null($resultat->Option_nom) ? 'NULL' : '\''.mysql_real_escape_string($resultat->Option_nom).'\'').','
-											  .(is_null($resultat->Option_valeur) ? 'NULL' : '\''.mysql_real_escape_string($resultat->Option_valeur).'\'').')';
-				$this->db->query($requete_ajout_valeur);
-			}
+		foreach($options[$numero] as $option) {
+			$requete_ajout_valeur=' INSERT INTO tranches_en_cours_valeurs (ID_Modele, Ordre, Nom_fonction, Option_nom, Option_valeur)'
+								 .' VALUES ('.$id_modele .',\''.$option->Ordre.'\',\''.$option->Nom_fonction.'\','
+								 .' '.$option->Option_nom.','.$option->Option_valeur.')';
+			$this->db->query($requete_ajout_valeur);
 		}
+		
+		// Suppression des étapes incomplètes = étapes dont le nombre d'options est différent de celui défini
+		
+		foreach(self::$noms_fonctions as $nom_fonction) {
+			$champs_obligatoires = array_diff(array_keys($nom_fonction::$champs), array_keys($nom_fonction::$valeurs_defaut));
+			
+			$requete_nettoyage = ' SELECT Ordre, Option_nom'
+								.' FROM tranches_en_cours_modeles_vue'
+								.' WHERE ID_Modele='.$id_modele.' AND Nom_fonction=\''.$nom_fonction.'\''
+								.' ORDER BY Ordre';
+			$resultats=$this->db->query($requete_nettoyage)->result();
+			$etapes_et_options=array();
+			foreach($resultats as $resultat) {
+				if (!array_key_exists($resultat->Ordre, $etapes_et_options)) {
+					$etapes_et_options[$resultat->Ordre]=array();
+				}
+				$etapes_et_options[$resultat->Ordre][]=$resultat->Option_nom;
+				echo "Etape ".$resultat->Ordre.', option '.$resultat->Option_nom."\n";
+			}
+			
+			foreach($etapes_et_options as $etape=>$options) {
+				$champs_obligatoires_manquants = array_diff($champs_obligatoires, $options);
+				if (count($champs_obligatoires_manquants) > 0) {
+					echo utf8_encode("\nEtape $etape : l'étape sera supprimée car les champs suivants ne sont pas renseignés : "
+									 .implode(', ', $champs_obligatoires_manquants)."\n");
+					$requete_suppression_etape=' DELETE FROM tranches_en_cours_valeurs'
+											  .' WHERE ID_Modele='.$id_modele.' AND Ordre='.$etape;
+					$this->db->query($requete_suppression_etape);
+				}
+			}
+		}		
 	}
 	
 	function get_tranches_non_pretes() {
 		$username = $this->session->userdata('user');
-		$requete="SELECT Pays,Magazine,Numero "
-				."FROM numeros "
-				."WHERE ID_Utilisateur=(SELECT ID FROM users WHERE username='$username') "
-				."  AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN "
-				."   (SELECT CONCAT(publicationcode,' ',issuenumber) "
-				."  FROM tranches_pretes)";
+		$id_user = $this->username_to_id($username);
+		$requete=" SELECT ID, Pays,Magazine,Numero"
+				." FROM numeros"
+				." WHERE ID_Utilisateur=".$id_user
+				."   AND CONCAT(Pays,'/',Magazine,' ',Numero) NOT IN"
+				."    (SELECT CONCAT(publicationcode,' ',issuenumber)"
+				."   FROM tranches_pretes)"
+				." ORDER BY Pays, Magazine, Numero";
 
-		$resultats = Inducks::requete_select($requete, DatabasePriv::$nom_db_DM,'ducksmanager.net');
+		$resultats = $this->requete_select_dm($requete);
 		
 		$publication_codes=array();
 		foreach($resultats as $resultat) {
@@ -412,6 +386,47 @@ class Modele_tranche_Wizard extends Modele_tranche {
 		}
 		
 		return $resultats;
+	}
+	
+	function desactiver_modele($pays,$magazine,$numero) {
+		$id_modele=$this->get_id_modele($pays,$magazine,$numero,self::$username);
+		
+		$requete_maj=' UPDATE tranches_en_cours_modeles '
+					.' SET Active=0'
+					.' WHERE ID='.$id_modele;
+		$this->db->query($requete_maj);
+		echo $requete_maj."\n";
+	}
+	
+	function get_couleurs_frequentes($id_modele) {
+		$couleurs=array();
+		$requete= ' SELECT DISTINCT Option_valeur'
+				 .' FROM tranches_en_cours_modeles_vue'
+				 .' WHERE ID_Modele='.$id_modele.' AND Option_nom LIKE \'Couleur%\'';
+		$resultats=$this->db->query($requete)->result();
+		foreach($resultats as $i=>$resultat) {
+			$couleurs[]=$resultat->Option_valeur;
+		}
+		return $couleurs;
+	}
+	
+	function get_couleur_point_photo($pays,$magazine,$numero,$frac_x,$frac_y) {
+		$id_modele=$this->Modele_tranche->get_id_modele($pays,$magazine,$numero);
+		$requete_nom_photo = ' SELECT NomPhotoPrincipale'
+							.' FROM tranches_en_cours_modeles'
+							.' WHERE ID='.$id_modele;
+		$resultat_nom_photo = $this->db->query($requete_nom_photo)->row();
+		
+		$chemin_photos = Fonction_executable::getCheminPhotos($pays);
+		$chemin_photo_tranche = $chemin_photos.'/'.$resultat_nom_photo->NomPhotoPrincipale;
+		$image = imagecreatefromjpeg($chemin_photo_tranche);
+		list($width, $height) = getimagesize($chemin_photo_tranche);
+		
+		$rgb = imagecolorat($image, $frac_x*$width, $frac_y*$height);
+		$r = ($rgb >> 16) & 0xFF;
+		$g = ($rgb >> 8) & 0xFF;
+		$b = $rgb & 0xFF;
+		return rgb2hex($r,$g,$b);
 	}
 	
 	function setNumero($numero) {

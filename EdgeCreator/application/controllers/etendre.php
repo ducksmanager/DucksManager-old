@@ -21,7 +21,7 @@ class Etendre extends CI_Controller {
 			$this->db->query('SET NAMES UTF8');
 			$this->load->helper('url');
 			
-			$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
+			$this->load->model('Modele_tranche_Wizard','Modele_tranche');
 			
 			$privilege=$this->Modele_tranche->get_privilege();
 			if ($privilege == 'Affichage') {
@@ -30,7 +30,7 @@ class Etendre extends CI_Controller {
 			}
 			$this->Modele_tranche->setUsername($this->session->userdata('user'));
 			
-			$this->Modele_tranche->dupliquer_modele_magazine_si_besoin(self::$pays,self::$magazine);
+			//$this->Modele_tranche->dupliquer_modele_magazine_si_besoin(self::$pays,self::$magazine);
 			
 			$numeros_dispos=$this->Modele_tranche->get_numeros_disponibles(self::$pays,self::$magazine);
 			$this->Modele_tranche->setNumerosDisponibles($numeros_dispos);

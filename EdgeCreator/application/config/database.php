@@ -41,9 +41,11 @@
 $active_group = 'default';
 $active_record = TRUE;
 
+$properties=parse_ini_file('/home/ducksmanager/ducksmanager.properties');
+
 $db['default']['hostname'] = "localhost";
 $db['default']['username'] = "root";
-$db['default']['password'] = "";
+$db['default']['password'] = $properties['db_password'];
 $db['default']['database'] = "db301759616";
 $db['default']['dbdriver'] = "mysql";
 $db['default']['dbprefix'] = "";

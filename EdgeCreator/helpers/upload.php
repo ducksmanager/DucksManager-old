@@ -1,6 +1,11 @@
 <?php
+$est_photo_tranche = $_POST['photo_tranche'] == 1 || $_GET['photo_tranche'] == 1 ? 1 : 0;
+
+if (!isset($_POST['MAX_FILE_SIZE'])) {
+	header('Location: '.preg_replace('#/[^/]+\?#','/image_upload.php?',$_SERVER['REQUEST_URI']));
+	exit;
+}
 $url_root=getcwd();
-$est_photo_tranche = $_POST['photo_tranche'] == 1;
 $extension = strtolower(strrchr($_FILES['image']['name'], '.'));
 $extension_cible='.jpg';
 $dossier = $url_root.'/../edges/'.$_POST['pays'].'/'.( $est_photo_tranche ? 'photos' : 'elements' ).'/';
@@ -15,8 +20,15 @@ if ($est_photo_tranche) {
 	$fichier.=$extension_cible;
 }
 else {
-	$fichier = basename($_FILES['image']['name']);
+	if (strpos($_FILES['image']['name'], $_POST['magazine']) === 0) {
+		$fichier = basename($_FILES['image']['name']);
+	}
+	else {
+		$fichier = basename($_POST['magazine'].'.'.$_FILES['image']['name']);
+	}
 }
+$fichier=str_replace(' ','_',$fichier);
+
 $taille_maxi = $_POST['MAX_FILE_SIZE'];
 $taille = filesize($_FILES['image']['tmp_name']);
 $extensions = $est_photo_tranche ? array('.jpg','.jpeg') : array('.png');
@@ -71,24 +83,22 @@ if(!isset($erreur)) //S'il n'y a pas d'erreur, on upload
 	  		</script><?php
 		  }
 		  ?>Envoi r&eacute;alis&eacute; avec succ&egrave;s !<?php 
-		  if ($est_photo_tranche) {
-			afficher_retour();
-		  }	
+		  afficher_retour($est_photo_tranche);
 	 }
 	 else //Sinon (la fonction renvoie FALSE).
 	 {
 		  echo 'Echec de l\'envoi !';
-	 	  afficher_retour();
+	 	  afficher_retour($est_photo_tranche);
 	 }
 }
 else
 {
 	 echo $erreur;
-	 afficher_retour();
+	 afficher_retour($est_photo_tranche);
 }
 
-function afficher_retour() {
-	?><br /><a href="javascript:void(0)" onclick="location.href=location.href.replace(/\/upload\.php/g,'/image_upload.php')">Autre envoi</a><?php
+function afficher_retour($est_photo_tranche) {
+	?><br /><a href="<?=$_SERVER['REDIRECT_URL'].'?photo_tranche='.$est_photo_tranche?>">Autre envoi</a><?php
 	
 }
 ?>

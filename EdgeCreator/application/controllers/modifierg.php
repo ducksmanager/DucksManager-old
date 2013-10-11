@@ -27,7 +27,7 @@ class ModifierG extends CI_Controller {
 			$this->load->helper('url');
 			$this->load->helper('form');
 			
-			$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
+			$this->load->model('Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 			$data=array();
 			
 			$privilege=$this->Modele_tranche->get_privilege();
@@ -138,7 +138,7 @@ class ModifierG extends CI_Controller {
 	
 			if (!$est_etape_temporaire)
 				$this->Modele_tranche->delete_option(self::$pays,self::$magazine,self::$etape,self::$nom_option);
-	
+
 			foreach($valeurs_distinctes_numeros_groupes as $valeur=>$intervalles) {
 				$id_valeur=$this->Modele_tranche->get_id_valeur_max()+1;
 				foreach($intervalles as $intervalle) {

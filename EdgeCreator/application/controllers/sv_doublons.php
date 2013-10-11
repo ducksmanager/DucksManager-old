@@ -1,5 +1,5 @@
 <?php
-include_once('viewer.php');
+include_once('viewer_wizard.php');
 class Sv_doublons extends CI_Controller {
 	static $pays;
 	static $magazine;

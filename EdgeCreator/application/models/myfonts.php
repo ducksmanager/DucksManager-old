@@ -2,7 +2,7 @@
 class MyFonts extends CI_Model {
 	var $p;
 	var $chemin_image;
-	static $regex_source_image='#(http:.*\.gif)#isU';
+	static $regex_source_image='#src=[^"]+"(.*\.gif)#isU';
 	var $font;
 	var $color;
 	var $color_bg;
@@ -14,14 +14,18 @@ class MyFonts extends CI_Model {
 	var $im;
 
 	function MyFonts($font=null,$color=null,$color_bg=null, $width=null, $text=null,$precision=18) {
-		
 		parent::__construct();
 		if (is_null($font))
 			return;
 		$this->font=$font;
 		$this->color=$color;
 		$this->color_bg=$color_bg;
-		$this->width=$width;
+		if (preg_match('#^[.0-9]+$#',$width)) {
+			$this->width=preg_replace('#^(.*\...).*#','$1',$width);
+		}
+		else {
+			$this->width=$width;
+		}
 		$this->text=$text;
 		$this->precision=$precision;
 
@@ -43,11 +47,10 @@ class MyFonts extends CI_Model {
 		);
 		$texte_clean=str_replace("'","\'",preg_replace('#[ ]+\.$#','',$this->text));
 		$requete_image_existe='SELECT ID FROM images_myfonts '
-							 .'WHERE Font LIKE \''.$this->font.'\' AND Color LIKE \''.$this->color.'\' AND ColorBG LIKE \''.$this->color_bg.'\''
-							 .' AND Width LIKE \''.$this->width.'\' AND Texte LIKE \''.$texte_clean.'\' AND Precision_ LIKE \''.$this->precision.'\'';
+							 .'WHERE Font = \''.$this->font.'\' AND Color = \''.$this->color.'\' AND ColorBG = \''.$this->color_bg.'\''
+							 .' AND Width = \''.$this->width.'\' AND Texte = \''.$texte_clean.'\'';
 		$requete_image_existe_resultat=$this->db->query($requete_image_existe)->result();
 		$image_existe=count($requete_image_existe_resultat) != 0;
-		
 		if ($image_existe && !isset($_GET['force_post'])) {
 			$id_image=$requete_image_existe_resultat[0]->ID;
 			$this->chemin_image=BASEPATH.'../../edges/images_myfonts/'.$id_image.'.gif';
@@ -76,6 +79,9 @@ class MyFonts extends CI_Model {
 		else {
 			$this->chemin_image=$chemin[1];
 			$this->chemin_image=str_replace('\\','',$this->chemin_image);
+			if (strpos($this->chemin_image,'http') !== 0) {
+				$this->chemin_image='http:'.$this->chemin_image;
+			}
 			
 			$requete='INSERT INTO images_myfonts(ID,Font,Color,ColorBG,Width,Texte,Precision_) '
 					.'VALUES(NULL,\''.$this->font.'\',\''.$this->color.'\',\''.$this->color_bg.'\','
@@ -101,12 +107,13 @@ class Post extends CI_Model {
 			$data[] = ($n).'='.($v);
 		}
 		$data = implode('&', $data);
-		// format --> test1=a&test2=b etc.
 
 		$this->url=$url.'?'.$data;
 		$this->content = Util::get_page($this->url);
 		
 		return;
+		
+		// For POST only
 		
 		// parse the given URL
 		$url = parse_url($url);

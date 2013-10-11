@@ -1,4 +1,4 @@
 <?php
-if (isset($decalages))
-	echo json_encode(array('decalages'=>$decalages));
+if (isset($infos_insertion))
+	echo json_encode(array('infos_insertion'=>$infos_insertion));
 ?>
