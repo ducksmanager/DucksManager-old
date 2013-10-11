@@ -1,5 +1,5 @@
 <?php
-error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED );
+@error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED );
 @session_start();
 ini_set('session.lifetime', 0);
 if (isset($_GET['lang'])) {
@@ -45,6 +45,7 @@ class DM_Core {
         return $liste;
     }
 }
+if (!isset(DM_Core::$d))
 DM_Core::$d=new Database();
 if (!DM_Core::$d) {
     echo PROBLEME_BD;
@@ -75,5 +76,10 @@ $isv_redirection_magazine=new InducksISV();
 $isv_redirection_magazine->nom='issuerange';
 $isv_redirection_magazine->url='http://coa.inducks.org/inducks/isv/inducks_issuerange.isv';
 $isv_redirection_magazine->champs=array('issuerangecode'=>'FUNC','publicationcode'=>'FUNC','title'=>null,'issuerangecomment'=>null,'errormessage'=>null);
+
+$isv_redirection_magazine=new InducksISV();
+$isv_redirection_magazine->nom='issue';
+$isv_redirection_magazine->url='http://coa.inducks.org/inducks/isv/inducks_issue.isv';
+$isv_redirection_magazine->champs=array('issuecode'=>'FUNC','issuenumber'=>'FUNC');
 
 ?>

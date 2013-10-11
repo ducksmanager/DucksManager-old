@@ -1,0 +1,254 @@
+	@CHARSET "ISO-8859-1";
+
+iframe {
+	border: 0;
+}
+
+#action_bar {
+	text-align:center;
+}
+
+#action_bar img.action {
+	height: 20px;
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+#action_bar img.action[name="photo"].active, #photo_tranche img {
+	/*outline: 2px solid cyan;
+	margin-left: 2px;*/
+}
+
+#status_user {
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	float: right;
+}
+
+button#connexion, button#deconnexion {
+	float: right;
+}
+
+.ui-dialog {
+	top: 70px !important;
+	z-index: 1000;
+}
+
+.ui-dialog.main {
+	border-width: 2px;
+}
+
+.ui-dialog .ui-dialog-content.final {
+	white-space: nowrap;
+}
+
+#wizard-conception .texte_presentation_tranche_finale {
+	width: 80%;
+	float: right;
+	text-align: right;
+}
+
+#wizard-1 #tranches_en_cours {
+	margin-left: 120px;
+	top: 0px !important;
+}
+
+#wizard-1 #tranches_en_cours li label {
+	padding-left: 32px;
+	background-repeat: no-repeat;
+	background-position: 10px;
+}
+
+#wizard-1 #tranches_en_cours li label .ui-button-text {
+	white-space: nowrap;
+}
+
+#wizard-proposition-clonage table td {
+	text-align: center;
+}
+
+#wizard-proposition-clonage .image_preview:hover {
+	outline: 2px dashed orange;
+}
+
+#wizard-proposition-clonage .image_preview.selected {
+	outline: 2px solid orange;
+}
+	
+	
+#wizard-clonage .loading {
+	background:url('../images/clone.png') no-repeat left center;
+	padding-left: 30px;
+}
+#wizard-clonage .done {
+	background:url('../images/ok.png') no-repeat left center;
+	padding-left: 30px;
+}
+
+
+.wizard.preview_etape:not(.final):not(.modif) {
+	cursor: pointer;
+}
+
+.wizard.preview_etape .image_etape.finale {
+	text-align: center;
+	display: inline;
+}
+
+.wizard.preview_etape .point_remplissage {
+	height: 12px; 
+	width: 12px; 
+	position: absolute;
+	cursor: move;
+}
+
+.wizard.preview_etape .arc_position {
+	position: absolute;
+}
+
+.wizard.preview_etape .arc_position.ui-draggable {
+	cursor: move;
+}
+
+.wizard.preview_etape .rotation input[name="option-Rotation"] {
+	cursor: move;
+}
+
+
+.wizard.preview_etape .rectangle_position, 
+.wizard.preview_etape .image_position,
+.wizard.preview_etape .agrafe {
+	position: absolute;
+	cursor: move;
+	background-color:transparent;
+	opacity: 1;
+	z-index: 1001;
+}
+
+.wizard.preview_etape .agrafe {
+	background-color: black;
+}
+
+.wizard.preview_etape .rectangle_degrade {
+	position: absolute;
+}
+
+#options-etape--Degrade .rectangle_degrade {
+	cursor: move;
+}
+
+.wizard.preview_etape .image_position img {
+	width: 100%;
+	height: 100%;
+}
+
+.wizard.preview_etape .rectangle_position.outlined, .wizard.preview_etape .image_position.outlined {
+	outline-width: 1px;
+	outline-style: solid;
+}
+
+.wizard.preview_etape .apercu_myfonts, .wizard.preview_etape .apercu_image {
+	min-height: 30px;
+	max-height: 100px;
+}
+
+.wizard.preview_etape .apercu_myfonts img {
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
+	max-width: 200px;
+	max-height: 100px;
+    text-align: left;
+}
+
+
+.wizard.preview_etape .proprietes_texte .apercu_myfonts img {
+	border-right: 1px solid black;	
+}
+
+.wizard.preview_etape div.extension_largeur {
+	position: absolute;
+	background-color: black;
+	width: 2px;
+	margin-top: 1px;
+	cursor: e-resize;
+}
+
+.wizard.preview_etape a[name~="fixer_rotation"]:hover {
+	text-decoration: underline;
+}
+
+.wizard.preview_etape input.option-Rotation {
+	cursor: move;
+}
+
+.wizard.preview_etape .point_polygone {
+	position: fixed;
+	width: 10px;
+	height: 10px;
+	border: 1px solid black;
+}
+
+.wizard.preview_etape .point_polygone.focus {
+	border: 1px solid white;
+	background-color: black;
+}
+
+.wizard.preview_etape .ui-resizable-helper { 
+	border: 2px dotted #00F; 
+}
+
+.dialog-preview-etape .ui-dialog-titlebar {
+	line-height: 15px;
+	height: 20px;
+}
+
+.dialog-preview-etape .ui-dialog-titlebar img {
+	height: 18px;
+	float: left;
+}
+
+.dialog-preview-etape .ui-dialog-titlebar .ui-dialog-titlebar-close {
+	right: -0.4em;
+	top: 20%;
+}
+
+.dialog-preview-etape .ui-dialog-titlebar img ~ span{
+	margin-left: 13px;	
+}
+
+.dialog-preview-etape.finale .ui-dialog-titlebar {
+	line-height: 11px;
+}
+
+
+.dialog-preview-etape:not(.finale) .image_preview {
+	float: left;
+}
+
+.preview_vide {
+	outline: 1px solid black;
+	background-color: white;
+	float: left;
+}
+
+#zone_ajout_etape {
+	position: absolute;
+	z-index: 999;
+}
+
+#ajout_etape {
+	cursor: pointer;
+	position: fixed;
+	z-index: 1000;
+}
+
+div.small.buttonset .ui-button-text, button.small .ui-button-text {
+	padding: 0px 10px 0px 10px !important;
+	font-size: 0.9em !important;
+}
+
+div.picker ~ input[type="text"] {
+	margin-left: 68px;
+}

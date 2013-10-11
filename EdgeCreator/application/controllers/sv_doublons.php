@@ -9,21 +9,20 @@ class Sv_doublons extends CI_Controller {
 	function index($pays=null,$magazine=null) {
 		
 		if (in_array(null,array($pays,$magazine))) {
-			echo 'Erreur : Nombre d\'arguments insuffisant';
+			$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
 			exit();
 		}
 		self::$pays=$pays;
 		self::$magazine=$magazine;
 		
-		$this->load->library('session');
 		if ($this->session->userdata('user') == false) {
 			echo 'Aucun utilisateur connecte';
 			return;
 		}
-		$this->load->database();
+		
 		$this->db->query('SET NAMES UTF8');
 		
-		$this->load->model('Modele_tranche');
+		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));
 		$this->Modele_tranche->sv_doublons($pays,$magazine);
 		

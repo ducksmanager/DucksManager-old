@@ -7,12 +7,12 @@ class ModifierG extends CI_Controller {
 	static $nom_option;
 	static $nouvelle_valeur;
 	
-	function index($pays=null,$magazine=null,$etape=null,$numeros='',$nom_option='',$nouvelle_valeur='', $debut_plage='null',$fin_plage='null', $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
+	function index($pays=null,$magazine=null,$etape=null,$numeros,$nom_option,$nouvelle_valeur, $debut_plage,$fin_plage, $nom_nouvelle_fonction=null, $est_etape_temporaire=false) {
 		try {
 			$est_etape_temporaire=$est_etape_temporaire === 'true';
 			$nouvelle_valeur=$nouvelle_valeur=='null' ? null : str_replace('[pt]','.',urldecode($nouvelle_valeur));
 			if (in_array(null,array($pays,$magazine,$etape))) {
-				echo 'Erreur : Nombre d\'arguments insuffisant';
+				$this->load->view('errorview',array('Erreur'=>'Nombre d\'arguments insuffisant'));
 				exit();
 			}
 			self::$etape=$etape;
@@ -22,18 +22,17 @@ class ModifierG extends CI_Controller {
 			self::$nom_option=$nom_option;
 			self::$nouvelle_valeur=$nouvelle_valeur;
 			$a=self::$nouvelle_valeur;
-			$this->load->library('session');
-			$this->load->database();
+			
 			$this->db->query('SET NAMES UTF8');
 			$this->load->helper('url');
 			$this->load->helper('form');
 			
-			$this->load->model('Modele_tranche');
+			$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 			$data=array();
 			
 			$privilege=$this->Modele_tranche->get_privilege();
 			if ($privilege == 'Affichage') {
-				echo 'Erreur : droits insuffisants';
+				$this->load->view('errorview',array('Erreur'=>'droits insuffisants'));
 				return;
 			}
 			$this->Modele_tranche->setUsername($this->session->userdata('user'));

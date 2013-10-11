@@ -8,7 +8,7 @@ class Cloner extends CI_Controller {
 	function index($pays=null,$magazine=null,$etape_courante=null,$etape=null) {
 		
 		if (in_array(null,array($pays,$magazine,$etape_courante,$etape))) {
-			echo 'Erreur : Nombre d\'arguments insuffisant';
+			$this->load->view('errorview',array('Erreur'=> 'Nombre d\'arguments insuffisant'));
 			exit();
 		}
 		self::$pays=$pays;
@@ -16,17 +16,16 @@ class Cloner extends CI_Controller {
 		self::$etape_courante=$etape_courante;
 		self::$etape=$etape;
 		
-		$this->load->library('session');
-		$this->load->database();
+		
 		$this->db->query('SET NAMES UTF8');
 		$this->load->helper('url');
 		$this->load->helper('form');
 		
-		$this->load->model('Modele_tranche');
+		$this->load->model($this->session->userdata('mode_expert') === true ? 'Modele_tranche' : 'Modele_tranche_Wizard','Modele_tranche');
 		
 		$privilege=$this->Modele_tranche->get_privilege();
 		if ($privilege == 'Affichage') {
-			echo 'Erreur : droits insuffisants';
+			$this->load->view('errorview',array('Erreur'=>'droits insuffisants'));
 			return;
 		}
 		$this->Modele_tranche->setUsername($this->session->userdata('user'));

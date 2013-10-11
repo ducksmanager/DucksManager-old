@@ -1,7 +1,7 @@
 <?php
 switch($format) {
 	case 'json':
-		header("X-JSON: " . json_encode($liste));
+		echo json_encode($liste);
 	break;
 	default:
 		?><select><?php

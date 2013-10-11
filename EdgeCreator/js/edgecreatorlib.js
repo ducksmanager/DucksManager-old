@@ -1,17 +1,19 @@
 function est_dans_intervalle(numero,intervalle) {
 	if (numero==null || intervalle.indexOf('Tous') != -1 || numero==intervalle)
 		return true;
+	var numeros_debut = null;
+	var numeros_fin = null;
 	if (intervalle.indexOf('~')!=-1) {
 		var numeros_debut_fin=intervalle.split('~');
-		var numeros_debut=numeros_debut_fin[0].split(';');
-		var numeros_fin=numeros_debut_fin[1].split(';');
+		numeros_debut=numeros_debut_fin[0].split(';');
+		numeros_fin=numeros_debut_fin[1].split(';');
 	}
 	else {
-		var numeros_debut=intervalle.split(';');
-		var numeros_fin=intervalle.split(';');
+		numeros_debut=intervalle.split(';');
+		numeros_fin=intervalle.split(';');
 	}
 	var trouve=false;
-	Object.keys(numeros_debut).each(function(i) {
+	$.each(Object.keys(numeros_debut),function(index,i) {
 		var numero_debut=numeros_debut[i];
 		var numero_fin=numeros_fin[i];
 		if (numero_debut === numero_fin) {
