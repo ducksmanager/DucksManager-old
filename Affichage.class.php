@@ -214,7 +214,7 @@ class Affichage {
 								continue;
 							}	
 							?><b><?=$evenement->utilisateur?></b> <?=NEWS_A_AJOUTE?> 
-							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
+							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
 							<?php 
 							if ($evenement->cpt > 0) {
 								?>
@@ -232,7 +232,8 @@ class Affichage {
 							$contributeurs = array_unique($evenement->utilisateur);
 							?><b><?=utf8_decode(implode('</b> '.ET.' <b>', $contributeurs))?></b> 
 							<?=count($contributeurs) === 1 ? NEWS_ONT_CREE_TRANCHE_SING : NEWS_ONT_CREE_TRANCHE_PLUR?>
-							<img src="images/flags/<?=$numero->Pays?>.png" />&nbsp;<?=$magazines_complets[$numero->Pays.'/'.$numero->Magazine].' '.$numero->Numero?>
+							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
+							
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
 						break;
@@ -268,6 +269,10 @@ class Affichage {
 				}
 			}
 		}
+	}
+	
+	static function afficher_texte_numero($pays, $magazine, $numero) {
+		?><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?><?php
 	}
 	
 	static function valider_formulaire_inscription($user, $pass, $pass2) {
