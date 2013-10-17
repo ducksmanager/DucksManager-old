@@ -1,3 +1,6 @@
 [submodule "EdgeCreator"]
 	path = EdgeCreator
 	url = https://github.com/ducksmanager/EdgeCreator.git
+[submodule "OpenFlashChart"]
+	path = OpenFlashChart
+	url = https://github.com/ducksmanager/OpenFlashChart.git
