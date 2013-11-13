@@ -8,7 +8,7 @@ include_once('Util.class.php');
 include_once('Database.class.php');
 class Inducks {
 	static $noms_complets;
-		static $use_local_db=false;
+		static $use_local_db=true;
 
 		static function connexion_ok() {
 			$requete='SELECT COUNT(*) As cpt FROM inducks_country';
