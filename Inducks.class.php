@@ -278,6 +278,7 @@ class Inducks {
 	}
 }
 
+require_once('_priv/Database.priv.class.php');
 Inducks::$use_local_db = $_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel;
 
 if (isset($_POST['get_pays'])) {

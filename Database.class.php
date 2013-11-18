@@ -505,7 +505,7 @@ function ajouter_auteur($id,$nom) {
 					if (!array_key_exists($auteur,$auteurs))
 					$auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
 					if (!$debut) {
-						if ($i==count($auteur__nb)-1) {
+						if ($i==count($auteurs__nbs)-1) {
 							?> <?=ET?> <?php
 						}
 						else {
@@ -544,6 +544,9 @@ function ajouter_auteur($id,$nom) {
 	}
 
 	function sous_liste($pays,$magazine) {
+        $id_user=$this->user_to_id($_SESSION['user']);
+        $l=DM_Core::$d->toList($id_user);
+
 		$l_magazine=new Liste();
 		if (isset($l->collection[$pays][$magazine])) {
 			foreach($l->collection[$pays][$magazine] as $numero) {
@@ -669,7 +672,7 @@ function ajouter_auteur($id,$nom) {
 		}
 		
 		/* Ajouts de tranches */
-		$requete_tranches='SELECT publicationcode, issuenumber, photographes, createurs, dateajout DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes '
+		$requete_tranches='SELECT publicationcode, issuenumber, photographes, createurs, DATE(dateajout) DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes '
 						 .'FROM tranches_pretes '
 						 .'WHERE DateAjout > date_add(now(), interval -1 month) '
 						 .'AND NOT (publicationcode = \'fr/JM\' AND issuenumber REGEXP \'^[0-9]+$\')';
