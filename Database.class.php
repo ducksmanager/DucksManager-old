@@ -598,7 +598,7 @@ function ajouter_auteur($id,$nom) {
 		return $cpt_et_niveaux;
 	}
 	
-	function getEvenementsRecents() {
+	function get_evenements_recents() {
 		$limite_evenements = 20;
 
 		$evenements = new stdClass();
@@ -621,8 +621,8 @@ function ajouter_auteur($id,$nom) {
 		
 		/* Ajouts aux collections */
 		$evenements->publicationcodes = array();
-		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour, 
-				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt, 
+		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour,
+				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt,
 				  		 (SELECT CONCAT(Pays,\'/\',Magazine,\'/\',Numero)
 						  FROM numeros n
 						  WHERE n.ID=numeros.ID
@@ -654,9 +654,9 @@ function ajouter_auteur($id,$nom) {
 		}
 		
 		/* Propositions de bouquineries */
-		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes '
-							 .'FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID '
-							 .'WHERE DateAjout > date_add(now(), interval -1 month)';
+		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
+							   FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID
+							   WHERE DateAjout > date_add(now(), interval -1 month)';
 		
 
 		$resultat_bouquineries = DM_Core::$d->requete_select($requete_bouquineries);
@@ -672,19 +672,32 @@ function ajouter_auteur($id,$nom) {
 		}
 		
 		/* Ajouts de tranches */
-		$requete_tranches='SELECT publicationcode, issuenumber, photographes, createurs, DATE(dateajout) DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes '
-						 .'FROM tranches_pretes '
-						 .'WHERE DateAjout > date_add(now(), interval -1 month) '
-						 .'AND NOT (publicationcode = \'fr/JM\' AND issuenumber REGEXP \'^[0-9]+$\')';
+		$requete_tranches="SELECT publicationcode, issuenumber, photographes, createurs, DATE(dateajout) DateAjout,
+                                  (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes, COUNT(issuenumber) AS cpt,
+                                  (
+                                    SELECT CONCAT(publicationcode,'/',issuenumber)
+                                    FROM tranches_pretes tp
+                                    WHERE tp.publicationcode =tranches_pretes.publicationcode AND tp.issuenumber =tranches_pretes.issuenumber
+                                    LIMIT 1
+                                  ) AS NumeroExemple
+                          FROM tranches_pretes
+                          WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+                            AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
+                          GROUP BY CONCAT(photographes, createurs), DATE(DateAjout)
+                          HAVING COUNT(issuenumber) > 0
+                          ORDER BY DateAjout DESC";
 		
 		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
 		foreach($resultat_tranches as $tranche_prete) {
 			$publicationcode = $tranche_prete['publicationcode'];
 			$evenements->publicationcodes[]=$publicationcode;
-			list($pays,$magazine)=explode('/', $publicationcode);
-			$numero=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$tranche_prete['issuenumber']);
 
-			$evenement = array('numero'=>$numero);
+            list($pays,$magazine,$numero)=explode('/',$tranche_prete['NumeroExemple']);
+            $numero_exemple=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+
+            $evenement = array('numero_exemple'=>$numero_exemple,
+                               'cpt'		   =>intval($tranche_prete['cpt'])-1);
+
 			ajouter_evenement(
 					$evenements->evenements,
 					$tranche_prete['DateAjout'],
@@ -768,7 +781,7 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
 	else if (isset($_POST['evenements_recents'])) {	
-		Affichage::afficher_evenements_recents(DM_Core::$d->getEvenementsRecents());
+		Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);

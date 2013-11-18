@@ -224,16 +224,21 @@ class Affichage {
 							<?=NEWS_A_SA_COLLECTION?><?php
 						break;
 						case 'tranches pretes':
-							$numero=$evenement->numero;
+							$numero=$evenement->numero_exemple;
 							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
 								$evenement->cpt++;
 								continue;
 							}
 							$contributeurs = array_unique($evenement->utilisateur);
 							?><b><?=utf8_decode(implode('</b> '.ET.' <b>', $contributeurs))?></b> 
-							<?=count($contributeurs) === 1 ? NEWS_ONT_CREE_TRANCHE_SING : NEWS_ONT_CREE_TRANCHE_PLUR?>
+							<?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
 							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
-							
+                            <?php
+                            if ($evenement->cpt > 0) {
+                                ?>
+                                <?=ET?> <?=$evenement->cpt?>
+                                <?=$evenement->cpt === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
+                            <?php } ?>
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
 						break;
