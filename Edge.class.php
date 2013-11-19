@@ -45,7 +45,7 @@ class Edge {
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
 				if (! (list($this->largeur,$this->hauteur,$type,$attr)=@getimagesize($url_image))) {
-					mail('admin@ducksmanager.net', 'Image de bibliothèque corrompue',$url_image);
+					mail('admin@ducksmanager.net', 'Image de bibliothï¿½que corrompue',$url_image);
 					return;
 				}
 				$this->largeur=intval( $this->largeur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
@@ -384,7 +384,7 @@ elseif (isset($_POST['generer_images_etageres'])) {
 		else
 			$pos_etagere_suivante=explode(',',$pos->etageres->etageres[$num_etagere]);
 	   	$hauteur=$pos_etagere_suivante[1]-$pos_etagere_courante[1];
-	   	if ($hauteur ==0) // Cas de la dernière étagère, vide
+	   	if ($hauteur ==0) // Cas de la derniï¿½re ï¿½tagï¿½re, vide
 	   		$hauteur=16;
 		$im=imagecreatetruecolor($largeur, $hauteur);
 		
@@ -536,14 +536,16 @@ function imagecreatefromgif_getimagesize($chemin) {
 	return array($image,imagesx($image),imagesy($image));
 }
 
-function imagepalettetotruecolor(&$img) {
-	if (!imageistruecolor($img))
-	{
-		$w = imagesx($img);
-		$h = imagesy($img);
-		$img1 = imagecreatetruecolor($w,$h);
-		imagecopy($img1,$img,0,0,0,0,$w,$h);
-		$img = $img1;
+if (!function_exists('imagepalettetotruecolor')) {
+	function imagepalettetotruecolor(&$img) {
+		if (!imageistruecolor($img))
+		{
+			$w = imagesx($img);
+			$h = imagesy($img);
+			$img1 = imagecreatetruecolor($w,$h);
+			imagecopy($img1,$img,0,0,0,0,$w,$h);
+			$img = $img1;
+		}
 	}
 }
 
