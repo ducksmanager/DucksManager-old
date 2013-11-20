@@ -602,7 +602,7 @@ function ajouter_auteur($id,$nom) {
 		$evenements->evenements = array();
 
 		/* Inscriptions */
-		$requete_inscriptions='SELECT users.ID, users.username, DateInscription, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
+		$requete_inscriptions='SELECT users.ID, users.username, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
 							 .'FROM users '
 							 .'WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE "test%"';
 
@@ -610,7 +610,6 @@ function ajouter_auteur($id,$nom) {
 		foreach($resultat_inscriptions as $inscription) {
 			ajouter_evenement(
 				$evenements->evenements,
-				$inscription['DateInscription'],
 				$inscription['DiffSecondes'],
 				'inscriptions',
 				$inscription['username']);
@@ -618,7 +617,7 @@ function ajouter_auteur($id,$nom) {
 		
 		/* Ajouts aux collections */
 		$evenements->publicationcodes = array();
-		$requete='SELECT users.ID, users.username, DATE(DateAjout) AS DateAjoutJour,
+		$requete='SELECT users.ID, users.username,
 				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt,
 				  		 (SELECT CONCAT(Pays,\'/\',Magazine,\'/\',Numero)
 						  FROM numeros n
@@ -642,8 +641,7 @@ function ajouter_auteur($id,$nom) {
 							   'cpt'		   =>intval($ajout['cpt'])-1);
 			
 			ajouter_evenement(
-				$evenements->evenements, 
-				$ajout['DateAjoutJour'],
+				$evenements->evenements,
 				$ajout['DiffSecondes'],
 				'ajouts',
 				$ajout['username'],
@@ -651,7 +649,7 @@ function ajouter_auteur($id,$nom) {
 		}
 		
 		/* Propositions de bouquineries */
-		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, DateAjout, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
+		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
 							   FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID
 							   WHERE DateAjout > date_add(now(), interval -1 month)';
 		
@@ -661,7 +659,6 @@ function ajouter_auteur($id,$nom) {
 			$evenement = array('nom_bouquinerie'=>$bouquinerie['Nom']);
 			ajouter_evenement(
 					$evenements->evenements,
-					$bouquinerie['DateAjout'],
 					$bouquinerie['DiffSecondes'],
 					'bouquineries',
 					$bouquinerie['username'],
@@ -697,7 +694,6 @@ function ajouter_auteur($id,$nom) {
 
 			ajouter_evenement(
 					$evenements->evenements,
-					$tranche_prete['DateAjout'],
 					$tranche_prete['DiffSecondes'],
 					'tranches pretes',
 					array_merge(explode(',',$tranche_prete['photographes']),
@@ -919,7 +915,7 @@ function note_to_pouces($num,$note) {
 }
 
 
-function ajouter_evenement(&$evenements, $jour_evenement, $diff_secondes, $type_evenement, $utilisateur, $evenement=array()) {
+function ajouter_evenement(&$evenements, $diff_secondes, $type_evenement, $utilisateur, $evenement=array()) {
 	$evenement['diffsecondes'] = $diff_secondes;
 	$evenement['utilisateur'] = $utilisateur;
 	if (!array_key_exists($diff_secondes, $evenements)) {

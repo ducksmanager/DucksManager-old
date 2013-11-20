@@ -185,7 +185,7 @@ class Edge {
 		return $sous_image;
 	}
 
-	static function getPourcentageVisible($get_html=false, $regen=false, $user_unique=true) {
+	static function getPourcentageVisible($get_html=false, $user_unique=true) {
 		include_once('Database.class.php');
 		global $numeros_inducks;
 		@session_start();
@@ -414,7 +414,7 @@ elseif (isset($_POST['generer_images_etageres'])) {
 	
 }
 elseif (isset($_GET['dispo_tranches'])) {
-	$data=Edge::getPourcentageVisible(false, false, false);
+	$data=Edge::getPourcentageVisible(false, false);
 	asort($data);
 	$usernames=array_keys($data);
 	sort($data);
