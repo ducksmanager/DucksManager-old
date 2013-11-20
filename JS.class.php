@@ -6,7 +6,6 @@ class JS {
 	function JS() {
 		$scripts=array();
 		$noms=func_get_args();
-		$balise_script_commencee=false;
 		foreach($noms as $nom) {
             $prefixe=substr($nom,0,strrpos($nom,'.'));
             if (isset($_GET['debug']) || strpos($nom,'scriptaculous')!==false || in_array($nom,array('prototype.js','js/json/json2.js','js/swfobject.js'))) {

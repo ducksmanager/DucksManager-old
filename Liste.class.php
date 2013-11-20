@@ -136,7 +136,6 @@ class Liste {
 				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
 		$counts=array();
-		$total=0;
 		foreach($this->collection as $pays=>$numeros_pays) {
 			$counts[$pays]=array();
 			foreach($numeros_pays as $magazine=>$numeros) {
@@ -429,7 +428,7 @@ class Liste {
 	function est_possede($pays,$magazine,$numero) {
 		if (array_key_exists($pays,$this->collection)) {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
-				foreach($this->collection[$pays][$magazine] as $id=>$numero_liste) {
+				foreach($this->collection[$pays][$magazine] as $numero_liste) {
 					if (nettoyer_numero($numero_liste[0])==$numero) {
 						return true;
 					}
@@ -441,7 +440,7 @@ class Liste {
 	function infos_numero($pays,$magazine,$numero) {
 		if (array_key_exists($pays,$this->collection)) {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
-				foreach($this->collection[$pays][$magazine] as $id=>$numero_liste) {
+				foreach($this->collection[$pays][$magazine] as $numero_liste) {
 					if ($numero_liste[0]==$numero) {
 						return array($numero_liste[0],
 									 array_key_exists($numero_liste[1],Database::$etats) ? $numero_liste[1] : 'indefini',

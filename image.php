@@ -13,7 +13,7 @@ foreach($possessions_init as $indice=>$possession) {
                              'Numero'=>$numero,
                              'Etat'=>$etat,
                              'Date d\'acquisition'=>$date,
-                             'Couleur'=>$couleur); // Les indices du tableau correspondent aux numéros
+                             'Couleur'=>$couleur); // Les indices du tableau correspondent aux numï¿½ros
 }
 $max_centaines=1;
 foreach($possessions as $numero) {
@@ -28,7 +28,7 @@ $hauteur+=30*$max_centaines;
 $centre_spirale_x = $largeur/2;
 $centre_spirale_y = $hauteur/2;
 //echo '<pre>';print_r($possessions);echo '</pre>';
-//unset($possessions[$array_temp[1]]); // On détruit la case vide
+//unset($possessions[$array_temp[1]]); // On dï¿½truit la case vide
 /*echo '<pre>';
 print_r($possessions);
 echo '</pre>';*/
@@ -81,7 +81,7 @@ $max=$numero;
 		
 		}*/
 		$cpt=0;
-		if ($numero%100==0) { // Affiche une ligne épaissie à la ligne des multiples de 500
+		if ($numero%100==0) { // Affiche une ligne ï¿½paissie ï¿½ la ligne des multiples de 500
 			$cpt++;
 			$p=num_vers_Point($numero,+0.1,$epaisseur);
 			$p2=num_vers_Point($numero+1,0.1,$epaisseur);
@@ -103,7 +103,7 @@ $max=$numero;
 	ImageJpeg($image);
 
 function num_vers_Point ($num,$modif_ecart,$epaisseur) {
-	global $largeur;global $hauteur;global $petit_rayon;global $centre_spirale_x;global $centre_spirale_y;
+	global $petit_rayon;global $centre_spirale_x;global $centre_spirale_y;
 
 	$num_centaines=0; $num_restant=$num;
 

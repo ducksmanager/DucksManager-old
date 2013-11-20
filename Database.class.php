@@ -244,7 +244,7 @@ class Database {
 					.'L\'utilisateur '.$_SESSION['user'].' est int&eacute;ress&eacute; par certains des num&eacute;ros que vous proposez &agrave; la vente sur DucksManager.'
 					.'<br /><br />Vous pouvez r&eacute;pondre directement &agrave; cet e-mail pour lui proposer un prix et un moyen de lui transmettre vos num&eacute;ros.'
 					.'<br /><br /><br />Bonne vente, et &agrave; bient&ocirc;t sur DucksManager !<br /><br />L\'&eacute;quipe DucksManager';
-					if (mail($email_vendeur, 'Un utilisateur est intéressé par vos numéros en vente sur DucksManager', $contenu_mail,$entete)) {
+					if (mail($email_vendeur, 'Un utilisateur est intï¿½ressï¿½ par vos numï¿½ros en vente sur DucksManager', $contenu_mail,$entete)) {
 						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);
@@ -307,7 +307,6 @@ class Database {
 				}
 				$requete_insert.=',ID_Utilisateur) VALUES ';
 				$debut=true;
-				$l=new Liste();
 				$liste_user=$this->toList($this->user_to_id($_SESSION['user']));
 				$liste_deja_possedes=array();
 				foreach($liste as $numero) {
@@ -382,9 +381,7 @@ class Database {
 				$requete.='WHERE (ID_Utilisateur='.$id_user.') ';
 			$requete.='ORDER BY Pays, Magazine, Numero';
 			$resultat=DM_Core::$d->requete_select($requete);
-			$cpt=0;
 			$l=new Liste();
-			$numero=-1;
 			foreach ($resultat as $infos) {
 				if (array_key_exists($infos['Pays'],$l->collection)) {
 						if (array_key_exists($infos['Magazine'],$l->collection[$infos['Pays']])) {
@@ -714,7 +711,7 @@ function ajouter_auteur($id,$nom) {
 		$evenements_slice=array();
 		$cpt=0;
 		
-		// Filtre : les 20 plus récents seulement
+		// Filtre : les 20 plus rï¿½cents seulement
 		foreach($evenements->evenements as $diff_secondes=>$evenements_types) {
 			$evenements_slice[$diff_secondes]=new stdClass();
 			foreach($evenements_types as $type=>$evenements_type) {
@@ -811,7 +808,7 @@ if (isset($_POST['database'])) {
 		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
-		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
+		/*Vï¿½rifier d'abord que les numï¿½ros ï¿½ ajouter ne correspondent pas dï¿½jï¿½ ï¿½ une date d'acquisition*/
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
 										   .'FROM achats '
 										   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
@@ -895,7 +892,7 @@ elseif (isset($_POST['liste_bouquineries'])) {
 			$json=json_encode($resultat_bouquineries);
 			echo $json;
 		}
-	else { // Vérification de l'utilisateur
+	else { // Vï¿½rification de l'utilisateur
 			if (DM_Core::$d->user_exists($_POST['user']))
 					echo UTILISATEUR_EXISTANT;
 			else

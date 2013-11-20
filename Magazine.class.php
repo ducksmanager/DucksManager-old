@@ -27,7 +27,6 @@ class Magazine extends DM_Core{
         global $isv_publicationcategory;
         global $isv_redirection_magazine;
 
-        $f_o=new Magazine();
         $liste_magazines_publicationcode=DM_Core::multipleConstructFromIsv('Magazine',$isv_publication);
         $liste_magazines_category=DM_Core::multipleConstructFromIsv('Magazine',$isv_publicationcategory);
         foreach($liste_magazines_publicationcode as $cle_magazine=>&$magazine) {

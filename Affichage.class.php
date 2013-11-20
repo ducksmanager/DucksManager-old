@@ -8,10 +8,8 @@ class Affichage {
 	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$id=null) {
 			$onmouseover='';
 			$onmouseout='';
-			$cpt=0;
 			$nb_onglets=count($tab_onglets);
 			$id=is_null($id) ? '':$id;
-			$largeur_tab=intval(100/($nb_onglets==0 ? 1 : $nb_onglets));
 			?><ul <?=empty($id)?'':('id="'.$id.'"')?> class="tabnav"><?php
 			foreach($tab_onglets as $nom_onglet=>$infos_lien) {
 				$pays=$id=='onglets_pays' ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
@@ -95,13 +93,7 @@ class Affichage {
 		}
 		$nb_non_possedes=count($numeros)-$nb_possedes;
 						
-						
-		$etats=array('manque'=>ETAT_MANQUANTS,
-					 'mauvais'=>ETAT_MAUVAIS,
-					 'moyen'=>ETAT_MOYEN,
-					 'bon'=>ETAT_BON,
-					 'excellent'=>ETAT_EXCELLENT,
-					 'indefini'=>ETAT_INDEFINI);
+		
 		$cpt=0;
 		//print_r($liste->collection[$pays][$magazine]);
 		?>
@@ -192,7 +184,7 @@ class Affichage {
 	static function afficher_evenements_recents($evenements) {
 		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
 
-		foreach($evenements->evenements as $diffsecondes=>$evenements_date) {
+		foreach($evenements->evenements as $evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $evenement) {
 					?><div><?php
@@ -207,7 +199,6 @@ class Affichage {
 						<?php 
 						break;
 						case 'ajouts':
-							$numeros=array();
 							$numero=$evenement->numero_exemple;
 							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
 								$evenement->cpt++;

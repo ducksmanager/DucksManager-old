@@ -24,10 +24,8 @@ class DM_Core {
         $tab=str_getcsv($page, '^');
         //echo '<pre>';print_r($tab);echo '</pre>';
         $liste=array();
-        $champs_inducks=array();
         for ($i=count($isv->champs);$i<count($tab)-1;$i+=count($isv->champs)) {
             $o=new $type_o;
-            $args=array();
             $j=0;
             foreach ($isv->champs as $champ_inducks=>$champ_DM) {
                 if (!is_null($champ_DM)) {

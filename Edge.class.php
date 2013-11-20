@@ -133,7 +133,6 @@ class Edge {
 		if ($this->hauteur > Etagere::$hauteur_max_etage)
 			Etagere::$hauteur_max_etage = $this->hauteur ;
 		$code.= '<img class="tranche" ';
-		$image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero_reference.'.png';
 		
 		if ($this->image_existe && !$regen) {
 			$code.='name="'.$this->pays.'/'.$this->magazine.'.'.$this->numero_reference.'" ';

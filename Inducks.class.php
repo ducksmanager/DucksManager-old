@@ -33,7 +33,7 @@ class Inducks {
 				}
 				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
 				if (isset($_GET['brut'])) {
-					echo 'Requête : '.$requete.'<br />'
+					echo 'Requï¿½te : '.$requete.'<br />'
 						.'Retour brut : <pre>'.Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)).'</pre>'
 						.'Stacktrace : <pre>';
 					debug_print_backtrace();
@@ -145,7 +145,7 @@ class Inducks {
 		$page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c='.$pays.'/'.$magazine);
 		$regex_couverture='#<img border=0 src="([^"]+)"></a><br>\(?<a href=issue\.php[^>]+>(?:<span[^>]+>)?([^<]+)</a>\)?#is';
 		preg_match_all($regex_couverture,$page,$couvertures);
-		foreach($couvertures[0] as $i=>$couverture) {
+		foreach(array_keys($couvertures[0]) as $i) {
 			$liste[$couvertures[2][$i]]=$couvertures[1][$i];
 		}
 		return $liste;
@@ -228,7 +228,7 @@ class Inducks {
 		}
 		include_once ('locales/lang.php');
 		$regex_retrieve_numeros='#country\^entrycode\^collectiontype\^comment#is';
-		return preg_match($regex_retrieve_numeros,$texte,$liste)>0;
+		return preg_match($regex_retrieve_numeros,$texte)>0;
 	}
 	
 	static function get_nb_numeros_magazines_pays($pays) {
@@ -350,7 +350,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		$code=substr($nom_histoire, strlen('code='));
 		$resultat_requete=Inducks::get_issues_from_storycode($code);
 		if (count($resultat_requete) == 0) {
-			// On réessaie en testant le doublement de chacun des espaces du code d'histoire
+			// On rï¿½essaie en testant le doublement de chacun des espaces du code d'histoire
 			$i=1;
 			$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
 			while ($code_avec_espaces !== $code) {
