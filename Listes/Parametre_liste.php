@@ -10,7 +10,7 @@ class Parametre_liste {
 		$this->valeur_defaut=$defaut;
 	}
 	function verif($valeur) {
-		echo 'Cette fonction ne peut pas être appelée directement';
+		echo 'Cette fonction ne peut pas ï¿½tre appelï¿½e directement (valeur : '.$valeur.')';
 	}
 }
 

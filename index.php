@@ -322,7 +322,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     	$ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
                                         $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
                                         $l=new Liste($_POST['rawData']);
-                                        $l->synchro_to_database(DM_Core::$d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);   
+                                        $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);   
                                     }
                                     else {
                                         $rawdata_valide=(Inducks::liste_numeros_valide($_POST['rawData']));

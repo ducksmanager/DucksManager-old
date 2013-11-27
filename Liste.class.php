@@ -294,7 +294,7 @@ class Liste {
 			return $cpt;
 	}
 
-	function synchro_to_database($d,$ajouter_numeros=true,$supprimer_numeros=false) {
+	function synchro_to_database($ajouter_numeros=true,$supprimer_numeros=false) {
 			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 			$l_ducksmanager=DM_Core::$d->toList($id_user);
 			$l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
