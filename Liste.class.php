@@ -260,7 +260,7 @@ class Liste {
 		}
 	}
 
-	function add_to_database($d,$id_user) {
+	function add_to_database($id_user) {
 			$cpt=0;
 			foreach($this->collection as $pays=>$numeros_pays) {
 				if ($pays=='country')
@@ -277,7 +277,7 @@ class Liste {
 			return $cpt;
 	}
 
-		function remove_from_database($d,$id_user) {
+		function remove_from_database($id_user) {
 			$cpt=0;
 			foreach($this->collection as $pays=>$numeros_pays) {
 				if ($pays=='country')
@@ -298,36 +298,6 @@ class Liste {
 			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 			$l_ducksmanager=DM_Core::$d->toList($id_user);
 			$l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
-	}
-		
-	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-
-		$liste_origine=$this->collection[$pays][$magazine];
-		foreach($liste as $numero) {
-			switch($etat) {
-				case 'manque':
-					if (($pos=array_search($numero,$liste_origine))!=-1) {
-						unset($liste_origine[$pos]);
-					}
-					break;
-				default:
-					if (!array_key_exists($pays,$this->collection)) {
-						$arr_temp=array($magazine=>array($numero,$id_acquisition));
-						$this->collection[$pays]=$arr_temp;
-						$liste_origine=$this->collection[$pays][$magazine];
-					}
-					if (!array_key_exists($magazine,$this->collection[$pays])) {
-						$this->collection[$pays][$magazine]=array($numero,$id_acquisition);
-						$liste_origine=$this->collection[$pays][$magazine];
-						continue;
-					}
-					if (!in_array($numero,$liste_origine)) {
-						array_push($liste_origine,array($numero,$id_acquisition));
-					}
-					break;
-			}
-		}
-		$this->collection[$pays][$magazine]=$liste_origine;
 	}
 
 	function lire() {
@@ -365,7 +335,7 @@ class Liste {
 				}
 			}
 			if ($supprimer_numeros)
-				$liste_a_supprimer->remove_from_database (DM_Core::$d, $id_user);
+				$liste_a_supprimer->remove_from_database ($id_user);
 			$liste_a_ajouter=new Liste();
 			foreach($other_list->collection as $pays=>$numeros_pays) {
 				foreach($numeros_pays as $magazine=>$numeros) {
@@ -390,7 +360,7 @@ class Liste {
 				}
 			}
 			if ($ajouter_numeros)
-				$liste_a_ajouter->add_to_database (DM_Core::$d, $id_user);
+				$liste_a_ajouter->add_to_database ($id_user);
 			if (!$ajouter_numeros && !$supprimer_numeros) {
 				?>
 				<ul>

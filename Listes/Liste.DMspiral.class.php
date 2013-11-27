@@ -204,10 +204,10 @@ class dmspiral extends Format_liste {
 				$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;
 				if ($est_numero_double) {
 					$premier_numero = $numero2[1] . $numero2[2];
-					$this->marquer_numero ($image, $premier_numero, $noir);
+					$this->marquer_numero ($image, $premier_numero);
 				}
 				else
-					$this->marquer_numero ($image, $numero['Numero'], $noir);
+					$this->marquer_numero ($image, $numero['Numero']);
 			}
 			//break;
 		}
@@ -223,7 +223,7 @@ class dmspiral extends Format_liste {
 		}
 	}
 	
-	function marquer_numero($image,$numero,$noir) {
+	function marquer_numero($image,$numero) {
 		$centaine=intval($numero/100);
 		$diz_unites=$numero-100*$centaine;
 		$pos=new stdClass();
