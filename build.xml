@@ -69,8 +69,9 @@
          description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
   <exec executable="phpcs">
    <arg value="--standard=${basedir}/build/phpcs.xml" />
-   <arg value="--ignore=EdgeCreator" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/EdgeCreator/"/>
   </exec>
  </target>
 
@@ -89,6 +90,8 @@
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/EdgeCreator/"/>
   </exec>
  </target>
 
