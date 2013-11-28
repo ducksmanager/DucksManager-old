@@ -91,7 +91,7 @@
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
    <arg value="--exclude"/>
-   <arg value="${basedir}/EdgeCreator/"/>
+   <arg value="${basedir}/EdgeCreator"/>
    <arg path="${basedir}" />
   </exec>
  </target>
