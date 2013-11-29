@@ -14,7 +14,7 @@ class Magazine extends DM_Core{
     var $redirige_depuis=null; // Facultatif
     var $ne_parait_plus=null;
     
-    function Magazine() {
+    function __construct() {
         parent::__construct();
     }
 

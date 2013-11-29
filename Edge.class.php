@@ -1,5 +1,4 @@
 <?php
-include_once('Texte.class.php');
 include_once('IntervalleValidite.class.php');
 include_once('DucksManager_Core.class.php');
 include_once('getDimensions.php');
@@ -27,7 +26,7 @@ class Edge {
 	static $largeur_numeros_precedents=0;
 	static $d;
 	
-	function Edge($pays=null,$magazine=null,$numero=null,$numero_reference=null,$image_seulement=false) {
+	function __construct($pays=null,$magazine=null,$numero=null,$numero_reference=null,$image_seulement=false) {
 		if (is_null($pays))
 			return;
 		$this->magazine_est_inexistant=false;

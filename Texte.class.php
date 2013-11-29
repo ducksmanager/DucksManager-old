@@ -7,7 +7,7 @@ class Texte {
 	var $angle;
 	var $couleur;
 	var $police;
-	function Texte($texte,$pos_x,$pos_y,$taille,$angle,$couleur,$police) {
+	function __construct($texte,$pos_x,$pos_y,$taille,$angle,$couleur,$police) {
 		$this->texte=$texte;
 		$this->pos_x=$pos_x;$this->pos_y=$pos_y;
 		$this->taille=$taille;
@@ -37,7 +37,7 @@ class Texte {
     }
 
     function dessiner_centre($image, $compression=array(1,1),$couleur_fond=array(0,0,0)) {
-        // Test pour détecter la largeur de la lettre
+        // Test pour dï¿½tecter la largeur de la lettre
         $this->pos_x=0;
         $image_factice=imagecreate(imagesx($image),imagesy($image));
         $points=$this->dessiner($image_factice);

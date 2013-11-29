@@ -7,7 +7,7 @@ include_once ('locales/lang.php');
 require_once('Format_liste.php');
 class classique extends Format_liste {
 	static $titre='Liste classique';
-	function classique() {
+	function __construct() {
 		$this->les_plus=array(CLASSIQUE_PLUS_1);
 		$this->les_moins=array(CLASSIQUE_MOINS_1,CLASSIQUE_MOINS_2,CLASSIQUE_MOINS_3);
 		$this->description=CLASSIQUE_DESCRIPTION;

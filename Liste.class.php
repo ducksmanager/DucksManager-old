@@ -8,44 +8,45 @@ class Liste {
 	var $collection=array();
 	var $very_max_centaines=1;
 	var $database;
-		static $types_listes=array();
+	static $types_listes=array();
 
-		static function set_types_listes() {
-			$rep = "Listes/";
-			$dir = opendir($rep);
-			$prefixe='Liste.';
-			$suffixe='.class.php';
-			while ($f = readdir($dir)) {
-				if (strpos($f,'Debug')!==false)
-					continue;
-				if(is_file($rep.$f)) {
-					if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
-						$nom=substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe));
-						
-						include_once('Listes/Liste.'.$nom.'.class.php');
-						$a=new ReflectionProperty($nom, 'titre');
-						Liste::$types_listes[$nom]=$a->getValue();
-					}
+	static function set_types_listes() {
+		$rep = "Listes/";
+		$dir = opendir($rep);
+		$prefixe='Liste.';
+		$suffixe='.class.php';
+		while ($f = readdir($dir)) {
+			if (strpos($f,'Debug')!==false)
+				continue;
+			if(is_file($rep.$f)) {
+				if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
+					$nom=substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe));
+					
+					include_once('Listes/Liste.'.$nom.'.class.php');
+					$a=new ReflectionProperty($nom, 'titre');
+					Liste::$types_listes[$nom]=$a->getValue();
 				}
 			}
-			return Liste::$types_listes;
 		}
-	function Liste($texte=false) {
+		return Liste::$types_listes;
+	}
+	
+	function __construct($texte=false) {
 		if (!$texte)
 					return;
 		$this->texte=$texte;
 		$this->lire();
 	}
 
-		function ajouter($pays,$magazine,$numero) {
-			if (!array_key_exists($pays, $this->collection))
-				$this->collection[$pays]=array();
-			if (!array_key_exists($magazine,$this->collection[$pays]))
-				$this->collection[$pays][$magazine]=array();
-			if (in_array($numero, $this->collection[$pays][$magazine]))
-				return;
-			$this->collection[$pays][$magazine][]=$numero;
-		}
+	function ajouter($pays,$magazine,$numero) {
+		if (!array_key_exists($pays, $this->collection))
+			$this->collection[$pays]=array();
+		if (!array_key_exists($magazine,$this->collection[$pays]))
+			$this->collection[$pays][$magazine]=array();
+		if (in_array($numero, $this->collection[$pays][$magazine]))
+			return;
+		$this->collection[$pays][$magazine][]=$numero;
+	}
 
 	function ListeExemple() {
 		$numeros_mp=array(array(2,'Excellent',false,-1),array(273,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));

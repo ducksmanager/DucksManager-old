@@ -20,7 +20,7 @@ class Database {
 	var $password;
 
 
-	function Database() {
+	function __construct() {
 			require_once('_priv/Database.priv.class.php');
 			return DatabasePriv::connect();
 	}

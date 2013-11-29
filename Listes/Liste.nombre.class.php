@@ -5,7 +5,7 @@ require_once('Database.class.php');
 class Nombre extends Format_liste {
 	static $titre='Liste classique abr&eacute;g&eacute;e';
 
-	function Nombre() {
+	function __construct() {
 		$this->les_plus = array(CLASSIQUE_ABREGE_PLUS_1);
 		$this->les_moins = array(CLASSIQUE_ABREGE_MOINS_1, CLASSIQUE_ABREGE_MOINS_2);
 		$this->description = CLASSIQUE_ABREGE_DESCRIPTION;

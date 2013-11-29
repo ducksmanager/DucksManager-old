@@ -3,7 +3,7 @@
 class IntervalleValidite {
     var $intervalles;
 
-    function IntervalleValidite(array $intervalles=null) {
+    function __construct(array $intervalles=null) {
         $this->intervalles=$intervalles;
         foreach($this->intervalles as &$intervalle) {
             if (is_array($intervalle)) {

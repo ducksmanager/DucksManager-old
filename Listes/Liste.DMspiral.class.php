@@ -7,7 +7,7 @@ require_once('Format_liste.php');
 class dmspiral extends Format_liste {
 	static $titre='Liste en spirale';
 	
-	function dmspiral() {
+	function __construct() {
 		$this->description='';//DMSPIRAL_DESCRIPTION;
 		$this->ajouter_parametres(array(
 			'epaisseur'=>new Parametre_min_max('Epaisseur des cases',10,25,30,15),
