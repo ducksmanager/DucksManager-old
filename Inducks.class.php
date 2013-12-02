@@ -19,21 +19,20 @@ class Inducks {
 		}
 		
 		static function requete_select($requete,$db='coa',$serveur='serveur_virtuel') {
-			if ($serveur=='serveur_virtuel' && Inducks::$use_local_db) {
+			if ($serveur==='serveur_virtuel' && Inducks::$use_local_db) {
 				mysql_select_db('coa');
 				$resultat = DM_Core::$d->requete_select($requete);
 				mysql_select_db(DatabasePriv::$nom_db_DM);
 				return $resultat;
 			}
 			else {
-				$ip_serveur=$serveur=='serveur_virtuel' ? Database::get_remote_url('') : 'http://www.ducksmanager.net';
-				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
+				$ip_serveur=$serveur==='serveur_virtuel' ? Database::get_remote_url('') : 'http://www.ducksmanager.net';
 				if (isset($_GET['dbg'])) {
 					echo $ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password).'<br /><br />';
 				}
 				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
 				if (isset($_GET['brut'])) {
-					echo 'Requï¿½te : '.$requete.'<br />'
+					echo 'Requête : '.$requete.'<br />'
 						.'Retour brut : <pre>'.Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)).'</pre>'
 						.'Stacktrace : <pre>';
 					debug_print_backtrace();
@@ -350,7 +349,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		$code=substr($nom_histoire, strlen('code='));
 		$resultat_requete=Inducks::get_issues_from_storycode($code);
 		if (count($resultat_requete) == 0) {
-			// On rï¿½essaie en testant le doublement de chacun des espaces du code d'histoire
+			// On rêessaie en testant le doublement de chacun des espaces du code d'histoire
 			$i=1;
 			$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
 			while ($code_avec_espaces !== $code) {
