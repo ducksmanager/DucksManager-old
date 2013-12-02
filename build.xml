@@ -46,6 +46,8 @@
          description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
   <exec executable="phpmd">
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/EdgeCreator/"/>
    <arg value="text" />
    <arg value="${basedir}/build/phpmd.xml" />
   </exec>
@@ -54,6 +56,8 @@
  <target name="phpmd-ci" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
   <exec executable="phpmd">
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/EdgeCreator/"/>
    <arg value="xml" />
    <arg value="${basedir}/build/phpmd.xml" />
    <arg value="--reportfile" />
@@ -65,8 +69,9 @@
          description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
   <exec executable="phpcs">
    <arg value="--standard=${basedir}/build/phpcs.xml" />
-   <arg value="--ignore=EdgeCreator" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/EdgeCreator/"/>
   </exec>
  </target>
 
@@ -75,8 +80,9 @@
    <arg value="--report=checkstyle" />
    <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
    <arg value="--standard=${basedir}/build/phpcs.xml" />
-   <arg value="--ignore=EdgeCreator" />
    <arg path="${basedir}" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/EdgeCreator/"/>
   </exec>
  </target>
 
@@ -84,6 +90,8 @@
   <exec executable="phpcpd">
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
+   <arg value="--exclude"/>
+   <arg value="EdgeCreator"/>
    <arg path="${basedir}" />
   </exec>
  </target>

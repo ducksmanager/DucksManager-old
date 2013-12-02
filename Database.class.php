@@ -20,7 +20,7 @@ class Database {
 	var $password;
 
 
-	function Database() {
+	function __construct() {
 			require_once('_priv/Database.priv.class.php');
 			return DatabasePriv::connect();
 	}
@@ -203,7 +203,6 @@ class Database {
 					<img src="images/flags/<?=$vente['Pays']?>.png" />&nbsp;<?=$liste_magazines[$publicationcode]?> n&deg;<?=$vente['Numero']?>
 				</li>
 				<?php
-				$id_utilisateur = $vente['username'];
 			}
 			$this->bloc_envoi_message_achat_vente($username_courant);
 		}
@@ -770,7 +769,6 @@ if (isset($_POST['database'])) {
 			else
 				$id_acquisition=$resultat_acqusitions[0]['ID_Acquisition'];
 		}
-		//$l->update_numeros($pays,$magazine,$etat,$liste,$id_acquisition);
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
 	else if (isset($_POST['evenements_recents'])) {	

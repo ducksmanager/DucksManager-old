@@ -16,7 +16,7 @@ class collectable extends Format_liste {
 	static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
 	static $max_centaines=0;
 	static $max_diz_et_unites=1;
-	function collectable() {
+	function __construct() {
 		$this->les_plus=array(COLLECTABLE_PLUS_1,COLLECTABLE_PLUS_2,COLLECTABLE_PLUS_3);
 		$this->les_moins=array(COLLECTABLE_MOINS_1,COLLECTABLE_MOINS_2);
 		$this->description=COLLECTABLE_DESCRIPTION;

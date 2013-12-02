@@ -3,7 +3,7 @@
 		var $date;
 		var $numeros=array();
 		var $couleur;
-		function Acquisition($date,$numeros,$couleur) {
+		function __construct($date,$numeros,$couleur) {
 			$this->date=$date;
 			$this->numeros=$numeros;
 			$this->couleur=$couleur;

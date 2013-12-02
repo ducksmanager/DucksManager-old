@@ -9,10 +9,6 @@ class Format_liste {
 	var $les_moins=array();
 	static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
 	
-	static function est_listable($numero) {
-		return true;
-	}
-	
 	function est_valide() {
 		foreach($this->parametres as $parametre) {
 			if (!($parametre->verif()))

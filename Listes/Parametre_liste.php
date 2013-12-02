@@ -10,7 +10,7 @@ class Parametre_liste {
 		$this->valeur_defaut=$defaut;
 	}
 	function verif($valeur) {
-		echo 'Cette fonction ne peut pas être appelée directement';
+		echo 'Cette fonction ne peut pas ï¿½tre appelï¿½e directement (valeur : '.$valeur.')';
 	}
 }
 
@@ -49,7 +49,7 @@ class Parametre_fixe  {
 }
 
 class parametres_generaux extends Format_liste {
-	function parametres_generaux() {
+	function __construct() {
 		$this->ajouter_parametres(array(
 			'espacement_boites'=>new Parametre_min_max('Espacement inter-boites',5,40,25,25),
 			'bordure_boites_r'=>new Parametre_min_max('Bordure - rouge',0,255,255,255),

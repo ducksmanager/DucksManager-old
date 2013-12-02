@@ -3,7 +3,7 @@ require_once('Util.class.php');
 if (isset($_POST['js']))
 	new JS($_POST['js']);
 class JS {
-	function JS() {
+	function __construct() {
 		$scripts=array();
 		$noms=func_get_args();
 		foreach($noms as $nom) {

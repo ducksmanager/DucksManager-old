@@ -1,6 +1,6 @@
 <?php header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passï¿½
 date_default_timezone_set('Europe/Paris');
 require_once('_priv/Admin.priv.class.php');
 require_once('travaux.php');
@@ -30,7 +30,7 @@ else {
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
-			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies à jour à chaque rafraichissement
+			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies ï¿½ jour ï¿½ chaque rafraichissement
 			setCookie('pass',sha1($_COOKIE['pass']),time()+3600);
 		}
 	}
@@ -322,7 +322,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     	$ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
                                         $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
                                         $l=new Liste($_POST['rawData']);
-                                        $l->synchro_to_database(DM_Core::$d,$ajouter_numeros_inducks,$supprimer_numeros_inducks);   
+                                        $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);   
                                     }
                                     else {
                                         $rawdata_valide=(Inducks::liste_numeros_valide($_POST['rawData']));
@@ -622,7 +622,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                     ?>
                                                     <?=MERCI_CONTRIBUTION?><br /><?=EMAIL_ENVOYE;?>
                                                     <?php
-                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de '.$_SESSION['user'].' pour la bibliothèque',
+                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de '.$_SESSION['user'].' pour la bibliothï¿½que',
                                                          $_POST['texte_participation'],'From: '.$_SESSION['user'].'<'.$_POST['email'].'>');
                                                 }
                                                 else {
@@ -712,7 +712,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 if (isset($_GET['supprimer_magazine'])) {
                                     list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
                                     $l_magazine=$l->sous_liste($pays,$magazine);
-                                    $l_magazine->remove_from_database (DM_Core::$d, $id_user);
+                                    $l_magazine->remove_from_database ($id_user);
                                 }
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
@@ -1455,7 +1455,7 @@ function formulaire_inscription() {
         DM_Core::$d->nouveau_user($user, $email, sha1($pass));
         if (isset($rawData)) {
             $l = new Liste($rawData);
-            $l->add_to_database(DM_Core::$d, DM_Core::$d->user_to_id($user));
+            $l->add_to_database(DM_Core::$d->user_to_id($user));
         }
         creer_id_session($user, $pass);
     }

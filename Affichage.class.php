@@ -8,7 +8,6 @@ class Affichage {
 	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$id=null) {
 			$onmouseover='';
 			$onmouseout='';
-			$nb_onglets=count($tab_onglets);
 			$id=is_null($id) ? '':$id;
 			?><ul <?=empty($id)?'':('id="'.$id.'"')?> class="tabnav"><?php
 			foreach($tab_onglets as $nom_onglet=>$infos_lien) {

@@ -8,44 +8,45 @@ class Liste {
 	var $collection=array();
 	var $very_max_centaines=1;
 	var $database;
-		static $types_listes=array();
+	static $types_listes=array();
 
-		static function set_types_listes() {
-			$rep = "Listes/";
-			$dir = opendir($rep);
-			$prefixe='Liste.';
-			$suffixe='.class.php';
-			while ($f = readdir($dir)) {
-				if (strpos($f,'Debug')!==false)
-					continue;
-				if(is_file($rep.$f)) {
-					if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
-						$nom=substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe));
-						
-						include_once('Listes/Liste.'.$nom.'.class.php');
-						$a=new ReflectionProperty($nom, 'titre');
-						Liste::$types_listes[$nom]=$a->getValue();
-					}
+	static function set_types_listes() {
+		$rep = "Listes/";
+		$dir = opendir($rep);
+		$prefixe='Liste.';
+		$suffixe='.class.php';
+		while ($f = readdir($dir)) {
+			if (strpos($f,'Debug')!==false)
+				continue;
+			if(is_file($rep.$f)) {
+				if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
+					$nom=substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe));
+					
+					include_once('Listes/Liste.'.$nom.'.class.php');
+					$a=new ReflectionProperty($nom, 'titre');
+					Liste::$types_listes[$nom]=$a->getValue();
 				}
 			}
-			return Liste::$types_listes;
 		}
-	function Liste($texte=false) {
+		return Liste::$types_listes;
+	}
+	
+	function __construct($texte=false) {
 		if (!$texte)
 					return;
 		$this->texte=$texte;
 		$this->lire();
 	}
 
-		function ajouter($pays,$magazine,$numero) {
-			if (!array_key_exists($pays, $this->collection))
-				$this->collection[$pays]=array();
-			if (!array_key_exists($magazine,$this->collection[$pays]))
-				$this->collection[$pays][$magazine]=array();
-			if (in_array($numero, $this->collection[$pays][$magazine]))
-				return;
-			$this->collection[$pays][$magazine][]=$numero;
-		}
+	function ajouter($pays,$magazine,$numero) {
+		if (!array_key_exists($pays, $this->collection))
+			$this->collection[$pays]=array();
+		if (!array_key_exists($magazine,$this->collection[$pays]))
+			$this->collection[$pays][$magazine]=array();
+		if (in_array($numero, $this->collection[$pays][$magazine]))
+			return;
+		$this->collection[$pays][$magazine][]=$numero;
+	}
 
 	function ListeExemple() {
 		$numeros_mp=array(array(2,'Excellent',false,-1),array(273,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));
@@ -260,7 +261,7 @@ class Liste {
 		}
 	}
 
-	function add_to_database($d,$id_user) {
+	function add_to_database($id_user) {
 			$cpt=0;
 			foreach($this->collection as $pays=>$numeros_pays) {
 				if ($pays=='country')
@@ -277,7 +278,7 @@ class Liste {
 			return $cpt;
 	}
 
-		function remove_from_database($d,$id_user) {
+		function remove_from_database($id_user) {
 			$cpt=0;
 			foreach($this->collection as $pays=>$numeros_pays) {
 				if ($pays=='country')
@@ -294,40 +295,10 @@ class Liste {
 			return $cpt;
 	}
 
-	function synchro_to_database($d,$ajouter_numeros=true,$supprimer_numeros=false) {
+	function synchro_to_database($ajouter_numeros=true,$supprimer_numeros=false) {
 			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 			$l_ducksmanager=DM_Core::$d->toList($id_user);
 			$l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
-	}
-		
-	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-
-		$liste_origine=$this->collection[$pays][$magazine];
-		foreach($liste as $numero) {
-			switch($etat) {
-				case 'manque':
-					if (($pos=array_search($numero,$liste_origine))!=-1) {
-						unset($liste_origine[$pos]);
-					}
-					break;
-				default:
-					if (!array_key_exists($pays,$this->collection)) {
-						$arr_temp=array($magazine=>array($numero,$id_acquisition));
-						$this->collection[$pays]=$arr_temp;
-						$liste_origine=$this->collection[$pays][$magazine];
-					}
-					if (!array_key_exists($magazine,$this->collection[$pays])) {
-						$this->collection[$pays][$magazine]=array($numero,$id_acquisition);
-						$liste_origine=$this->collection[$pays][$magazine];
-						continue;
-					}
-					if (!in_array($numero,$liste_origine)) {
-						array_push($liste_origine,array($numero,$id_acquisition));
-					}
-					break;
-			}
-		}
-		$this->collection[$pays][$magazine]=$liste_origine;
 	}
 
 	function lire() {
@@ -365,7 +336,7 @@ class Liste {
 				}
 			}
 			if ($supprimer_numeros)
-				$liste_a_supprimer->remove_from_database (DM_Core::$d, $id_user);
+				$liste_a_supprimer->remove_from_database ($id_user);
 			$liste_a_ajouter=new Liste();
 			foreach($other_list->collection as $pays=>$numeros_pays) {
 				foreach($numeros_pays as $magazine=>$numeros) {
@@ -390,7 +361,7 @@ class Liste {
 				}
 			}
 			if ($ajouter_numeros)
-				$liste_a_ajouter->add_to_database (DM_Core::$d, $id_user);
+				$liste_a_ajouter->add_to_database ($id_user);
 			if (!$ajouter_numeros && !$supprimer_numeros) {
 				?>
 				<ul>
