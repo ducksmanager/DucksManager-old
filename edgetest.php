@@ -1,7 +1,7 @@
 <?php
 include_once('JS.class.php');
 include_once('Etagere.class.php');
-include_once('../Edge.class.php');
+include_once('Edge.class.php');
 include_once('Util.class.php');
 include_once('getDimensions.php');
 
