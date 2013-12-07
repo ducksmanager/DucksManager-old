@@ -706,7 +706,7 @@ function ajouter_auteur($id,$nom) {
 		$evenements_slice=array();
 		$cpt=0;
 		
-		// Filtre : les 20 plus r�cents seulement
+		// Filtre : les 20 plus récents seulement
 		foreach($evenements->evenements as $diff_secondes=>$evenements_types) {
 			$evenements_slice[$diff_secondes]=new stdClass();
 			foreach($evenements_types as $type=>$evenements_type) {
@@ -725,6 +725,29 @@ function ajouter_auteur($id,$nom) {
 		$evenements->evenements=$evenements_slice;
 		return $evenements;
 	}
+
+    public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite_seulement)
+    {
+        $requete_tranches_collection_ajoutees =
+            'SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
+             FROM tranches_pretes tp, numeros n
+             WHERE n.ID_Utilisateur = '.$id_user.'
+             AND CONCAT(publicationcode,\'/\',issuenumber) = CONCAT(n.Pays,\'/\',n.Magazine,\'/\',n.Numero)';
+
+        if ($depuis_derniere_visite_seulement) {
+            $requete_tranches_collection_ajoutees.='
+             AND tranches_pretes.dateajout>(
+               SELECT DernierAcces
+               FROM users
+               WHERE ID='.$id_user.' AND DernierAcces > \'0000-00-00\')';
+        }
+        else {
+            $requete_tranches_collection_ajoutees.='
+             ORDER BY DiffSecondes ASC
+             LIMIT 5';
+        }
+        return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
+    }
 }
 
 function mysql_current_db() {

@@ -476,6 +476,26 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             echo IE_INF_A_9_NON_SUPPORTE;
                                         }
                                         else {
+                                            $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, false);
+                                            if (count($resultat_tranches_collection_ajoutees) > 0) {
+                                                $publication_codes = array();
+                                                foreach($resultat_tranches_collection_ajoutees as $tranche) {
+                                                    $publication_codes[] = $tranche['publicationcode'];
+                                                }
+                                                $publication_codes = array_unique($publication_codes);
+                                                list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($publication_codes);
+
+                                                ?><div>
+                                                    <?=BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE?><br />
+                                                    <?php
+                                                    foreach($resultat_tranches_collection_ajoutees as $tranche) {
+                                                        list($pays,$magazine)=explode('/', $tranche['publicationcode']);
+                                                        echo Affichage::afficher_texte_numero($pays,$magazines_complets[$tranche['publicationcode']],$tranche['issuenumber'])
+                                                            .Affichage::afficher_temps_passe($tranche['DiffSecondes']).'<br />';
+                                                    }
+                                                    ?>
+                                                </div><br /><br /><?php
+                                            }
                                             ?>
                                             <span id="chargement_bibliotheque_termine"><?=CHARGEMENT?>..</span>.<br />
                                             <div id="barre_pct_bibliotheque" style="border: 1px solid white; width: 200px;">
@@ -708,6 +728,24 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             break;
 
                             case 'gerer':
+                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
+                                $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
+                                if ($nb_nouvelles_tranches > 0) {
+                                    ?><div class="confirmation">
+                                    <?php
+                                        echo $nb_nouvelles_tranches.' ';
+                                        if ($nb_nouvelles_tranches === 1) {
+                                            echo BIBLIOTHEQUE_NOUVELLE_TRANCHE;
+                                        }
+                                        else {
+                                            echo BIBLIOTHEQUE_NOUVELLES_TRANCHES;
+                                        }
+                                    ?>
+                                    </div><?php
+                                }
+                                $requete_maj_dernier_acces = 'UPDATE users SET DernierAcces=CURRENT_TIMESTAMP WHERE ID='.$id_user;
+                                DM_Core::$d->requete($requete_maj_dernier_acces);
+
                                 $l=DM_Core::$d->toList($id_user);
                                 if (isset($_GET['supprimer_magazine'])) {
                                     list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);

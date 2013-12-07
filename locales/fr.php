@@ -67,6 +67,9 @@ define('BIBLIOTHEQUE','Visionnez votre collection comme si vous &eacute;tiez dev
 define('BIBLIOTHEQUE_CONTRIBUTEURS','Une liste de ceux qui ont particip&eacute; &agrave; la cr&eacute;ation de la biblioth&egrave;que!');
 define('BIBLIOTHEQUE_CONTRIBUTEURS_COURT','Contributeurs');
 define('BIBLIOTHEQUE_COURT','Ma biblioth&egrave;que');
+define('BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE','Derni&egrave;res tranches de votre collection ajout&eacute;es :');
+define('BIBLIOTHEQUE_NOUVELLE_TRANCHE','nouvelle tranche a &eacute;t&eacute; con&ccedil;ue depuis votre derni&egrave;re visite.<br />Acc&eacute;dez &agrave; <a target="_blank" href="?action=bibliotheque">votre biblioth&egrave;que</a> pour la voir.');
+define('BIBLIOTHEQUE_NOUVELLES_TRANCHES','nouvelles tranches ont &eacute;t&eacute; con&ccedil;ues depuis votre derni&egrave;re visite.<br />Acc&eacute;dez &agrave; <a target="_blank" href="?action=bibliotheque">votre biblioth&egrave;que</a> pour les voir.');
 define('BIBLIOTHEQUE_OPTIONS','D&eacute;finissez les options d\'affichage de votre biblioth&egrave;que');
 define('BIBLIOTHEQUE_OPTIONS_COURT','Options de la biblioth&egrave;que');
 define('BIBLIOTHEQUE_PARTICIPER','Aidez-nous &agrave; afficher de belles biblioth&egrave;ques pour tous les utilisateurs !');

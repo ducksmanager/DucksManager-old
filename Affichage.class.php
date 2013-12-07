@@ -232,39 +232,39 @@ class Affichage {
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
 						break;
-					}?>
-					<span class="date">
-						<?=NEWS_IL_Y_A_PREFIXE?> 
-						<?php 
-							$diff=intval($evenement->diffsecondes);
-							if ($diff < 60) {
-								?><?=$diff.' '.NEWS_TEMPS_SECONDE.($diff == 1 ? '':'s')?><?php
-							}
-							else {
-								$diff=intval($diff/60);
-								if ($diff < 60) {
-									?><?=$diff.' '.NEWS_TEMPS_MINUTE.($diff == 1 ? '':'s')?><?php
-								}
-								else {
-									$diff=intval($diff/60);
-									if ($diff < 24) {
-										?><?=$diff.' '.NEWS_TEMPS_HEURE.($diff == 1 ? '':'s')?><?php
-									}
-									else {
-										$diff=intval($diff/24);
-										?><?=$diff.' '.NEWS_TEMPS_JOUR.(intval($diff) == 1 ? '':'s')?><?php
-									}
-								}
-							}
-							?>
-						<?=NEWS_IL_Y_A_SUFFIXE?>
-					</span>
-					<?php 
+					}
+                    Affichage::afficher_temps_passe($evenement->diffsecondes);
 					?></div><?php
 				}
 			}
 		}
 	}
+
+    static function afficher_temps_passe($diff_secondes) {
+        ?><span class="date">&nbsp;<?=NEWS_IL_Y_A_PREFIXE?>
+
+        <?php
+        if ($diff_secondes < 60) {
+            ?><?=$diff_secondes.' '.NEWS_TEMPS_SECONDE.($diff_secondes == 1 ? '':'s')?><?php
+        }
+        else {
+            $diff_secondes=intval($diff_secondes/60);
+            if ($diff_secondes < 60) {
+                ?><?=$diff_secondes.' '.NEWS_TEMPS_MINUTE.($diff_secondes == 1 ? '':'s')?><?php
+            }
+            else {
+                $diff_secondes=intval($diff_secondes/60);
+                if ($diff_secondes < 24) {
+                    ?><?=$diff_secondes.' '.NEWS_TEMPS_HEURE.($diff_secondes == 1 ? '':'s')?><?php
+                }
+                else {
+                    $diff_secondes=intval($diff_secondes/24);
+                    ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.(intval($diff_secondes) == 1 ? '':'s')?><?php
+                }
+            }
+        }
+		?><?=NEWS_IL_Y_A_SUFFIXE?></span><?php
+    }
 	
 	static function afficher_texte_numero($pays, $magazine, $numero) {
 		?><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?><?php
