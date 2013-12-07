@@ -732,7 +732,8 @@ function ajouter_auteur($id,$nom) {
             'SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
              FROM tranches_pretes tp, numeros n
              WHERE n.ID_Utilisateur = '.$id_user.'
-             AND CONCAT(publicationcode,\'/\',issuenumber) = CONCAT(n.Pays,\'/\',n.Magazine,\'/\',n.Numero)';
+             AND CONCAT(publicationcode,\'/\',issuenumber) = CONCAT(n.Pays,\'/\',n.Magazine,\'/\',n.Numero)
+             AND tp.dateajout > \'2013-07-01\'';
 
         if ($depuis_derniere_visite_seulement) {
             $requete_tranches_collection_ajoutees.='
