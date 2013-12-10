@@ -1,4 +1,6 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+
 error_reporting(E_ALL);
 $database=isset($_GET['coa']) ? 'coa' : 'db301759616';
 
@@ -102,7 +104,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 	}
 	else { 
 		Inducks::$use_local_db=false;
-		// Récupération des informations sur la collection de l'utilisateur
+		// Rï¿½cupï¿½ration des informations sur la collection de l'utilisateur
 		$pseudo=mysql_real_escape_string($_GET['pseudo_user']);
 		$mdp=mysql_real_escape_string($_GET['mdp_user']);
 			
