@@ -1,5 +1,4 @@
 <?php
-ob_start('ob_gzhandler');
 if (isset($_GET['dbg'])) {
 	error_reporting(E_ALL);
 }
