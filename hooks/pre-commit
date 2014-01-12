@@ -24,6 +24,7 @@ DBTABLESEXCLUDED="^(edgecreator|tranches_en_cours|images_myfonts)"
 
 $MYSQLPATH/mysqldump -d -u $DBUSER -p$DBPASS $DBNAME $($MYSQLPATH/mysql -u $DBUSER -p$DBPASS $DBNAME -Bse "SHOW TABLES WHERE Tables_in_$DBNAME NOT REGEXP '$DBTABLESEXCLUDED'") > $DBPATH/$DBEXPORTNAME.sql
 
+sed -i 's/^-- Dump completed.*//' $DBPATH/$DBEXPORTNAME.sql
 git add $DBPATH/$DBEXPORTNAME.sql
 
 exit 0
