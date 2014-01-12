@@ -112,12 +112,11 @@ class Edge {
 
 		$vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
 		if ($vrai_magazine != $magazine) {
-			foreach($numeros_clean_et_references as $i=>$numero) {
+			foreach($numeros_clean_et_references as $numero) {
 				$numero_clean = is_array($numero) ? $numero['clean'] : $numero;
 				list($vrai_magazine,$vrai_numero) = Inducks::get_vrais_magazine_et_numero($pays,$magazine,$numero_clean);
 				$numeros_clean_et_references[$numero_clean]['reference']=$vrai_numero;
 			}
-			$magazine=$vrai_magazine;
 		}
 
 		return array($vrai_magazine, $numeros_clean_et_references);
@@ -188,10 +187,11 @@ class Edge {
 		include_once('Database.class.php');
 		global $numeros_inducks;
 		@session_start();
+        $pourcentages_visible=array();
 		if ($user_unique===true)
 			$ids_users=array(DM_Core::$d->user_to_id($_SESSION['user']));
 		else {
-			$pourcentages_visible=array();
+            $ids_users = array();
 			$requete_users='SELECT ID, username FROM users';
 			$resultat_users=DM_Core::$d->requete_select($requete_users);
 			foreach($resultat_users as $user)
@@ -222,6 +222,9 @@ class Edge {
 				$total_numeros+=count($numeros);
 				list($magazine, $numeros_clean_et_references) = self::get_numeros_clean($pays, $magazine, $numeros);
 				foreach($numeros_clean_et_references as $numero) {
+                    if (!array_key_exists('clean', $numero)) {
+                        $numero['clean'] = $numero['reference'];
+                    }
 					$e=new Edge($pays, $magazine, $numero['clean'],$numero['reference']);
 					
 					if ($get_html) {
