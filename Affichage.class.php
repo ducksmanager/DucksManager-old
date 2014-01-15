@@ -140,43 +140,48 @@ class Affichage {
 			$possede=$infos->est_possede;
 			?>
 			<div class="num_<?=$possede ? 'possede' : 'manque'?>" 
-				 id="n<?=($cpt)?>" title="<?=$numero?>"><img class="preview" src="images/icones/view.png" /><span class="num">n&deg;<?=$numero?>&nbsp;<span class="soustitre"><?=$sous_titre?></span></span>
-						<?php
-						
-						if ($possede) {
-							?><div class="bloc_details">
-								<div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
-							</div><?php
-							if (!in_array($id_acquisition,array(-1,-2))) {
-								$requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
-								$resultat_date=DM_Core::$d->requete_select($requete_date_achat);
-								if (count($resultat_date)>0) {
-									$regex_date='#([^-]+)-([^-]+)-(.+)#is';
-									$date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-									$id=$resultat_date[0]['ID_Acquisition'];
-									if (!is_null($date) && !empty($date)) {
-										?>
-											<div class="details_numero detail_date" class="achat_<?=$id?>">
-												<img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
-											</div><?php
-									}
-								}
-							}
-							else { ?>
-								<div class="details_numero detail_date"></div><?php
-							}
-							?><div class="details_numero detail_a_vendre"><?php
-							if ($av) {
-								?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
-							}
-							?></div>
-						 </div><?php
-						}
-					?>
-					</div>
-				</div>
-				<?php
-				$cpt++;
+				 id="n<?=($cpt)?>" title="<?=$numero?>">
+                <a name="<?=$numero?>"></a>
+                <img class="preview" src="images/icones/view.png" />
+                <span class="num">n&deg;<?=$numero?>&nbsp;
+                    <span class="soustitre"><?=$sous_titre?></span>
+                </span>
+                    <?php
+
+                    if ($possede) {
+                        ?><div class="bloc_details">
+                            <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
+                        </div><?php
+                        if (!in_array($id_acquisition,array(-1,-2))) {
+                            $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
+                            $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
+                            if (count($resultat_date)>0) {
+                                $regex_date='#([^-]+)-([^-]+)-(.+)#is';
+                                $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+                                $id=$resultat_date[0]['ID_Acquisition'];
+                                if (!is_null($date) && !empty($date)) {
+                                    ?>
+                                        <div class="details_numero detail_date" class="achat_<?=$id?>">
+                                            <img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
+                                        </div><?php
+                                }
+                            }
+                        }
+                        else { ?>
+                            <div class="details_numero detail_date"></div><?php
+                        }
+                        ?><div class="details_numero detail_a_vendre"><?php
+                        if ($av) {
+                            ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
+                        }
+                        ?></div>
+                     </div><?php
+                    }
+                ?>
+                </div>
+            </div>
+            <?php
+            $cpt++;
 		}
 	}
 	

@@ -416,6 +416,17 @@ function charger_recherche() {
 
        $('recherche_bibliotheque').down('button').observe('click',recherche);
    }
+	$('contenu').observe('click', function() {
+		$$('.magazine_trouve, .histoire_trouvee, .resultat_recherche').invoke('remove');
+	});
+
+	$$('.toggler_aide_recherche_magazine').invoke(
+		'observe',
+		'click',
+		function() {
+			$$('#aide_recherche_magazine, .toggler_aide_recherche_magazine').invoke('toggleClassName','cache');
+		}
+	);
 }
 
 function creer_image() {
@@ -523,23 +534,16 @@ function recherche() {
                     var haut=offset['top']-16;
                     var gauche=offset['left'];
                     $('body').insert(new Element('img',{'src':'images/icones/arrow_down.png'})
-                    .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-                    .addClassName('fleche_position'));
+	                    .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
+	                    .addClassName('fleche_position'));
 
                     $('body').insert(new Element('img',{'src':'images/icones/arrow_up.png'})
-                    .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-                    .addClassName('fleche_position'));
+	                    .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
+	                    .addClassName('fleche_position'));
                     window.scrollTo(gauche,haut);
                 }
                 else {
-                    pays_magazine=pays_magazine.split('/');
-                    if ($$('#liste_pays option#'+pays_magazine[0]).length == 0) {
-                        alert('Magazine '+pays_magazine.join('/')+' non trouve');
-                        return;
-                    }
-                    $('liste_pays').selectedIndex = $$('#liste_pays option#'+pays_magazine[0])[0].index;
-                    select_magazine(pays_magazine[1]);
-                    $$('.magazine_trouve, .resultat_recherche').invoke('remove');
+	                location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine='+pays_magazine.replace('.','#'));
                 }
             });
             $$('.histoire_trouvee').invoke('observe','click',function(event) {

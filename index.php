@@ -174,8 +174,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 	                    <?php
                     }
                     else {
-						?>initPays();
-                    	charger_recherche();<?php
+						?>initPays();<?php
 					}
                 }
                 else {
@@ -189,6 +188,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             else {
 				?>montrer_magazines();<?php
 			}
+            ?>charger_recherche();<?php
             break;
         case 'stats':
             if (isset($_GET['onglet'])) {
@@ -913,6 +913,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         if (isset($_POST['magazine'])) {
 	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine'],true);
                                         }
+                                        elseif (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
+                                            list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
+                                        }
                                         else {
 											list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
                                         }
@@ -954,12 +957,13 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             <option id="vide"><?=SELECTIONNER_PAYS?>
                                         </select>
                                         <br /><br />
-                                        <input type="submit" class="valider" value="<?=VALIDER?>" />
+                                        <input id="validerAjoutMagazine" type="submit" class="valider" value="<?=VALIDER?>" />
                                     </form>
                                 </td>
                                 <td style="vertical-align:top">
                                     <br />
-                                    <?=RECHERCHE_MAGAZINE?>
+                                    <?=RECHERCHE_MAGAZINE_1?>
+                                    <?=RECHERCHE_MAGAZINE_2?>
                                     
                                     <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
                                         <input type="text" style="width:300px" name="" />
@@ -992,7 +996,18 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 		                                        <?=POSSESSION_MAGAZINES_1?> <?=$nb_numeros?> <?=NUMEROS?>. 
 		                                        <?=POSSESSION_MAGAZINES_2?> <?=$nb_magazines?> <?=POSSESSION_MAGAZINES_3?> <?=$nb_pays?> <?=PAYS?>.
 		                                        <br />
-		                                        <?=POSSESSION_MAGAZINES_4?><br />
+		                                        <?=POSSESSION_MAGAZINES_4?><br /><br />
+                                                <br />
+                                                <span class="nouveau"><?=NOUVEAU?></span>&nbsp;<?=RECHERCHE_MAGAZINE_1?>&nbsp;
+                                                <b class="toggler_aide_recherche_magazine">Cliquez ici</b>
+                                                <b class="toggler_aide_recherche_magazine cache">^</b>
+                                                <div id="aide_recherche_magazine" class="cache">
+                                                    <?=RECHERCHE_MAGAZINE_2?>
+                                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
+                                                        <input type="text" style="width:300px" name="" />
+                                                        <button style="width: 30px;">OK</button>
+                                                    </div>
+                                                </div>
 		                                        <?php
 		                                    }
 											Affichage::onglets($onglet_pays,$onglets_pays,'','','onglets_pays');
@@ -1016,6 +1031,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" />
                                                     </OBJECT>
                                                 <?php } ?>
+
+                                                <br />
+
                                                 <table width="100%">
                                                 <tr><td>
                                                 <span id="liste_numeros"><?=CHARGEMENT.'...'?></span>

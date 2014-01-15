@@ -29,6 +29,7 @@ ul.tabnav li.cache {
 }
 
 ul#onglets_pays {
+    margin-top: 50px;
 	white-space: nowrap;
 }
 

@@ -431,6 +431,9 @@ function afficher_numeros(pays,magazine) {
            onSuccess:function(transport) {
                 $('liste_numeros').update(transport.responseText);
                 init_observers_gerer_numeros();
+	            if (location.hash) {
+	                $('liste_numeros').select('[name="'+location.hash.replace(/#/,'')+'"]')[0].scrollIntoView(true);
+	            }
            }
 	});
 }

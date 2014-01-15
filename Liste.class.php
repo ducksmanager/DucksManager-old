@@ -245,18 +245,8 @@ class Liste {
 					<div id="resultat_stats"></div>
 				<?php
 				}
-				echo '<br /><span style="color:red">'.NOUVEAU.'</span>&nbsp;'
-					.ANNONCE_AGRANDIR_COLLECTION1.ANNONCE_AGRANDIR_COLLECTION2
-					.' <a href="?action=agrandir&onglet=auteurs_favoris">'
-					.ICI.'</a>';
-				?>
-
-				<div id="update_stats"></div>
-				<span style="display:none" id="infos_maj"></span>
-				<br />
+                ?>
 				<?php
-				$pays='fr';
-
 			break;
 		}
 	}
