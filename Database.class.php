@@ -855,7 +855,7 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['liste_achats'])) {
 		//print_r($_SESSION);acquisitions
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date');
+		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
 		$tab_achats=array();
 		$cpt_strlen=0;
 		foreach ($liste_achats as $achat) {
