@@ -243,7 +243,7 @@ class Database {
 					.'L\'utilisateur '.$_SESSION['user'].' est int&eacute;ress&eacute; par certains des num&eacute;ros que vous proposez &agrave; la vente sur DucksManager.'
 					.'<br /><br />Vous pouvez r&eacute;pondre directement &agrave; cet e-mail pour lui proposer un prix et un moyen de lui transmettre vos num&eacute;ros.'
 					.'<br /><br /><br />Bonne vente, et &agrave; bient&ocirc;t sur DucksManager !<br /><br />L\'&eacute;quipe DucksManager';
-					if (mail($email_vendeur, 'Un utilisateur est int�ress� par vos num�ros en vente sur DucksManager', $contenu_mail,$entete)) {
+					if (mail($email_vendeur, 'Un utilisateur est int"ressé par vos numéros en vente sur DucksManager', $contenu_mail,$entete)) {
 						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);
@@ -826,7 +826,7 @@ if (isset($_POST['database'])) {
 		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
-		/*V�rifier d'abord que les num�ros � ajouter ne correspondent pas d�j� � une date d'acquisition*/
+		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
 										   .'FROM achats '
 										   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
@@ -910,7 +910,7 @@ elseif (isset($_POST['liste_bouquineries'])) {
 			$json=json_encode($resultat_bouquineries);
 			echo $json;
 		}
-	else { // V�rification de l'utilisateur
+	else { // Vérification de l'utilisateur
 			if (DM_Core::$d->user_exists($_POST['user']))
 					echo UTILISATEUR_EXISTANT;
 			else
