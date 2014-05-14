@@ -243,7 +243,6 @@ define('IDENTIFICATION_OBLIGATOIRE','Vous devez &ecirc;tre connect&eacute;(e) po
 define('IDENTIFIEZ_VOUS','Identifiez-vous pour acc&eacute;der &agrave; votre compte DucksManager.');
 define('IDENTIFIEZ_VOUS_BACKEND','Identifiez-vous.');
 define('IE_INF_A_9_NON_SUPPORTE', 'D&eacute;sol&eacute;, Internet Explorer n\'est pas support&eacute; qu\'&agrave; partir de la version 9 pour cette fonctionnalit&eacute;');
-define('IE_NON_SUPPORTE', 'D&eacute;sol&eacute;, Internet Explorer n\'est pas support&eacute; pour cette fonctionnalit&eacute;');
 define('IMPORTATION_EN_COURS','L\'importation depuis Inducks est en cours...');
 define('IMPORTATION_NUMEROS','Importation des num&eacute;ros...');
 define('IMPORTER','Importer');
