@@ -431,11 +431,13 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
                                             $entete .= "To: ".$resultat_verifier_email[0]['username']." <".$_POST['email'].">\r\n";
                                             $entete .= "From: DucksManager <admin@ducksmanager.net>\r\n";
-                                            $contenu_mail='Bonjour '.$resultat_verifier_email[0]['username'].'<br /><br />'
-                                                         .'Vous recevez cet e-mail &agrave; la suite de votre demande de r&eacute;initialisation de mot de passe sur DucksManager.'
-                                                         .'<br /><br />Votre mot de passe temporaire est :'.$mdp_temporaire
-                                                         .'<br /><br /><br />A bient&ocirc;t sur DucksManager !<br /><br />Le webmaster';
-                                            if (mail($_POST['email'], 'Reinitialisation de mot de passe DucksManager', $contenu_mail,$entete))
+                                            $contenu_mail=
+                                                sprintf(SALUTATION,$resultat_verifier_email[0]['username'])
+                                                .'<br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_1
+                                                .'<br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_2.$mdp_temporaire
+                                                .'<br /><br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_3
+                                                .'<br /><br />'.EMAIL_SIGNATURE;
+                                            if (mail($_POST['email'], EMAIL_REINIT_MOT_DE_PASSE_TITRE, $contenu_mail,$entete))
                                                 echo MOT_DE_PASSE_OUBLIE_EMAIL_ENVOYE;
                                             else
                                                 echo MOT_DE_PASSE_OUBLIE_ERREUR_ENVOI_EMAIL;

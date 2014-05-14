@@ -3,7 +3,7 @@
 require_once('Database.class.php');
 $d=new Database();
 if (!$d) {
-	echo 'Probl&egrave;me avec la base de donn&eacute;es !';
+	echo PROBLEME_BD;
 	exit(-1);
 }
 

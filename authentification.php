@@ -1,6 +1,6 @@
 <?php
 @session_start();
-$erreur='Identifiez vous.';
+$erreur=IDENTIFIEZ_VOUS_BACKEND;
 $user=isset($_POST['user']) ? $_POST['user'] : (isset($_SESSION['user']) ? $_SESSION['user'] : null);
 $pass=isset($_POST['pass']) ? sha1($_POST['pass']) : (isset($_SESSION['pass']) ? $_SESSION['pass'] : null);
 if (!is_null($user)) {
@@ -15,11 +15,11 @@ if (!is_null($user)) {
 			$erreur='';
 		}
 		else {
-			$erreur = 'Permission non accord&eacute;e';
+			$erreur = PERMISSION_NON_ACCORDEE;
 		}
 	}
 	else {
-		$erreur = 'Identifiants invalides';
+		$erreur = IDENTIFIANTS_INCORRECTS;
 	}
 }
 if (!empty($erreur)) {
@@ -29,9 +29,9 @@ if (!empty($erreur)) {
 			<?=$erreur?>
 			<form method="post" action="">
 				<table border="0">
-					<tr><td>Nom d'utilisateur :</td><td><input type="text" name="user" /></td></tr>
-					<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>
-					<tr><td align="center" colspan="2"><input type="submit" value="Connexion"/></td></tr>
+					<tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
+					<tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
+					<tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr>
 				</table>
 			</form>
 		</body>

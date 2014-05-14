@@ -2,16 +2,17 @@
 class Resolution {
     static $numeros_doubles_JM=array('2411-12','2463-64','2479-80','2506-07','2515-16','2531-32','2558-59','2584-85','2610-11','2619-20','2636-37','2662-63','2671-72','2688-89','2715-16','2723-24','2767-68','2819-20','2828-29','2844-45','2871-72','2879-80','2896-97','2923-24','2932-33','2948-49','2975-76','2984-85');
 }
+
+include_once('Util.class.php');
+include_once('Database.class.php');
+include_once('Inducks.class.php');
 ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Op&eacute;rations de maintenance</title>
+        <title><?=MAINTENANCE?></title>
     </head>
     <body><?php
-include_once('Util.class.php');
-include_once('Database.class.php');
-include_once('Inducks.class.php');
 
 $l = DM_Core::$d->toList();
 foreach($l->collection as $pays => $magazines) {

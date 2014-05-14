@@ -116,7 +116,7 @@ foreach ($auteurs as $auteur) {
 		}
 		$total_codes=$possedes+$publie_france_non_possede+$publie_etranger_non_possede;
 		
-		echo $possedes . ' poss&eacute;d&eacute;s sur ' . $total_codes . ' (' . $publie_france_non_possede . ' publi&eacute;s en France mais non poss&eacute;d&eacute;s)<br />';
+		echo sprintf(STATISTIQUES_AUTEURS_RESUME, $possedes, $total_codes, $publie_france_non_possede).'<br />';
 		
 		date_default_timezone_set('Europe/Paris');
 		$requete_suppr_stats_existe = 'DELETE FROM auteurs_pseudos '

@@ -238,12 +238,14 @@ class Database {
 					$entete = "MIME-Version: 1.0\r\n";
 					$entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
 					$entete .= "To: ".$username." <".$email_vendeur.">\r\n";
-					$entete .= "From: ".$_SESSION['user']." de DucksManager <".$email_acheteur.">\r\n";
-					$contenu_mail='Bonjour '.$username.',<br /><br />'
-					.'L\'utilisateur '.$_SESSION['user'].' est int&eacute;ress&eacute; par certains des num&eacute;ros que vous proposez &agrave; la vente sur DucksManager.'
-					.'<br /><br />Vous pouvez r&eacute;pondre directement &agrave; cet e-mail pour lui proposer un prix et un moyen de lui transmettre vos num&eacute;ros.'
-					.'<br /><br /><br />Bonne vente, et &agrave; bient&ocirc;t sur DucksManager !<br /><br />L\'&eacute;quipe DucksManager';
-					if (mail($email_vendeur, 'Un utilisateur est int"ressé par vos numéros en vente sur DucksManager', $contenu_mail,$entete)) {
+					$entete .= "From: ".$_SESSION['user']." ".DE." DucksManager <".$email_acheteur.">\r\n";
+					$contenu_mail=
+                         sprintf(SALUTATION,$_SESSION['user'])
+                        .'<br /><br />'.sprintf(EMAIL_ACHAT_VENTE_2,$_SESSION['user'])
+                        .'<br /><br />'.EMAIL_ACHAT_VENTE_3
+                        .'<br /><br /><br />'.EMAIL_ACHAT_VENTE_3
+                        .'<br /><br />'.EMAIL_SIGNATURE;
+					if (mail($email_vendeur, EMAIL_ACHAT_VENTE_TITRE, $contenu_mail,$entete)) {
 						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);

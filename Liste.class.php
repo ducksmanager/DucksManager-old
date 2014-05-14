@@ -166,7 +166,7 @@ class Liste {
 								<div id="barre_pct_classement" style="border: 1px solid white; width: 200px;">
 									<div id="pct_classement" style="width: 0%; background-color: red;">&nbsp;</div>
 								</div>
-								Calcul <span id="message_classement">initialis&eacute;</span>
+								<?=CALCUL?> <span id="message_classement"><?=CALCUL_EN_COURS?></span>
 								<br /><br />
 								<script type="text/javascript">
 									initProgressBar('classement','classement_histogramme2.php');
