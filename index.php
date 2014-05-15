@@ -1226,7 +1226,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 	                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', 0)';
                                             DM_Core::$d->requete($requete);
 
-                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="http://www.ducksmanager.net/backend/bouquineries.php">Validation</a>');
+                                            $entete = "MIME-Version: 1.0\r\n";
+                                            $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
+                                            $entete .= "To: admin@ducksmanager.net\r\n";
+                                            $entete .= "From: admin@ducksmanager.net\r\n";
+                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="http://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
                                             ?>
                                             <span style="color: red">
                                                 <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>

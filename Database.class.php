@@ -574,7 +574,7 @@ function ajouter_auteur($id,$nom) {
 		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
 
 		$id_user=$this->user_to_id($_SESSION['user']);
-		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE ID_Utilisateur='.$id_user;
+		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
 		$nb = array('Photographe'=> $resultat_nb_photographies[0]['cpt'],
 					'Concepteur'	=> $resultat_nb_creations[0]['cpt'],
@@ -652,7 +652,7 @@ function ajouter_auteur($id,$nom) {
 		/* Propositions de bouquineries */
 		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
 							   FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID
-							   WHERE DateAjout > date_add(now(), interval -1 month)';
+							   WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 		
 
 		$resultat_bouquineries = DM_Core::$d->requete_select($requete_bouquineries);
@@ -899,6 +899,7 @@ if (isset($_POST['database'])) {
 elseif (isset($_POST['liste_bouquineries'])) {
 			$requete_bouquineries='SELECT Nom, CONCAT(Adresse, \'<br />\',CodePostal, \' \',Ville) AS Adresse, Pays, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
 								 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
+                                 .'WHERE Actif=1 '
 								 .'ORDER BY Pays, CodePostal, Ville';
 			$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
 			foreach($resultat_bouquineries as &$bouquinerie) {
