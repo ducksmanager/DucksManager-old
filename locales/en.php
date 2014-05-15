@@ -354,7 +354,7 @@ define('NEWS_AUTRES_NUMEROS','other issues');
 define('NEWS_AUTRES_TRANCHES','other edges');
 define('NEWS_EVENEMENTS_PLUS_ANCIENS','Older events');
 define('NEWS_IL_Y_A_PREFIXE','');
-define('NEWS_IL_Y_A_SUFFIXE','ago');
+define('NEWS_IL_Y_A_SUFFIXE',' ago');
 define('NEWS_A_CREE_TRANCHE','has created the edge of issue ');
 define('NEWS_ONT_CREE_TRANCHE','have created the edge of issue ');
 define('NEWS_ONT_CREE_TRANCHE_2','for the DucksManager bookcase');
