@@ -1216,26 +1216,22 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 	if (isset($_POST['ajouter'])) {
 										$erreur=false;
 										foreach (array('nom','adresse','cp','ville','commentaire') as $champ) {
-											$_POST[$champ]=str_replace("'","\\'",mysql_real_escape_string($_POST[$champ]));
+											$_POST[$champ]=mysql_real_escape_string($_POST[$champ]);
 											if (empty($_POST[$champ])) {
 												$erreur=true;
 												?><div style="color:red"><?=CHAMP_OBLIGATOIRE_1.ucfirst($champ).CHAMP_OBLIGATOIRE_2?></div><?php 
 											}
 										}
 										if (!$erreur) {
-	                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).')';
-	                                		?>
-											<span style="color: red">
-											<?php
-											if (!is_null($id_user) && $id_user==1)
-												DM_Core::$d->requete($requete);
-											else {
-												mail('admin@ducksmanager.net','Ajout de bouquinerie',$requete);
-												echo EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE;
-											}
-											echo MERCI_CONTRIBUTION;
-											?> </span><br />
-											
+	                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', 0)';
+                                            DM_Core::$d->requete($requete);
+
+                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="http://www.ducksmanager.net/backend/bouquineries.php">Validation</a>');
+                                            ?>
+                                            <span style="color: red">
+                                                <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>
+                                            </span>
+                                            <br />
 											<?php
 										}
 		                     		}

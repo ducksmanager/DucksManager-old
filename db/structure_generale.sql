@@ -135,8 +135,9 @@ CREATE TABLE `bouquineries` (
   `CoordX` float NOT NULL DEFAULT '0',
   `CoordY` float NOT NULL DEFAULT '0',
   `DateAjout` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Actif` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
