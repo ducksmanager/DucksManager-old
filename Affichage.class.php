@@ -131,7 +131,6 @@ class Affichage {
 			</tr>
 		</table>
 		<?php
-		//echo '<pre>';print_r($liste);echo '</pre>';
 		foreach($numeros2 as $numero=>$infos) {
 			$etat=$infos->etat;
 			$id_acquisition=$infos->id_acquisition;
@@ -184,6 +183,46 @@ class Affichage {
             $cpt++;
 		}
 	}
+
+    static function afficher_footer_selection_numeros() {
+
+        $parametres = array(
+            'etat' => array(
+                'label' => ETAT,
+                'liste' => array(1,2)
+            ),
+            'date_achat' => array(
+                'label' => DATE_ACHAT,
+                'liste' => array()
+            ),
+            'vente' => array(
+                'label' => VENTE,
+                'liste' => array(VENTE_CONSERVER_VOLONTE_VENTE, VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE)
+            )
+        );
+
+        ?>
+        <div id="footer_ajout_suppr" class="cache">
+            <h2 id="footer_titre">1 numéro sélectionné</h2>
+            <?php foreach($parametres as $parametre => $infos_parametre) {
+                ?><div class="footer_section">
+                    <h2 class="libelle" style="">
+                        <label for="<?=$parametre?>"><?=$infos_parametre['label']?></label>
+                    </h2>
+                    <select class="liste" id="<?=$parametre?>">
+                        <?php foreach($infos_parametre['liste'] as $option) {
+                            ?><option value="<?=$option?>"><?=$option?></option><?php
+                        }
+                    ?></select>
+                </div><?php
+            }
+            ?>
+            <div id="enregistrer_parametrage_numeros" class="footer_section">
+                <h2 >Enregistrer</h2>
+            </div>
+        </div>
+        <?php
+    }
 	
 	static function afficher_evenements_recents($evenements) {
 		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);

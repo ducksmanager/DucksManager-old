@@ -72,6 +72,11 @@ function stop_selection(sel) {
 	}
 }
 
+function afficher_footer_ajout_suppr() {
+	$('footer_ajout_suppr').removeClassName('cache');
+	$('main').addClassName('avec_footer_ajout_suppr');
+}
+
 function effacer_infos_acquisition() {
 	$('nouvelle_acquisition').update();
 }

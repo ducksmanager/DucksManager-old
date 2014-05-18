@@ -1,6 +1,6 @@
 <?php header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le pass�
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
 date_default_timezone_set('Europe/Paris');
 require_once('_priv/Admin.priv.class.php');
 require_once('travaux.php');
@@ -30,7 +30,7 @@ else {
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
-			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
+			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies à jour à chaque rafraichissement
 			setCookie('pass',sha1($_COOKIE['pass']),time()+3600);
 		}
 	}
@@ -63,6 +63,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <link rel="stylesheet" type="text/css" href="pluit-carousel.css">
         <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="footer_ajout_suppr.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('_priv/Database.priv.class.php');
         if (!isLocalHost()) {?>
@@ -210,9 +211,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             break;
     }
     ?>">
-    <table
-        style="text-align: left; color: white; background-color: rgb(61, 75, 95); width: 100%; height: 100%;border:0"
-        cellpadding="0" cellspacing="0">
+    <table id="main" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
                 <td id="medailles_et_login" align="center" style="vertical-align: bottom; height:45px;padding-left:3px;background-color:rgb(61, 75, 95)">
@@ -644,7 +643,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                     ?>
                                                     <?=MERCI_CONTRIBUTION?><br /><?=EMAIL_ENVOYE;?>
                                                     <?php
-                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de '.$_SESSION['user'].' pour la biblioth�que',
+                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de '.$_SESSION['user'].' pour la bibliothèque',
                                                          $_POST['texte_participation'],'From: '.$_SESSION['user'].'<'.$_POST['email'].'>');
                                                 }
                                                 else {
@@ -1044,9 +1043,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             <?php
                                             }
                                         }
+
+                                        Affichage::afficher_footer_selection_numeros();
+
                                         break;
                                 }
-
                                 break;
                             case 'stats':
                                 ?>
