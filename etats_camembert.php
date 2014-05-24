@@ -16,16 +16,16 @@ $cpt_etats=array();
 $autres=0;
 $valeurs_magazines=array();
 $cles_magazines=array();
-foreach(Etat::$liste as $etat) {
-	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat = \''.$etat->nom.'\'');
+foreach(Etats::$liste as $etat) {
+	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat = \''.$etat->nomParametre.'\'');
 	$cpt=$resultat[0]['c'];
 	if ($cpt==0) continue;
 	if ($cpt/$total<0.01) {
 		$autres+=$cpt;
 	}
 	else {
-		$valeur=new pie_value($cpt*100,utf8_encode($etat->libelle));
-		$valeur->set_tooltip(utf8_encode($etat->libelle.'<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.round(100*$cpt/$total).'%)');
+		$valeur=new pie_value($cpt*100,utf8_encode($etat->libelleParametre));
+		$valeur->set_tooltip(utf8_encode($etat->libelleParametre.'<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.round(100*$cpt/$total).'%)');
 		array_push($valeurs_magazines,$valeur);
 	}
 }

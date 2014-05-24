@@ -5,7 +5,7 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 require_once('Liste.class.php');
 require_once('Inducks.class.php');
-require_once('Etat.class.php');
+require_once('Etats.class.php');
 
 class Database {
 	public static $etats;
@@ -145,7 +145,7 @@ class Database {
 
 	function liste_etats() {
 		$etats=array();
-		foreach(Etat::$liste as $etat_court=>$etat) {
+		foreach(Etats::$liste as $etat_court=>$etat) {
 			if (!in_array($etat_court, 'indefini', 'non_possede')) {
 				$etats[]=$etat->libelle;
 			}
