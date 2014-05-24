@@ -5,12 +5,7 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 require_once('Liste.class.php');
 require_once('Inducks.class.php');
-
-Database::$etats=array(
-   'mauvais'=>array(MAUVAIS,'#FF0000'),
-   'moyen'=>array(MOYEN,'#FF8000'),
-   'bon'=>array(BON,'#2CA77B'),
-   'indefini'=>array(INDEFINI,'#808080'));
+require_once('Etat.class.php');
 
 class Database {
 	public static $etats;
@@ -150,9 +145,9 @@ class Database {
 
 	function liste_etats() {
 		$etats=array();
-		foreach(self::$etats as $etat_court=>$infos_etat) {
-			if ($etat_court!='indefini') {
-				$etats[]=$infos_etat[0];
+		foreach(Etat::$liste as $etat_court=>$etat) {
+			if (!in_array($etat_court, 'indefini', 'non_possede')) {
+				$etats[]=$etat->libelle;
 			}
 		}
 		echo implode('~', $etats);

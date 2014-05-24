@@ -370,6 +370,7 @@ define('NOM_UTILISATEUR','Nom d\'utilisateur');
 define('NON','Non');
 define('NON_CONNECTE','Non connect&eacute;(e)');
 define('NON_NUMERIQUES','Non-num&eacute;riques');
+define('NON_POSSEDE', 'Non poss&eacute;d&eacute;');
 define('NOTATION_MODIFIEE','La notation a ete modifiee');
 define('NOUVEAU','Nouveau!');
 define('NOUVEAU_MAGAZINE','Nouveau magazine');
