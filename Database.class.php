@@ -5,7 +5,7 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 require_once('Liste.class.php');
 require_once('Inducks.class.php');
-require_once('Etats.class.php');
+require_once('ParametrageAjoutSuppr.class.php');
 
 class Database {
 	public static $etats;
@@ -145,7 +145,7 @@ class Database {
 
 	function liste_etats() {
 		$etats=array();
-		foreach(Etats::$liste as $etat_court=>$etat) {
+		foreach(Etats::$instance->getListe() as $etat_court=>$etat) {
 			if (!in_array($etat_court, 'indefini', 'non_possede')) {
 				$etats[]=$etat->libelle;
 			}
@@ -746,6 +746,15 @@ function ajouter_auteur($id,$nom) {
         }
         return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
     }
+
+    /**
+     * @param $id_user
+     * @return array
+     */
+    function get_liste_achats($id_user)
+    {
+        return DM_Core::$d->requete_select('SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User=' . $id_user . ' ORDER BY Date DESC');
+    }
 }
 
 function mysql_current_db() {
@@ -852,8 +861,8 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['liste_achats'])) {
 		//print_r($_SESSION);acquisitions
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
-		$tab_achats=array();
+        $liste_achats = DM_Core::$d->get_liste_achats($id_user);
+        $tab_achats=array();
 		$cpt_strlen=0;
 		foreach ($liste_achats as $achat) {
 			$id_achat=$achat['ID_Acquisition'];

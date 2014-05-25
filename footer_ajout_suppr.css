@@ -20,12 +20,24 @@
     margin-left: 1%;
 }
 
-#footer_ajout_suppr .footer_section h2.libelle, #footer_ajout_suppr .footer_section select.liste {
+#footer_ajout_suppr .footer_section h2.libelle,
+#footer_ajout_suppr .footer_section div.liste {
     float: left;
     width: 50%;
     text-align: center;
     height: 100%;
     margin: 0;
+}
+
+#footer_ajout_suppr .footer_section div.liste ul {
+    position: absolute;
+    bottom: 18px;
+    list-style-type: none;
+    border: 1px solid black;
+}
+
+#footer_ajout_suppr .footer_section div.liste ul li {
+    cursor: pointer;
 }
 
 #footer_ajout_suppr .footer_section h2.libelle {

@@ -404,7 +404,7 @@ class Liste {
 				foreach($this->collection[$pays][$magazine] as $numero_liste) {
 					if ($numero_liste[0]==$numero) {
 						return array($numero_liste[0],
-									 array_key_exists($numero_liste[1],Etat::$liste) ? $numero_liste[1] : 'indefini',
+									 array_key_exists($numero_liste[1],Etats::$instance->getListe()) ? $numero_liste[1] : 'indefini',
 									 $numero_liste[2],
 									 $numero_liste[3]);
 					}

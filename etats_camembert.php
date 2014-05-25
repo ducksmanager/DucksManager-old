@@ -16,7 +16,7 @@ $cpt_etats=array();
 $autres=0;
 $valeurs_magazines=array();
 $cles_magazines=array();
-foreach(Etats::$liste as $etat) {
+foreach(Etats::$instance->getListe() as $etat) {
 	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat = \''.$etat->nomParametre.'\'');
 	$cpt=$resultat[0]['c'];
 	if ($cpt==0) continue;

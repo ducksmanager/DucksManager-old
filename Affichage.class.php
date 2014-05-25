@@ -185,38 +185,19 @@ class Affichage {
 	}
 
     static function afficher_footer_selection_numeros() {
+        global $id_user;
 
-        $parametres = array(
-            'etat' => array(
-                'label' => ETAT,
-                'liste' => array(1,2)
-            ),
-            'date_achat' => array(
-                'label' => DATE_ACHAT,
-                'liste' => array()
-            ),
-            'vente' => array(
-                'label' => VENTE,
-                'liste' => array(VENTE_CONSERVER_VOLONTE_VENTE, VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE)
-            )
-        );
+        $achats = DM_Core::$d->get_liste_achats($id_user);
+        foreach($achats as $achat) {
+            EtatsAchats::$instance->ajouter_date_achat($achat);
+        }
 
         ?>
-        <div id="footer_ajout_suppr" class="cache">
+        <div id="footer_ajout_suppr" class=" menu desktop cache">
             <h2 id="footer_titre">1 numéro sélectionné</h2>
-            <?php foreach($parametres as $parametre => $infos_parametre) {
-                ?><div class="footer_section">
-                    <h2 class="libelle" style="">
-                        <label for="<?=$parametre?>"><?=$infos_parametre['label']?></label>
-                    </h2>
-                    <select class="liste" id="<?=$parametre?>">
-                        <?php foreach($infos_parametre['liste'] as $option) {
-                            ?><option value="<?=$option?>"><?=$option?></option><?php
-                        }
-                    ?></select>
-                </div><?php
-            }
-            ?>
+            <?=Etats::$instance?>
+            <?=EtatsAchats::$instance?>
+            <?=EtatsAVendre::$instance?>
             <div id="enregistrer_parametrage_numeros" class="footer_section">
                 <h2 >Enregistrer</h2>
             </div>
