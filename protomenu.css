@@ -105,7 +105,6 @@ div.menu input {
 .menu.desktop {
 	width: 24em;
 	background: #f9f8f7;
-	border: 1px solid #999;
 	padding: 0;
 }
 .menu.desktop.small {
@@ -117,15 +116,16 @@ div.menu input {
 .menu.desktop ul, .menu.desktop li {
 	margin: 0;
 	padding: 0;
+    background: #f9f8f7;
 }
 .menu.desktop li.separator {
 	height: 1px;
 }
 .menu.desktop a, .types_listes a {
 	color: #555;
-	padding: 3px 3px 3px 25px;
+	padding: 11px 3px 12px 25px;
 	margin: 0;
-	border: 1px solid #f9f8f7;
+    border-bottom: 0 !important;
 }
 .menu.desktop a.disabled {
 	opacity: 0.25;
@@ -186,9 +186,6 @@ a.dmspiral {
 .menu.desktop a.pas_a_vendre {
   background: #f9f8f7 url(images/pas_av_petit.png) 2px 50% no-repeat;
 }
-.menu.desktop a.conserver {
-    background: #f9f8f7;
-}
 .menu.desktop a.possede {
   background: #f9f8f7 url(images/possede.png) 2px 50% no-repeat;
 }
@@ -203,6 +200,9 @@ a.dmspiral {
 }
 .menu.desktop a.excellent {
   background: #f9f8f7 url(images/excellent.png) 2px 50% no-repeat;
+}
+.menu.desktop a.indefini {
+    background: #f9f8f7;
 }
 .menu.desktop a.date {
   background: #f9f8f7 url(images/page_date.png) 2px 50% no-repeat;
@@ -236,7 +236,7 @@ a.dmspiral {
 }
 /* we need explicit enabled class to overcome css deficiences (without creating unnecessary markup) 
 */
-.menu.desktop a.enabled:hover {
+.menu.desktop a:hover {
 	background-color: #0A246A;
 	color: #fff;
 	cursor:pointer;

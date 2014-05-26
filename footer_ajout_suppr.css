@@ -9,14 +9,20 @@
 }
 
 #footer_ajout_suppr #footer_titre {
-    margin-top: 6px;
+    position: absolute;
+    clear: both;
+    width: 100%;
+    bottom: 0;
+    margin: 0;
+    padding: 10px;
+    background: #dddddd;
     text-align: center;
 }
 
 #footer_ajout_suppr .footer_section {
     float: left;
     width: 23%;
-    height: 30px;
+    height: 40px;
     margin-left: 1%;
 }
 
@@ -24,24 +30,22 @@
 #footer_ajout_suppr .footer_section div.liste {
     float: left;
     width: 50%;
-    text-align: center;
-    height: 100%;
     margin: 0;
+    padding: 12px 0;
+    text-align: center;
 }
 
 #footer_ajout_suppr .footer_section div.liste ul {
     position: absolute;
-    bottom: 18px;
+    width: 13%;
+    bottom: 35px;
     list-style-type: none;
-    border: 1px solid black;
+    border: 1px solid #999999;
 }
 
 #footer_ajout_suppr .footer_section div.liste ul li {
     cursor: pointer;
-}
-
-#footer_ajout_suppr .footer_section h2.libelle {
-    padding-top: 6px;
+    height: 38px;
 }
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros {
@@ -55,6 +59,6 @@
     width: 100%;
     margin: 0;
     height: 25px;
-    padding: 7px 0 0 0;
+    padding: 10px 0;
     text-align: center;
 }

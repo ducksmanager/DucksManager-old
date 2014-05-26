@@ -153,7 +153,7 @@ class EtatsAchats extends ParametrageAjoutSuppr {
     var $dates_achat = array();
 
     function __construct() {
-        parent::__construct('achat', VENTE);
+        parent::__construct('achat', DATE_ACHAT);
 
         $this->add_to_list(new EtatAchat('date', ACHAT_ASSOCIER_DATE_ACHAT));
         $this->add_to_list(new EtatAchat('pas_date', ACHAT_DESASSOCIER_DATE_ACHAT));

@@ -194,13 +194,13 @@ class Affichage {
 
         ?>
         <div id="footer_ajout_suppr" class=" menu desktop cache">
-            <h2 id="footer_titre">1 numéro sélectionné</h2>
             <?=Etats::$instance?>
             <?=EtatsAchats::$instance?>
             <?=EtatsAVendre::$instance?>
             <div id="enregistrer_parametrage_numeros" class="footer_section">
                 <h2 >Enregistrer</h2>
             </div>
+            <h2 id="footer_titre">1 numéro sélectionné</h2>
         </div>
         <?php
     }
