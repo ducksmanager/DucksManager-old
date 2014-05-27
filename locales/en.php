@@ -454,7 +454,7 @@ define('PROPOSE_PAR','Proposed by ');
 define('PROPOSER_BOUQUINERIE','Propose a second-hand bookshop');
 define('PROPOSER_MAGAZINES_POSSEDES','Only suggest issues whose magazines are in my magazines list');
 define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','This option allows to tell DucksManager that only the issues belonging to your magazines list can be suggested.');
-define('PUB_WHATTHEDUCK_1','New ! Keep an eye on your comics collection at any time thanks to ');
+define('PUB_WHATTHEDUCK_1','Keep an eye on your comics collection at any time thanks to ');
 define('PUB_WHATTHEDUCK_2',', DucksManager\'s mobile app !');
 define('PUB_WHATTHEDUCK_3','Available for free on Android Market.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Do you wish to execute these operations ?');
