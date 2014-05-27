@@ -1,4 +1,4 @@
-<?header('Content-Type: text/html; charset=utf-8');
+<?php header('Content-Type: text/html; charset=utf-8');
 error_reporting(E_ALL);
 include_once('../Database.class.php');
 include_once('../authentification.php');
