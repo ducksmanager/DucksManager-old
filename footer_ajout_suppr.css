@@ -46,6 +46,12 @@
 #footer_ajout_suppr .footer_section div.liste ul li {
     cursor: pointer;
     height: 38px;
+    display: none;
+}
+
+#footer_ajout_suppr .footer_section div.liste ul.open li,
+#footer_ajout_suppr .footer_section div.liste ul li.selected{
+    display: list-item;
 }
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros {

@@ -200,7 +200,11 @@ class Affichage {
             <div id="enregistrer_parametrage_numeros" class="footer_section">
                 <h2 >Enregistrer</h2>
             </div>
-            <h2 id="footer_titre">1 numéro sélectionné</h2>
+            <h2 id="footer_titre">
+                <span id="nb_selection">0</span>
+                <span id="numero_selectionne" style="display: inline;"><?=NUMERO_SELECTIONNE?></span>
+                <span id="numeros_selectionnes" style="display: none;"><?=NUMEROS_SELECTIONNES?></span>
+            </h2>
         </div>
         <?php
     }

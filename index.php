@@ -93,7 +93,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 			if (!isset($_GET['action'])) $_GET['action']='';            
 			switch($_GET['action']) {
                 case 'gerer':
-                    new JS('js/edges2.js','js/menu_contextuel.js');
+                    new JS('js/edges2.js','js/menu_contextuel.js','js/footer_ajout_suppr.js');
                 break;  
                 case 'bibliotheque':
                     $textures=array();

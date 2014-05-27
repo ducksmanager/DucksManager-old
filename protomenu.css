@@ -245,7 +245,7 @@ a.dmspiral {
 	font-weight:normal;
 	cursor:default;
 }
-.menu.desktop a.selected {
+.menu.desktop li.selected a {
 	background-color: brown;
 	color: #fff;
 }

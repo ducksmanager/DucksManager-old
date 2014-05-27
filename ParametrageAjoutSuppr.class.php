@@ -13,11 +13,8 @@ class ParametreAjoutSuppr {
 
     function __toString() {
         $classes = array($this->nomParametrage, $this->nomParametre);
-        if ($this->nomParametre === 'conserver') {
-            $classes[] = 'selected';
-        }
         return '
-            <li>
+            <li '.($this->nomParametre === 'conserver' ? 'class="selected"' : '').'>
                 <a href="javascript:return false;"
                    name="'.$this->nomParametrage.'_'.$this->nomParametre.'"
                    class="'.implode(' ', $classes).'">'.$this->libelleParametre.'

@@ -435,7 +435,7 @@ function afficher_numeros(pays,magazine) {
 	                $('liste_numeros').select('[name="'+location.hash.replace(/#/,'')+'"]')[0].scrollIntoView(true);
 	            }
 
-	           afficher_footer_ajout_suppr();
+	           init_footer_ajout_suppr();
            }
 	});
 }
