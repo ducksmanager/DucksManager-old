@@ -37,6 +37,16 @@ class ParametrageAjoutSuppr {
         self::$liste[$nom] = array();
     }
 
+    function toStringListe($liste) {
+        $str = '<ul>';
+        foreach($liste as $item) {
+            $str.= $item;
+        }
+        $str.= '</ul>';
+
+        return $str;
+    }
+
     function __toString() {
         $liste = array_merge(
             self::$liste[$this->nom],
@@ -49,12 +59,8 @@ class ParametrageAjoutSuppr {
                     .'<h2 class="libelle">'
                         .'<label for="'.$this->nom.'">'.$this->libelle.'</label>'
                     .'</h2>'
-                    .'<div class="liste">'
-                        .'<ul>';
-                        foreach($liste as $item) {
-                            $str.= $item;
-                        }
-        $str.=          '</ul>'
+                    .'<div class="conteneur_liste" id="parametrage_'.$this->nom.'">'
+                        .$this->toStringListe($liste)
                     .'</div>'
                 .'</div>';
         return $str;
@@ -152,7 +158,26 @@ class EtatsAchats extends ParametrageAjoutSuppr {
     /** @var EtatsAchats */
     static $instance;
 
+    /** @var Achat[]  */
     var $dates_achat = array();
+
+    function toStringListe($liste) {
+        $str = parent::toStringListe($liste);
+        $liste_achats ='<ul id="liste_achats">';
+        foreach($this->dates_achat as $date_achat) {
+            $liste_achats.=
+                '<li>
+                    <a href="javascript:return false;"
+                       name="'.$date_achat->id_acquisition.'">'
+                            .ACHAT.' "'.$date_achat->libelle.'"<br />'
+                            .$date_achat->date.'
+                    </a>
+                </li>';
+        }
+
+        $liste_achats.='</ul>';
+        return $str.$liste_achats;
+    }
 
     function __construct() {
         parent::__construct('achat', DATE_ACHAT);

@@ -7,6 +7,7 @@ define('ACHAT_ASSOCIER_DATE_ACHAT','Associer avec une date d\'achat');
 define('ACHAT_CONSERVER_DATE_ACHAT','Conserver la date d\'achat');
 define('ACHAT_DESASSOCIER_DATE_ACHAT','D&eacute;sassocier de la date d\'achat');
 define('ACHAT_VENTE_NUMEROS','Achat/Vente de num&eacute;ros');
+define('ACHAT','Achat');
 define('ACHATS','Achats');
 define('ACHATS_DE_NUMEROS','Achats de numéros');
 define('ACHATS_COURT','Achats');

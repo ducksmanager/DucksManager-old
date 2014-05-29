@@ -7,6 +7,7 @@ define('ACHAT_ASSOCIER_DATE_ACHAT','Link with a purchase date');
 define('ACHAT_CONSERVER_DATE_ACHAT','Do not change the purchase date');
 define('ACHAT_DESASSOCIER_DATE_ACHAT','Unlink from purchase date');
 define('ACHAT_VENTE_NUMEROS','Buy/Sell issues');
+define('ACHAT','Purchase');
 define('ACHATS','Purchases');
 define('ACHATS_DE_NUMEROS','Issues purchases');
 define('ACHATS_COURT','Purchases');

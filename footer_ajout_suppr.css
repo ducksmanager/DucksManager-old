@@ -27,7 +27,7 @@
 }
 
 #footer_ajout_suppr .footer_section h2.libelle,
-#footer_ajout_suppr .footer_section div.liste {
+#footer_ajout_suppr .footer_section div.conteneur_liste {
     float: left;
     width: 50%;
     margin: 0;
@@ -35,7 +35,29 @@
     text-align: center;
 }
 
-#footer_ajout_suppr .footer_section div.liste ul {
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats {
+    float: left;
+    margin-left: 13%;
+    margin-bottom: 75px;
+    bottom: 75px;
+    max-height: 266px;
+    overflow-y: auto;
+    border: 0;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li a {
+    padding: 4px;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li.selected {
+    display: none;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats.open li.selected {
+    display: block;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul {
     position: absolute;
     width: 13%;
     bottom: 35px;
@@ -43,20 +65,19 @@
     border: 1px solid #999999;
 }
 
-#footer_ajout_suppr .footer_section div.liste ul li {
+#footer_ajout_suppr .footer_section div.conteneur_liste ul li {
     cursor: pointer;
     height: 38px;
     display: none;
 }
 
-#footer_ajout_suppr .footer_section div.liste ul.open li,
-#footer_ajout_suppr .footer_section div.liste ul li.selected{
+#footer_ajout_suppr .footer_section div.conteneur_liste ul.open li,
+#footer_ajout_suppr .footer_section div.conteneur_liste ul li.selected{
     display: list-item;
 }
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros {
     float: right;
-    margin: 0 1%;
 }
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros h2 {
