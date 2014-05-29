@@ -85,6 +85,7 @@ define('CHAMP_OBLIGATOIRE_1','Le champ ');
 define('CHAMP_OBLIGATOIRE_2',' est obligatoire');
 define('CHARGEMENT','Chargement');
 define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','Chargement termin&eacute;');
+define('CHOISISSEZ', 'Choisissez');
 define('CLASSIQUE_ABREGE_DESCRIPTION','Cet affichage permet de consulter le nombre de num&eacute;ros poss&eacute;d&eacute;s pour un magazine.');
 define('CLASSIQUE_ABREGE_MOINS_1','Pas vraiment une liste');
 define('CLASSIQUE_ABREGE_MOINS_2','Impossible d\'ajouter des num&eacute;ros manuellement');

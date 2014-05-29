@@ -241,6 +241,10 @@ a.dmspiral {
 	color: #fff;
 	cursor:pointer;
 }
+.menu.desktop a.choisir:hover {
+    background-color: #fff;
+    color: #555;
+}
 .menu.desktop a.disabled:hover {
 	font-weight:normal;
 	cursor:default;

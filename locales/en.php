@@ -85,6 +85,7 @@ define('CHAMP_OBLIGATOIRE_1','Le champ ');
 define('CHAMP_OBLIGATOIRE_2',' est obligatoire');
 define('CHARGEMENT','Loading');
 define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','Done.');
+define('CHOISISSEZ', 'Choose');
 define('CLASSIQUE_ABREGE_DESCRIPTION','This displays the number of possessed issues for a magazine');
 define('CLASSIQUE_ABREGE_MOINS_1','Not really a list');
 define('CLASSIQUE_ABREGE_MOINS_2','Impossible to add issues manually');

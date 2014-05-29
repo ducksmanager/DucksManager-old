@@ -38,8 +38,13 @@ class ParametrageAjoutSuppr {
     }
 
     function __toString() {
-        $liste = array(new ParametreAjoutSuppr($this->nom, 'conserver', NE_PAS_CHANGER));
-        $liste = array_merge(self::$liste[$this->nom], $liste);
+        $liste = array_merge(
+            self::$liste[$this->nom],
+            array(
+                new ParametreAjoutSuppr($this->nom, 'conserver', NE_PAS_CHANGER),
+                new ParametreAjoutSuppr($this->nom, 'choisir', CHOISISSEZ)
+            )
+        );
         $str = '<div class="footer_section">'
                     .'<h2 class="libelle">'
                         .'<label for="'.$this->nom.'">'.$this->libelle.'</label>'
