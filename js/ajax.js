@@ -139,6 +139,7 @@ function get_achats(continue_id) {
 	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
 	                        element=element.up('div');
 		        		stop_selection(element);
+				        Event.stop(event);
 		        	}
 		        }
 		    ); 
@@ -151,6 +152,7 @@ function get_achats(continue_id) {
                         if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
                             element=element.up('div');
                         start_selection(element);
+	                    Event.stop(event);
 		        	}
 		        }
 		    );
