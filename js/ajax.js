@@ -108,64 +108,65 @@ function get_achats(continue_id) {
                             'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
                             'enregistrer_changements');
             l10n_action('remplirSpanName',arr_l10n);
-            
-            $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
-		        'observe',
-		        'mouseover',
-		        function(event) {
-		        	$$('.survole').invoke('removeClassName','survole');
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-                    lighten(element);
-		          }
-		    ); 
-		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
-		        'observe',
-		        'mouseout',
-		        function(event) {
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-		        	unlighten(element);
-		        }
-		    ); 
-		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
-		        'observe',
-		        'mouseup',
-		        function(event) {
-		        	if (event.isLeftClick()) {
-			        	var element=Event.element(event);
+
+            $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num')
+	            .invoke(
+			        'observe',
+			        'mouseover',
+			        function(event) {
+			            $$('.survole').invoke('removeClassName','survole');
+			            var element=Event.element(event);
 	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
 	                        element=element.up('div');
-		        		stop_selection(element);
-				        Event.stop(event);
-		        	}
-		        }
-		    ); 
-		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
-		        'observe',
-		        'mousedown',
-		        function(event) {
-                    if (event.isLeftClick()) {
-    		        	var element=Event.element(event);
-                        if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                            element=element.up('div');
-                        start_selection(element);
-	                    Event.stop(event);
-		        	}
-		        }
-		    );
-		    $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
-		        'observe',
-		        'mousemove',
-		        function(event) {
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-		        	pre_select(element);
-		          }
-		    );  
+	                    lighten(element);
+			          }
+			    )
+	            .invoke(
+			        'observe',
+			        'mouseout',
+			        function(event) {
+			            var element=Event.element(event);
+	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
+	                        element=element.up('div');
+			            unlighten(element);
+			        }
+			    )
+	            .invoke(
+			        'observe',
+			        'mouseup',
+			        function(event) {
+			            if (event.isLeftClick()) {
+				            var element=Event.element(event);
+		                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
+		                        element=element.up('div');
+			                stop_selection(element);
+					        Event.stop(event);
+			            }
+			        }
+			    )
+	            .invoke(
+			        'observe',
+			        'mousedown',
+			        function(event) {
+	                    if (event.isLeftClick()) {
+	                        var element=Event.element(event);
+	                        if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
+	                            element=element.up('div');
+	                        start_selection(element);
+		                    Event.stop(event);
+			            }
+			        }
+			    )
+	            .invoke(
+			        'observe',
+			        'mousemove',
+			        function(event) {
+			            var element=Event.element(event);
+	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
+	                        element=element.up('div');
+			            pre_select(element);
+			          }
+			    );
                         
             $$('.preview').invoke('observe','click',function(event) {
                 var element=Event.element(event);
