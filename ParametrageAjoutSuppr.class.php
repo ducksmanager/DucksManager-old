@@ -38,7 +38,7 @@ class ParametrageAjoutSuppr {
     }
 
     function toStringListe($liste) {
-        $str = '<ul>';
+        $str = '<ul class="liste_parametrage">';
         foreach($liste as $item) {
             $str.= $item;
         }
