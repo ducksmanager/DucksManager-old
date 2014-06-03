@@ -71,6 +71,14 @@
     display: none;
 }
 
+#footer_ajout_suppr .footer_section div.conteneur_liste ul li a {
+    overflow: hidden;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul.open li a {
+    overflow: visible;
+}
+
 #footer_ajout_suppr .footer_section div.conteneur_liste ul.open li,
 #footer_ajout_suppr .footer_section div.conteneur_liste ul li.selected{
     display: list-item;
