@@ -37,12 +37,29 @@ function init_footer_ajout_suppr() {
 
 	footer.select('.achat.date, #liste_achats').invoke('observe', 'mouseover', function() {
 		$$('#liste_achats, #parametrage_achat ul').invoke('addClassName', 'open');
-
 		return false;
 	});
 
 	$$('#liste_achats li a').invoke('observe', 'click', function() {
 		associer_date_achat.click();
+	});
+
+	$('enregistrer_parametrage_numeros').observe('click', function() {
+		var liste = $$('.num_checked').pluck('title');
+		var prefixe_parametrage='parametrage_';
+		var parametrage = {};
+		$$('.conteneur_liste').each(function(conteneur) {
+			var nom_parametrage = conteneur.id.replace(prefixe_parametrage,'');
+			var valeur = conteneur.down('ul.liste_parametrage li.selected a').name;
+			if (nom_parametrage === 'achat' && valeur === 'date') {
+				parametrage[nom_parametrage] = conteneur.down('ul#liste_achats li.selected a').name;
+			}
+			else {
+				parametrage[nom_parametrage] = valeur;
+			}
+		});
+		update_numeros(liste,parametrage.etat,parametrage.achat,parametrage.a_vendre);
+		console.log(parametrage);
 	});
 }
 

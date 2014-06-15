@@ -4,6 +4,8 @@ class ParametreAjoutSuppr {
     var $nomParametre;
     var $libelleParametre;
 
+    static $nomParametreConserver = 'conserver';
+
     function __construct($nomParametrage, $nomParametre, $libelleParametre)
     {
         $this->nomParametrage = $nomParametrage;
@@ -14,9 +16,9 @@ class ParametreAjoutSuppr {
     function __toString() {
         $classes = array($this->nomParametrage, $this->nomParametre);
         return '
-            <li '.($this->nomParametre === 'conserver' ? 'class="selected"' : '').'>
+            <li '.($this->nomParametre === self::$nomParametreConserver ? 'class="selected"' : '').'>
                 <a href="javascript:return false;"
-                   name="'.$this->nomParametrage.'_'.$this->nomParametre.'"
+                   name="'.$this->nomParametre.'"
                    class="'.implode(' ', $classes).'">'.$this->libelleParametre.'
                 </a>
             </li>';
@@ -51,7 +53,7 @@ class ParametrageAjoutSuppr {
         $liste = array_merge(
             self::$liste[$this->nom],
             array(
-                new ParametreAjoutSuppr($this->nom, 'conserver', NE_PAS_CHANGER),
+                new ParametreAjoutSuppr($this->nom, ParametreAjoutSuppr::$nomParametreConserver, NE_PAS_CHANGER),
                 new ParametreAjoutSuppr($this->nom, 'choisir', CHOISISSEZ)
             )
         );

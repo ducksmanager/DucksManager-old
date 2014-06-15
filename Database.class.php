@@ -282,16 +282,16 @@ class Database {
 			break;
 			default:
 
-				$intitule=$etat=='non_marque'?'':$etat;
+				$intitule=$etat=='conserver'?'':$etat;
 				$requete_insert='INSERT INTO numeros(Pays,Magazine,Numero,';
-				$arr=array($etat=>array('non_marque','Etat'),
+				$arr=array($etat=>array('conserver','Etat'),
 						   $id_acquisition=>array(-2,'ID_Acquisition'),
 						   $av=>array(-1,'AV')
 						  );
 				$debut=true;
-				foreach($arr as $indice=>$valeur) {
+				foreach($arr as $valeur) {
 					if (!($debut)) {
-						if ($etat=='non_marque') {
+						if ($etat=='conserver') {
 							$debut=false;
 							continue;
 						}
@@ -315,14 +315,14 @@ class Database {
 
 					$requete_insert.='(\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',';
 
-					$arr=array($etat=>array('non_marque','\''.$intitule.'\''),
+					$arr=array($etat=>array('conserver','\''.$intitule.'\''),
 							   $id_acquisition=>array(-2,$id_acquisition),
 							   $av=>array(-1,$av)
 							  );
 					$debut=true;
-					foreach($arr as $indice=>$valeur) {
+					foreach($arr as $valeur) {
 						if (!($debut)) {
-							if ($etat=='non_marque') {
+							if ($etat=='conserver') {
 								$debut=false;
 								continue;
 							}
@@ -339,7 +339,7 @@ class Database {
 				DM_Core::$d->requete($requete_insert);
 				$requete_update='UPDATE numeros SET ';
 
-				$arr=array($etat=>array('non_marque','Etat=\''.$intitule.'\''),
+				$arr=array($etat=>array('conserver','Etat=\''.$intitule.'\''),
 						   $id_acquisition=>array(-2,'ID_Acquisition='.$id_acquisition),
 						   $av=>array(-1,'AV='.$av)
 						  );
@@ -784,22 +784,22 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		$etat=$_POST['etat'];
-		if ($_POST['av']=='true'||$_POST['av']=='-1')
-			$av=($_POST['av']=='true')?1:0;
-		else
-			$av=$_POST['av'];
-		$date_acquisition=$_POST['date_acquisition'];
-		$id_acquisition=$date_acquisition;
-		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
-			$requete_id_acquisition='SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND Date = \''.$date_acquisition.'\' GROUP BY ID_Acquisition';
-			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
-			//echo $requete_id_acquisition;
-			if ($resultat_acqusitions[0]['cpt'] ==0)
-				$id_acquisition=-1;
-			else
-				$id_acquisition=$resultat_acqusitions[0]['ID_Acquisition'];
-		}
-		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
+		if ($_POST['vente'] === ParametreAjoutSuppr::$nomParametreConserver) {
+            $vente=$_POST['vente'];
+        }
+        else {
+            $vente=$_POST['vente'] === 'a_vendre' ? 1 : 0;
+        }
+        $achat = $_POST['achat'];
+        if ($achat !== ParametreAjoutSuppr::$nomParametreConserver && $achat !== 'pas_date') {
+            $achat=$_POST['id_acquisition'];
+            $requete_id_acquisition='SELECT ID_Acquisition AS cpt FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND ID_Acquisition = \''.$achat.'\'';
+            $resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
+            if (count($resultat_acqusitions) === 0) {
+                $achat = -1;
+            }
+        }
+		DM_Core::$d->update_numeros($pays,$magazine,$etat,$vente,$liste,$achat);
 	}
 	else if (isset($_POST['evenements_recents'])) {	
 		Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());
