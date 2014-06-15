@@ -17,7 +17,7 @@
         </style>
     </head>
     <body>
-    	<div id="num_courant" style="top:0px; left:90%;position:fixed;width:10%;border:1px solid black;text-align:center;background-color:white">
+    	<div id="num_courant" style="top:0; left:90%;position:fixed;width:10%;border:1px solid black;text-align:center;background-color:white">
     		Aucun num&eacute;ro.
     	</div>
        	<div style="width:90%">
@@ -32,14 +32,19 @@ if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
         die ('Valeur du wanted invalide');
     }
-    echo '--- WANTED ---';
     $requete_plus_demandes='SELECT Count(Numero) as cpt, Pays, Magazine, Numero '
                           .'FROM numeros '
                           .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
     $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
-    
+
+    if (isset($_GET['user'])) {
+        $id_user=DM_Core::$d->user_to_id($_GET['user']);
+        $l=DM_Core::$d->toList($id_user);
+    }
+
+    echo '--- WANTED ---';
 	$numeros_demandes=array();
 	foreach($resultat_plus_demandes as $num) {
 		$pays=$num['Pays'];
@@ -74,7 +79,8 @@ if (isset($_GET['wanted'])) {
 		if (is_null($nom_magazine_complet)) {
 			$nom_magazine_complet = $publicationcode;
 		}
-		?><br /><u><?=$cpt?> utilisateurs poss&egrave;dent le num&eacute;ro :</u><br />
+        $est_possede = isset($l) && $l->est_possede($pays,$magazine,$numero);
+		?><br /><u><?=$cpt?> utilisateurs <?=($est_possede ? "<b><i>dont {$_GET['user']}</i></b>" : "")?> poss&egrave;dent le num&eacute;ro :</u><br />
 		&nbsp;
 			<img src="../images/flags/<?=$pays?>.png" /> 
 			<?=$nom_magazine_complet?> n&deg;<?=$numero?>
