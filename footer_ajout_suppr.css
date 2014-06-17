@@ -86,6 +86,7 @@
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros {
     float: right;
+    cursor: pointer;
 }
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros h2 {

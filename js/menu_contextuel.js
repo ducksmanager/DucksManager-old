@@ -838,15 +838,14 @@ function action_onclick(proto,e) {
     }
 }
 
-function update_numeros(liste,etat,date_achat,av) { 
-    liste_serialized=liste.join();
+function update_numeros(liste,etat,id_acquisition,av) {
+    var liste_serialized=liste.join();
     var pays=$('pays').innerHTML;
     var magazine=$('magazine').innerHTML;
     new Ajax.Request('Database.class.php', {
         method: 'post',
-        parameters:'database=true&update=true&pays='+pays+'&magazine='+magazine+'&list_to_update='+liste_serialized+'&etat='+etat+'&date_acquisition='+date_achat+'&av='+av,
-        onSuccess:function(transport,json) {
-            //var a;
+        parameters:'database=true&update=true&Pays='+pays+'&Magazine='+magazine+'&list_to_update='+liste_serialized+'&Etat='+etat+'&ID_Acquisition='+id_acquisition+'&AV='+av,
+        onSuccess:function() {
             window.location.replace("?action=gerer&onglet=ajout_suppr&onglet_magazine="+pays+"/"+magazine);
         }
     });

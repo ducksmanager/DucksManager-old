@@ -85,7 +85,7 @@ class Etat extends ParametreAjoutSuppr {
 
     function __construct($nom, $libelle, $couleur)
     {
-        parent::__construct('etat', $nom, $libelle);
+        parent::__construct('Etat', $nom, $libelle);
         $this->couleur = $couleur;
     }
 }
@@ -96,7 +96,7 @@ class Etats extends ParametrageAjoutSuppr {
     static $instance;
 
     function __construct() {
-        parent::__construct('etat', ETAT);
+        parent::__construct('Etat', ETAT);
 
         $this->add_to_list(new Etat('mauvais', MAUVAIS,'#FF0000'));
         $this->add_to_list(new Etat('moyen', MOYEN,'#FF8000'));
@@ -113,7 +113,7 @@ Etats::$instance = new Etats();
 class EtatAVendre extends ParametreAjoutSuppr {
     function __construct($nom, $libelle)
     {
-        parent::__construct('vente', $nom, $libelle);
+        parent::__construct('AV', $nom, $libelle);
     }
 }
 
@@ -123,7 +123,7 @@ class EtatsAVendre extends ParametrageAjoutSuppr {
     static $instance;
 
     function __construct() {
-        parent::__construct('vente', VENTE);
+        parent::__construct('AV', VENTE);
 
         $this->add_to_list(new EtatAVendre('a_vendre', VENTE_MARQUER_A_VENDRE));
         $this->add_to_list(new EtatAVendre('pas_a_vendre', VENTE_MARQUER_PAS_A_VENDRE));
@@ -151,7 +151,7 @@ class EtatAchat extends ParametreAjoutSuppr {
 
     function __construct($nom, $libelle)
     {
-        parent::__construct('achat', $nom, $libelle);
+        parent::__construct('ID_Acquisition', $nom, $libelle);
     }
 }
 
@@ -182,7 +182,7 @@ class EtatsAchats extends ParametrageAjoutSuppr {
     }
 
     function __construct() {
-        parent::__construct('achat', DATE_ACHAT);
+        parent::__construct('ID_Acquisition', DATE_ACHAT);
 
         $this->add_to_list(new EtatAchat('date', ACHAT_ASSOCIER_DATE_ACHAT));
         $this->add_to_list(new EtatAchat('pas_date', ACHAT_DESASSOCIER_DATE_ACHAT));

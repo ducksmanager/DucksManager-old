@@ -266,108 +266,76 @@ class Database {
 		}
 	}
 	
-	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-		if ($etat=='possede') $etat='indefini';
-		switch($etat) {
+	function update_numeros($parametres) {
+        $liste=explode(',',$parametres['list_to_update']);
+
+		if ($parametres['Etat'] === 'possede') {
+            $parametres['Etat']='indefini';
+        }
+
+		switch($parametres['Etat']) {
 			case 'non_possede':
-				$requete='DELETE FROM numeros WHERE (ID_Utilisateur=\''.$this->user_to_id($_SESSION['user']).'\') AND (';
-				$debut=true;
+				$numeros = array();
 				foreach($liste as $numero) {
-					if (!$debut)
-						$requete.=' OR ';
-					$requete.='Numero = \''.$numero.'\'';
-					$debut=false;
+                    $numeros[] = '\''.$numero.'\'';
 				}
-				$requete.=')';
+                $requete='DELETE FROM numeros '
+                        .'WHERE (ID_Utilisateur=\''.$this->user_to_id($_SESSION['user']).'\') AND (Numero IN '.implode(',', $numeros).'))';
+
+                DM_Core::$d->requete($requete);
 			break;
 			default:
+                // Ignorer les paramètres ayant la valeur "conserver"
+                $parametres = array_filter($parametres, function($valeur) {
+                    return $valeur !== ParametreAjoutSuppr::$nomParametreConserver;
+                });
 
-				$intitule=$etat=='conserver'?'':$etat;
-				$requete_insert='INSERT INTO numeros(Pays,Magazine,Numero,';
-				$arr=array($etat=>array('conserver','Etat'),
-						   $id_acquisition=>array(-2,'ID_Acquisition'),
-						   $av=>array(-1,'AV')
-						  );
-				$debut=true;
-				foreach($arr as $valeur) {
-					if (!($debut)) {
-						if ($etat=='conserver') {
-							$debut=false;
-							continue;
-						}
-						else
-							$requete_insert.=',';
-					}
-					$requete_insert.=$valeur[1];
-					$debut=false;
-				}
-				$requete_insert.=',ID_Utilisateur) VALUES ';
-				$debut=true;
-				$liste_user=$this->toList($this->user_to_id($_SESSION['user']));
-				$liste_deja_possedes=array();
-				foreach($liste as $numero) {
-					if ($liste_user->est_possede($pays,$magazine,$numero)) {
-						array_push($liste_deja_possedes,$numero);
-						continue;
-					}
-					if (!$debut)
-						$requete_insert.=', ';
+                $liste_user=$this->toList($this->user_to_id($_SESSION['user']));
 
-					$requete_insert.='(\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',';
+                $champs_fixes = array('Pays', 'Magazine', 'Numero', 'ID_Utilisateur');
 
-					$arr=array($etat=>array('conserver','\''.$intitule.'\''),
-							   $id_acquisition=>array(-2,$id_acquisition),
-							   $av=>array(-1,$av)
-							  );
-					$debut=true;
-					foreach($arr as $valeur) {
-						if (!($debut)) {
-							if ($etat=='conserver') {
-								$debut=false;
-								continue;
-							}
-							else
-								$requete_insert.=',';
-						}
-						$requete_insert.=$valeur[1];
-						$debut=false;
-					}
-					$requete_insert.=','.$this->user_to_id($_SESSION['user']).')';
-					$debut=false;
-				}
-				//echo $requete_insert;
-				DM_Core::$d->requete($requete_insert);
-				$requete_update='UPDATE numeros SET ';
+                $champs_variables = array_intersect(
+                    array(Etats::$instance->nom, EtatsAchats::$instance->nom, EtatsAVendre::$instance->nom),
+                    array_flip($parametres)
+                );
+                $champs = array_merge($champs_fixes, $champs_variables);
 
-				$arr=array($etat=>array('conserver','Etat=\''.$intitule.'\''),
-						   $id_acquisition=>array(-2,'ID_Acquisition='.$id_acquisition),
-						   $av=>array(-1,'AV='.$av)
-						  );
-				$debut=true;
-				foreach($arr as $indice=>$valeur) {
-					if ($indice!=$valeur[0]) {
-						if (!$debut)
-							$requete_update.=',';
-						$requete_update.=$valeur[1];
-						$debut=false;
-					}
-				}
+                $inserts = array();
+                $updates = array();
+                foreach($liste as $numero) {
+                    $parametres = array_intersect_key($parametres, array_flip($champs));
+                    $parametres['Numero'] = $numero;
 
-				$requete_update.=' WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$this->user_to_id($_SESSION['user']).' AND (';
-				$debut=true;
-				foreach($liste_deja_possedes as $numero) {
-					if (!$debut)
-						$requete_update.='OR ';
-					$requete_update.='Numero = \''.$numero.'\' ';
-					$debut=false;
-				}
-				$requete_update.='))';
-				DM_Core::$d->requete($requete_update);
-				echo $requete_update;
+                    if ($liste_user->est_possede($parametres['Pays'],$parametres['Magazine'],$parametres['Numero'])) {
+                        array_push($updates, $parametres);
+                    }
+                    else {
+                        array_push($inserts, $parametres);
+                    }
+                }
 
-		}
-		if (isset($requete))
-			mysql_query($requete);
+                foreach($inserts as $insert) {
+                    $values = array_intersect_key($insert, array_flip($champs));
+                    $requete_insert='INSERT INTO numeros('.implode(',', array_keys($values)).') VALUES (\''.implode("','", $values).'\')';
+                    DM_Core::$d->requete($requete_insert);
+                }
+
+                foreach($updates as $update) {
+                    $values = array();
+                    foreach($champs_variables as $champ) {
+                        $values[]=$champ."='".$update[$champ]."'";
+                    }
+
+                    $criteria = array();
+                    foreach($champs_fixes as $champ) {
+                        $criteria[]=$champ."='".$update[$champ]."'";
+                    }
+
+                    $requete_update=' UPDATE numeros'
+                                   .' SET '.implode(',', $values).' WHERE ('.implode(' AND ', $criteria).')';
+                    DM_Core::$d->requete($requete_update);
+                }
+        }
 	}
 
 	function toList($id_user=false) {
@@ -777,29 +745,10 @@ if (isset($_POST['database'])) {
 	}
 
 	else if (isset($_POST['update'])) {
-		//print_r($_SESSION);
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		$l=DM_Core::$d->toList($id_user);
-		$liste=explode(',',$_POST['list_to_update']);
-		$pays=$_POST['pays'];
-		$magazine=$_POST['magazine'];
-		$etat=$_POST['etat'];
-		if ($_POST['vente'] === ParametreAjoutSuppr::$nomParametreConserver) {
-            $vente=$_POST['vente'];
-        }
-        else {
-            $vente=$_POST['vente'] === 'a_vendre' ? 1 : 0;
-        }
-        $achat = $_POST['achat'];
-        if ($achat !== ParametreAjoutSuppr::$nomParametreConserver && $achat !== 'pas_date') {
-            $achat=$_POST['id_acquisition'];
-            $requete_id_acquisition='SELECT ID_Acquisition AS cpt FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND ID_Acquisition = \''.$achat.'\'';
-            $resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
-            if (count($resultat_acqusitions) === 0) {
-                $achat = -1;
-            }
-        }
-		DM_Core::$d->update_numeros($pays,$magazine,$etat,$vente,$liste,$achat);
+        $parametres = array_merge($_POST, array(
+            'ID_Utilisateur'=>DM_Core::$d->user_to_id($_SESSION['user']))
+        );
+		DM_Core::$d->update_numeros($parametres);
 	}
 	else if (isset($_POST['evenements_recents'])) {	
 		Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());

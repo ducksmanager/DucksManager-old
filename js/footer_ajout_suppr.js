@@ -58,7 +58,7 @@ function init_footer_ajout_suppr() {
 				parametrage[nom_parametrage] = valeur;
 			}
 		});
-		update_numeros(liste,parametrage.etat,parametrage.achat,parametrage.a_vendre);
+		update_numeros(liste,parametrage.Etat,parametrage.ID_Acquisition,parametrage.AV);
 		console.log(parametrage);
 	});
 }
