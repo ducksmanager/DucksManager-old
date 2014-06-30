@@ -68,46 +68,25 @@ function use_or_fetch($src_image) {
     global $debug;
     $src_image=preg_replace('#\?.*#is', '',str_replace('http://localhost/DucksManager/','',$src_image));
     if ($debug) echo '<br />'.$src_image;
-    //if (!file_exists($src_image)) {
-        if ($debug) echo ' - Recuperation depuis ducksmanager.net';
-        $src_image=str_replace(' ','%20',$src_image);
-        if (strpos($src_image, '.png') == strlen($src_image)-4) {
-            $im=imagecreatefrompng($src_image);
-            if ($im===false && $debug) {
-                echo 'Erreur recuperation PNG '.$src_image.'<br />';
-                return null;
-            }
-            imagepng($im,$src_image);
-        }
-        elseif (strpos($src_image, '.jpg') == strlen($src_image)-4) {
-            $im=imagecreatefromjpeg($src_image);
-            if ($im===false && $debug) {
-                echo 'Erreur recuperation JPG '.$src_image.'<br />';
-                exit(0);
-            }
-            imagejpeg($im,$src_image);
-        }
-        else {
-            echo 'Erreur extension inconnue recuperation '.$src_image.'<br />';
-            exit(0);
-        }
-        return $im;
-    //}
+    if ($debug) echo ' - Recuperation depuis ducksmanager.net';
+    $src_image=str_replace(' ','%20',$src_image);
     if (strpos($src_image, '.png') == strlen($src_image)-4) {
         $im=imagecreatefrompng($src_image);
         if ($im===false && $debug) {
-            echo 'Erreur recuperation PNG existante'.$src_image.'<br />';
-            exit(0);
+            echo 'Erreur recuperation PNG '.$src_image.'<br />';
+            return null;
         }
-        return $im;
     }
     elseif (strpos($src_image, '.jpg') == strlen($src_image)-4) {
         $im=imagecreatefromjpeg($src_image);
         if ($im===false && $debug) {
-            echo 'Erreur recuperation JPG existante'.$src_image.'<br />';
+            echo 'Erreur recuperation JPG '.$src_image.'<br />';
             exit(0);
         }
-        return $im;
     }
-
+    else {
+        echo 'Erreur extension inconnue recuperation '.$src_image.'<br />';
+        exit(0);
+    }
+    return $im;
 }
