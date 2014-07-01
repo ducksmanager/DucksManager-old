@@ -1,24 +1,26 @@
 <?php
 class ParametreAjoutSuppr {
     var $nomParametrage;
-    var $nomParametre;
+    var $classeCssParametre;
+    var $valeurParametre;
     var $libelleParametre;
 
     static $nomParametreConserver = 'conserver';
 
-    function __construct($nomParametrage, $nomParametre, $libelleParametre)
+    function __construct($nomParametrage, $classeCssParametre, $valeurParametre, $libelleParametre)
     {
         $this->nomParametrage = $nomParametrage;
-        $this->nomParametre = $nomParametre;
+        $this->valeurParametre = $valeurParametre;
         $this->libelleParametre = $libelleParametre;
+        $this->classeCssParametre = $classeCssParametre;
     }
 
     function __toString() {
-        $classes = array($this->nomParametrage, $this->nomParametre);
+        $classes = array($this->nomParametrage, $this->classeCssParametre);
         return '
-            <li '.($this->nomParametre === self::$nomParametreConserver ? 'class="selected"' : '').'>
+            <li '.($this->valeurParametre === self::$nomParametreConserver ? 'class="selected"' : '').'>
                 <a href="javascript:return false;"
-                   name="'.$this->nomParametre.'"
+                   name="'.$this->valeurParametre.'"
                    class="'.implode(' ', $classes).'">'.$this->libelleParametre.'
                 </a>
             </li>';
@@ -53,8 +55,8 @@ class ParametrageAjoutSuppr {
         $liste = array_merge(
             self::$liste[$this->nom],
             array(
-                new ParametreAjoutSuppr($this->nom, ParametreAjoutSuppr::$nomParametreConserver, NE_PAS_CHANGER),
-                new ParametreAjoutSuppr($this->nom, 'choisir', CHOISISSEZ)
+                new ParametreAjoutSuppr($this->nom, ParametreAjoutSuppr::$nomParametreConserver, ParametreAjoutSuppr::$nomParametreConserver, NE_PAS_CHANGER),
+                new ParametreAjoutSuppr($this->nom, 'choisir', 'choisir', CHOISISSEZ)
             )
         );
         $str = '<div class="footer_section">'
@@ -69,7 +71,7 @@ class ParametrageAjoutSuppr {
     }
 
     function add_to_list(ParametreAjoutSuppr $parametre) {
-        self::$liste[$this->nom][$parametre->nomParametre] = $parametre;
+        self::$liste[$this->nom][$parametre->valeurParametre] = $parametre;
     }
 
     function getListe() {
@@ -83,9 +85,9 @@ class Etat extends ParametreAjoutSuppr {
 
     var $couleur;
 
-    function __construct($nom, $libelle, $couleur)
+    function __construct($nom, $classeCss, $libelle, $couleur)
     {
-        parent::__construct('Etat', $nom, $libelle);
+        parent::__construct('Etat', $classeCss, $nom, $libelle);
         $this->couleur = $couleur;
     }
 }
@@ -98,11 +100,11 @@ class Etats extends ParametrageAjoutSuppr {
     function __construct() {
         parent::__construct('Etat', ETAT);
 
-        $this->add_to_list(new Etat('mauvais', MAUVAIS,'#FF0000'));
-        $this->add_to_list(new Etat('moyen', MOYEN,'#FF8000'));
-        $this->add_to_list(new Etat('bon', BON,'#2CA77B'));
-        $this->add_to_list(new Etat('indefini', INDEFINI,'#808080'));
-        $this->add_to_list(new Etat('non_possede', NON_POSSEDE,'#000000'));
+        $this->add_to_list(new Etat('mauvais', 'mauvais', MAUVAIS, '#FF0000'));
+        $this->add_to_list(new Etat('moyen', 'moyen', MOYEN, '#FF8000'));
+        $this->add_to_list(new Etat('bon', 'bon', BON, '#2CA77B'));
+        $this->add_to_list(new Etat('indefini', 'possede', INDEFINI, '#808080'));
+        $this->add_to_list(new Etat('non_possede', 'non_possede', NON_POSSEDE, '#000000'));
     }
 }
 
@@ -111,9 +113,10 @@ Etats::$instance = new Etats();
 /** Etats de vente */
 
 class EtatAVendre extends ParametreAjoutSuppr {
-    function __construct($nom, $libelle)
+
+    function __construct($nom, $classeCss, $libelle)
     {
-        parent::__construct('AV', $nom, $libelle);
+        parent::__construct('AV', $classeCss, $nom, $libelle);
     }
 }
 
@@ -125,8 +128,8 @@ class EtatsAVendre extends ParametrageAjoutSuppr {
     function __construct() {
         parent::__construct('AV', VENTE);
 
-        $this->add_to_list(new EtatAVendre('a_vendre', VENTE_MARQUER_A_VENDRE));
-        $this->add_to_list(new EtatAVendre('pas_a_vendre', VENTE_MARQUER_PAS_A_VENDRE));
+        $this->add_to_list(new EtatAVendre('1', 'a_vendre', VENTE_MARQUER_A_VENDRE));
+        $this->add_to_list(new EtatAVendre('0', 'pas_a_vendre', VENTE_MARQUER_PAS_A_VENDRE));
     }
 }
 
@@ -149,9 +152,9 @@ class Achat {
 
 class EtatAchat extends ParametreAjoutSuppr {
 
-    function __construct($nom, $libelle)
+    function __construct($nom, $classeCss, $libelle)
     {
-        parent::__construct('ID_Acquisition', $nom, $libelle);
+        parent::__construct('ID_Acquisition', $classeCss, $nom, $libelle);
     }
 }
 
@@ -184,8 +187,8 @@ class EtatsAchats extends ParametrageAjoutSuppr {
     function __construct() {
         parent::__construct('ID_Acquisition', DATE_ACHAT);
 
-        $this->add_to_list(new EtatAchat('date', ACHAT_ASSOCIER_DATE_ACHAT));
-        $this->add_to_list(new EtatAchat('pas_date', ACHAT_DESASSOCIER_DATE_ACHAT));
+        $this->add_to_list(new EtatAchat('-2', 'date', ACHAT_ASSOCIER_DATE_ACHAT));
+        $this->add_to_list(new EtatAchat('-1', 'pas_date', ACHAT_DESASSOCIER_DATE_ACHAT));
     }
 
     function ajouter_date_achat($achat) {

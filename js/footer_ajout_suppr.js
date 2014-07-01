@@ -6,7 +6,7 @@ function init_footer_ajout_suppr() {
 	var footer = $('footer_ajout_suppr');
 	elements_listes_params_numeros = footer.select('div.conteneur_liste ul.liste_parametrage');
 	elements_choix_params_numeros = footer.select('div.conteneur_liste ul li');
-	associer_date_achat = footer.select('.achat.date')[0];
+	associer_date_achat = footer.select('#parametrage_ID_Acquisition .date')[0];
 
 	elements_listes_params_numeros
 		.invoke('observe','mouseover',function() {
@@ -35,8 +35,8 @@ function init_footer_ajout_suppr() {
 			this.addClassName('selected');
 		});
 
-	footer.select('.achat.date, #liste_achats').invoke('observe', 'mouseover', function() {
-		$$('#liste_achats, #parametrage_achat ul').invoke('addClassName', 'open');
+	footer.select('#parametrage_ID_Acquisition .date, #liste_achats').invoke('observe', 'mouseover', function() {
+		$$('#liste_achats, #parametrage_ID_Acquisition ul').invoke('addClassName', 'open');
 		return false;
 	});
 

@@ -203,7 +203,7 @@ CREATE TABLE `numeros` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   UNIQUE KEY `Pays` (`Pays`,`Magazine`,`Numero`,`ID_Utilisateur`),
   KEY `Index 2` (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=60095 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=60096 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
