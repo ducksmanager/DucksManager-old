@@ -51,7 +51,7 @@ function init_footer_ajout_suppr() {
 		$$('.conteneur_liste').each(function(conteneur) {
 			var nom_parametrage = conteneur.id.replace(prefixe_parametrage,'');
 			var valeur = conteneur.down('ul.liste_parametrage li.selected a').name;
-			if (nom_parametrage === 'achat' && valeur === 'date') {
+			if (nom_parametrage === 'ID_Acquisition' && valeur === '-2') {
 				parametrage[nom_parametrage] = conteneur.down('ul#liste_achats li.selected a').name;
 			}
 			else {

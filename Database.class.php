@@ -280,7 +280,7 @@ class Database {
                     $numeros[] = '\''.$numero.'\'';
 				}
                 $requete='DELETE FROM numeros '
-                        .'WHERE (ID_Utilisateur=\''.$this->user_to_id($_SESSION['user']).'\') AND (Numero IN '.implode(',', $numeros).'))';
+                        .'WHERE ID_Utilisateur=\''.$this->user_to_id($_SESSION['user']).'\' AND Numero IN ('.implode(',', $numeros).')';
 
                 DM_Core::$d->requete($requete);
 			break;
@@ -748,6 +748,14 @@ if (isset($_POST['database'])) {
         $parametres = array_merge($_POST, array(
             'ID_Utilisateur'=>DM_Core::$d->user_to_id($_SESSION['user']))
         );
+        $id_acquisition = $parametres['ID_Acquisition'];
+        if ($id_acquisition >= 0) {
+            $requete_acquisition_existe='SELECT 1 FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$parametres['ID_Utilisateur'];
+            $resultat_acquisition_existe = DM_Core::$d->requete_select($requete_acquisition_existe);
+            if (count($resultat_acquisition_existe) === 0) {
+                $parametres['ID_Acquisition'] = -1;
+            }
+        }
 		DM_Core::$d->update_numeros($parametres);
 	}
 	else if (isset($_POST['evenements_recents'])) {	
