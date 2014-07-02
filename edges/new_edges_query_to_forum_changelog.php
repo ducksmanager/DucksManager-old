@@ -25,7 +25,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
     $chemin = $pays .'/gen/'. $magazine .'.'. $numero .'.png';
 
-    $url = DatabasePriv::$url_serveur_virtuel.'/DucksManager/edges/'.$chemin;
+    $url = 'http://ducksmanager.net/edges/'.$chemin;
 
     if (isset($_GET['publier'])) {
         $requete='INSERT INTO tranches_pretes ('.implode(',',array_keys($valeurs)).') VALUES (\''.implode($valeurs, '\', \'').'\')';
