@@ -46,7 +46,17 @@
 }
 
 #footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li a {
-    padding: 4px;
+    padding: 4px 24px 4px 4px;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li .supprimer_date_achat {
+    position: absolute;
+    margin-top: 15px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    background: transparent url('images/supprimer.png') no-repeat;
 }
 
 #footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li.selected {

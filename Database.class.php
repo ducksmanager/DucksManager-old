@@ -809,14 +809,11 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->requete('UPDATE achats SET Date=\''.$_POST['date'].'\',Description=\''.$_POST['description'].'\' WHERE ID_User='.$id_user.' AND ID_Acquisition=\''.$_POST['id_acquisition'].'\'');
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
-		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$requete='DELETE FROM achats WHERE ID_User='.$id_user.' AND ID_Acquisition='.$_POST['supprimer_acquisition'];
-		echo $requete;
 		DM_Core::$d->requete($requete);
 	}
 	else if (isset($_POST['liste_achats'])) {
-		//print_r($_SESSION);acquisitions
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
         $liste_achats = DM_Core::$d->get_liste_achats($id_user);
         $tab_achats=array();

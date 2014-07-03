@@ -170,14 +170,15 @@ class EtatsAchats extends ParametrageAjoutSuppr {
         $str = parent::toStringListe($liste);
         $liste_achats ='<ul id="liste_achats">';
         foreach($this->dates_achat as $date_achat) {
-            $liste_achats.=
-                '<li>
-                    <a href="javascript:return false;"
-                       name="'.$date_achat->id_acquisition.'">'
-                            .ACHAT.' "'.$date_achat->libelle.'"<br />'
-                            .$date_achat->date.'
-                    </a>
-                </li>';
+            $liste_achats.= '<li>
+                <div title="'.SUPPRIMER_DATE_ACHAT.'" class="supprimer_date_achat"></div>
+                <a class="achat"
+                   href="javascript:return false;"
+                   name="'.$date_achat->id_acquisition.'">
+                    '.ACHAT.' "'.$date_achat->libelle.'"<br />
+                    '.$date_achat->date.'
+                </a>
+            </li>';
         }
 
         $liste_achats.='</ul>';

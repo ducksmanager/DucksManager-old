@@ -496,9 +496,9 @@ define('STATISTIQUES_QUOTIDIENNES','Les statistiques sont mises &agrave; jour qu
 define('SUCCES','Succ&egrave;s!');
 define('SUGGESTIONS_ACHATS','Suggestions d\'achats');
 define('SUGGESTIONS_ACHATS_QUOTIDIENNES','Les suggestions d\'achat sont mises &agrave; jour quotidiennement.');
-define('SUPPRESSION_ACQUISITION_CONFIRMATION','Confirmez-vous la suppression de cette acquisition ?\nLes numéros correspondant à cette date d\'acquisition seront conservés.');
+define('SUPPRESSION_DATE_ACHAT_CONFIRMATION','Confirmez-vous la suppression de cette date d\'achat ? Les numéros correspondant à cette date d\'acquisition seront conservés.');
 define('SUPPRIMER','Supprimer');
-define('SUPPRIMER_ACQUISITION','Supprimer cette acquisition');
+define('SUPPRIMER_DATE_ACHAT','Supprimer cette date d\'achat');
 define('SUPPRIMER_COMPTE','Supprimer mon compte DucksManager');
 define('SUPPRIMER_NUMEROS_NON_INDUCKS','Supprimer de DucksManager les num&eacute;ros qui n\'apparaissent pas dans la collection Inducks');
 define('SUR','sur');
