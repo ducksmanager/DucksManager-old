@@ -272,7 +272,7 @@ class Affichage {
     }
 	
 	static function afficher_texte_numero($pays, $magazine, $numero) {
-		?><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?><?php
+		?><span class="nowrap"><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?></span><?php
 	}
 	
 	static function valider_formulaire_inscription($user, $pass, $pass2) {

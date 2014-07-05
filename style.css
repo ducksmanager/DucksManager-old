@@ -39,6 +39,10 @@ a.important:HOVER {
 	display: none;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
 #medailles_et_login .medaille {
 	height: 120px;
 	margin-left: 5px;
