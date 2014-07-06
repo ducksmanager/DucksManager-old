@@ -4,11 +4,9 @@ var l10n_divers=new Array('chargement');
 
 var types_listes=new Array();
 var parametres=new Array();
-var lists_to_update=new Array();
 var id_magazine_selectionne=null;
 var printMenu;
 var magazineMenu;
-var statAjax;
 var prevent_click=false;
 var nom_magazine_draggable;
 var nom_magazine_droppable;
@@ -120,8 +118,6 @@ function implement_dragsanddrops() {
             }
         });
     });
-    //creer_menu_print();
-    //creer_menu_magazine();
 }
 
 function creer_slider(element) {
@@ -271,30 +267,6 @@ function ajouter_texte_sliders() {
     $('contenu_'+nom_onglet).insert('Les rectangles verts correspondent aux valeurs par d&eacute;faut.');
 }
 
-function creer_menu_print() {
-
-    printMenu = [
-    {
-        separator: true
-    },/*{
-        className: 'deplacer_avant',
-        groupName: 'deplacer_avant',
-        nextSpanName: 'nom_magazine_droppable'
-    },{
-        className: 'deplacer_apres',
-        groupName: 'deplacer_apres',
-        nextSpanName: 'nom_magazine_droppable'
-    },*/{
-        className: 'fusionner_les_deux',
-        groupName: 'fusionner_les_deux'
-    }];
-    new Proto.Menu({
-      selector:  '#body',
-      className: 'menu desktop large',
-      menuItems: printMenu,
-      type:      'print'
-    });
-}
 
 function creer_menu_magazine() {
     magazineMenu = [
@@ -322,29 +294,6 @@ function creer_menu_magazine() {
         groupName: 'type_liste_global',
         subMenu : true
     }];
-
-    new Ajax.Request('Liste.class.php', {
-	   method: 'post',
-	   parameters:'types_listes=true',
-	   onSuccess:function(transport) {
-	    	var listes=transport.headerJSON;
-                var i=0;
-                for (var liste_abrege in listes) {
-                    var liste=new Object();
-                    liste.name=listes[liste_abrege];
-                    liste.className=liste_abrege;
-                    types_listes[i]=liste;
-                    i++;
-	    	}
-
-                new Proto.Menu({
-                  selector:  '.draggable_box',
-                  className: 'menu desktop',
-                  menuItems: magazineMenu,
-                  type:      'magazine'
-                });
-           }
-    });
 }
 
 function toggle_item_menu(element_clic) {
@@ -356,38 +305,6 @@ function toggle_item_menu(element_clic) {
     });
     $('contenu_'+element_clic.down().name).setStyle({'display':'block'});
 }
-
-function init_autocompleter_auteurs() {
-    l10n_action('fillArray',l10n_calculs_auteurs,'l10n_calculs_auteurs');
-    if (!($('auteur_cherche'))) return;
-    new Ajax.Autocompleter ('auteur_cherche',
-        'liste_auteurs',
-        'auteurs_choix.php',
-        {
-            method: 'post',
-            indicator:'loading_auteurs',
-            paramName: 'value',
-            afterUpdateElement: ac_return
-        });
-}
-
-
-function ac_return(field, item){
-	var regex_nettoyage_nom=/(?:^[\t ]*)|(?:[\t ]*$)/g
-	$('auteur_nom').value=field.value.replace(regex_nettoyage_nom,'');
-    $('auteur_id').value=item.down('[name="nom_auteur"]').readAttribute('title');
-    $('auteur_cherche').value=$('auteur_cherche').value.replace(regex_nettoyage_nom,'');
-}
-
-function ajouter_auteur() {
-    var nom_auteur=new Element('div').update($('auteur_cherche').value);
-    var abbrev_auteur=new Element('div',{
-        'class':'abbrev'
-    }).update($('auteur_id'));
-    $('auteurs_ajoutes').insert(nom_auteur).insert(abbrev_auteur);
-}
-
-
 
 function stats_auteur(id_user) {
     $('resultat_stats').update(l10n_calculs_auteurs['calcul_en_cours']);
@@ -420,17 +337,6 @@ function modifier_type_liste(box,type_liste,confirmer) {
             afficher_termine();
        }
     });
-}
-
-function toggle_options(element) {
-    var box_options=$(element).next('.box_options');
-    if (box_options.getStyle('display')=='block') {
-        box_options.setStyle({'display':'none'});
-        return;
-    }
-    else {
-        box_options.setStyle({'display':'block'});
-    }
 }
 
 function toggle_aide() {

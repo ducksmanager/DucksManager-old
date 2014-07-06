@@ -94,20 +94,6 @@ function get_achats(continue_id) {
                             groupName: 'save_enregistrer_changements'
 			  }];
 			myMenuItems=myMenuItems.concat(myMenuItems2);
-			
-			new Proto.Menu({
-                          type: 'gestion_numeros',
-			  selector: '#liste_numeros',
-			  className: 'menu desktop',
-			  menuItems: myMenuItems
-			});
-            var arr_l10n=new Array(
-                            'conserver_etat_actuel','marquer_non_possede','marquer_possede',
-                            'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
-                            'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
-                            'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
-                            'enregistrer_changements');
-            l10n_action('remplirSpanName',arr_l10n);
 
             $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num')
 	            .invoke(

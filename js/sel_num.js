@@ -6,10 +6,10 @@ var now_selecting=false;
 var element_opacity_temp=1;
 var liste;
 var text_couleur=null;
-var l10n_acquisitions=[ 'modifier_acquisition','description',
-                        'date_invalide','date_invalide','suppression_date_achat_confirmation',
-                        'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
-                        'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer'];
+var l10n_acquisitions=new Array('modifier_acquisition','supprimer_acquisition','description',
+                                'date_invalide','date_invalide','suppression_date_achat_confirmation',
+                                'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
+                                'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer');
 
 function disableselect(e){
 return false
