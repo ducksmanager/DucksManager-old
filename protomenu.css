@@ -238,16 +238,12 @@ a.dmspiral {
 */
 .menu.desktop a:hover {
 	background-color: #0A246A;
-	color: #fff;
+	color: #fff !important;
 	cursor:pointer;
 }
 .menu.desktop a.choisir:hover {
     background-color: #fff;
-    color: #555;
-}
-.menu.desktop a.choisir:hover {
-    background-color: #fff;
-    color: #555;
+    color: #555 !important;
 }
 .menu.desktop a.disabled:hover {
 	font-weight:normal;

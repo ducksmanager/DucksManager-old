@@ -65,6 +65,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="stylesheet" href="footer_ajout_suppr.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="css/datepicker/prototypejs-calendar.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('_priv/Database.priv.class.php');
         if (!isLocalHost()) {?>
@@ -123,7 +124,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     }
                 break;
             }
-            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js');
+            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js','js/datepicker/prototypejs-calendar.js','js/datepicker/date_patches.js');
         }
         ?>
     </head>

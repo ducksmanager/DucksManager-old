@@ -35,8 +35,8 @@ a.important:HOVER {
 	font-weight: bold;
 }
 
-.cache {
-	display: none;
+.cache, .template {
+    display: none !important;
 }
 
 table#main {

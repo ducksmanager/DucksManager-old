@@ -32,6 +32,7 @@ define('AJOUTER_BOUQUINERIE','Ajouter la bouquinerie');
 define('AJOUTER_MAGAZINE','Ajouter un magazine');
 define('AJOUTER_NUMEROS_INDUCKS','Ajouter dans DucksManager les num&eacute;ros qui en sont absents');
 define('ANALYSE_LISTE','Analyse de la liste...');
+define('ANNULER','Annuler');
 define('ATTENTION_EMAIL_VIDE_ACHAT','Afin de pouvoir contacter les utilisateurs qui proposent des num&eacute;ros &agrave; la vente, veuillez renseigner votre e-mail sur la page ');
 define('ATTENTION_MOT_DE_PASSE_INDUCKS','Attention ! Si vous souhaitez utiliser le m&ecirc;me mot de passe pour votre collection DucksManager et votre compte Inducks, votre mot de passe Inducks doit obligatoirement &ecirc;tre compos&eacute; de plus de 6 caract&egrave;res !');
 define('ATTENTION_VENTE_SANS_EMAIL','Attention ! Votre collection contient des num&eacute;ros &agrave; vendre mais vous n\'avez pas indiqu&eacute; votre adresse e-mail dans la page ');

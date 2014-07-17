@@ -1,6 +1,7 @@
 var elements_listes_params_numeros;
 var elements_choix_params_numeros;
 var liste_achats;
+var nouvel_date_achat;
 var associer_date_achat;
 
 function init_footer_ajout_suppr() {
@@ -8,6 +9,7 @@ function init_footer_ajout_suppr() {
 	elements_listes_params_numeros = footer.select('div.conteneur_liste ul.liste_parametrage');
 	elements_choix_params_numeros = footer.select('div.conteneur_liste ul li');
 	liste_achats = footer.select('#liste_achats')[0];
+	nouvel_date_achat = footer.select('#calendarview_input')[0];
 	associer_date_achat = footer.select('#parametrage_ID_Acquisition .date')[0];
 
 	elements_listes_params_numeros
@@ -41,6 +43,15 @@ function init_footer_ajout_suppr() {
 		return false;
 	});
 
+	liste_achats.select('.creer_achat')[0].observe('click', function() {
+		liste_achats.select('.nouvel_achat')[0].removeClassName('template');
+		this.up('li').addClassName('cache');
+	});
+
+	nouvel_date_achat.calendarviewable({
+		'dateFormat' : '%d/%m/%Y'
+	});
+
 	liste_achats.select('li .supprimer_date_achat').invoke('observe', 'click', function(e) {
 		if (confirm(l10n_acquisitions['suppression_date_achat_confirmation'])) {
 			var element_achat = Event.element(e).next('a.achat');
@@ -57,6 +68,7 @@ function init_footer_ajout_suppr() {
 	$$('#liste_achats li a.achat').invoke('observe', 'click', function() {
 		associer_date_achat.click();
 	});
+
 
 	$('enregistrer_parametrage_numeros').observe('click', function() {
 		var liste = $$('.num_checked').pluck('title');

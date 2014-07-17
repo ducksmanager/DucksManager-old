@@ -49,6 +49,17 @@
     padding: 4px 24px 4px 4px;
 }
 
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li a.creer_achat {
+    height: 100%;
+    padding-top: 12px;
+    padding-right: 4px;
+    color: black;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li a.creer_achat:hover {
+    color: white;
+}
+
 #footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li .supprimer_date_achat {
     position: absolute;
     margin-top: 15px;
@@ -92,6 +103,11 @@
 #footer_ajout_suppr .footer_section div.conteneur_liste ul.open li,
 #footer_ajout_suppr .footer_section div.conteneur_liste ul li.selected{
     display: list-item;
+}
+
+#footer_ajout_suppr .footer_section div.conteneur_liste ul li.nouvel_achat {
+    height: 90px;
+    padding-top: 15px;
 }
 
 #footer_ajout_suppr #enregistrer_parametrage_numeros {

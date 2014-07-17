@@ -166,19 +166,45 @@ class EtatsAchats extends ParametrageAjoutSuppr {
     /** @var Achat[]  */
     var $dates_achat = array();
 
-    function toStringListe($liste) {
-        $str = parent::toStringListe($liste);
-        $liste_achats ='<ul id="liste_achats">';
-        foreach($this->dates_achat as $date_achat) {
-            $liste_achats.= '<li>
+    static function toStringAchat($date_achat) {
+        if (is_null($date_achat)) {
+            $idAcquisition = '';
+            $libelle = '';
+            $dateAcquisition = '';
+        }
+        else {
+            $idAcquisition = $date_achat->id_acquisition;
+            $libelle = $date_achat->libelle;
+            $dateAcquisition = $date_achat->date;
+        }
+        return '<li'.(is_null($date_achat) ? ' class="template"' :'').'>
                 <div title="'.SUPPRIMER_DATE_ACHAT.'" class="supprimer_date_achat"></div>
                 <a class="achat"
                    href="javascript:return false;"
-                   name="'.$date_achat->id_acquisition.'">
-                    '.ACHAT.' "'.$date_achat->libelle.'"<br />
-                    '.$date_achat->date.'
+                   name="'.$idAcquisition.'">
+                    '.ACHAT.' "'.$libelle.'"<br />
+                    '.$dateAcquisition.'
                 </a>
             </li>';
+    }
+
+    function toStringListe($liste) {
+        $str = parent::toStringListe($liste);
+        $liste_achats =
+            '<ul id="liste_achats">
+                <li><a id="creer_date_achat" href="javascript:return false;" name="achat" class="creer_achat enabled">'.CREER_DATE_ACHAT.'</a></li>
+                <li class="nouvel_achat template">
+                    <input id="nouvelle_description" type="text" size="30" maxlength="30" value="'.DESCRIPTION.'"><br />
+                    <div id="calendarview_input">
+                        <label for="nouvelle_date"></label>
+                        <input id="nouvelle_date" type="text" size="30" maxlength="10" />
+                    </div>
+                    <input id="nouvelle_date_ok" type="submit" value="'.OK.'" />&nbsp;
+                    <input id="nouvelle_date_annuler" type="submit" value="'.ANNULER.'" />
+                </li>';
+        $liste_achats.=self::toStringAchat(null);
+        foreach($this->dates_achat as $date_achat) {
+            $liste_achats.= self::toStringAchat($date_achat);
         }
 
         $liste_achats.='</ul>';

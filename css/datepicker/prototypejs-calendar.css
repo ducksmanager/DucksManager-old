@@ -1,0 +1,118 @@
+div.calendarview-calendar {
+  z-index: 100;
+  color: #000;
+}
+
+div.calendarview-calendar.calendarview-popup {
+  width: 175px;
+}
+
+div.calendarview-calendar table {
+  background-color: #eee;
+  border: 1px solid #aaa;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+div.calendarview-calendar thead {
+  background-color: white;
+}
+
+div.calendarview-calendar td,
+div.calendarview-calendar th {
+  width: 24px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+}
+
+div.calendarview-calendar th.calendarview-title {
+  padding: 5px 0;
+}
+
+div.calendarview-calendar th {
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  color: #555;
+}
+
+div.calendarview-calendar tr.calendarview-days td {
+  border: 1px solid #eaeaea;
+  color: #333;
+  cursor: pointer;
+  text-align: center;
+  background: #fff;
+}
+
+div.calendarview-calendar th.calendarview-button {
+  border-left: solid 1px #a7a7a7;
+  background-color: #e7e7e7;
+}
+
+div.calendarview-calendar tr.calendarview-days td:hover,
+div.calendarview-calendar th.calendarview-button:hover {
+  background-color: #34ABFA;
+  cursor: pointer;
+}
+
+div.calendarview-calendar tr.calendarview-days td:active
+div.calendarview-calendar th.calendarview-button:active {
+  background-color: #cde;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-selected {
+  background-color: #f00;/*#fff;*/
+  color: #000;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-today,
+div.calendarview-calendar tr.calendarview-days td.calendarview-past.calendarview-selected.calendarview-today {
+  color: #fff;
+  background: #369;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-weekend {
+  color: #ffdd82;
+  background: #fff3d4;
+  border-color: #ffdd82;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-otherDay {
+  color: #ffc5b4;
+  background: #FFE6DF;
+  border-color: #ffc5b4;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-today.calendarview-weekend {
+  color: #ffdd82;
+  background: #ffdd82;
+  background: #7BCFFD;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-otherDay.calendarview-weekend {
+/*  background: #F3C6BA;*/
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-selected.calendarview-weekend,
+div.calendarview-calendar tr.calendarview-days td.calendarview-today.calendarview-weekend.calendarview-selected {
+  color: #fff;
+  background: #ffdd82;
+}
+
+.new-deposition-event-calendar .calendarview-calendar table thead tr th, 
+.new-deposition-event-calendar .calendarview-calendar table tbody tr td {
+  font-size: 11px;
+}
+.calendarview-calendar table thead tr th {
+  height: 17px;
+  line-height: 17px;
+  text-align: center;
+}
+
+div.calendarview-calendar tr.calendarview-days td.calendarview-past {
+  color: #ccc !important;
+  border-bottom: solid 1px #fff !important;
+  border-left: solid 1px #fff !important;
+  border-color: #fff !important;
+  background: #eee !important;
+}

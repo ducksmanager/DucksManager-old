@@ -32,6 +32,7 @@ define('AJOUTER_BOUQUINERIE','Add the second-hand bookshop');
 define('AJOUTER_MAGAZINE','Add a magazine');
 define('AJOUTER_NUMEROS_INDUCKS','Add into the DucksManager collection the missing issues');
 define('ANALYSE_LISTE','Analyzing the list...');
+define('ANNULER','Cancel');
 define('ATTENTION_EMAIL_VIDE_ACHAT','In order to contact the users who want to sell of their collection,you must fill your email address on the page ');
 define('ATTENTION_MOT_DE_PASSE_INDUCKS','Warning ! If you wish to use the same password for your DucksManager collection and for your Inducks account, your Inducks password must have a length of 6 characters or more !');
 define('ATTENTION_VENTE_SANS_EMAIL','Warning ! Your collection contains some issues that you want to sell, but you haven\'t specified any email address to which potential buyers can contact you. You can specify one on the page ');
