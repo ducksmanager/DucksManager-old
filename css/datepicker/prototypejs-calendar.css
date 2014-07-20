@@ -4,14 +4,14 @@ div.calendarview-calendar {
 }
 
 div.calendarview-calendar.calendarview-popup {
-  width: 175px;
+  width: 100%;
 }
 
 div.calendarview-calendar table {
   background-color: #eee;
   border: 1px solid #aaa;
   border-collapse: collapse;
-  margin: 0 auto;
+  width: 100%;
 }
 
 div.calendarview-calendar thead {
@@ -24,6 +24,10 @@ div.calendarview-calendar th {
   height: 22px;
   line-height: 22px;
   text-align: center;
+}
+
+div.calendarview-calendar tr.calendarview-title-row {
+    height: 36px;
 }
 
 div.calendarview-calendar th.calendarview-title {

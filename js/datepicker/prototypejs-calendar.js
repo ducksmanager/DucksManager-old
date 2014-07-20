@@ -88,7 +88,7 @@ var Calendar = Class.create({/*
     table.appendChild(thead);
 
     cell.addClassName('calendarview-title');
-    row.appendChild(cell);
+    row.addClassName('calendarview-title-row').appendChild(cell);
     thead.appendChild(row);
     // Calendar Navigation
     row = new Element('tr');
