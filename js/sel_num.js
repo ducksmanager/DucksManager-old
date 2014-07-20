@@ -29,7 +29,6 @@ function start_selection(sel) {
 		$('liste_numeros').onmousedown=disableselect
 		$('liste_numeros').onclick=reEnable
 	}
-	$('menu_contextuel').hide();
 	debut_selection=parseInt(sel.id.substring(1,sel.id.length+1));
 	now_selecting=true;
 }

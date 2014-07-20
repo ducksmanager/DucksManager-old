@@ -88,7 +88,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script><?php
-        new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js');
+        new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/l10n.js','js/ajax.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
 			if (!isset($_GET['action'])) $_GET['action']='';            
