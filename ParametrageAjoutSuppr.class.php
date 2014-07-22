@@ -201,7 +201,8 @@ class EtatsAchats extends ParametrageAjoutSuppr {
                     </div>
                     <input id="nouvelle_date_ok" type="submit" value="'.OK.'" />&nbsp;
                     <input id="nouvelle_date_annuler" type="submit" value="'.ANNULER.'" />
-                </li>';
+                </li>
+                <li class="separator"></li>';
         $liste_achats.=self::toStringAchat(null);
         foreach($this->dates_achat as $date_achat) {
             $liste_achats.= self::toStringAchat($date_achat);

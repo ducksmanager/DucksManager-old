@@ -16,7 +16,7 @@ div.menu input {
 }
 
 .menu .separator {
-	height: 1px;
+	height: 1px !important;
 	padding: 0;
 	overflow: hidden;
 	display: block;
@@ -29,76 +29,6 @@ div.menu input {
 }
 .menu li {
 	list-style-position: outside;
-}
-
-.sous_menu {
-	/*background:transparent url(images/fleche_sous_menu.png) no-repeat scroll 100% 50%;*/
-}
-
-
-/* FIREFOX STYLES */
-
-.menu.firefox {
-	width: 12em;
-	background: #F4F5EB;
-	border-top: 1px solid #ddd;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #666;
-	border-bottom: 1px solid #666;
-	padding: 2px 0;
-}
-.menu.firefox a {
-	color: #555;
-	padding: 4px 15px;
-	margin: 0 2px;
-}
-.menu.firefox a:hover {
-	background: #006;
-	color: #fff;
-}
-.menu.firefox a.disabled {
-	color: #bbb;
-}
-.menu.firefox a.disabled:hover {
-	background: #F4F5EB;
-	color: #bbb;
-}
-.menu.firefox .separator {
-	border-bottom: 1px solid #fff;
-	background: #999;
-	margin: 2px 4px;
-}
-
-
-/* GOOGLE STYLES */
-
-.menu.google {
-	width: 10.5em;
-	background: #fff;
-	border-top: 1px solid #ccc;
-	border-left: 1px solid #ccc;
-	border-bottom: 1px solid #676767;
-	border-right: 1px solid #676767;
-}
-.menu.google a {
-	color: #00c;
-	text-decoration: none;
-	padding: 2px 5px;
-	cursor: pointer;
-	font-size: 12px;
-}
-.menu.google a:hover {
-	background: #D3E3FE;
-}
-.menu.google a.disabled {
-	color: #bbb;
-}
-.menu.google a.disabled:hover {
-	background: #fff;
-	color: #bbb;
-}
-.menu.google .separator {
-	background: #ccc;
 }
 
 /* DESKTOP STYLES */
@@ -118,9 +48,6 @@ div.menu input {
 	padding: 0;
     background: #f9f8f7;
 }
-.menu.desktop li.separator {
-	height: 1px;
-}
 .menu.desktop a, .types_listes a {
 	color: #555;
 	padding: 11px 3px 12px 25px;
@@ -135,7 +62,7 @@ div.menu input {
 .menu.desktop li.separator {
 	border-bottom: 1px solid #fff;
 	background: #aaa;
-	margin: 1px 1px 0 1px;
+	margin: 0;
 	line-height: 1px !important;
 }
 
@@ -202,7 +129,7 @@ a.dmspiral {
   background: #f9f8f7 url(images/excellent.png) 2px 50% no-repeat;
 }
 .menu.desktop a.indefini {
-    background: #f9f8f7;
+  background: #f9f8f7;
 }
 .menu.desktop a.date {
   background: #f9f8f7 url(images/page_date.png) 2px 50% no-repeat;
@@ -222,18 +149,7 @@ a.dmspiral {
 .menu.desktop a.save {
   background: #f9f8f7 url(images/page_save.png) 2px 50% no-repeat;
 }
-.menu.desktop a.xsl {
-  background: #f9f8f7 url(images/page_excel.png) 2px 50% no-repeat;
-}
-.menu.desktop a.doc {
-  background: #f9f8f7 url(images/page_word.png) 2px 50% no-repeat;
-}
-.menu.desktop a.pdf {
-  background: #f9f8f7 url(images/page_acrobat.png) 2px 50% no-repeat;
-}
-.menu.desktop a.send {
-  background: #f9f8f7 url(images/email.png) 2px 50% no-repeat;
-}
+
 /* we need explicit enabled class to overcome css deficiences (without creating unnecessary markup) 
 */
 .menu.desktop a:hover {
@@ -257,29 +173,10 @@ a.dmspiral {
 	background-color: green;
 	color: #fff;
 }
-/*
-.editer_date {
-	background:url("images/editer.png") no-repeat scroll 215px center transparent;
-}
-.supprimer_date {
-	background:url("images/supprimer.png") no-repeat scroll right center transparent;
-}*/
-        
-#sous_menu_parametres_liste input {
-    margin:0;
-    width: 35px;
-    text-align: center;
-    background-color: white;
-}
 
 .menu.desktop a.parametre.enabled:hover {
     background-color: transparent;
     color: #555555;
     font-weight: normal;
     cursor: default;
-}
-
-#sous_menu_achat_associer_date_achat {
-    max-height:500px;
-    overflow-y:auto;
 }
