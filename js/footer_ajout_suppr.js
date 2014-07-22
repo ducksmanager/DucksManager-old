@@ -2,7 +2,11 @@ var footer;
 var elements_listes_params_numeros;
 var elements_choix_params_numeros;
 var liste_achats;
-var nouvel_date_achat;
+var btn_creer_achat;
+var form_nouvel_achat;
+var nouvelle_date_achat;
+var nouvelle_date_achat_ok;
+var nouvelle_date_achat_annuler;
 var associer_date_achat;
 
 function init_footer_ajout_suppr() {
@@ -10,8 +14,14 @@ function init_footer_ajout_suppr() {
 	elements_listes_params_numeros = footer.select('div.conteneur_liste ul.liste_parametrage');
 	elements_choix_params_numeros = footer.select('div.conteneur_liste ul li');
 	liste_achats = $('liste_achats');
-	nouvel_date_achat = footer.select('#calendarview_input')[0];
-	associer_date_achat = footer.select('#parametrage_ID_Acquisition .date')[0];
+
+	btn_creer_achat = liste_achats.down('.btn_creer_achat');
+	form_nouvel_achat = liste_achats.down('.form_nouvel_achat');
+	nouvelle_date_achat = form_nouvel_achat.down('#calendarview_input');
+	nouvelle_date_achat_ok = form_nouvel_achat.down('#nouvelle_date_ok');
+	nouvelle_date_achat_annuler = form_nouvel_achat.down('#nouvelle_date_annuler');
+
+	associer_date_achat = footer.down('#parametrage_ID_Acquisition .date');
 
 	elements_listes_params_numeros
 		.invoke('observe','mouseover',function() {
@@ -49,12 +59,12 @@ function init_footer_ajout_suppr() {
 		elements_listes_params_numeros.invoke('removeClassName','open');
 	});
 
-	liste_achats.select('.creer_achat')[0].observe('click', function() {
-		liste_achats.select('.nouvel_achat')[0].removeClassName('template');
-		this.up('li').addClassName('cache');
+	[btn_creer_achat,nouvelle_date_achat_annuler].invoke('observe','click', function() {
+		liste_achats.down('.form_nouvel_achat').toggleClassName('template');
+		liste_achats.down('.creer_date_achat').toggleClassName('cache');
 	});
 
-	nouvel_date_achat.calendarviewable({
+	nouvelle_date_achat.calendarviewable({
 		'dateFormat' : '%d/%m/%Y'
 	});
 

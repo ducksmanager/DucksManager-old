@@ -192,8 +192,8 @@ class EtatsAchats extends ParametrageAjoutSuppr {
         $str = parent::toStringListe($liste);
         $liste_achats =
             '<ul id="liste_achats">
-                <li><a id="creer_date_achat" href="javascript:return false;" name="achat" class="creer_achat enabled">'.CREER_DATE_ACHAT.'</a></li>
-                <li class="nouvel_achat template">
+                <li class="creer_date_achat"><a href="javascript:return false;" name="achat" class="btn_creer_achat enabled">'.CREER_DATE_ACHAT.'</a></li>
+                <li class="form_nouvel_achat template">
                     <input id="nouvelle_description" type="text" size="30" maxlength="30" value="'.DESCRIPTION.'"><br />
                     <div id="calendarview_input">
                         <label for="nouvelle_date"></label>

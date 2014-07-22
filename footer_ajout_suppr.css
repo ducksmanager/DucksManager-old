@@ -50,6 +50,10 @@
     padding: 4px 24px 4px 4px;
 }
 
+#footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li.creer_date_achat a {
+    padding: 4px 0;
+}
+
 #footer_ajout_suppr .footer_section div.conteneur_liste ul#liste_achats li a.creer_achat {
     height: 100%;
     padding-top: 12px;
@@ -93,6 +97,10 @@
     display: none;
 }
 
+#footer_ajout_suppr .footer_section div.conteneur_liste ul li.creer_date_achat {
+    height: 23px;
+}
+
 #footer_ajout_suppr .footer_section div.conteneur_liste ul li a {
     overflow: hidden;
 }
@@ -106,7 +114,7 @@
     display: list-item;
 }
 
-#footer_ajout_suppr .footer_section div.conteneur_liste ul li.nouvel_achat {
+#footer_ajout_suppr .footer_section div.conteneur_liste ul li.form_nouvel_achat {
     height: 90px;
     padding-top: 15px;
 }
