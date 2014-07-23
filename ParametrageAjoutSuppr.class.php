@@ -197,7 +197,7 @@ class EtatsAchats extends ParametrageAjoutSuppr {
                     <input id="nouvelle_description" type="text" size="30" maxlength="30" value="'.DESCRIPTION.'"><br />
                     <div id="calendarview_input">
                         <label for="nouvelle_date"></label>
-                        <input id="nouvelle_date" type="text" size="30" maxlength="10" />
+                        <input id="nouvelle_date" readonly="readonly" type="text" size="30" maxlength="10" />
                     </div>
                     <input id="nouvelle_date_ok" type="submit" value="'.OK.'" />&nbsp;
                     <input id="nouvelle_date_annuler" type="submit" value="'.ANNULER.'" />

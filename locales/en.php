@@ -1,4 +1,5 @@
 <?php
+define('_FORMAT_DATE','%Y-%m-%d');
 define('','');
 define('A','at');
 define('A_VENDRE','For sale');

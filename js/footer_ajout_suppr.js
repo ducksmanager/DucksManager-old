@@ -4,7 +4,9 @@ var elements_choix_params_numeros;
 var liste_achats;
 var btn_creer_achat;
 var form_nouvel_achat;
+var nouvelle_description;
 var nouvelle_date_achat;
+var nouvelle_date_achat_valeur;
 var nouvelle_date_achat_ok;
 var nouvelle_date_achat_annuler;
 var associer_date_achat;
@@ -17,7 +19,9 @@ function init_footer_ajout_suppr() {
 
 	btn_creer_achat = liste_achats.down('.btn_creer_achat');
 	form_nouvel_achat = liste_achats.down('.form_nouvel_achat');
+	nouvelle_description = form_nouvel_achat.down('#nouvelle_description');
 	nouvelle_date_achat = form_nouvel_achat.down('#calendarview_input');
+	nouvelle_date_achat_valeur = form_nouvel_achat.down('#nouvelle_date');
 	nouvelle_date_achat_ok = form_nouvel_achat.down('#nouvelle_date_ok');
 	nouvelle_date_achat_annuler = form_nouvel_achat.down('#nouvelle_date_annuler');
 
@@ -64,13 +68,24 @@ function init_footer_ajout_suppr() {
 		liste_achats.down('.creer_date_achat').toggleClassName('cache');
 	});
 
+	nouvelle_date_achat_ok.observe('click', function() {
+		var date_entree=nouvelle_date_achat_valeur.getValue();
+		var description_entree=nouvelle_description.getValue();
+		new Ajax.Request('Database.class.php', {
+			method: 'post',
+			parameters: 'database=true&acquisition=true&afficher_non_defini=false&date=' + date_entree + '&description=' + description_entree,
+			onSuccess: function (transport, json) {
+
+			}
+		});
+	});
 	nouvelle_date_achat.calendarviewable({
-		'dateFormat' : '%d/%m/%Y'
+		'dateFormat' : l10n_acquisitions['_format_date']
 	});
 
 	liste_achats.select('li .supprimer_date_achat').invoke('observe', 'click', function(e) {
 		if (confirm(l10n_acquisitions['suppression_date_achat_confirmation'])) {
-			var element_achat = Event.element(e).next('a.achat');
+			var element_achat = this.next('a.achat');
 			new Ajax.Request('Database.class.php', {
 				method: 'post',
 				parameters:'database=true&supprimer_acquisition='+element_achat.readAttribute('name'),

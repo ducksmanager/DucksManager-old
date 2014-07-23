@@ -13,8 +13,8 @@ var tab_achats=new Array();
 var nouvel_achat_o;
 
 
-function init_observers_gerer_numeros() {
-	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
+function init_observers_gerer_numeros(callback) {
+	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions',callback);
 	get_achats(-1);
 }
 
@@ -419,12 +419,12 @@ function afficher_numeros(pays,magazine) {
            parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
            onSuccess:function(transport) {
                 $('liste_numeros').update(transport.responseText);
-                init_observers_gerer_numeros();
-	            if (location.hash) {
-	                $('liste_numeros').select('[name="'+location.hash.replace(/#/,'')+'"]')[0].scrollIntoView(true);
-	            }
-
-	           init_footer_ajout_suppr();
+                init_observers_gerer_numeros(function() {
+	                if (location.hash) {
+		                $('liste_numeros').select('[name="' + location.hash.replace(/#/, '') + '"]')[0].scrollIntoView(true);
+	                }
+	                init_footer_ajout_suppr();
+                });
            }
 	});
 }

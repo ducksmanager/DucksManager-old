@@ -786,20 +786,24 @@ if (isset($_POST['database'])) {
 				}
 	}
 	else if (isset($_POST['acquisition'])) {
-		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+
+        $format_date = str_replace('%','',_FORMAT_DATE);
+        $date = date($format_date, strtotime(mysql_real_escape_string($_POST['date'])));
+
+        $description = mysql_real_escape_string($_POST['description']);
 
 		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
 										   .'FROM achats '
-										   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
-				$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
+										   .'WHERE ID_User='.$id_user.' AND Date = \''.$date.'\' AND Description = \''.$description.'\'';
+        $compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
 		if ($compte_acquisition_date[0]['c']!=0) {
 			echo 'Date';exit(0);
 		}
 
 		DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
-				   .' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
+                           .' VALUES ('.$id_user.',\''.$date.'\',\''.$description.'\')');
 		$requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
 		$liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
 

@@ -9,7 +9,8 @@ var text_couleur=null;
 var l10n_acquisitions=new Array('modifier_acquisition','supprimer_acquisition','description',
                                 'date_invalide','date_invalide','suppression_date_achat_confirmation',
                                 'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
-                                'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer');
+                                'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer',
+								'_format_date');
 
 function disableselect(e){
 return false
@@ -260,32 +261,3 @@ function unlighten_colorselector (element) {
 	if (element.id!='colorsel_'+selection_couleur)
 		element.style.border=''; 
 }
-
- function isDate(d) {
-	 // Cette fonction permet de vérifier la validité d'une date au format jj/mm/aa ou jj/mm/aaaa
-	 // Par Romuald
-	
-	 if (d == "") // si la variable est vide on retourne faux
-	 return false;
-	
-	 e = new RegExp("^([0-9]{4})\-[0-9]{1,2}\-[0-9]{1,2}$");
-	
-	 if (!e.test(d)) // On teste l'expression régulière pour valider la forme de la date
-	 return false; // Si pas bon, retourne faux
-	
-	 // On sépare la date en 3 variables pour vérification, parseInt() converti du texte en entier
-	 a = parseInt(d.split("-")[0], 10); // année
-	 m = parseInt(d.split("-")[1], 10); // mois
-	 j = parseInt(d.split("-")[2], 10); // jour
-	
-	 // Définition du dernier jour de février
-	 // Année bissextile si annnée divisible par 4 et que ce n'est pas un siècle, ou bien si divisible par 400
-	 if (a%4 == 0 && a%100 !=0 || a%400 == 0) fev = 29;
-	 else fev = 28;
-	
-	 // Nombre de jours pour chaque mois
-	 nbJours = new Array(31,fev,31,30,31,30,31,31,30,31,30,31);
-	
-	 // Enfin, retourne vrai si le jour est bien entre 1 et le bon nombre de jours, idem pour les mois, sinon retourn faux
-	 return ( m >= 1 && m <=12 && j >= 1 && j <= nbJours[m-1] );
- } 

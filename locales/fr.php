@@ -1,5 +1,5 @@
 <?php
-define('','');
+define('_FORMAT_DATE','%d/%m/%Y');
 define('A','&agrave;');
 define('A_VENDRE','A vendre');
 define('ACCUEIL','Accueil');
