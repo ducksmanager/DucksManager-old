@@ -74,8 +74,13 @@ function init_footer_ajout_suppr() {
 		new Ajax.Request('Database.class.php', {
 			method: 'post',
 			parameters: 'database=true&acquisition=true&afficher_non_defini=false&date=' + date_entree + '&description=' + description_entree,
-			onSuccess: function (transport, json) {
+			onSuccess: function (transport) {
+				if (transport.responseText === 'Date') {
 
+				}
+				else {
+					liste_achats.down('.separator').insert({after: transport.responseText});
+				}
 			}
 		});
 	});

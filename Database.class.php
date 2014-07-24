@@ -804,8 +804,12 @@ if (isset($_POST['database'])) {
 
 		DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
                            .' VALUES ('.$id_user.',\''.$date.'\',\''.$description.'\')');
-		$requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
-		$liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
+
+        $last_id = DM_Core::$d->requete_select("SELECT LAST_INSERT_ID() as last_id");
+        $nouvel_achat=DM_Core::$d->requete_select('SELECT * FROM achats WHERE ID_Acquisition='.$last_id[0]['last_id']);
+
+        $o_nouvel_achat = new Achat($nouvel_achat[0]['ID_Acquisition'], $nouvel_achat[0]['Date'], $nouvel_achat[0]['Description']);
+        echo EtatsAchats::toStringAchat($o_nouvel_achat);
 
 	}
 	else if (isset($_POST['modif_acquisition'])) {

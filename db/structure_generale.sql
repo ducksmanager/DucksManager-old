@@ -32,7 +32,7 @@ CREATE TABLE `achats` (
   `Style_marquage` enum('Aucun','Simple','Double','Triple','Pointillé','Zig-zag','Double zig-zag','Ondulé','Double ondulé') DEFAULT NULL,
   `Description` varchar(100) NOT NULL,
   UNIQUE KEY `Acquisition,Date est unique` (`ID_Acquisition`,`Date`)
-) ENGINE=MyISAM AUTO_INCREMENT=1019 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1029 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
