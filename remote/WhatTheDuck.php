@@ -92,11 +92,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 				echo $requete_liste_numeros;
 			$resultats_liste_numeros=mysql_query($requete_liste_numeros);
 			while($numero = mysql_fetch_array($resultats_liste_numeros)) {
-				if ($version=='1.1') {
-					$liste_numeros[]=Inducks::nettoyer_numero($numero['issuenumber']);
-				}
-				else
-					$liste_numeros[]=$numero['issuenumber'];
+				$liste_numeros[]=$numero['issuenumber'];
 			}
 			$retour->static->numeros=$liste_numeros;
 		}
@@ -122,7 +118,8 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 				$pass2=$_GET['mdp_user2'];
 				$email=$_GET['email'];
 				
-				include_once('Affichage.class.php');
+				@include_once('Affichage.class.php');
+                @include_once('../Affichage.class.php');
 				
 				$erreur = Affichage::valider_formulaire_inscription($user, $pass, $pass2);
 				
