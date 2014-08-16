@@ -1001,8 +1001,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 		                                        <br />
 		                                        <?=POSSESSION_MAGAZINES_4?><br /><br />
                                                 <br />
-                                                <span class="nouveau"><?=NOUVEAU?></span>&nbsp;<?=RECHERCHE_MAGAZINE_1?>&nbsp;
-                                                <b class="toggler_aide_recherche_magazine">Cliquez ici</b>
+                                                <?=RECHERCHE_MAGAZINE_1?>&nbsp;
+                                                <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
                                                 <b class="toggler_aide_recherche_magazine cache">^</b>
                                                 <div id="aide_recherche_magazine" class="cache">
                                                     <?=RECHERCHE_MAGAZINE_2?>
