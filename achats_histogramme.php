@@ -135,7 +135,12 @@ foreach ($liste_mois as $i=>$mois) {
 $legendes=array();
 ksort($couleurs);
 foreach($couleurs as $publicationcode=>$couleur) {
-	$nom_complet_magazine=$noms_magazines[$publicationcode];
+    if (array_key_exists($publicationcode, $noms_magazines)) {
+        $nom_complet_magazine = $noms_magazines[$publicationcode];
+    }
+    else { // Magazine ayant disparu d'Inducks
+        $nom_complet_magazine = $publicationcode;
+    }
 	$legendes[]=new bar_stack_key( $couleur, $nom_complet_magazine, 13 );
 }
 $bar_stack->set_keys($legendes);

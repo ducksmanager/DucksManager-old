@@ -50,7 +50,12 @@ if (isset($_POST['id'])) {
         foreach(json_decode($_POST['ids']) as $i=>$pays) {
             foreach($infos[$i]->total as $magazine=>$total) {
                 $pays_complet = $noms_complets_pays[$pays];
-                $magazine_complet = $noms_complets_magazines[$pays.'/'.$magazine];
+                if (array_key_exists($pays.'/'.$magazine, $noms_complets_magazines)) {
+                    $magazine_complet = $noms_complets_magazines[$pays.'/'.$magazine];
+                }
+                else { // Magazine ayant disparu d'Inducks
+                    $magazine_complet = $magazine;
+                }
                 $donnee=new stdClass ();
                 $donnee->nom_magazine_court=$magazine;
                 $donnee->pays=$pays_complet;

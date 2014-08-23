@@ -262,13 +262,16 @@ class collectable extends Format_liste {
 				foreach($liste as $pays=>$numeros_pays) {
 					ksort($numeros_pays);
 					foreach($numeros_pays as $magazine=>$numeros) {
-						  		?><td>
-						  			<img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
-						  			&nbsp;<?=$magazine?>
-						  		  </td>
-								  <td>
-								 	<?=$noms_magazines[$pays.'/'.$magazine]?>
-								  </td><?php 
+                        if (!array_key_exists($pays.'/'.$magazine, $noms_magazines)) { // Magazine ayant disparu d'Inducks
+                            continue;
+                        }
+                        ?><td>
+                            <img alt="<?=$pays?>" src="images/flags/<?=$pays?>.png" />
+                            &nbsp;<?=$magazine?>
+                        </td>
+                        <td>
+                            <?=$noms_magazines[$pays.'/'.$magazine]?>
+                        </td><?php
 						if($i%2 == 1) {
 							?></tr><tr><?php 
 						}

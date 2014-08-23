@@ -37,6 +37,9 @@ $valeurs_magazines=array();
 $cles_magazines=array();
 $nb_magazines_autres=0;
 foreach($counts as $publicationcode=>$cpt) {
+    if (!array_key_exists($publicationcode, $noms_magazines)) { // Magazine ayant disparu d'Inducks
+        continue;
+    }
 	$nom_complet_magazine=$noms_magazines[$publicationcode];
 	if ($cpt/$total<0.01) {
 		$autres+=$cpt;
