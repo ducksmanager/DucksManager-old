@@ -224,9 +224,11 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}
-							$contributeurs = array_unique($evenement->utilisateur);
-							?><b><?=utf8_decode(implode('</b> '.ET.' <b>', $contributeurs))?></b> 
-							<?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
+							$contributeurs = array_filter(array_unique($evenement->utilisateur));
+                            $str_contributeurs = '<b>'.utf8_decode(implode('</b>, <b>', $contributeurs)).'</b>';
+                            $str_contributeurs = str_replace_last(',', ' '.ET.' ', $str_contributeurs);
+
+							?><?=$str_contributeurs?> <?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
 							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
                             <?php
                             if ($evenement->cpt > 0) {
@@ -295,5 +297,13 @@ class Affichage {
 		}
 		return $erreur;
 	}
+}
+
+function str_replace_last($search, $replace, $str ) {
+    if( ( $pos = strrpos( $str , $search ) ) !== false ) {
+        $search_length  = strlen( $search );
+        $str    = substr_replace( $str , $replace , $pos , $search_length );
+    }
+    return $str;
 }
 ?>
