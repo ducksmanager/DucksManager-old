@@ -16,6 +16,7 @@ set +x
 echo "mysql -v --user=root --password=xxxxxxxx --default_character_set utf8 coa --local_infile=1 < createtables_clean.sql" 1>&2
 mysql -v --user=root --password=$db_password --default_character_set utf8 coa --local_infile=1 < createtables_clean.sql
 
+cd $sh_dir
 removed_publications_text=$(php import_inducks.php 'check_removed_publications')
 LEN=$(echo ${#removed_publications_text})
 if [ ${LEN} -gt 0 ]; then
@@ -25,7 +26,6 @@ if [ ${LEN} -gt 0 ]; then
 	set -x
 fi
 
-cd $sh_dir
 php insert_new_similar_edges.php
 
 set +x
