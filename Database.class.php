@@ -2,6 +2,12 @@
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
+
+require_once('_priv/Database.priv.class.php');
+if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
+    $_SERVER['SERVER_ADDR'] = DatabasePriv::$ip_serveur_virtuel;
+}
+
 include_once ('locales/lang.php');
 require_once('Liste.class.php');
 require_once('Inducks.class.php');
@@ -21,7 +27,6 @@ class Database {
 
 
 	function __construct() {
-			require_once('_priv/Database.priv.class.php');
 			return DatabasePriv::connect();
 	}
 
@@ -681,7 +686,7 @@ function ajouter_auteur($id,$nom) {
                           GROUP BY CONCAT(photographes, createurs), DATE(DateAjout)
                           HAVING COUNT(issuenumber) > 0
                           ORDER BY DateAjout DESC";
-		
+
 		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
 		foreach($resultat_tranches as $tranche_prete) {
 			$publicationcode = $tranche_prete['publicationcode'];
