@@ -66,88 +66,74 @@ div.menu input {
 	line-height: 1px !important;
 }
 
+.menu.desktop a {
+    background: #f9f8f7 no-repeat 2px 50%;
+}
+
 .menu.desktop a.deplacer_avant {
-  background: #f9f8f7 url(images/deplacer_haut.png) 2px 50% no-repeat;
+    background-image: url(images/deplacer_haut.png);
 }
 .menu.desktop a.deplacer_apres {
-  background: #f9f8f7 url(images/deplacer_bas.png) 2px 50% no-repeat;
+    background-image: url(images/deplacer_bas.png);
 }
 .menu.desktop a.fusionner_les_deux {
-  background: #f9f8f7 url(images/fusionner.png) 2px 50% no-repeat;
+    background-image: url(images/fusionner.png);
 }
 
 .menu.desktop a.type_liste {
-  background: #f9f8f7 url(images/type_liste.png) 2px 50% no-repeat;
+    background-image: url(images/type_liste.png);
 }
 .menu.desktop a.extraire {
-  background: #f9f8f7 url(images/layers.png) 2px 50% no-repeat;
+    background-image: url(images/layers.png);
 }
 .menu.desktop a.fusionner_tout {
-  background: #f9f8f7 url(images/fusionner_tout.png) 2px 50% no-repeat;
+    background-image: url(images/fusionner_tout.png);
 }
 .menu.desktop a.type_liste_global {
-  background: #f9f8f7 url(images/type_liste_global.png) 2px 50% no-repeat;
-}
-a.classique {
-  background: #ffffff url(images/list.png) 2px 50% no-repeat;
-}
-a.nombre {
-  background: #ffffff url(images/sum.png) 2px 50% no-repeat;
-}
-a.collectable {
-  background: #ffffff url(images/table.png) 2px 50% no-repeat;
-}
-a.dmspiral {
-  background: #ffffff url(images/spiral.png) 2px 50% no-repeat;
+    background-image: url(images/type_liste_global.png);
 }
 
-.menu.desktop a.new {
-  background: #f9f8f7 url(images/page.png) 2px 50% no-repeat;
-}
-.menu.desktop a.non_possede {
-  background: #f9f8f7 url(images/non_possede.png) 2px 50% no-repeat;
-}
 .menu.desktop a.a_vendre {
-  background: #f9f8f7 url(images/av_petit.png) 2px 50% no-repeat;
+    background-image: url(images/av_petit.png);
 }
 .menu.desktop a.pas_a_vendre {
-  background: #f9f8f7 url(images/pas_av_petit.png) 2px 50% no-repeat;
+    background-image: url(images/pas_av_petit.png);
+}
+
+.menu.desktop a.non_possede {
+    background-image: url(images/non_possede.png);
 }
 .menu.desktop a.possede {
-  background: #f9f8f7 url(images/possede.png) 2px 50% no-repeat;
+    background-image: url(images/possede.png);
 }
 .menu.desktop a.mauvais {
-  background: #f9f8f7 url(images/mauvais.png) 2px 50% no-repeat;
+    background-image: url(images/mauvais.png);
 }
 .menu.desktop a.moyen {
-  background: #f9f8f7 url(images/moyen.png) 2px 50% no-repeat;
+    background-image: url(images/moyen.png);
 }
 .menu.desktop a.bon {
-  background: #f9f8f7 url(images/bon.png) 2px 50% no-repeat;
+    background-image: url(images/bon.png);
 }
-.menu.desktop a.excellent {
-  background: #f9f8f7 url(images/excellent.png) 2px 50% no-repeat;
-}
-.menu.desktop a.indefini {
-  background: #f9f8f7;
-}
+
 .menu.desktop a.date {
-  background: #f9f8f7 url(images/page_date.png) 2px 50% no-repeat;
+    background-image: url(images/page_date.png);
 }
 .menu.desktop a.pas_date {
-  background: #f9f8f7 url(images/pas_page_date.png) 2px 50% no-repeat;
+    background-image: url(images/pas_page_date.png);
 }
-.menu.desktop a.date2 {
-  background: #f9f8f7 url(images/page_date_petit.png) 2px 50% no-repeat;
+
+a.classique {
+    background: #ffffff url(images/list.png) 2px 50% no-repeat;
 }
-.menu.desktop a.n_date {
-  background: #f9f8f7 url(images/page_date.png) 2px 50% no-repeat;
+a.nombre {
+    background: #ffffff url(images/sum.png) 2px 50% no-repeat;
 }
-.menu.desktop a.delete {
-  background: #f9f8f7 url(images/page_delete.png) 2px 50% no-repeat;
+a.collectable {
+    background: #ffffff url(images/table.png) 2px 50% no-repeat;
 }
-.menu.desktop a.save {
-  background: #f9f8f7 url(images/page_save.png) 2px 50% no-repeat;
+a.dmspiral {
+    background: #ffffff url(images/spiral.png) 2px 50% no-repeat;
 }
 
 /* we need explicit enabled class to overcome css deficiences (without creating unnecessary markup) 
