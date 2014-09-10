@@ -1,18 +1,13 @@
-var selection_couleur='indefini';
-var selection_activee=false;
 var debut_selection=-1;
-var current_line=null;
 var now_selecting=false;
-var element_opacity_temp=1;
 var liste;
-var text_couleur=null;
 var l10n_acquisitions=new Array('modifier_acquisition','supprimer_acquisition','description',
                                 'date_invalide','date_invalide','suppression_date_achat_confirmation',
                                 'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
                                 'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer',
 								'_format_date');
 
-function disableselect(e){
+function disableselect(){
 return false
 }
 
@@ -27,7 +22,7 @@ function start_selection(sel) {
 	
 	//if NS6
 	if (window.sidebar){
-		$('liste_numeros').onmousedown=disableselect
+		$('liste_numeros').onmousedown=disableselect;
 		$('liste_numeros').onclick=reEnable
 	}
 	debut_selection=parseInt(sel.id.substring(1,sel.id.length+1));
@@ -36,7 +31,6 @@ function start_selection(sel) {
 
 function stop_selection(sel) {
 	now_selecting=false;
-	var j=0;
 	
 	var fin_selection=parseInt(sel.id.substring(1,sel.id.length+1));
 	
@@ -73,10 +67,6 @@ function stop_selection(sel) {
 	}
 }
 
-function effacer_infos_acquisition() {
-	$('nouvelle_acquisition').update();
-}
-
 function changer_affichage(type_numeros) {
 	$('nb_selection').update(0);
 	$('menu_contextuel').hide();
@@ -98,9 +88,6 @@ function changer_affichage(type_numeros) {
 		
 }
 
-function deselect_old(select) {
-	
-}
 function modifier_acquisition(id_acquisition,item) {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
 	var select=$('date_acquisition');
@@ -155,72 +142,6 @@ function modifier_acquisition(id_acquisition,item) {
 			});
 		}
 	});
-}
-function changer_date_acquisition(element,afficher_non_specifiee) {
-	
-	$('nouvelle_acquisition').update();
-	var option_sel=$('date_acquisition').options[$('date_acquisition').selectedIndex].value;
-	if ($('date_acquisition').selectedIndex==$('date_acquisition').length-1) {
-		var date_jour=new Element('input',{'id':'date_jour','type':'text','size':'2'});
-		var date_mois=new Element('input',{'id':'date_mois','type':'text','size':'2'});
-		var date_annee=new Element('input',{'id':'date_annee','type':'text','size':'4'});
-		var description=new Element('input',{'id':'description_acquisition','type':'text','size':'15'});
-		var enregistrer_acquisition=new Element('button').insert(l10n_acquisitions['nouvelle_acquisition_sauvegarder']);
-		$('nouvelle_acquisition').insert('<br />').insert(l10n_acquisitions['date']).insert(' : ');
-		$('nouvelle_acquisition').insert(date_jour).insert(' / ').insert(date_mois).insert(' / ').insert(date_annee).insert('<br />');
-		$('nouvelle_acquisition').insert(l10n_acquisitions['description']).insert(' : <br />').insert(description);
-		$('nouvelle_acquisition').insert('<br />').insert(enregistrer_acquisition);
-		enregistrer_acquisition.observe('click',function() {
-			if (!isDate(date_jour.value+'/'+date_mois.value+'/'+date_annee.value)) {
-				alert(l10n_acquisitions['date_invalide']);
-				return; 
-			}
-			if (description.textLength>30) {
-				alert(l10n_acquisitions['description_invalide']);
-				return;
-			}
-			var myAjax = new Ajax.Request('Database.class.php', {
-			   method: 'post', 
-			   parameters:'database=true&afficher_non_defini='+afficher_non_specifiee+'&acquisition=true&date_annee='+date_annee.value+'&date_mois='+date_mois.value+'&date_jour='+date_jour.value+'&description='+description.value,
-			   onSuccess:function(transport,json) {
-			    	location.reload();
-			   }
-			});
-		});
-	}
-	
-}
-
-function enregistrer_changements_liste() {
-	if (!numeros_marques()) {
-		alert(l10n_acquisitions['selectionner_numeros_a_marquer']);
-		return;
-	}
-	var acquisition_id=$('date_acquisition').selectedIndex;
-	var acquisition_sel=$('date_acquisition').options[acquisition_id].value;
-	/*
-	if (acquisition_sel=='Nouvelle acquisition...') {
-		alert(l10n_acquisitions['date_invalide']);
-		return;
-	}*/
-	acquisition_sel=acquisition_sel.substring(acquisition_sel.indexOf('[')+1,acquisition_sel.indexOf(']'));
-	var text_validation=l10n_acquisitions['les']+liste.length+l10n_acquisitions['numeros_selectionnes_enregistres'];
-	if (text_couleur) {
-		text_validation+=' '+l10n_acquisitions['avec_etat']+' "'+text_couleur+'"';
-		if (acquisition_id!=0)
-			text_validation+=l10n_acquisitions['et'];
-	}
-	if (acquisition_id!=0)
-		text_validation+=l10n_acquisitions['avec_acquisition']+' '+$('date_acquisition').value;
-	text_validation+='.\n'+l10n_acquisitions['confirmer'];
-	var valider=confirm(text_validation);
-	
-	if (valider) {
-		
-		if (acquisition_id==0) // Date non spécifiée
-			acquisition_sel=null;
-		update_numeros(liste,selection_couleur,acquisition_sel);
-	}
 }
 
 function pre_select(element) {

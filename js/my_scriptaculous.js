@@ -5,7 +5,6 @@ var l10n_divers=new Array('chargement');
 var types_listes=new Array();
 var parametres=new Array();
 var id_magazine_selectionne=null;
-var printMenu;
 var magazineMenu;
 var prevent_click=false;
 var nom_magazine_draggable;
@@ -14,6 +13,7 @@ var draggable_id;
 var droppable_id;
 var description_liste_en_cours=null;
 
+var protos=new Array();
 var l10n_print=new Array();
 
 function implement_draganddrop(box) {
@@ -356,6 +356,69 @@ function toggle_aide() {
 function toMagazineID(element) {
     return ($(element).hasClassName('draggable_box') ? $(element):$(element).up('.draggable_box'))
                 .readAttribute('id').substring('box_'.length);
+}
+
+function elementToTypeListe(element) {
+	var classes=$w(element.className);
+	for(var i=0;i<classes.length;i++) {
+		if (['item_sous_menu', 'enabled', 'type_liste'].indexOf(classes[i])==-1) {
+			return classes[i];
+		}
+	}
+	return null;
+}
+
+function afficher_infos_type_liste(type_liste) {
+	$('contenu_index_aide').update($('titre_index_aide').update(l10n_divers['chargement']+'...'));
+	//toggle_item_menu($$('[name="index_aide"]')[0]);
+	description_liste_en_cours=type_liste;
+	new Ajax.Request('Liste.class.php', {
+		method: 'post',
+		parameters:'get_description=true&type_liste='+type_liste,
+		onSuccess:function(transport) {
+			if (description_liste_en_cours!=transport.request.parameters.type_liste)
+				return;
+			var resultat=transport.headerJSON;
+			$('titre_index_aide').update(resultat.titre);
+			$('contenu_index_aide').insert(resultat.contenu);
+		}
+	});
+}
+
+function changer_position_liste(pays_magazine,pays_magazine_precedent,pays_magazine_suivant,position_liste) {
+	new Ajax.Request('Liste.class.php', {
+		method: 'post',
+		parameters:'changer_position_liste=true&pays_magazine='+pays_magazine+'&precedent='+pays_magazine_precedent+'&suivant='+pays_magazine_suivant+'&nouvelle_position='+position_liste,
+		onSuccess:function() {
+
+		}
+	});
+}
+
+function update_list(magazine_selectionne,type_liste,parametres) {
+	new Ajax.Request('Liste.class.php', {
+		method: 'post',
+		parameters:'update_list=true&pays_magazine='+magazine_selectionne+'&type_liste='+type_liste+'&parametres='+parametres,
+		onSuccess:function(transport) {
+			$(magazine_selectionne).down('.contenu_liste').update(transport.responseText);
+			fin_update();
+		}
+	});
+}
+
+function update_parametres_generaux(parametres) {
+	new Ajax.Request('Liste.class.php', {
+		method: 'post',
+		parameters:'update_parametres_generaux=true&parametres='+parametres,
+		onSuccess:function() {
+			fin_update();
+		}
+	});
+}
+
+function fin_update() {
+	afficher_termine();
+	setTimeout(afficher_vide,1000);
 }
 
 function extraire_magazine(id_magazine_selectionne,pays_magazine) {

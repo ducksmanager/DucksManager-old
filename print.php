@@ -28,7 +28,6 @@ require_once('Listes/Format_liste.php');?>
         new JS('prototype.js');
         new JS('js/l10n.js');
         new JS('js/json/json2.js');
-        new JS('js/menu_contextuel.js');
         new JS('js/scriptaculous/src/scriptaculous.js');
         new JS('js/my_scriptaculous.js');
         new JS('js/ajax.js'); ?>
