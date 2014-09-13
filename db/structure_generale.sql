@@ -126,11 +126,7 @@ DROP TABLE IF EXISTS `bouquineries`;
 CREATE TABLE `bouquineries` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Nom` varchar(25) NOT NULL,
-  `Adresse` text NOT NULL,
   `AdresseComplete` text NOT NULL,
-  `CodePostal` int(11) NOT NULL,
-  `Ville` varchar(20) NOT NULL,
-  `Pays` varchar(20) NOT NULL DEFAULT 'France',
   `Commentaire` text NOT NULL,
   `ID_Utilisateur` int(11) DEFAULT NULL,
   `CoordX` float NOT NULL DEFAULT '0',

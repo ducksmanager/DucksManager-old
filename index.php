@@ -125,7 +125,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     }
                 break;
             }
-            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js','js/datepicker/prototypejs-calendar.js','js/datepicker/date_patches.js');
+            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js');
         }
         ?>
     </head>
