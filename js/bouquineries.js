@@ -56,7 +56,7 @@ function localiser(id_adresse) {
 	}
 }
 
-function creer_marqueur(adresse,position) {debugger;
+function creer_marqueur(adresse,position) {
 	var marker = new google.maps.Marker({
 		map: map,
 		position: position,
@@ -79,7 +79,7 @@ function creer_marqueur(adresse,position) {debugger;
 
 	google.maps.event.addListener(marker, 'click', function() {
 		for (id_adresse in adresses) {
-			if (typeof(infowindows[id_adresse]) != 'undefined') {
+			if (infowindows.hasOwnProperty(id_adresse)) {
 				infowindows[id_adresse].close(map,marker);
 				if (marker.title == adresses[id_adresse].Nom)
 					infowindows[id_adresse].open(map,marker);
