@@ -56,28 +56,25 @@ function localiser(id_adresse) {
 	}
 }
 
-function creer_marqueur(adresse,position) {
+function creer_marqueur(adresse,position) {debugger;
 	var marker = new google.maps.Marker({
 		map: map,
 		position: position,
 		title: adresse.Nom
 	});
 
+	var fields = ['Nom', 'Commentaire', 'Adresse', 'Signature'];
 
-	var contentString = '<div id="content">'+
-		'<div id="siteNotice">'+
-		'</div>'+
-		'<h1 id="firstHeading" class="firstHeading">'+adresse.Nom+'</h1>'+
-		'<div id="bodyContent">'+
-		'<p>'+adresse.Commentaire+'</p>'+
-		'<p>Adresse : </p>'+
-		'<p>'+adresse.AdresseComplete+'<br />'
-		+adresse.Signature+'<br />'+
-		'</div>'+
-		'</div>';
+	var element = $$('.infoWindow.template')[0].clone(true).removeClassName('template');
+	for (var i_field in fields) {
+		if( fields.hasOwnProperty(i_field)) {
+			var field = fields[i_field];
+			element.down('.' + field).update(adresse[field]);
+		}
+	}
 
 	infowindows[adresse.id] = new google.maps.InfoWindow({
-		content: contentString
+		content: element.innerHTML
 	});
 
 	google.maps.event.addListener(marker, 'click', function() {
