@@ -127,6 +127,7 @@ CREATE TABLE `bouquineries` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Nom` varchar(25) NOT NULL,
   `Adresse` text NOT NULL,
+  `AdresseComplete` text NOT NULL,
   `CodePostal` int(11) NOT NULL,
   `Ville` varchar(20) NOT NULL,
   `Pays` varchar(20) NOT NULL DEFAULT 'France',
@@ -137,7 +138,7 @@ CREATE TABLE `bouquineries` (
   `DateAjout` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Actif` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +204,7 @@ CREATE TABLE `numeros` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   UNIQUE KEY `Pays` (`Pays`,`Magazine`,`Numero`,`ID_Utilisateur`),
   KEY `Index 2` (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=60099 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=60105 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

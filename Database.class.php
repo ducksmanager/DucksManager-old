@@ -902,10 +902,9 @@ if (isset($_POST['database'])) {
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
 	}
 elseif (isset($_POST['liste_bouquineries'])) {
-			$requete_bouquineries='SELECT Nom, CONCAT(Adresse, \'<br />\',CodePostal, \' \',Ville) AS Adresse, Pays, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
+			$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
 								 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
-                                 .'WHERE Actif=1 '
-								 .'ORDER BY Pays, CodePostal, Ville';
+                                 .'WHERE Actif=1';
 			$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
 			foreach($resultat_bouquineries as &$bouquinerie) {
 				$i=0;

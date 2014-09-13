@@ -4,7 +4,7 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<style type="text/css">
 			html { height: 100% }
-			body { height: 100%; margin: 0px; padding: 0px }
+			body { height: 100%; margin: 0; padding: 0; }
 			#map_canvas { height: 100% }
 		</style>
 		<?php
@@ -17,9 +17,9 @@
 		<script type="text/javascript">
 			var map;
 			var geocoder;
-			var adresses=new Array();
+			var adresses=[];
 			var id_adresse_courante=0;
-			var infowindows=new Array();
+			var infowindows=[];
 			
 			function analyserAdresseSuivante() {
 				if (id_adresse_courante < adresses.length) {
@@ -34,7 +34,7 @@
 				new Ajax.Request('Database.class.php', {
 				   method: 'post',
 				   parameters:'database=true&liste_bouquineries=true',
-				   onSuccess:function(transport,json) {
+				   onSuccess:function(transport) {
 					   adresses=JSON.parse(transport.responseText);
 					   analyserAdresseSuivante();
 				   }
@@ -42,12 +42,12 @@
 				geocoder = new google.maps.Geocoder();
 				var latlng = new google.maps.LatLng(46.754917, 1.73584);
 				var myOptions = {
-					zoom: 6,
+					zoom: 4,
 					center: latlng,
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 					streetViewControl: true
 				};
-				map = new google.maps.Map(document.getElementById("map_canvas"),  myOptions);
+				map = new google.maps.Map($("map_canvas"),  myOptions);
 			}
 
 			function localiser(id_adresse) {
@@ -73,8 +73,7 @@
 					'<div id="bodyContent">'+
 					'<p>'+adresse.Commentaire+'</p>'+
 					'<p>Adresse : </p>'+
-					'<p>'+adresse.Adresse+'<br />'
-					     +adresse.Pays+'<br /></p>'
+					'<p>'+adresse.AdresseComplete+'<br />'
 						+adresse.Signature+'<br />'+
 					'</div>'+
 					'</div>';

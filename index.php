@@ -92,7 +92,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 			switch($_GET['action']) {
                 case 'gerer':
                     new JS('js/edges2.js','js/menu_contextuel.js');
-                break;  
+                break;
+                case 'bouquineries':
+                    ?><script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script><?php
+                    new JS('js/bouquineries.js');
+                break;
                 case 'bibliotheque':
                     $textures=array();
                     for ($i=1;$i<=2;$i++) {
@@ -121,7 +125,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     }
                 break;
             }
-            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js');
+            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js','js/datepicker/prototypejs-calendar.js','js/datepicker/date_patches.js');
         }
         ?>
     </head>
