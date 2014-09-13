@@ -194,6 +194,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 			}
             ?>charger_recherche();<?php
             break;
+        case 'bouquineries':
+            ?>initializeAutocomplete();<?php
+        break;
         case 'stats':
             if (isset($_GET['onglet'])) {
             	switch($_GET['onglet']) {
@@ -1219,15 +1222,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 	?><br /><br /><?php
                                 	if (isset($_POST['ajouter'])) {
 										$erreur=false;
-										foreach (array('nom','adresse','cp','ville','commentaire') as $champ) {
+										foreach (array('nom','adresse_complete','coordX', 'coordY', 'commentaire') as $champ) {
 											$_POST[$champ]=mysql_real_escape_string($_POST[$champ]);
 											if (empty($_POST[$champ])) {
 												$erreur=true;
-												?><div style="color:red"><?=CHAMP_OBLIGATOIRE_1.ucfirst($champ).CHAMP_OBLIGATOIRE_2?></div><?php 
+												?><div style="color:red"><?=CHAMP_OBLIGATOIRE_1.ucfirst($champ).CHAMP_OBLIGATOIRE_2?></div><?php
 											}
 										}
 										if (!$erreur) {
-	                                		$requete='INSERT INTO bouquineries(Nom, Adresse, CodePostal, Ville, Pays, Commentaire, ID_Utilisateur, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse'].'\',\''.$_POST['cp'].'\',\''.$_POST['ville'].'\',\'France\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', 0)';
+	                                		$requete='INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse_complete'].'\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', '.$_POST['coordX'].', '.$_POST['coordY'].', 0)';
                                             DM_Core::$d->requete($requete);
 
                                             $entete = "MIME-Version: 1.0\r\n";
@@ -1246,7 +1249,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 		                     ?>
 							<iframe src="bouquineries.php" width="70%" height="700px"></iframe>
 							<br /> <br />
-	
+
 							<h2>
 							<?=PROPOSER_BOUQUINERIE?>
 							</h2>
@@ -1256,37 +1259,30 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 							<br />
 							<?=PRIX_HONNETES?>
 							<br /> <br />
-							<form method="post" action="?action=bouquineries">
+							<form method="post" id="form_bouquinerie" action="?action=bouquineries">
 								<table border="0">
 									<tr>
-										<td><?=NOM_BOUQUINERIE?> :</td>
-										<td><input maxlength="25" size="26" name="nom" type="text" /></td>
+										<td><label for="bouquinerie_nom"><?=NOM_BOUQUINERIE?> :</label></td>
+										<td><input size="40" maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
 									</tr>
 									<tr>
-										<td><?=ADRESSE?> :</td>
-										<td><textarea cols="20" name="adresse"></textarea></td>
+										<td><label for="adresse_complete"><?=ADRESSE?> :</label></td>
+										<td><input size="40" type="text" id="adresse_complete" name="adresse_complete"/></td>
 									</tr>
 									<tr>
-										<td><?=CODE_POSTAL?> :</td>
-										<td><input maxlength="11" name="cp" type="text" size="5"
-											maxlength="5" /></td>
-									</tr>
-									<tr>
-										<td><?=VILLE?> :</td>
-										<td><input maxlength="20" size="26" name="ville" type="text" />
-										</td>
-									</tr>
-									<tr>
-										<td><?=COMMENTAIRES_BOUQUINERIE?><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
-										<td><textarea name="commentaire" colspan="40" rowspan="5"></textarea>
+										<td><label for="bouquinerie_commentaires"><?=COMMENTAIRES_BOUQUINERIE?></label><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
+										<td><textarea id="bouquinerie_commentaires" name="commentaire" cols="41" rows="5"></textarea>
 										</td>
 									</tr>
 									<tr>
 										<td align="center" colspan="2">
+                                            <br />
 											<input name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" />
 										</td>
 									</tr>
 	                        	</table>
+                                <input type="hidden" name="coordX" />
+                                <input type="hidden" name="coordY" />
 							</form>
 						<?php
 						break;
