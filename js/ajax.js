@@ -221,6 +221,10 @@ function charger_evenements() {
 		   parameters:'database=true&evenements_recents=true',
 		   onSuccess:function(transport) {
 			   $('evenements').innerHTML = transport.responseText;
+			   $$('.evenement_tranches_pretes a.has_tooltip').each(function(element) {
+				   var content = element.next('.tooltip_content');
+				   new Opentip(element, content.innerHTML, { delay: 0 });
+			   });
 		   }
 	});
 }

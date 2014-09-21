@@ -641,9 +641,9 @@ function ajouter_auteur($id,$nom) {
 			$evenements->publicationcodes[]=$publicationcode[0];
 			
 			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
-			$numero_exemple=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+			$numero_complet=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
 			
-			$evenement = array('numero_exemple'=>$numero_exemple,
+			$evenement = array('numero_exemple'=>$numero_complet,
 							   'cpt'		   =>intval($ajout['cpt'])-1);
 			
 			ajouter_evenement(
@@ -672,41 +672,54 @@ function ajouter_auteur($id,$nom) {
 		}
 		
 		/* Ajouts de tranches */
-		$requete_tranches="SELECT publicationcode, issuenumber, photographes, createurs, DATE(dateajout) DateAjout,
-                                  (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes, COUNT(issuenumber) AS cpt,
-                                  (
-                                    SELECT CONCAT(publicationcode,'/',issuenumber)
-                                    FROM tranches_pretes tp
-                                    WHERE tp.publicationcode =tranches_pretes.publicationcode AND tp.issuenumber =tranches_pretes.issuenumber
-                                    LIMIT 1
-                                  ) AS NumeroExemple
-                          FROM tranches_pretes
-                          WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
-                            AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
-                          GROUP BY CONCAT(photographes, createurs), DATE(DateAjout)
-                          HAVING COUNT(issuenumber) > 0
-                          ORDER BY DateAjout DESC";
+		$requete_tranches= "SELECT publicationcode, issuenumber, photographes, createurs, DATE(dateajout) DateAjout,
+                                   (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes,
+                                   CONCAT(publicationcode,'/',issuenumber) AS Numero
+                            FROM tranches_pretes
+                            WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+                              AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
+                            ORDER BY DateAjout DESC, CONCAT(photographes, createurs)";
 
 		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
+        $diff_secondes_date_precedente = '';
+        $evenement = null;
 		foreach($resultat_tranches as $tranche_prete) {
 			$publicationcode = $tranche_prete['publicationcode'];
 			$evenements->publicationcodes[]=$publicationcode;
 
-            list($pays,$magazine,$numero)=explode('/',$tranche_prete['NumeroExemple']);
-            $numero_exemple=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+            list($pays,$magazine,$numero)=explode('/',$tranche_prete['Numero']);
+            $numero_complet=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
 
-            $evenement = array('numero_exemple'=>$numero_exemple,
-                               'cpt'		   =>intval($tranche_prete['cpt'])-1);
+            $diff_secondes_date_courante = $tranche_prete['DiffSecondes'];
+            $collaborateurs = array_merge(explode(',',$tranche_prete['photographes']),
+                                          explode(',',$tranche_prete['createurs'   ]));
 
-			ajouter_evenement(
-					$evenements->evenements,
-					$tranche_prete['DiffSecondes'],
-					'tranches pretes',
-					array_merge(explode(',',$tranche_prete['photographes']),
-								explode(',',$tranche_prete['createurs'])),
-					$evenement);
+            if ($diff_secondes_date_precedente === $diff_secondes_date_courante) {
+                $evenement['numeros'][] = $numero_complet;
+            }
+            else {
+                if (!is_null($evenement)) {
+                    ajouter_evenement(
+                        $evenements->evenements,
+                        $diff_secondes_date_courante,
+                        'tranches_pretes',
+                        $collaborateurs,
+                        $evenement);
+                }
+                $evenement = array('numeros' => array($numero_complet));
+            }
+            $diff_secondes_date_precedente = $diff_secondes_date_courante;
 		}
-		
+
+        if (count($resultat_tranches) > 0) {
+            ajouter_evenement(
+                $evenements->evenements,
+                $diff_secondes_date_courante,
+                'tranches_pretes',
+                $collaborateurs,
+                $evenement);
+        }
+
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
 		ksort($evenements->evenements);
 		

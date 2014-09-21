@@ -191,7 +191,7 @@ class Affichage {
 		foreach($evenements->evenements as $evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $evenement) {
-					?><div><?php
+					?><div class="evenement_<?=$type?>"><?php
 					switch($type) {
 						case 'inscriptions':
 							?><b><?=$evenement->utilisateur?></b> <?=NEWS_S_EST_INSCRIT?>
@@ -218,8 +218,8 @@ class Affichage {
 							<?php } ?>
 							<?=NEWS_A_SA_COLLECTION?><?php
 						break;
-						case 'tranches pretes':
-							$numero=$evenement->numero_exemple;
+						case 'tranches_pretes':
+							$numero=$evenement->numeros[0];
 							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
 								$evenement->cpt++;
 								continue;
@@ -231,10 +231,20 @@ class Affichage {
 							?><?=$str_contributeurs?> <?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
 							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
                             <?php
-                            if ($evenement->cpt > 0) {
-                                ?>
-                                <?=ET?> <?=$evenement->cpt?>
-                                <?=$evenement->cpt === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
+                            array_shift($evenement->numeros);
+                            $nb_autres_numeros = count($evenement->numeros);
+                            if ($nb_autres_numeros > 0) {
+                                ?><a href="javascript:void(0)" class="has_tooltip">
+                                    <?=ET?> <?=($nb_autres_numeros)?>
+                                    <?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
+                                </a>
+                                <span class="cache tooltip_content">
+                                    <?php
+                                        foreach($evenement->numeros as $numero) {
+                                            Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);
+                                        }
+                                    ?>
+                                </span>
                             <?php } ?>
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
