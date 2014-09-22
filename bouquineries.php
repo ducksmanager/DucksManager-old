@@ -11,7 +11,7 @@
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
 		<?php
 			require_once('JS.class.php');
-			new JS('prototype.js', 'js/bouquineries.js');
+			new JS('prototype-1.7.2.js', 'js/bouquineries.js');
 		?>
 	</head>
 	<body onload="initialize()">

@@ -86,7 +86,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script><?php
-        new JS('prototype.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js');
+        new JS('prototype-1.7.2.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
 			if (!isset($_GET['action'])) $_GET['action']='';            
@@ -1352,7 +1352,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 									<li><img src="images/demo3.png" alt="demo3" width="500"
 										height="333" />
 									</li>
-									<li><img src="images/demo_bibliotheque.png" alt="demo2_2"
+									<li><img src="images/demo_bibliotheque.jpg" alt="demo2_2"
 										width="500" height="333" />
 									</li>
 								</ul>
@@ -1407,7 +1407,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 									<?=PRESENTATION_BIBLIOTHEQUE_2?>
 									<br /> <br />
 									<?=PRESENTATION_BIBLIOTHEQUE_3?>
-									<br /> <img src="images/demo_bibliotheque2.png" alt="demo2_2" />
+									<br /> <img src="images/demo_bibliotheque2.jpg" alt="demo2_2" />
 								</div>
 
 							</div>

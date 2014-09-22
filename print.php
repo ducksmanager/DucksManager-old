@@ -25,7 +25,7 @@ require_once('Listes/Format_liste.php');?>
         <link rel="stylesheet" type="text/css" href="csstabs.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <?php
-        new JS('prototype.js');
+        new JS('prototype-1.7.2.js');
         new JS('js/l10n.js');
         new JS('js/json/json2.js');
         new JS('js/menu_contextuel.js');
