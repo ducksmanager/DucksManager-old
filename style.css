@@ -43,6 +43,10 @@ a.important:HOVER {
     white-space: nowrap;
 }
 
+.opentip .nowrap {
+    white-space: inherit;
+}
+
 #medailles_et_login .medaille {
 	height: 120px;
 	margin-left: 5px;
