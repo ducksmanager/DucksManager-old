@@ -360,7 +360,7 @@ function charger_bibliotheque(grossissement, regen) {
 }
 
 function charger_tranche(tranche) {
-    tranche.observe('load',charger_tranche_suivante); 
+    tranche.observe('load',charger_tranche_suivante);
         
     tranche.observe('error',charger_tranche_suivante);
     var lettre_rand=String.fromCharCode(65+Math.floor(Math.random() * 25));
@@ -379,25 +379,23 @@ function charger_tranche(tranche) {
 function charger_tranche_suivante(element) {
     var tranche2=Event.element(element);
     var suivant=tranche2.next();
-    if (suivant.className.indexOf('tranche')==-1) {
-        nb_etageres_terminees++;
-        $('pct_bibliotheque').setStyle({'width':parseInt(100*nb_etageres_terminees/nb_etageres)+'%'});
-        var tranche_suivante=suivant.next().next();
-        if (tranche_suivante.className.indexOf('tranche')==-1) {
-            /*new Ajax.Request('Edge.class.php', {
-                method: 'post',
-                parameters:'num_gen='+$('num_gen').readAttribute('name')+'&hauteur='+$('bibliotheque').scrollHeight+'&largeur='+largeur_section,
-                onSuccess:function(transport) {
-
-                }
-            });*/
-           init_observers_tranches();
-           l10n_action('remplirSpan','chargement_bibliotheque_termine');
-           $('barre_pct_bibliotheque').remove();
-           charger_recherche();
+    if (suivant && suivant.className.indexOf('tranche') == -1) {
+        if (tranche2.up('#bibliotheque')) { // Contexte bibliothèque
+            nb_etageres_terminees++;
+            $('pct_bibliotheque').setStyle({'width': parseInt(100 * nb_etageres_terminees / nb_etageres) + '%'});
+            var tranche_suivante = suivant.next().next();
+            if (tranche_suivante.className.indexOf('tranche') == -1) {
+                init_observers_tranches();
+                l10n_action('remplirSpan', 'chargement_bibliotheque_termine');
+                $('barre_pct_bibliotheque').remove();
+                charger_recherche();
+            }
+            else
+                charger_tranche(tranche_suivante);
         }
-        else
-            charger_tranche(tranche_suivante);
+        else { // Contexte affichage dans les événements récents
+            callback_tranches_chargees(tranche2.up('.tooltip_content'));
+        }
     }
     else {
         charger_tranche(suivant);

@@ -86,7 +86,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script><?php
-        new JS('prototype-1.7.2.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js');
+        new JS('prototype-1.7.2.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js', 'js/edges2.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
 			if (!isset($_GET['action'])) $_GET['action']='';            
@@ -113,7 +113,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         var texture2='<?=$textures[2]?>';
                         var sous_texture2='<?=$textures[3]?>';
                     </script><?php
-                    new JS('js/edges2.js');
                 break;
                 case 'stats':if (!isset($_GET['onglet'])) $_GET['onglet']='magazines';
                     switch($_GET['onglet']) {

@@ -8,8 +8,6 @@ html, body {
 
 a {
 	color:#ffffff;
-	text-decoration: none;
-	white-space: nowrap;
 	border-bottom: 1px dotted #ffffff;
 }
 
@@ -18,18 +16,28 @@ a {
 }
 
 a:HOVER {
-	text-decoration:none;
 	border-bottom: 1px dashed #ffffff !important;
+}
+
+.opentip-container {
+	max-width: 500px !important;
+}
+
+a, a:HOVER {
+	text-decoration: none;
 	white-space: nowrap;
+}
+
+a.has_tooltip, a.has_tooltip:HOVER {
+	white-space: normal;
+	border-bottom: 0 !important;
+	cursor: help;
 }
 
 del {
 	white-space:nowrap;
 }
 
-a.important {
-	/*color:red;*/ 
-}
 a.important:HOVER {
 	text-decoration:underline;
 	font-weight: bold;

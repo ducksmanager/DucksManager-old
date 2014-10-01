@@ -186,6 +186,10 @@ class Affichage {
 	}
 	
 	static function afficher_evenements_recents($evenements) {
+		include_once('Edge.class.php');
+		Edge::$sans_etageres = true;
+		Edge::$grossissement_defaut = 1;
+
 		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
 
 		foreach($evenements->evenements as $evenements_date) {
@@ -229,23 +233,29 @@ class Affichage {
                             $str_contributeurs = str_replace_last(',', ' '.ET.' ', $str_contributeurs);
 
 							?><?=$str_contributeurs?> <?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
-							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
-                            <?php
-                            array_shift($evenement->numeros);
-                            $nb_autres_numeros = count($evenement->numeros);
-                            if ($nb_autres_numeros > 0) {
-                                ?><a href="javascript:void(0)" class="has_tooltip">
-                                    <?=ET?> <?=($nb_autres_numeros)?>
-                                    <?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
-                                </a>
-                                <span class="cache tooltip_content">
-                                    <?php
-                                        foreach($evenement->numeros as $numero) {
-                                            Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);
-                                        }
-                                    ?>
-                                </span>
-                            <?php } ?>
+							<a href="javascript:void(0)" class="has_tooltip">
+								<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
+								<?php
+								$nb_autres_numeros = count($evenement->numeros) - 1;
+								if ($nb_autres_numeros > 0) {
+									?>
+										<?=ET?> <?=($nb_autres_numeros)?>
+										<?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
+								<?php } ?>
+							</a>
+							<span class="cache tooltip_content">
+								<?php
+								foreach($evenement->numeros as $numero) {
+									$e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero);
+									echo $e->html;
+								}
+								echo Edge::getEtagereHTML(true);
+								foreach($evenement->numeros as $numero) {
+									Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);
+									?><br /><?php
+								}
+								?>
+							</span>
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
 						break;

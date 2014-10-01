@@ -222,11 +222,16 @@ function charger_evenements() {
 		   onSuccess:function(transport) {
 			   $('evenements').innerHTML = transport.responseText;
 			   $$('.evenement_tranches_pretes a.has_tooltip').each(function(element) {
-				   var content = element.next('.tooltip_content');
-				   new Opentip(element, content.innerHTML, { delay: 0 });
+				   var tooltip_content = element.next('.tooltip_content');
+				   charger_tranche(tooltip_content.down('.tranche'));
 			   });
 		   }
 	});
+}
+
+function callback_tranches_chargees(tooltip_content) {
+	var element_texte_hover = tooltip_content.previous('a.has_tooltip');
+	new Opentip(element_texte_hover, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null });
 }
 
 function griser(caller) {

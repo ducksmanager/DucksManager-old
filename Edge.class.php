@@ -25,6 +25,7 @@ class Edge {
 	static $grossissement_defaut=1.5;
 	static $largeur_numeros_precedents=0;
 	static $d;
+	static $sans_etageres = false;
 	
 	function __construct($pays=null,$magazine=null,$numero=null,$numero_reference=null,$image_seulement=false) {
 		if (is_null($pays))
@@ -44,7 +45,7 @@ class Edge {
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
 				if (! (list($this->largeur,$this->hauteur,$type,$attr)=@getimagesize($url_image))) {
-					mail('admin@ducksmanager.net', 'Image de biblioth�que corrompue',$url_image);
+					mail('admin@ducksmanager.net', 'Image de bibliothèque corrompue',$url_image);
 					return;
 				}
 				$this->largeur=intval( $this->largeur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
@@ -124,12 +125,15 @@ class Edge {
 	
 	function getImgHTML($regen=false) {
 		$code='';
-		if (Edge::$largeur_numeros_precedents + $this->largeur > Etagere::$largeur) {
-			$code.=Edge::getEtagereHTML();
-			Edge::$largeur_numeros_precedents=0;
+		if (!Edge::$sans_etageres) {
+			if (Edge::$largeur_numeros_precedents + $this->largeur > Etagere::$largeur) {
+				$code .= Edge::getEtagereHTML();
+				Edge::$largeur_numeros_precedents = 0;
+			}
+			if ($this->hauteur > Etagere::$hauteur_max_etage) {
+				Etagere::$hauteur_max_etage = $this->hauteur;
+			}
 		}
-		if ($this->hauteur > Etagere::$hauteur_max_etage)
-			Etagere::$hauteur_max_etage = $this->hauteur ;
 		$code.= '<img class="tranche" ';
 		
 		if ($this->image_existe && !$regen) {
@@ -385,7 +389,7 @@ elseif (isset($_POST['generer_images_etageres'])) {
 		else
 			$pos_etagere_suivante=explode(',',$pos->etageres->etageres[$num_etagere]);
 	   	$hauteur=$pos_etagere_suivante[1]-$pos_etagere_courante[1];
-	   	if ($hauteur ==0) // Cas de la derni�re �tag�re, vide
+	   	if ($hauteur ==0) // Cas de la dernière étagère, vide
 	   		$hauteur=16;
 		$im=imagecreatetruecolor($largeur, $hauteur);
 		
