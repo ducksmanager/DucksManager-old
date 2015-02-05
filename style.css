@@ -11,6 +11,10 @@ a {
 	border-bottom: 1px dotted #ffffff;
 }
 
+.underlined {
+	text-decoration: underline;
+}
+
 #colonne_gauche a {
 	border-bottom: none;
 }
@@ -69,19 +73,19 @@ a.important:HOVER {
 
 #recemment h4 {
 	text-align: center;
-    margin-top: 0px;
+    margin-top: 0;
 }
 
-#recemment div {
+#recemment #evenements div {
 	margin-top: 12px;
 }
 
-#recemment div .date {
+#recemment #evenements div .date {
 	color: #444;
 	float: right;
 }
 
-#recemment a {
+#recemment #evenements a {
 	color: black;
 }
 
