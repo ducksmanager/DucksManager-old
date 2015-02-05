@@ -36,12 +36,18 @@ class Edge {
 		$this->numero= $numero;
 		$this->numero_reference= $numero_reference;
 		
-		$url_image='edges/'.$this->pays.'/gen/'.$this->magazine.'.'.$this->numero_reference.'.png';
-		if ($image_seulement)
-			$this->image=imagecreatefrompng($url_image);
+		$dossier_image = 'edges/'.$this->pays.'/gen/';
+		$url_image=$dossier_image.$this->magazine.'.'.$this->numero_reference.'.png';
+		if ($image_seulement) {
+			if (!file_exists($url_image)) {
+				mkdir($dossier_image, 0777, true);
+				imagepng($this->dessiner_defaut(),$url_image);
+			}
+			$this->image=@imagecreatefrompng($url_image);
+		}
 		else {
 			$this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero_reference);
-			
+
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
 				if (! (list($this->largeur,$this->hauteur,$type,$attr)=@getimagesize($url_image))) {
@@ -50,25 +56,31 @@ class Edge {
 				}
 				$this->largeur=intval( $this->largeur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
 				$this->hauteur=intval( $this->hauteur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
-				
+
 			}
 			else {
 				$dimensions=getDimensionsParDefautMagazine($this->pays,$this->magazine,array($this->numero_reference));
 				if (!is_null($dimensions[$this->numero_reference]) && $dimensions[$this->numero_reference]!='null')
 					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
-				
+
 				if (!$this->image_existe) {
 					@imagepng($this->dessiner_defaut(),$url_image);
 				}
-				
+
 				$this->est_visible=false;
 				$this->largeur*=Edge::$grossissement_affichage;
 				$this->hauteur*=Edge::$grossissement_affichage;
-				
+
 				$this->magazine_est_inexistant=true;
 			}
-			$this->html=$this->getImgHTML();
+
+			$this->est_visible=false;
+			$this->largeur*=Edge::$grossissement_affichage;
+			$this->hauteur*=Edge::$grossissement_affichage;
+
+			$this->magazine_est_inexistant=true;
 		}
+		$this->html=$this->getImgHTML();
 	}
 
 	function getLargeurHauteurDefaut() {
