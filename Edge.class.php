@@ -73,14 +73,8 @@ class Edge {
 
 				$this->magazine_est_inexistant=true;
 			}
-
-			$this->est_visible=false;
-			$this->largeur*=Edge::$grossissement_affichage;
-			$this->hauteur*=Edge::$grossissement_affichage;
-
-			$this->magazine_est_inexistant=true;
+			$this->html=$this->getImgHTML();
 		}
-		$this->html=$this->getImgHTML();
 	}
 
 	function getLargeurHauteurDefaut() {
