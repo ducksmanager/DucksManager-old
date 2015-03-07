@@ -681,7 +681,7 @@ function ajouter_auteur($id,$nom) {
                             ORDER BY DateAjout DESC, collaborateurs";
 
 		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
-        $groupe_precedent = '';
+        $groupe_precedent = null;
         $evenement = null;
 		foreach($resultat_tranches as $tranche_prete) {
 			$publicationcode = $tranche_prete['publicationcode'];
@@ -693,7 +693,9 @@ function ajouter_auteur($id,$nom) {
             $collaborateurs = explode(',', preg_replace('#(,{2,})#',',', trim($tranche_prete['collaborateurs'],',')));
             $groupe_courant = array('DiffSecondes' => $tranche_prete['DiffSecondes'], 'Collaborateurs' => $collaborateurs);
 
-            if ($groupe_precedent === $groupe_courant) {
+            if (!is_null($groupe_precedent) &&
+                ($groupe_precedent['Collaborateurs'] === $groupe_courant['Collaborateurs']
+              && round($groupe_precedent['DiffSecondes'] / 24 / 3600) === round($groupe_courant['DiffSecondes'] / 24 / 3600))) {
                 $evenement['numeros'][] = $numero_complet;
             }
             else {
