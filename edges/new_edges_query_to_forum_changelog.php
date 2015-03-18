@@ -51,6 +51,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 list($noms_pays,$noms_magazines) = Inducks::get_noms_complets(array_keys($numeros));
 
 $code_ajouts = array();
+$code_images_ajouts = array();
 $contributeurs_non_remercies = array('brunoperel');
 foreach($numeros as $publicationcode=>$numeros_et_contributeurs) {
     list($pays,$magazine)=explode('/',$publicationcode);
@@ -65,8 +66,12 @@ foreach($numeros as $publicationcode=>$numeros_et_contributeurs) {
         $code_ajout.= ' (Merci '.implode(', ',$contributeurs).')';
     }
     $code_ajouts[]=$code_ajout;
+    foreach($numeros_et_contributeurs['numeros'] as $numero) {
+        $code_images_ajouts[] = '[img]http://ducksmanager.net/edges/' . $pays . '/gen/' . $magazine . '.' .$numero.'.png?C[/img]';
+    }
 }
 echo '<pre>[code]'.implode('<br />',$code_ajouts).'[/code]</pre>';
+echo '<pre style="white-space: normal">'.implode('',$code_images_ajouts).'</pre>';
 echo '<br /><br />';
 foreach ($urls_images as $url_image) {
     ?><img src="<?=$url_image?>" /><?php
