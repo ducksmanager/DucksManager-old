@@ -51,6 +51,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 list($noms_pays,$noms_magazines) = Inducks::get_noms_complets(array_keys($numeros));
 
 $code_ajouts = array();
+$contributeurs_non_remercies = array('brunoperel');
 foreach($numeros as $publicationcode=>$numeros_et_contributeurs) {
     list($pays,$magazine)=explode('/',$publicationcode);
     $code_ajout ='[Biblioth&egrave;que][Tranches][Ajout]'
@@ -58,7 +59,7 @@ foreach($numeros as $publicationcode=>$numeros_et_contributeurs) {
         .($pays=='fr' ? '':' ('.$noms_pays[$pays].')')
         .' n&deg; '.implode(', ',$numeros_et_contributeurs['numeros']);
 
-    $contributeurs=$numeros_et_contributeurs['contributeurs'];
+    $contributeurs=array_diff($numeros_et_contributeurs['contributeurs'], $contributeurs_non_remercies);
     if (count($contributeurs) > 0) {
         $contributeurs = array_unique($contributeurs);
         $code_ajout.= ' (Merci '.implode(', ',$contributeurs).')';
