@@ -27,7 +27,7 @@ var temps_dernier_mouseover=0;
 function ouvrir_tranche() {
     if (action_en_cours || extrait_courant>0)
         return;
-    extraits=new Array();
+    extraits=[];
     extrait_courant=-1;
     ouverture_couverture=true;
     if (couverture_ouverte && tranche_bib != tranche_en_cours) {
@@ -428,15 +428,15 @@ function charger_recherche() {
 }
 
 function creer_image() {
-    var pos=new Object();
-    pos['tranches']=new Object();
-    pos['etageres']=new Object();
+    var pos={};
+    pos['tranches']={};
+    pos['etageres']={};
 	$('bibliotheque').select('.tranche,.etagere').each(function(element) {
         var type_element=element.hasClassName('etagere') ? 'etageres' : 'tranches';
         var src=type_element == 'etageres' ? 'etageres' : element.readAttribute('src').replace(new RegExp('=','g'),'_');
-        var position=new Array(element.cumulativeOffset()['left'],element.cumulativeOffset()['top'],element.readAttribute('width'),element.readAttribute('height')).join(',');
+        var position=[element.cumulativeOffset()['left'],element.cumulativeOffset()['top'],element.readAttribute('width'),element.readAttribute('height')].join(',');
         if (!(pos[type_element][src]))
-            pos[type_element][src]=new Array();
+            pos[type_element][src]=[];
         pos[type_element][src].push(position);
     });
     for (var type in pos)
@@ -617,7 +617,7 @@ function ouvrirInfoBulleEffectif(tranche,timestamp) {
         method: 'post',
         parameters:'get_visible=true&debug='+debug+'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
-            var parametres=new Array();
+            var parametres=[];
             parametres['pays']=transport.request.parameters.pays;
             parametres['magazine']=transport.request.parameters.magazine;
             parametres['numero']=transport.request.parameters.numero;
@@ -629,7 +629,7 @@ function ouvrirInfoBulleEffectif(tranche,timestamp) {
 }
 
 function getInfosNumero (texte) {
-    var infos=new Array();
+    var infos=[];
     var pays__magazine_numero=texte.split('/');
     var magazine_numero=pays__magazine_numero[1].split('.');
     infos['pays']=pays__magazine_numero[0];
