@@ -334,6 +334,8 @@ function fermer() {
     });
 }
 
+var element_conteneur_bibliotheque;
+
 function charger_bibliotheque(grossissement, regen) {
     var section=$('bibliotheque');
     largeur_section=section.clientWidth;
@@ -345,15 +347,17 @@ function charger_bibliotheque(grossissement, regen) {
         parameters:'largeur='+largeur_section+'&hauteur='+hauteur_section+'&texture1='+texture1+'&sous_texture1='+sous_texture1
                   +'&texture2='+texture2+'&sous_texture2='+sous_texture2+'&grossissement='+grossissement+'&regen='+regen,
         onSuccess:function(transport) {
-            $('bibliotheque').update(transport.responseText);
-            $('bibliotheque').setStyle({'width':$('largeur_etagere').readAttribute('name')+'px',
+			var element_bibliotheque = $('bibliotheque');
+			element_bibliotheque.update(transport.responseText);
+			element_bibliotheque.setStyle({'width':$('largeur_etagere').readAttribute('name')+'px',
                                         'backgroundImage':'url(\'edges/textures/'+texture1+'/'+sous_texture1+'.jpg\')'});
             $('pourcentage_collection_visible').setStyle({'display':'inline'});
             $('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
-            var premiere_tranche=$('bibliotheque').down(2);
+            var premiere_tranche=element_bibliotheque.down(2);
             hauteur_etage=$('hauteur_etage').readAttribute('name');
             nb_etageres=$$('.etagere').length;
             nb_etageres_terminees=1;
+			element_conteneur_bibliotheque = element_bibliotheque;
             charger_tranche(premiere_tranche);
         }
     });
@@ -366,7 +370,7 @@ function charger_tranche(tranche) {
     var lettre_rand=String.fromCharCode(65+Math.floor(Math.random() * 25));
     var src=tranche.name.replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
     if (src.indexOf('gen')!=-1) {
-        var src_similaires=$$('[src*="'+src+'"]').pluck('src');
+        var src_similaires=element_conteneur_bibliotheque.select('[src*="'+src+'"]').pluck('src');
         if (src_similaires.length >0)
             tranche.src=src_similaires[0];
         else    

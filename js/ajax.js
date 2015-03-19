@@ -223,8 +223,8 @@ function charger_evenements() {
 		   onSuccess:function(transport) {
 			   $('evenements').innerHTML = transport.responseText;
 			   $$('.evenement_tranches_pretes a.has_tooltip').each(function(element) {
-				   var tooltip_content = element.next('.tooltip_content');
-				   charger_tranche(tooltip_content.down('.tranche'));
+				   element_conteneur_bibliotheque = element.next('.tooltip_content');
+				   charger_tranche(element_conteneur_bibliotheque.down('.tranche'));
 			   });
 		   }
 	});
