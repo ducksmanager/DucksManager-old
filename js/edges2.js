@@ -431,7 +431,7 @@ function creer_image() {
     var pos=new Object();
     pos['tranches']=new Object();
     pos['etageres']=new Object();
-    $$('.tranche,.etagere').each(function(element) {
+	$('bibliotheque').select('.tranche,.etagere').each(function(element) {
         var type_element=element.hasClassName('etagere') ? 'etageres' : 'tranches';
         var src=type_element == 'etageres' ? 'etageres' : element.readAttribute('src').replace(new RegExp('=','g'),'_');
         var position=new Array(element.cumulativeOffset()['left'],element.cumulativeOffset()['top'],element.readAttribute('width'),element.readAttribute('height')).join(',');
