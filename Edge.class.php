@@ -330,6 +330,9 @@ elseif (isset($_POST['get_sous_texture'])) {
 		}
 	}
 }
+elseif (isset($_POST['partager_bibliotheque'])) {
+    Affichage::partager_page();
+}
 elseif (isset($_POST['generer_image'])) {
 	error_reporting(E_ALL);
 	$nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.jpg';

@@ -514,6 +514,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             <span id="pourcentage_collection_visible"></span>
                                             <br />
                                             <br />
+                                            <div id="partager_bibliotheque" style="float: left" class="cache">
+                                                <a id="partager_bibliotheque_lien" href="javascript:void(0)">Fier(e) de votre collection ? Montrez votre bibliothèque à vos amis !</a>
+                                            </div>
                                             <div id="recherche_bibliotheque">
                                                 <?=RECHERCHER_BIBLIOTHEQUE?><br />
                                                 <input type="text" style="width:300px" name="" />

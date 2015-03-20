@@ -1,8 +1,7 @@
 #bibliotheque  {
     z-index:50;
-    background-color:transparent;
-    background-repeat:repeat;
-    background-position:left top;
+    background: transparent repeat left top;
+    clear: both;
     padding-left:15px;
     padding-right:5px;
 }
@@ -11,7 +10,7 @@
     position: absolute;
     display: none;
     z-index:700;
-    margin-top: -20px;
+    margin-top: -4px;
     background-color:gray;
 }
 

@@ -11,6 +11,10 @@ a {
 	border-bottom: 1px dotted #ffffff;
 }
 
+a.noborder, a.noborder:HOVER {
+    border-bottom: 0 !important;
+}
+
 .underlined {
 	text-decoration: underline;
 }

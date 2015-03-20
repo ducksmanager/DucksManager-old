@@ -409,7 +409,7 @@ function charger_tranche_suivante(element) {
 function charger_recherche() {
    if ($('recherche_bibliotheque')) {
        if ($('bibliotheque')) {
-           creer_image();
+           afficher_lien_partage();
            $('recherche_bibliotheque').setStyle({'left':($('contenu').cumulativeOffset()['left']
                                                          +parseInt($('bibliotheque').getStyle('width').substring(0,$('bibliotheque').getStyle('width').length-2))
                                                          -330)+'px',
@@ -429,6 +429,32 @@ function charger_recherche() {
 			$$('#aide_recherche_magazine, .toggler_aide_recherche_magazine').invoke('toggleClassName','cache');
 		}
 	);
+}
+
+var a2a_config = {};
+var zone_partager_bibliotheque;
+
+function afficher_lien_partage() {
+	zone_partager_bibliotheque = $('partager_bibliotheque');
+	zone_partager_bibliotheque.removeClassName('cache');
+	$('partager_bibliotheque_lien').observe('click', function() {
+		zone_partager_bibliotheque.addClassName('cache');
+		new Ajax.Request('Edge.class.php', {
+			method: 'post',
+			parameters: 'partager_bibliotheque=true',
+			onSuccess: function (transport) {
+				zone_partager_bibliotheque.update(transport.responseText);
+				zone_partager_bibliotheque.removeClassName('cache');
+
+				var a = document.createElement('script');
+				a.type = 'text/javascript';
+				a.async = true;
+				a.src = '//static.addtoany.com/menu/page.js';
+				var s = document.getElementsByTagName('script')[0];
+				s.parentNode.insertBefore(a, s);
+			}
+		});
+	});
 }
 
 function creer_image() {
