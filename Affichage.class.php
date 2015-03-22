@@ -203,7 +203,7 @@ class Affichage {
 						break;
 						case 'bouquineries':
 							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE_BOUQUINERIE.' '
-								   ?><i><a href="index.php?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
+								   ?><i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
 						<?php 
 						break;
 						case 'ajouts':

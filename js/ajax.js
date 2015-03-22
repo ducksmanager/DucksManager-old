@@ -449,7 +449,7 @@ function afficher_numeros(pays,magazine) {
 }
 
 function afficher_form_open() {
-	var contenu='<form method="post" action="index.php?action=open">'
+	var contenu='<form method="post" action="?action=open">'
 			   +'<table border="0"><tr><td>Nom d\'utilisateur :</td><td><input type="text" name="user" /></td></tr>'
 			   +'<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>'
 			   +'<tr><td align="center" colspan="2"><input type="submit" value="Connexion"/></td></tr></table></form>';

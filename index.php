@@ -401,7 +401,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 if (!isset($_SESSION['user'])) {
                                     ?>
                                     <?=IDENTIFIEZ_VOUS?><br /><br />
-                                    <form method="post" action="index.php?action=open">
+                                    <form method="post" action="?action=open">
                                         <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
                                         <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
                                         <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
@@ -1499,7 +1499,7 @@ function formulaire_inscription() {
     }
     if (!isset($user) || !is_null($erreur)) {
         ?>
-        <form method="post" action="index.php?action=new">
+        <form method="post" action="?action=new">
         <?php
         if (isset($rawData)) {
             ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
@@ -1525,11 +1525,10 @@ function formulaire_inscription() {
 function creer_id_session($user,$pass) {
     $_SESSION['user']=$user;
     $_SESSION['pass']=sha1($pass);
-    echo '<script language="Javascript">
-    <!--
-    document.location.replace("index.php?action=gerer");
-    // -->
-    </script>';
+
+    ?><script type="text/javascript">
+        document.location.replace("?action=gerer");
+    </script><?php
 }
 
 function encart_WhatTheDuck() {
