@@ -37,7 +37,7 @@ class Item {
 	
 	function est_affiche() {
 		return ($this->est_prive=='no'
-		     || ($this->est_prive=='always' && isset($_SESSION['user']) &&!(self::$action=='logout'))
+		     || (($this->est_prive=='always' || $this->est_prive=='always__limited_external_access') && isset($_SESSION['user']) &&!(self::$action=='logout'))
 			 || ($this->est_prive=='never'  &&!(isset($_SESSION['user']) &&!(self::$action=='logout'))))
 			&& (!$this->beta || self::$beta_user);
 	}
@@ -82,7 +82,7 @@ $menus=array(
 	new Menu(COLLECTION, 'no',
 			 array(new Item('new', 'never', NOUVELLE_COLLECTION),
 				   new Item('open', 'never', OUVRIR_COLLECTION),
-				   new Item('bibliotheque', 'always', BIBLIOTHEQUE_COURT),
+				   new Item('bibliotheque', 'always__limited_external_access', BIBLIOTHEQUE_COURT),
 				   new Item('gerer', 'always', GERER_COLLECTION),
 				   new Item('stats', 'always', STATISTIQUES_COLLECTION),
 				   new Item('agrandir', 'always', AGRANDIR_COLLECTION),
