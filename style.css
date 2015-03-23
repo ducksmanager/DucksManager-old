@@ -11,6 +11,10 @@ a {
 	border-bottom: 1px dotted #ffffff;
 }
 
+a.noborder, a.noborder:HOVER {
+    border-bottom: 0 !important;
+}
+
 .underlined {
 	text-decoration: underline;
 }
@@ -240,9 +244,9 @@ a.important:HOVER {
 }
 
 .beta, .nouveau {
-    font-size:smaller;
-    color:blue;
-    vertical-align:super;
+    font-size: smaller;
+    vertical-align: super;
+    font-weight: bold;
 }
 
 .error, .warning, .confirmation {

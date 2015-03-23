@@ -99,19 +99,27 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     new JS('js/bouquineries.js');
                 break;
                 case 'bibliotheque':
-                    $textures=array();
-                    for ($i=1;$i<=2;$i++) {
-                        $requete_textures='SELECT Bibliotheque_Texture'.$i.', Bibliotheque_Sous_Texture'.$i.' FROM users WHERE ID = \''.$id_user.'\'';
-                        $resultat_textures=DM_Core::$d->requete_select($requete_textures);
-                        $textures[]=$resultat_textures[0]['Bibliotheque_Texture'.$i];
-                        $textures[]=$resultat_textures[0]['Bibliotheque_Sous_Texture'.$i];
+                    if (isset($_GET['user'])) {
+                        $user_bibliotheque = $_GET['user'];
+                        $cle_bibliotheque = isset($_GET['key']) ? $_GET['key'] : -1;
+                        $est_partage_bibliotheque = true;
                     }
+                    else {
+                        $user_bibliotheque = -1;
+                        $cle_bibliotheque = -1;
+                        $est_partage_bibliotheque = false;
+                    }
+                    $onglet = isset($_GET['onglet']) && in_array($_GET['onglet'], array('affichage', 'options'))
+                        ? $_GET['onglet']
+                        : 'affichage';
+                    $regen = isset($_GET['regen']) ? 1 : 0;
                     ?>
                     <script type="text/javascript">
-                        var texture1='<?=$textures[0]?>';
-                        var sous_texture1='<?=$textures[1]?>';
-                        var texture2='<?=$textures[2]?>';
-                        var sous_texture2='<?=$textures[3]?>';
+                        var user_bibliotheque = <?=is_null($user_bibliotheque) ? -1 : "'".$user_bibliotheque."'"?>;
+                        var cle_bibliotheque = <?=is_null($cle_bibliotheque) ? -1 : "'".$cle_bibliotheque."'"?>;
+                        var est_partage_bibliotheque = <?=$est_partage_bibliotheque ? 1 : 0?>;
+                        var onglet = '<?=$onglet?>';
+                        var regen = '<?=$regen?>';
                     </script><?php
                 break;
                 case 'stats':if (!isset($_GET['onglet'])) $_GET['onglet']='magazines';
@@ -153,17 +161,17 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         case 'open':
             break;
         case 'bibliotheque':
-            if (!isset($_GET['onglet']) || $_GET['onglet']=='affichage') {
-                if (Util::getBrowser()!=='MSIE<9') {
-                    $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE ID = \''.$id_user.'\'';
-                    $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
-                    $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
-                    $regen=isset($_GET['regen']) ? 1 : 0;
-                    echo 'charger_bibliotheque(\''.$grossissement.'\','.$regen.');';
-                }
-            }
-            elseif (isset($_GET['onglet']) && $_GET['onglet']=='options') {
-                echo 'initTextures();init_ordre_magazines()';
+            switch ($onglet) {
+                case 'affichage':
+                    if (Util::getBrowser() !== 'MSIE<9') {
+                        ?>charger_bibliotheque();<?php
+                    }
+                break;
+                case 'options':
+                    ?>initTextures();
+                    init_ordre_magazines();<?php
+                break;
+
             }
         break;
         case 'gerer':
@@ -401,7 +409,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 if (!isset($_SESSION['user'])) {
                                     ?>
                                     <?=IDENTIFIEZ_VOUS?><br /><br />
-                                    <form method="post" action="index.php?action=open">
+                                    <form method="post" action="?action=open">
                                         <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
                                         <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
                                         <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
@@ -467,81 +475,96 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 break;
                             case 'bibliotheque':
                                 ?>
-                                <h2><?=BIBLIOTHEQUE_COURT?></h2><br /><br />
+                                <div id="conteneur_bibliotheque">
+                                    <h2 id="titre_bibliotheque"></h2><br /><br />
                                 <?php
-                                $onglets=array(
-                                        BIBLIOTHEQUE_COURT=>array('affichage',BIBLIOTHEQUE),
-                                        BIBLIOTHEQUE_OPTIONS_COURT=>array('options',BIBLIOTHEQUE_OPTIONS),
-                                        BIBLIOTHEQUE_PARTICIPER_COURT=>array('participer',BIBLIOTHEQUE_PARTICIPER),
-                                        BIBLIOTHEQUE_CONTRIBUTEURS_COURT=>array('contributeurs',BIBLIOTHEQUE_CONTRIBUTEURS));
-                                if (!isset($_GET['onglet']))
-                                    $onglet='affichage';
-                                else
-                                    $onglet=$_GET['onglet'];
-                                Affichage::onglets($onglet,$onglets,'onglet','?action=bibliotheque');
-                                switch($onglet) {
+                                if (!$est_partage_bibliotheque) {
+                                    $onglets = array(
+                                        BIBLIOTHEQUE_COURT => array('affichage', BIBLIOTHEQUE),
+                                        BIBLIOTHEQUE_OPTIONS_COURT => array('options', BIBLIOTHEQUE_OPTIONS),
+                                        BIBLIOTHEQUE_PARTICIPER_COURT => array('participer', BIBLIOTHEQUE_PARTICIPER),
+                                        BIBLIOTHEQUE_CONTRIBUTEURS_COURT => array('contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS));
+                                    if (!isset($_GET['onglet']))
+                                        $onglet = 'affichage';
+                                    else
+                                        $onglet = $_GET['onglet'];
+                                    Affichage::onglets($onglet, $onglets, 'onglet', '?action=bibliotheque');
+                                }
+                                switch ($onglet) {
                                     case 'affichage':
-                                        if (Util::getBrowser()==='MSIE<9') {
+                                        if (Util::getBrowser() === 'MSIE<9') {
                                             echo IE_INF_A_9_NON_SUPPORTE;
-                                        }
-                                        else {
-                                            $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, false);
-                                            if (count($resultat_tranches_collection_ajoutees) > 0) {
-                                                $publication_codes = array();
-                                                foreach($resultat_tranches_collection_ajoutees as $tranche) {
-                                                    $publication_codes[] = $tranche['publicationcode'];
-                                                }
-                                                $publication_codes = array_unique($publication_codes);
-                                                list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($publication_codes);
-
-                                                ?><div>
-                                                    <?=BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE?><br />
-                                                    <?php
-                                                    foreach($resultat_tranches_collection_ajoutees as $tranche) {
-                                                        list($pays,$magazine)=explode('/', $tranche['publicationcode']);
-                                                        echo Affichage::afficher_texte_numero($pays,$magazines_complets[$tranche['publicationcode']],$tranche['issuenumber'])
-                                                            .Affichage::afficher_temps_passe($tranche['DiffSecondes']).'<br />';
+                                        } else {
+                                            if (!$est_partage_bibliotheque) {
+                                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, false);
+                                                if (count($resultat_tranches_collection_ajoutees) > 0) {
+                                                    $publication_codes = array();
+                                                    foreach ($resultat_tranches_collection_ajoutees as $tranche) {
+                                                        $publication_codes[] = $tranche['publicationcode'];
                                                     }
+                                                    $publication_codes = array_unique($publication_codes);
+                                                    list($pays_complets, $magazines_complets) = Inducks::get_noms_complets($publication_codes);
+
                                                     ?>
-                                                </div><br /><br /><?php
+                                                    <div>
+                                                        <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
+                                                        <?php
+                                                        foreach ($resultat_tranches_collection_ajoutees as $tranche) {
+                                                            list($pays, $magazine) = explode('/', $tranche['publicationcode']);
+                                                            echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
+                                                                . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
+                                                        }
+                                                        ?>
+                                                    </div><br/><br/><?php
+                                                }
                                             }
                                             ?>
-                                            <span id="chargement_bibliotheque_termine"><?=CHARGEMENT?>..</span>.<br />
-                                            <div id="barre_pct_bibliotheque" style="border: 1px solid white; width: 200px;">
-                                                <div id="pct_bibliotheque" style="width: 0%; background-color: red;">&nbsp;</div>
+                                            <span id="chargement_bibliotheque_termine"><?= CHARGEMENT ?>..</span>.
+                                            <br/>
+                                            <div id="barre_pct_bibliotheque"
+                                                 style="border: 1px solid white; width: 200px;">
+                                                <div id="pct_bibliotheque"
+                                                     style="width: 0; background-color: red;">&nbsp;</div>
                                             </div>
                                             <span id="pcent_visible"></span>
                                             <span id="pourcentage_collection_visible"></span>
-                                            <br />
-                                            <br />
-                                            <div id="recherche_bibliotheque">
-                                                <?=RECHERCHER_BIBLIOTHEQUE?><br />
-                                                <input type="text" style="width:300px" name="" />
-                                                <button style="width: 30px;">OK</button>
-                                            </div>
-                                            <br /><br />
-                                            <div id="bibliotheque" style="width:100%;height:100%"></div>
+                                            <br/>
+                                            <br/>
+                                            <?php if (!$est_partage_bibliotheque) { ?>
+                                                <div id="partager_bibliotheque" style="float: left" class="cache">
+                                                    <span class="nouveau"><?=NOUVEAU?></span>
+                                                    <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
+                                                </div>
+                                                <div id="recherche_bibliotheque">
+                                                    <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
+                                                    <input type="text" style="width:300px" name=""/>
+                                                    <button style="width: 30px;">OK</button>
+                                                </div>
                                             <?php
+                                            } ?>
+                                            <br/><br/>
+                                            <div id="bibliotheque" style="width:100%;height:100%"></div>
+                                        <?php
                                         }
-                                    break;
+                                        break;
                                     case 'options':
                                         require_once('Edge.class.php');
                                         if (isset($_POST['texture1'])) {
-                                            for ($i=1;$i<=2;$i++) {
-                                                $requete_update_texture='UPDATE users SET Bibliotheque_Texture'.$i.'=\''.$_POST['texture'.$i].'\' WHERE id='.$id_user;
+                                            for ($i = 1; $i <= 2; $i++) {
+                                                $requete_update_texture = 'UPDATE users SET Bibliotheque_Texture' . $i . '=\'' . $_POST['texture' . $i] . '\' WHERE id=' . $id_user;
                                                 DM_Core::$d->requete($requete_update_texture);
-                                                $requete_update_sous_texture='UPDATE users SET Bibliotheque_Sous_Texture'.$i.'=\''.$_POST['sous_texture'.$i].'\' WHERE id='.$id_user;
+                                                $requete_update_sous_texture = 'UPDATE users SET Bibliotheque_Sous_Texture' . $i . '=\'' . $_POST['sous_texture' . $i] . '\' WHERE id=' . $id_user;
                                                 DM_Core::$d->requete($requete_update_sous_texture);
                                             }
-                                            $requete_suppr_ordres='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
+                                            $requete_suppr_ordres = 'DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user;
                                             DM_Core::$d->requete($requete_suppr_ordres);
-                                            foreach($_POST as $index=>$valeur) {
-                                                if (strpos($index, 'magazine_')!==false) {
-                                                    list($pays,$magazine)=explode('_',  substr($index, strlen('magazine_')));
-                                                    $requete_ajout_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
-                                                                        .'VALUES (\''.$pays.'\',\''.$magazine.'\','.$valeur.','.$id_user.')';
+                                            foreach ($_POST as $index => $valeur) {
+                                                if (strpos($index, 'magazine_') !== false) {
+                                                    list($pays, $magazine) = explode('_', substr($index, strlen('magazine_')));
+                                                    $requete_ajout_ordre = 'INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
+                                                        . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',' . $valeur . ',' . $id_user . ')';
                                                     DM_Core::$d->requete($requete_ajout_ordre);
-                                                    
+
                                                 }
                                             }
                                             /*if (!is_numeric($_POST['grossissement']))
@@ -549,62 +572,72 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             /*$requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
                                             DM_Core::$d->requete($requete_update_grossissement);*/
                                         }
-                                        ?><form method="post" action="?action=bibliotheque&amp;onglet=options">
-                                            <span style="text-decoration:underline"><?=TEXTURE?> : </span><br />
-                                            <select style="width:300px;" id="texture1" name="texture1">
-                                                <option id="chargement_sous_texture"><?=CHARGEMENT?>...</option>
-                                            </select>
-                                            <br /><br />
-                                            <span style="text-decoration:underline"><?=SOUS_TEXTURE?> : </span><br />
-                                            <select style="width:300px;" id="sous_texture1" name="sous_texture1">
-                                                <option id="vide"><?=SELECTIONNER_TEXTURE?></option>
-                                            </select>
-                                            <br /><br /><br />
-                                            <span style="text-decoration:underline"><?=TEXTURE_ETAGERE?> : </span><br />
-                                            <select style="width:300px;" id="texture2" name="texture2">
-                                                <option id="chargement_sous_texture"><?=CHARGEMENT?>...</option>
-                                            </select>
-                                            <br /><br />
-                                            <span style="text-decoration:underline"><?=SOUS_TEXTURE_ETAGERE?> : </span><br />
-                                            <select style="width:300px;" id="sous_texture2" name="sous_texture2">
-                                                <option id="vide"><?=SELECTIONNER_TEXTURE?></option>
-                                            </select>
-                                            <br /><br /><br />
-                                            <span style="text-decoration:underline"><?=ORDRE_MAGAZINES?> : </span><br />
-                                            <?=EXPLICATION_ORDRE_MAGAZINES?><br /><br />
+                                        ?>
+                                        <form method="post" action="?action=bibliotheque&amp;onglet=options">
+                                        <span style="text-decoration:underline"><?= TEXTURE ?> : </span><br/>
+                                        <select style="width:300px;" id="texture1" name="texture1">
+                                            <option id="chargement_sous_texture"><?= CHARGEMENT ?>...</option>
+                                        </select>
+                                        <br/><br/>
+                                        <span style="text-decoration:underline"><?= SOUS_TEXTURE ?> : </span><br/>
+                                        <select style="width:300px;" id="sous_texture1" name="sous_texture1">
+                                            <option id="vide"><?= SELECTIONNER_TEXTURE ?></option>
+                                        </select>
+                                        <br/><br/><br/>
+                                        <span style="text-decoration:underline"><?= TEXTURE_ETAGERE ?>
+                                            : </span><br/>
+                                        <select style="width:300px;" id="texture2" name="texture2">
+                                            <option id="chargement_sous_texture"><?= CHARGEMENT ?>...</option>
+                                        </select>
+                                        <br/><br/>
+                                        <span style="text-decoration:underline"><?= SOUS_TEXTURE_ETAGERE ?>
+                                            : </span><br/>
+                                        <select style="width:300px;" id="sous_texture2" name="sous_texture2">
+                                            <option id="vide"><?= SELECTIONNER_TEXTURE ?></option>
+                                        </select>
+                                        <br/><br/><br/>
+                                        <span style="text-decoration:underline"><?= ORDRE_MAGAZINES ?>
+                                            : </span><br/>
+                                        <?= EXPLICATION_ORDRE_MAGAZINES ?><br/><br/>
+                                        <?php
+                                        DM_Core::$d->maintenance_ordre_magazines($id_user);?>
+                                        <div id="liste_magazines">
                                             <?php
-                                            DM_Core::$d->maintenance_ordre_magazines($id_user);?>
-                                            <div id="liste_magazines">
-                                                <?php
-                                                $requete_ordre_magazines='SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
-                                                $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
-                                                $publication_codes=array();
-                                                foreach($resultat_ordre_magazines as $magazine) {
-													$publication_codes[]=$magazine['Pays'].'/'.$magazine['Magazine'];
-												}
-												list($noms_pays,$noms_magazines)=Inducks::get_noms_complets($publication_codes);
-												foreach($resultat_ordre_magazines as $magazine) {
-                                                    $num_ordre=$magazine['Ordre'];
-                                                    $nom_pays=$magazine['Pays'];
-                                                    $nom_magazine=$magazine['Magazine'];
-                                                    $pays_complet = $noms_pays[$nom_pays];
-                                                    $magazine_complet = $noms_magazines[$nom_pays.'/'.$nom_magazine];
-                                                    ?>
-                                                    <div style="margin-top:10px;height:40px;" class="magazine_deplacable" id="<?=$nom_pays?>_<?=$nom_magazine?>">
-                                                        <div class="handle" style="float:left;text-align:center;border:1px solid white;width:40px">
-                                                            <img alt="<?=$nom_pays?>" src="images/flags/<?=$nom_pays?>.png" />
-                                                            <br /><?=$nom_magazine?>
-                                                        </div>
-                                                        <div style="float:left;margin-left: 5px;margin-top: 7px;">
-                                                            <?=$magazine_complet?> (<?=$pays_complet?>)
-                                                        </div>
-                                                        <input type="hidden" name="magazine_<?=$nom_pays?>_<?=$nom_magazine?>" value="<?=$num_ordre?>" />
-                                                    </div>
-                                                    <?php
-                                                }
+                                            $requete_ordre_magazines = 'SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user . ' ORDER BY Ordre';
+                                            $resultat_ordre_magazines = DM_Core::$d->requete_select($requete_ordre_magazines);
+                                            $publication_codes = array();
+                                            foreach ($resultat_ordre_magazines as $magazine) {
+                                                $publication_codes[] = $magazine['Pays'] . '/' . $magazine['Magazine'];
+                                            }
+                                            list($noms_pays, $noms_magazines) = Inducks::get_noms_complets($publication_codes);
+                                            foreach ($resultat_ordre_magazines as $magazine) {
+                                                $num_ordre = $magazine['Ordre'];
+                                                $nom_pays = $magazine['Pays'];
+                                                $nom_magazine = $magazine['Magazine'];
+                                                $pays_complet = $noms_pays[$nom_pays];
+                                                $magazine_complet = $noms_magazines[$nom_pays . '/' . $nom_magazine];
                                                 ?>
-                                            </div>
-                                            <?php /*
+                                                <div style="margin-top:10px;height:40px;"
+                                                     class="magazine_deplacable"
+                                                     id="<?= $nom_pays ?>_<?= $nom_magazine ?>">
+                                                    <div class="handle"
+                                                         style="float:left;text-align:center;border:1px solid white;width:40px">
+                                                        <img alt="<?= $nom_pays ?>"
+                                                             src="images/flags/<?= $nom_pays ?>.png"/>
+                                                        <br/><?= $nom_magazine ?>
+                                                    </div>
+                                                    <div style="float:left;margin-left: 5px;margin-top: 7px;">
+                                                        <?= $magazine_complet ?> (<?= $pays_complet ?>)
+                                                    </div>
+                                                    <input type="hidden"
+                                                           name="magazine_<?= $nom_pays ?>_<?= $nom_magazine ?>"
+                                                           value="<?= $num_ordre ?>"/>
+                                                </div>
+                                            <?php
+                                            }
+                                            ?>
+                                        </div>
+                                        <?php /*
                                             <span style="text-decoration:underline"><?=TAILLE_TRANCHES?> : </span><br />
                                             <select style="width:300px;" id="grossissement" name="grossissement">
                                             <?php
@@ -627,70 +660,71 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             ?>
                                             </select>
                                             <br /><br />
-                                            <?php */?>
-                                            <br />
-                                            <input type="submit" class="valider" value="<?=VALIDER?>" />
+                                            <?php */
+                                        ?>
+                                        <br/>
+                                        <input type="submit" class="valider" value="<?= VALIDER ?>"/>
                                         </form>
                                         <?php
 
-                                    break;
+                                        break;
 
                                     case 'participer':
                                         require_once('Edge.class.php');
                                         echo INTRO_PARTICIPER_BIBLIOTHEQUE_1;
-                                        ?><br /><br /><?php
-                                        $pourcentage_visible=Edge::getPourcentageVisible();
-                                        if ($pourcentage_visible==100) {
+                                        ?><br/><br/><?php
+                                        $pourcentage_visible = Edge::getPourcentageVisible($id_user);
+                                        if ($pourcentage_visible == 100) {
                                             echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_IMPOSSIBLE;
-                                        }
-                                        else {
-                                            $cryptinstall="captcha/cryptographp.fct.php";
-                                            include $cryptinstall;
+                                        } else {
+                                            include "captcha/cryptographp.fct.php";
                                             if (isset($_POST['code'])) {
                                                 if (chk_crypt($_POST['code'])) {
                                                     ?>
-                                                    <?=MERCI_CONTRIBUTION?><br /><?=EMAIL_ENVOYE;?>
+                                                    <?= MERCI_CONTRIBUTION ?><br/><?= EMAIL_ENVOYE; ?>
                                                     <?php
-                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de '.$_SESSION['user'].' pour la biblioth�que',
-                                                         $_POST['texte_participation'],'From: '.$_SESSION['user'].'<'.$_POST['email'].'>');
-                                                }
-                                                else {
+                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de ' . $_SESSION['user'] . ' pour la biblioth�que',
+                                                        $_POST['texte_participation'], 'From: ' . $_SESSION['user'] . '<' . $_POST['email'] . '>');
+                                                } else {
                                                     ?>
-                                                    <span style="color: red"><?=ERREUR_CAPTCHA?></span><br /><br />
-                                                    <?php
+                                                    <span style="color: red"><?= ERREUR_CAPTCHA ?></span><br/><br/>
+                                                <?php
                                                 }
                                             }
                                             if (!isset($_POST['code']) || !chk_crypt($_POST['code'])) {
                                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1
-                                                    .'<span style="font-weight: bold">'.$pourcentage_visible.'</span>'
-                                                    .INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2;
-                                                ?><br /><br /><?php
+                                                    . '<span style="font-weight: bold">' . $pourcentage_visible . '</span>'
+                                                    . INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2;
+                                                ?><br/><br/><?php
                                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3;
-                                                ?><br /><?php
+                                                ?><br/><?php
                                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4;
                                                 ?>
-                                                <br /><br />
-                                                <form action="?session_id=<?=session_id()?>&amp;action=bibliotheque&amp;onglet=participer" method="post">
+                                                <br/><br/>
+                                                <form
+                                                    action="?session_id=<?= session_id() ?>&amp;action=bibliotheque&amp;onglet=participer"
+                                                    method="post">
                                                     <table>
                                                         <tr>
                                                             <td>
-                                                                <?=VOTRE_ADRESSE_EMAIL?> :
+                                                                <?= VOTRE_ADRESSE_EMAIL ?> :
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="email" />
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <?=SPECIFIER_NUMEROS_BIBLIOTHEQUE?> :
-                                                            </td>
-                                                            <td>
-                                                                <textarea cols="40" rows="10" name="texte_participation"></textarea>
+                                                                <input type="text" name="email"/>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <?=RECOPIER_CODE_SUIVANT?>
+                                                                <?= SPECIFIER_NUMEROS_BIBLIOTHEQUE ?> :
+                                                            </td>
+                                                            <td>
+                                                                <textarea cols="40" rows="10"
+                                                                          name="texte_participation"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <?= RECOPIER_CODE_SUIVANT ?>
                                                             </td>
                                                             <td style="background-color:gray">
                                                                 <?php dsp_crypt(0, 1); ?>
@@ -698,42 +732,46 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <?=ICI?> :
+                                                                <?= ICI ?> :
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="code" />
+                                                                <input type="text" name="code"/>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td></td>
                                                             <td>
-                                                                <input type="submit" class="valider" value="<?=VALIDER?>" />
+                                                                <input type="submit" class="valider"
+                                                                       value="<?= VALIDER ?>"/>
                                                             </td>
                                                         </tr>
                                                     </table>
                                                 </form>
-                                                <?php
+                                            <?php
                                             }
                                         }
                                         break;
-                                        
-                                        case 'contributeurs':
-                                            $requete_contributeurs='SELECT Nom, Texte FROM bibliotheque_contributeurs';
-                                            $contributeurs=DM_Core::$d->requete_select($requete_contributeurs);
-                                            ?>
-                                                <div style="border:1px solid white">
-                                                    <h2 style="text-align:center"><?=INTRO_CONTRIBUTEURS_BIBLIOTHEQUE?></h2>
+
+                                    case 'contributeurs':
+                                        $requete_contributeurs = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
+                                        $contributeurs = DM_Core::$d->requete_select($requete_contributeurs);
+                                        ?>
+                                        <div style="border:1px solid white">
+                                            <h2 style="text-align:center"><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
                                             <?php
-                                            foreach($contributeurs as $contributeur) {
+                                            foreach ($contributeurs as $contributeur) {
                                                 ?>
-                                                    <span style="font-size:18px;line-height:20px;"><?=$contributeur['Nom']?></span> <?=$contributeur['Texte']?><br />
-                                                <?php
+                                                <span
+                                                    style="font-size:18px;line-height:20px;"><?= $contributeur['Nom'] ?></span> <?= $contributeur['Texte'] ?>
+                                                <br/>
+                                            <?php
                                             }
                                             ?>
-                                                </div>
-                                            <?php
+                                        </div>
+                                        <?php
                                         break;
-                                }
+                                    }
+                                ?></div><?php
                             break;
 
                             case 'gerer':
@@ -1496,7 +1534,7 @@ function formulaire_inscription() {
     }
     if (!isset($user) || !is_null($erreur)) {
         ?>
-        <form method="post" action="index.php?action=new">
+        <form method="post" action="?action=new">
         <?php
         if (isset($rawData)) {
             ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
@@ -1522,11 +1560,10 @@ function formulaire_inscription() {
 function creer_id_session($user,$pass) {
     $_SESSION['user']=$user;
     $_SESSION['pass']=sha1($pass);
-    echo '<script language="Javascript">
-    <!--
-    document.location.replace("index.php?action=gerer");
-    // -->
-    </script>';
+
+    ?><script type="text/javascript">
+        document.location.replace("?action=gerer");
+    </script><?php
 }
 
 function encart_WhatTheDuck() {

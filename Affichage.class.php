@@ -203,7 +203,7 @@ class Affichage {
 						break;
 						case 'bouquineries':
 							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE_BOUQUINERIE.' '
-								   ?><i><a href="index.php?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
+								   ?><i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
 						<?php 
 						break;
 						case 'ajouts':
@@ -317,6 +317,21 @@ class Affichage {
 		}
 		return $erreur;
 	}
+
+    static function partager_page() {
+        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+        $cle = Util::get_random_string();
+        $requete_ajout_acces = 'INSERT INTO bibliotheque_acces_externes(ID_Utilisateur, Cle) VALUES ('.$id_user.', \''.$cle.'\')';
+        DM_Core::$d->requete($requete_ajout_acces);
+        ?><div class="a2a_kit a2a_kit_size_32 a2a_default_style"
+               data-a2a-url="http://www.ducksmanager.net/?action=bibliotheque&user=<?=$_SESSION['user']?>&key=<?=$cle?>"
+               data-a2a-title="Ma bibliothèque DucksManager">
+            <a class="noborder a2a_button_email"></a>
+            <a class="noborder a2a_button_facebook"></a>
+            <a class="noborder a2a_button_twitter"></a>
+            <a class="noborder a2a_button_google_plus"></a>
+        </div><?php
+    }
 }
 
 function str_replace_last($search, $replace, $str ) {
