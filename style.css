@@ -244,9 +244,9 @@ a.important:HOVER {
 }
 
 .beta, .nouveau {
-    font-size:smaller;
-    color:blue;
-    vertical-align:super;
+    font-size: smaller;
+    vertical-align: super;
+    font-weight: bold;
 }
 
 .error, .warning, .confirmation {

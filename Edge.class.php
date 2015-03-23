@@ -193,69 +193,63 @@ class Edge {
 		return $sous_image;
 	}
 
-	static function getPourcentageVisible($get_html=false, $user_unique=true) {
+	static function getPourcentageVisible($id_user, $get_html=false) {
 		include_once('Database.class.php');
 		global $numeros_inducks;
 		@session_start();
-        $pourcentages_visible=array();
-		if ($user_unique===true)
-			$ids_users=array(DM_Core::$d->user_to_id($_SESSION['user']));
-		else {
-            $ids_users = array();
-			$requete_users='SELECT ID, username FROM users';
-			$resultat_users=DM_Core::$d->requete_select($requete_users);
-			foreach($resultat_users as $user)
-				$ids_users[$user['username']]=$user['ID'];
-		}
-		foreach($ids_users as $username=>$id_user) {
-			$l=DM_Core::$d->toList($id_user);
-			$texte_final='';
-			$total_numeros=0;
-			$total_numeros_visibles=0;
-			DM_Core::$d->maintenance_ordre_magazines($id_user);
-			$requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
-			$resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
-			$publication_codes=array();
-			foreach($resultat_ordre_magazines as $ordre) {
-				$pays=$ordre['Pays'];
-				$magazine=$ordre['Magazine'];
-				$publication_codes[]=$pays.'/'.$magazine;
-			}
-			$numeros_inducks = Inducks::get_numeros_liste_publications($publication_codes);
-			getDimensionsParDefaut($publication_codes);
-			foreach($resultat_ordre_magazines as $ordre) {
-				$pays=$ordre['Pays'];
-				$magazine=$ordre['Magazine'];
-				$numeros=$l->collection[$pays][$magazine];
-				if ($get_html === true)
-					sort($numeros);
-				$total_numeros+=count($numeros);
-				list($magazine, $numeros_clean_et_references) = self::get_numeros_clean($pays, $magazine, $numeros);
-				foreach($numeros_clean_et_references as $numero) {
-                    if (!array_key_exists('clean', $numero)) {
-                        $numero['clean'] = $numero['reference'];
-                    }
-					$e=new Edge($pays, $magazine, $numero['clean'],$numero['reference']);
-					
-					if ($get_html) {
-						$texte_final.=$e->html;
-					}
-					if ($e->est_visible)
-						$total_numeros_visibles++;
-				}
-			}
-			$pourcentage_visible=$total_numeros==0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
-			if ($user_unique===true) {
-				if ($get_html)
-					return array($texte_final, $pourcentage_visible);
-				else
-					return $pourcentage_visible;
-			}
-			elseif ($total_numeros>0)
-				$pourcentages_visible[' '.$username]=$pourcentage_visible;
-		}
-		return $pourcentages_visible;
+
+        $l=DM_Core::$d->toList($id_user);
+        $texte_final='';
+        $total_numeros=0;
+        $total_numeros_visibles=0;
+        DM_Core::$d->maintenance_ordre_magazines($id_user);
+        $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
+        $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+        $publication_codes=array();
+        foreach($resultat_ordre_magazines as $ordre) {
+            $pays=$ordre['Pays'];
+            $magazine=$ordre['Magazine'];
+            $publication_codes[]=$pays.'/'.$magazine;
+        }
+        $numeros_inducks = Inducks::get_numeros_liste_publications($publication_codes);
+        getDimensionsParDefaut($publication_codes);
+        foreach($resultat_ordre_magazines as $ordre) {
+            $pays=$ordre['Pays'];
+            $magazine=$ordre['Magazine'];
+            $numeros=$l->collection[$pays][$magazine];
+            if ($get_html === true)
+                sort($numeros);
+            $total_numeros+=count($numeros);
+            list($magazine, $numeros_clean_et_references) = self::get_numeros_clean($pays, $magazine, $numeros);
+            foreach($numeros_clean_et_references as $numero) {
+                if (!array_key_exists('clean', $numero)) {
+                    $numero['clean'] = $numero['reference'];
+                }
+                $e=new Edge($pays, $magazine, $numero['clean'],$numero['reference']);
+
+                if ($get_html) {
+                    $texte_final.=$e->html;
+                }
+                if ($e->est_visible)
+                    $total_numeros_visibles++;
+            }
+        }
+        $pourcentage_visible=$total_numeros==0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
+        if ($get_html)
+            return array($texte_final, $pourcentage_visible);
+        else
+            return $pourcentage_visible;
 	}
+
+    static function getParametresBibliotheque($id_user) {
+        $textures = array();
+        for ($i = 1; $i <= 2; $i++) {
+            $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
+            $resultat_textures = DM_Core::$d->requete_select($requete_textures);
+            $textures[] = $resultat_textures[0]['Bibliotheque_Texture' . $i];
+            $textures[] = $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i];
+        }
+    }
 
 	function getChemin() {
 		return 'edges/'.$this->pays.'/elements';
@@ -264,6 +258,7 @@ class Edge {
 }
 DM_Core::$d->requete('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
+    $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
 	include_once ('locales/lang.php');
 	list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=Inducks::get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
 	?>
@@ -272,12 +267,16 @@ if (isset($_POST['get_visible'])) {
 	<?php
 	if (!getEstVisible($_POST['pays'], strtoupper($_POST['magazine']), $_POST['numero'])) {
 		?>
-		<?=TRANCHE_NON_DISPONIBLE1?><br /><?=TRANCHE_NON_DISPONIBLE2?><a class="lien_participer" target="_blank" href="?action=bibliotheque&onglet=participer"><?=ICI?></a><?=TRANCHE_NON_DISPONIBLE3?>
-		<?php
+        <?=TRANCHE_NON_DISPONIBLE1?><br /><?php
+        if (!$est_partage_bibliotheque) {
+            ?><?= TRANCHE_NON_DISPONIBLE2 ?>
+            <a class="lien_participer" target="_blank"
+               href="?action=bibliotheque&onglet=participer"><?= ICI ?></a><?= TRANCHE_NON_DISPONIBLE3 ?>
+        <?php
+        }
 	}
 	?>
-		<div style="position:absolute;width:100%;text-align:center;border-top:1px solid black;bottom:10px"><?=DECOUVRIR_COUVERTURE?></div>
-	<?php
+    <div style="position:absolute;width:100%;text-align:center;border-top:1px solid black;bottom:10px"><?=DECOUVRIR_COUVERTURE?></div><?php
 }
 elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
 	if (isset($_GET['grossissement']))
@@ -287,6 +286,56 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
 	$e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero'],$_GET['numero'],true);
 	imagepng($e->image);
 }
+elseif (isset($_POST['get_bibliotheque'])) {
+    header('Content-type: application/json');
+
+    $user = $_POST['user_bibliotheque'];
+    $cle = $_POST['cle_bibliotheque'];
+    if ($user !== '-1') {
+        $id_user = DM_Core::$d->get_id_user_partage_bibliotheque($user, $cle);
+        $titre = BIBLIOTHEQUE_DE.$user;
+    }
+    else {
+        $id_user = DM_Core::$d->user_to_id($_SESSION['user']);
+        $titre = BIBLIOTHEQUE_COURT;
+    }
+
+    if (is_null($id_user)) {
+        echo json_encode(array('erreur' => 'Lien de partage invalide'));
+    }
+    else {
+        $requete_grossissement = 'SELECT username, Bibliotheque_Grossissement FROM users WHERE ID = \'' . $id_user . '\'';
+        $resultat_grossissement = DM_Core::$d->requete_select($requete_grossissement);
+        $username = $resultat_grossissement[0]['username'];
+        $grossissement = $resultat_grossissement[0]['Bibliotheque_Grossissement'];
+
+        $textures = array();
+        for ($i = 1; $i <= 2; $i++) {
+            $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
+            $resultat_textures = DM_Core::$d->requete_select($requete_textures);
+            $textures[$i - 1] = array(
+                'texture' => $resultat_textures[0]['Bibliotheque_Texture' . $i],
+                'sous_texture' => $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i]
+            );
+        }
+
+        Edge::$grossissement = $grossissement;
+        Etagere::$largeur = $_POST['largeur'];
+        Etagere::$hauteur = $_POST['hauteur'];
+        Etagere::$epaisseur = 20;
+        Etagere::$texture1 = $textures[0]['texture'];
+        Etagere::$sous_texture1 = $textures[0]['sous_texture'];
+        Etagere::$texture2 = $textures[1]['texture'];
+        Etagere::$sous_texture2 = $textures[1]['sous_texture'];
+
+        ob_start();
+        include_once('edgetest.php');
+        $contenu = ob_get_clean();
+
+        echo json_encode(array('titre' => $titre, 'contenu' => $contenu, 'textures' => $textures));
+    }
+}
+
 /*
  * Table bibliotheque_options
 */
@@ -427,103 +476,6 @@ elseif (isset($_POST['generer_images_etageres'])) {
 	</a>
    	<?php
 	
-}
-elseif (isset($_GET['dispo_tranches'])) {
-	$data=Edge::getPourcentageVisible(false, false);
-	asort($data);
-	$usernames=array_keys($data);
-	sort($data);
-	$somme=0;
-	foreach($data as $pct)
-		$somme+=$pct;
-	$moyenne=$somme/count($data);
-	$data_moyenne=array();
-	for($i=0;$i<count($data);$i++)
-		$data_moyenne[]=$moyenne;
-
-	include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
-
-	$chart = new open_flash_chart();
-	$chart->set_title( new title( 'Disponibilite des tranches' ) );
-
-	//
-	// Make our area chart:
-	//
-	$area = new area();
-	// set the circle line width:
-	$area->set_width( 2 );
-	$area->set_default_dot_style( new hollow_dot() );
-	$area->set_colour( '#838A96' );
-	$area->set_fill_colour( '#E01B49' );
-	$area->set_fill_alpha( 0.4 );
-	$area->set_values( $data );
-	$t=new tooltip( "Utilisateur #x_label<br>#val#" );
-
-	// add the area object to the chart:
-	$chart->add_element( $area );
-	
-	$line_dot = new line();
-	$line_dot->set_values($data_moyenne);
-	$line_dot->set_tooltip( $t );
-	$chart->add_element( $line_dot );
-
-	$y_axis = new y_axis();
-	$y_axis->set_range( 0, 100, 10 );
-	$y_axis->labels = null;
-	$y_axis->set_offset( false );
-
-	$chart->add_y_axis( $y_axis );
-
-	$x_labels = new x_axis_labels();
-	$x_labels->set_vertical();
-	$x_labels->set_colour( '#A2ACBA' );
-	$x_labels->set_labels($usernames);
-	
-	$x = new x_axis();
-	$x->set_colour( '#A2ACBA' );
-	$x->set_grid_colour( '#D7E4A3' );
-	$x->set_offset( false );
-	$x->set_labels( $x_labels );
-	
-	$chart->set_x_axis( $x );
-
-	?>
-		<html>
-			<head>
-			<link rel="stylesheet" type="text/css" href="style.css">
-			<!--[if IE]>
-					<style type="text/css" media="all">@import "fix-ie.css";</style>
-			<![endif]-->
-			<script type="text/javascript" src="js/json/json2.js"></script>
-			<script type="text/javascript" src="js/swfobject.js"></script>
-			<script type="text/javascript">
-			swfobject.embedSWF("open-flash-chart.swf", "my_chart", "<?=(25*count($usernames))?>", "380", "9.0.0");
-			</script>
-
-			<script type="text/javascript">
-
-			function open_flash_chart_data()
-			{
-				return JSON.stringify(data);
-			}
-
-			function findSWF(movieName) {
-			  if (navigator.appName.indexOf("Microsoft")!= -1) {
-				return window[movieName];
-			  } else {
-				return document[movieName];
-			  }
-			}
-
-			var data = <?php echo $chart->toPrettyString(); ?>;
-
-			</script>
-			</head>
-			<body>
-				<div id="my_chart"></div>
-			</body>
-		</html>
-		<?php
 }
 
 function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {

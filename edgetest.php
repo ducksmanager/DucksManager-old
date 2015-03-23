@@ -7,8 +7,6 @@ include_once('getDimensions.php');
 
 global $numeros_inducks;
 
-$largeur=$_POST['largeur'];
-$hauteur=$_POST['hauteur'];
 ?>
 <html>
 	<head>
@@ -19,21 +17,13 @@ $hauteur=$_POST['hauteur'];
 		?>
 
 	</head>
-	<body id="body" style="margin:0;padding:0" style="white-space:nowrap;">
+	<body id="body" style="margin:0;padding:0;white-space:nowrap;">
 		<?php
-		Edge::$grossissement=$_POST['grossissement'];
-		Etagere::$largeur=$largeur;
-		Etagere::$hauteur=$hauteur;
-		Etagere::$epaisseur=20;
-		Etagere::$texture1=$_POST['texture1'];
-		Etagere::$sous_texture1=$_POST['sous_texture1'];
-		Etagere::$texture2=$_POST['texture2'];
-		Etagere::$sous_texture2=$_POST['sous_texture2'];
 		list($width, $height, $type, $attr)=getimagesize('edges/textures/'.Etagere::$texture1.'/'.Etagere::$sous_texture1.'.jpg');
 		if ($width<Etagere::$largeur)
 			Etagere::$largeur=$width;
 		echo Edge::getEtagereHTML();
-		list($html, $pourcentage_visible)=Edge::getPourcentageVisible(true);
+		list($html, $pourcentage_visible)=Edge::getPourcentageVisible($id_user, true);
 		echo $html;
 		echo Edge::getEtagereHTML(false);
 		//Util::ecrire_dans_fichier('./edges/_tmp/'.$rand.'.html', $html);

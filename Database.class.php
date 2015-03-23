@@ -70,6 +70,9 @@ class Database {
 			}
 			$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
 			$resultat=DM_Core::$d->requete_select($requete);
+            if (count($resultat) === 0) {
+                return null;
+            }
 			return $resultat[0]['ID'];
 	}
 
@@ -769,6 +772,22 @@ function ajouter_auteur($id,$nom) {
              LIMIT 5';
         }
         return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
+    }
+
+    function get_id_user_partage_bibliotheque($user, $cle) {
+        $id_user=DM_Core::$d->user_to_id($user);
+        if (is_null($id_user)) {
+            return null;
+        }
+
+        $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
+                                          WHERE ID_Utilisateur = '.mysql_real_escape_string($id_user).' AND Cle=\''.mysql_real_escape_string($cle).'\'';
+        if (count(DM_Core::$d->requete_select($requete_verifier_lien_partage)) > 0) {
+            return $id_user;
+        }
+        else {
+            return null;
+        }
     }
 }
 

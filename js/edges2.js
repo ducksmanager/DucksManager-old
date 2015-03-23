@@ -336,31 +336,43 @@ function fermer() {
 
 var element_conteneur_bibliotheque;
 
-function charger_bibliotheque(grossissement, regen) {
-    var section=$('bibliotheque');
-    largeur_section=section.clientWidth;
-    hauteur_section=section.clientHeight;
-    $('pourcentage_collection_visible').setStyle({'display':'none'});
-    l10n_action('remplirSpan','pourcentage_collection_visible');
-    new Ajax.Request('edgetest.php', {
-        method: 'post',
-        parameters:'largeur='+largeur_section+'&hauteur='+hauteur_section+'&texture1='+texture1+'&sous_texture1='+sous_texture1
-                  +'&texture2='+texture2+'&sous_texture2='+sous_texture2+'&grossissement='+grossissement+'&regen='+regen,
-        onSuccess:function(transport) {
-			var element_bibliotheque = $('bibliotheque');
-			element_bibliotheque.update(transport.responseText);
-			element_bibliotheque.setStyle({'width':$('largeur_etagere').readAttribute('name')+'px',
-                                        'backgroundImage':'url(\'edges/textures/'+texture1+'/'+sous_texture1+'.jpg\')'});
-            $('pourcentage_collection_visible').setStyle({'display':'inline'});
-            $('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
-            var premiere_tranche=element_bibliotheque.down(2);
-            hauteur_etage=$('hauteur_etage').readAttribute('name');
-            nb_etageres=$$('.etagere').length;
-            nb_etageres_terminees=1;
-			element_conteneur_bibliotheque = element_bibliotheque;
-            charger_tranche(premiere_tranche);
-        }
-    });
+function charger_bibliotheque() {
+
+	var conteneur=$('conteneur_bibliotheque');
+	var section=$('bibliotheque');
+	largeur_section=section.clientWidth;
+	hauteur_section=section.clientHeight;
+	$('pourcentage_collection_visible').setStyle({'display':'none'});
+	l10n_action('remplirSpan','pourcentage_collection_visible');
+
+	new Ajax.Request('Edge.class.php', {
+		method: 'post',
+		parameters: 'get_bibliotheque=true&largeur='+largeur_section+'&hauteur='+hauteur_section
+				  +'&user_bibliotheque='+user_bibliotheque+'&cle_bibliotheque='+cle_bibliotheque,
+		onSuccess:function(transport) {
+			if (!!transport.responseJSON.erreur) {
+				conteneur.update(transport.responseJSON.erreur);
+			}
+			else {
+				var textures = transport.responseJSON.textures;
+				var element_bibliotheque = $('bibliotheque');
+				element_bibliotheque.update(transport.responseJSON.contenu);
+				element_bibliotheque.setStyle({
+					'width': $('largeur_etagere').readAttribute('name') + 'px',
+					'backgroundImage': 'url(\'edges/textures/' + textures[0].texture + '/' + textures[0].sous_texture + '.jpg\')'
+				});
+				$('titre_bibliotheque').update(transport.responseJSON.titre);
+				$('pourcentage_collection_visible').setStyle({'display': 'inline'});
+				$('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
+				var premiere_tranche = element_bibliotheque.down(2);
+				hauteur_etage = $('hauteur_etage').readAttribute('name');
+				nb_etageres = $$('.etagere').length;
+				nb_etageres_terminees = 1;
+				element_conteneur_bibliotheque = element_bibliotheque;
+				charger_tranche(premiere_tranche);
+			}
+		}
+	});
 }
 
 function charger_tranche(tranche) {
@@ -645,7 +657,8 @@ function ouvrirInfoBulleEffectif(tranche,timestamp) {
     }
     new Ajax.Request('Edge.class.php', {
         method: 'post',
-        parameters:'get_visible=true&debug='+debug+'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
+        parameters:'get_visible=true&est_partage_bibliotheque='+est_partage_bibliotheque+'&debug='+debug
+				 +'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
             var parametres=[];
             parametres['pays']=transport.request.parameters.pays;

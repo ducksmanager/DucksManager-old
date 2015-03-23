@@ -324,7 +324,7 @@ class Affichage {
         $requete_ajout_acces = 'INSERT INTO bibliotheque_acces_externes(ID_Utilisateur, Cle) VALUES ('.$id_user.', \''.$cle.'\')';
         DM_Core::$d->requete($requete_ajout_acces);
         ?><div class="a2a_kit a2a_kit_size_32 a2a_default_style"
-               data-a2a-url="http://www.ducksmanager.net/bibliotheque.php?user=<?=$_SESSION['user']?>&key=<?=$cle?>"
+               data-a2a-url="http://www.ducksmanager.net/?action=bibliotheque&user=<?=$_SESSION['user']?>&key=<?=$cle?>"
                data-a2a-title="Ma bibliothèque DucksManager">
             <a class="noborder a2a_button_email"></a>
             <a class="noborder a2a_button_facebook"></a>
