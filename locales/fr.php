@@ -458,7 +458,7 @@ define('PUB_WHATTHEDUCK_3','Disponible gratuitement sur les t&eacute;l&eacute;ph
 define('QUESTION_EXECUTER_OPS_INDUCKS','Quelles op&eacute;rations souhaitez-vous ex&eacute;cuter ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
 define('QUESTION_SUPPRIMER_MAGAZINE','Souhaitez-vous supprimer ce magazine de votre collection ? Les num&eacute;ros suivants seront &eacute;galement supprim&eacute;s de votre collection dans ce cas :');
-define('RECHERCHE_MAGAZINE_1','Vous ne connaissez pas le nom du magazine ?');
+define('RECHERCHE_MAGAZINE_1','Vous ne trouvez pas le nom du magazine d\'un des num&eacute;ros de votre collection ?');
 define('RECHERCHE_MAGAZINE_2', 'Entrez ci-dessous le titre d\'une de ses histoires. DucksManager vous proposera une liste de magazines contenant cette histoire.');
 define('RECHERCHER_BIBLIOTHEQUE','Rechercher une histoire dans la biblioth&egrave;que :');
 define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');

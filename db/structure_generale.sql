@@ -32,7 +32,7 @@ CREATE TABLE `achats` (
   `Style_marquage` enum('Aucun','*','+','!') DEFAULT NULL,
   `Description` varchar(100) NOT NULL,
   UNIQUE KEY `Acquisition,Date est unique` (`ID_Acquisition`,`Date`)
-) ENGINE=MyISAM AUTO_INCREMENT=1101 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1103 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +254,7 @@ CREATE TABLE `numeros` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   UNIQUE KEY `Pays` (`Pays`,`Magazine`,`Numero`,`ID_Utilisateur`),
   KEY `ID` (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=110842 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=110845 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -396,7 +396,7 @@ CREATE TABLE `users` (
   `DernierAcces` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM AUTO_INCREMENT=1226 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1227 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

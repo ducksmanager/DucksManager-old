@@ -369,8 +369,13 @@ function select_magazine(valeur_magazine) {
 }
 
 function magazine_selected() {
-	var el_select=$('liste_magazines');
-	$('form_magazine').value=el_select.options[el_select.options.selectedIndex].id;
+	var el_select_pays=$('liste_pays');
+	var el_select_magazine=$('liste_magazines');
+	var value_pays = el_select_pays.options[el_select_pays.options.selectedIndex].id;
+	var value_magazine = el_select_magazine.options[el_select_magazine.options.selectedIndex].id;
+	$('form_magazine').value=value_magazine;
+	$('onglet_magazine').value = [value_pays, value_magazine].join('/');
+
 }
 
 function select_numero() {

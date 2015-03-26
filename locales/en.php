@@ -459,7 +459,7 @@ define('PUB_WHATTHEDUCK_3','Available for free on Android Market.');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Do you wish to execute these operations ?');
 define('QUESTION_IMPORTER_INDUCKS','Do you wish to import them?');
 define('QUESTION_SUPPRIMER_MAGAZINE','Would you like this magazine to be removed from your collection ? In this case, the following issues will also be removed from your collection :');
-define('RECHERCHE_MAGAZINE_1','Don\'t find the magazine name of your issue ?');
+define('RECHERCHE_MAGAZINE_1','Don\'t find the magazine name of one of your issues ?');
 define('RECHERCHE_MAGAZINE_2', 'Please type hereunder the title of one of its stories. DucksManager will list the magazines which contain this story.');
 define('RECHERCHER_BIBLIOTHEQUE','Find a story in the bookcase :');
 define('RECHERCHER_BOUQUINERIES','Find second-hand bookshops');

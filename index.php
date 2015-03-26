@@ -178,23 +178,12 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             if (isset($_GET['onglet_magazine'])) {
                 $onglet_magazine=$_GET['onglet_magazine'];
                 if ($onglet_magazine=='new') {
-                    if (isset($_POST['magazine'])) {
-                        $pays=$_POST['pays'];
-                        $magazine=$_POST['magazine'];
-	                    ?>
-	                    montrer_magazines();
-	                    <?php
-                    }
-                    else {
-						?>initPays();<?php
-					}
+                    ?>initPays();<?php
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
-                    ?>montrer_magazines();<?php
-                }
-                if (isset($magazine)) {
-                    ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
+                    ?>montrer_magazines();
+                    afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
                 }
             }
             else {
@@ -957,10 +946,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 											?><br /><br /><?php 
 										}
 
-                                        if (isset($_POST['magazine'])) {
-	                                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_POST['pays'].'/'.$_POST['magazine'],true);
-                                        }
-                                        elseif (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
+                                        if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
                                             list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
                                         }
                                         else {
@@ -991,10 +977,12 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         <table style="border:0">
                             <tr>
                                 <td style="width:400px">
-                                    <form method="post" action="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new">
-                                        <input type="hidden" id="form_pays" name="pays" value="" />
-                                        <input type="hidden" id="form_magazine" name="magazine" value="" />
-                                        <input type="hidden" name="onglet_magazine" value="new" />
+                                    <form method="get" action="?">
+                                        <input type="hidden" name="action" value="gerer" />
+                                        <input type="hidden" name="onglet" value="ajout_suppr" />
+                                        <input type="hidden" id="form_pays" value="" />
+                                        <input type="hidden" id="form_magazine" value="" />
+                                        <input type="hidden" id="onglet_magazine" name="onglet_magazine" value="" />
                                         <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
                                         <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
                                             <option id="chargement_pays"><?=CHARGEMENT?>...
@@ -1034,29 +1022,32 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 												}
 											}
 											if ($nb_numeros == 0) {
-												?>
-												<?=COLLECTION_VIDE_1?><br />
-												<?=COLLECTION_VIDE_2?><br /><br /><?php
+                                                if (!isset($_GET['onglet_magazine'])) {
+                                                    ?><?= COLLECTION_VIDE_1 ?><br/>
+                                                      <?= COLLECTION_VIDE_2 ?><br/><br/><?php
+                                                }
 											}
 											else {
-												?>
-		                                        <?=POSSESSION_MAGAZINES_1?> <?=$nb_numeros?> <?=NUMEROS?>. 
-		                                        <?=POSSESSION_MAGAZINES_2?> <?=$nb_magazines?> <?=POSSESSION_MAGAZINES_3?> <?=$nb_pays?> <?=PAYS?>.
-		                                        <br />
-		                                        <?=POSSESSION_MAGAZINES_4?><br /><br />
-                                                <br />
-                                                <?=RECHERCHE_MAGAZINE_1?>&nbsp;
-                                                <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
-                                                <b class="toggler_aide_recherche_magazine cache">^</b>
-                                                <div id="aide_recherche_magazine" class="cache">
-                                                    <?=RECHERCHE_MAGAZINE_2?>
-                                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
-                                                        <input type="text" style="width:300px" name="" />
-                                                        <button style="width: 30px;">OK</button>
-                                                    </div>
+                                                ?><?= POSSESSION_MAGAZINES_1 ?> <?= $nb_numeros ?> <?= NUMEROS ?>.
+                                                  <?= POSSESSION_MAGAZINES_2 ?> <?= $nb_magazines ?>
+                                                  <?= POSSESSION_MAGAZINES_3 ?> <?= $nb_pays ?> <?= PAYS ?>.
+                                                <br/>
+                                                  <?= POSSESSION_MAGAZINES_4 ?><br/><br/>
+                                                <br/>
+                                            <?php
+                                            }
+                                            ?><?=RECHERCHE_MAGAZINE_1?>&nbsp;
+                                            <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
+                                            <b class="toggler_aide_recherche_magazine cache">^</b>
+                                            <div id="aide_recherche_magazine" class="cache">
+                                                <?=RECHERCHE_MAGAZINE_2?>
+                                                <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
+                                                    <input type="text" style="width:300px" name="" />
+                                                    <button style="width: 30px;">OK</button>
                                                 </div>
-		                                        <?php
-		                                    }
+                                            </div>
+                                            <?php
+
 											Affichage::onglets($onglet_pays,$onglets_pays,'','','onglets_pays');
 											Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr','onglets_magazines');
 											
