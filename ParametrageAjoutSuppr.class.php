@@ -19,7 +19,7 @@ class ParametreAjoutSuppr {
         $classes = array($this->nomParametrage, $this->classeCssParametre);
         return '
             <li '.($this->valeurParametre === self::$nomParametreConserver ? 'class="selected"' : '').'>
-                <a href="javascript:return false;"
+                <a href="javascript:void(0)"
                    name="'.$this->valeurParametre.'"
                    class="'.implode(' ', $classes).'">'.$this->libelleParametre.'
                 </a>
@@ -180,7 +180,7 @@ class EtatsAchats extends ParametrageAjoutSuppr {
         return '<li'.(is_null($date_achat) ? ' class="template"' :'').'>
                 <div title="'.SUPPRIMER_DATE_ACHAT.'" class="supprimer_date_achat"></div>
                 <a class="achat"
-                   href="javascript:return false;"
+                   href="javascript:void(0)"
                    name="'.$idAcquisition.'">
                     '.ACHAT.' "'.$libelle.'"<br />
                     '.$dateAcquisition.'
@@ -192,15 +192,17 @@ class EtatsAchats extends ParametrageAjoutSuppr {
         $str = parent::toStringListe($liste);
         $liste_achats =
             '<ul id="liste_achats">
-                <li class="creer_date_achat"><a href="javascript:return false;" name="achat" class="btn_creer_achat enabled">'.CREER_DATE_ACHAT.'</a></li>
+                <li class="creer_date_achat"><a href="javascript:void(0);" name="achat" class="btn_creer_achat enabled">'.CREER_DATE_ACHAT.'</a></li>
                 <li class="form_nouvel_achat template">
                     <input id="nouvelle_description" type="text" size="30" maxlength="30" value="'.DESCRIPTION.'"><br />
                     <div id="calendarview_input">
                         <label for="nouvelle_date"></label>
                         <input id="nouvelle_date" readonly="readonly" type="text" size="30" maxlength="10" />
                     </div>
-                    <input id="nouvelle_date_ok" type="submit" value="'.OK.'" />&nbsp;
-                    <input id="nouvelle_date_annuler" type="submit" value="'.ANNULER.'" />
+                    <div class="creer_date_achat_controles">
+                        <input id="nouvelle_date_ok" type="submit" value="'.OK.'" />&nbsp;
+                        <input id="nouvelle_date_annuler" type="submit" value="'.ANNULER.'" />
+                    </div>
                 </li>
                 <li class="separator"></li>';
         $liste_achats.=self::toStringAchat(null);

@@ -5,6 +5,7 @@ div.calendarview-calendar {
 
 div.calendarview-calendar.calendarview-popup {
   width: 100%;
+  position: static !important;
 }
 
 div.calendarview-calendar table {

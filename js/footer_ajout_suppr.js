@@ -66,6 +66,10 @@ function init_footer_ajout_suppr() {
 	[btn_creer_achat,nouvelle_date_achat_annuler].invoke('observe','click', function() {
 		liste_achats.down('.form_nouvel_achat').toggleClassName('template');
 		liste_achats.down('.creer_date_achat').toggleClassName('cache');
+		//if (liste_achats.down('.creer_date_achat').hasClassName('cache')) {
+		//	$('nouvelle_date').click();
+		//}
+		rafraichir_liste_achats();
 	});
 
 	nouvelle_date_achat_ok.observe('click', function() {
@@ -81,6 +85,7 @@ function init_footer_ajout_suppr() {
 				else {
 					liste_achats.down('.separator').insert({after: transport.responseText});
 				}
+				rafraichir_liste_achats();
 			}
 		});
 	});
@@ -96,6 +101,7 @@ function init_footer_ajout_suppr() {
 				parameters:'database=true&supprimer_acquisition='+element_achat.readAttribute('name'),
 				onSuccess:function() {
 					element_achat.up('li').remove();
+					rafraichir_liste_achats();
 				}
 			});
 		}
@@ -122,8 +128,9 @@ function init_footer_ajout_suppr() {
 			}
 		});
 		update_numeros(liste,parametrage.Etat,parametrage.ID_Acquisition,parametrage.AV);
-		console.log(parametrage);
 	});
+
+	rafraichir_liste_achats();
 }
 
 function toggle_footer_ajout_suppr(show) {
@@ -143,4 +150,11 @@ function update_numeros(liste,etat,id_acquisition,av) {
 			window.location.replace("?action=gerer&onglet=ajout_suppr&onglet_magazine="+pays+"/"+magazine);
 		}
 	});
+}
+
+function rafraichir_liste_achats() {
+	var nb_achats = liste_achats.select('li .supprimer_date_achat').length;
+	var est_form_nouvel_achat_affiche = !liste_achats.down('.form_nouvel_achat').hasClassName('template');
+
+	liste_achats.toggleClassName('aucune_date', nb_achats === 1 && !est_form_nouvel_achat_affiche);
 }
