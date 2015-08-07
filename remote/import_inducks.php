@@ -21,6 +21,8 @@ switch($action) {
         $sql = preg_replace('#CREATE TABLE induckspriv_[^;]+;#is', '', $sql);
         $sql = preg_replace('#\# SQL for re-creating and filling table induckspriv_[a-z]*#is', '', $sql);
         $sql = preg_replace('#ALTER TABLE ([^)]+) ADD FULLTEXT#i', "ALTER TABLE $1 ENGINE = MYISAM;\n$0", $sql);
+        $sql = preg_replace('#(\# End of file)?\n*$#i',
+                            "\n\nALTER TABLE inducks_entry ADD FULLTEXT INDEX entryTitleFullText(title);\n\n\1", $sql);
         Util::ecrire_dans_fichier($properties['isv_path'] . '/../createtables_clean.sql', $sql, false);
 
     break;

@@ -377,10 +377,12 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		}
 	}
 	else {
-		$requete='SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title '
+		$condition = 'MATCH(inducks_entry.title) AGAINST (\''.implode(',', explode(' ', $nom_histoire)).'\')';
+		$requete='SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title, '
+							     .$condition.' AS score'
 				.'FROM inducks_entry '
 				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE inducks_entry.title LIKE "%'.$nom_histoire.'%" '
+				.'WHERE '.$condition
 				.'ORDER BY title';
 		$resultat_requete=Inducks::requete_select($requete);
 		foreach($resultat_requete as $resultat) {
