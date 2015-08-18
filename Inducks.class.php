@@ -32,7 +32,7 @@ class Inducks {
 				}
 				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
 				if (isset($_GET['brut'])) {
-					echo 'Requête : '.$requete.'<br />'
+					echo 'Requï¿½te : '.$requete.'<br />'
 						.'Retour brut : <pre>'.Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)).'</pre>'
 						.'Stacktrace : <pre>';
 					debug_print_backtrace();
@@ -349,7 +349,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		$code=substr($nom_histoire, strlen('code='));
 		$resultat_requete=Inducks::get_issues_from_storycode($code);
 		if (count($resultat_requete) == 0) {
-			// On rêessaie en testant le doublement de chacun des espaces du code d'histoire
+			// On rï¿½essaie en testant le doublement de chacun des espaces du code d'histoire
 			$i=1;
 			$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
 			while ($code_avec_espaces !== $code) {
@@ -379,11 +379,11 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 	else {
 		$condition = 'MATCH(inducks_entry.title) AGAINST (\''.implode(',', explode(' ', $nom_histoire)).'\')';
 		$requete='SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title, '
-							     .$condition.' AS score'
+							     .$condition.' AS score '
 				.'FROM inducks_entry '
 				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE '.$condition
-				.'ORDER BY title';
+				.'WHERE '.$condition.' '
+				.'ORDER BY score DESC, title';
 		$resultat_requete=Inducks::requete_select($requete);
 		foreach($resultat_requete as $resultat) {
 			$code=$resultat['storycode'];
