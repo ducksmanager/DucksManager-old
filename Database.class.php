@@ -7,9 +7,11 @@ require_once('_priv/Database.priv.class.php');
 if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
     $_SERVER['SERVER_ADDR'] = DatabasePriv::$ip_serveur_virtuel;
 }
-
-include_once ('locales/lang.php');
-require_once('Liste.class.php');
+else {
+	include_once ('locales/lang.php');
+	require_once('Liste.class.php');
+	require_once('DucksManager_Core.class.php');
+}
 require_once('Inducks.class.php');
 
 Database::$etats=array(
@@ -795,8 +797,6 @@ function mysql_current_db() {
 	$r = mysql_query("SELECT DATABASE()") or die(mysql_error());
 	return mysql_result($r,0);
 }
-
-require_once('DucksManager_Core.class.php');
 
 if (isset($_POST['database'])) {
 	@session_start();
