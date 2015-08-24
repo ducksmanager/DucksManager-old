@@ -4,8 +4,6 @@ function flattenpublicationcode($element) {
     return $element['publicationcode'];
 }
 
-include_once('../Util.class.php');
-
 $action = $argv[1];
 $propertiesFile = $argv[2];
 $isvPath=$argv[3];
@@ -15,6 +13,7 @@ $properties = parse_ini_file($propertiesFile);
 switch($action) {
     case 'clean':
         $no_database = true;
+        include_once('../Util.class.php');
         $sql = Util::lire_depuis_fichier($isvPath . '/../createtables.sql');
         $sql = preg_replace('#DROP TABLE IF EXISTS induckspriv[^;]+;#is', '', $sql);
         $sql = preg_replace('#RENAME TABLE induckspriv[^;]+;#is', '', $sql);
