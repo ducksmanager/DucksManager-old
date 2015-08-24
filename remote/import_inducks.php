@@ -8,13 +8,14 @@ include_once('../Util.class.php');
 
 $action = $argv[1];
 $propertiesFile = $argv[2];
+$isvPath=$argv[3];
 
 $properties = parse_ini_file($propertiesFile);
 
 switch($action) {
     case 'clean':
         $no_database = true;
-        $sql = Util::lire_depuis_fichier($properties['isv_path'] . '/../createtables.sql');
+        $sql = Util::lire_depuis_fichier($isvPath . '/../createtables.sql');
         $sql = preg_replace('#DROP TABLE IF EXISTS induckspriv[^;]+;#is', '', $sql);
         $sql = preg_replace('#RENAME TABLE induckspriv[^;]+;#is', '', $sql);
         $sql = preg_replace('#CREATE TABLE IF NOT EXISTS induckspriv[^;]+;#is', '', $sql);
@@ -24,7 +25,7 @@ switch($action) {
         $sql = preg_replace('#ALTER TABLE ([^)]+) ADD FULLTEXT#i', "ALTER TABLE $1 ENGINE = MYISAM;\n$0", $sql);
         $sql = preg_replace('#(\# End of file)\n*$#i',
                             "\nALTER TABLE inducks_entry ADD FULLTEXT INDEX entryTitleFullText(title);\n\n$1\n", $sql);
-        Util::ecrire_dans_fichier($properties['isv_path'] . '/../createtables_clean.sql', $sql, false);
+        Util::ecrire_dans_fichier($isvPath . '/../createtables_clean.sql', $sql, false);
 
     break;
     case 'check_removed_publications':
