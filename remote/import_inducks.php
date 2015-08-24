@@ -7,8 +7,9 @@ function flattenpublicationcode($element) {
 include_once('../Util.class.php');
 
 $action = $argv[1];
+$propertiesFile = $argv[2];
 
-$properties = parse_ini_file('/home/ducksmanager/ducksmanager.properties');
+$properties = parse_ini_file($propertiesFile);
 
 switch($action) {
     case 'clean':
