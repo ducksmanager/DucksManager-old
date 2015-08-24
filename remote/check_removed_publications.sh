@@ -1,9 +1,10 @@
 #!/bin/sh
+sh_dir=`pwd`/remote
 set +x
 . /home/ducksmanager/ducksmanager.properties
 set -x
 
-removed_publications_text=$(php import_inducks.php 'check_removed_publications')
+removed_publications_text=$(php ${sh_dir}/import_inducks.php 'check_removed_publications')
 LEN=$(echo ${#removed_publications_text})
 if [ ${LEN} -gt 0 ]; then
 	set +x
