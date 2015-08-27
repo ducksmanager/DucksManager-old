@@ -464,7 +464,7 @@ define('RECHERCHE_MAGAZINE_2', 'Please type hereunder the title of one of its st
 define('RECHERCHER_BIBLIOTHEQUE','Find a story in the bookcase :');
 define('RECHERCHER_BOUQUINERIES','Find second-hand bookshops');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Search for second-hand bookshops in your city');
-define('RECOPIER_CODE_SUIVANT', 'Please type the following code');
+define('RECOPIER_CODE', 'Please copy the text');
 define('RECUPERATION_LISTE','Retrieving the list...');
 define('RECUPERATION_NUMEROS','Retrieving issues...');
 define('REFERENCES','referenced');

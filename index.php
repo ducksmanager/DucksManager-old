@@ -666,21 +666,18 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         if ($pourcentage_visible == 100) {
                                             echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_IMPOSSIBLE;
                                         } else {
-                                            include "captcha/cryptographp.fct.php";
-                                            if (isset($_POST['code'])) {
-                                                if (chk_crypt($_POST['code'])) {
-                                                    ?>
-                                                    <?= MERCI_CONTRIBUTION ?><br/><?= EMAIL_ENVOYE; ?>
-                                                    <?php
-                                                    mail('admin@ducksmanager.net', 'Proposition d\'aide de ' . $_SESSION['user'] . ' pour la biblioth�que',
-                                                        $_POST['texte_participation'], 'From: ' . $_SESSION['user'] . '<' . $_POST['email'] . '>');
-                                                } else {
-                                                    ?>
-                                                    <span style="color: red"><?= ERREUR_CAPTCHA ?></span><br/><br/>
-                                                <?php
-                                                }
+                                            require_once 'captcha/securimage/securimage.php';
+
+                                            $image = new Securimage();
+                                            $captcha_correcte = $image->check($_POST['captcha_code']) === true;
+                                            if ($captcha_correcte) {
+                                                ?><?= MERCI_CONTRIBUTION ?><br/><?= EMAIL_ENVOYE; ?><?php
+                                                mail('admin@ducksmanager.net', 'Proposition d\'aide de ' . $_SESSION['user'] . ' pour la bibliothèque',
+                                                    $_POST['texte_participation'], 'From: ' . $_SESSION['user'] . '<' . $_POST['email'] . '>');
+                                            } else {
+                                                ?><span style="color: red"><?= ERREUR_CAPTCHA ?></span><br/><br/><?php
                                             }
-                                            if (!isset($_POST['code']) || !chk_crypt($_POST['code'])) {
+                                            if (!isset($_POST['code']) || !$captcha_correcte) {
                                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1
                                                     . '<span style="font-weight: bold">' . $pourcentage_visible . '</span>'
                                                     . INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2;
@@ -713,18 +710,13 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <?= RECOPIER_CODE_SUIVANT ?>
-                                                            </td>
-                                                            <td style="background-color:gray">
-                                                                <?php dsp_crypt(0, 1); ?>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <?= ICI ?> :
+                                                                <?= RECOPIER_CODE ?> :
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="code"/>
+                                                                <?php
+                                                                require_once 'captcha/securimage/securimage.php';
+                                                                echo Securimage::getCaptchaHtml(array('input_text' => ''));
+                                                                ?>
                                                             </td>
                                                         </tr>
                                                         <tr>

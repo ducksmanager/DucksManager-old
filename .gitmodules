@@ -4,3 +4,6 @@
 [submodule "OpenFlashChart"]
 	path = OpenFlashChart
 	url = https://github.com/ducksmanager/OpenFlashChart.git
+[submodule "captcha/securimage"]
+	path = captcha/securimage
+	url = https://github.com/dapphp/securimage

@@ -6,6 +6,10 @@ html, body {
 	line-height:15px;
 }
 
+object {
+	display: none;
+}
+
 a {
 	color:#ffffff;
 	border-bottom: 1px dotted #ffffff;
