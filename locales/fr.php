@@ -463,7 +463,7 @@ define('RECHERCHE_MAGAZINE_2', 'Entrez ci-dessous le titre d\'une de ses histoir
 define('RECHERCHER_BIBLIOTHEQUE','Rechercher une histoire dans la biblioth&egrave;que :');
 define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');
 define('RECHERCHER_BOUQUINERIES_TEXTE','Rechercher des bouquineries pr&egrave;s de chez vous');
-define('RECOPIER_CODE_SUIVANT', 'Recopiez le code suivant');
+define('RECOPIER_CODE', 'Recopiez le texte');
 define('RECUPERATION_LISTE','R&eacute;cup&eacute;ration liste...');
 define('RECUPERATION_NUMEROS','R&eacute;cup&eacute;ration...');
 define('REFERENCES','r�f�renc�s');
