@@ -5,13 +5,14 @@ function flattenpublicationcode($element) {
 }
 
 $action = $argv[1];
-$propertiesFile = $argv[2];
-$isvPath=$argv[3];
-
-$properties = parse_ini_file($propertiesFile);
 
 switch($action) {
     case 'clean':
+        $propertiesFile = $argv[2];
+        $properties = parse_ini_file($propertiesFile);
+        
+        $isvPath=$argv[3];
+        
         $no_database = true;
         include_once('../Util.class.php');
         $sql = Util::lire_depuis_fichier($isvPath . '/../createtables.sql');
