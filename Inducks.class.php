@@ -181,7 +181,7 @@ class Inducks {
 			$liste_pays=array();
 			foreach($publication_codes_chunk as $i=>$publication_code) {
 				list($pays,$magazine)=explode('/',$publication_code);
-				$liste_pays[]="'".$pays."'";
+				$liste_pays=array_merge($liste_pays, "'".$pays."'");
 				$publication_codes_chunk[$i]="'".$publication_code."'";
 			}
 			$requete_noms_pays='SELECT countrycode, countryname FROM inducks_countryname '
