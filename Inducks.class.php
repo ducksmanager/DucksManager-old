@@ -13,41 +13,54 @@ class Inducks {
 		static function connexion_ok() {
 			$requete='SELECT COUNT(*) As cpt FROM inducks_country';
 			$resultat=Inducks::requete_select($requete);
-			return is_array($resultat) 
-				&& is_array($resultat[0])
-				&& intval($resultat[0][0]) > 0 ;
+			return is_array($resultat);
 		}
 		
-		static function requete_select($requete,$db='coa',$serveur='serveur_virtuel') {
-			if ($serveur==='serveur_virtuel' && Inducks::$use_local_db) {
+		static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
+			if ($nomServeur==='serveur_virtuel' && Inducks::$use_local_db) {
 				mysql_select_db('coa');
 				$resultat = DM_Core::$d->requete_select($requete);
-				mysql_select_db(DatabasePriv::$nom_db_DM);
+				mysql_select_db(ServeurDb::$nom_db_DM);
 				return $resultat;
 			}
 			else {
-				$ip_serveur=$serveur==='serveur_virtuel' ? Database::get_remote_url('') : 'http://www.ducksmanager.net';
-				if (isset($_GET['dbg'])) {
-					echo $ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password).'<br /><br />';
+				if ($nomServeur === 'serveur_virtuel') {
+					$coaServers = ServeurCoa::$coa_servers;
+				} else {
+					$coaServers = array(ServeurCoa::$ducksmanager_server);
 				}
-				$output=Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password));
-				if (isset($_GET['brut'])) {
-					echo 'Requ�te : '.$requete.'<br />'
-						.'Retour brut : <pre>'.Util::get_page($ip_serveur.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1(DatabasePriv::getProfil($serveur)->password)).'</pre>'
-						.'Stacktrace : <pre>';
-					debug_print_backtrace();
-					echo '</pre>';
-				}
-				if ($output == '') // Cas des requetes hors SELECT
-					return array();
-				list($champs,$resultats)=unserialize($output);
-				foreach($champs as $i_champ=>$nom_champ) {
-					foreach($resultats as $i=>$resultat) {
-						$resultats[$i][$nom_champ]=$resultat[$i_champ];
+
+				foreach($coaServers as $coaServer) {
+					$url = $coaServer->getUrl().'/'.$coaServer->web_root;
+					$fullUrl = $url.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1($coaServer->db_password);
+					if (isset($_GET['dbg'])) {
+						echo $fullUrl.'<br /><br />';
+					}
+					$output=Util::get_page($fullUrl);
+					if (isset($_GET['brut'])) {
+						echo 'Requete : '.$requete.'<br />'
+							.'Retour brut : <pre>'.Util::get_page($fullUrl).'</pre>'
+							.'Stacktrace : <pre>';
+						debug_print_backtrace();
+						echo '</pre>';
+					}
+					if ($output === '') // Cas des requetes hors SELECT
+						return array();
+					elseif (!is_array($output)) {
+						return null;
+					}
+					else {
+						list($champs,$resultats)=unserialize($output);
+						foreach($champs as $i_champ=>$nom_champ) {
+							foreach($resultats as $i=>$resultat) {
+								$resultats[$i][$nom_champ]=$resultat[$i_champ];
+							}
+						}
+						return $resultats;
 					}
 				}
+				return array();
 			}
-			return $resultats;
 		}
 
 	static function get_auteur($nom_auteur_abrege) {
@@ -97,7 +110,7 @@ class Inducks {
 		$magazine_depart=$magazine;
 		$magazine=Inducks::get_vrai_magazine($pays,$magazine);
 		$fonction_nettoyage=$sans_espace ? 'nettoyer_numero_sans_espace' : 'nettoyer_numero';
-		$nom_db_non_coa = DatabasePriv::$nom_db_DM;
+		$nom_db_non_coa = ServeurDb::$nom_db_DM;
 		$numeros=array();
 		switch($mode) {
 			case "urls":
@@ -277,8 +290,8 @@ class Inducks {
 	}
 }
 
-require_once('_priv/Database.priv.class.php');
-Inducks::$use_local_db = $_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel;
+require_once('ServeurDb.class.php');
+Inducks::$use_local_db = $_SERVER['SERVER_ADDR'] === ServeurDb::getIpServeurVirtuel();
 
 if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();

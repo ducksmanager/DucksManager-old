@@ -404,10 +404,10 @@ elseif (isset($_POST['generer_image'])) {
 		.'</xml>';*/
 	$contenu=implode("\n",array($texture1.'/'.$sous_texture1,$texture2.'/'.$sous_texture2,$largeur,str_replace('\"','"',$_POST['pos'])));
 	Util::ecrire_dans_fichier('edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.json', $contenu, false);
-	include_once('_priv/Database.priv.class.php');
+	include_once('ServeurDb.class.php');
 	?>
 	<a style="float:left;border-bottom:1px dashed white" target="_blank" href="javascript:void(0)"
-	   onclick="window.open('<?=Database::get_remote_url('Merge.class.php')?>?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>','Download')">
+	   onclick="window.open('<?= ServeurDb::getRemoteUrl('Merge.class.php') ?>?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>','Download')">
 		<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
 	</a><?php
 }
@@ -471,7 +471,7 @@ elseif (isset($_POST['generer_images_etageres'])) {
 		imagedestroy($im);
 	}
 	
-	?><a style="float:left;border-bottom:1px dashed white" target="_blank" href="<?=Database::get_remote_url('Merge.class.php')?>?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>&nb=<?=count($pos->etageres->etageres)?>&largeur=<?=$largeur?>">
+	?><a style="float:left;border-bottom:1px dashed white" target="_blank" href="<?= ServeurDb::getRemoteUrl('Merge.class.php') ?>?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>&nb=<?=count($pos->etageres->etageres)?>&largeur=<?=$largeur?>">
 		<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
 	</a>
    	<?php

@@ -1,6 +1,6 @@
 <?php 
-include_once('_priv/Database.priv.class.php');
+include_once('ServeurDb.class.php');
 
-echo DatabasePriv::$url_serveur_virtuel.'/DucksManager/remote';
+echo ServeurDb::getUrlServeurVirtuel().'/DucksManager/remote';
 
 ?>

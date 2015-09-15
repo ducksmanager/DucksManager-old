@@ -40,7 +40,7 @@ switch($action) {
             $issues_cpt[$resultat['publicationcode']] = $resultat['cpt'];
         }
 
-        DatabasePriv::connect('coa');
+        ServeurDb::connect('coa');
         $requete = 'SELECT publicationcode FROM inducks_publication WHERE publicationcode IN (\''.implode('\',\'', $publication_codes).'\') ';
         $resultats = DM_Core::$d->requete_select($requete);
 

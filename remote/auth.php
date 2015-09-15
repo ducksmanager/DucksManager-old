@@ -1,13 +1,13 @@
 <?php
 
-include_once('../_priv/Database.priv.class.php');
-DatabasePriv::connect($database);
+include_once('../ServeurDb.class.php');
+ServeurDb::connect($database);
 if (isset($_GET['debug']))
-	echo 'Serveur : '.DatabasePriv::getProfilCourant()->server
-	.', User : '.DatabasePriv::getProfilCourant()->user
+	echo 'Serveur : '.ServeurDb::getProfilCourant()->server
+	.', User : '.ServeurDb::getProfilCourant()->user
 	.', BD : '.$database."\n";
 
-if (!isset($_GET['mdp']) || !DatabasePriv::verifPassword($_GET['mdp'])) {
+if (!isset($_GET['mdp']) || !ServeurDb::verifPassword($_GET['mdp'])) {
 	echo 'Erreur d\'authentification';
 	exit();
 }

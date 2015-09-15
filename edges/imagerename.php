@@ -31,7 +31,7 @@ if (isset($_GET['nouveau_nom']) && !empty($_GET['nouveau_nom'])) {
 		echo '</textarea>';
 		
 		if (isLocalhost()) {
-			$url_complete_serveur_virtuel = DatabasePriv::$url_serveur_virtuel
+			$url_complete_serveur_virtuel = ServeurDb::getUrlServeurVirtuel()
 										   .substr($_SERVER["REQUEST_URI"],strpos($_SERVER["REQUEST_URI"],'/',2));
 			?><br /><iframe style="width:800px; height: 200px" src="<?=$url_complete_serveur_virtuel?>"></iframe><?php
 		}		

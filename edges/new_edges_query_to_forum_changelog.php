@@ -4,7 +4,7 @@ include_once('../Database.class.php');
 include_once('../authentification.php');
 
 $requete_tranches_pretes_pour_publication = 'SELECT * FROM tranches_en_cours_modeles WHERE PretePourPublication=1';
-$tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, DatabasePriv::$nom_db_DM, 'serveur_virtuel');
+$tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, ServeurDb::$nom_db_DM, 'serveur_virtuel');
 
 $urls_images=array();
 $numeros=array();
@@ -25,7 +25,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
     $chemin = $pays .'/gen/'. $magazine .'.'. $numero .'.png';
 
-    $url = DatabasePriv::$url_serveur_virtuel.'/DucksManager/edges/'.$chemin;
+    $url = ServeurDb::getUrlServeurVirtuel().'/DucksManager/edges/'.$chemin;
 
     if (isset($_GET['publier'])) {
         $requete='INSERT INTO tranches_pretes ('.implode(',',array_keys($valeurs)).') VALUES (\''.implode($valeurs, '\', \'').'\')';
@@ -33,7 +33,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
         copy($url, $chemin);
 
         $requete_tranche_publiee = 'UPDATE tranches_en_cours_modeles SET PretePourPublication=0 WHERE ID='.$id;
-        $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranche_publiee, DatabasePriv::$nom_db_DM, 'serveur_virtuel');
+        $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranche_publiee, ServeurDb::$nom_db_DM, 'serveur_virtuel');
 
     }
     $urls_images[]=$url;
