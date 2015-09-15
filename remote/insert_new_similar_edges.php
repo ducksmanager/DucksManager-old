@@ -1,7 +1,7 @@
 <?php
 include_once('../Inducks.class.php');
 Inducks::$use_local_db=false;
-DatabasePriv::connect('coa');
+ServeurDb::connect('coa');
 
 mysql_query('SET NAMES UTF8');
 

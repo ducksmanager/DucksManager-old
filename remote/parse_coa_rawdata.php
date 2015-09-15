@@ -2,15 +2,15 @@
 ob_start('ob_gzhandler');
 $database='coa';
 
-include_once('../_priv/Database.priv.class.php');
+include_once('../ServeurDb.class.php');
 include_once('../Util.class.php');
-DatabasePriv::connect($database);
+ServeurDb::connect($database);
 if (isset($_GET['dbg']))
-	echo 'Serveur : '.DatabasePriv::getProfilCourant()->server
-	.', User : '.DatabasePriv::getProfilCourant()->user
+	echo 'Serveur : '.ServeurDb::getProfilCourant()->server
+	.', User : '.ServeurDb::getProfilCourant()->user
 	.', BD : '.$database."\n";
 
-if (!isset($_GET['mdp']) || !DatabasePriv::verifPassword($_GET['mdp'])) {
+if (!isset($_GET['mdp']) || !ServeurDb::verifPassword($_GET['mdp'])) {
 	echo 'Erreur d\'authentification';
 	exit();
 }

@@ -65,11 +65,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <link rel="stylesheet" type="text/css" href="css/opentip.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
-        <?php include_once('_priv/Database.priv.class.php');
+        <?php include_once('ServeurDb.class.php');
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
-            var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=DatabasePriv::$ip_serveur_virtuel?>/piwik/");
+            var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=ServeurDb::getPiwikServer()->ip?>/piwik/");
             document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
             </script>
             <script type="text/javascript">

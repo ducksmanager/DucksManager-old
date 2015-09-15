@@ -14,7 +14,7 @@ function getDimensionsParDefaut($publication_codes) {
 		$requete_dimensions='SELECT Pays,Magazine, Numero_debut, Numero_fin, Option_nom, Option_valeur FROM edgecreator_modeles_vue '
 						   .'WHERE CONCAT(Pays,\'/\',Magazine) IN ('.implode(',', $publication_codes).') '
 						   .'  AND Nom_fonction=\'Dimensions\' AND username=\'brunoperel\'';
-		$resultat_dimensions=Inducks::requete_select($requete_dimensions,'db301759616');
+		$resultat_dimensions=Inducks::requete_select($requete_dimensions,ServeurDb::$nom_db_DM);
 		foreach($resultat_dimensions as $resultat) {
 			$pays=$resultat['Pays'];
 			$magazine=$resultat['Magazine'];

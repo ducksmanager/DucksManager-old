@@ -4,12 +4,6 @@ error_reporting(E_ALL);
 include_once('../Database.class.php');
 include_once('../authentification.php');
 
-
-$token = DatabasePriv::$token_serveur_virtuel;
-
-$server_reboot_status = call_online_api($token, 'POST', '/server/reboot/45508', null, array('reason' => 'Server unresponsive'));
-echo $server_reboot_status;
-
 function call_online_api($token, $http_method, $endpoint, $get = array(), $post = array())
 {
     if (!empty($get)) {
@@ -28,3 +22,13 @@ function call_online_api($token, $http_method, $endpoint, $get = array(), $post 
 
     return curl_exec($call);
 }
+
+$coaMachine = ServeurCoa::getCoaServer('dedibox');
+
+echo call_online_api(
+    $coaMachine->restart_token,
+    'POST',
+    '/server/reboot/'.$coaMachine->machine_id,
+    null,
+    array('reason' => 'Server unresponsive')
+);

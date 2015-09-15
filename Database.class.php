@@ -3,9 +3,9 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 
-require_once('_priv/Database.priv.class.php');
+require_once('ServeurDb.class.php');
 if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
-    $_SERVER['SERVER_ADDR'] = DatabasePriv::$ip_serveur_virtuel;
+    $_SERVER['SERVER_ADDR'] = ServeurDb::getIpServeurVirtuel();
 }
 else {
 	include_once ('locales/lang.php');
@@ -29,7 +29,7 @@ class Database {
 
 
 	function __construct() {
-			return DatabasePriv::connect();
+			return ServeurDb::connect();
 	}
 
 	function connect($user,$password) {
@@ -38,8 +38,8 @@ class Database {
 	}
 
 	function requete_select($requete) {
-		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel && mysql_current_db() !== 'coa') {
-			return Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+		if ($_SERVER['SERVER_ADDR'] === ServeurDb::getIpServeurVirtuel() && mysql_current_db() !== 'coa') {
+			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		else {
 			$requete_resultat=mysql_query($requete);
@@ -54,16 +54,12 @@ class Database {
 
 	function requete($requete) {
 		require_once('Inducks.class.php');
-		if ($_SERVER['SERVER_ADDR'] === DatabasePriv::$ip_serveur_virtuel) {
-			return Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+		if ($_SERVER['SERVER_ADDR'] === ServeurDb::getIpServeurVirtuel()) {
+			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		else {
 			return mysql_query($requete);
 		}
-	}
-	
-	static function get_remote_url($page) {
-		return DatabasePriv::$url_serveur_virtuel.'/'.DatabasePriv::$root_serveur_virtuel.'/'.$page;
 	}
 	
 	function user_to_id($user) {
@@ -835,8 +831,10 @@ if (isset($_POST['database'])) {
 		}
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
-	else if (isset($_POST['evenements_recents'])) {	
-		Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());
+	else if (isset($_POST['evenements_recents'])) {
+		if (Inducks::connexion_ok()) {
+			Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());
+		}
 	}
 	else if (isset($_POST['affichage'])) {
 		//print_r($_SESSION);
