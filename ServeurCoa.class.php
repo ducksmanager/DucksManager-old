@@ -3,7 +3,7 @@ include_once 'Util.class.php';
 
 class ServeurCoa {
     /** @var $coa_servers ServeurCoa[] */
-    static $coa_servers;
+    static $coa_servers = array();
 
     /** @var $ducksmanager_server ServeurCoa */
     static $ducksmanager_server;

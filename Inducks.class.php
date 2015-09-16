@@ -24,6 +24,10 @@ class Inducks {
 				return $resultat;
 			}
 			else {
+				if (count(ServeurCoa::$coa_servers) === 0) {
+					ServeurCoa::initCoaServers();
+				}
+
 				if ($nomServeur === 'serveur_virtuel') {
 					$coaServers = ServeurCoa::$coa_servers;
 				} else {
