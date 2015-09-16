@@ -30,7 +30,7 @@ class Inducks {
 					$coaServers = array(ServeurCoa::$ducksmanager_server);
 				}
 
-				foreach($coaServers as $coaServer) {
+				foreach($coaServers as $coaServerName=>$coaServer) {
 					$url = $coaServer->getUrl().'/'.$coaServer->web_root;
 					$fullUrl = $url.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1($coaServer->db_password);
 					if (isset($_GET['dbg'])) {
@@ -44,19 +44,23 @@ class Inducks {
 						debug_print_backtrace();
 						echo '</pre>';
 					}
-					if ($output === '') // Cas des requetes hors SELECT
+					if ($output === '') { // Cas des requetes hors SELECT
 						return array();
-					elseif (!is_array($output)) {
-						return null;
 					}
 					else {
-						list($champs,$resultats)=unserialize($output);
-						foreach($champs as $i_champ=>$nom_champ) {
-							foreach($resultats as $i=>$resultat) {
-								$resultats[$i][$nom_champ]=$resultat[$i_champ];
+						$unserialized = @unserialize($output);
+						if (is_array($unserialized)) {
+							list($champs,$resultats) = $unserialized;
+							foreach($champs as $i_champ=>$nom_champ) {
+								foreach($resultats as $i=>$resultat) {
+									$resultats[$i][$nom_champ]=$resultat[$i_champ];
+								}
 							}
+							return $resultats;
 						}
-						return $resultats;
+						else {
+							unset(ServeurCoa::$coa_servers[$coaServerName]);
+						}
 					}
 				}
 				return array();
