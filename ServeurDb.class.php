@@ -6,7 +6,7 @@ class ServeurDb {
 	static $db_servers_file='ducksmanager_db.ini';
 
 	/** @var $db_servers ProfilDB[] */
-	static $db_servers;
+	static $db_servers = array();
 
 	/** @var $db_servers ProfilDB */
 	static $current_db_server;
@@ -27,8 +27,11 @@ class ServeurDb {
 			self::$db_servers[$name] = Util::cast(ProfilDB::class, json_decode(json_encode($configured_db_server)));
 		}
 	}
-	
+
 	static function connect($db=null) {
+		if (count(self::$db_servers) === 0) {
+			ServeurDb::initDBServers();
+		}
 		if (!isLocalHost()) {
 			if (isServeurVirtuel()) {
 				$current_db_server='serveur_virtuel';
@@ -43,7 +46,7 @@ class ServeurDb {
 		self::$current_db_server=$current_db_server;
 		return self::$db_servers[$current_db_server]->connexion($db);
 	}
-	
+
 	static function getProfil($nom) {
 		return self::$db_servers[$nom];
 	}
@@ -55,11 +58,11 @@ class ServeurDb {
 	static function getUrlServeurVirtuel() {
 		return 'http://'.self::getIpServeurVirtuel();
 	}
-	
+
 	static function getProfilCourant() {
 		return self::getProfil(self::$current_db_server);
 	}
-	
+
 	static function verifPassword($password) {
 		return sha1(self::getProfilCourant()->password) == $password;
 	}
@@ -83,9 +86,9 @@ class ProfilDB {
 	var $server;
 	var $user;
 	var $password;
-	
+
 	function ProfilDB() { }
-	
+
 	function connexion($db) {
 		if (!$this->server) return false;
 		if (!$idbase = @mysql_pconnect($this->server, $this->user, $this->password))
