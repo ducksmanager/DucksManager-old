@@ -4,33 +4,31 @@ if (!isset($no_database))
 
 class Util {
 	static $nom_fic;
-	static function get_page($url,$force_curl=false) {
-		if ($force_curl && extension_loaded('curl')) {
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($ch, CURLOPT_NOBODY, FALSE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_setopt($ch, CURLOPT_ENCODING, "gzip");
-			$page = curl_exec($ch);
-			curl_close($ch);
-			return $page;
+	static function get_page($url, $timeout = 0) {
+		if ($timeout > 0) {
+			$context = stream_context_create( array(
+				'http'=>array(
+					'timeout' => $timeout
+				)
+			));
 		}
 		else {
-			$handle = @fopen($url, "r");
-			if (isset($_GET['dbg'])) {
-				echo $url;
-			}
-			if ($handle) {
-				$buffer="";
-				while (!feof($handle)) {
-					$buffer.= fgets($handle, 4096);
-				}
-				fclose($handle);
-				return $buffer;
-			}
-			else return ERREUR_CONNEXION_INDUCKS;
+			$context = null;
 		}
+
+		$handle = fopen($url, "r", null, $context);
+		if (isset($_GET['dbg'])) {
+			echo $url;
+		}
+		if ($handle) {
+			$buffer="";
+			while (!feof($handle)) {
+				$buffer.= fgets($handle, 4096);
+			}
+			fclose($handle);
+			return $buffer;
+		}
+		else return ERREUR_CONNEXION_INDUCKS;
 	}
 
 	static function start_log($nom) {

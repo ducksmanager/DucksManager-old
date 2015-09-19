@@ -40,10 +40,10 @@ class Inducks {
 					if (isset($_GET['dbg'])) {
 						echo $fullUrl.'<br /><br />';
 					}
-					$output=Util::get_page($fullUrl);
+					$output=Util::get_page($fullUrl, 1.0);
 					if (isset($_GET['brut'])) {
 						echo 'Requete : '.$requete.'<br />'
-							.'Retour brut : <pre>'.Util::get_page($fullUrl).'</pre>'
+							.'Retour brut : <pre>'.$output.'</pre>'
 							.'Stacktrace : <pre>';
 						debug_print_backtrace();
 						echo '</pre>';
@@ -162,7 +162,7 @@ class Inducks {
 	
 	static function get_covers($pays,$magazine) {
 		$liste=array();
-		$page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c='.$pays.'/'.$magazine);
+		$page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c=' . $pays . '/' . $magazine);
 		$regex_couverture='#<img border=0 src="([^"]+)"></a><br>\(?<a href=issue\.php[^>]+>(?:<span[^>]+>)?([^<]+)</a>\)?#is';
 		preg_match_all($regex_couverture,$page,$couvertures);
 		foreach(array_keys($couvertures[0]) as $i) {
@@ -292,7 +292,7 @@ class Inducks {
 		$magazine=strtoupper($magazine);
 		list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,"urls",true);
 		if (false!==($i=array_search($numero, $numeros)))
-			return Util::get_page('http://coa.inducks.org/'.$urls[$i]);
+			return Util::get_page('http://coa.inducks.org/' . $urls[$i]);
 		else
 			return ERREUR_CONNEXION_INDUCKS;
 	}
