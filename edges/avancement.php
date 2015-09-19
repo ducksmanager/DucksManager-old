@@ -113,18 +113,22 @@ foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	foreach($resultat_tranches_pretes_magazine as $tranche_prete_magazine) {
 		$tranches_pretes[]=$tranche_prete_magazine['issuenumber'];
 	}
-	foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
-		$tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes);
-		?><span onmouseover="document.getElementById('num_courant').innerHTML='<?=$liste_magazines[$publicationcode].' '.$numero_inducks?>';"
-		class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>">&nbsp;</span><?php
-		if ($tranche_prete_numero_inducks)
-			$cpt_dispos++;
+	if (array_key_exists($publicationcode, $numeros_inducks)) {
+		foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
+			$tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes);
+			?><span onmouseover="document.getElementById('num_courant').innerHTML='<?=$liste_magazines[$publicationcode].' '.$numero_inducks?>';"
+			class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>">&nbsp;</span><?php
+			if ($tranche_prete_numero_inducks)
+				$cpt_dispos++;
+		}
+	} else {
+		?>Certaines tranches de cette publication sont prêtes mais la publication n'existe plus sur Inducks : <?=implode(', ', $tranches_pretes)?><?php
 	}
 }
 
 
-	?><br  />
-	<?=$cpt_dispos?> tranches pr&ecirc;tes.<br />
+	?><br  /><br />
+	<b><?=$cpt_dispos?> tranches pr&ecirc;tes.</b><br />
         <br /><br />
         <u>L&eacute;gende : </u><br />
         <span class="num">&nbsp;</span> Nous avons besoin d'une photo de cette tranche !<br />
