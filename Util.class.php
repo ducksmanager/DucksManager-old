@@ -11,12 +11,12 @@ class Util {
 					'timeout' => $timeout
 				)
 			));
+			$handle = fopen($url, "r", null, $context);
 		}
 		else {
-			$context = null;
+			$handle = fopen($url, "r");
 		}
 
-		$handle = fopen($url, "r", null, $context);
 		if (isset($_GET['dbg'])) {
 			echo $url;
 		}
