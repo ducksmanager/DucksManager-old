@@ -1,6 +1,6 @@
 #!/bin/sh
-sh_dir=`pwd`/remote
 isv_path=$1
+sh_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 properties_file=/home/coa/coa.properties
 
 set +x
