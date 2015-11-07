@@ -103,10 +103,9 @@ class Inducks {
 		$numeros = array();
 
 		$max_publication_codes_request = 20;
-		$chunk_size = min(count($publication_codes), $max_publication_codes_request);
-		for ($offset = 0; $offset < $chunk_size; $offset += $max_publication_codes_request) {
+		for ($offset = 0; $offset < count($publication_codes); $offset += $max_publication_codes_request) {
 			$current_chunk_size = min(count($publication_codes) - $offset, $max_publication_codes_request);
-			$publication_codes_chunk = array_splice($publication_codes, $offset, $offset + $current_chunk_size);
+			$publication_codes_chunk = array_slice($publication_codes, $offset, $offset + $current_chunk_size);
 			$requete='SELECT issuenumber, publicationcode FROM inducks_issue '
 					.'WHERE publicationcode IN ('.implode(',',$publication_codes_chunk).') '
 					.'ORDER BY publicationcode';
