@@ -519,7 +519,7 @@ define('TEXTURE__BOIS','Wood');
 define('TITRE','DucksManager : Your Disney comics collection manager');
 define('TITRE_PAGE_ACCUEIL','Welcome !');
 define('TITRE_PAGE_AGRANDIR','Expand your collection');
-define('TITRE_PAGE_BIBLIOTHEQUE','The DucksMabager bookcase');
+define('TITRE_PAGE_BIBLIOTHEQUE','The DucksManager bookcase');
 define('TITRE_PAGE_BOUQUINERIES','Second-hand bookshops');
 define('TITRE_PAGE_DUCKHUNT_TOUR','The DuckHunt Tour');
 define('TITRE_PAGE_GERER','Collection management');
