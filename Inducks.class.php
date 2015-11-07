@@ -96,20 +96,30 @@ class Inducks {
 	}
 	
 	static function get_numeros_liste_publications($publication_codes) {
-		foreach($publication_codes as $i=>$publication_code) {
-			$publication_codes[$i]="'".$publication_code."'";
+		$publication_codes = array_map(function($publication_code) {
+			return "'".$publication_code."'";
+		}, $publication_codes);
+
+		$numeros = array();
+
+		$max_publication_codes_request = 20;
+		$chunk_size = min(count($publication_codes), $max_publication_codes_request);
+		for ($offset = 0; $offset < $chunk_size; $offset += $max_publication_codes_request) {
+			$current_chunk_size = min(count($publication_codes) - $offset, $max_publication_codes_request);
+			$publication_codes_chunk = array_splice($publication_codes, $offset, $offset + $current_chunk_size);
+			$requete='SELECT issuenumber, publicationcode FROM inducks_issue '
+					.'WHERE publicationcode IN ('.implode(',',$publication_codes_chunk).') '
+					.'ORDER BY publicationcode';
+			$resultat_requete=Inducks::requete_select($requete);
+			$numeros= array_merge($numeros, $resultat_requete);
 		}
-		$requete='SELECT issuenumber, publicationcode FROM inducks_issue '
-				.'WHERE publicationcode IN ('.implode(',',$publication_codes).') '
-				.'ORDER BY publicationcode';
-		$resultat_requete=Inducks::requete_select($requete);
-		$resultat_requete=array_map('nettoyer_numero_base_sans_espace',$resultat_requete);
+		$numeros= array_map('nettoyer_numero_base_sans_espace',$numeros);
 		
 		$resultat_final=array();
-		foreach($resultat_requete as $resultat) {
-			if (!array_key_exists($resultat['publicationcode'],$resultat_final))
-				$resultat_final[$resultat['publicationcode']]=array();
-			$resultat_final[$resultat['publicationcode']][]=$resultat['issuenumber'];
+		foreach($numeros as $numero) {
+			if (!array_key_exists($numero['publicationcode'],$resultat_final))
+				$resultat_final[$numero['publicationcode']]=array();
+			$resultat_final[$numero['publicationcode']][]=$numero['issuenumber'];
 		}
 		return $resultat_final;
 	}
