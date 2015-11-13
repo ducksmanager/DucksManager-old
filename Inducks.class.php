@@ -13,7 +13,7 @@ class Inducks {
 		static function connexion_ok() {
 			$requete='SELECT COUNT(*) As cpt FROM inducks_country';
 			$resultat=Inducks::requete_select($requete);
-			return is_array($resultat);
+			return is_array($resultat) && count($resultat) > 0;
 		}
 		
 		static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
@@ -48,7 +48,11 @@ class Inducks {
 						debug_print_backtrace();
 						echo '</pre>';
 					}
-					if ($output === '') { // Cas des requetes hors SELECT
+					if (empty($output)) {
+						return array();
+					}
+					elseif ($output === ERREUR_CONNEXION_INDUCKS) {
+						echo ERREUR_CONNEXION_INDUCKS;
 						return array();
 					}
 					else {
