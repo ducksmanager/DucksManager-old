@@ -10,8 +10,8 @@ if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
 else {
 	include_once ('locales/lang.php');
 	require_once('Liste.class.php');
-	require_once('DucksManager_Core.class.php');
 }
+require_once('DucksManager_Core.class.php');
 require_once('Inducks.class.php');
 
 Database::$etats=array(
