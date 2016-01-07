@@ -22,12 +22,12 @@ return true
 function start_selection(sel) {
 	
 	//if IE4+
-	$('liste_numeros').onselectstart=new Function ("return false")
+	$('liste_numeros').onselectstart=new Function ("return false");
 	
 	//if NS6
 	if (window.sidebar){
-		$('liste_numeros').onmousedown=disableselect
-		$('liste_numeros').onclick=reEnable
+		$('liste_numeros').onmousedown=disableselect;
+		$('liste_numeros').onclick=reEnable;
 	}
 	$('menu_contextuel').hide();
 	debut_selection=parseInt(sel.id.substring(1,sel.id.length+1));
@@ -52,7 +52,6 @@ function stop_selection(sel) {
 			if ($('n'+i).hasClassName('num_checked')) {
 				$('n'+i).removeClassName('num_checked');
 				$('nb_selection').update(parseInt($('nb_selection').innerHTML)-1);
-				continue;	
 			}
 			else {
 				$('n'+i).addClassName('num_checked');
@@ -216,7 +215,7 @@ function enregistrer_changements_liste() {
 	
 	if (valider) {
 		
-		if (acquisition_id==0) // Date non spécifiée
+		if (acquisition_id==0) // Date non spï¿½cifiï¿½e
 			acquisition_sel=null;
 		update_numeros(liste,selection_couleur,acquisition_sel);
 	}
@@ -262,7 +261,7 @@ function unlighten_colorselector (element) {
 }
 
  function isDate(d) {
-	 // Cette fonction permet de vérifier la validité d'une date au format jj/mm/aa ou jj/mm/aaaa
+	 // Cette fonction permet de vï¿½rifier la validitï¿½ d'une date au format jj/mm/aa ou jj/mm/aaaa
 	 // Par Romuald
 	
 	 if (d == "") // si la variable est vide on retourne faux
@@ -270,16 +269,16 @@ function unlighten_colorselector (element) {
 	
 	 e = new RegExp("^([0-9]{4})\-[0-9]{1,2}\-[0-9]{1,2}$");
 	
-	 if (!e.test(d)) // On teste l'expression régulière pour valider la forme de la date
+	 if (!e.test(d)) // On teste l'expression rï¿½guliï¿½re pour valider la forme de la date
 	 return false; // Si pas bon, retourne faux
 	
-	 // On sépare la date en 3 variables pour vérification, parseInt() converti du texte en entier
-	 a = parseInt(d.split("-")[0], 10); // année
+	 // On sï¿½pare la date en 3 variables pour vï¿½rification, parseInt() converti du texte en entier
+	 a = parseInt(d.split("-")[0], 10); // annï¿½e
 	 m = parseInt(d.split("-")[1], 10); // mois
 	 j = parseInt(d.split("-")[2], 10); // jour
 	
-	 // Définition du dernier jour de février
-	 // Année bissextile si annnée divisible par 4 et que ce n'est pas un siècle, ou bien si divisible par 400
+	 // Dï¿½finition du dernier jour de fï¿½vrier
+	 // Annï¿½e bissextile si annnï¿½e divisible par 4 et que ce n'est pas un siï¿½cle, ou bien si divisible par 400
 	 if (a%4 == 0 && a%100 !=0 || a%400 == 0) fev = 29;
 	 else fev = 28;
 	

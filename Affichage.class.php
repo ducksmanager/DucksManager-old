@@ -213,7 +213,7 @@ class Affichage {
 								continue;
 							}	
 							?><b><?=$evenement->utilisateur?></b> <?=NEWS_A_AJOUTE?> 
-							<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
+							<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
 							<?php 
 							if ($evenement->cpt > 0) {
 								?>
@@ -234,7 +234,7 @@ class Affichage {
 
 							?><?=$str_contributeurs?> <?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
 							<a href="javascript:void(0)" class="has_tooltip underlined">
-								<?=Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero)?>
+								<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);?>
 								<?php
 								$nb_autres_numeros = count($evenement->numeros) - 1;
 								if ($nb_autres_numeros > 0) {

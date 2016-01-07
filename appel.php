@@ -57,4 +57,3 @@ if (isset($_POST['ecrire']) && $_POST['ecrire']=='true') {
 }
 else
 	echo $contenu;
-?>

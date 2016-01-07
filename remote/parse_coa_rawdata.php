@@ -69,5 +69,3 @@ if (isset($_GET['rawData_file'])) {
 	}
 	echo serialize($collection);
 }
-
-?>

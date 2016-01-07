@@ -47,4 +47,3 @@ class Format_liste {
 		return (array)$this->parametres;
 	}
 }
-?>

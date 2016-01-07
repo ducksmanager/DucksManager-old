@@ -31,10 +31,10 @@ class JS {
                     while (!feof($inF)) {
                             $js.= fgets($inF, 4096);
                     }
-                    $js_c=JSMin::minify($js);
+//                    $js_c=JSMin::minify($js);
                     $inF = fopen($prefixe.'_c.js',"w");
-                    fwrite($inF,$js_c);
-                    fclose($inF);
+//                    fwrite($inF,$js_c);
+//                    fclose($inF);
                     $stat = stat($nom);
                     $inF = fopen($prefixe.'_c.txt',"w");
                     fwrite($inF,$stat['mtime']);
@@ -81,7 +81,7 @@ class JSMin {
 	switch($d) {
 	  case 1:
 		$this->output .= $this->a;
-
+	  break;
 	  case 2:
 		$this->a = $this->b;
 
@@ -105,6 +105,7 @@ class JSMin {
 		  }
 		}
 
+	  break;
 	  case 3:
 		$this->b = $this->next();
 
@@ -259,6 +260,7 @@ class JSMin {
 			}
 		  }
 
+		break;
 		case '*':
 		  $this->get();
 
@@ -276,6 +278,7 @@ class JSMin {
 			}
 		  }
 
+		break;
 		default:
 		  return $c;
 	  }

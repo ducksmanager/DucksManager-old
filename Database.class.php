@@ -450,8 +450,7 @@ function ajouter_auteur($id,$nom) {
 			foreach($auteurs_surveilles as $num=>$auteur) {
 				?><tr><td>- <?=$auteur['NomAuteur']?></td><?php
 				if ($affiche_notation) {
-					?><td id="pouces<?=$num?>" onmouseout="vider_pouces()"><?php
-                                        echo note_to_pouces($num,$auteur['Notation']);
+					?><td id="pouces<?=$num?>" onmouseout="vider_pouces()"><?php note_to_pouces($num,$auteur['Notation']);
 					?><input type="hidden" value="<?=$auteur['NomAuteurAbrege']?>" name="auteur<?=$num?>" />
 					<input type="hidden" id="notation<?=$num?>" name="notation<?=$num?>" />
 					</td>

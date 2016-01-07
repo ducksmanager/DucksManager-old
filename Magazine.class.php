@@ -87,4 +87,3 @@ class Magazine extends DM_Core{
         DM_Core::$d->requete('TRUNCATE magazines');
     }
 }
-?>

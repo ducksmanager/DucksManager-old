@@ -550,4 +550,3 @@ define('VIDER_LISTE','Empty my issues list');
 define('VILLE','City');
 define('VOTRE_ADRESSE_EMAIL','Your e-mail address');
 define('VOUS_POSSEDEZ_UN_COMPTE_INDUCKS','Import my Inducks collection');
-?>

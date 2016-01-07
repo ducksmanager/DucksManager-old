@@ -177,7 +177,7 @@ function creer_slider(element) {
                 update_parametres_generaux(JSON.stringify(parametres_update));
             break;
             
-            case 'contenu_boite_selectionnee':// Propriétés de boite
+            case 'contenu_boite_selectionnee':// Propriï¿½tï¿½s de boite
                 afficher_sv_en_cours();
                 update_list(id_magazine_selectionne, $(id_magazine_selectionne).down('.contenu_liste').title, JSON.stringify(parametres_update));
             break;
@@ -373,7 +373,7 @@ function init_autocompleter_auteurs() {
 
 
 function ac_return(field, item){
-	var regex_nettoyage_nom=/(?:^[\t ]*)|(?:[\t ]*$)/g
+	var regex_nettoyage_nom=/(?:^[\t ]*)|(?:[\t ]*$)/g;
 	$('auteur_nom').value=field.value.replace(regex_nettoyage_nom,'');
     $('auteur_id').value=item.down('[name="nom_auteur"]').readAttribute('title');
     $('auteur_cherche').value=$('auteur_cherche').value.replace(regex_nettoyage_nom,'');
@@ -422,23 +422,12 @@ function modifier_type_liste(box,type_liste,confirmer) {
     });
 }
 
-function toggle_options(element) {
-    var box_options=$(element).next('.box_options');
-    if (box_options.getStyle('display')=='block') {
-        box_options.setStyle({'display':'none'});
-        return;
-    }
-    else {
-        box_options.setStyle({'display':'block'});
-    }
-}
-
 function toggle_aide() {
     if ($('info').getStyle('display')=='block') {
         $('info').setStyle({'display':'none'});
         $('lien_afficher_aide').removeClassName('cache');
         $('lien_cacher_aide').addClassName('cache');
-        return;
+
     }
     else {
         $('info').setStyle({'display':'block'});
@@ -474,7 +463,7 @@ function extraire_magazine(id_magazine_selectionne,pays_magazine) {
             $('body').insert(transport.responseText);
             implement_draganddrop($('box_'+transport.request.parameters.pays+'_'+transport.request.parameters.magazine));
             $('menu_contextuel_magazine').remove();
-            creer_menu_magazine(); // Réinitialise les observers des boites de magazines
+            creer_menu_magazine(); // Rï¿½initialise les observers des boites de magazines
         }
     });
 }

@@ -157,7 +157,7 @@ class Liste {
 		}
 		switch($onglet) {
 			case 'magazines':
-				?><iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0px"></iframe><?php
+				?><iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0"></iframe><?php
 			break;
 			case 'possessions':
 							?>
@@ -171,13 +171,13 @@ class Liste {
 								<script type="text/javascript">
 									initProgressBar('classement','classement_histogramme2.php');
 								</script>
-								<div id="resultat_classement" style="border:0px"></div>
+								<div id="resultat_classement" style="border:0"></div>
 
 								
 								<?php
 				break;
 			case 'etats':
-				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0px"></iframe><?php
+				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0"></iframe><?php
 			break;
 
 			case 'achats':
@@ -187,7 +187,7 @@ class Liste {
 					echo AUCUNE_DATE_ACQUISITION;
 				}
 				else {
-					?><iframe id="iframe_graphique" style="border:0px"></iframe>
+					?><iframe id="iframe_graphique" style="border:0"></iframe>
 					<br />
 					<a href="javascript:void(0)" onclick="afficher_histogramme_achats();">
 						<?=AFFICHER_NOUVELLES_ACQUISITIONS?>
@@ -212,7 +212,7 @@ class Liste {
 						echo CALCULS_PAS_ENCORE_FAITS.'<br />';
 					}
 					else {
-						echo '<iframe id="iframe_graphique" src="auteurs_histogramme.php" style="border:0px"></iframe>';
+						echo '<iframe id="iframe_graphique" src="auteurs_histogramme.php" style="border:0"></iframe>';
 					}
 				}
 				?><br /><br />
@@ -303,87 +303,83 @@ class Liste {
 	}
 
 	function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {
-			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-			$numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
+		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
 
-			$liste_a_supprimer=new Liste();
-			
-			foreach($this->collection as $pays=>$numeros_pays) {
-				foreach($numeros_pays as $magazine=>$numeros) {
-					$magazine_affiche=false;
-					sort($numeros);
-					foreach($numeros as $numero) {
-						if (array_key_exists($pays, $other_list->collection)
-						 && array_key_exists($magazine, $other_list->collection[$pays])
-						 && in_array($numero[0], $other_list->collection[$pays][$magazine]))
-							$numeros_communs++;
-						else {
-							$liste_a_supprimer->ajouter($pays, $magazine, $numero[0]);
-							$magazine_affiche = true;
-							$numeros_a_supprimer++;
-						 }
+		$liste_a_supprimer=new Liste();
+
+		foreach($this->collection as $pays=>$numeros_pays) {
+			foreach($numeros_pays as $magazine=>$numeros) {
+				sort($numeros);
+				foreach($numeros as $numero) {
+					if (array_key_exists($pays, $other_list->collection)
+					 && array_key_exists($magazine, $other_list->collection[$pays])
+					 && in_array($numero[0], $other_list->collection[$pays][$magazine]))
+						$numeros_communs++;
+					else {
+						$liste_a_supprimer->ajouter($pays, $magazine, $numero[0]);
+						$numeros_a_supprimer++;
+					 }
+				}
+			}
+		}
+		if ($supprimer_numeros)
+			$liste_a_supprimer->remove_from_database ($id_user);
+		$liste_a_ajouter=new Liste();
+		foreach($other_list->collection as $pays=>$numeros_pays) {
+			foreach($numeros_pays as $magazine=>$numeros) {
+				if ($pays=='country')
+					continue;
+				foreach($numeros as $numero) {
+					$trouve=false;
+					if (array_key_exists($pays,$this->collection)
+					&& array_key_exists($magazine,$this->collection[$pays])) {
+						$numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
+						for ($i=0;$i<$numeros_possedes_magazine;$i++)
+							if ($numero==$this->collection[$pays][$magazine][$i][0])
+								$trouve=true;
+					}
+					if (!$trouve) {
+						$liste_a_ajouter->ajouter($pays, $magazine, $numero);
+						$numeros_a_ajouter++;
 					}
 				}
 			}
-			if ($supprimer_numeros)
-				$liste_a_supprimer->remove_from_database ($id_user);
-			$liste_a_ajouter=new Liste();
-			foreach($other_list->collection as $pays=>$numeros_pays) {
-				foreach($numeros_pays as $magazine=>$numeros) {
-					if ($pays=='country')
-						continue;
-					$magazine_affiche=false;
-					foreach($numeros as $numero) {
-						$trouve=false;
-						if (array_key_exists($pays,$this->collection)
-						&& array_key_exists($magazine,$this->collection[$pays])) {
-							$numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
-							for ($i=0;$i<$numeros_possedes_magazine;$i++)
-								if ($numero==$this->collection[$pays][$magazine][$i][0])
-									$trouve=true;
-						}
-						if (!$trouve) {
-							$liste_a_ajouter->ajouter($pays, $magazine, $numero);
-							$magazine_affiche=true;
-							$numeros_a_ajouter++;
-						}
-					}
-				}
-			}
-			if ($ajouter_numeros)
-				$liste_a_ajouter->add_to_database ($id_user);
-			if (!$ajouter_numeros && !$supprimer_numeros) {
-				?>
-				<ul>
-					<li style="margin-top:10px"><?=$numeros_a_ajouter?> <?=NUMEROS_A_AJOUTER?> :
-						<?=$liste_a_ajouter->afficher('Classique')?>
-					</li>
-					<li style="margin-top:10px"><?=$numeros_a_supprimer?> <?=NUMEROS_A_SUPPRIMER?> :
-						<?=$liste_a_supprimer->afficher('Classique')?>
-					</li>
-					<li style="margin-top:10px"><?=$numeros_communs?> <?=NUMEROS_COMMUNS?>
-					</li>
-				</ul>
-				<?php
-				return array($numeros_a_ajouter, $numeros_a_supprimer);
-			}
-			else {
-				echo OPERATIONS_EXECUTEES.' <br />';
-			}
+		}
+		if ($ajouter_numeros)
+			$liste_a_ajouter->add_to_database ($id_user);
+		if (!$ajouter_numeros && !$supprimer_numeros) {
+			?>
+			<ul>
+				<li style="margin-top:10px"><?=$numeros_a_ajouter?> <?=NUMEROS_A_AJOUTER?> :
+					<?php $liste_a_ajouter->afficher('Classique'); ?>
+				</li>
+				<li style="margin-top:10px"><?=$numeros_a_supprimer?> <?=NUMEROS_A_SUPPRIMER?> :
+					<?php $liste_a_supprimer->afficher('Classique'); ?>
+				</li>
+				<li style="margin-top:10px"><?=$numeros_communs?> <?=NUMEROS_COMMUNS?>
+				</li>
+			</ul>
+			<?php
+			return array($numeros_a_ajouter, $numeros_a_supprimer);
+		}
+		else {
+			echo OPERATIONS_EXECUTEES.' <br />';
+		}
 	}
 
 	function afficher($type,$parametres=null) {
 		$type=strtolower($type);
-			if (@require_once('Listes/Liste.'.$type.'.class.php')) {
-				$o=new $type();
-				if (!is_null($parametres)) {
-					foreach($parametres as $nom_parametre=>$parametre)
-						$o->parametres->$nom_parametre=$parametre;
-				}
-				$o->afficher($this->collection);
+		if (@require_once('Listes/Liste.'.$type.'.class.php')) {
+			$o=new $type();
+			if (!is_null($parametres)) {
+				foreach($parametres as $nom_parametre=>$parametre)
+					$o->parametres->$nom_parametre=$parametre;
 			}
-			else
-				echo ERREUR_TYPE_LISTE_INVALIDE;
+			$o->afficher($this->collection);
+		}
+		else
+			echo ERREUR_TYPE_LISTE_INVALIDE;
 	}
 
 	function est_possede($pays,$magazine,$numero) {

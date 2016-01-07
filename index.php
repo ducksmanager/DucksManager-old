@@ -133,7 +133,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     }
                 break;
             }
-            new JS('js/selection_menu.js','js/bouquineries.js','js/divers.js');
+            new JS('js/bouquineries.js','js/divers.js');
         }
         ?>
     </head>
@@ -988,7 +988,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     <?=RECHERCHE_MAGAZINE_1?>
                                     <?=RECHERCHE_MAGAZINE_2?>
                                     
-                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
+                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0;">
                                         <input type="text" style="width:300px" name="" />
                                         <button style="width: 30px;">OK</button>
                                     </div>
@@ -1029,7 +1029,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             <b class="toggler_aide_recherche_magazine cache">^</b>
                                             <div id="aide_recherche_magazine" class="cache">
                                                 <?=RECHERCHE_MAGAZINE_2?>
-                                                <div id="recherche_bibliotheque" style="display:block;margin-top: 0px;">
+                                                <div id="recherche_bibliotheque" style="display:block;margin-top: 0;">
                                                     <input type="text" style="width:300px" name="" />
                                                     <button style="width: 30px;">OK</button>
                                                 </div>

@@ -8,72 +8,72 @@ include_once('Util.class.php');
 include_once('Database.class.php');
 class Inducks {
 	static $noms_complets;
-		static $use_local_db=true;
+	static $use_local_db=true;
 
-		static function connexion_ok() {
-			$requete='SELECT COUNT(*) As cpt FROM inducks_country';
-			$resultat=Inducks::requete_select($requete);
-			return is_array($resultat) && count($resultat) > 0;
+	static function connexion_ok() {
+		$requete='SELECT COUNT(*) As cpt FROM inducks_country';
+		$resultat=Inducks::requete_select($requete);
+		return is_array($resultat) && count($resultat) > 0;
+	}
+
+	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
+		if ($nomServeur==='serveur_virtuel' && false) {
+			mysql_select_db('coa');
+			$resultat = DM_Core::$d->requete_select($requete);
+			mysql_select_db(ServeurDb::$nom_db_DM);
+			return $resultat;
 		}
-		
-		static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
-			if ($nomServeur==='serveur_virtuel' && Inducks::$use_local_db) {
-				mysql_select_db('coa');
-				$resultat = DM_Core::$d->requete_select($requete);
-				mysql_select_db(ServeurDb::$nom_db_DM);
-				return $resultat;
+		else {
+			if (count(ServeurCoa::$coa_servers) === 0) {
+				ServeurCoa::initCoaServers();
 			}
-			else {
-				if (count(ServeurCoa::$coa_servers) === 0) {
-					ServeurCoa::initCoaServers();
-				}
 
-				if ($nomServeur === 'serveur_virtuel') {
-					$coaServers = ServeurCoa::$coa_servers;
-				} else {
-					$coaServers = array(ServeurCoa::$ducksmanager_server);
-				}
+			if ($nomServeur === 'serveur_virtuel') {
+				$coaServers = ServeurCoa::$coa_servers;
+			} else {
+				$coaServers = array(ServeurCoa::$ducksmanager_server);
+			}
 
-				foreach($coaServers as $coaServerName=>$coaServer) {
-					$url = $coaServer->getUrl().'/'.$coaServer->web_root;
-					$fullUrl = $url.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1($coaServer->db_password);
-					if (isset($_GET['dbg'])) {
-						echo $fullUrl.'<br /><br />';
-					}
-					$output=Util::get_page($fullUrl, 1.0);
-					if (isset($_GET['brut'])) {
-						echo 'Requete : '.$requete.'<br />'
-							.'Retour brut : <pre>'.$output.'</pre>'
-							.'Stacktrace : <pre>';
-						debug_print_backtrace();
-						echo '</pre>';
-					}
-					if (empty($output)) {
-						return array();
-					}
-					elseif ($output === ERREUR_CONNEXION_INDUCKS) {
-						echo ERREUR_CONNEXION_INDUCKS;
-						return array();
+			foreach($coaServers as $coaServerName=>$coaServer) {
+				$url = $coaServer->getUrl().'/'.$coaServer->web_root;
+				$fullUrl = $url.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1($coaServer->db_password);
+				if (isset($_GET['dbg'])) {
+					echo $fullUrl.'<br /><br />';
+				}
+				$output=Util::get_page($fullUrl, 1.0);
+				if (isset($_GET['brut'])) {
+					echo 'Requete : '.$requete.'<br />'
+						.'Retour brut : <pre>'.$output.'</pre>'
+						.'Stacktrace : <pre>';
+					debug_print_backtrace();
+					echo '</pre>';
+				}
+				if (empty($output)) {
+					return array();
+				}
+				elseif ($output === ERREUR_CONNEXION_INDUCKS) {
+					echo ERREUR_CONNEXION_INDUCKS;
+					return array();
+				}
+				else {
+					$unserialized = @unserialize($output);
+					if (is_array($unserialized)) {
+						list($champs,$resultats) = $unserialized;
+						foreach($champs as $i_champ=>$nom_champ) {
+							foreach($resultats as $i=>$resultat) {
+								$resultats[$i][$nom_champ]=$resultat[$i_champ];
+							}
+						}
+						return $resultats;
 					}
 					else {
-						$unserialized = @unserialize($output);
-						if (is_array($unserialized)) {
-							list($champs,$resultats) = $unserialized;
-							foreach($champs as $i_champ=>$nom_champ) {
-								foreach($resultats as $i=>$resultat) {
-									$resultats[$i][$nom_champ]=$resultat[$i_champ];
-								}
-							}
-							return $resultats;
-						}
-						else {
-							unset(ServeurCoa::$coa_servers[$coaServerName]);
-						}
+						unset(ServeurCoa::$coa_servers[$coaServerName]);
 					}
 				}
-				return array();
 			}
+			return array();
 		}
+	}
 
 	static function get_auteur($nom_auteur_abrege) {
 			$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$nom_auteur_abrege.'\'';
@@ -160,6 +160,7 @@ class Inducks {
 						.' LEFT JOIN '.$nom_db_non_coa.'.tranches_en_cours_modeles tp2 ON CONCAT(tp2.Pays,"/", tp2.Magazine) = i.publicationcode AND tp2.Numero = i.issuenumber AND tp2.Active = 0'
 						.' WHERE i.publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
+				$resultats = array();
 				foreach($resultat_requete as $numero) {
 					$element_numero = array();
 					foreach(array('issuenumber', 'contributeurs', 'en_cours') as $champ) {
@@ -171,6 +172,7 @@ class Inducks {
 				return $resultats;
 			break;
 		}
+		return array();
 	}
 	
 	static function get_covers($pays,$magazine) {
@@ -455,4 +457,3 @@ function nettoyer_numero_base_sans_espace($ligne_resultat) {
 	$ligne_resultat['issuenumber'] = nettoyer_numero_sans_espace($ligne_resultat['issuenumber']);
 	return $ligne_resultat;
 }
-?>

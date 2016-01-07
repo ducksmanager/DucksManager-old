@@ -24,9 +24,6 @@ function l10n_action(fonction,index,param,param2) {
                         case 'remplirSpanIndex':
                             window[fonction](i,transport.responseText[i]);
                             break;
-                        case 'remplirSpan':
-                            window[fonction](index[i],transport.responseText[i]);
-                            break;
                         case 'remplirSpanName':
                             window[fonction](index[i],transport.responseText[i]);
                             break;
