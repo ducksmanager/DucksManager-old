@@ -161,4 +161,3 @@ if (isset($_POST['id'])) {
         //header("X-JSON: " . str_replace('\n','',json_encode($retour)));
     }
 }
-?>

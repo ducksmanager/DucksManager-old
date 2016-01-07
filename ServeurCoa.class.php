@@ -16,6 +16,7 @@ class ServeurCoa {
     var $web_root;
     var $db_user;
     var $db_password;
+    var $coa_only;
     var $complete_coa_tables;
 
     public function __construct() { }

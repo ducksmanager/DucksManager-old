@@ -108,6 +108,3 @@ if (!$dernier_init_est_recent) {
 			echo $requete.'<br />';
 	}
 }
-
-
-?>

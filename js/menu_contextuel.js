@@ -101,7 +101,7 @@ Proto.Menu = Class.create({
                 className: (item.subMenu?'sous_menu ':'')
                 +(item.className || '')
                 +(item.disabled ? ' disabled' : (item.selected?' enabled selected':' enabled'))
-                })
+                });
                                 
             list.insert(new Element('li', {
                 className: item.separator ? 'separator' : ''
@@ -452,7 +452,7 @@ Proto.Menu = Class.create({
                 id_magazine_selectionne=toMagazineID(draggable_box);
                 $(this.getId('entete')).update(draggable_box.down('.titre_magazine').readAttribute('name'));
 
-                // Création du sous-menu des magazines pouvant être extraits
+                // Crï¿½ation du sous-menu des magazines pouvant ï¿½tre extraits
                 if ($('sous_menu_extraire'))
                     $('sous_menu_extraire').remove();
                 if (id_magazine_selectionne.match(/[^_]+_[^-]+\-[^_]+_/)) { // + d'un magazine dans la boite'

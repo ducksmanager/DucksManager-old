@@ -30,14 +30,13 @@ class Texte {
             $placement_texte=array($points[6]+($largeur_coupee-$largeur_compressee)/2,
                                    $points[7]+($hauteur_coupee-$hauteur_compressee)/2);
             imagecopyresampled($image, $image_texte, $placement_texte[0], $placement_texte[1], 0, 0, $largeur_compressee, $hauteur_compressee, $largeur_compressee, $hauteur_compressee);
-
         }
         else
             return imagettftext($image,$this->taille,$this->angle,$this->pos_x,$this->pos_y,$this->couleur,$this->police,$this->texte);
     }
 
     function dessiner_centre($image, $compression=array(1,1),$couleur_fond=array(0,0,0)) {
-        // Test pour d�tecter la largeur de la lettre
+        // Test pour détecter la largeur de la lettre
         $this->pos_x=0;
         $image_factice=imagecreate(imagesx($image),imagesy($image));
         $points=$this->dessiner($image_factice);

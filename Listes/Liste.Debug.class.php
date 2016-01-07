@@ -19,4 +19,3 @@ class debug extends Format_liste {
 		}
 	}
 }
-?>

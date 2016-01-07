@@ -15,4 +15,3 @@ foreach($resultat_tous_magazines_possedes as $pays_magazine) {
     }
     $pays_tmp=$pays;
 }
-?>

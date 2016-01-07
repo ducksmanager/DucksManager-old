@@ -4,7 +4,7 @@
 	}
 	
 	textarea {
-		border: 0px;
+		border: 0;
 		width: 300px;
 	}
 </style>

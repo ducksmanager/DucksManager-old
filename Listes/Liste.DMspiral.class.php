@@ -46,7 +46,6 @@ class dmspiral extends Format_liste {
 		$this->ajouter_parametres(array(
 			'haut'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/2,
 			'gauche'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/4));
-		$a=$this->p('nb_centaines')*$this->p('epaisseur')/2;
 		foreach($numeros as $numero) {
 			$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero, $numero)>0;
 			if ($est_numero_double) {
@@ -61,12 +60,12 @@ class dmspiral extends Format_liste {
 		
 		$image=imagecreatetruecolor(100+(48+$this->p('nb_centaines')/2)*$this->p('epaisseur')-10+$this->p('marge')+10, $this->p('epaisseur')*$this->p('nb_centaines')+$this->p('hauteur_centrale')+2+$this->p('marge')*2);
 		imageantialias($image, true);
-		$blanc=  imagecolorallocate($image, 255,255,255);
+		imagecolorallocate($image, 255,255,255);
 		$gris_clair=imagecolorallocate($image, $this->p('nuance_gris_fond'),$this->p('nuance_gris_fond'),$this->p('nuance_gris_fond'));
 		imagefill($image, 0,0, $gris_clair);
 
 		$noir=  imagecolorallocate($image, 0,0,0);
-		$blanc=  imagecolorallocate($image, 255,255,255);
+		imagecolorallocate($image, 255,255,255);
 
 		/** CREATION DE LA GRILLE **/
 
@@ -197,9 +196,7 @@ class dmspiral extends Format_liste {
 
 		$requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
 		$resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
-		$i=0;
 		foreach($resultat_numeros_possedes as $numero) {
-			$a=intval($numero['Numero']);
 			if (0!=(intval($numero['Numero']))) {
 				$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;
 				if ($est_numero_double) {

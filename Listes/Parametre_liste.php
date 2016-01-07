@@ -57,6 +57,4 @@ class parametres_generaux extends Format_liste {
 			'bordure_boites_b'=>new Parametre_min_max('Bordure - bleu',0,255,0,0)));
 		
 	}
-} 
-
-?>
+}

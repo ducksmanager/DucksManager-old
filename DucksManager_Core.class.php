@@ -79,5 +79,3 @@ $isv_redirection_magazine=new InducksISV();
 $isv_redirection_magazine->nom='issue';
 $isv_redirection_magazine->url='http://coa.inducks.org/inducks/isv/inducks_issue.isv';
 $isv_redirection_magazine->champs=array('issuecode'=>'FUNC','issuenumber'=>'FUNC');
-
-?>

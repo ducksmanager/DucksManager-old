@@ -13,7 +13,7 @@ $requete='SELECT issuenumber FROM inducks_issue '
 		.'  AND issuenumber REGEXP \'^[0-9]+$\' '
 		.'  AND CAST(issuenumber AS UNSIGNED) > CAST('.$numero_reference.' AS UNSIGNED)';
 
-$doublons_coa=DM_Core::$d->requete_select($requete,'coa','serveur_virtuel');
+$doublons_coa=DM_Core::$d->requete_select($requete);
 
 $requete_doublons_deja_dispo="SELECT Numero FROM tranches_doublons "
 							."WHERE NumeroReference=$numero_reference "
@@ -71,13 +71,12 @@ foreach($doublons_a_ajouter as $doublon_a_ajouter) {
 		$tranches_a_ajouter[]=$doublon_a_ajouter;
 }
 if (count($tranches_a_ajouter) > 0) {
-	$requete_ajout_tranches='INSERT INTO tranches_pretes(publicationcode,issuenumber,photographes,createurs,dateajout) '
-						   .'VALUES ';
 	$mini_requetes_ajout=array();
 	foreach($tranches_a_ajouter as $numero)
 		$mini_requetes_ajout[]="('fr/JM','$numero',NULL,NULL,NOW())";
 	
-	$requete_ajout_tranches.=implode(',',$mini_requetes_ajout);
+	$requete_ajout_tranches.='INSERT INTO tranches_pretes(publicationcode,issuenumber,photographes,createurs,dateajout) '
+							.'VALUES '.implode(',',$mini_requetes_ajout);
 	
 	if (isset($_GET['dbg']))
 		echo $requete_ajout_tranches.'<br />';

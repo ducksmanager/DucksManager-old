@@ -29,10 +29,7 @@ function init_notations() {
 	    	var reg=new RegExp("_", "g");
 	    	var notations=transport.responseText.split(reg);
 	    	for (var i=0;i<notations.length;i++) {
-	    		if (notations[i]==1)
-	    			auteurs_valides[i]=true;
-	    		else
-	    			auteurs_valides[i]=false;
+	    		auteurs_valides[i] = notations[i] == 1;
 	    	}
 		}
 	});

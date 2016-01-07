@@ -538,7 +538,6 @@ function remplacerCouleur(&$im,$r_old,$g_old,$b_old,$r,$g,$b) {
 		return;
 	$width = imagesx($im);
 	$height = imagesy($im);
-	$cloneH = 0;
 	$oldhex = rgb2hex($r_old,$g_old,$b_old);
 	$hex = rgb2hex($r,$g,$b);
 	$color = imagecolorallocate($im, hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 6)));

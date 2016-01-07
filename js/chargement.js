@@ -21,9 +21,8 @@ function MAJProgressBar(id) {
     var pct=getPctCourant(id);
     $('message_'+id).update('pour '+chargements[id]['element_courant']);
     $('pct_'+id).setStyle({'width':pct+'%'});
-    if (pct==100)
-        return true;
-    return false;
+    return pct == 100;
+
 }
 
 function traitement_suivant(id,page) {

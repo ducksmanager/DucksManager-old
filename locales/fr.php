@@ -550,4 +550,3 @@ define('VIDER_LISTE','Vider ma liste de num&eacute;ros');
 define('VILLE','Ville');
 define('VOTRE_ADRESSE_EMAIL','Votre adresse e-mail');
 define('VOUS_POSSEDEZ_UN_COMPTE_INDUCKS','Importer ma collection Inducks');
-?>
