@@ -479,9 +479,25 @@ class Liste {
 				}
 			}
 		}
+	
+		/**
+		 * @param $parametres
+		 * @param $id_user
+		 * @param $pays
+		 * @param $magazine
+		 */
+		static function maj_parametres($parametres, $id_user, $pays, $magazine)
+		{
+			foreach ($parametres as $parametre => $valeur) {
+				$requete_modifier_parametre = 'UPDATE parametres_listes SET Valeur=\'' . $valeur . '\' '
+					. 'WHERE ID_Utilisateur=' . $id_user . ' AND Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' AND Parametre = \'' . $parametre . '\'';
+				DM_Core::$d->requete($requete_modifier_parametre);
+			}
+		}
 }
 if (isset($_POST['parametres']))
 	$_POST['parametres'] = str_replace('\"', '"', $_POST['parametres']);
+
 if (isset($_POST['types_listes'])) {
 	header("X-JSON: " . json_encode(Liste::set_types_listes()));
 }
@@ -578,11 +594,7 @@ elseif (isset($_POST['update_list'])) {
 	list($pays,$magazine)=explode('_',$_POST['pays_magazine']);
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	$l = DM_Core::$d->toList($id_user);
-	foreach($parametres as $parametre=>$valeur) {
-		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
-								   .'WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Parametre = \''.$parametre.'\'';
-		DM_Core::$d->requete($requete_modifier_parametre);
-	}
+	Liste::maj_parametres($parametres, $id_user, $pays, $magazine);
 	
 	$sous_liste = new Liste();
 	$sous_liste = $l->sous_liste($pays, $magazine);
@@ -624,11 +636,7 @@ elseif (isset($_POST['parametres'])) {
 		foreach($parametres as $nom_parametre=>$parametre)
 			$liste_courante->parametres->$nom_parametre->valeur=$parametre;
 	}
-	foreach($parametres as $parametre=>$valeur) {
-		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
-								   .'WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Parametre = \''.$parametre.'\'';
-		DM_Core::$d->requete($requete_modifier_parametre);
-	}
+	Liste::maj_parametres($parametres, $id_user, $pays, $magazine);
 	header("X-JSON: " . json_encode($liste_courante->getListeParametresModifiables()));
 }
 
