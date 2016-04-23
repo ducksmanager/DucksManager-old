@@ -157,7 +157,11 @@ class Liste {
 		}
 		switch($onglet) {
 			case 'magazines':
-				?><iframe src="magazines_camembert.php" id="iframe_graphique" style="border:0"></iframe><?php
+				?>
+				<div id="canvas-holder" style=" width:500px; height:500px">
+					<canvas id="my_chart"></canvas>
+				</div>
+				<div id="js-legend" class="chart-legend"></div><?php
 			break;
 			case 'possessions':
 							?>
