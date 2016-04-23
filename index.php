@@ -63,6 +63,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <link rel="stylesheet" type="text/css" href="pluit-carousel.css">
         <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
         <link rel="stylesheet" type="text/css" href="css/opentip.css">
+        <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('ServeurDb.class.php');
@@ -86,7 +87,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script><?php
-        new JS('prototype-1.7.2.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js', 'js/edges2.js');
+        new JS('prototype-1.7.2.js','js/chart.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js', 'js/edges2.js');
         if (!is_null($action)) {
             new JS('js/sel_num.js');
 			if (!isset($_GET['action'])) $_GET['action']='';            
@@ -122,7 +123,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         var regen = '<?=$regen?>';
                     </script><?php
                 break;
-                case 'stats':if (!isset($_GET['onglet'])) $_GET['onglet']='magazines';
+                case 'stats':
+                    if (!isset($_GET['onglet'])) {
+                        $_GET['onglet']='magazines';
+                    }
+                    new JS('js/stats.js');
                     switch($_GET['onglet']) {
                         case 'possessions':
                             new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
@@ -198,10 +203,13 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             if (isset($_GET['onglet'])) {
             	switch($_GET['onglet']) {
 					case 'auteurs':
-						echo 'init_autocompleter_auteurs();';
+						?>init_autocompleter_auteurs();<?php
 					break;
 					case 'achats':
-						echo 'afficher_histogramme_achats();';
+						?>afficher_histogramme_achats();<?php
+					break;
+					case 'magazines':
+						?>afficher_histogramme_magazines();<?php
 					break;
 				}
             }
