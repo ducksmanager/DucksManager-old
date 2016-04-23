@@ -21,11 +21,11 @@ function toNomMoisTraduitComplet($str) {
 
 date_default_timezone_set('Europe/Paris');
 global $noms_mois;
-$noms_mois=array('Jan'=>'Jan','Feb'=>'Fev','Mar'=>'Mar','Apr'=>'Avr','May'=>'Mai','Juin'=>'Juin',
-				 'Jul'=>'Juil','Aug'=>'Aou','Sep'=>'Sep','Oct'=>'Oct','Nov'=>'Nov','Dec'=>'Dec');
+$noms_mois= ['Jan'=>'Jan','Feb'=>'Fev','Mar'=>'Mar','Apr'=>'Avr','May'=>'Mai','Juin'=>'Juin',
+				 'Jul'=>'Juil','Aug'=>'Aou','Sep'=>'Sep','Oct'=>'Oct','Nov'=>'Nov','Dec'=>'Dec'];
 
-$noms_mois_complets=array('Jan'=>'Janvier','Feb'=>'Février','Mar'=>'Mars','Apr'=>'Avril','May'=>'Mai','Juin'=>'Juin',
-						  'Jul'=>'Juillet','Aug'=>'Août','Sep'=>'Septembre','Oct'=>'Octobre','Nov'=>'Novembre','Dec'=>'Décembre');
+$noms_mois_complets= ['Jan'=>'Janvier','Feb'=>'Fï¿½vrier','Mar'=>'Mars','Apr'=>'Avril','May'=>'Mai','Juin'=>'Juin',
+						  'Jul'=>'Juillet','Aug'=>'Aoï¿½t','Sep'=>'Septembre','Oct'=>'Octobre','Nov'=>'Novembre','Dec'=>'Dï¿½cembre'];
 
 session_start();
 if (isset($_GET['lang'])) {
@@ -44,8 +44,8 @@ $type=isset($_GET['type']) && $_GET['type'] == 'progressif' ? 'progressif' : 'no
 
 $requete_liste_pays_magazines='SELECT DISTINCT CONCAT(Pays,\'/\',Magazine) AS publicationcode FROM numeros WHERE ID_Utilisateur='.$id_user;
 $resultat_liste_pays_magazines=DM_Core::$d->requete_select($requete_liste_pays_magazines);
-$couleurs=array();
-$publication_codes=array();
+$couleurs= [];
+$publication_codes= [];
 foreach($resultat_liste_pays_magazines as $resultat) {
 	$publicationcode=$resultat['publicationcode'];
 	$publication_codes[]=$publicationcode;
@@ -57,9 +57,9 @@ $requete_premier_mois='SELECT Date FROM achats WHERE ID_User='.$id_user.' AND Da
 $resultat_premier_mois=DM_Core::$d->requete_select($requete_premier_mois);
 $mois_courant=substr($resultat_premier_mois[0]['Date'], 0,7);
 $mois_affiche=date("M y", mktime(0, 0, 0, intval(substr($mois_courant, 5,2)), 1, substr($mois_courant, 0,4)));
-$liste_mois=array($mois_courant);
-$liste_mois_affiches=array($mois_affiche);
-$liste_mois_affiches_complets=array($mois_affiche);
+$liste_mois= [$mois_courant];
+$liste_mois_affiches= [$mois_affiche];
+$liste_mois_affiches_complets= [$mois_affiche];
 while($mois_courant != date('Y-m')) {
 	$mois_courant=date("Y-m", mktime(0, 0, 0, intval(substr($mois_courant, 5,2))+1, 1, substr($mois_courant, 0,4)));
 	$mois_affiche=date("M y", mktime(0, 0, 0, intval(substr($mois_courant, 5,2)), 1, substr($mois_courant, 0,4)));
@@ -80,7 +80,7 @@ $requete_possessions_avant_achats='SELECT Count(Numero) AS cpt, Pays, Magazine '
 								 .'WHERE ID_Utilisateur='.$id_user.'  AND ID_Acquisition=-2 '
 								 .'GROUP BY Pays,Magazine';
 $resultats_possessions_avant_achats=DM_Core::$d->requete_select($requete_possessions_avant_achats);
-$comptes_totaux_magazines=array();
+$comptes_totaux_magazines= [];
 foreach($resultats_possessions_avant_achats as $possession_avant_achats) {
 	$pays=$possession_avant_achats['Pays'];
 	$magazine=$possession_avant_achats['Magazine'];
@@ -98,7 +98,7 @@ foreach ($liste_mois as $i=>$mois) {
 			.'WHERE ID_Utilisateur='.$id_user.' '
 			.'GROUP BY Pays,Magazine';
 	$requete_resultat=DM_Core::$d->requete_select($requete);
-	$sections=array();
+	$sections= [];
 	$cpt_mois=0;
 	foreach($requete_resultat as $cpt) {
 		$cpt_mois+=$cpt['cpt'];
@@ -132,7 +132,7 @@ foreach ($liste_mois as $i=>$mois) {
 		$max = $cpt_mois;
 	$bar_stack->append_stack($sections);
 }
-$legendes=array();
+$legendes= [];
 ksort($couleurs);
 foreach($couleurs as $publicationcode=>$couleur) {
     if (array_key_exists($publicationcode, $noms_magazines)) {

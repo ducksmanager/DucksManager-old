@@ -3,7 +3,7 @@ global $dimensions;
 
 function getDimensionsParDefaut($publication_codes) {
 	global $dimensions;
-	$dimensions=array();
+	$dimensions= [];
 	
 	foreach($publication_codes as $i=>$publication_code) {
 		$publication_codes[$i]="'".$publication_code."'";
@@ -19,7 +19,7 @@ function getDimensionsParDefaut($publication_codes) {
 			$pays=$resultat['Pays'];
 			$magazine=$resultat['Magazine'];
 			if (!isset($dimensions[$pays.'/'.$magazine])) {
-				$dimensions[$pays.'/'.$magazine]=array();
+				$dimensions[$pays.'/'.$magazine]= [];
 			}
 			$dimensions[$pays.'/'.$magazine][]=$resultat;
 		}

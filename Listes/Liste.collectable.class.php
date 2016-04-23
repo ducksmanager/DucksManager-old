@@ -17,11 +17,11 @@ class collectable extends Format_liste {
 	static $max_centaines=0;
 	static $max_diz_et_unites=1;
 	function __construct() {
-		$this->les_plus=array(COLLECTABLE_PLUS_1,COLLECTABLE_PLUS_2,COLLECTABLE_PLUS_3);
-		$this->les_moins=array(COLLECTABLE_MOINS_1,COLLECTABLE_MOINS_2);
+		$this->les_plus= [COLLECTABLE_PLUS_1,COLLECTABLE_PLUS_2,COLLECTABLE_PLUS_3];
+		$this->les_moins= [COLLECTABLE_MOINS_1,COLLECTABLE_MOINS_2];
 		$this->description=COLLECTABLE_DESCRIPTION;
-		$this->ajouter_parametres(array(
-			'nb_numeros_ligne'=>new Parametre_valeurs('Nombre de num&eacute;ros par ligne',array(25,50,100),50,50)));
+		$this->ajouter_parametres([
+			'nb_numeros_ligne'=>new Parametre_valeurs('Nombre de num&eacute;ros par ligne', [25,50,100],50,50)]);
 	}
 
 	static function est_listable($numero) {
@@ -100,10 +100,10 @@ class collectable extends Format_liste {
 					</tr><?php
 				}
 			global $centaines_utilisees;
-			$centaines_utilisees=array();
+			$centaines_utilisees= [];
 			ksort($liste);
 			
-			$publication_codes=array();
+			$publication_codes= [];
 			foreach($liste as $pays=>$numeros_pays) {
 				foreach(array_keys($numeros_pays) as $magazine) {
 					$publication_codes[]=$pays.'/'.$magazine;
@@ -128,9 +128,9 @@ class collectable extends Format_liste {
 				   $total_magazine = 0;
 				   global $liste_numeros;
 				   global $liste_numeros_doubles;
-				   $liste_numeros = array();
-				   $liste_numeros_doubles = array();
-				   $liste_non_numeriques = array();
+				   $liste_numeros = [];
+				   $liste_numeros_doubles = [];
+				   $liste_non_numeriques = [];
 				   foreach($numeros as $numero_et_etat) {
 						$total_magazine++;
 						$numero = $numero_et_etat[0];
@@ -247,7 +247,7 @@ class collectable extends Format_liste {
 				?>
 					<td class="legende_magazines">
 						<table><?php
-				$publication_codes=array();
+				$publication_codes= [];
 				foreach($liste as $pays=>$numeros_pays) {
 					foreach(array_keys($numeros_pays) as $magazine) {
 						$publication_codes[]=$pays.'/'.$magazine;

@@ -22,11 +22,11 @@ if (isset($_GET['storycode'])) {
 			.'INNER JOIN inducks_publication ON inducks_issue.publicationcode = inducks_publication.publicationcode '
 			.'WHERE storycode = \''.$code.'\' '
 			.'ORDER BY publicationcode, issuenumber';
-	$resultats_tab=array();
+	$resultats_tab= [];
 	$resultats=mysql_query($requete);
 	
-	$noms_magazines=array();
-	$numeros=array();
+	$noms_magazines= [];
+	$numeros= [];
 	while($resultat = mysql_fetch_array($resultats)) {
 		$numero=new stdClass();
 		$numero->magazine=$resultat['publicationcode'];
@@ -56,7 +56,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 		$retour->static=new stdClass();
 		
 		if (isset($_GET['liste_pays'])) {
-			$liste_pays=array();
+			$liste_pays= [];
 			$requete_liste_pays='SELECT countrycode, countryname '
 							   .'FROM inducks_countryname '
 							   .'WHERE languagecode=\'fr\' and countryname <>\'fake\' '
@@ -70,7 +70,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 			$retour->static->pays=$liste_pays;
 		}
 		else if (isset($_GET['liste_magazines']) && isset($_GET['pays'])) {
-			$liste_magazines=array();
+			$liste_magazines= [];
 			$requete_liste_magazines='SELECT publicationcode, title '
 								    .'FROM inducks_publication '
 								    .'WHERE countrycode=\''.$_GET['pays'].'\' '
@@ -84,7 +84,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 			$retour->static->magazines=$liste_magazines;
 		}
 		else if (isset($_GET['liste_numeros']) && isset($_GET['magazine'])) {
-			$liste_numeros=array();
+			$liste_numeros= [];
 			$requete_liste_numeros='SELECT issuenumber '
 								  .'FROM inducks_issue '
 								  .'WHERE publicationcode=\''.$_GET['magazine'].'\'';
@@ -151,7 +151,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 						
 						if (isset($_GET['debug']))
 							echo $requete.'<br />';
-						if (count($resultats)==0 && $resultats === array())
+						if (count($resultats)==0 && $resultats === [])
 							echo 'OK';
 						else
 							print_r($resultats);
@@ -161,9 +161,9 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 						mysql_query('SET NAMES UTF8');
 						foreach($resultats as $resultat) {
 							$retour=new stdClass();
-							$numeros=array();
-							$pays=array();
-							$magazines=array();
+							$numeros= [];
+							$pays= [];
+							$magazines= [];
 							$requete_numeros='SELECT * FROM numeros WHERE ID_Utilisateur='.$resultat['ID'].' ORDER BY Pays, Magazine, Numero';
 							$resultats_numeros=Inducks::requete_select($requete_numeros,'db301759616','ducksmanager.net');
 							foreach($resultats_numeros as $resultat_numero) {
@@ -172,7 +172,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 								$etat=$resultat_numero['Etat'];
 								
 								if (!array_key_exists($pays_magazine,$numeros)) {
-									$numeros[$pays_magazine]=array();
+									$numeros[$pays_magazine]= [];
 									$magazines[$pays_magazine]=$pays_magazine;
 								}
 								switch($version) {

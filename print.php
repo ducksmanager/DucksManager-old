@@ -107,10 +107,10 @@ else {
             <a id="lien_cacher_aide" class="toggle_info" href="javascript:void(0)" onclick="toggle_aide()">&lt;&lt; <span name="cacher_aide"></span></a>
             <a id="lien_afficher_aide" class="toggle_info cache" href="javascript:void(0)" onclick="toggle_aide()"><span name="afficher_aide"></span> &gt;&gt;</a>
             <div id="info"><?php
-            $onglets=array(
-                PRESENTATION=>array('presentation',PRESENTATION),
-                INDEX_AIDE=>array('index_aide',INDEX_AIDE),
-                PARAMETRES=>array('parametres',PARAMETRES));
+            $onglets= [
+                PRESENTATION=> ['presentation',PRESENTATION],
+                INDEX_AIDE=> ['index_aide',INDEX_AIDE],
+                PARAMETRES=> ['parametres',PARAMETRES]];
             Affichage::onglets('parametres',$onglets,'onglet_aide','?');
             ?>
                 <div id="contenu_presentation" class="contenu" style="display:none">
@@ -133,9 +133,9 @@ else {
                 </div>
                 <div class="contenu" id="contenu_parametres" style="display:block">
                     <?php
-                    $onglets=array(
-                        GENERAL=>array('general',GENERAL),
-                        BOITE_SELECTIONNEE=>array('boite_selectionnee',BOITE_SELECTIONNEE));
+                    $onglets= [
+                        GENERAL=> ['general',GENERAL],
+                        BOITE_SELECTIONNEE=> ['boite_selectionnee',BOITE_SELECTIONNEE]];
                     Affichage::onglets('general',$onglets,'onglet_type_param','?');
                     ?>
                     <div id="contenu_general" style="display:block;visibility:hidden">
@@ -177,10 +177,7 @@ else {
 
 <?php
 function afficher_boite($pays,$nom_magazine,$type_liste,$parametres=null) {
-    global $l;
-    list($nom_complet_pays, $nom_complet_magazine) = Inducks::get_nom_complet_magazine($pays, $nom_magazine);
-    $sous_liste = new Liste();
-    $sous_liste = $l->sous_liste($pays, $nom_magazine);
+    $nom_complet_magazine = Inducks::get_nom_complet_magazine($pays, $nom_magazine);
     ?><span class="draggable_box widget" id="box_<?= $pays ?>_<?= $nom_magazine ?>">
         <div class="parametres_box cache"><?=json_encode($parametres)?></div>
         <table>

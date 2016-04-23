@@ -6,11 +6,11 @@ class Util {
 	static $nom_fic;
 	static function get_page($url, $timeout = 0) {
 		if ($timeout > 0) {
-			$context = stream_context_create( array(
-				'http'=>array(
+			$context = stream_context_create( [
+				'http'=> [
 					'timeout' => $timeout
-				)
-			));
+				]
+			]);
 			$handle = @fopen($url, "r", null, $context);
 		}
 		else {
@@ -89,7 +89,7 @@ class Util {
 		$requete_magazines='SELECT Pays, Magazine FROM numeros GROUP BY Pays, Magazine ORDER BY Pays, Magazine';
 		$resultat_magazines=DM_Core::$d->requete_select($requete_magazines);
 		$pays='';
-		$magazines_inducks=array();
+		$magazines_inducks= [];
 		foreach($resultat_magazines as $pays_magazine) {
 			if ($pays!==$pays_magazine['Pays']) {
 				$magazines_inducks=Inducks::get_liste_magazines($pays_magazine['Pays']);

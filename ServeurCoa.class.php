@@ -3,7 +3,7 @@ include_once 'Util.class.php';
 
 class ServeurCoa {
     /** @var $coa_servers ServeurCoa[] */
-    static $coa_servers = array();
+    static $coa_servers = [];
 
     /** @var $ducksmanager_server ServeurCoa */
     static $ducksmanager_server;
@@ -26,7 +26,7 @@ class ServeurCoa {
     }
 
     static function initCoaServers() {
-        self::$coa_servers = array();
+        self::$coa_servers = [];
         $configured_coa_servers = parse_ini_file(self::$coa_servers_file, true);
         foreach($configured_coa_servers as $name=>$coaServer) {
             /** @var ServeurCoa $coaServerObject */

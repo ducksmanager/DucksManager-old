@@ -26,8 +26,8 @@ if (isset($_GET['dbg'])) {
 	print_r( $resultats_doublons_deja_dispo);
 }
 
-$doublons_deja_dispo=array();
-$doublons_a_ajouter=array();
+$doublons_deja_dispo= [];
+$doublons_a_ajouter= [];
 
 foreach($resultats_doublons_deja_dispo as $doublon_deja_dispo) {
 	$doublons_deja_dispo[$doublon_deja_dispo['Numero']]=true;
@@ -45,7 +45,7 @@ foreach($doublons_coa as $doublon_coa) {
 if (count($doublons_a_ajouter) > 0) {
 	$requete_ajout_doublons='INSERT INTO tranches_doublons(Pays,Magazine,Numero,NumeroReference) '
 						   .'VALUES ';
-	$mini_requetes_ajout=array();
+	$mini_requetes_ajout= [];
 	foreach($doublons_a_ajouter as $doublon)
 		$mini_requetes_ajout[]="('fr','JM','$doublon','$numero_reference')";
 	
@@ -59,8 +59,8 @@ if (count($doublons_a_ajouter) > 0) {
 $requete_tranches_deja_pretes="SELECT issuenumber FROM tranches_pretes "
 							."WHERE publicationcode='fr/JM' ";
 $resultats_tranches_deja_pretes=Inducks::requete_select($requete_tranches_deja_pretes,'db301759616','ducksmanager.net');
-$tranches_deja_dispo=array();
-$tranches_a_ajouter=array();
+$tranches_deja_dispo= [];
+$tranches_a_ajouter= [];
 
 foreach($resultats_tranches_deja_pretes as $tranche_deja_dispo) {
 	$tranches_deja_dispo[$tranche_deja_dispo['issuenumber']]=true;
@@ -71,7 +71,7 @@ foreach($doublons_a_ajouter as $doublon_a_ajouter) {
 		$tranches_a_ajouter[]=$doublon_a_ajouter;
 }
 if (count($tranches_a_ajouter) > 0) {
-	$mini_requetes_ajout=array();
+	$mini_requetes_ajout= [];
 	foreach($tranches_a_ajouter as $numero)
 		$mini_requetes_ajout[]="('fr/JM','$numero',NULL,NULL,NOW())";
 	

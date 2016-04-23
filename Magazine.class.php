@@ -19,7 +19,7 @@ class Magazine extends DM_Core{
     }
 
     function get_cle() {
-        return array($this->pays_abrege,$this->nom_abrege,$this->redirige_depuis);
+        return [$this->pays_abrege,$this->nom_abrege,$this->redirige_depuis];
     }
 
     static function updateList() {

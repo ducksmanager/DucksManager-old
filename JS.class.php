@@ -4,11 +4,11 @@ if (isset($_POST['js']))
 	new JS($_POST['js']);
 class JS {
 	function __construct() {
-		$scripts=array();
+		$scripts= [];
 		$noms=func_get_args();
 		foreach($noms as $nom) {
             $prefixe=substr($nom,0,strrpos($nom,'.'));
-            if (isset($_GET['debug']) || strpos($nom,'scriptaculous')!==false || in_array($nom,array('prototype-1.7.2.js','js/json/json2.js','js/swfobject.js'))) {
+            if (isset($_GET['debug']) || strpos($nom,'scriptaculous')!==false || in_array($nom, ['prototype-1.7.2.js','js/json/json2.js','js/swfobject.js'])) {
                 ?><script type="text/javascript" src="<?=$nom?>"></script><?php
                 continue;
             }

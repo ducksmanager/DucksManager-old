@@ -31,7 +31,7 @@ class IntervalleValidite {
     }
 
     function getListeNumeros() {
-        $liste=array();
+        $liste= [];
         foreach($this->intervalles as $item) {
             if (!is_array($item))
                 $liste[]=$item;

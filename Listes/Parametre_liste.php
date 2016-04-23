@@ -15,7 +15,7 @@ class Parametre_liste {
 }
 
 class Parametre_valeurs extends Parametre_liste{
-	var $valeurs_possibles=array();
+	var $valeurs_possibles= [];
 	function __construct($texte,$valeurs,$valeur,$defaut) {
 		$this->valeurs_possibles=$valeurs;
 		parent::__construct($texte,$valeur,$defaut);
@@ -50,11 +50,11 @@ class Parametre_fixe  {
 
 class parametres_generaux extends Format_liste {
 	function __construct() {
-		$this->ajouter_parametres(array(
+		$this->ajouter_parametres([
 			'espacement_boites'=>new Parametre_min_max('Espacement inter-boites',5,40,25,25),
 			'bordure_boites_r'=>new Parametre_min_max('Bordure - rouge',0,255,255,255),
 			'bordure_boites_v'=>new Parametre_min_max('Bordure - vert',0,255,0,0),
-			'bordure_boites_b'=>new Parametre_min_max('Bordure - bleu',0,255,0,0)));
+			'bordure_boites_b'=>new Parametre_min_max('Bordure - bleu',0,255,0,0)]);
 		
 	}
 }

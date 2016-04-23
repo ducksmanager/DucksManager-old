@@ -4,7 +4,7 @@ include 'OpenFlashChart/php-ofc-library/open-flash-chart.php';
 $title = new title( date("D M d Y") );
 
 $bar = new bar();
-$bar->set_values( array(9,8,7,6,5,4,3,2,1) );
+$bar->set_values( [9,8,7,6,5,4,3,2,1]);
 
 $chart_1 = new open_flash_chart();
 $chart_1->set_title( $title );
@@ -14,7 +14,7 @@ $chart_1->add_element( $bar );
 // generate some random data
 srand((double)microtime()*1000000);
 
-$tmp = array();
+$tmp = [];
 for( $i=0; $i<9; $i++ )
   $tmp[] = rand(1,10);
 

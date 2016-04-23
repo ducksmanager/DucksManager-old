@@ -6,8 +6,8 @@ include_once('../authentification.php');
 $requete_tranches_pretes_pour_publication = 'SELECT * FROM tranches_en_cours_modeles WHERE PretePourPublication=1';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, ServeurDb::$nom_db_DM, 'serveur_virtuel');
 
-$urls_images=array();
-$numeros=array();
+$urls_images= [];
+$numeros= [];
 foreach($tranches_pretes_pour_publication as $tranche) {
     $pays = $tranche['Pays'];
     $id = $tranche['ID'];
@@ -17,7 +17,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     $photographes = $tranche['photographes'];
     $createurs = $tranche['createurs'];
 
-    $valeurs=array();
+    $valeurs= [];
     $valeurs['publicationcode']=$publicationcode;
     $valeurs['issuenumber']=$numero;
     $valeurs['photographes']=$photographes;
@@ -38,7 +38,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     }
     $urls_images[]=$url;
     if (!array_key_exists($publicationcode,$numeros))
-        $numeros[$publicationcode]=array('numeros'=>array(), 'contributeurs'=>array());
+        $numeros[$publicationcode]= ['numeros'=> [], 'contributeurs'=> []];
     $numeros[$publicationcode]['numeros'][]=$numero;
     if (!is_null($photographes)) {
         $numeros[$publicationcode]['contributeurs'][]=$photographes;
@@ -50,9 +50,9 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
 list($noms_pays,$noms_magazines) = Inducks::get_noms_complets(array_keys($numeros));
 
-$code_ajouts = array();
-$code_images_ajouts = array();
-$contributeurs_non_remercies = array('brunoperel');
+$code_ajouts = [];
+$code_images_ajouts = [];
+$contributeurs_non_remercies = ['brunoperel'];
 foreach($numeros as $publicationcode=>$numeros_et_contributeurs) {
     list($pays,$magazine)=explode('/',$publicationcode);
     $code_ajout ='[Biblioth&egrave;que][Tranches][Ajout]'

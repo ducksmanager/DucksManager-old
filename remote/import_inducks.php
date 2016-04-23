@@ -35,7 +35,7 @@ switch($action) {
         $resultats=Inducks::requete_select($requete_liste_magazines_utilisateurs,'db301759616','ducksmanager.net');
 
         $publication_codes = array_map('flattenpublicationcode', $resultats);
-        $issues_cpt = array();
+        $issues_cpt = [];
         foreach($resultats as $resultat) {
             $issues_cpt[$resultat['publicationcode']] = $resultat['cpt'];
         }

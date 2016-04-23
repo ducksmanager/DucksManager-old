@@ -22,7 +22,7 @@ if (isset($_GET['rawData_file'])) {
 	if (isset($_GET['dbg']))
 		echo 'Contenu en entree : '.$contenu.'<br /><br />';
     $lignes=explode("\n",$contenu);
-	$collection=array(); 
+	$collection= []; 
 	foreach($lignes as $i=>$ligne) {
 		$ligne=str_replace("\r", '', $ligne);
 		if ($i==0)
@@ -49,12 +49,12 @@ if (isset($_GET['rawData_file'])) {
 					$magazine=$pays_magazine[1];
 					$numero=$resultats[0]['issuenumber'];
 					if (!array_key_exists($pays,$collection)) {
-						$arr_temp=array($magazine=>array(0=>$numero));
+						$arr_temp= [$magazine=> [0=>$numero]];
 						$collection[$pays]=$arr_temp;
 					}
 					else {
 						if (!array_key_exists($magazine,$collection[$pays])) {
-							$collection[$pays][$magazine]=array($numero);
+							$collection[$pays][$magazine]= [$numero];
 						}
 						else
 							if (!array_push($collection[$pays][$magazine],$numero))

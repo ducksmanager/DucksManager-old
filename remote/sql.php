@@ -8,10 +8,10 @@ include_once('auth.php');
 
 if (isset($_GET['req'])) {
 	$requete=str_replace("\'","'",$_GET['req']);
-	$resultats_tab=array();
+	$resultats_tab= [];
 	$resultats=mysql_query($requete);
 	$debut=true;
-	$champs=array();
+	$champs= [];
 	while($resultat = mysql_fetch_array($resultats)) {
 		if ($debut) {
 			foreach(array_keys($resultat) as $cle)
@@ -19,13 +19,13 @@ if (isset($_GET['req'])) {
 					$champs[]=$cle;
 			$debut=false;
 		}
-		$valeurs=array();
+		$valeurs= [];
 		foreach($resultat as $cle=>$valeur)
 			if (is_int($cle))
 				$valeurs[$cle]=$valeur;
 		$resultats_tab[]=$valeurs;
 	}
-	$resultats_tab=array($champs,$resultats_tab);
+	$resultats_tab= [$champs,$resultats_tab];
 	if (isset($_GET['debug'])) {
 		?><pre><?php echo $requete."\n";print_r($resultats_tab);?></pre><?php
 	}

@@ -3,7 +3,7 @@ if (isset($_POST['value'])) {
 	require_once('Util.class.php');
 	require_once('Inducks.class.php');
 	$valeurs=$_POST['value'];
-	$liste_auteurs=array();
+	$liste_auteurs= [];
 	foreach(explode(' ',$valeurs) as $mot) {
 		$requete_auteur='SELECT personcode, fullname FROM inducks_person '
 					   .'WHERE LOWER(fullname) LIKE \'%'.$mot.'%\' ';

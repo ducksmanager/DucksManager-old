@@ -14,12 +14,12 @@ $requete_noms_images='SELECT Pays, Magazine, Option_valeur, Numero_debut, Numero
 $resultat_noms_images=DM_Core::$d->requete_select($requete_noms_images);
 
 ob_start();
-$numeros_inducks=array();
+$numeros_inducks= [];
 foreach($resultat_noms_images as $image) {
 	$pays=$image['Pays'];
 	$magazine=$image['Magazine'];
 	if (!array_key_exists($pays,$numeros_inducks))
-		$numeros_inducks[$pays]=array();
+		$numeros_inducks[$pays]= [];
 	if (!array_key_exists($magazine,$numeros_inducks[$pays]))
 		$numeros_inducks[$pays][$magazine]=Inducks::get_numeros($pays,$magazine,false,true);
 	$nom_image=$image['Option_valeur'];

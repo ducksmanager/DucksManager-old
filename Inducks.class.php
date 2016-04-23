@@ -17,7 +17,7 @@ class Inducks {
 	}
 
 	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
-		if ($nomServeur==='serveur_virtuel' && Inducks::$use_local_db) {
+		if ($nomServeur==='serveur_virtuel' && false) {
 			mysql_select_db('coa');
 			$resultat = DM_Core::$d->requete_select($requete);
 			mysql_select_db(ServeurDb::$nom_db_DM);
@@ -31,7 +31,7 @@ class Inducks {
 			if ($nomServeur === 'serveur_virtuel') {
 				$coaServers = ServeurCoa::$coa_servers;
 			} else {
-				$coaServers = array(ServeurCoa::$ducksmanager_server);
+				$coaServers = [ServeurCoa::$ducksmanager_server];
 			}
 
 			foreach($coaServers as $coaServerName=>$coaServer) {
@@ -49,11 +49,11 @@ class Inducks {
 					echo '</pre>';
 				}
 				if (empty($output)) {
-					return array();
+					return [];
 				}
 				elseif ($output === ERREUR_CONNEXION_INDUCKS) {
 					echo ERREUR_CONNEXION_INDUCKS;
-					return array();
+					return [];
 				}
 				else {
 					$unserialized = @unserialize($output);
@@ -71,7 +71,7 @@ class Inducks {
 					}
 				}
 			}
-			return array();
+			return [];
 		}
 	}
 
@@ -92,10 +92,10 @@ class Inducks {
 	static function get_vrais_magazine_et_numero($pays,$magazine,$numero) {
 		$vrai_magazine=self::get_vrai_magazine($pays,$magazine);
 		if ($vrai_magazine != $magazine) {
-			return array($vrai_magazine,substr($magazine, strlen($vrai_magazine)).$numero);
+			return [$vrai_magazine,substr($magazine, strlen($vrai_magazine)).$numero];
 		}
 		else {
-			return array($magazine,$numero);
+			return [$magazine,$numero];
 		}
 	}
 	
@@ -104,7 +104,7 @@ class Inducks {
 			return "'".$publication_code."'";
 		}, $publication_codes);
 
-		$numeros = array();
+		$numeros = [];
 
 		$max_publication_codes_request = 20;
 		for ($offset = 0; $offset < count($publication_codes); $offset += $max_publication_codes_request) {
@@ -118,10 +118,10 @@ class Inducks {
 		}
 		$numeros= array_map('nettoyer_numero_base_sans_espace',$numeros);
 		
-		$resultat_final=array();
+		$resultat_final= [];
 		foreach($numeros as $numero) {
 			if (!array_key_exists($numero['publicationcode'],$resultat_final))
-				$resultat_final[$numero['publicationcode']]=array();
+				$resultat_final[$numero['publicationcode']]= [];
 			$resultat_final[$numero['publicationcode']][]=$numero['issuenumber'];
 		}
 		return $resultat_final;
@@ -132,27 +132,27 @@ class Inducks {
 		$magazine=Inducks::get_vrai_magazine($pays,$magazine);
 		$fonction_nettoyage=$sans_espace ? 'nettoyer_numero_sans_espace' : 'nettoyer_numero';
 		$nom_db_non_coa = ServeurDb::$nom_db_DM;
-		$numeros=array();
+		$numeros= [];
 		switch($mode) {
 			case "urls":
-				$urls=array();
+				$urls= [];
 				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
 				foreach($resultat_requete as $i=>$numero) {
 					$numeros[$i]=call_user_func($fonction_nettoyage, $numero['issuenumber']);
 					$urls[$i]='issue.php?c='.$pays.'%2F'.$magazine_depart.str_replace(' ','+',$numero['issuenumber']);
 				}
-				return array($numeros,$urls);
+				return [$numeros,$urls];
 			break;
 			case "titres":
-				$titres=array();
+				$titres= [];
 				$requete='SELECT issuenumber, title FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
 				foreach($resultat_requete as $i=>$numero) {
 					$numeros[$i]=call_user_func($fonction_nettoyage, $numero['issuenumber']);
 					$titres[$i]=$numero['title'];
 				}
-				return array($numeros,$titres);
+				return [$numeros,$titres];
 			break;
 			case "numeros_et_createurs_tranche":
 				$requete=' SELECT i.issuenumber, tp2.username contributeurs, IF(tp2.Active=0, 1, 0) en_cours'
@@ -160,10 +160,10 @@ class Inducks {
 						.' LEFT JOIN '.$nom_db_non_coa.'.tranches_en_cours_modeles tp2 ON CONCAT(tp2.Pays,"/", tp2.Magazine) = i.publicationcode AND tp2.Numero = i.issuenumber AND tp2.Active = 0'
 						.' WHERE i.publicationcode = \''.$pays.'/'.$magazine.'\'';
 				$resultat_requete=Inducks::requete_select($requete);
-				$resultats = array();
+				$resultats = [];
 				foreach($resultat_requete as $numero) {
-					$element_numero = array();
-					foreach(array('issuenumber', 'contributeurs', 'en_cours') as $champ) {
+					$element_numero = [];
+					foreach(['issuenumber', 'contributeurs', 'en_cours'] as $champ) {
 						$element_numero[$champ] = $numero[$champ];
 					}
 					$element_numero['issuenumber'] = $fonction_nettoyage($element_numero['issuenumber']);
@@ -172,11 +172,11 @@ class Inducks {
 				return $resultats;
 			break;
 		}
-		return array();
+		return [];
 	}
 	
 	static function get_covers($pays,$magazine) {
-		$liste=array();
+		$liste= [];
 		$page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c=' . $pays . '/' . $magazine);
 		$regex_couverture='#<img border=0 src="([^"]+)"></a><br>\(?<a href=issue\.php[^>]+>(?:<span[^>]+>)?([^<]+)</a>\)?#is';
 		preg_match_all($regex_couverture,$page,$couvertures);
@@ -189,35 +189,30 @@ class Inducks {
 	static function get_pays() {
 		$requete='SELECT countrycode, countryname FROM inducks_countryname WHERE languagecode = \''.$_SESSION['lang'].'\' ORDER BY countryname';
 		$resultat_requete=Inducks::requete_select($requete);
-		$liste_pays_courte=array();
+		$liste_pays_courte= [];
 		foreach($resultat_requete as $pays) {
 			$liste_pays_courte[$pays['countrycode']]=$pays['countryname'];
 		}
 		return $liste_pays_courte;
 	}
 
-	static function get_nom_complet_magazine($pays,$magazine) {
-		$requete_pays='SELECT countryname FROM inducks_countryname WHERE languagecode = \''.$_SESSION['lang'].'\' AND countrycode = \''.$pays.'\' ORDER BY countryname';
-		$resultat_requete=Inducks::requete_select($requete_pays);
-		$nom_pays=$resultat_requete[0]['countryname'];
-			
+	static function get_nom_complet_magazine($pays,$magazine) {			
 		$requete_magazine='SELECT title FROM inducks_publication WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
 		$resultat_requete=Inducks::requete_select($requete_magazine);
-		$nom_magazine=$resultat_requete[0]['title'];
 			
-		return array($nom_pays,$nom_magazine);
+		return $resultat_requete[0]['title'];
 	}
 	
 	static function get_noms_complets($publication_codes) {
-		$liste_pays_complets=array();
-		$liste_magazines_complets=array();
+		$liste_pays_complets= [];
+		$liste_magazines_complets= [];
 		
 		$publication_codes_chunks=array_chunk($publication_codes, 100);
 		foreach($publication_codes_chunks as $publication_codes_chunk) {
-			$liste_pays=array();
+			$liste_pays= [];
 			foreach($publication_codes_chunk as $i=>$publication_code) {
 				list($pays,$magazine)=explode('/',$publication_code);
-				$liste_pays=array_merge($liste_pays, array("'".$pays."'"));
+				$liste_pays=array_merge($liste_pays, ["'".$pays."'"]);
 				$publication_codes_chunk[$i]="'".$publication_code."'";
 			}
 			$requete_noms_pays='SELECT countrycode, countryname FROM inducks_countryname '
@@ -235,13 +230,13 @@ class Inducks {
 				$liste_magazines_complets[$resultat['publicationcode']]=$resultat['title'];
 			}
 		}
-		return array($liste_pays_complets,$liste_magazines_complets);
+		return [$liste_pays_complets,$liste_magazines_complets];
 	}
 
 	static function get_liste_magazines($pays) {
 		$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode = \''.$pays.'\'';
 		$resultat_requete=Inducks::requete_select($requete);
-		$liste_magazines_courte=array();
+		$liste_magazines_courte= [];
 		foreach($resultat_requete as $magazine) {
 			list($nom_pays,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
 			$liste_magazines_courte[$nom_magazine_abrege]=$magazine['title'];
@@ -269,7 +264,7 @@ class Inducks {
 	static function get_nb_numeros_magazines_pays($pays) {
 		$requete='SELECT publicationcode, Count(issuenumber) AS cpt FROM inducks_issue WHERE publicationcode LIKE \''.$pays.'/%\' GROUP BY publicationcode';
 		$resultat_requete=Inducks::requete_select($requete);
-		$nb_numeros=array();
+		$nb_numeros= [];
 		foreach($resultat_requete as $magazine) {
 			list($nom_pays,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
 			$nb_numeros[$nom_magazine_abrege]=$magazine['cpt'];
@@ -287,14 +282,14 @@ class Inducks {
 		return Inducks::requete_select($requete);
 	}
 	static function get_magazines_ne_paraissant_plus($publication_codes) {
-		$liste_magazines=array();
+		$liste_magazines= [];
 		foreach($publication_codes as $publicationcode) {
 			$liste_magazines[]="'".$publicationcode."'";
 		}
 	   	$requete_get_ne_parait_plus='SELECT CONCAT(PaysAbrege,\'/\',NomAbrege) AS publicationcode, NeParaitPlus FROM magazines WHERE publicationcode IN ('.implode(',',$liste_magazines).')';
 	   	$resultat_get_ne_parait_plus=DM_Core::$d->requete_select($requete_get_ne_parait_plus);
 	   	
-		$magazines_ne_paraissant_plus=array();
+		$magazines_ne_paraissant_plus= [];
 		foreach($resultat_get_ne_parait_plus as $resultat) {
 			if ($resultat['NeParaitPlus']==1) {
 				$magazines_ne_paraissant_plus[]=$resultat['publicationcode'];
@@ -333,10 +328,10 @@ elseif (isset($_POST['get_numeros'])) {
 	Inducks::get_numeros($_POST['pays'],$_POST['magazine']);
 }
 elseif (isset($_POST['get_cover'])) {
-	$resultats=array();
+	$resultats= [];
 	$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
 	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) == 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
-	$liste_magazines=array();
+	$liste_magazines= [];
 	$_POST['numero']=str_replace(' ','',$_POST['numero']);
 	$_POST['magazine']=strtoupper($_POST['magazine']);
 	$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
@@ -366,7 +361,7 @@ elseif (isset($_POST['get_cover'])) {
 				$num_page=-99+($i++);
 			else
 				$num_page=substr ($num_page, 1);
-			$resultats[]=array('page'=>$num_page,'url'=>$url);
+			$resultats[]= ['page'=>$num_page,'url'=>$url];
 		}
 	}
 	if (count($resultat_get_extraits) == 0)
@@ -379,7 +374,7 @@ elseif (isset($_POST['get_covers'])) {
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
 	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
-	$liste_magazines=array();
+	$liste_magazines= [];
 	if (strpos($nom_histoire, 'code=') === 0) {
 		$liste_magazines['direct']=true;
 		$code=substr($nom_histoire, strlen('code='));
@@ -397,7 +392,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 			}
 		}
 		
-		$publication_codes=array();
+		$publication_codes= [];
 		foreach($resultat_requete as $resultat) {
 			$publication_codes[]=$resultat['publicationcode'];
 		}
@@ -406,10 +401,10 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 			list($pays,$magazine)=explode('/',$resultat['publicationcode']);
 			$nom_complet_magazine=$noms_magazines[$resultat['publicationcode']];
 			$issuenumber=$resultat['issuenumber'];
-			$liste_magazines[]=array('pays'=>$pays,
+			$liste_magazines[]= ['pays'=>$pays,
 									 'magazine_numero'=>$magazine.'.'.$issuenumber,
 									 'nom_magazine'=>$nom_complet_magazine,
-									 'titre'=>$nom_complet_magazine);
+									 'titre'=>$nom_complet_magazine];
 		}
 	}
 	else {
@@ -424,8 +419,8 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		foreach($resultat_requete as $resultat) {
 			$code=$resultat['storycode'];
 			$title=$resultat['title'];
-			$liste_magazines[]=array('code'=>$code,
-									 'titre'=>$title);
+			$liste_magazines[]= ['code'=>$code,
+									 'titre'=>$title];
 		}
 		if (count($liste_magazines) > 10) {
 			$liste_magazines=array_slice($liste_magazines, 0,10);

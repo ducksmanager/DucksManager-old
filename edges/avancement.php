@@ -45,7 +45,7 @@ if (isset($_GET['wanted'])) {
     }
 
     echo '--- WANTED ---';
-	$numeros_demandes=array();
+	$numeros_demandes= [];
 	foreach($resultat_plus_demandes as $num) {
 		$pays=$num['Pays'];
 		$magazine=$num['Magazine'];
@@ -57,12 +57,12 @@ if (isset($_GET['wanted'])) {
         $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
         $est_dispo=count(DM_Core::$d->requete_select($requete_est_dispo)) > 0;
         if (!$est_dispo) {
-			$numeros_demandes[]=array('cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero);
+			$numeros_demandes[]= ['cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero];
 			if ($cptwanted++ >= $_GET['wanted'])
 				break;
 		}
     }
-	$publicationcodes=array();
+	$publicationcodes= [];
     foreach($numeros_demandes as $numero_demande) {
 		$publicationcodes[]=$numero_demande['publicationcode'];
 	}
@@ -97,7 +97,7 @@ $requete_pays_magazines_tranches_pretes='SELECT DISTINCT publicationcode FROM tr
 $resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete_select($requete_pays_magazines_tranches_pretes);
 
 $cpt_dispos=0;
-$publicationcodes=array();
+$publicationcodes= [];
 foreach($resultat_pays_magazines_tranches_pretes as $publicationcode) {
 	$publicationcodes[]=$publicationcode['publicationcode'];
 }
@@ -109,7 +109,7 @@ foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	echo '<br /><br />(<img src="../images/flags/'.$pays.'.png" /> '.$magazine.') '.$liste_magazines[$publicationcode].'<br />';
 	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\'';
 	$resultat_tranches_pretes_magazine=DM_Core::$d->requete_select($requete_tranches_pretes_magazine);
-	$tranches_pretes=array();
+	$tranches_pretes= [];
 	foreach($resultat_tranches_pretes_magazine as $tranche_prete_magazine) {
 		$tranches_pretes[]=$tranche_prete_magazine['issuenumber'];
 	}

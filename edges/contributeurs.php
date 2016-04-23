@@ -8,7 +8,7 @@ if (isset($_GET['contributions'])) {
 						  .'ORDER BY publicationcode';
 	$resultat_contributions=DM_Core::$d->requete_select($requete_contributions);
 
-	$contributions=array();
+	$contributions= [];
 	foreach($resultat_contributions as $contribution) {
 		$contributions[]=$contribution;
 	}
@@ -67,7 +67,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 
 $requete_utilisateurs='SELECT username FROM users ORDER BY UPPER(username)';
 $resultat_utilisateurs=DM_Core::$d->requete_select($requete_utilisateurs);
-$utilisateurs=array();
+$utilisateurs= [];
 foreach($resultat_utilisateurs as $utilisateur) {
 	$utilisateurs[]=utf8_decode($utilisateur['username']);
 }

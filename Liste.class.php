@@ -5,10 +5,10 @@ require_once('Inducks.class.php');
 class Liste {
 	var $contenu;
 	var $nom_fichier;
-	var $collection=array();
+	var $collection= [];
 	var $very_max_centaines=1;
 	var $database;
-	static $types_listes=array();
+	static $types_listes= [];
 
 	static function set_types_listes() {
 		$rep = "Listes/";
@@ -40,18 +40,18 @@ class Liste {
 
 	function ajouter($pays,$magazine,$numero) {
 		if (!array_key_exists($pays, $this->collection))
-			$this->collection[$pays]=array();
+			$this->collection[$pays]= [];
 		if (!array_key_exists($magazine,$this->collection[$pays]))
-			$this->collection[$pays][$magazine]=array();
+			$this->collection[$pays][$magazine]= [];
 		if (in_array($numero, $this->collection[$pays][$magazine]))
 			return;
 		$this->collection[$pays][$magazine][]=$numero;
 	}
 
 	function ListeExemple() {
-		$numeros_mp=array(array(2,'Excellent',false,-1),array(273,'Bon',false,-1),array(4,'Excellent',false,-1),array(92,'Excellent',false,-1));
-		$numeros_mad=array(array(6,'Indefini',false,-1),array(16,'Bon',false,-1));
-		$this->collection=array('fr'=>(array('MP'=>$numeros_mp)), 'us'=>array('MAD'=>$numeros_mad));
+		$numeros_mp= [[2,'Excellent',false,-1], [273,'Bon',false,-1], [4,'Excellent',false,-1], [92,'Excellent',false,-1]];
+		$numeros_mad= [[6,'Indefini',false,-1], [16,'Bon',false,-1]];
+		$this->collection= ['fr'=>(['MP'=>$numeros_mp]), 'us'=> ['MAD'=>$numeros_mad]];
 	}
 
 	function fusionnerAvec($liste_autre) {
@@ -67,15 +67,15 @@ class Liste {
 					$av=$numero_etat_av_date[2];
 					$date=$numero_etat_av_date[3];
 					if (!array_key_exists($pays,$this->collection)) {
-						$arr_temp=array($magazine=>array(0=>array($numero,$etat,$av,$date)));
+						$arr_temp= [$magazine=> [0=> [$numero,$etat,$av,$date]]];
 						$this->collection[$pays]=$arr_temp;
 					}
 					else {
 						if (!array_key_exists($magazine,$this->collection[$pays])) {
-							$this->collection[$pays][$magazine]=array(0=>array($numero,$etat,$av,$date));
+							$this->collection[$pays][$magazine]= [0=> [$numero,$etat,$av,$date]];
 						}
 						else
-							if (!array_push($this->collection[$pays][$magazine],array($numero,$etat,$av,$date)))
+							if (!array_push($this->collection[$pays][$magazine], [$numero,$etat,$av,$date]))
 								echo '<b>'.$magazine.$numero.'</b>';
 					}
 				}
@@ -87,24 +87,24 @@ class Liste {
 	function sous_liste($pays,$magazine=false) {
 		$nouvelle_liste=new Liste();
 		if (!$magazine)
-					$nouvelle_liste->collection=array($pays=>array($this->collection[$pays]));
+					$nouvelle_liste->collection= [$pays=> [$this->collection[$pays]]];
 		else
-					$nouvelle_liste->collection=array($pays=>array($magazine=>$this->collection[$pays][$magazine]));
+					$nouvelle_liste->collection= [$pays=> [$magazine=>$this->collection[$pays][$magazine]]];
 		return $nouvelle_liste;
 	}
 
 	function liste_pays() {
-		$tab=array();
+		$tab= [];
 		$liste=Inducks::get_pays();
 		foreach(array_keys($this->collection) as $pays) {
 			$pays_trouve=array_key_exists($pays,$liste);
-			$tab[$pays_trouve ? $liste[$pays] : $pays]=array($pays,$pays_trouve ? $liste[$pays] : $pays);
+			$tab[$pays_trouve ? $liste[$pays] : $pays]= [$pays,$pays_trouve ? $liste[$pays] : $pays];
 		}
 		return $tab;
 	}
 	
 	function liste_magazines($pays_magazine_supplementaire=null,$tri_noms_complets=true) {
-		$publication_codes=array();
+		$publication_codes= [];
 		foreach($this->collection as $pays=>$numeros_pays) {
 			foreach(array_keys($numeros_pays) as $magazine) {
 				$publication_codes[]=$pays.'/'.$magazine;
@@ -115,11 +115,11 @@ class Liste {
 		}
 		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
 		foreach(array_keys($noms_pays) as $nom_abrege) {
-			$noms_pays[$noms_pays[$nom_abrege]]=array($nom_abrege, $noms_pays[$nom_abrege]);
+			$noms_pays[$noms_pays[$nom_abrege]]= [$nom_abrege, $noms_pays[$nom_abrege]];
 			unset($noms_pays[$nom_abrege]);
 		}
 		foreach(array_keys($noms_magazines) as $nom_abrege) {
-			$noms_magazines[$nom_abrege]=array($nom_abrege, $noms_magazines[$nom_abrege]);
+			$noms_magazines[$nom_abrege]= [$nom_abrege, $noms_magazines[$nom_abrege]];
 		}
 		
 		if ($tri_noms_complets) {
@@ -130,24 +130,24 @@ class Liste {
 				return ($a[1] < $b[1]) ? -1 : 1; 
 			});
 		}
-		return array($noms_pays,$noms_magazines);
+		return [$noms_pays,$noms_magazines];
 	}
 
 	function statistiques($onglet) {
 				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
-		$counts=array();
+		$counts= [];
 		foreach($this->collection as $pays=>$numeros_pays) {
-			$counts[$pays]=array();
+			$counts[$pays]= [];
 			foreach($numeros_pays as $magazine=>$numeros) {
 				$counts[$pays][$magazine]=count($numeros);
 			}
 		}
-		$onglets=array(MAGAZINES=>array('magazines',MAGAZINES_COURT),
-							   POSSESSIONS=>array('possessions',POSSESSIONS_COURT),
-							   ETATS_NUMEROS=>array('etats',ETATS_NUMEROS_COURT),
-							   ACHATS=>array('achats',ACHATS_COURT),
-							   AUTEURS=>array('auteurs',AUTEURS_COURT));
+		$onglets= [MAGAZINES=> ['magazines',MAGAZINES_COURT],
+							   POSSESSIONS=> ['possessions',POSSESSIONS_COURT],
+							   ETATS_NUMEROS=> ['etats',ETATS_NUMEROS_COURT],
+							   ACHATS=> ['achats',ACHATS_COURT],
+							   AUTEURS=> ['auteurs',AUTEURS_COURT]];
 		Affichage::onglets($onglet,$onglets,'onglet','?action=stats');
 
 		if (count($counts)==0) {
@@ -361,7 +361,7 @@ class Liste {
 				</li>
 			</ul>
 			<?php
-			return array($numeros_a_ajouter, $numeros_a_supprimer);
+			return [$numeros_a_ajouter, $numeros_a_supprimer];
 		}
 		else {
 			echo OPERATIONS_EXECUTEES.' <br />';
@@ -399,10 +399,10 @@ class Liste {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
 				foreach($this->collection[$pays][$magazine] as $numero_liste) {
 					if ($numero_liste[0]==$numero) {
-						return array($numero_liste[0],
+						return [$numero_liste[0],
 									 array_key_exists($numero_liste[1],Database::$etats) ? $numero_liste[1] : 'indefini',
 									 $numero_liste[2],
-									 $numero_liste[3]);
+									 $numero_liste[3]];
 					}
 				}
 			}
@@ -411,13 +411,13 @@ class Liste {
 	}
 	
 	function nettoyer_collection() {
-		$collection2=array();
+		$collection2= [];
 		foreach($this->collection as $pays=>$liste_magazines) {
-			$collection2[$pays]=array();
+			$collection2[$pays]= [];
 			foreach($liste_magazines as $magazine=>$liste_numeros) {
-				$collection2[$pays][$magazine]=array();
+				$collection2[$pays][$magazine]= [];
 				foreach($liste_numeros as $numero_liste) {
-					$collection2[$pays][$magazine][]=array(nettoyer_numero($numero_liste[0]),$numero_liste[1],$numero_liste[2],$numero_liste[3]);
+					$collection2[$pays][$magazine][]= [nettoyer_numero($numero_liste[0]),$numero_liste[1],$numero_liste[2],$numero_liste[3]];
 				}
 			}	
 		}
@@ -437,9 +437,9 @@ class Liste {
 
 		static function import($liste_texte) {
 			$l=new Liste($liste_texte);
-			if ($l->collection == array()) {
+			if ($l->collection == []) {
 				echo AUCUN_NUMERO_INDUCKS;
-				return array(false,0,0);
+				return [false,0,0];
 			}
 			else {
 				if (isset($_SESSION['user'])) {
@@ -448,14 +448,14 @@ class Liste {
 					list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
 					if ($ajouts==0 && $suppressions==0) {
 						echo LISTES_IDENTIQUES;
-						return array(true,0,0);
+						return [true,0,0];
 					}
 				}
 				else {
 					echo RESULTAT_NUMEROS_INDUCKS;
 					$l->afficher('Classique');
 				}
-				return array(true,$ajouts, $suppressions);
+				return [true,$ajouts, $suppressions];
 			}
 		}
 		
@@ -533,14 +533,14 @@ elseif(isset($_POST['sous_liste'])) {
 							DM_Core::$d->requete($requete_effacer_parametres_courants);
 						}
 						else {	
-							header("X-JSON: " . json_encode(array('message'=>'Les parametres de la boite seront reinitialises si vous changez son type d\'affichage. Confirmer ?')));
+							header("X-JSON: " . json_encode(['message'=>'Les parametres de la boite seront reinitialises si vous changez son type d\'affichage. Confirmer ?']));
 							exit(0);
 						}
 					}
 				}
 			}
 			$type_liste=$_POST['type_liste'];
-			$parametres=array();
+			$parametres= [];
 		}
 	}
 	else {
@@ -586,7 +586,7 @@ elseif (isset($_POST['get_description'])) {
 		include_once('Listes/Liste.'.$_POST['type_liste'].'.class.php');
 	$a=new ReflectionProperty($_POST['type_liste'], 'titre');
 	$b=new $_POST['type_liste'];
-	header("X-JSON: " . json_encode(array('titre'=>$a->getValue(),'contenu'=>$b->description)));
+	header("X-JSON: " . json_encode(['titre'=>$a->getValue(),'contenu'=>$b->description]));
 }
 elseif (isset($_POST['update_list'])) {
 	@session_start();

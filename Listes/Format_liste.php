@@ -3,10 +3,10 @@ include_once('Parametre_liste.php');
 
 class Format_liste {
 	static $titre;
-	var $parametres=array();
+	var $parametres= [];
 	var $description;
-	var $les_plus=array();
-	var $les_moins=array();
+	var $les_plus= [];
+	var $les_moins= [];
 	static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
 	
 	function est_valide() {
@@ -35,7 +35,7 @@ class Format_liste {
 	}
 	
 	function getListeParametresModifiables() {
-		$parametres_filtres=array();
+		$parametres_filtres= [];
 		foreach((array)$this->parametres as $nom_parametre=>$parametre) {
 			if ($this->parametre_est_modifiable($parametre))
 				$parametres_filtres[$nom_parametre]=$parametre;

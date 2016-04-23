@@ -12,7 +12,7 @@ if (isset($_POST['id'])) {
     }
     elseif (isset($_POST['element'])) {
         $pays=$_POST['element'];
-        $retour=array('total'=>null,'possede'=>null,'total_pct'=>null,'possede_pct'=>null);
+        $retour= ['total'=>null,'possede'=>null,'total_pct'=>null,'possede_pct'=>null];
         require_once('Inducks.class.php');
         $nb_numeros_magazines=Inducks::get_nb_numeros_magazines_pays($pays);
         foreach(array_keys($l->collection[$pays]) as $magazine) {
@@ -37,9 +37,9 @@ if (isset($_POST['id'])) {
 		foreach(array_keys($_POST) as $key)
 			$_POST[$key] = str_replace('\\"','"',$_POST[$key]);
         $infos=json_decode($_POST['infos']);
-        $donnees=array();
+        $donnees= [];
         
-        $publication_codes=array();
+        $publication_codes= [];
         foreach(json_decode($_POST['ids']) as $i=>$pays) {
         	foreach(array_keys(get_object_vars($infos[$i]->total)) as $magazine) {
         		$publication_codes[]=$pays.'/'.$magazine;
@@ -74,7 +74,7 @@ if (isset($_POST['id'])) {
         //$bar_stack->set_colours(array('#FF8000','#04B404'));
 
         $bar_stack_pct = new bar_stack();
-        $bar_stack_pct->set_colours(array('#FF8000','#04B404'));
+        $bar_stack_pct->set_colours(['#FF8000','#04B404']);
 
         foreach ($donnees as $donnee) {
                 $tmp = new bar_stack_value($donnee->possede,'#FF8000');
@@ -82,7 +82,7 @@ if (isset($_POST['id'])) {
                 $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
                 $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES.' : '.$donnee->possede.'<br>'.TOTAL.' : '.intval($donnee->total)));
                 $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS.' : '.($donnee->total-$donnee->possede).'<br>'.TOTAL.' : #total#'));
-                $bar_stack->append_stack(array($tmp,$tmp2));
+                $bar_stack->append_stack([$tmp,$tmp2]);
 
                 //$b->set_tooltip('a');
                 //$bar_stack->append_stack(array($donnee->possede, intval($total[$index])));
@@ -95,7 +95,7 @@ if (isset($_POST['id'])) {
                 $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
                 $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES).' : #val#%');
                 $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS).' : '.(100-$donnee->possede_pct).'%');
-                $bar_stack_pct->append_stack(array($tmp,$tmp2));
+                $bar_stack_pct->append_stack([$tmp,$tmp2]);
         }
 
         $supertotal=0;
@@ -104,19 +104,19 @@ if (isset($_POST['id'])) {
                         $supertotal=$donnee->total;
 
         $bar_stack->set_keys(
-        array(
+        [
                 new bar_stack_key('#FF8000', utf8_encode(NUMEROS_POSSEDES), 13 ),
                 new bar_stack_key('#04B404', utf8_encode(NUMEROS_REFERENCES), 13 )
-        ));
+        ]);
 
         //$bar_stack->set_tooltip('#x_label# : #val# '.utf8_encode(NUMEROS__GRAPHIQUE')).'<br>'.TOTAL.' : #total# '.utf8_encode(REFERENCES);
 
 
         $bar_stack_pct->set_keys(
-        array(
+        [
                 new bar_stack_key('#FF8000', utf8_encode(NUMEROS_POSSEDES), 13 ),
                 new bar_stack_key('#04B404', utf8_encode(NUMEROS_REFERENCES), 13 )
-        ));
+        ]);
 
         //$bar_stack_pct->set_tooltip('#x_label# : #val# %' );
 
@@ -126,7 +126,7 @@ if (isset($_POST['id'])) {
         $y_pct = new y_axis();
         $y_pct->set_range( 0, 100, 5 );
 
-        $noms_magazines_courts=array();
+        $noms_magazines_courts= [];
         foreach($donnees as $donnee)
             $noms_magazines_courts[]=$donnee->nom_magazine_court;
         
@@ -150,7 +150,7 @@ if (isset($_POST['id'])) {
         $chart_pct->set_tooltip( $tooltip );
         $taille_graphique=count($donnees)<=4?300:80+40*count($donnees);
 
-        $retour=array();
+        $retour= [];
         $retour['largeur_graphique']=$taille_graphique;
         $retour['data_1']=$chart->toPrettyString();
         $retour['data_2']=$chart_pct->toPrettyString();

@@ -12,10 +12,10 @@ Util::exit_if_not_logged_in();
 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user);
 $total=$resultat[0]['c'];
-$cpt_etats=array();
+$cpt_etats= [];
 $autres=0;
-$valeurs_magazines=array();
-$cles_magazines=array();
+$valeurs_magazines= [];
+$cles_magazines= [];
 foreach(Database::$etats as $etat_court=>$infos_etat) {
 	$resultat=DM_Core::$d->requete_select('SELECT Count(Numero) AS c FROM numeros WHERE ID_Utilisateur='.$id_user.' AND Etat = \''.$etat_court.'\'');
 	$cpt=$resultat[0]['c'];

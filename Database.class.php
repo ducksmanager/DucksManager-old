@@ -14,11 +14,11 @@ else {
 require_once('DucksManager_Core.class.php');
 require_once('Inducks.class.php');
 
-Database::$etats=array(
-   'mauvais'=>array(MAUVAIS,'#FF0000'),
-   'moyen'=>array(MOYEN,'#FF8000'),
-   'bon'=>array(BON,'#2CA77B'),
-   'indefini'=>array(INDEFINI,'#808080'));
+Database::$etats=[
+   'mauvais'=>[MAUVAIS,'#FF0000'],
+   'moyen'=>[MOYEN,'#FF8000'],
+   'bon'=>[BON,'#2CA77B'],
+   'indefini'=>[INDEFINI,'#808080']];
 
 class Database {
 	public static $etats;
@@ -44,8 +44,8 @@ class Database {
 		else {
 			$requete_resultat=mysql_query($requete);
 			if (!is_resource($requete_resultat))
-				return array();
-			$arr=array();
+				return [];
+			$arr=[];
 			while($arr_tmp=mysql_fetch_array($requete_resultat))
 					array_push($arr,$arr_tmp);
 			return $arr;
@@ -155,7 +155,7 @@ class Database {
 	}
 
 	function liste_etats() {
-		$etats=array();
+		$etats=[];
 		foreach(self::$etats as $etat_court=>$infos_etat) {
 			if ($etat_court!='indefini') {
 				$etats[]=$infos_etat[0];
@@ -188,7 +188,7 @@ class Database {
                   	<a target="_blank" href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
             	</span><?php
 			}
-			$publication_codes = array();
+			$publication_codes = [];
 			foreach ($resultat_ventes_utilisateurs as $vente) {
 				$publication_codes[]=$vente['Pays'].'/'.$vente['Magazine'];
 			}
@@ -295,10 +295,10 @@ class Database {
 
 				$intitule=$etat=='non_marque'?'':$etat;
 				$requete_insert='INSERT INTO numeros(Pays,Magazine,Numero,';
-				$arr=array($etat=>array('non_marque','Etat'),
-						   $id_acquisition=>array(-2,'ID_Acquisition'),
-						   $av=>array(-1,'AV')
-						  );
+				$arr=[$etat=>['non_marque','Etat'],
+						   $id_acquisition=>[-2,'ID_Acquisition'],
+						   $av=>[-1,'AV']
+						  ];
 				$debut=true;
 				foreach($arr as $indice=>$valeur) {
 					if (!($debut)) {
@@ -315,7 +315,7 @@ class Database {
 				$requete_insert.=',ID_Utilisateur) VALUES ';
 				$debut=true;
 				$liste_user=$this->toList($this->user_to_id($_SESSION['user']));
-				$liste_deja_possedes=array();
+				$liste_deja_possedes=[];
 				foreach($liste as $numero) {
 					if ($liste_user->est_possede($pays,$magazine,$numero)) {
 						array_push($liste_deja_possedes,$numero);
@@ -326,10 +326,10 @@ class Database {
 
 					$requete_insert.='(\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',';
 
-					$arr=array($etat=>array('non_marque','\''.$intitule.'\''),
-							   $id_acquisition=>array(-2,$id_acquisition),
-							   $av=>array(-1,$av)
-							  );
+					$arr=[$etat=>['non_marque','\''.$intitule.'\''],
+							   $id_acquisition=>[-2,$id_acquisition],
+							   $av=>[-1,$av]
+							  ];
 					$debut=true;
 					foreach($arr as $indice=>$valeur) {
 						if (!($debut)) {
@@ -350,10 +350,10 @@ class Database {
 				DM_Core::$d->requete($requete_insert);
 				$requete_update='UPDATE numeros SET ';
 
-				$arr=array($etat=>array('non_marque','Etat=\''.$intitule.'\''),
-						   $id_acquisition=>array(-2,'ID_Acquisition='.$id_acquisition),
-						   $av=>array(-1,'AV='.$av)
-						  );
+				$arr=[$etat=>['non_marque','Etat=\''.$intitule.'\''],
+						   $id_acquisition=>[-2,'ID_Acquisition='.$id_acquisition],
+						   $av=>[-1,'AV='.$av]
+						  ];
 				$debut=true;
 				foreach($arr as $indice=>$valeur) {
 					if ($indice!=$valeur[0]) {
@@ -392,15 +392,15 @@ class Database {
 			foreach ($resultat as $infos) {
 				if (array_key_exists($infos['Pays'],$l->collection)) {
 						if (array_key_exists($infos['Magazine'],$l->collection[$infos['Pays']])) {
-							array_push($l->collection[$infos['Pays']][$infos['Magazine']],array($infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']));
+							array_push($l->collection[$infos['Pays']][$infos['Magazine']],[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]);
 						}
 						else {
-							$l->collection[$infos['Pays']][$infos['Magazine']]=array(0=>array($infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']));
+							$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
 						}
 				}
 				else {
-					$l->collection[$infos['Pays']]=array($infos['Magazine']=>0);
-					$l->collection[$infos['Pays']][$infos['Magazine']]=array(0=>array($infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']));
+					$l->collection[$infos['Pays']]=[$infos['Magazine']=>0];
+					$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
 
 				}
 			}
@@ -488,8 +488,8 @@ function ajouter_auteur($id,$nom) {
 			echo INTRO_NUMEROS_RECOMMANDES;?>
 			<br />
 			<ol><?php
-			$pays_parcourus=array();
-			$auteurs=array();
+			$pays_parcourus=[];
+			$auteurs=[];
 
 			foreach($resultat_numeros_recommandes as $numero) {
 				$pays=$numero['Pays'];
@@ -581,19 +581,19 @@ function ajouter_auteur($id,$nom) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
-		$nb = array('Photographe'=> $resultat_nb_photographies[0]['cpt'],
+		$nb = ['Photographe'=> $resultat_nb_photographies[0]['cpt'],
 					'Concepteur'	=> $resultat_nb_creations[0]['cpt'],
-					'Duckhunter'	=> $resultat_nb_bouquineries[0]['cpt']);
+					'Duckhunter'	=> $resultat_nb_bouquineries[0]['cpt']];
 
-		$limites=array('Photographe'=>array('Avance' => 50, 'Intermediaire' => 10, 'Debutant' => 1),
-					   'Concepteur'	=>array('Avance' => 10, 'Intermediaire' => 3,  'Debutant' => 1),
-					   'Duckhunter' =>array('Avance' =>  5, 'Intermediaire' => 3,  'Debutant' => 1));
-		$cpt_et_niveaux=array();
+		$limites=['Photographe'=>['Avance' => 50, 'Intermediaire' => 10, 'Debutant' => 1],
+					   'Concepteur'	=>['Avance' => 10, 'Intermediaire' => 3,  'Debutant' => 1],
+					   'Duckhunter' =>['Avance' =>  5, 'Intermediaire' => 3,  'Debutant' => 1]];
+		$cpt_et_niveaux=[];
 		foreach($nb as $type=>$cpt) {
 			$cpt_et_niveaux[$type]=null;
 			foreach ($limites[$type] as $niveau=>$cpt_min) {
 				if ($cpt >= $cpt_min) {
-					$cpt_et_niveaux[$type]=array('Niveau'=>$niveau,'Cpt'=>$cpt);
+					$cpt_et_niveaux[$type]=['Niveau'=>$niveau,'Cpt'=>$cpt];
 					break;
 				}
 			}
@@ -605,7 +605,7 @@ function ajouter_auteur($id,$nom) {
 		$limite_evenements = 20;
 
 		$evenements = new stdClass();
-		$evenements->evenements = array();
+		$evenements->evenements = [];
 
 		/* Inscriptions */
 		$requete_inscriptions='SELECT users.ID, users.username, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
@@ -622,7 +622,7 @@ function ajouter_auteur($id,$nom) {
 		}
 		
 		/* Ajouts aux collections */
-		$evenements->publicationcodes = array();
+		$evenements->publicationcodes = [];
 		$requete='SELECT users.ID, users.username,
 				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt,
 				  		 (SELECT CONCAT(Pays,\'/\',Magazine,\'/\',Numero)
@@ -641,10 +641,10 @@ function ajouter_auteur($id,$nom) {
 			$evenements->publicationcodes[]=$publicationcode[0];
 			
 			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
-			$numero_complet=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+			$numero_complet=['Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero];
 			
-			$evenement = array('numero_exemple'=>$numero_complet,
-							   'cpt'		   =>intval($ajout['cpt'])-1);
+			$evenement = ['numero_exemple'=>$numero_complet,
+							   'cpt'		   =>intval($ajout['cpt'])-1];
 			
 			ajouter_evenement(
 				$evenements->evenements,
@@ -662,7 +662,7 @@ function ajouter_auteur($id,$nom) {
 
 		$resultat_bouquineries = DM_Core::$d->requete_select($requete_bouquineries);
 		foreach($resultat_bouquineries as $bouquinerie) {
-			$evenement = array('nom_bouquinerie'=>$bouquinerie['Nom']);
+			$evenement = ['nom_bouquinerie'=>$bouquinerie['Nom']];
 			ajouter_evenement(
 					$evenements->evenements,
 					$bouquinerie['DiffSecondes'],
@@ -688,10 +688,10 @@ function ajouter_auteur($id,$nom) {
 			$evenements->publicationcodes[]=$publicationcode;
 
             list($pays,$magazine,$numero)=explode('/',$tranche_prete['Numero']);
-            $numero_complet=array('Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero);
+            $numero_complet=['Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero];
 
             $collaborateurs = explode(',', preg_replace('#(,{2,})#',',', trim($tranche_prete['collaborateurs'],',')));
-            $groupe_courant = array('DiffSecondes' => $tranche_prete['DiffSecondes'], 'Collaborateurs' => $collaborateurs);
+            $groupe_courant = ['DiffSecondes' => $tranche_prete['DiffSecondes'], 'Collaborateurs' => $collaborateurs];
 
             if (!is_null($groupe_precedent) &&
                 ($groupe_precedent['Collaborateurs'] === $groupe_courant['Collaborateurs']
@@ -707,7 +707,7 @@ function ajouter_auteur($id,$nom) {
                         $groupe_precedent['Collaborateurs'],
                         $evenement);
                 }
-                $evenement = array('numeros' => array($numero_complet));
+                $evenement = ['numeros' => [$numero_complet]];
             }
             $groupe_precedent = $groupe_courant;
 		}
@@ -724,14 +724,14 @@ function ajouter_auteur($id,$nom) {
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
 		ksort($evenements->evenements);
 		
-		$evenements_slice=array();
+		$evenements_slice=[];
 		$cpt=0;
 		
 		// Filtre : les 20 plus récents seulement
 		foreach($evenements->evenements as $diff_secondes=>$evenements_types) {
 			$evenements_slice[$diff_secondes]=new stdClass();
 			foreach($evenements_types as $type=>$evenements_type) {
-				$evenements_slice_type=array();
+				$evenements_slice_type=[];
 				foreach($evenements_type as $evenement) {
 					if ($cpt >= $limite_evenements) {
 						$evenements_slice[$diff_secondes]->$type=$evenements_slice_type;
@@ -893,7 +893,7 @@ if (isset($_POST['database'])) {
 		//print_r($_SESSION);acquisitions
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
-		$tab_achats=array();
+		$tab_achats=[];
 		$cpt_strlen=0;
 		foreach ($liste_achats as $achat) {
 			$id_achat=$achat['ID_Acquisition'];
@@ -974,14 +974,14 @@ function note_to_pouces($num,$note) {
 }
 
 
-function ajouter_evenement(&$evenements, $diff_secondes, $type_evenement, $utilisateur, $evenement=array()) {
+function ajouter_evenement(&$evenements, $diff_secondes, $type_evenement, $utilisateur, $evenement=[]) {
 	$evenement['diffsecondes'] = $diff_secondes;
 	$evenement['utilisateur'] = $utilisateur;
 	if (!array_key_exists($diff_secondes, $evenements)) {
 		$evenements[$diff_secondes]=new stdClass();
 	}
 	if (!array_key_exists($type_evenement, $evenements[$diff_secondes])) {
-		$evenements[$diff_secondes]->$type_evenement=array();
+		$evenements[$diff_secondes]->$type_evenement=[];
 	}
 	$evenements_type=$evenements[$diff_secondes]->$type_evenement;
 	$evenements_type[]=json_decode(json_encode($evenement));
