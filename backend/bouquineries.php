@@ -20,7 +20,7 @@ $resultats = DM_Core::$d->requete_select($requete);
 
 if (count($resultats) > 0) {
     $champs = array_keys($resultats[0]);
-    $champs_utilises = array();
+    $champs_utilises = [];
     ?><table border="1">
         <tr><form method="post">
             <?php foreach($champs as $champ) {

@@ -9,17 +9,17 @@ class dmspiral extends Format_liste {
 	
 	function __construct() {
 		$this->description='';//DMSPIRAL_DESCRIPTION;
-		$this->ajouter_parametres(array(
+		$this->ajouter_parametres([
 			'epaisseur'=>new Parametre_min_max('Epaisseur des cases',10,25,30,15),
 			'marge'=>new Parametre_min_max('Marge',0,5,2,2),
 			'hauteur_centrale'=>new Parametre_min_max('Hauteur centrale',25,60,40,40),
 			'nuance_gris_fond'=>new Parametre_min_max('Nuance de gris du fond',100,255,255,255),
 			'couleur_r'=>new Parametre_min_max('Remplissage - rouge',0,255,0,0),
 			'couleur_g'=>new Parametre_min_max('Remplissage - vert',0,255,0,0),
-			'couleur_b'=>new Parametre_min_max('Remplissage - bleu',0,255,255,255)));
+			'couleur_b'=>new Parametre_min_max('Remplissage - bleu',0,255,255,255)]);
 		
-		$this->ajouter_parametres(array(
-			'taille_police'=>new Parametre_fixe($this->p('epaisseur')/4)));
+		$this->ajouter_parametres([
+			'taille_police'=>new Parametre_fixe($this->p('epaisseur')/4)]);
 	}
 	
 	static function est_listable($numero) {
@@ -39,13 +39,13 @@ class dmspiral extends Format_liste {
 		if (!isset($_GET['debug']))
 			header('Content-type: image/png');
 	
-		$numeros_doubles=array();
+		$numeros_doubles= [];
 		list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
-		$this->ajouter_parametres(array('numero_max'=>max($numeros)));
-		$this->ajouter_parametres(array('nb_centaines'=>intval($this->p('numero_max')/100)+1));
-		$this->ajouter_parametres(array(
+		$this->ajouter_parametres(['numero_max'=>max($numeros)]);
+		$this->ajouter_parametres(['nb_centaines'=>intval($this->p('numero_max')/100)+1]);
+		$this->ajouter_parametres([
 			'haut'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/2,
-			'gauche'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/4));
+			'gauche'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/4]);
 		foreach($numeros as $numero) {
 			$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero, $numero)>0;
 			if ($est_numero_double) {
@@ -54,7 +54,7 @@ class dmspiral extends Format_liste {
 			}
 		}
 
-		list($nom_pays_complet,$nom_magazine_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
+		$nom_magazine_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
 
 		$titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
 		

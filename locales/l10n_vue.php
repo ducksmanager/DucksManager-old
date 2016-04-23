@@ -16,8 +16,8 @@
     global $regex;
     global $l10n;
     $regex="#'((?:(?!',').)*)','((?:(?!'\)).)*)'\);#";
-    $l10n=array();
-    $locales=array('en'=>'Anglais','fr'=>'Francais');
+    $l10n= [];
+    $locales= ['en'=>'Anglais','fr'=>'Francais'];
     
     ?><tr><td>Element<?php
     foreach($locales as $locale_abbr=>$locale) {
@@ -55,7 +55,7 @@ function lire_locale($lang) {
 		$cle=$matches[1][$i];
 		$valeur=str_replace("\\'","'",$matches[2][$i]);
 		if (!array_key_exists($cle,$l10n))
-			$l10n[$cle]=array();
+			$l10n[$cle]= [];
 		$l10n[$cle][$lang]=$valeur;
 	}
 }

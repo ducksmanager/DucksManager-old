@@ -19,7 +19,7 @@ class Affichage {
 				   $lien='?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new';
 				}
 				else
-					$lien=(empty($prefixe) || in_array($prefixe,array('?','.'))) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
+					$lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
 				if ($infos_lien[0]==$onglet_courant)
 				   echo 'active ';
 				if (empty($prefixe)) {
@@ -31,7 +31,7 @@ class Affichage {
 							$nom='magazine';
 						break;
 						default:
-							if (in_array($argument,array('onglet_aide','onglet_type_param','previews')))
+							if (in_array($argument, ['onglet_aide','onglet_type_param','previews']))
 								$nom=$infos_lien[0];
 							else
 								$nom='';
@@ -75,7 +75,7 @@ class Affichage {
 	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
 		$liste->nettoyer_collection();
 		$nb_possedes=0;
-		$numeros2=array();
+		$numeros2= [];
 		foreach($numeros as $i=>$numero) {
 			$infos_numero=$liste->infos_numero($pays,$magazine,$numero);
 			$o=new stdClass();
@@ -100,7 +100,7 @@ class Affichage {
 		<span id="magazine" style="display:none"><?=$magazine?></span>
 		<?php
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		list($pays_complet,$nom_complet)=Inducks::get_nom_complet_magazine($pays, $magazine);
+		$nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
 		?>
 		<br />
 		<table border="0" width="100%">
@@ -152,7 +152,7 @@ class Affichage {
                         ?><div class="bloc_details">
                             <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
                         </div><?php
-                        if (!in_array($id_acquisition,array(-1,-2))) {
+                        if (!in_array($id_acquisition, [-1,-2])) {
                             $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
                             $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
                             if (count($resultat_date)>0) {

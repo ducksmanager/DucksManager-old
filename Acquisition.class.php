@@ -1,7 +1,7 @@
 <?php
 	class Acquisition {
 		var $date;
-		var $numeros=array();
+		var $numeros= [];
 		var $couleur;
 		function __construct($date,$numeros,$couleur) {
 			$this->date=$date;
@@ -11,7 +11,7 @@
 		
 		function afficher($magazines_groupes) {
 			if ($magazines_groupes) {
-				$magazines=array();
+				$magazines= [];
 				foreach($this->numeros as $numero) {
 					if (!in_array($numero['Magazine'],$magazines))
 						array_push($magazines,$numero['Magazine']);

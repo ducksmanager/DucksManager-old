@@ -78,9 +78,9 @@ class Menu extends Item{
 	}
 }
 
-$menus=array(
+$menus= [
 	new Menu(COLLECTION, 'no',
-			 array(new Item('new', 'never', NOUVELLE_COLLECTION),
+			 [new Item('new', 'never', NOUVELLE_COLLECTION),
 				   new Item('open', 'never', OUVRIR_COLLECTION),
 				   new Item('bibliotheque', 'always__limited_external_access', BIBLIOTHEQUE_COURT),
 				   new Item('gerer', 'always', GERER_COLLECTION),
@@ -89,12 +89,12 @@ $menus=array(
 				   new Item('print', 'always', IMPRIMER_COLLECTION),
 				   new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS),
 				   new Item('logout', 'always', DECONNEXION)
-			)),
+			 ]),
 	new Menu(DUCKHUNT_TOUR, 'no',
-			array(new Item('duckhunt_tour', 'no', PRESENTATION_DUCKHUNT_TOUR),
-				  new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES))
+			[new Item('duckhunt_tour', 'no', PRESENTATION_DUCKHUNT_TOUR),
+				  new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES)]
 			),
 	new LigneVide(),
 	new Item('demo','never',DEMO_MENU)
-);
+];
 ?>

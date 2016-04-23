@@ -12,7 +12,7 @@ Util::exit_if_not_logged_in();
 @session_start();
 $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 $l=DM_Core::$d->toList($id_user);
-$counts=array();
+$counts= [];
 $total=0;
 $requete_cpt_numeros_groupes='SELECT Pays,Magazine,Count(Numero) AS cpt '
 							.'FROM numeros '
@@ -21,7 +21,7 @@ $requete_cpt_numeros_groupes='SELECT Pays,Magazine,Count(Numero) AS cpt '
 							.'ORDER BY cpt';
 $resultat_cpt_numeros_groupes=DM_Core::$d->requete_select($requete_cpt_numeros_groupes);
 
-$publication_codes=array();
+$publication_codes= [];
 foreach($resultat_cpt_numeros_groupes as $resultat) {
 	$publicationcode=$resultat['Pays'].'/'.$resultat['Magazine'];
 	$cpt=intval($resultat['cpt']);
@@ -32,9 +32,9 @@ foreach($resultat_cpt_numeros_groupes as $resultat) {
 list($noms_pays,$noms_magazines)=Inducks::get_noms_complets($publication_codes);
 
 $autres=0;
-$explode_pays=array();
-$valeurs_magazines=array();
-$cles_magazines=array();
+$explode_pays= [];
+$valeurs_magazines= [];
+$cles_magazines= [];
 $nb_magazines_autres=0;
 foreach($counts as $publicationcode=>$cpt) {
     if (!array_key_exists($publicationcode, $noms_magazines)) { // Magazine ayant disparu d'Inducks

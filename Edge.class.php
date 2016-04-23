@@ -9,7 +9,7 @@ class Edge {
 	var $magazine;
 	var $numero;
 	var $numero_reference;
-	var $textes=array();
+	var $textes= [];
 	var $largeur=20;
 	var $hauteur=200;
 	var $image;
@@ -17,8 +17,8 @@ class Edge {
 	var $o;
 	var $est_visible=true;
 	var $magazine_est_inexistant=false;
-	var $intervalles_validite=array();
-	var $en_cours=array();
+	var $intervalles_validite= [];
+	var $en_cours= [];
 	var $html='';
 	static $grossissement=10;
 	static $grossissement_affichage=1.5;
@@ -59,7 +59,7 @@ class Edge {
 
 			}
 			else {
-				$dimensions=getDimensionsParDefautMagazine($this->pays,$this->magazine,array($this->numero_reference));
+				$dimensions=getDimensionsParDefautMagazine($this->pays,$this->magazine, [$this->numero_reference]);
 				if (!is_null($dimensions[$this->numero_reference]) && $dimensions[$this->numero_reference]!='null')
 					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
 
@@ -78,7 +78,7 @@ class Edge {
 	}
 
 	function getLargeurHauteurDefaut() {
-		return array($this->largeur,$this->hauteur);
+		return [$this->largeur,$this->hauteur];
 	}
 	
 	static function getEtagereHTML($br=true) {
@@ -95,12 +95,12 @@ class Edge {
 	
 	
 	static function get_numeros_clean($pays,$magazine,$numeros) {
-		$numeros_clean_et_references=array();
+		$numeros_clean_et_references= [];
 		foreach($numeros as $i=>$numero) {
 			$numero=$numero[0];
 			$numero_clean=self::get_numero_clean($numero);
 			$numeros[$i]="'".$numero_clean."'";
-			$numeros_clean_et_references[$numero]=array('clean'=>$numero_clean,'reference'=>$numero_clean);
+			$numeros_clean_et_references[$numero]= ['clean'=>$numero_clean,'reference'=>$numero_clean];
 		}
 		
 		$numeros_subarrays=array_chunk($numeros, 250);
@@ -126,7 +126,7 @@ class Edge {
 			}
 		}
 
-		return array($vrai_magazine, $numeros_clean_et_references);
+		return [$vrai_magazine, $numeros_clean_et_references];
 	}
 	
 	function getImgHTML($regen=false) {
@@ -174,7 +174,7 @@ class Edge {
             imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
     }
 
-	function placer_image($sous_image, $position='haut', $decalage=array(0,0), $compression_largeur=1, $compression_hauteur=1) {
+	function placer_image($sous_image, $position='haut', $decalage= [0,0], $compression_largeur=1, $compression_hauteur=1) {
 		if (is_string($sous_image)) {
 			$extension_image=strtolower(substr($sous_image, strrpos($sous_image, '.')+1,strlen($sous_image)-strrpos($sous_image, '.')-1));
 			$fonction_creation_image='imagecreatefrom'.$extension_image.'_getimagesize';
@@ -205,7 +205,7 @@ class Edge {
         DM_Core::$d->maintenance_ordre_magazines($id_user);
         $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
         $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
-        $publication_codes=array();
+        $publication_codes= [];
         foreach($resultat_ordre_magazines as $ordre) {
             $pays=$ordre['Pays'];
             $magazine=$ordre['Magazine'];
@@ -236,13 +236,13 @@ class Edge {
         }
         $pourcentage_visible=$total_numeros==0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
         if ($get_html)
-            return array($texte_final, $pourcentage_visible);
+            return [$texte_final, $pourcentage_visible];
         else
             return $pourcentage_visible;
 	}
 
     static function getParametresBibliotheque($id_user) {
-        $textures = array();
+        $textures = [];
         for ($i = 1; $i <= 2; $i++) {
             $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
             $resultat_textures = DM_Core::$d->requete_select($requete_textures);
@@ -260,7 +260,7 @@ DM_Core::$d->requete('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
     $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
 	include_once ('locales/lang.php');
-	list($nom_complet_pays,$nom_complet_magazine)=$nom_complet_magazine=Inducks::get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
+	$nom_complet_magazine=Inducks::get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
 	?>
 	<div class="titre_magazine"><?=$nom_complet_magazine?></div><br />
 	<div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
@@ -301,7 +301,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
     }
 
     if (is_null($id_user)) {
-        echo json_encode(array('erreur' => 'Lien de partage invalide'));
+        echo json_encode(['erreur' => 'Lien de partage invalide']);
     }
     else {
         $requete_grossissement = 'SELECT username, Bibliotheque_Grossissement FROM users WHERE ID = \'' . $id_user . '\'';
@@ -309,14 +309,14 @@ elseif (isset($_POST['get_bibliotheque'])) {
         $username = $resultat_grossissement[0]['username'];
         $grossissement = $resultat_grossissement[0]['Bibliotheque_Grossissement'];
 
-        $textures = array();
+        $textures = [];
         for ($i = 1; $i <= 2; $i++) {
             $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
             $resultat_textures = DM_Core::$d->requete_select($requete_textures);
-            $textures[$i - 1] = array(
+            $textures[$i - 1] = [
                 'texture' => $resultat_textures[0]['Bibliotheque_Texture' . $i],
                 'sous_texture' => $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i]
-            );
+			];
         }
 
         Edge::$grossissement = $grossissement;
@@ -332,7 +332,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
         include_once('edgetest.php');
         $contenu = ob_get_clean();
 
-        echo json_encode(array('titre' => $titre, 'contenu' => $contenu, 'textures' => $textures));
+        echo json_encode(['titre' => $titre, 'contenu' => $contenu, 'textures' => $textures]);
     }
 }
 
@@ -385,8 +385,8 @@ elseif (isset($_POST['partager_bibliotheque'])) {
 elseif (isset($_POST['generer_image'])) {
 	error_reporting(E_ALL);
 	$nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.jpg';
-	$images=array('texture1','sous_texture1','texture2','sous_texture2');
-	$variables=array('largeur','texture1','sous_texture1','texture2','sous_texture2');
+	$images= ['texture1','sous_texture1','texture2','sous_texture2'];
+	$variables= ['largeur','texture1','sous_texture1','texture2','sous_texture2'];
 	foreach($variables as $variable)
 		${$variable}=$_POST[$variable];
 	
@@ -402,7 +402,7 @@ elseif (isset($_POST['generer_image'])) {
 		.'<largeur>'.$largeur.'</largeur>'."\n"
 		.jsonToXML($pos)
 		.'</xml>';*/
-	$contenu=implode("\n",array($texture1.'/'.$sous_texture1,$texture2.'/'.$sous_texture2,$largeur,str_replace('\"','"',$_POST['pos'])));
+	$contenu=implode("\n", [$texture1.'/'.$sous_texture1,$texture2.'/'.$sous_texture2,$largeur,str_replace('\"','"',$_POST['pos'])]);
 	Util::ecrire_dans_fichier('edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.json', $contenu, false);
 	include_once('ServeurDb.class.php');
 	?>
@@ -413,8 +413,8 @@ elseif (isset($_POST['generer_image'])) {
 }
 elseif (isset($_POST['generer_images_etageres'])) {
 	error_reporting(E_ALL);
-	$images=array('texture1','sous_texture1','texture2','sous_texture2');
-	$variables=array('largeur','texture1','sous_texture1','texture2','sous_texture2');
+	$images= ['texture1','sous_texture1','texture2','sous_texture2'];
+	$variables= ['largeur','texture1','sous_texture1','texture2','sous_texture2'];
 	foreach($variables as $variable)
 		${$variable}=$_POST[$variable];
 		
@@ -429,7 +429,7 @@ elseif (isset($_POST['generer_images_etageres'])) {
 		}
 	}
 	$max_y=0;
-	$pos_sup_gauche=array();
+	$pos_sup_gauche= [];
 	foreach($pos->etageres->etageres as $i=>$pos_etagere) {
 		$pos_etagere_courante=explode(',',$pos_etagere);
 		if ($i==0)
@@ -487,19 +487,19 @@ function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
 	$e->est_visible=count(DM_Core::$d->requete_select($requete_est_visible)) > 0;
 		
 	if ($get_html)
-		return array($e->getImgHTML($regen),$e->est_visible);
+		return [$e->getImgHTML($regen),$e->est_visible];
 	else
 		return $e->est_visible;
 }
 
 function imagecreatefrompng_getimagesize($chemin) {
 	$image=imagecreatefrompng($chemin);
-	return array($image,imagesx($image),imagesy($image));
+	return [$image,imagesx($image),imagesy($image)];
 }
 
 function imagecreatefromgif_getimagesize($chemin) {
 	$image=imagecreatefromgif($chemin);
-	return array($image,imagesx($image),imagesy($image));
+	return [$image,imagesx($image),imagesy($image)];
 }
 
 if (!function_exists('imagepalettetotruecolor')) {
@@ -517,7 +517,7 @@ if (!function_exists('imagepalettetotruecolor')) {
 
 function rgb2hex($r,$g,$b) {
 	$hex = "";
-	$rgb=array($r,$g,$b);
+	$rgb= [$r,$g,$b];
 	for ($i = 0; $i < 3; $i++) {
 		if (($rgb[$i] > 255) || ($rgb[$i] < 0)) {
 			echo "Error : input must be between 0 and 255";

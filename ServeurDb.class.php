@@ -6,7 +6,7 @@ class ServeurDb {
 	static $db_servers_file='ducksmanager_db.ini';
 
 	/** @var $db_servers ProfilDB[] */
-	static $db_servers = array();
+	static $db_servers = [];
 
 	/** @var $db_servers ProfilDB */
 	static $current_db_server;
@@ -21,7 +21,7 @@ class ServeurDb {
 	}
 
 	static function initDBServers() {
-		self::$db_servers = array();
+		self::$db_servers = [];
 		$configured_db_servers = parse_ini_file(self::$db_servers_file, true);
 		foreach($configured_db_servers as $name=>$configured_db_server) {
 			self::$db_servers[$name] = Util::cast(ProfilDB::class, json_decode(json_encode($configured_db_server)));
@@ -73,11 +73,11 @@ class ServeurDb {
 			$server = 'dedibox';
 		}
 		$serveurCoaPrincipal = ServeurCoa::getCoaServer($server);
-		return implode('/', array(
+		return implode('/', [
 			$serveurCoaPrincipal->getUrl(),
 			$serveurCoaPrincipal->web_root,
 			$page
-		));
+		]);
 	}
 }
 

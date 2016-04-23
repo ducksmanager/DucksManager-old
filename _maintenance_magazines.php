@@ -1,6 +1,6 @@
 <?php header('Content-type: text/html; charset=UTF-8');
 class Resolution {
-    static $numeros_doubles_JM=array('2411-12','2463-64','2479-80','2506-07','2515-16','2531-32','2558-59','2584-85','2610-11','2619-20','2636-37','2662-63','2671-72','2688-89','2715-16','2723-24','2767-68','2819-20','2828-29','2844-45','2871-72','2879-80','2896-97','2923-24','2932-33','2948-49','2975-76','2984-85');
+    static $numeros_doubles_JM= ['2411-12','2463-64','2479-80','2506-07','2515-16','2531-32','2558-59','2584-85','2610-11','2619-20','2636-37','2662-63','2671-72','2688-89','2715-16','2723-24','2767-68','2819-20','2828-29','2844-45','2871-72','2879-80','2896-97','2923-24','2932-33','2948-49','2975-76','2984-85'];
 }
 
 include_once('Util.class.php');
@@ -50,11 +50,11 @@ function tentative_resolution_numero($pays,$magazine,$num_dm) {
                     $split=str_split($num_suivant);
                     $num_double_corresp=$num_dm.'-'.$split[2].$split[3];
                     if (in_array($num_double_corresp,  Resolution::$numeros_doubles_JM))
-                        return array($pays,$magazine,$num_double_corresp);
+                        return [$pays,$magazine,$num_double_corresp];
                 break;
                 case 'JMS':
                     if ($num_dm==2500)
-                        return array($pays,$magazine,'2500A');
+                        return [$pays,$magazine,'2500A'];
                 break;
                 case 'PMHS':
                     $split=str_split($num_dm);
@@ -72,10 +72,10 @@ function tentative_resolution_numero($pays,$magazine,$num_dm) {
                     }
                     switch($lettre) {
                         case 'B':
-                            return array($pays,'JP',$nombre);
+                            return [$pays,'JP',$nombre];
                         break;
                         case 'C':
-                            return array($pays,'TP',$nombre+2);
+                            return [$pays,'TP',$nombre+2];
                         break;
                     }
                 break;

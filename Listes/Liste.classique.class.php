@@ -8,13 +8,13 @@ require_once('Format_liste.php');
 class classique extends Format_liste {
 	static $titre='Liste classique';
 	function __construct() {
-		$this->les_plus=array(CLASSIQUE_PLUS_1);
-		$this->les_moins=array(CLASSIQUE_MOINS_1,CLASSIQUE_MOINS_2,CLASSIQUE_MOINS_3);
+		$this->les_plus= [CLASSIQUE_PLUS_1];
+		$this->les_moins= [CLASSIQUE_MOINS_1,CLASSIQUE_MOINS_2,CLASSIQUE_MOINS_3];
 		$this->description=CLASSIQUE_DESCRIPTION;
 	}
 
 	function afficher($liste) {
-		$publication_codes=array();
+		$publication_codes= [];
 		foreach($liste as $pays=>$numeros_pays) {
 			foreach(array_keys($numeros_pays) as $magazine) {
 				$publication_codes[]=$pays.'/'.$magazine;
@@ -26,7 +26,7 @@ class classique extends Format_liste {
 			foreach($numeros_pays as $magazine=>$numeros) {
 				?><u><?=array_key_exists($pays.'/'.$magazine,$noms_magazines) ? $noms_magazines[$pays.'/'.$magazine] : $magazine?></u> <?php
 				sort($numeros);
-				$texte=array();
+				$texte= [];
 				foreach($numeros as $numero) {
 					$texte[]=urldecode(is_array($numero) ? $numero[0] : $numero);
 				}

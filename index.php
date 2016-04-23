@@ -109,7 +109,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         $cle_bibliotheque = -1;
                         $est_partage_bibliotheque = false;
                     }
-                    $onglet = isset($_GET['onglet']) && in_array($_GET['onglet'], array('affichage', 'options'))
+                    $onglet = isset($_GET['onglet']) && in_array($_GET['onglet'], ['affichage', 'options'])
                         ? $_GET['onglet']
                         : 'affichage';
                     $regen = isset($_GET['regen']) ? 1 : 0;
@@ -464,11 +464,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     <h2 id="titre_bibliotheque"></h2><br /><br />
                                 <?php
                                 if (!$est_partage_bibliotheque) {
-                                    $onglets = array(
-                                        BIBLIOTHEQUE_COURT => array('affichage', BIBLIOTHEQUE),
-                                        BIBLIOTHEQUE_OPTIONS_COURT => array('options', BIBLIOTHEQUE_OPTIONS),
-                                        BIBLIOTHEQUE_PARTICIPER_COURT => array('participer', BIBLIOTHEQUE_PARTICIPER),
-                                        BIBLIOTHEQUE_CONTRIBUTEURS_COURT => array('contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS));
+                                    $onglets = [
+                                        BIBLIOTHEQUE_COURT => ['affichage', BIBLIOTHEQUE],
+                                        BIBLIOTHEQUE_OPTIONS_COURT => ['options', BIBLIOTHEQUE_OPTIONS],
+                                        BIBLIOTHEQUE_PARTICIPER_COURT => ['participer', BIBLIOTHEQUE_PARTICIPER],
+                                        BIBLIOTHEQUE_CONTRIBUTEURS_COURT => ['contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS]];
                                     if (!isset($_GET['onglet']))
                                         $onglet = 'affichage';
                                     else
@@ -483,7 +483,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             if (!$est_partage_bibliotheque) {
                                                 $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, false);
                                                 if (count($resultat_tranches_collection_ajoutees) > 0) {
-                                                    $publication_codes = array();
+                                                    $publication_codes = [];
                                                     foreach ($resultat_tranches_collection_ajoutees as $tranche) {
                                                         $publication_codes[] = $tranche['publicationcode'];
                                                     }
@@ -590,7 +590,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             <?php
                                             $requete_ordre_magazines = 'SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user . ' ORDER BY Ordre';
                                             $resultat_ordre_magazines = DM_Core::$d->requete_select($requete_ordre_magazines);
-                                            $publication_codes = array();
+                                            $publication_codes = [];
                                             foreach ($resultat_ordre_magazines as $magazine) {
                                                 $publication_codes[] = $magazine['Pays'] . '/' . $magazine['Magazine'];
                                             }
@@ -711,7 +711,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                             <td>
                                                                 <?php
                                                                 require_once 'captcha/securimage/securimage.php';
-                                                                echo Securimage::getCaptchaHtml(array('input_text' => ''));
+                                                                echo Securimage::getCaptchaHtml(['input_text' => '']);
                                                                 ?>
                                                             </td>
                                                         </tr>
@@ -779,9 +779,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
                                 <?php
-                                $onglets=array(
-                                        GESTION_NUMEROS_COURT=>array('ajout_suppr',GESTION_NUMEROS),
-                                        GESTION_COMPTE_COURT=>array('compte',GESTION_COMPTE));
+                                $onglets= [
+                                        GESTION_NUMEROS_COURT=> ['ajout_suppr',GESTION_NUMEROS],
+                                        GESTION_COMPTE_COURT=> ['compte',GESTION_COMPTE]];
                                 if (!isset($_GET['onglet']))
                                     $onglet='ajout_suppr';
                                 else
@@ -940,7 +940,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         else {
 											list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
                                         }
-                                        $onglets_pays[NOUVEAU_MAGAZINE]=array('new',AJOUTER_MAGAZINE);
+                                        $onglets_pays[NOUVEAU_MAGAZINE]= ['new',AJOUTER_MAGAZINE];
                                         if (!isset($_GET['onglet_magazine'])) {
 											reset($onglets_pays);                                            
 											$premier_pays=current($onglets_pays);
@@ -1123,8 +1123,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                             case 'agrandir':
                                 $l=DM_Core::$d->toList($id_user);
 
-                                $onglets=array(ACHAT_VENTE_NUMEROS=>array('achat_vente',CONTACT_UTILISATEURS),
-                                               AUTEURS_FAVORIS=>array('auteurs_favoris',AUTEURS_FAVORIS_TEXTE));
+                                $onglets= [ACHAT_VENTE_NUMEROS=> ['achat_vente',CONTACT_UTILISATEURS],
+                                               AUTEURS_FAVORIS=> ['auteurs_favoris',AUTEURS_FAVORIS_TEXTE]];
                                 if (!isset($_GET['onglet']))
                                     $onglet='achat_vente';
                                 else
@@ -1137,8 +1137,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         DM_Core::$d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':
-                                        $onglets_auteurs=array(RESULTATS_SUGGESTIONS_MAGS=>array('resultats',SUGGESTIONS_ACHATS),
-                                                               PREFERENCES_AUTEURS=>array('preferences',PREFERENCES_AUTEURS));
+                                        $onglets_auteurs= [RESULTATS_SUGGESTIONS_MAGS=> ['resultats',SUGGESTIONS_ACHATS],
+                                                               PREFERENCES_AUTEURS=> ['preferences',PREFERENCES_AUTEURS]];
                                         if (!isset($_GET['onglet_auteur']))
                                             $onglet_auteurs='resultats';
                                         else
@@ -1239,7 +1239,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 	?><br /><br /><?php
                                 	if (isset($_POST['ajouter'])) {
 										$erreur=false;
-										foreach (array('nom','adresse_complete','coordX', 'coordY', 'commentaire') as $champ) {
+										foreach (['nom','adresse_complete','coordX', 'coordY', 'commentaire'] as $champ) {
 											$_POST[$champ]=mysql_real_escape_string($_POST[$champ]);
 											if (empty($_POST[$champ])) {
 												$erreur=true;

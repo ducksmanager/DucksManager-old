@@ -6,14 +6,14 @@ $epaisseur=16;
 $petit_rayon=81;
 
 $possessions_init=explode(',',$_GET['chaine']);
-$possessions=array();
+$possessions= [];
 foreach($possessions_init as $indice=>$possession) {
 	list($id,$numero,$etat,$date,$couleur)=$array_temp=explode('!',$possessions_init[$indice]);
-        $possessions[]=array('ID'=>$id,
+        $possessions[]= ['ID'=>$id,
                              'Numero'=>$numero,
                              'Etat'=>$etat,
                              'Date d\'acquisition'=>$date,
-                             'Couleur'=>$couleur); // Les indices du tableau correspondent aux num�ros
+                             'Couleur'=>$couleur]; // Les indices du tableau correspondent aux num�ros
 }
 $max_centaines=1;
 foreach($possessions as $numero) {
@@ -72,7 +72,7 @@ foreach($possessions as $numero) {
 	$p2=num_vers_Point($numero+1,0,$epaisseur);
 	$p3=num_vers_Point($numero+100,0,$epaisseur);
 	$p4=num_vers_Point($numero+101,0,$epaisseur);
-	$x=array($p['x'],$p['y'],$p2['x'],$p2['y'],$p4['x'],$p4['y'],$p3['x'],$p3['y']);
+	$x= [$p['x'],$p['y'],$p2['x'],$p2['y'],$p4['x'],$p4['y'],$p3['x'],$p3['y']];
 
 	$coul=etat_to_color($etat,$image);
 
@@ -95,7 +95,7 @@ function num_vers_Point ($num,$modif_ecart,$epaisseur) {
 
 	$rayon=$petit_rayon+($modif_ecart*$epaisseur)+$epaisseur*$num_centaines+(0.01*$num_restant)*$epaisseur;
 
-	$point=array();
+	$point= [];
 	$point['x']=intval($centre_spirale_x-$rayon*sin($angle));
 	$point['y']=intval($centre_spirale_y-$rayon*cos($angle));
 	return $point;

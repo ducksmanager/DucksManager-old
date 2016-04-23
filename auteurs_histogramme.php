@@ -17,11 +17,11 @@ if ($date_dernier_calcul=='0000-00-00')
 $requete_auteurs='SELECT NomAuteur, NbNonPossedesFrance, NbNonPossedesEtranger, NbPossedes FROM auteurs_pseudos '
 				.'WHERE ID_User='.$id_user.' AND DateStat = \''.$date_dernier_calcul.'\'';
 $resultat_auteurs=DM_Core::$d->requete_select($requete_auteurs);
-$non_poss_etr=array();$non_poss_etr_pct=array();
-$non_poss_fr=array();$non_poss_fr_pct=array();
-$poss=array();$poss_pct=array();
-$totaux=array();
-$auteurs=array();
+$non_poss_etr= [];$non_poss_etr_pct= [];
+$non_poss_fr= [];$non_poss_fr_pct= [];
+$poss= [];$poss_pct= [];
+$totaux= [];
+$auteurs= [];
 foreach($resultat_auteurs as $auteur) {
 	$total=$auteur['NbNonPossedesEtranger']+$auteur['NbNonPossedesFrance']+$auteur['NbPossedes'];
 
@@ -65,7 +65,7 @@ foreach ($poss as $index=>$val_poss) {
 	$tmp2->set_tooltip($auteurs[$index].'<br>'.utf8_encode(HISTOIRES_NON_POSSEDEES_PAYS.' : '.$val_non_poss_fr.'<br>'.TOTAL.' : '.$totaux[$index]));
 	$tmp3->set_tooltip($auteurs[$index].'<br>'.utf8_encode(HISTOIRES_NON_POSSEDEES_ETRANGER.' : '.$val_non_poss_etr.'<br>'.TOTAL.' : '.$totaux[$index]));
 
-	$bar_stack->append_stack(array($tmp,$tmp2,$tmp3));
+	$bar_stack->append_stack([$tmp,$tmp2,$tmp3]);
 }
 
 foreach ($poss_pct as $index=>$val_poss) {
@@ -78,7 +78,7 @@ foreach ($poss_pct as $index=>$val_poss) {
 	$tmp2->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_PAYS.' : '.$val_non_poss_fr.'%<br>'.TOTAL.' : '.$totaux[$index]));
 	$tmp3->set_tooltip(utf8_encode($auteurs[$index].'<br>'.HISTOIRES_NON_POSSEDEES_ETRANGER.' : '.$val_non_poss_etr.'%<br>'.TOTAL.' : '.$totaux[$index]));
 
-	$bar_stack_pct->append_stack(array($tmp,$tmp2,$tmp3));
+	$bar_stack_pct->append_stack([$tmp,$tmp2,$tmp3]);
 }
 
 $supertotal=0;

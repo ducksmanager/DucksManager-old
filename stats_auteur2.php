@@ -5,9 +5,9 @@ require_once ('Database.class.php');
 require_once ('Util.class.php');
 $debut = microtime(true);
 
-$notations_tous_users = array();
+$notations_tous_users = [];
 
-$auteurs = array();
+$auteurs = [];
 $requete_auteurs = 'SELECT DISTINCT NomAuteurAbrege FROM auteurs_pseudos '
 				   .'WHERE DateStat =\'0000-00-00\'';
 $resultat_auteurs = DM_Core::$d->requete_select($requete_auteurs);
@@ -16,12 +16,12 @@ foreach ($resultat_auteurs as $auteur)
 
 if (!is_null($id_user))
 	$l = DM_Core::$d->toList($id_user);
-$liste_magazines=array();
+$liste_magazines= [];
 foreach ($auteurs as $auteur) {
 	if (empty($auteur))
 		continue;
 	
-	$users=array();
+	$users= [];
 	
 	$requete_users = 'SELECT auteurs_pseudos.ID_User, users.RecommandationsListeMags FROM auteurs_pseudos INNER JOIN users ON auteurs_pseudos.ID_User=users.ID '
 				   . 'WHERE auteurs_pseudos.NomAuteurAbrege = \'' . $auteur . '\' AND auteurs_pseudos.DateStat = \'0000-00-00\' ';
@@ -34,7 +34,7 @@ foreach ($auteurs as $auteur) {
 			$liste_magazines = $l->liste_magazines();
 		}
 		else
-			$liste_magazines = array('vide' => 'vide');
+			$liste_magazines = ['vide' => 'vide'];
 		$users[ $user['ID_User'] ]= $liste_magazines;
 	}
 	
@@ -48,8 +48,8 @@ foreach ($auteurs as $auteur) {
 	foreach ($users as $id_user => $liste_magazines) {
 		$accepte_magazines_possedes_seulement = ! array_key_exists('vide',$liste_magazines);
 		if (!array_key_exists($id_user, $notations_tous_users))
-			$notations_tous_users[$id_user] = array();
-		$notations_magazines = array();
+			$notations_tous_users[$id_user] = [];
+		$notations_magazines = [];
 		$requete_notation = 'SELECT Notation FROM auteurs_pseudos WHERE '
 						  . 'NomAuteurAbrege = \'' . $auteur . '\' AND ID_user=' . $id_user . ' AND DateStat = \'0000-00-00\'';
 		$resultat_notation = DM_Core::$d->requete_select($requete_notation);
@@ -80,7 +80,7 @@ foreach ($auteurs as $auteur) {
 					continue;
 			}
 			else { // Nouvelle histoire
-				if (!empty($dernier_storycode)) { // Analyse de l'histoire précédente
+				if (!empty($dernier_storycode)) { // Analyse de l'histoire prï¿½cï¿½dente
 					if ($est_possede)
 						$possedes++;
 					else {
@@ -108,7 +108,7 @@ foreach ($auteurs as $auteur) {
 			else {
 				if (!$accepte_magazines_possedes_seulement|| array_key_exists($pays.'/'.$magazine,$liste_magazines)) {
 					if (!array_key_exists($pays . '/' . $magazine . ' ' . $numero, $notations_magazines))
-						$notations_magazines[$pays . '/' . $magazine . ' ' . $numero] = array('Score' => 0, 'Auteurs' => array($auteur=>0));
+						$notations_magazines[$pays . '/' . $magazine . ' ' . $numero] = ['Score' => 0, 'Auteurs' => [$auteur=>0]];
 					$notations_magazines[$pays . '/' . $magazine . ' ' . $numero]['Score']+=$notation_auteur;
 					$notations_magazines[$pays . '/' . $magazine . ' ' . $numero]['Auteurs'][$auteur]++;
 				}
@@ -130,7 +130,7 @@ foreach ($auteurs as $auteur) {
 			$score_magazine = $score_auteurs['Score'];
 			$auteurs = $score_auteurs['Auteurs'];
 			if (!array_key_exists($numero, $notations_tous_users[$id_user]))
-				$notations_tous_users[$id_user][$numero] = array('Numero' => $numero, 'Score' => 0, 'Auteurs' => array());
+				$notations_tous_users[$id_user][$numero] = ['Numero' => $numero, 'Score' => 0, 'Auteurs' => []];
 			$notations_tous_users[$id_user][$numero]['Score']+=$score_magazine;
 			foreach ($auteurs as $auteur => $nb_histoires_auteur)
 				$notations_tous_users[$id_user][$numero]['Auteurs'][$auteur] = $nb_histoires_auteur;
@@ -139,7 +139,7 @@ foreach ($auteurs as $auteur) {
 		//echo '<pre>';print_r($notations_magazines);echo '</pre>';for ($k=0;$k<50;$k++) echo "\n";
 	}
 }
-$notations_user2 = array();
+$notations_user2 = [];
 foreach ($notations_tous_users as $user => $notations_user) {
 	usort($notations_user, 'tri_notations');
 	$notations_user2[$user] = $notations_user;
@@ -151,7 +151,7 @@ foreach ($notations_tous_users as $user => $notations_user) {
 		$magazine = $magazine_numero[0];
 		$numero = implode(' ',array_slice($magazine_numero,1,count($magazine_numero)-1));
 		$notation = $notations_user2[$user][$i]['Score'];
-		$auteurs_et_nb_histoires = array();
+		$auteurs_et_nb_histoires = [];
 		if (isset($notations_user2[$user][$i]['Auteurs'])) {
 			foreach ($notations_user2[$user][$i]['Auteurs'] as $auteur => $nb_histoires) {
 				$auteurs_et_nb_histoires[]= $auteur.'='.$nb_histoires;

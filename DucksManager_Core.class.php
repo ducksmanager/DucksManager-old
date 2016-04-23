@@ -14,7 +14,7 @@ class DM_Core {
      * @var Database
      */
     static $d;
-    static $corresp=array();
+    static $corresp= [];
 
     function  __construct() {
     }
@@ -23,7 +23,7 @@ class DM_Core {
         $page=Util::get_page($isv->url);
         $tab=str_getcsv($page, '^');
         //echo '<pre>';print_r($tab);echo '</pre>';
-        $liste=array();
+        $liste= [];
         for ($i=count($isv->champs);$i<count($tab)-1;$i+=count($isv->champs)) {
             $o=new $type_o;
             $j=0;
@@ -63,19 +63,19 @@ global $isv_publicationcategory;
 $isv_publication=new InducksISV();
 $isv_publication->nom='publication';
 $isv_publication->url='http://coa.inducks.org/inducks/isv/inducks_publication.isv';
-$isv_publication->champs=array('publicationcode'=>'FUNC','countrycode'=>'pays_abrege','languagecode'=>null,'title'=>'nom_complet','size'=>null,'publicationcomment'=>null,'errormessage'=>null);
+$isv_publication->champs= ['publicationcode'=>'FUNC','countrycode'=>'pays_abrege','languagecode'=>null,'title'=>'nom_complet','size'=>null,'publicationcomment'=>null,'errormessage'=>null];
 
 $isv_publicationcategory=new InducksISV();
 $isv_publicationcategory->nom='publicationcategory';
 $isv_publicationcategory->url='http://coa.inducks.org/inducks/isv/inducks_publicationcategory.isv';
-$isv_publicationcategory->champs=array('publicationcode'=>'FUNC','category'=>'FUNC');
+$isv_publicationcategory->champs= ['publicationcode'=>'FUNC','category'=>'FUNC'];
 
 $isv_redirection_magazine=new InducksISV();
 $isv_redirection_magazine->nom='issuerange';
 $isv_redirection_magazine->url='http://coa.inducks.org/inducks/isv/inducks_issuerange.isv';
-$isv_redirection_magazine->champs=array('issuerangecode'=>'FUNC','publicationcode'=>'FUNC','title'=>null,'issuerangecomment'=>null,'errormessage'=>null);
+$isv_redirection_magazine->champs= ['issuerangecode'=>'FUNC','publicationcode'=>'FUNC','title'=>null,'issuerangecomment'=>null,'errormessage'=>null];
 
 $isv_redirection_magazine=new InducksISV();
 $isv_redirection_magazine->nom='issue';
 $isv_redirection_magazine->url='http://coa.inducks.org/inducks/isv/inducks_issue.isv';
-$isv_redirection_magazine->champs=array('issuecode'=>'FUNC','issuenumber'=>'FUNC');
+$isv_redirection_magazine->champs= ['issuecode'=>'FUNC','issuenumber'=>'FUNC'];

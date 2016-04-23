@@ -20,7 +20,7 @@ if (isset($_GET['user'])) {
         }
     }
     $max_y=0;
-    $pos_sup_gauche=array();
+    $pos_sup_gauche= [];
     foreach($pos->etageres->etageres as $i=>$pos_etagere) {
         $pos_etagere_courante=explode(',',$pos_etagere);
         if ($i==0)
