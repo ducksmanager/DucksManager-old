@@ -257,7 +257,7 @@ class collectable extends Format_liste {
 				$i=0;
 							?><tr>
 								<td align="center" colspan="4">
-									<u><?=MAGAZINES?></u>
+									<u><?=PUBLICATIONS?></u>
 								</td></tr><tr><?php
 				foreach($liste as $pays=>$numeros_pays) {
 					ksort($numeros_pays);

@@ -117,7 +117,7 @@ foreach ($liste_mois as $i=>$mois) {
 			$section = new bar_stack_value($comptes_totaux_magazines[$publicationcode],$couleurs[$publicationcode]);
 			$section->set_tooltip(utf8_encode($liste_mois_affiches_complets[$i]).'<br>'
 								 .$nom_complet_magazine.'<br>'
-								 .'<i>'.MAGAZINE.'</i> : '.(($nb==0?'' : ('+'.$nb.', ')).TOTAL.' '.$comptes_totaux_magazines[$publicationcode]).'<br>'
+								 .'<i>'.PUBLICATION.'</i> : '.(($nb==0?'' : ('+'.$nb.', ')).TOTAL.' '.$comptes_totaux_magazines[$publicationcode]).'<br>'
 								 .'<i>'.TOUS_MAGAZINES.'</i> : '.(($cpt_mois==0?'' : ('+'.$cpt_mois.', ')).TOTAL.' '.$cpt_total));
 		}
 		else {
