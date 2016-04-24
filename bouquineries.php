@@ -9,10 +9,8 @@
             .template { display: none; }
 		</style>
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-		<?php
-			require_once('JS.class.php');
-			new JS('prototype-1.7.2.js', 'js/bouquineries.js');
-		?>
+		<script type="text/javascript" src="prototype-1.7.2.js"></script>
+		<script type="text/javascript" src="js/bouquineries.js"></script>
 	</head>
 	<body onload="initialize()">
 		<div id="map_canvas" style="width:100%; height:100%"></div>

@@ -160,8 +160,7 @@ class Liste {
 				?>
 				<div id="canvas-holder" style=" width:500px; height:500px">
 					<canvas id="my_chart"></canvas>
-				</div>
-				<div id="js-legend" class="chart-legend"></div><?php
+				</div><?php
 			break;
 			case 'possessions':
 							?>

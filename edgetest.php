@@ -1,5 +1,4 @@
 <?php
-include_once('JS.class.php');
 include_once('Etagere.class.php');
 include_once('Edge.class.php');
 include_once('Util.class.php');
@@ -10,12 +9,9 @@ global $numeros_inducks;
 ?>
 <html>
 	<head>
-		<?php
-		new JS('js/scriptaculous/lib/prototype.js');
-		new JS('js/scriptaculous/src/scriptaculous.js');
-		new JS('js/edges2.js');
-		?>
-
+		<script type="text/javascript" src="js/scriptaculous/lib/prototype.js"></script>
+		<script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
+		<script type="text/javascript" src="js/edges2.js"></script>
 	</head>
 	<body id="body" style="margin:0;padding:0;white-space:nowrap;">
 		<?php

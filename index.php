@@ -6,7 +6,6 @@ require_once('_priv/Admin.priv.class.php');
 require_once('travaux.php');
 require_once('DucksManager_Core.class.php');
 require_once('Liste.class.php');
-require_once('JS.class.php');
 require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
@@ -86,18 +85,28 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         }?>
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
-        </script><?php
-        new JS('prototype-1.7.2.js','js/chart.js','js/scriptaculous/src/scriptaculous.js','js/pluit-carousel.js','js/my_scriptaculous.js','js/l10n.js','js/ajax.js', 'js/opentip/opentip-prototype-excanvas.min.js', 'js/edges2.js');
+        </script>
+        <script type="text/javascript" src="prototype-1.7.2.js"></script>
+        <script type="text/javascript" src="js/chart.js"></script>
+        <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
+        <script type="text/javascript" src="js/pluit-carousel.js"></script>
+        <script type="text/javascript" src="js/my_scriptaculous.js"></script>
+        <script type="text/javascript" src="js/l10n.js"></script>
+        <script type="text/javascript" src="js/ajax.js"></script>
+        <script type="text/javascript" src="js/opentip/opentip-prototype-excanvas.min.js"></script>
+        <script type="text/javascript" src="js/edges2.js"></script><?php
+
         if (!is_null($action)) {
-            new JS('js/sel_num.js');
+            ?><script type="text/javascript" src="js/sel_num.js"></script><?php
 			if (!isset($_GET['action'])) $_GET['action']='';            
 			switch($_GET['action']) {
                 case 'gerer':
-                    new JS('js/edges2.js','js/menu_contextuel.js');
+                    ?><script type="text/javascript" src="js/menu_contextuel.js"></script><?php
                 break;
                 case 'bouquineries':
-                    ?><script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script><?php
-                    new JS('js/bouquineries.js');
+                    ?>
+                    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+                    <?php
                 break;
                 case 'bibliotheque':
                     if (isset($_GET['user'])) {
@@ -127,18 +136,25 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     if (!isset($_GET['onglet'])) {
                         $_GET['onglet']='magazines';
                     }
-                    new JS('js/stats.js');
+                    ?><script type="text/javascript" src="js/stats.js"></script><?php
+
                     switch($_GET['onglet']) {
                         case 'possessions':
-                            new JS('js/chargement.js','js/classement_histogramme.js','js/json/json2.js','js/swfobject.js');
+                            ?>
+                            <script type="text/javascript" src="js/chargement.js"></script>
+                            <script type="text/javascript" src="js/classement_histogramme.js"></script>
+                            <script type="text/javascript" src="js/json/json2.js"></script>
+                            <script type="text/javascript" src="js/swfobject.js"></script>
+                        <?php
                         break;
-                        case 'achats':
-                            new JS('js/achats_histogramme.js');
+                        case 'achats': ?>
+                            <script type="text/javascript" src="js/achats_histogramme.js"></script>
+                            <?php
                         break;
                     }
                 break;
             }
-            new JS('js/bouquineries.js','js/divers.js');
+            ?><script src="js/divers.js"></script><?php
         }
         ?>
     </head>
