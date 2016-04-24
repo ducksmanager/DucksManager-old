@@ -1,7 +1,6 @@
 <?php header('Content-Type: text/html; charset=utf-8'); 
 require_once('DucksManager_Core.class.php');
 require_once('Liste.class.php');
-require_once('JS.class.php');
 require_once('Affichage.class.php');
 require_once('Listes/Format_liste.php');?>
 
@@ -23,16 +22,15 @@ require_once('Listes/Format_liste.php');?>
         <link rel="stylesheet" type="text/css" href="scriptaculous.css" />
         <link rel="icon" type="image/png" href="favicon.png" />
         <link rel="stylesheet" type="text/css" href="csstabs.css">
+        <link rel="stylesheet" type="text/css" href="csstabs.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
-        <?php
-        new JS('prototype-1.7.2.js');
-        new JS('js/l10n.js');
-        new JS('js/json/json2.js');
-        new JS('js/menu_contextuel.js');
-        new JS('js/scriptaculous/src/scriptaculous.js');
-        new JS('js/my_scriptaculous.js');
-        new JS('js/ajax.js'); ?>
-
+        <script type="text/javascript" src="prototype-1.7.2.js"></script>
+        <script type="text/javascript" src="js/l10n.js"></script>
+        <script type="text/javascript" src="js/json/json2.js"></script>
+        <script type="text/javascript" src="js/menu_contextuel.js"></script>
+        <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
+        <script type="text/javascript" src="js/my_scriptaculous.js"></script>
+        <script type="text/javascript" src="js/ajax.js"></script>
     </head>
     <body onload="implement_dragsanddrops()" id="body">
 <?php
