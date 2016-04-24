@@ -159,7 +159,7 @@ class Liste {
 			case 'magazines':
 				?>
 				<div id="canvas-holder" style=" width:500px; height:500px">
-					<canvas id="magazines"></canvas>
+					<canvas id="graph_publications"></canvas>
 				</div><?php
 			break;
 			case 'possessions':
@@ -182,9 +182,8 @@ class Liste {
 			case 'etats':
 				?>
 				<div id="canvas-holder" style=" width:500px; height:500px">
-					<canvas id="my_chart"></canvas>
+					<canvas id="graph_conditions"></canvas>
 				</div><?php
-				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0"></iframe><?php
 			break;
 
 			case 'achats':
