@@ -143,7 +143,7 @@ class Liste {
 				$counts[$pays][$magazine]=count($numeros);
 			}
 		}
-		$onglets= [MAGAZINES=> ['magazines',MAGAZINES_COURT],
+		$onglets= [PUBLICATIONS=> ['magazines',PUBLICATIONS_COURT],
 							   POSSESSIONS=> ['possessions',POSSESSIONS_COURT],
 							   ETATS_NUMEROS=> ['etats',ETATS_NUMEROS_COURT],
 							   ACHATS=> ['achats',ACHATS_COURT],
@@ -159,7 +159,7 @@ class Liste {
 			case 'magazines':
 				?>
 				<div id="canvas-holder" style=" width:500px; height:500px">
-					<canvas id="my_chart"></canvas>
+					<canvas id="magazines"></canvas>
 				</div><?php
 			break;
 			case 'possessions':
@@ -180,6 +180,10 @@ class Liste {
 								<?php
 				break;
 			case 'etats':
+				?>
+				<div id="canvas-holder" style=" width:500px; height:500px">
+					<canvas id="my_chart"></canvas>
+				</div><?php
 				?><iframe id="iframe_graphique" src="etats_camembert.php" style="border:0"></iframe><?php
 			break;
 

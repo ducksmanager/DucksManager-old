@@ -1,6 +1,7 @@
 function afficher_histogramme_magazines() {
-	new Ajax.Request('magazines_camembert.php', {
+	new Ajax.Request('Stats.class.php', {
 		method: 'post',
+		parameters:'publications=true',
 		onSuccess:function(transport,data) {
 			var config = {
 				type: 'pie',
@@ -17,8 +18,8 @@ function afficher_histogramme_magazines() {
 				}
 			};
 
-			var ctx = $("my_chart").getContext("2d");
-			var chart = new Chart(ctx, config);
+			var ctx = $("magazines").getContext("2d");
+			new Chart(ctx, config);
 		}
 	});
 }
