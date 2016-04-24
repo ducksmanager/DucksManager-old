@@ -1,7 +1,7 @@
-function afficher_histogramme_magazines() {
+function afficher_histogramme(type) {
 	new Ajax.Request('Stats.class.php', {
 		method: 'post',
-		parameters:'publications=true',
+		parameters: type+'=true',
 		onSuccess:function(transport,data) {
 			var config = {
 				type: 'pie',
@@ -18,7 +18,7 @@ function afficher_histogramme_magazines() {
 				}
 			};
 
-			var ctx = $("magazines").getContext("2d");
+			var ctx = $("graph_"+type).getContext("2d");
 			new Chart(ctx, config);
 		}
 	});

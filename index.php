@@ -225,7 +225,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 						?>afficher_histogramme_achats();<?php
 					break;
 					case 'magazines':
-						?>afficher_histogramme_magazines();<?php
+						?>afficher_histogramme('publications');<?php
+					break;
+					case 'etats':
+						?>afficher_histogramme('conditions');<?php
 					break;
 				}
             }

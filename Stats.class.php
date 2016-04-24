@@ -13,12 +13,13 @@ class Stats {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$counts= [];
 		$total=0;
-		$requete_cpt_numeros_groupes='SELECT Pays,Magazine,Count(Numero) AS cpt '
-			.'FROM numeros '
-			.'WHERE ID_Utilisateur='.$id_user.' '
-			.'GROUP BY Pays,Magazine '
-			.'ORDER BY cpt';
-		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select($requete_cpt_numeros_groupes);
+		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select(
+			'SELECT Pays,Magazine,Count(Numero) AS cpt
+			 FROM numeros
+			 WHERE ID_Utilisateur='.$id_user.'
+			 GROUP BY Pays,Magazine
+			 ORDER BY cpt'
+		);
 
 		$publication_codes= [];
 		foreach($resultat_cpt_numeros_groupes as $resultat) {
@@ -57,9 +58,57 @@ class Stats {
 		}
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
 	}
+
+	static function getConditionData() {
+		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$resultat=DM_Core::$d->requete_select('
+			SELECT Count(Numero) AS c
+			FROM numeros
+			WHERE ID_Utilisateur='.$id_user
+		);
+
+		$data = [];
+		$labels = [];
+		$colors = [];
+
+		$total=$resultat[0]['c'];
+		$autres=0;
+		foreach(Database::$etats as $etat_court=>$infos_etat) {
+			$resultat=DM_Core::$d->requete_select('
+				SELECT Count(Numero) AS c
+				FROM numeros
+				WHERE ID_Utilisateur='.$id_user.'
+				  AND Etat = \''.$etat_court.'\''
+			);
+			$cpt=$resultat[0]['c'];
+			if ($cpt==0) continue;
+			if ($cpt/$total<0.01) {
+				$autres+=$cpt;
+			}
+			else {
+				$data[]=$cpt;
+				$labels[]=utf8_encode(Database::$etats[$etat_court][0]);
+				$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+
+//				$tooltip = utf8_encode(Database::$etats[$etat_court][0].'<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.round($cpt/$total).'%)';
+			}
+		}
+		if ($autres!=0) {
+			$data[]=$autres;
+			$labels[]=utf8_encode(AUTRES);
+			$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+
+//			$tooltip = utf8_encode(AUTRES.'<br>'.NUMEROS_POSSEDES).' : '.$autres.' ('.round($autres/$total).'%)';
+		}
+		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
+	}
 }
 
 if (isset($_POST['publications'])) {
 	$data = Stats::getPublicationData();
+	header("X-JSON: " . json_encode(array('values' => $data['values'], 'colors' => $data['colors'], 'labels' => $data['labels'])));
+}
+else if (isset($_POST['conditions'])) {
+	$data = Stats::getConditionData();
 	header("X-JSON: " . json_encode(array('values' => $data['values'], 'colors' => $data['colors'], 'labels' => $data['labels'])));
 }
