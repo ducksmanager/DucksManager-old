@@ -163,7 +163,10 @@ class Liste {
 				</div><?php
 			break;
 			case 'possessions':
-							?>
+				?>
+				<div id="canvas-holder" style=" width:1000px; height:500px">
+					<canvas id="graph_possessions" width="100%" height="500px" style="background-color: white"></canvas>
+				</div>
 								
 								<span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
 								<div id="barre_pct_classement" style="border: 1px solid white; width: 200px;">
@@ -172,7 +175,7 @@ class Liste {
 								<?=CALCUL?> <span id="message_classement"><?=CALCUL_EN_COURS?></span>
 								<br /><br />
 								<script type="text/javascript">
-									initProgressBar('classement','classement_histogramme2.php');
+									initProgressBar('classement','Stats.class.php', 'possessions=true', afficher_histogramme_possessions);
 								</script>
 								<div id="resultat_classement" style="border:0"></div>
 
