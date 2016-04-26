@@ -1,10 +1,10 @@
 var chargements=new Array();
 var infos_chargements=new Array();
-function initProgressBar(id,page) {
+function initProgressBar(id,page, parameters, callback) {
     infos_chargements[id]=new Array();
     new Ajax.Request(page, {
         method: 'post',
-        parameters : 'init_chargement=true&id='+id,
+        parameters : (parameters || '')+'&init_chargement=true&id='+id,
         onSuccess : function(transport) {
             var id=transport.request.parameters.id;
             chargements[id]=transport.headerJSON;
@@ -12,41 +12,33 @@ function initProgressBar(id,page) {
                 chargements[id]['element_courant']=chargements[id][i];
                 break;
             }
-            traitement_suivant(id,transport.request.url);
+            traitement_suivant(id,transport.request.url, parameters, callback);
         }
     });
 }
 
 function MAJProgressBar(id) {
     var pct=getPctCourant(id);
-    $('message_'+id).update('pour '+chargements[id]['element_courant']);
+    $('message_'+id).update(' : '+chargements[id]['element_courant']);
     $('pct_'+id).setStyle({'width':pct+'%'});
     return pct == 100;
 
 }
 
-function traitement_suivant(id,page) {
+function traitement_suivant(id,page, parameters, callback) {
     new Ajax.Request(page, {
         method: 'post',
-        parameters : 'id='+id+'&element='+chargements[id]['element_courant'],
+        parameters : (parameters || '')+'&id='+id+'&element='+chargements[id]['element_courant'],
         onSuccess : function(transport) {
             var id=transport.request.parameters.id;
             infos_chargements[id][getIndexCourant(id)]=transport.headerJSON;
             var est_termine=MAJProgressBar(id);
             chargements[id]['element_courant']=getElementSuivant(id);
-            if (est_termine) {
-                new Ajax.Request(transport.request.url, {
-                    method: 'post',
-                    parameters : 'id='+id+'&fin=true&ids='+JSON.stringify(chargements[id])+'&infos='+JSON.stringify(infos_chargements[id]),
-                    onSuccess : function(transport) {
-                        window['fin_traitement_'+transport.request.parameters.id](transport.headerJSON,transport);
-                        $('chargement_'+transport.request.parameters.id+'_termine').update();
-                        $('message_'+transport.request.parameters.id).update('Termin&eacute;');
-                    }
-                });
+            if (est_termine && callback) {
+                callback({chargements: chargements[id], infos: infos_chargements[id]});
             }
             else
-                traitement_suivant(id,transport.request.url);
+                traitement_suivant(id,transport.request.url, parameters, callback);
         }
     });
     

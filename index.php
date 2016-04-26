@@ -139,12 +139,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                     ?><script type="text/javascript" src="js/stats.js"></script><?php
 
                     switch($_GET['onglet']) {
-                        case 'possessions':
-                            ?>
+                        case 'possessions': ?>
                             <script type="text/javascript" src="js/chargement.js"></script>
-                            <script type="text/javascript" src="js/classement_histogramme.js"></script>
-                            <script type="text/javascript" src="js/json/json2.js"></script>
-                            <script type="text/javascript" src="js/swfobject.js"></script>
                         <?php
                         break;
                         case 'achats': ?>
@@ -225,10 +221,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 						?>afficher_histogramme_achats();<?php
 					break;
 					case 'magazines':
-						?>afficher_histogramme('publications');<?php
+						?>afficher_diagramme_secteurs('publications');<?php
 					break;
 					case 'etats':
-						?>afficher_histogramme('conditions');<?php
+						?>afficher_diagramme_secteurs('conditions');<?php
 					break;
 				}
             }

@@ -67,22 +67,25 @@ if (isset($_POST['id'])) {
                 $donnees[]=$donnee;
             }
         }
-        $title = new title(utf8_encode(POSSESSION_NUMEROS));
-        $title->set_style( "{font-size: 20px; color: #F24062; font-family:Tuffy; text-align: center;}" );
+        $title = utf8_encode(POSSESSION_NUMEROS);
 
-        $bar_stack = new bar_stack();
-        //$bar_stack->set_colours(array('#FF8000','#04B404'));
+        $possedes = [];
+        $possedes_cpt = [];
 
-        $bar_stack_pct = new bar_stack();
-        $bar_stack_pct->set_colours(['#FF8000','#04B404']);
+        $totaux = [];
+        $totaux_cpt = [];
+        $colors = ['#FF8000','#04B404'];
 
         foreach ($donnees as $donnee) {
-                $tmp = new bar_stack_value($donnee->possede,'#FF8000');
-                $tmp2 = new bar_stack_value(intval($donnee->total)-$donnee->possede,'#04B404');
-                $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
-                $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES.' : '.$donnee->possede.'<br>'.TOTAL.' : '.intval($donnee->total)));
-                $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS.' : '.($donnee->total-$donnee->possede).'<br>'.TOTAL.' : #total#'));
-                $bar_stack->append_stack([$tmp,$tmp2]);
+                $possedes[] = $donnee->possede;
+                $totaux[] = intval($donnee->total)-$donnee->possede;
+
+//                $tmp = new bar_stack_value($donnee->possede,'#FF8000');
+//                $tmp2 = new bar_stack_value(intval($donnee->total)-$donnee->possede,'#04B404');
+//                $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
+//                $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES.' : '.$donnee->possede.'<br>'.TOTAL.' : '.intval($donnee->total)));
+//                $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS.' : '.($donnee->total-$donnee->possede).'<br>'.TOTAL.' : #total#'));
+//                $bar_stack->append_stack([$tmp,$tmp2]);
 
                 //$b->set_tooltip('a');
                 //$bar_stack->append_stack(array($donnee->possede, intval($total[$index])));
@@ -90,72 +93,30 @@ if (isset($_POST['id'])) {
 
 
         foreach ($donnees as $donnee) {
-                $tmp = new bar_stack_value($donnee->possede_pct,'#FF8000');
-                $tmp2 = new bar_stack_value(intval($donnee->total_pct),'#04B404');
-                $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
-                $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES).' : #val#%');
-                $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS).' : '.(100-$donnee->possede_pct).'%');
-                $bar_stack_pct->append_stack([$tmp,$tmp2]);
+            $possedes_cpt[] = $donnee->possede;
+            $totaux_cpt[] = intval($donnee->total)-$donnee->possede;
+
+//                $tmp = new bar_stack_value($donnee->possede_pct,'#FF8000');
+//                $tmp2 = new bar_stack_value(intval($donnee->total_pct),'#04B404');
+//                $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
+//                $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES).' : #val#%');
+//                $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS).' : '.(100-$donnee->possede_pct).'%');
+//                $bar_stack_pct->append_stack([$tmp,$tmp2]);
         }
 
         $supertotal=0;
-        foreach($donnees as $donnee)
-                if ($donnee->total+$donnee->possede>$supertotal)
-                        $supertotal=$donnee->total;
-
-        $bar_stack->set_keys(
-        [
-                new bar_stack_key('#FF8000', utf8_encode(NUMEROS_POSSEDES), 13 ),
-                new bar_stack_key('#04B404', utf8_encode(NUMEROS_REFERENCES), 13 )
-        ]);
-
-        //$bar_stack->set_tooltip('#x_label# : #val# '.utf8_encode(NUMEROS__GRAPHIQUE')).'<br>'.TOTAL.' : #total# '.utf8_encode(REFERENCES);
-
-
-        $bar_stack_pct->set_keys(
-        [
-                new bar_stack_key('#FF8000', utf8_encode(NUMEROS_POSSEDES), 13 ),
-                new bar_stack_key('#04B404', utf8_encode(NUMEROS_REFERENCES), 13 )
-        ]);
-
-        //$bar_stack_pct->set_tooltip('#x_label# : #val# %' );
-
-        $y = new y_axis();
-        $y->set_range( 0, $supertotal, intval($supertotal/10) );
-
-        $y_pct = new y_axis();
-        $y_pct->set_range( 0, 100, 5 );
-
-        $noms_magazines_courts= [];
-        foreach($donnees as $donnee)
-            $noms_magazines_courts[]=$donnee->nom_magazine_court;
+        foreach($donnees as $donnee) {
+            if ($donnee->total+$donnee->possede>$supertotal) {
+                $supertotal=$donnee->total;
+            }
+        }
         
-        $x = new x_axis();
-        $x->set_labels_from_array($noms_magazines_courts);
+        $legend = [utf8_encode(NUMEROS_POSSEDES), utf8_encode(NUMEROS_REFERENCES)];
 
-        $tooltip = new tooltip();
-        $tooltip->set_hover();
-        $chart = new open_flash_chart();
-        $chart->set_title( $title );
-        $chart->add_element( $bar_stack );
-        $chart->set_x_axis( $x );
-        $chart->add_y_axis( $y );
-        $chart->set_tooltip( $tooltip );
-
-        $chart_pct = new open_flash_chart();
-        $chart_pct->set_title( $title );
-        $chart_pct->add_element( $bar_stack_pct );
-        $chart_pct->set_x_axis( $x );
-        $chart_pct->add_y_axis( $y_pct );
-        $chart_pct->set_tooltip( $tooltip );
-        $taille_graphique=count($donnees)<=4?300:80+40*count($donnees);
-
-        $retour= [];
-        $retour['largeur_graphique']=$taille_graphique;
-        $retour['data_1']=$chart->toPrettyString();
-        $retour['data_2']=$chart_pct->toPrettyString();
-        $retour['l10n_valeur_reelles']=AFFICHER_VALEURS_REELLES;
-        $retour['l10n_pourcentages']=AFFICHER_POURCENTAGES;
+        $labels= [];
+        foreach($donnees as $donnee) {
+            $labels[]=$donnee->nom_magazine_court;
+        }
         
         echo str_replace('\n','',json_encode($retour));
         //header("X-JSON: " . str_replace('\n','',json_encode($retour)));
