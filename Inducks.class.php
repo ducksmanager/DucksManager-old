@@ -40,7 +40,7 @@ class Inducks {
 				if (isset($_GET['dbg'])) {
 					echo $fullUrl.'<br /><br />';
 				}
-				$output=Util::get_page($fullUrl, 1.0);
+				$output=Util::get_page($fullUrl, 3.0);
 				if (isset($_GET['brut'])) {
 					echo 'Requete : '.$requete.'<br />'
 						.'Retour brut : <pre>'.$output.'</pre>'

@@ -28,7 +28,9 @@ class Util {
 			fclose($handle);
 			return $buffer;
 		}
-		else return ERREUR_CONNEXION_INDUCKS;
+		else {
+			return ERREUR_CONNEXION_INDUCKS;
+		}
 	}
 
 	static function start_log($nom) {
