@@ -31,6 +31,9 @@ function afficher_histogramme_possessions(data) {
 		onSuccess : function(transport) {
 			var data = transport.headerJSON;
 
+			var labels_magazines_longs = data.labels_magazines_longs;
+			var labels_pays_longs = data.labels_pays_longs;
+
 			$('canvas-holder').setStyle({width: 30*data.labels.length + 'px'});
 
 			Chart.defaults.global.maintainAspectRatio = false;
@@ -38,17 +41,41 @@ function afficher_histogramme_possessions(data) {
 				type: 'bar',
 				data: data,
 				options: {
+					title:{
+						display:true,
+						text: data.title
+					},
 					responsive: true,
-					// barShowStroke : false
+					scales: {
+						xAxes: [{
+							stacked: true,
+							ticks: {
+								autoSkip: false
+							}
+						}],
+						yAxes: [{
+							stacked: true
+						}]
+					},
+					tooltips: {
+						enabled: true,
+						mode: 'label',
+						callbacks: {
+							title: function(tooltipItems) {
+								var publicationcode = tooltipItems[0].xLabel;
+								return labels_magazines_longs[publicationcode]+
+									   ' ('+labels_pays_longs[publicationcode.split('/')[0]]+')';
+							}
+						}
+					}
 				}
 			};
 
 			var ctx = $("graph_possessions").getContext("2d");
 			new Chart(ctx, config);
 
-
-			$('chargement_classement_termine').update();
-			$('message_classement').update('Termin&eacute;');
+			$$('#barre_pct_classement, #chargement_classement_termine, #prefixe_message_classement, #message_classement')
+				.invoke('update')
 		}
 	});
 }

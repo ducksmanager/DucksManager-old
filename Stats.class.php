@@ -122,16 +122,22 @@ class Stats {
 			foreach(json_decode($_POST['ids']) as $i=>$pays) {
 				foreach($infos[$i]->total as $magazine=>$total) {
 					$pays_complet = $noms_complets_pays[$pays];
-					if (array_key_exists($pays.'/'.$magazine, $noms_complets_magazines)) {
+					$publication_code = $pays.'/'.$magazine;
+					if (array_key_exists($publication_code, $noms_complets_magazines)) {
 						$magazine_complet = $noms_complets_magazines[$pays.'/'.$magazine];
 					}
 					else { // Magazine ayant disparu d'Inducks
 						$magazine_complet = $magazine;
 					}
 					$donnee=new stdClass ();
-					$donnee->nom_magazine_court=$magazine;
+					$donnee->publication_code=$publication_code;
+
+					$donnee->pays_court=$pays;
 					$donnee->pays=$pays_complet;
+					
+					$donnee->nom_magazine_court=$magazine;
 					$donnee->nom_magazine=$magazine_complet;
+					
 					$donnee->total=$total;
 					$donnee->possede=$infos[$i]->possede->$magazine;
 					$donnee->total_pct=$infos[$i]->total_pct->$magazine;
@@ -158,29 +164,12 @@ class Stats {
 			foreach ($donnees as $donnee) {
 				$possedes['data'][] = $donnee->possede;
 				$totaux['data'][] = intval($donnee->total)-$donnee->possede;
-
-//                $tmp = new bar_stack_value($donnee->possede,'#FF8000');
-//                $tmp2 = new bar_stack_value(intval($donnee->total)-$donnee->possede,'#04B404');
-//                $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
-//                $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES.' : '.$donnee->possede.'<br>'.TOTAL.' : '.intval($donnee->total)));
-//                $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS.' : '.($donnee->total-$donnee->possede).'<br>'.TOTAL.' : #total#'));
-//                $bar_stack->append_stack([$tmp,$tmp2]);
-
-				//$b->set_tooltip('a');
-				//$bar_stack->append_stack(array($donnee->possede, intval($total[$index])));
 			}
 
 
 			foreach ($donnees as $donnee) {
 				$possedes_cpt['data'][] = $donnee->possede;
 				$totaux_cpt['data'][] = intval($donnee->total)-$donnee->possede;
-
-//                $tmp = new bar_stack_value($donnee->possede_pct,'#FF8000');
-//                $tmp2 = new bar_stack_value(intval($donnee->total_pct),'#04B404');
-//                $titre_infobulle=$donnee->pays.' : '.$donnee->nom_magazine;
-//                $tmp->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_POSSEDES).' : #val#%');
-//                $tmp2->set_tooltip($titre_infobulle.utf8_encode('<br>'.NUMEROS_MANQUANTS).' : '.(100-$donnee->possede_pct).'%');
-//                $bar_stack_pct->append_stack([$tmp,$tmp2]);
 			}
 
 			$supertotal=0;
@@ -193,14 +182,20 @@ class Stats {
 			$legend = [utf8_encode(NUMEROS_POSSEDES), utf8_encode(NUMEROS_REFERENCES)];
 
 			$labels= [];
+			$labels_pays_longs= [];
+			$labels_magazines_longs= [];
 			foreach($donnees as $donnee) {
-				$labels[]=$donnee->nom_magazine_court;
+				$labels[]=$donnee->publication_code;
+				$labels_pays_longs[$donnee->pays_court]=$donnee->pays;
+				$labels_magazines_longs[$donnee->publication_code]=$donnee->nom_magazine;
 			}
 
 			return [
 				'datasets' => [$possedes, $totaux],
 				'legend' => $legend,
 				'labels' => $labels,
+				'labels_magazines_longs' => $labels_magazines_longs,
+				'labels_pays_longs' => $labels_pays_longs,
 				'title' => $title,
 			];
 		}
