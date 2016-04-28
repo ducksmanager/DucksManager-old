@@ -4,3 +4,22 @@
     height: 12px;
     margin-right: 5px;
 }
+
+#barre_pct_classement {
+    width: 200px;
+    border: 1px solid white;
+}
+
+#pct_classement {
+    width: 0;
+    background-color: red;
+}
+
+#canvas-holder {
+    width:1000px;
+    height:500px;
+}
+
+.graph_possessions {
+    background-color: white;
+}

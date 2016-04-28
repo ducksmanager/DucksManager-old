@@ -163,26 +163,37 @@ class Liste {
 				</div><?php
 			break;
 			case 'possessions':
-				?>
-					<span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
-					<div id="barre_pct_classement" style="border: 1px solid white; width: 200px;">
-						<div id="pct_classement" style="width: 0%; background-color: red;">&nbsp;</div>
-					</div>
-					<span id="prefixe_message_classement">
-						<?=CALCUL?>
-					</span>
-					<span id="message_classement"><?=CALCUL_EN_COURS?></span>
-					<br /><br />
-					<script type="text/javascript">
-						initProgressBar('classement','Stats.class.php', 'possessions=true', afficher_histogramme_possessions);
-					</script>
-					<div id="resultat_classement" style="border:0"></div>
+				$types = ['abs' => AFFICHER_VALEURS_REELLES, 'cpt'=> AFFICHER_POURCENTAGES]; ?>
 
-					<div id="canvas-holder" style=" width:1000px; height:500px">
-						<canvas id="graph_possessions" width="100%" height="500px" style="background-color: white"></canvas>
-						<div id="possessions-tooltip"></div>
-					</div>
-					<?php
+				<span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
+				<div id="barre_pct_classement">
+					<div id="pct_classement">&nbsp;</div>
+				</div>
+				<span id="prefixe_message_classement">
+					<?=CALCUL?>
+				</span>
+				<span id="message_classement"></span>
+				<div id="fin_classement" class="hidden">
+					<?php foreach($types as $type=>$label) {
+					?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
+						 onclick="toggleGraphs()">
+						<?=$label?>
+					  </a><?php
+					}?>
+				</div>
+				<br />
+				<script type="text/javascript">
+					initProgressBar('classement','Stats.class.php', 'possessions=true', afficher_histogramme_possessions);
+				</script>
+				<div id="resultat_classement"></div>
+
+				<div id="canvas-holder" class="hidden">
+					<?php foreach($types as $type=>$label) {
+						?><canvas class="graph_possessions <?=$type?> <?=$type==='cpt' ? 'hidden' : ''?>"
+								  width="100%" height="500px"></canvas><?php
+					}?>
+				</div>
+				<?php
 				break;
 			case 'etats':
 				?>
