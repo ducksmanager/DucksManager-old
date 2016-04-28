@@ -1,4 +1,4 @@
-function l10n_action(fonction,index,param,param2) {
+function l10n_action(fonction,index,param) {
     if (typeof index!='string') {
         index_param=index.join('~')+'~';
     }
@@ -7,7 +7,7 @@ function l10n_action(fonction,index,param,param2) {
     new Ajax.Request('locales/lang.php', {
         method: 'post',
         parameters:'index='+index_param,
-        onSuccess:function(transport,json) {
+        onSuccess:function(transport) {
             if (transport.responseText.indexOf('~')!=-1) {
                 transport.responseText=transport.responseText.split('~');
             }
@@ -43,10 +43,11 @@ function l10n_action(fonction,index,param,param2) {
 }
 
 function remplirSpanIndex (index,trad) {
-	if ($('item'+index)) {
-		$('item'+index).update(trad);
-		if ($('item'+index).hasClassName('sub_menu'))
-			$('item'+index).insert('&nbsp;&gt;&gt;');
+    var element = $('item'+index);
+	if (element) {
+		element.update(trad);
+		if (element.hasClassName('sub_menu'))
+			element.insert('&nbsp;&gt;&gt;');
 	}
 }
 
