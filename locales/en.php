@@ -385,7 +385,7 @@ define('NUMEROS_COMMUNS','issues are in both collections');
 define('NUMEROS_IMPORTES','issues have been imported.');
 define('NUMEROS_MANQUANTS','Missing issues');
 define('NUMEROS_POSSEDES','Possessed issues');
-define('NUMEROS_REFERENCES','Referenced issues');
+define('NUMEROS_REFERENCES','Non-possessed referenced issues');
 define('NUMEROS_SELECTIONNES_ENREGISTRES','selected issues will be added to your collection');
 define('NUMEROS_SUPPRIMES','The issues of your collection have been deleted');
 define('OK','OK');

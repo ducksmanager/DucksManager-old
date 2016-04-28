@@ -1,7 +1,7 @@
-var chargements=new Array();
-var infos_chargements=new Array();
+var chargements=[];
+var infos_chargements=[];
 function initProgressBar(id,page, parameters, callback) {
-    infos_chargements[id]=new Array();
+    infos_chargements[id]=[];
     new Ajax.Request(page, {
         method: 'post',
         parameters : (parameters || '')+'&init_chargement=true&id='+id,
@@ -70,17 +70,4 @@ function getPctCourant(id_chargement) {
             break;
     }
     return parseInt(100*((parseInt(i)+1)/(chargements[id_chargement].length)));
-}
-
-function fin_traitement_classement(headerJSON,transport) {
-    var texte=JSON.parse(transport.responseText);
-    data_1=(JSON.parse(texte.data_1));
-    data_2=(JSON.parse(texte.data_2));
-    $('resultat_classement').update(new Element('div',{'id':'my_chart'}))
-                            .insert(new Element('br'))
-                            .insert(new Element('a',{'href':'javascript:load_1()'}).update(texte.l10n_valeur_reelles))
-                            .insert('&nbsp;&nbsp;-&nbsp;&nbsp;')
-                            .insert(new Element('a',{'href':'javascript:load_2()'}).update(texte.l10n_pourcentages));
-    swfobject.embedSWF("open-flash-chart.swf", "my_chart", texte.largeur_graphique, "380", "9.0.0");
-
 }

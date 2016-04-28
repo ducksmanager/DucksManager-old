@@ -140,7 +140,6 @@ class Stats {
 					
 					$donnee->total=$total;
 					$donnee->possede=$infos[$i]->possede->$magazine;
-					$donnee->total_pct=$infos[$i]->total_pct->$magazine;
 					$donnee->possede_pct=$infos[$i]->possede_pct->$magazine;
 					$donnees[]=$donnee;
 				}
@@ -159,7 +158,7 @@ class Stats {
 				'backgroundColor' => '#04B404',
 				'data' => []
 			];
-			$totaux_cpt = $possedes;
+			$totaux_cpt = $totaux;
 
 			foreach ($donnees as $donnee) {
 				$possedes['data'][] = $donnee->possede;
@@ -168,8 +167,8 @@ class Stats {
 
 
 			foreach ($donnees as $donnee) {
-				$possedes_cpt['data'][] = $donnee->possede;
-				$totaux_cpt['data'][] = intval($donnee->total)-$donnee->possede;
+				$possedes_cpt['data'][] = $donnee->possede_pct;
+				$totaux_cpt['data'][] = 100-$donnee->possede_pct;
 			}
 
 			$supertotal=0;
@@ -191,7 +190,10 @@ class Stats {
 			}
 
 			return [
-				'datasets' => [$possedes, $totaux],
+				'datasets' => [
+					'possedes' => $possedes, 'totaux' => $totaux,
+					'possedes_cpt' => $possedes_cpt, 'totaux_cpt' => $totaux_cpt
+				],
 				'legend' => $legend,
 				'labels' => $labels,
 				'labels_magazines_longs' => $labels_magazines_longs,
@@ -211,13 +213,11 @@ class Stats {
 					$retour['total'][$magazine]=$nb_numeros_magazines[$magazine];
 					$retour['possede'][$magazine]=count($l->collection[$for][$magazine]);
 					$retour['possede_pct'][$magazine]=round(100*($retour['possede'][$magazine]/$retour['total'][$magazine]));
-					$retour['total_pct'][$magazine]=100-$retour['possede_pct'][$magazine];
 				}
 				else {
 					$retour['total'][$magazine]=0;
 					$retour['possede'][$magazine]=0;
 					$retour['possede_pct'][$magazine]=0;
-					$retour['total_pct'][$magazine]=0;
 				}
 			}
 			return $retour;
