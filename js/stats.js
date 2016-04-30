@@ -2,7 +2,8 @@ function afficher_diagramme_secteurs(type) {
 	new Ajax.Request('Stats.class.php', {
 		method: 'post',
 		parameters: type+'=true',
-		onSuccess:function(transport,data) {
+		onSuccess:function(transport) {
+			var data = transport.responseJSON;
 			var config = {
 				type: 'pie',
 				data: {
@@ -29,7 +30,7 @@ function afficher_histogramme_possessions(data) {
 		method: 'post',
 		parameters : 'possessions=true&fin=true&ids='+JSON.stringify(data.chargements)+'&infos='+JSON.stringify(data.infos),
 		onSuccess : function(transport) {
-			var data = transport.headerJSON;
+			var data = transport.responseJSON;
 
 			var labels_magazines_longs = data.labels_magazines_longs;
 			var labels_pays_longs = data.labels_pays_longs;
@@ -96,7 +97,7 @@ function afficher_histogramme_achats() {
 		method: 'post',
 		parameters : 'achats=true',
 		onSuccess : function(transport) {
-			var data = transport.headerJSON;
+			var data = transport.responseJSON;
 			var achats = data.datasets;
 			achats.tot = {};
 
