@@ -7,7 +7,7 @@ function initProgressBar(id,page, parameters, callback) {
         parameters : (parameters || '')+'&init_chargement=true&id='+id,
         onSuccess : function(transport) {
             var id=transport.request.parameters.id;
-            chargements[id]=transport.headerJSON;
+            chargements[id]=transport.responseJSON;
             for (var i in chargements[id]) {
                 chargements[id]['element_courant']=chargements[id][i];
                 break;
@@ -31,7 +31,7 @@ function traitement_suivant(id,page, parameters, callback) {
         parameters : (parameters || '')+'&id='+id+'&element='+chargements[id]['element_courant'],
         onSuccess : function(transport) {
             var id=transport.request.parameters.id;
-            infos_chargements[id][getIndexCourant(id)]=transport.headerJSON;
+            infos_chargements[id][getIndexCourant(id)]=transport.responseJSON;
             var est_termine=MAJProgressBar(id);
             chargements[id]['element_courant']=getElementSuivant(id);
             if (est_termine && callback) {

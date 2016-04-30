@@ -267,28 +267,26 @@ class Stats {
 
 Stats::$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
+header('Content-Type: application/json');
+
 if (isset($_POST['publications'])) {
-	$data = Stats::getPublicationData();
-	header("X-JSON: " . json_encode($data));
+	echo json_encode(Stats::getPublicationData());
 }
 else if (isset($_POST['conditions'])) {
-	$data = Stats::getConditionData();
-	header("X-JSON: " . json_encode($data));
+	echo json_encode(Stats::getConditionData());
 }
 else if (isset($_POST['achats'])) {
-	$data = Stats::getPurchaseHistory();
-	header("X-JSON: " . json_encode($data));
+	echo json_encode(Stats::getPurchaseHistory());
 }
 else if (isset($_POST['possessions'])) {
 	if (isset($_POST['init_chargement'])) {
 		$l=DM_Core::$d->toList(Stats::$id_user);
-		header("X-JSON: " . json_encode(array_keys($l->collection)));
+		echo json_encode(array_keys($l->collection));
 	}
 	else if (isset($_POST['element'])) {
-		header("X-JSON: " . json_encode(Stats::getPossessionsData($_POST['element'])));
+		echo json_encode(Stats::getPossessionsData($_POST['element']));
 	}
 	else if (isset($_POST['fin'])) {
-		$data = Stats::getPossessionsData(null);
-		header("X-JSON: " . json_encode(Stats::getPossessionsData()));
+		echo json_encode(Stats::getPossessionsData());
 	}
 }
