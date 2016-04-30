@@ -176,7 +176,7 @@ class Liste {
 				<div id="fin_classement" class="hidden">
 					<?php foreach($types as $type=>$label) {
 					?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
-						 onclick="toggleGraphs()">
+						 onclick="toggleGraphs('possessions')">
 						<?=$label?>
 					  </a><?php
 					}?>
@@ -197,29 +197,34 @@ class Liste {
 				break;
 			case 'etats':
 				?>
-				<div id="canvas-holder" style=" width:500px; height:500px">
+				<div id="canvas-holder" style="width:500px;">
 					<canvas id="graph_conditions"></canvas>
 				</div><?php
 			break;
 
 			case 'achats':
-				$requete_achat_existe='SELECT Count(Date) AS cpt FROM achats WHERE ID_User='.$id_user;
-				$resultat_achat_existe=DM_Core::$d->requete_select($requete_achat_existe);
-				if ($resultat_achat_existe[0]['cpt']==0) {
-					echo AUCUNE_DATE_ACQUISITION;
-				}
-				else {
-					?><iframe id="iframe_graphique" style="border:0"></iframe>
-					<br />
-					<a href="javascript:void(0)" onclick="afficher_histogramme_achats();">
-						<?=AFFICHER_NOUVELLES_ACQUISITIONS?>
-					</a> 
-					&nbsp;-&nbsp;
-					<a href="javascript:void(0)" onclick="afficher_histogramme_achats('progressif');">
-						<?=AFFICHER_POSSESSIONS_TOTALES?>
-					</a>
-					<?php
-				}
+				$types = ['nouv' => AFFICHER_NOUVELLES_ACQUISITIONS, 'tot'=> AFFICHER_POSSESSIONS_TOTALES]; ?>
+
+				<div id="message_achats"><?=CHARGEMENT?>...</div>
+				
+				<div id="fin_achats" class="hidden">
+					<?php foreach($types as $type=>$label) {
+						?><a class="graph_type noborder <?=$type==='nouv' ? 'bold' : ''?>" href="javascript:void(0)"
+							 onclick="toggleGraphs('achats')">
+						<?=$label?>
+						</a><?php
+					}?>
+				</div>
+				
+				<br />
+
+				<div id="canvas-holder" class="hidden" style="background: whitesmoke">
+					<?php foreach($types as $type=>$label) {
+						?><canvas class="graph_achats <?=$type?> <?=$type==='tot' ? 'hidden' : ''?>"
+								  width="100%" height="500px"></canvas><?php
+					}?>
+				</div>
+				<?php
 			break;
 			case 'auteurs':
 				if (isset($_POST['auteur_nom'])) {

@@ -94,6 +94,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript" src="js/l10n.js"></script>
         <script type="text/javascript" src="js/ajax.js"></script>
         <script type="text/javascript" src="js/opentip/opentip-prototype-excanvas.min.js"></script>
+        <script type="text/javascript" src="js/moment.min.js"></script>
         <script type="text/javascript" src="js/edges2.js"></script><?php
 
         if (!is_null($action)) {
@@ -142,10 +143,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         case 'possessions': ?>
                             <script type="text/javascript" src="js/chargement.js"></script>
                         <?php
-                        break;
-                        case 'achats': ?>
-                            <script type="text/javascript" src="js/achats_histogramme.js"></script>
-                            <?php
                         break;
                     }
                 break;
