@@ -89,16 +89,12 @@ class Stats {
 				$data[]=$cpt;
 				$labels[]=utf8_encode(Database::$etats[$etat_court][0]);
 				$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-
-//				$tooltip = utf8_encode(Database::$etats[$etat_court][0].'<br>'.NUMEROS_POSSEDES).' : '.$cpt.' ('.round($cpt/$total).'%)';
 			}
 		}
 		if ($autres!=0) {
 			$data[]=$autres;
 			$labels[]=utf8_encode(AUTRES);
 			$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-
-//			$tooltip = utf8_encode(AUTRES.'<br>'.NUMEROS_POSSEDES).' : '.$autres.' ('.round($autres/$total).'%)';
 		}
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
 	}
@@ -223,6 +219,50 @@ class Stats {
 			return $retour;
 		}
 	}
+	
+	static function getPurchaseHistory() {
+		$id_user=static::$id_user;
+
+		$requete_achats = "
+			SELECT DATE_FORMAT(Date,'%Y-%m') AS Mois,CONCAT(Pays, '/', Magazine) AS Publicationcode, Count(Numero) AS cpt
+			FROM numeros n
+			  LEFT JOIN achats USING (ID_Acquisition)
+			WHERE ID_Utilisateur=$id_user
+			GROUP BY YEAR(Date), MONTH(Date), Pays,Magazine
+			ORDER BY YEAR(Date), MONTH(Date)
+		";
+		$resultat_achats = DM_Core::$d->requete_select($requete_achats);
+
+		$premier_achat = null;
+		$achats_magazines = array();
+
+		foreach($resultat_achats as $achat) {
+			if (is_null($premier_achat) && !is_null($achat['Mois'])) {
+				$premier_achat = $achat;
+			}
+
+			if (!array_key_exists($achat['Publicationcode'], $achats_magazines)) {
+				$achats_magazines[$achat['Publicationcode']] = array();
+			}
+			$achats_magazines[$achat['Publicationcode']][$achat['Mois']] = (int) $achat['cpt'];
+		}
+
+		$publication_codes = array_map(function($achat) {
+			return $achat['Publicationcode'];
+		}, $resultat_achats);
+
+		list($noms_complets_pays,$noms_complets_magazines)=Inducks::get_noms_complets($publication_codes);
+
+		return array(
+			'labels_pays_longs' => $noms_complets_pays,
+			'labels_magazines_longs' => $noms_complets_magazines,
+			'datasets' => array(
+				'nouv' => $achats_magazines
+			),
+			'premier_achat' => $premier_achat,
+			'title' => utf8_encode(ACHATS)
+		);
+	}
 }
 
 Stats::$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
@@ -233,6 +273,10 @@ if (isset($_POST['publications'])) {
 }
 else if (isset($_POST['conditions'])) {
 	$data = Stats::getConditionData();
+	header("X-JSON: " . json_encode($data));
+}
+else if (isset($_POST['achats'])) {
+	$data = Stats::getPurchaseHistory();
 	header("X-JSON: " . json_encode($data));
 }
 else if (isset($_POST['possessions'])) {
