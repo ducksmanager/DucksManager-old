@@ -16,7 +16,7 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
+	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
 		if ($nomServeur==='serveur_virtuel' && false) {
 			mysql_select_db('coa');
 			$resultat = DM_Core::$d->requete_select($requete);
@@ -40,7 +40,7 @@ class Inducks {
 				if (isset($_GET['dbg'])) {
 					echo $fullUrl.'<br /><br />';
 				}
-				$output=Util::get_page($fullUrl, 3.0);
+				$output=Util::get_page($fullUrl, $timeout);
 				if (isset($_GET['brut'])) {
 					echo 'Requete : '.$requete.'<br />'
 						.'Retour brut : <pre>'.$output.'</pre>'
