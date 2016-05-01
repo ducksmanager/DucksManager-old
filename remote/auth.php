@@ -1,5 +1,9 @@
 <?php
 
+if (!isset($database)) {
+	$database = null;
+}
+
 include_once('../ServeurDb.class.php');
 ServeurDb::connect($database);
 if (isset($_GET['debug']))
