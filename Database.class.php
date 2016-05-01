@@ -46,7 +46,7 @@ class Database {
 			if (!is_resource($requete_resultat))
 				return [];
 			$arr=[];
-			while($arr_tmp=mysql_fetch_array($requete_resultat))
+			while($arr_tmp=mysql_fetch_array($requete_resultat, MYSQL_ASSOC))
 					array_push($arr,$arr_tmp);
 			return $arr;
 		}
