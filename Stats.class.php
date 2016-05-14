@@ -263,6 +263,80 @@ class Stats {
 			'title' => utf8_encode(ACHATS)
 		);
 	}
+
+	static function getAuthorStoriesData() {
+		$id_user=static::$id_user;
+
+		$title = utf8_encode(POSSESSION_HISTOIRES_AUTEURS);
+		
+		$legend = [utf8_encode(HISTOIRES_POSSEDEES), utf8_encode(HISTOIRES_NON_POSSEDEES)];
+
+		$requete_auteurs = "
+			SELECT a_h.personcode, p.fullname, COUNT(a_h.storycode) AS cpt
+			FROM dm_stats.auteurs_histoires a_h
+			INNER JOIN coa.inducks_person p ON a_h.personcode = p.personcode
+			GROUP BY a_h.personcode
+		";
+
+		$resultat_auteurs = Inducks::requete_select($requete_auteurs, 'dm_stats');
+		$auteurs = [];
+
+		foreach($resultat_auteurs as $auteur) {
+			$auteurs[$auteur['personcode']] = ['fullname' => $auteur['fullname'], 'cpt' => $auteur['cpt']];
+		}
+
+		$requete_stats_auteurs = "
+			SELECT u_h_m.personcode, COUNT(u_h_m.storycode) AS cpt
+			FROM dm_stats.utilisateurs_histoires_manquantes u_h_m
+			WHERE u_h_m.ID_User = $id_user
+			GROUP BY u_h_m.personcode
+		";
+
+		$resultat_stats_auteurs = Inducks::requete_select($requete_stats_auteurs, 'dm_stats');
+
+		$possedees = [
+			'label' => utf8_encode(HISTOIRES_POSSEDEES),
+			'backgroundColor' => '#FF8000',
+			'data' => []
+		];
+		$possedees_pct = $possedees;
+
+		$manquantes = [
+			'label' => utf8_encode(HISTOIRES_NON_POSSEDEES),
+			'backgroundColor' => '#04B404',
+			'data' => []
+		];
+		$manquantes_pct = $manquantes;
+
+		$labels = [];
+
+		foreach($resultat_stats_auteurs as $stat_utilisateur_auteur) {
+			$auteur = $stat_utilisateur_auteur['personcode'];
+			$total_auteur = $auteurs[$auteur]['cpt'];
+			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur['cpt'];
+			$possedees_auteur_pct = round(100*($possedees_auteur/$total_auteur));
+
+			$possedees['data'][]  = $possedees_auteur;
+			$manquantes['data'][] = $total_auteur - $possedees_auteur ;
+
+			$possedees_pct['data'][] = $possedees_auteur_pct;
+			$manquantes_pct['data'][] = 100 - $possedees_auteur_pct;
+
+			$labels[]=$auteurs[$auteur]['fullname'];
+		}
+
+
+		return [
+			'datasets' => [
+				'possedees' => $possedees, 'manquantes' => $manquantes,
+				'possedees_pct' => $possedees_pct, 'manquantes_pct' => $manquantes_pct
+			],
+			'legend' => $legend,
+			'labels' => $labels,
+			'title' => $title,
+		];
+
+	}
 }
 
 Stats::$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
@@ -277,6 +351,9 @@ else if (isset($_POST['conditions'])) {
 }
 else if (isset($_POST['achats'])) {
 	echo json_encode(Stats::getPurchaseHistory());
+}
+else if (isset($_POST['auteurs'])) {
+	echo json_encode(Stats::getAuthorStoriesData());
 }
 else if (isset($_POST['possessions'])) {
 	if (isset($_POST['init_chargement'])) {

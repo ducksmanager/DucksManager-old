@@ -35,7 +35,7 @@ function afficher_histogramme_possessions(data) {
 			var labels_magazines_longs = data.labels_magazines_longs;
 			var labels_pays_longs = data.labels_pays_longs;
 
-			$('canvas-holder').setStyle({width: 30*data.labels.length + 'px'});
+			$('canvas-holder').setStyle({width: 100 + 30*data.labels.length + 'px'});
 
 			Chart.defaults.global.maintainAspectRatio = false;
 			var config = {
@@ -88,6 +88,68 @@ function afficher_histogramme_possessions(data) {
 			$('barre_pct_classement').addClassName('hidden');
 			$$('#barre_pct_classement, #chargement_classement_termine, #prefixe_message_classement, #message_classement')
 				.invoke('update')
+		}
+	});
+}
+
+function afficher_histogramme_stats_auteurs() {
+	new Ajax.Request('Stats.class.php', {
+		method: 'post',
+		parameters : 'auteurs=true',
+		onSuccess : function(transport) {
+			var data = transport.responseJSON;
+
+			var noms_complets_auteurs = data.labels;
+
+			Chart.defaults.global.maintainAspectRatio = false;
+			var config = {
+				type: 'bar',
+				options: {
+					title:{
+						display:true,
+						text: data.title
+					},
+					responsive: true,
+					scales: {
+						xAxes: [{
+							stacked: true,
+							ticks: {
+								autoSkip: false
+							}
+						}],
+						yAxes: [{
+							stacked: true
+						}]
+					},
+					tooltips: {
+						enabled: true,
+						mode: 'label',
+						callbacks: {
+							title: function(tooltipItems) {
+								return noms_complets_auteurs[tooltipItems[0].xLabel];
+							}
+						}
+					}
+				}
+			};
+
+			var config_abs = Object.clone(config);
+			config_abs.data = Object.clone(data);
+			config_abs.data.datasets = [data.datasets.possedees, data.datasets.manquantes];
+			new Chart($$('.graph_auteurs.abs')[0].getContext('2d'), config_abs);
+
+			var config_cpt = Object.clone(config);
+			config_cpt.data = Object.clone(data);
+			config_cpt.data.datasets = [data.datasets.possedees_pct, data.datasets.manquantes_pct];
+			config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
+				return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
+			};
+			new Chart($$('.graph_auteurs.pct')[0].getContext('2d'), config_cpt);
+
+			$('canvas-holder')
+				.setStyle({width: 250 + 50*data.labels.length + 'px'});
+
+			$$('#canvas-holder, #fin_stats_auteur').invoke('removeClassName', 'hidden');
 		}
 	});
 }

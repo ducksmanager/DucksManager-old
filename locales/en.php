@@ -236,6 +236,7 @@ define('GESTION_NUMEROS_COURT','My issues');
 define('GRATUIT_AUCUNE_LIMITE','DucksManager is free and has no use limits.');
 define('HISTOIRE','story');
 define('HISTOIRES','stories');
+define('HISTOIRES_NON_POSSEDEES','Non-possessed stories');
 define('HISTOIRES_NON_POSSEDEES_ETRANGER','Non-possessed stories published abroad only');
 define('HISTOIRES_NON_POSSEDEES_PAYS','Non-possessed stories published in France');
 define('HISTOIRES_POSSEDEES','Possessed stories');
