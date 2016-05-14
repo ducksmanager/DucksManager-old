@@ -29,7 +29,7 @@ class Inducks {
 			}
 
 			if ($nomServeur === 'serveur_virtuel') {
-				$coaServers = [ServeurCoa::$coa_servers];
+				$coaServers = ServeurCoa::$coa_servers;
 			} else {
 				$coaServers = [ServeurCoa::$ducksmanager_server];
 			}
