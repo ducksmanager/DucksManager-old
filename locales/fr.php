@@ -235,6 +235,7 @@ define('GESTION_NUMEROS_COURT','Mes num&eacute;ros');
 define('GRATUIT_AUCUNE_LIMITE','DucksManager est gratuit et sans limite d\'utilisation.');
 define('HISTOIRE','histoire');
 define('HISTOIRES','histoires');
+define('HISTOIRES_NON_POSSEDEES','Histoires non possédées');
 define('HISTOIRES_NON_POSSEDEES_ETRANGER','Histoires non possédées publiées à l\'étranger uniquement');
 define('HISTOIRES_NON_POSSEDEES_PAYS','Histoires non possédées publiées en France');
 define('HISTOIRES_POSSEDEES','Histoires possédées');

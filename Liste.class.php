@@ -239,7 +239,23 @@ class Liste {
 						echo CALCULS_PAS_ENCORE_FAITS.'<br />';
 					}
 					else {
-						echo '<iframe id="iframe_graphique" src="auteurs_histogramme.php" style="border:0"></iframe>';
+						$types = ['abs' => AFFICHER_VALEURS_REELLES, 'pct'=> AFFICHER_POURCENTAGES]; ?>
+
+						<div id="fin_stats_auteur" class="hidden">
+							<?php foreach($types as $type=>$label) {
+								?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
+									 onclick="toggleGraphs('auteurs')">
+								<?=$label?>
+								</a><?php
+							}?>
+						</div>
+						
+						<div id="canvas-holder" class="hidden">
+							<?php foreach($types as $type=>$label) {
+								?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"
+										  width="100%" height="500px"></canvas><?php
+							}?>
+						</div><?php
 					}
 				}
 				?><br /><br />

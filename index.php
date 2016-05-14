@@ -212,7 +212,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             if (isset($_GET['onglet'])) {
             	switch($_GET['onglet']) {
 					case 'auteurs':
-						?>init_autocompleter_auteurs();<?php
+						?>init_autocompleter_auteurs();afficher_histogramme_stats_auteurs()<?php
 					break;
 					case 'achats':
 						?>afficher_histogramme_achats();<?php
