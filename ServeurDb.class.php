@@ -33,7 +33,7 @@ class ServeurDb {
 			ServeurDb::initDBServers();
 		}
 		if (!isLocalHost()) {
-			if (isServeurVirtuel()) {
+			if (self::isServeurVirtuel()) {
 				$current_db_server='serveur_virtuel';
 			}
 			else {
@@ -53,6 +53,14 @@ class ServeurDb {
 
 	static function getIpServeurVirtuel() {
 		return ServeurDb::getProfil('serveur_virtuel')->ip;
+	}
+
+	static function getDomainServeurVirtuel() {
+		return ServeurDb::getProfil('serveur_virtuel')->domain;
+	}
+
+	static function isServeurVirtuel() {
+		return $_SERVER['HTTP_HOST']==ServeurDb::getDomainServeurVirtuel();
 	}
 
 	static function getUrlServeurVirtuel() {
@@ -83,6 +91,7 @@ class ServeurDb {
 
 class ProfilDB {
 	var $ip;
+	var $domain;
 	var $server;
 	var $user;
 	var $password;
@@ -102,10 +111,6 @@ class ProfilDB {
 
 function isLocalHost() {
 	return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
-}
-
-function isServeurVirtuel() {
-	return $_SERVER['HTTP_HOST']==ServeurDb::getIpServeurVirtuel();
 }
 
 ServeurDb::initDBServers();

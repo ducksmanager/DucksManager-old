@@ -35,12 +35,7 @@ class Inducks {
 			}
 
 			foreach($coaServers as $coaServerName=>$coaServer) {
-				$url = $coaServer->getUrl().'/'.$coaServer->web_root;
-				$fullUrl = $url.'/sql.php?db='.$db.'&req='.urlencode($requete).'&mdp='.sha1($coaServer->db_password);
-				if (isset($_GET['dbg'])) {
-					echo $fullUrl.'<br /><br />';
-				}
-				$output=Util::get_page($fullUrl, $timeout);
+				$output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete), $timeout, isset($_GET['dbg']));
 				if (isset($_GET['brut'])) {
 					echo 'Requete : '.$requete.'<br />'
 						.'Retour brut : <pre>'.$output.'</pre>'
@@ -309,7 +304,7 @@ class Inducks {
 }
 
 require_once('ServeurDb.class.php');
-Inducks::$use_local_db = $_SERVER['SERVER_ADDR'] === ServeurDb::getIpServeurVirtuel();
+Inducks::$use_local_db = ServeurDb::isServeurVirtuel();
 
 if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();

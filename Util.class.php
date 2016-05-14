@@ -32,6 +32,15 @@ class Util {
 			return ERREUR_CONNEXION_INDUCKS;
 		}
 	}
+	
+	static function get_secured_page(ServeurCoa $coaServer, $url, $timeout, $dbg) {
+		$baseUrl = $coaServer->getUrl().'/'.$coaServer->web_root;
+		$fullUrl = $baseUrl.'/'.$url.'&mdp='.sha1($coaServer->db_password);
+		if ($dbg) {
+			echo $fullUrl.'<br /><br />';
+		}
+		return Util::get_page($fullUrl, $timeout);
+	}
 
 	static function start_log($nom) {
 

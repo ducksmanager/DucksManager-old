@@ -37,8 +37,8 @@ class Database {
 			$this->password=$password;
 	}
 
-	function requete_select($requete) {
-		if ($_SERVER['SERVER_ADDR'] === ServeurDb::getIpServeurVirtuel() && mysql_current_db() !== 'coa') {
+	function requete_select($requete, $forceMemeServeur=false) {
+		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel() && mysql_current_db() !== 'coa') {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		else {
@@ -52,9 +52,9 @@ class Database {
 		}
 	}
 
-	function requete($requete) {
+	function requete($requete, $forceMemeServeur=false) {
 		require_once('Inducks.class.php');
-		if ($_SERVER['SERVER_ADDR'] === ServeurDb::getIpServeurVirtuel()) {
+		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel()) {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		else {
