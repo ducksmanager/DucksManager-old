@@ -15,7 +15,7 @@ class ServeurDb {
 
 	/**
 	 * @return ProfilDB
-     */
+	 */
 	static function getPiwikServer() {
 		return self::getProfil('serveur_virtuel');
 	}
@@ -60,7 +60,7 @@ class ServeurDb {
 	}
 
 	static function isServeurVirtuel() {
-		return $_SERVER['HTTP_HOST']==ServeurDb::getDomainServeurVirtuel();
+		return in_array($_SERVER['HTTP_HOST'], [ServeurDb::getDomainServeurVirtuel(), ServeurDb::getIpServeurVirtuel()]);
 	}
 
 	static function getUrlServeurVirtuel() {
