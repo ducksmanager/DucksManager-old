@@ -446,7 +446,7 @@ function ajouter_auteur($id,$nom) {
 			if ($affiche_notation) {
 				?><form method="post" action="?action=agrandir&onglet=auteurs_favoris&onglet_auteur=preferences"><?php
 			}
-			?><table style="width:100%"><?php
+			?><table><?php
 			foreach($auteurs_surveilles as $num=>$auteur) {
 				?><tr><td>- <?=$auteur['NomAuteur']?></td><?php
 				if ($affiche_notation) {

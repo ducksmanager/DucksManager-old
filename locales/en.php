@@ -312,7 +312,7 @@ define('LICENCE_INDUCKS1','This website is partially based on the Inducks websit
 define('LICENCE_INDUCKS2','Click here to read the Inducks licence.');
 define('LICENCE_INDUCKS3','All the pictures of Disney characters and products belong to The Walt Disney Company.');
 define('LIEN_FORUM_DES_FANS','official DucksManager message board !');
-define('LISTE_AUTEURS_INTRO','Your authors list is the following one : ');
+define('LISTE_AUTEURS_INTRO','You\'re following the following authors : ');
 define('LISTE_BOUQUINERIES','List of second-hand bookshops');
 define('LISTES_IDENTIQUES','Your Inducks and DucksManager collections are identical, no action is required.');
 define('MAINTENANCE','Maintenance');

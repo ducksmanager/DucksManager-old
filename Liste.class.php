@@ -280,15 +280,7 @@ class Liste {
 				?>
 				</div>
 				<br />
-				<?php
-				echo STATISTIQUES_QUOTIDIENNES;
-				if (count($resultat_auteurs_surveilles)>0) {
-					echo LANCER_CALCUL_MANUELLEMENT.'<br />';
-					?><button onclick="stats_auteur(<?php echo $id_user;?>)"><?php echo LANCER_CALCUL;?></button>
-					<div id="resultat_stats"></div>
-				<?php
-				}
-                ?>
+				<?=STATISTIQUES_QUOTIDIENNES?>
 				<?php
 			break;
 		}
