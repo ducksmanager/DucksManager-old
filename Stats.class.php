@@ -87,13 +87,13 @@ class Stats {
 			}
 			else {
 				$data[]=$cpt;
-				$labels[]=utf8_encode(Database::$etats[$etat_court][0]);
+				$labels[]=Database::$etats[$etat_court][0];
 				$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
 			}
 		}
 		if ($autres!=0) {
 			$data[]=$autres;
-			$labels[]=utf8_encode(AUTRES);
+			$labels[]=AUTRES;
 			$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
 		}
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
@@ -140,17 +140,17 @@ class Stats {
 					$donnees[]=$donnee;
 				}
 			}
-			$title = utf8_encode(POSSESSION_NUMEROS);
+			$title = POSSESSION_NUMEROS;
 
 			$possedes = [
-				'label' => utf8_encode(NUMEROS_POSSEDES),
+				'label' => NUMEROS_POSSEDES,
 				'backgroundColor' => '#FF8000',
 				'data' => []
 			];
 			$possedes_cpt = $possedes;
 
 			$totaux = [
-				'label' => utf8_encode(NUMEROS_REFERENCES),
+				'label' => NUMEROS_REFERENCES,
 				'backgroundColor' => '#04B404',
 				'data' => []
 			];
@@ -174,7 +174,7 @@ class Stats {
 				}
 			}
 
-			$legend = [utf8_encode(NUMEROS_POSSEDES), utf8_encode(NUMEROS_REFERENCES)];
+			$legend = [NUMEROS_POSSEDES, NUMEROS_REFERENCES];
 
 			$labels= [];
 			$labels_pays_longs= [];
@@ -260,16 +260,16 @@ class Stats {
 				'nouv' => $achats_magazines
 			),
 			'premier_achat' => $premier_achat,
-			'title' => utf8_encode(ACHATS)
+			'title' => ACHATS
 		);
 	}
 
 	static function getAuthorStoriesData() {
 		$id_user=static::$id_user;
 
-		$title = utf8_encode(POSSESSION_HISTOIRES_AUTEURS);
+		$title = POSSESSION_HISTOIRES_AUTEURS;
 		
-		$legend = [utf8_encode(HISTOIRES_POSSEDEES), utf8_encode(HISTOIRES_NON_POSSEDEES)];
+		$legend = [HISTOIRES_POSSEDEES, HISTOIRES_NON_POSSEDEES];
 
 		$requete_auteurs = "
 			SELECT a_h.personcode, p.fullname, COUNT(a_h.storycode) AS cpt
@@ -295,14 +295,14 @@ class Stats {
 		$resultat_stats_auteurs = Inducks::requete_select($requete_stats_auteurs, 'dm_stats');
 
 		$possedees = [
-			'label' => utf8_encode(HISTOIRES_POSSEDEES),
+			'label' => HISTOIRES_POSSEDEES,
 			'backgroundColor' => '#FF8000',
 			'data' => []
 		];
 		$possedees_pct = $possedees;
 
 		$manquantes = [
-			'label' => utf8_encode(HISTOIRES_NON_POSSEDEES),
+			'label' => HISTOIRES_NON_POSSEDEES,
 			'backgroundColor' => '#04B404',
 			'data' => []
 		];
