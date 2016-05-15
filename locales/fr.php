@@ -311,7 +311,7 @@ define('LICENCE_INDUCKS1','Ce site se base en partie sur les donn&eacute;es du s
 define('LICENCE_INDUCKS2','Cliquez ici pour lire la licence Inducks.');
 define('LICENCE_INDUCKS3','Toutes les images de personnages et / ou produits Disney: &copy; The Walt Disney Company.');
 define('LIEN_FORUM_DES_FANS','forum officiel de DucksManager !');
-define('LISTE_AUTEURS_INTRO','Votre liste d\'auteurs est la suivante : ');
+define('LISTE_AUTEURS_INTRO','Vous suivez les auteurs suivants : ');
 define('LISTE_BOUQUINERIES','Liste des bouquineries');
 define('LISTES_IDENTIQUES','Vos collections Inducks et DucksManager sont identiques. Aucune action n\'est requise.');
 define('MAINTENANCE','Maintenance');
