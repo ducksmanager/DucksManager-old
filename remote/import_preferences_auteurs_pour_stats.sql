@@ -14,6 +14,10 @@ FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMI
 IGNORE 1 LINES
 (ID_Utilisateur, Publicationcode, Numero);
 
+TRUNCATE TABLE dm_stats.utilisateurs_histoires_manquantes;
+
+TRUNCATE TABLE dm_stats.auteurs_histoires;
+
 TRUNCATE TABLE dm_stats.histoires_publications;
 
 insert into dm_stats.histoires_publications(storycode, publicationcode, issuenumber)
@@ -27,8 +31,6 @@ insert into dm_stats.histoires_publications(storycode, publicationcode, issuenum
     FROM auteurs_pseudos_simple a_p
   );
 
-TRUNCATE TABLE dm_stats.auteurs_histoires;
-
 insert into dm_stats.auteurs_histoires(personcode, storycode)
   select distinct sj.personcode, sv.storycode
   from coa.inducks_storyjob sj
@@ -38,7 +40,6 @@ insert into dm_stats.auteurs_histoires(personcode, storycode)
     FROM auteurs_pseudos_simple a_p
   );
 
-TRUNCATE TABLE dm_stats.utilisateurs_histoires_manquantes;
 
 insert into dm_stats.utilisateurs_histoires_manquantes (ID_User, personcode, storycode)
   select a_p.ID_User, a_h.personcode, a_h.storycode
