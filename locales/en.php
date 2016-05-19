@@ -317,6 +317,7 @@ define('LISTE_BOUQUINERIES','List of second-hand bookshops');
 define('LISTES_IDENTIQUES','Your Inducks and DucksManager collections are identical, no action is required.');
 define('MAINTENANCE','Maintenance');
 define('MAUVAIS','Bad');
+define('MAX_AUTEURS_SURVEILLES_ATTEINT','You have reached the maximum amount of watched authors. Remove existing authors from your list in order to watch other ones.');
 define('MERCI_COMPREHENSION','Thank you for your understanding.');
 define('MERCI_CONTRIBUTION','Thanks for your contribution !');
 define('MINUTES','minute(s)');
