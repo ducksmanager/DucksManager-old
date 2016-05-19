@@ -61,8 +61,8 @@ insert into dm_stats.utilisateurs_publications_manquantes(ID_User, personcode, s
       and a_p.ID_User = n.ID_Utilisateur
   );
 
-insert into utilisateurs_publications_suggerees(ID_User, publicationcode, issuenumber, Score)
+insert into dm_stats.utilisateurs_publications_suggerees(ID_User, publicationcode, issuenumber, Score)
   select ID_User, publicationcode, issuenumber, sum(Notation)
-  from utilisateurs_publications_manquantes
+  from dm_stats.utilisateurs_publications_manquantes
   group by ID_User, publicationcode, issuenumber
   having sum(Notation) > 0;
