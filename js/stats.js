@@ -149,6 +149,7 @@ function afficher_histogramme_stats_auteurs() {
 			$('canvas-holder')
 				.setStyle({width: 250 + 50*data.labels.length + 'px'});
 
+			$('chargement_stats_auteur').addClassName('hidden');
 			$$('#canvas-holder, #fin_stats_auteur').invoke('removeClassName', 'hidden');
 		}
 	});
