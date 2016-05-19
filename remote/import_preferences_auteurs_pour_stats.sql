@@ -35,11 +35,17 @@ insert into dm_stats.auteurs_histoires(personcode, storycode)
   select distinct sj.personcode, sv.storycode
   from coa.inducks_storyjob sj
     inner join coa.inducks_storyversion sv on sj.storyversioncode = sv.storyversioncode
-  WHERE sv.what='s' and sv.kind='n' and sj.personcode IN (
-    select distinct a_p.NomAuteurAbrege
-    FROM auteurs_pseudos_simple a_p
-  );
-
+  WHERE sv.what='s'
+    and sv.kind='n'
+    and sj.personcode IN (
+      select distinct a_p.NomAuteurAbrege
+      FROM auteurs_pseudos_simple a_p
+    )
+    and EXISTS (
+      select 1
+      from coa.inducks_entry e
+      where e.storyversioncode = sv.storyversioncode
+    );
 
 insert into dm_stats.utilisateurs_histoires_manquantes (ID_User, personcode, storycode)
   select a_p.ID_User, a_h.personcode, a_h.storycode
