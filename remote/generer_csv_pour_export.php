@@ -31,7 +31,7 @@ if (isset($_GET['csv'])) {
         break;
         case 'auteurs_pseudos':
             $requete = "
-                SELECT ID_user, NomAuteurAbrege
+                SELECT ID_user, NomAuteurAbrege, Notation
                 FROM auteurs_pseudos
                 WHERE DateStat IS NULL AND NomAuteurAbrege <> ''";
         break;
