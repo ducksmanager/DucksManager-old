@@ -241,6 +241,9 @@ class Liste {
 					else {
 						$types = ['abs' => AFFICHER_VALEURS_REELLES, 'pct'=> AFFICHER_POURCENTAGES]; ?>
 
+						<div id="chargement_stats_auteur">
+							<?=CHARGEMENT?>...
+						</div>
 						<div id="fin_stats_auteur" class="hidden">
 							<?php foreach($types as $type=>$label) {
 								?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
