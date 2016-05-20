@@ -316,6 +316,7 @@ define('LISTE_BOUQUINERIES','Liste des bouquineries');
 define('LISTES_IDENTIQUES','Vos collections Inducks et DucksManager sont identiques. Aucune action n\'est requise.');
 define('MAINTENANCE','Maintenance');
 define('MAUVAIS','Mauvais');
+define('MAX_AUTEURS_SURVEILLES_ATTEINT','Vous avez atteint le nombre maximal d\'auteurs surveillés. Supprimiez des auteurs existants pour en surveiller d\'autres.');
 define('MERCI_COMPREHENSION','Merci de votre compr&eacute;hension.');
 define('MERCI_CONTRIBUTION','Merci pour votre contribution !');
 define('MINUTES','minute(s)');
