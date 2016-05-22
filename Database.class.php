@@ -490,60 +490,6 @@ function ajouter_auteur($id,$nom) {
 		}
 	}
 
-	function liste_suggestions_magazines() {
-		$id_user=$this->user_to_id($_SESSION['user']);
-		$requete_numeros_recommandes='SELECT Pays, Magazine, Numero, Texte, Notation FROM numeros_recommandes '
-                                            .'WHERE ID_Utilisateur='.$id_user.' ORDER BY Notation DESC';
-		$resultat_numeros_recommandes=DM_Core::$d->requete_select($requete_numeros_recommandes);
-		if (count($resultat_numeros_recommandes)!=0) {
-			echo INTRO_NUMEROS_RECOMMANDES;?>
-			<br />
-			<ol><?php
-			$pays_parcourus=[];
-			$auteurs=[];
-
-			foreach($resultat_numeros_recommandes as $numero) {
-				$pays=$numero['Pays'];
-				if (!array_key_exists($pays,$pays_parcourus))
-					$pays_parcourus[$pays]=Inducks::get_liste_magazines($pays);
-				?>
-				<li><?=$pays_parcourus[$pays][$numero['Magazine']]?> <?=$numero['Numero']?><br />
-				
-				<?php
-				$auteurs__nbs=explode(',',$numero['Texte']);
-
-				echo '<b>'.$numero['Notation'].' points : </b>';
-				$debut=true;
-				foreach ($auteurs__nbs as $i=>$histoire) {
-					list($auteur,$nb_histoires)=explode('=',$histoire);
-					if (!array_key_exists($auteur,$auteurs))
-					$auteurs[$auteur]=DM_Core::$d->get_auteur($auteur);
-					if (!$debut) {
-						if ($i==count($auteurs__nbs)-1) {
-							?> <?=ET?> <?php
-						}
-						else {
-							?>, <?php
-						}
-					}
-					if ($nb_histoires==1) {
-						?>1 <?=HISTOIRE?><?php
-					}
-					else {
-						?><?=$nb_histoires?> <?=HISTOIRES?><?php
-					}
-					?> <?=DE?> <?=$auteurs[$auteur]?><?php
-					$debut=false;
-				}
-			}
-			?>
-		</ol><?php
-		}
-		else {
-                    ?><?=CALCULS_PAS_ENCORE_FAITS?><br /><?php
-                }
-	}
-
 	function liste_auteurs_notes($auteurs_surveilles) {
 		foreach($auteurs_surveilles as $auteur) {
 			if ($auteur['Notation']>=1)

@@ -296,6 +296,16 @@ class Affichage {
 	static function afficher_texte_numero($pays, $magazine, $numero) {
 		?><span class="nowrap"><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?></span><?php
 	}
+
+	static function afficher_texte_histoire($code, $title, $comment)
+	{
+		if (empty($title)) {
+			$title = TITRE_INCONNU.($comment ? ' ('.$comment.') ' : '');
+		}
+		?><?=$title?>&nbsp;<a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search=">
+			<?=VOIR_PLUS?>
+		</a><?php
+	}
 	
 	static function valider_formulaire_inscription($user, $pass, $pass2) {
 		$erreur=null;
