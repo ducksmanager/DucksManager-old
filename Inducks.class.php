@@ -308,9 +308,14 @@ Inducks::$use_local_db = ServeurDb::isServeurVirtuel();
 
 if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();
+	
+	if ($_POST['inclure_tous_pays']) {
+		?><option id="all"><?=TOUS_PAYS?><?php
+	}
+	$selected = $_POST['selected'];
 
 	foreach($liste_pays_courte as $id=>$pays) {
-		if ($pays=='France')
+		if (($selected && $id === $selected) || $pays === 'France')
 			echo '<option selected="selected" id="'.$id.'">'.$pays;
 		else
 			echo '<option id="'.$id.'">'.$pays;

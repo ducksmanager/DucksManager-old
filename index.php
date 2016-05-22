@@ -233,6 +233,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 echo 'init_autocompleter_auteurs();';
                 echo 'init_notations();';
             }
+            ?>initPays(true, '<?=mysql_real_escape_string($_GET['pays'])?>');<?php
             break;
     }
     ?>">
@@ -1184,9 +1185,14 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 if (count($resultat_auteurs_surveilles)>0) {
                                                     if (!$auteur_note_existe) echo AUTEURS_NON_NOTES;
                                                     else {
-                                                        ?><div id="suggestions"><?php
+                                                        ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
+                                                        <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
+                                                            <option id="chargement_pays"><?=CHARGEMENT?>...
+                                                        </select>
+                                                        <div id="suggestions"><?php
                                                             include_once 'Stats.class.php';
-                                                            Stats::showSuggestedPublications();
+                                                            $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'all') ? $_GET['pays'] : null;
+                                                            Stats::showSuggestedPublications($pays);
                                                         ?></div><?php
                                                     }
                                                 }

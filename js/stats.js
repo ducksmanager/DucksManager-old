@@ -283,3 +283,9 @@ function toggleGraphs(type) {
 	toggleClass('.graph_'+type, 'hidden');
 	toggleClass('.graph_type', 'bold');
 }
+
+function recharger_stats_auteurs() {
+	var el_select=$('liste_pays');
+	var pays=el_select.options[el_select.options.selectedIndex].id;
+	location.replace(location.href.replace(/&pays=[^&$]+/, '') + '&pays='+pays);
+}

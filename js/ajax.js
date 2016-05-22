@@ -292,11 +292,11 @@ function connexion(user,pass) {
 	});
 }
 
-function initPays() {
+function initPays(inclure_tous_pays, selected) {
     if (!$('liste_pays')) return;
     new Ajax.Request('Inducks.class.php', {
            method: 'post',
-           parameters:'get_pays=true',
+           parameters:'get_pays=true&inclure_tous_pays='+inclure_tous_pays+'&selected='+selected,
            onSuccess:function(transport,json) {
                 $('liste_pays').update(transport.responseText);
                 if ($('liste_magazines'))
