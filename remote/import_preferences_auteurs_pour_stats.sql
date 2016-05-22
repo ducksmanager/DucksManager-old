@@ -4,7 +4,7 @@ INTO TABLE auteurs_pseudos_simple
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '\n'
 IGNORE 1 LINES
-(ID_User, NomAuteurAbrege);
+(ID_User, NomAuteurAbrege, Notation);
 
 LOAD DATA LOW_PRIORITY LOCAL INFILE 'export/numeros.csv'
 REPLACE
