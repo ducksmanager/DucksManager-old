@@ -23,3 +23,24 @@
 .graph_possessions {
     background-color: white;
 }
+
+#suggestions ul.liste_histoires {
+    margin: 0;
+}
+
+#suggestions .numero {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+#suggestions .numero.top1 {
+    font-size: xx-large;
+}
+
+#suggestions .numero.top2 {
+    font-size: x-large;
+}
+
+#suggestions .numero.top3 {
+    font-size: large;
+}

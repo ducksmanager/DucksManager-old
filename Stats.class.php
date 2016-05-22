@@ -335,35 +335,120 @@ class Stats {
 			'labels' => $labels,
 			'title' => $title,
 		];
+	}
 
+	static function showSuggestedPublications() {
+		$id_user=static::$id_user;
+
+		$requete_suggestions_publications = "
+			SELECT 
+				u_p_s.publicationcode, u_p_s.issuenumber, u_p_s.Score, p.fullname as author,
+				GROUP_CONCAT(u_p_m.storycode SEPARATOR '---') AS storycodes,
+				GROUP_CONCAT(s.title SEPARATOR '---') AS storytitles,
+				GROUP_CONCAT(s.storycomment SEPARATOR '---') AS storycomments
+			FROM dm_stats.utilisateurs_publications_suggerees u_p_s
+			  INNER JOIN dm_stats.utilisateurs_publications_manquantes u_p_m
+				ON u_p_s.ID_User = u_p_m.ID_User AND u_p_s.publicationcode = u_p_m.publicationcode AND u_p_s.issuenumber = u_p_m.issuenumber
+			  INNER JOIN coa.inducks_person p
+				ON u_p_m.personcode = p.personcode
+			  INNER JOIN coa.inducks_story s 
+			  	ON u_p_m.storycode = s.storycode
+			WHERE u_p_s.ID_User=$id_user
+			GROUP BY u_p_s.publicationcode, u_p_s.issuenumber, u_p_m.personcode
+			ORDER BY u_p_s.Score DESC
+			LIMIT 20
+		";
+		$resultat_suggestions_publications = Inducks::requete_select($requete_suggestions_publications, 'dm_stats');
+
+		$min_score = $resultat_suggestions_publications[count($resultat_suggestions_publications) - 1]['Score'];
+		$max_score = $resultat_suggestions_publications[0]['Score'];
+
+		$publicationcodes = array_map(function($suggestion) {
+			return $suggestion['publicationcode'];
+		}, $resultat_suggestions_publications);
+
+		$resultat_suggestions_publications_groupes = [];
+		array_walk($resultat_suggestions_publications, function ($suggestion) use (&$resultat_suggestions_publications_groupes, $min_score, $max_score) {
+			$issue = implode(' ', array($suggestion['publicationcode'], $suggestion['issuenumber']));
+			if (!array_key_exists($issue, $resultat_suggestions_publications_groupes)) {
+				$resultat_suggestions_publications_groupes[$issue] = [
+					'publicationcode' => $suggestion['publicationcode'],
+					'issuenumber' => $suggestion['issuenumber'],
+					'Score' => $suggestion['Score'],
+					'Importance' => $suggestion['Score'] === $max_score ? 1 : ($suggestion['Score'] === $min_score ? 3 : 2),
+					'stories' => [],
+				];
+			}
+			$resultat_suggestions_publications_groupes[$issue]['stories'][$suggestion['author']] = [
+				'titles' => explode('---', $suggestion['storytitles']),
+				'comments' => explode('---', $suggestion['storycomments']),
+				'codes' => explode('---', $suggestion['storycodes'])
+			];
+		});
+
+		list($liste_pays_complets,$liste_magazines_complets) = Inducks::get_noms_complets($publicationcodes);
+
+		foreach($resultat_suggestions_publications_groupes as $suggestion) {
+			list($pays,$magazine) = explode('/', $suggestion['publicationcode']);
+			?>
+			<div>
+				<span class="numero top<?=$suggestion['Importance']?>"><?php
+				Affichage::afficher_texte_numero(
+					$pays,
+					$liste_magazines_complets[$suggestion['publicationcode']],
+					$suggestion['issuenumber']
+				);
+				?>&nbsp;</span><?=NUMERO_CONTIENT?>
+			</div>
+			<ul class="liste_histoires"><?php
+			foreach($suggestion['stories'] as $author => $stories) {
+				?><li>
+					<div>
+						<?=implode(' ', [count($stories['codes']), count($stories['codes']) === 1 ? HISTOIRES_INEDITES : HISTOIRES_INEDITES, DE, $author])?>
+					</div>
+					<ul class="liste_histoires">
+						<?php foreach($stories['codes'] as $i_code => $code) {
+							?><li>
+								<?php Affichage::afficher_texte_histoire($code, $stories['titles'][$i_code], $stories['comments'][$i_code]);
+							?></li>
+							<?php
+						}?>
+					</ul>
+				</li><?php
+			}
+			?></ul><?php
+		}
 	}
 }
 
 Stats::$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
-header('Content-Type: application/json');
+if (isset($_POST['graph'])) {
 
-if (isset($_POST['publications'])) {
-	echo json_encode(Stats::getPublicationData());
-}
-else if (isset($_POST['conditions'])) {
-	echo json_encode(Stats::getConditionData());
-}
-else if (isset($_POST['achats'])) {
-	echo json_encode(Stats::getPurchaseHistory());
-}
-else if (isset($_POST['auteurs'])) {
-	echo json_encode(Stats::getAuthorStoriesData());
-}
-else if (isset($_POST['possessions'])) {
-	if (isset($_POST['init_chargement'])) {
-		$l=DM_Core::$d->toList(Stats::$id_user);
-		echo json_encode(array_keys($l->collection));
+	header('Content-Type: application/json');
+	
+	if (isset($_POST['publications'])) {
+		echo json_encode(Stats::getPublicationData());
 	}
-	else if (isset($_POST['element'])) {
-		echo json_encode(Stats::getPossessionsData($_POST['element']));
+	else if (isset($_POST['conditions'])) {
+		echo json_encode(Stats::getConditionData());
 	}
-	else if (isset($_POST['fin'])) {
-		echo json_encode(Stats::getPossessionsData());
+	else if (isset($_POST['achats'])) {
+		echo json_encode(Stats::getPurchaseHistory());
+	}
+	else if (isset($_POST['auteurs'])) {
+		echo json_encode(Stats::getAuthorStoriesData());
+	}
+	else if (isset($_POST['possessions'])) {
+		if (isset($_POST['init_chargement'])) {
+			$l=DM_Core::$d->toList(Stats::$id_user);
+			echo json_encode(array_keys($l->collection));
+		}
+		else if (isset($_POST['element'])) {
+			echo json_encode(Stats::getPossessionsData($_POST['element']));
+		}
+		else if (isset($_POST['fin'])) {
+			echo json_encode(Stats::getPossessionsData());
+		}
 	}
 }

@@ -387,20 +387,6 @@ function ajouter_auteur() {
     $('auteurs_ajoutes').insert(nom_auteur).insert(abbrev_auteur);
 }
 
-
-
-function stats_auteur(id_user) {
-    $('resultat_stats').update(l10n_calculs_auteurs['calcul_en_cours']);
-    new Ajax.Request('stats_auteur2.php', {
-        method: 'post',
-        parameters:'id_user='+id_user,
-        onSuccess:function(transport,json) {
-            $('resultat_stats').update(l10n_calculs_auteurs['calcul_termine']);
-            window.location.reload();
-        }
-    });
-}
-
 function modifier_type_liste(box,type_liste,confirmer) {
     afficher_chargement_parametres();
     new Ajax.Request('Liste.class.php', {

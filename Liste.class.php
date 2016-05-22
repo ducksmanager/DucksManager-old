@@ -183,7 +183,7 @@ class Liste {
 				</div>
 				<br />
 				<script type="text/javascript">
-					initProgressBar('classement','Stats.class.php', 'possessions=true', afficher_histogramme_possessions);
+					initProgressBar('classement','Stats.class.php', 'graph=true&possessions=true', afficher_histogramme_possessions);
 				</script>
 				<div id="resultat_classement"></div>
 

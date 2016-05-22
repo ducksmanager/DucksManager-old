@@ -146,6 +146,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         break;
                     }
                 break;
+                case 'agrandir':
+                    ?><script type="text/javascript" src="js/stats.js"></script><?php
             }
             ?><script src="js/divers.js"></script><?php
         }
@@ -1175,20 +1177,17 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 <?php
                                                 $auteur_note_existe=false;
                                                 foreach($resultat_auteurs_surveilles as $auteur_surveille) {
-                                                    if ($auteur_surveille['Notation']!=-1) $auteur_note_existe=true;
+                                                    if ($auteur_surveille['Notation']!=-1) {
+                                                        $auteur_note_existe=true;
+                                                    }
                                                 }
                                                 if (count($resultat_auteurs_surveilles)>0) {
                                                     if (!$auteur_note_existe) echo AUTEURS_NON_NOTES;
                                                     else {
-                                                        echo LANCER_CALCUL_SUGGESTIONS_MANUELLEMENT;
-                                                        ?>
-                                                        <br />
-                                                        <button onclick="stats_auteur(<?=$id_user?>)"><?=LANCER_CALCUL_SUGGESTIONS?></button>
-                                                        <div id="resultat_stats"></div>
-                                                        
-		                                                <br /><br />
-		                                                <?php
-		                                                DM_Core::$d->liste_suggestions_magazines();
+                                                        ?><div id="suggestions"><?php
+                                                            include_once 'Stats.class.php';
+                                                            Stats::showSuggestedPublications();
+                                                        ?></div><?php
                                                     }
                                                 }
                                                 else echo AUCUN_AUTEUR_SURVEILLE.' '.AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET;

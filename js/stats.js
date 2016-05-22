@@ -1,7 +1,7 @@
 function afficher_diagramme_secteurs(type) {
 	new Ajax.Request('Stats.class.php', {
 		method: 'post',
-		parameters: type+'=true',
+		parameters: 'graph=true&'+type+'=true',
 		onSuccess:function(transport) {
 			var data = transport.responseJSON;
 			var config = {
@@ -28,7 +28,7 @@ function afficher_diagramme_secteurs(type) {
 function afficher_histogramme_possessions(data) {
 	new Ajax.Request('Stats.class.php', {
 		method: 'post',
-		parameters : 'possessions=true&fin=true&ids='+JSON.stringify(data.chargements)+'&infos='+JSON.stringify(data.infos),
+		parameters : 'graph=true&possessions=true&fin=true&ids='+JSON.stringify(data.chargements)+'&infos='+JSON.stringify(data.infos),
 		onSuccess : function(transport) {
 			var data = transport.responseJSON;
 
@@ -95,7 +95,7 @@ function afficher_histogramme_possessions(data) {
 function afficher_histogramme_stats_auteurs() {
 	new Ajax.Request('Stats.class.php', {
 		method: 'post',
-		parameters : 'auteurs=true',
+		parameters : 'graph=true&auteurs=true',
 		onSuccess : function(transport) {
 			var data = transport.responseJSON;
 
@@ -158,7 +158,7 @@ function afficher_histogramme_stats_auteurs() {
 function afficher_histogramme_achats() {
 	new Ajax.Request('Stats.class.php', {
 		method: 'post',
-		parameters : 'achats=true',
+		parameters : 'graph=true&achats=true',
 		onSuccess : function(transport) {
 			var data = transport.responseJSON;
 			var achats = data.datasets;
