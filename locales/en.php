@@ -449,8 +449,6 @@ define('PROBLEME_BD','Problem when connecting to the database!');
 define('PROPOSE_LES_NUMEROS','wants to sell the following issues :');
 define('PROPOSE_PAR','Proposed by ');
 define('PROPOSER_BOUQUINERIE','Propose a second-hand bookshop');
-define('PROPOSER_MAGAZINES_POSSEDES','Only suggest issues whose magazines are in my magazines list');
-define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','This option allows to tell DucksManager that only the issues belonging to your magazines list can be suggested.');
 define('PUB_WHATTHEDUCK_1','New ! Keep an eye on your comics collection at any time thanks to ');
 define('PUB_WHATTHEDUCK_2',', DucksManager\'s mobile app !');
 define('PUB_WHATTHEDUCK_3','Available for free on Android Market.');

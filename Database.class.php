@@ -473,17 +473,10 @@ function ajouter_auteur($id,$nom) {
 			}
 			?></table><?php
 			if ($affiche_notation) {
-				$id_user=$this->user_to_id($_SESSION['user']);
-				$requete_get_recommandations_liste_mags='SELECT RecommandationsListeMags FROM users WHERE ID='.$id_user;
-				$resultat_get_recommandations_liste_mags=DM_Core::$d->requete_select($requete_get_recommandations_liste_mags);
-				$recommandations_liste_mags=$resultat_get_recommandations_liste_mags[0]['RecommandationsListeMags'];
 				echo EXPLICATION_NOTATION_AUTEURS1;
 				?><br /><?php 
 				echo EXPLICATION_NOTATION_AUTEURS2;
 				?><br /><br />
-				<input type="checkbox" <?=($recommandations_liste_mags?'checked="checked" ':'')?>
-					   name="proposer_magazines_possedes" />&nbsp;<?=PROPOSER_MAGAZINES_POSSEDES?><br />
-				<span style="font-size:10px"><?=PROPOSER_MAGAZINES_POSSEDES_EXPLICATION?></span>
 				<br /><br /><input type="submit" class="valider" value="<?=VALIDER_NOTATIONS?>" /></form>
 				<?php
 			}
