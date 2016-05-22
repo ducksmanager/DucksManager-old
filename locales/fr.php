@@ -448,8 +448,6 @@ define('PROBLEME_BD','Probl&egrave;me avec la base de donn&eacute;es !');
 define('PROPOSE_LES_NUMEROS','propose les num&eacute;ros suivants en vente :');
 define('PROPOSE_PAR','Propos&eacute;e par ');
 define('PROPOSER_BOUQUINERIE','Proposer une bouquinerie');
-define('PROPOSER_MAGAZINES_POSSEDES','Me proposer uniquement des magazines appartenant &agrave; ma liste');
-define('PROPOSER_MAGAZINES_POSSEDES_EXPLICATION','Cette option permet de pr&eacute;ciser &agrave; DucksManager que seuls les num&eacute;ros appartenant &agrave; votre liste de magazines pourront &eacute;tre sugg&eacute;r&eacute;s.');
 define('PUB_WHATTHEDUCK_1','Nouveau ! Gardez votre collection avec vous en toutes circonstances gr&acirc;ce &agrave; ');
 define('PUB_WHATTHEDUCK_2',', l\'application mobile de DucksManager !');
 define('PUB_WHATTHEDUCK_3','Disponible gratuitement sur les t&eacute;l&eacute;phones et tablettes Android.');
