@@ -63,6 +63,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
         <link rel="stylesheet" type="text/css" href="css/opentip.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
+        <link rel="stylesheet" type="text/css" href="css/starbox.css" />
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('ServeurDb.class.php');
@@ -86,9 +87,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script>
-        <script type="text/javascript" src="prototype-1.7.2.js"></script>
+        <script type="text/javascript" src="prototype-1.7.3.js"></script>
         <script type="text/javascript" src="js/chart.js"></script>
         <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
+        <script type='text/javascript' src='js/starbox.js'></script>
         <script type="text/javascript" src="js/pluit-carousel.js"></script>
         <script type="text/javascript" src="js/my_scriptaculous.js"></script>
         <script type="text/javascript" src="js/l10n.js"></script>
@@ -230,10 +232,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             break;
         case 'agrandir':
             if (isset($_GET['onglet']) && $_GET['onglet']=='auteurs_favoris') {
-                echo 'init_autocompleter_auteurs();';
-                echo 'init_notations();';
+                ?>init_autocompleter_auteurs();
+                init_notations();<?php
             }
-            ?>initPays(true, '<?=mysql_real_escape_string($_GET['pays'])?>');<?php
+            ?>
+            initPays(true, <?=empty($_GET['pays']) ? 'null' : ("'".mysql_real_escape_string($_GET['pays'])."'")?>);<?php
             break;
     }
     ?>">

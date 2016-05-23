@@ -9,7 +9,7 @@
             .template { display: none; }
 		</style>
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
-		<script type="text/javascript" src="prototype-1.7.2.js"></script>
+		<script type="text/javascript" src="prototype-1.7.3.js"></script>
 		<script type="text/javascript" src="js/bouquineries.js"></script>
 	</head>
 	<body onload="initialize()">

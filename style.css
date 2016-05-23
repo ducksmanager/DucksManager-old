@@ -23,7 +23,7 @@ a.noborder, a.noborder:HOVER {
 	text-decoration: underline;
 }
 
-.hidden {
+.hidden, .template {
 	display: none !important;
 }
 

@@ -454,46 +454,32 @@ function ajouter_auteur($id,$nom) {
 			?><br /><?php
 		}
 		else {
-			if ($affiche_notation) {
-				?><form method="post" action="?action=agrandir&onglet=auteurs_favoris&onglet_auteur=preferences"><?php
-			}
-			?><table><?php
-			foreach($auteurs_surveilles as $num=>$auteur) {
-				?><tr><td>- <?=$auteur['NomAuteur']?></td><?php
-				if ($affiche_notation) {
-					?><td id="pouces<?=$num?>" onmouseout="vider_pouces()"><?php note_to_pouces($num,$auteur['Notation']);
-					?><input type="hidden" value="<?=$auteur['NomAuteurAbrege']?>" name="auteur<?=$num?>" />
-					<input type="hidden" id="notation<?=$num?>" name="notation<?=$num?>" />
-					</td>
-					<td><input type="checkbox" <?=($auteur['Notation']==-1?'checked="checked"':'')?> id="aucune_note<?=$num?>" onclick="set_aucunenote(<?=$num?>)" name="aucune_note<?=$num?>" />&nbsp;<?=AUCUNE_NOTE?>
-					<?php
-				}
-				?><td><a href="javascript:void(0)" onclick="supprimer_auteur('<?=$auteur['NomAuteurAbrege']?>')"><?=SUPPRIMER?></a></td>
-				</tr><?php
-			}
-			?></table><?php
-			if ($affiche_notation) {
-				echo EXPLICATION_NOTATION_AUTEURS1;
-				?><br /><?php 
-				echo EXPLICATION_NOTATION_AUTEURS2;
-				?><br /><br />
-				<br /><br /><input type="submit" class="valider" value="<?=VALIDER_NOTATIONS?>" /></form>
-				<?php
-			}
-		}
-	}
-
-	function liste_auteurs_notes($auteurs_surveilles) {
-		foreach($auteurs_surveilles as $auteur) {
-			if ($auteur['Notation']>=1)
-				echo '1_';
-			else
-				echo '0_';
+            ?><ul id="liste_notations">
+                <li class="notation template">
+                    <div class="nom_auteur"></div>
+                    <div class="notation_auteur"></div>
+                    <div class="supprimer_auteur">
+                        <a href="javascript:void(0)"><?=SUPPRIMER?></a>
+                    </div>
+                </li>
+            </ul><?php
 		}
 	}
 	
 	function get_notes_auteurs($id_user) {
 		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat = \'0000-00-00\'');
+	}
+	
+	function modifier_note_auteur($auteur, $note) {
+        $id_user=$this->user_to_id($_SESSION['user']);
+        
+        $requete_notation="
+          UPDATE auteurs_pseudos
+          SET Notation=$note
+          WHERE DateStat = '0000-00-00' 
+            AND NomAuteurAbrege = '$auteur'
+            AND ID_user=$id_user";
+        DM_Core::$d->requete($requete_notation);
 	}
 
 	function sous_liste($pays,$magazine) {
@@ -868,13 +854,15 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['liste_notations'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$resultat_notations=DM_Core::$d->get_notes_auteurs($id_user);
-		$json=json_encode(DM_Core::$d->liste_auteurs_notes($resultat_notations));
-		echo header("X-JSON: " . $json);
+		
+        header('Content-Type: application/json');
+		echo json_encode($resultat_notations);
 	}
 	else if (isset($_POST['changer_notation'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		DM_Core::$d->update_notation($_POST['auteur_abrege'],$_POST['notation']);
-		echo NOTATION_MODIFIEE;
+		DM_Core::$d->modifier_note_auteur(
+		    mysql_real_escape_string($_POST['auteur']),
+		    mysql_real_escape_string($_POST['notation'])
+        );
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);

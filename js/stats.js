@@ -289,3 +289,45 @@ function recharger_stats_auteurs() {
 	var pays=el_select.options[el_select.options.selectedIndex].id;
 	location.replace(location.href.replace(/&pays=[^&$]+/, '') + '&pays='+pays);
 }
+
+function init_notations() {
+	new Ajax.Request('Database.class.php', {
+		method: 'post',
+		parameters:'database=true&liste_notations=true',
+		onSuccess:function(transport) {
+			var notations = transport.responseJSON;
+
+			var liste_notations = $('liste_notations');
+			var template = liste_notations.select('.template')[0];
+			for (var i=0;i<notations.length;i++) {
+				var notation = notations[i];
+
+				var el_li = template.clone(true).removeClassName('template');
+				el_li.down('.nom_auteur').update(notation.NomAuteur);
+				el_li.down('.notation_auteur').writeAttribute('id', 'notation_auteur_' + notation.NomAuteurAbrege);
+				el_li.down('.supprimer_auteur').down('a').writeAttribute('id', 'supprimer_auteur_' + notation.NomAuteurAbrege).observe('click', function() {
+					supprimer_auteur(this.id.replace(/^[^_]+_/,''));
+				});
+				liste_notations.insert(el_li);
+
+				new Starbox(el_li.down('.notation_auteur'), notation.Notation || 5, {
+					buttons: 10,
+					max: 10,
+					stars: 10,
+					rerate: true,
+					onRate: function(element, datum) {
+						var auteur = datum.identity.replace(/^.+_(.+)$/,'$1');
+						var notation = datum.rated;
+						new Ajax.Request('Database.class.php', {
+							method: 'post',
+							parameters:'database=true&changer_notation=true&auteur='+auteur+'&notation='+notation,
+							onSuccess:function(transport) {
+
+							}
+						});
+					}
+				});
+			}
+		}
+	});
+}
