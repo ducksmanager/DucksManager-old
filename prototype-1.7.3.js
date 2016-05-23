@@ -1,4 +1,4 @@
-/*  Prototype JavaScript framework, version 1.7.2
+/*  Prototype JavaScript framework, version 1.7.3
  *  (c) 2005-2010 Sam Stephenson
  *
  *  Prototype is freely distributable under the terms of an MIT-style license.
@@ -8,7 +8,7 @@
 
 var Prototype = {
 
-	Version: '1.7.2',
+	Version: '1.7.3',
 
 	Browser: (function(){
 		var ua = navigator.userAgent;
@@ -480,11 +480,11 @@ Object.extend(Function.prototype, (function() {
 
 	function toISOString() {
 		return this.getUTCFullYear() + '-' +
-		(this.getUTCMonth() + 1).toPaddedString(2) + '-' +
-		this.getUTCDate().toPaddedString(2) + 'T' +
-		this.getUTCHours().toPaddedString(2) + ':' +
-		this.getUTCMinutes().toPaddedString(2) + ':' +
-		this.getUTCSeconds().toPaddedString(2) + 'Z';
+			(this.getUTCMonth() + 1).toPaddedString(2) + '-' +
+			this.getUTCDate().toPaddedString(2) + 'T' +
+			this.getUTCHours().toPaddedString(2) + ':' +
+			this.getUTCMinutes().toPaddedString(2) + ':' +
+			this.getUTCSeconds().toPaddedString(2) + 'Z';
 	}
 
 
@@ -621,7 +621,7 @@ Object.extend(String.prototype, (function() {
 	}
 
 	function stripTags() {
-		return this.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?>|<\/\w+>/gi, '');
+		return this.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?(\/)?>|<\/\w+>/gi, '');
 	}
 
 	function stripScripts() {
@@ -679,7 +679,7 @@ Object.extend(String.prototype, (function() {
 
 	function succ() {
 		return this.slice(0, this.length - 1) +
-		String.fromCharCode(this.charCodeAt(this.length - 1) + 1);
+			String.fromCharCode(this.charCodeAt(this.length - 1) + 1);
 	}
 
 	function times(count) {
@@ -734,7 +734,7 @@ Object.extend(String.prototype, (function() {
 
 	function evalJSON(sanitize) {
 		var json = this.unfilterJSON(),
-			cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+			cx = /[\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff\u0000]/g;
 		if (cx.test(json)) {
 			json = json.replace(cx, function (a) {
 				return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
@@ -1332,9 +1332,8 @@ Array.from = $A;
 	}
 
 	if (arrayProto.some) {
-		var some = wrapNative(Array.prototype.some);
+		some = wrapNative(Array.prototype.some);
 	}
-
 
 	function every(iterator) {
 		if (this == null) throw new TypeError();
@@ -1352,21 +1351,15 @@ Array.from = $A;
 	}
 
 	if (arrayProto.every) {
-		var every = wrapNative(Array.prototype.every);
+		every = wrapNative(Array.prototype.every);
 	}
 
-	var _reduce = arrayProto.reduce;
-	function inject(memo, iterator) {
-		iterator = iterator || Prototype.K;
-		var context = arguments[2];
-		return _reduce.call(this, iterator.bind(context), memo);
-	}
-
-	if (!arrayProto.reduce) {
-		var inject = Enumerable.inject;
-	}
 
 	Object.extend(arrayProto, Enumerable);
+
+	if (arrayProto.entries === Enumerable.entries) {
+		delete arrayProto.entries;
+	}
 
 	if (!arrayProto._reverse)
 		arrayProto._reverse = arrayProto.reverse;
@@ -1383,7 +1376,6 @@ Array.from = $A;
 		any:       some,
 		every:     every,
 		all:       every,
-		inject:    inject,
 
 		clear:     clear,
 		first:     first,
@@ -1508,8 +1500,8 @@ var Hash = Class.create(Enumerable, (function() {
 
 	function inspect() {
 		return '#<Hash:{' + this.map(function(pair) {
-			return pair.map(Object.inspect).join(': ');
-		}).join(', ') + '}>';
+				return pair.map(Object.inspect).join(': ');
+			}).join(', ') + '}>';
 	}
 
 	function clone() {
@@ -1642,10 +1634,10 @@ var Try = {
 var Ajax = {
 	getTransport: function() {
 		return Try.these(
-			function() {return new XMLHttpRequest()},
-			function() {return new ActiveXObject('Msxml2.XMLHTTP')},
-			function() {return new ActiveXObject('Microsoft.XMLHTTP')}
-		) || false;
+				function() {return new XMLHttpRequest()},
+				function() {return new ActiveXObject('Msxml2.XMLHTTP')},
+				function() {return new ActiveXObject('Microsoft.XMLHTTP')}
+			) || false;
 	},
 
 	activeRequestCount: 0
@@ -1771,7 +1763,7 @@ Ajax.Request = Class.create(Ajax.Base, {
 
 		if (this.method == 'post') {
 			headers['Content-type'] = this.options.contentType +
-			(this.options.encoding ? '; charset=' + this.options.encoding : '');
+				(this.options.encoding ? '; charset=' + this.options.encoding : '');
 
 			/* Force "Connection: close" for older Mozilla browsers to work
 			 * around a bug where XMLHttpRequest sends an incorrect
@@ -1844,10 +1836,10 @@ Ajax.Request = Class.create(Ajax.Base, {
 	isSameOrigin: function() {
 		var m = this.url.match(/^\s*https?:\/\/[^\/]*/);
 		return !m || (m[0] == '#{protocol}//#{domain}#{port}'.interpolate({
-			protocol: location.protocol,
-			domain: document.domain,
-			port: location.port ? ':' + location.port : ''
-		}));
+				protocol: location.protocol,
+				domain: document.domain,
+				port: location.port ? ':' + location.port : ''
+			}));
 	},
 
 	getHeader: function(name) {
@@ -1939,7 +1931,7 @@ Ajax.Response = Class.create({
 
 		try {
 			return json.evalJSON(this.request.options.sanitizeJSON ||
-			!this.request.isSameOrigin());
+				!this.request.isSameOrigin());
 		} catch (e) {
 			this.request.dispatchException(e);
 		}
@@ -1953,7 +1945,7 @@ Ajax.Response = Class.create({
 			return null;
 		try {
 			return this.responseText.evalJSON(options.sanitizeJSON ||
-			!this.request.isSameOrigin());
+				!this.request.isSameOrigin());
 		} catch (e) {
 			this.request.dispatchException(e);
 		}
@@ -2146,12 +2138,12 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 
 
 	function visible(element) {
-		return $(element).style.display !== 'none';
+		return $(element).getStyle('display') !== 'none';
 	}
 
 	function toggle(element, bool) {
 		element = $(element);
-		if (Object.isUndefined(bool))
+		if (typeof bool !== 'boolean')
 			bool = !Element.visible(element);
 		Element[bool ? 'show' : 'hide'](element);
 
@@ -2231,7 +2223,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 		try {
 			s.appendChild(document.createTextNode(""));
 			isBuggy = !s.firstChild ||
-			s.firstChild && s.firstChild.nodeType !== 3;
+				s.firstChild && s.firstChild.nodeType !== 3;
 		} catch (e) {
 			isBuggy = true;
 		}
@@ -2683,6 +2675,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 
 	function descendantOf_DOM(element, ancestor) {
 		element = $(element), ancestor = $(ancestor);
+		if (!element || !ancestor) return false;
 		while (element = element.parentNode)
 			if (element === ancestor) return true;
 		return false;
@@ -2690,12 +2683,14 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 
 	function descendantOf_contains(element, ancestor) {
 		element = $(element), ancestor = $(ancestor);
+		if (!element || !ancestor) return false;
 		if (!ancestor.contains) return descendantOf_DOM(element, ancestor);
 		return ancestor.contains(element) && ancestor !== element;
 	}
 
 	function descendantOf_compareDocumentPosition(element, ancestor) {
 		element = $(element), ancestor = $(ancestor);
+		if (!element || !ancestor) return false;
 		return (element.compareDocumentPosition(ancestor) & 8) === 8;
 	}
 
@@ -2800,8 +2795,10 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 		for (var attr in attributes) {
 			name = table.names[attr] || attr;
 			value = attributes[attr];
-			if (table.values[attr])
-				name = table.values[attr](element, value) || name;
+			if (table.values[attr]) {
+				value = table.values[attr](element, value);
+				if (Object.isUndefined(value)) continue;
+			}
 			if (value === false || value === null)
 				element.removeAttribute(name);
 			else if (value === true)
@@ -2979,7 +2976,9 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 
 		values: {
 			checked: function(element, value) {
-				element.checked = !!value;
+				value = !!value;
+				element.checked = value;
+				return value ? 'checked' : null;
 			},
 
 			style: function(element, value) {
@@ -2994,7 +2993,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 		ATTRIBUTE_TRANSLATIONS.read.names);
 
 	var CAMEL_CASED_ATTRIBUTE_NAMES = $w('colSpan rowSpan vAlign dateTime ' +
-	'accessKey tabIndex encType maxLength readOnly longDesc frameBorder');
+		'accessKey tabIndex encType maxLength readOnly longDesc frameBorder');
 
 	for (var i = 0, attr; attr = CAMEL_CASED_ATTRIBUTE_NAMES[i]; i++) {
 		ATTRIBUTE_TRANSLATIONS.write.names[attr.toLowerCase()] = attr;
@@ -3124,8 +3123,11 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 			value = element.currentStyle[style];
 		}
 
-		if (style === 'opacity' && !STANDARD_CSS_OPACITY_SUPPORTED)
-			return getOpacity_IE(element);
+		if (style === 'opacity') {
+			if (!STANDARD_CSS_OPACITY_SUPPORTED)
+				return getOpacity_IE(element);
+			else return value ? parseFloat(value) : 1.0;
+		}
 
 		if (value === 'auto') {
 			if ((style === 'width' || style === 'height') && Element.visible(element))
@@ -3177,7 +3179,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 		if (value < 0.00001) value = 0;
 
 		style.filter = stripAlphaFromFilter_IE(filter) +
-		'alpha(opacity=' + (value * 100) + ')';
+			' alpha(opacity=' + (value * 100) + ')';
 
 		return element;
 	}
@@ -3193,7 +3195,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 
 		var filter = Element.getStyle(element, 'filter');
 		if (filter.length === 0) return 1.0;
-		var match = (filter || '').match(/alpha\(opacity=(.*)\)/);
+		var match = (filter || '').match(/alpha\(opacity=(.*)\)/i);
 		if (match && match[1]) return parseFloat(match[1]) / 100;
 		return 1.0;
 	}
@@ -3519,7 +3521,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 		return boxWidth - bl - br - pl - pr;
 	}
 
-	if ('currentStyle' in document.documentElement) {
+	if (!Object.isUndefined(document.documentElement.currentStyle) && !Prototype.Browser.Opera) {
 		getRawStyle = getRawStyle_IE;
 	}
 
@@ -3692,12 +3694,12 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 				var parent = element.parentNode, pLayout = $(parent).getLayout();
 
 				newWidth = pLayout.get('width') -
-				this.get('margin-left') -
-				this.get('border-left') -
-				this.get('padding-left') -
-				this.get('padding-right') -
-				this.get('border-right') -
-				this.get('margin-right');
+					this.get('margin-left') -
+					this.get('border-left') -
+					this.get('padding-left') -
+					this.get('padding-right') -
+					this.get('border-right') -
+					this.get('margin-right');
 			}
 
 			element.setStyle({ width: newWidth + 'px' });
@@ -4047,15 +4049,19 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 	function getOffsetParent(element) {
 		element = $(element);
 
+		function selfOrBody(element) {
+			return isHtml(element) ? $(document.body) : $(element);
+		}
+
 		if (isDocument(element) || isDetached(element) || isBody(element) || isHtml(element))
 			return $(document.body);
 
 		var isInline = (Element.getStyle(element, 'display') === 'inline');
-		if (!isInline && element.offsetParent) return $(element.offsetParent);
+		if (!isInline && element.offsetParent) return selfOrBody(element.offsetParent);
 
 		while ((element = element.parentNode) && element !== document.body) {
 			if (Element.getStyle(element, 'position') !== 'static') {
-				return isHtml(element) ? $(document.body) : $(element);
+				return selfOrBody(element);
 			}
 		}
 
@@ -4093,8 +4099,8 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 			}
 		} while (element);
 
-		valueL -= layout.get('margin-top');
-		valueT -= layout.get('margin-left');
+		valueL -= layout.get('margin-left');
+		valueT -= layout.get('margin-top');
 
 		return new Element.Offset(valueL, valueT);
 	}
@@ -4265,6 +4271,8 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 			offsetLeft: 0
 		}, options || {});
 
+		var docEl = document.documentElement;
+
 		source  = $(source);
 		element = $(element);
 		var p, delta, layout, styles = {};
@@ -4278,19 +4286,41 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 			}
 		}
 
+		function pageScrollXY() {
+			var x = 0, y = 0;
+			if (Object.isNumber(window.pageXOffset)) {
+				x = window.pageXOffset;
+				y = window.pageYOffset;
+			} else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) {
+				x = document.body.scrollLeft;
+				y = document.body.scrollTop;
+			} else if (docEl && (docEl.scrollLeft || docEl.scrollTop)) {
+				x = docEl.scrollLeft;
+				y = docEl.scrollTop;
+			}
+			return { x: x, y: y };
+		}
+
+		var pageXY = pageScrollXY();
+
+
 		if (options.setWidth || options.setHeight) {
 			layout = Element.getLayout(source);
 		}
 
 		if (options.setLeft)
-			styles.left = (p[0] - delta[0] + options.offsetLeft) + 'px';
+			styles.left = (p[0] + pageXY.x - delta[0] + options.offsetLeft) + 'px';
 		if (options.setTop)
-			styles.top  = (p[1] - delta[1] + options.offsetTop)  + 'px';
+			styles.top  = (p[1] + pageXY.y - delta[1] + options.offsetTop)  + 'px';
 
-		if (options.setWidth)
-			styles.width  = layout.get('border-box-width')  + 'px';
-		if (options.setHeight)
-			styles.height = layout.get('border-box-height') + 'px';
+		var currentLayout = element.getLayout();
+
+		if (options.setWidth) {
+			styles.width = layout.get('width')  + 'px';
+		}
+		if (options.setHeight) {
+			styles.height = layout.get('height') + 'px';
+		}
 
 		return Element.setStyle(element, styles);
 	}
@@ -4383,7 +4413,7 @@ Ajax.PeriodicalUpdater = Class.create(Ajax.Base, {
 
 	function isDetached(element) {
 		return element !== document.body &&
-		!Element.descendantOf(element, document.body);
+			!Element.descendantOf(element, document.body);
 	}
 
 	if ('getBoundingClientRect' in document.documentElement) {
@@ -4488,15 +4518,29 @@ Prototype.Selector = (function() {
 	};
 })();
 Prototype._original_property = window.Sizzle;
+
+;(function () {
+	function fakeDefine(fn) {
+		Prototype._actual_sizzle = fn();
+	}
+	fakeDefine.amd = true;
+
+	if (typeof define !== 'undefined' && define.amd) {
+		Prototype._original_define = define;
+		Prototype._actual_sizzle = null;
+		window.define = fakeDefine;
+	}
+})();
+
 /*!
- * Sizzle CSS Selector Engine v@VERSION
+ * Sizzle CSS Selector Engine v1.10.18
  * http://sizzlejs.com/
  *
  * Copyright 2013 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: @DATE
+ * Date: 2014-02-05
  */
 (function( window ) {
 
@@ -4584,11 +4628,11 @@ Prototype._original_property = window.Sizzle;
 			"ATTR": new RegExp( "^" + attributes ),
 			"PSEUDO": new RegExp( "^" + pseudos ),
 			"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
-			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
-			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
+				"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
+				"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 			"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
 			"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
-			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
+				whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 		},
 
 		rinputs = /^(?:input|select|textarea|button)$/i,
@@ -4925,11 +4969,11 @@ Prototype._original_property = window.Sizzle;
 		});
 
 		support.getElementsByClassName = rnative.test( doc.getElementsByClassName ) && assert(function( div ) {
-			div.innerHTML = "<div class='a'></div><div class='a i'></div>";
+				div.innerHTML = "<div class='a'></div><div class='a i'></div>";
 
-			div.firstChild.className = "i";
-			return div.getElementsByClassName("i").length === 2;
-		});
+				div.firstChild.className = "i";
+				return div.getElementsByClassName("i").length === 2;
+			});
 
 		support.getById = assert(function( div ) {
 			docElem.appendChild( div ).id = expando;
@@ -4986,10 +5030,10 @@ Prototype._original_property = window.Sizzle;
 			};
 
 		Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
-			if ( typeof context.getElementsByClassName !== strundefined && documentIsHTML ) {
-				return context.getElementsByClassName( className );
-			}
-		};
+				if ( typeof context.getElementsByClassName !== strundefined && documentIsHTML ) {
+					return context.getElementsByClassName( className );
+				}
+			};
 
 		/* QSA/matchesSelector
 		 ---------------------------------------------------------------------- */
@@ -5035,9 +5079,9 @@ Prototype._original_property = window.Sizzle;
 		}
 
 		if ( (support.matchesSelector = rnative.test( (matches = docElem.webkitMatchesSelector ||
-			docElem.mozMatchesSelector ||
-			docElem.oMatchesSelector ||
-			docElem.msMatchesSelector) )) ) {
+				docElem.mozMatchesSelector ||
+				docElem.oMatchesSelector ||
+				docElem.msMatchesSelector) )) ) {
 
 			assert(function( div ) {
 				support.disconnectedMatch = matches.call( div, "div" );
@@ -5059,10 +5103,10 @@ Prototype._original_property = window.Sizzle;
 				var adown = a.nodeType === 9 ? a.documentElement : a,
 					bup = b && b.parentNode;
 				return a === bup || !!( bup && bup.nodeType === 1 && (
-					adown.contains ?
-						adown.contains( bup ) :
-					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
-				));
+						adown.contains ?
+							adown.contains( bup ) :
+						a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+					));
 			} :
 			function( a, b ) {
 				if ( b ) {
@@ -5378,10 +5422,10 @@ Prototype._original_property = window.Sizzle;
 				var pattern = classCache[ className + " " ];
 
 				return pattern ||
-				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
-				classCache( className, function( elem ) {
-					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== strundefined && elem.getAttribute("class") || "" );
-				});
+					(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
+					classCache( className, function( elem ) {
+						return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== strundefined && elem.getAttribute("class") || "" );
+					});
 			},
 
 			"ATTR": function( name, operator, check ) {
@@ -5452,7 +5496,7 @@ Prototype._original_property = window.Sizzle;
 
 								while ( (node = ++nodeIndex && node && node[ dir ] ||
 
-								(diff = nodeIndex = 0) || start.pop()) ) {
+									(diff = nodeIndex = 0) || start.pop()) ) {
 
 									if ( node.nodeType === 1 && ++diff && node === elem ) {
 										outerCache[ type ] = [ dirruns, nodeIndex, diff ];
@@ -5465,7 +5509,7 @@ Prototype._original_property = window.Sizzle;
 
 							} else {
 								while ( (node = ++nodeIndex && node && node[ dir ] ||
-								(diff = nodeIndex = 0) || start.pop()) ) {
+									(diff = nodeIndex = 0) || start.pop()) ) {
 
 									if ( ( ofType ? node.nodeName.toLowerCase() === name : node.nodeType === 1 ) && ++diff ) {
 										if ( useCache ) {
@@ -5635,9 +5679,9 @@ Prototype._original_property = window.Sizzle;
 			"text": function( elem ) {
 				var attr;
 				return elem.nodeName.toLowerCase() === "input" &&
-				elem.type === "text" &&
+					elem.type === "text" &&
 
-				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
+					( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
 			},
 
 			"first": createPositionalPseudo(function() {
@@ -5954,9 +5998,9 @@ Prototype._original_property = window.Sizzle;
 			}, implicitRelative, true ),
 			matchers = [ function( elem, context, xml ) {
 				return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
-					(checkContext = context).nodeType ?
-						matchContext( elem, context, xml ) :
-						matchAnyContext( elem, context, xml ) );
+						(checkContext = context).nodeType ?
+							matchContext( elem, context, xml ) :
+							matchAnyContext( elem, context, xml ) );
 			} ];
 
 		for ( ; i < len; i++ ) {
@@ -6229,6 +6273,22 @@ Prototype._original_property = window.Sizzle;
 
 })( window );
 
+;(function() {
+	if (typeof Sizzle !== 'undefined') {
+		return;
+	}
+
+	if (typeof define !== 'undefined' && define.amd) {
+		window.Sizzle = Prototype._actual_sizzle;
+		window.define = Prototype._original_define;
+		delete Prototype._actual_sizzle;
+		delete Prototype._original_define;
+	} else if (typeof module !== 'undefined' && module.exports) {
+		window.Sizzle = module.exports;
+		module.exports = {};
+	}
+})();
+
 ;(function(engine) {
 	var extendElements = Prototype.Selector.extendElements;
 
@@ -6276,11 +6336,11 @@ var Form = {
 				if (!values.length) {return result;}
 				var encodedKey = encodeURIComponent(key).gsub(/%20/, '+');
 				return result + (result ? "&" : "") + values.map(function (value) {
-					value = value.gsub(/(\r)?\n/, '\r\n');
-					value = encodeURIComponent(value);
-					value = value.gsub(/%20/, '+');
-					return encodedKey + "=" + value;
-				}).join("&");
+						value = value.gsub(/(\r)?\n/, '\r\n');
+						value = encodeURIComponent(value);
+						value = value.gsub(/%20/, '+');
+						return encodedKey + "=" + value;
+					}).join("&");
 			};
 		}
 
@@ -6737,8 +6797,8 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 			body = document.body || { scrollLeft: 0 };
 
 		return event.pageX || (event.clientX +
-		(docElement.scrollLeft || body.scrollLeft) -
-		(docElement.clientLeft || 0));
+			(docElement.scrollLeft || body.scrollLeft) -
+			(docElement.clientLeft || 0));
 	}
 
 	function pointerY(event) {
@@ -6746,8 +6806,8 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 			body = document.body || { scrollTop: 0 };
 
 		return  event.pageY || (event.clientY +
-		(docElement.scrollTop || body.scrollTop) -
-		(docElement.clientTop || 0));
+			(docElement.scrollTop || body.scrollTop) -
+			(docElement.clientTop || 0));
 	}
 
 
@@ -6870,7 +6930,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 
 	Event._isCustomEvent = isCustomEvent;
 
-	function getRegistryForElement(element, uid) {
+	function getOrCreateRegistryFor(element, uid) {
 		var CACHE = GLOBAL.Event.cache;
 		if (Object.isUndefined(uid))
 			uid = getUniqueElementID(element);
@@ -6886,7 +6946,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 
 
 	function register(element, eventName, handler) {
-		var registry = getRegistryForElement(element);
+		var registry = getOrCreateRegistryFor(element);
 		if (!registry[eventName]) registry[eventName] = [];
 		var entries = registry[eventName];
 
@@ -6906,9 +6966,8 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 	}
 
 	function unregister(element, eventName, handler) {
-		var registry = getRegistryForElement(element);
-		var entries = registry[eventName];
-		if (!entries) return;
+		var registry = getOrCreateRegistryFor(element);
+		var entries = registry[eventName] || [];
 
 		var i = entries.length, entry;
 		while (i--) {
@@ -6918,10 +6977,16 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 			}
 		}
 
-		if (!entry) return;
+		if (entry) {
+			var index = entries.indexOf(entry);
+			entries.splice(index, 1);
+		}
 
-		var index = entries.indexOf(entry);
-		entries.splice(index, 1);
+		if (entries.length === 0) {
+			delete registry[eventName];
+			if (Object.keys(registry).length === 1 && ('element' in registry))
+				destroyRegistryForElement(element);
+		}
 
 		return entry;
 	}
@@ -7020,14 +7085,24 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 	}
 
 	function stopObservingEventName(element, eventName) {
-		var registry = getRegistryForElement(element);
+		var registry = getOrCreateRegistryFor(element);
 		var entries = registry[eventName];
-		if (!entries) return;
-		delete registry[eventName];
+		if (entries) {
+			delete registry[eventName];
+		}
+
+		entries = entries || [];
 
 		var i = entries.length;
 		while (i--)
 			removeEvent(element, eventName, entries[i].responder);
+
+		for (var name in registry) {
+			if (name === 'element') continue;
+			return; // There is another registered event
+		}
+
+		destroyRegistryForElement(element);
 	}
 
 
@@ -7174,7 +7249,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 
 	function isSimulatedMouseEnterLeaveEvent(eventName) {
 		return !MOUSEENTER_MOUSELEAVE_EVENTS_SUPPORTED &&
-		(eventName === 'mouseenter' || eventName === 'mouseleave');
+			(eventName === 'mouseenter' || eventName === 'mouseleave');
 	}
 
 	function createResponder(uid, eventName, handler) {
@@ -7194,7 +7269,8 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
 
 	function createResponderForCustomEvent(uid, eventName, handler) {
 		return function(event) {
-			var element = Event.cache[uid].element;
+			var cache = Event.cache[uid];
+			var element =  cache && cache.element;
 
 			if (Object.isUndefined(event.eventName))
 				return false;
@@ -7283,7 +7359,9 @@ Hash.toQueryString = Object.toQueryString;
 
 var Toggle = { display: Element.toggle };
 
-Element.Methods.childOf = Element.Methods.descendantOf;
+Element.addMethods({
+	childOf: Element.Methods.descendantOf
+});
 
 var Insertion = {
 	Before: function(element, content) {
@@ -7310,13 +7388,13 @@ var Position = {
 
 	prepare: function() {
 		this.deltaX =  window.pageXOffset
-		|| document.documentElement.scrollLeft
-		|| document.body.scrollLeft
-		|| 0;
+			|| document.documentElement.scrollLeft
+			|| document.body.scrollLeft
+			|| 0;
 		this.deltaY =  window.pageYOffset
-		|| document.documentElement.scrollTop
-		|| document.body.scrollTop
-		|| 0;
+			|| document.documentElement.scrollTop
+			|| document.body.scrollTop
+			|| 0;
 	},
 
 	within: function(element, x, y) {
@@ -7349,10 +7427,10 @@ var Position = {
 		if (!mode) return 0;
 		if (mode == 'vertical')
 			return ((this.offset[1] + element.offsetHeight) - this.ycomp) /
-			element.offsetHeight;
+				element.offsetHeight;
 		if (mode == 'horizontal')
 			return ((this.offset[0] + element.offsetWidth) - this.xcomp) /
-			element.offsetWidth;
+				element.offsetWidth;
 	},
 
 

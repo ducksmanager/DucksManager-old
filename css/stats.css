@@ -44,3 +44,10 @@
 #suggestions .numero.top3 {
     font-size: large;
 }
+
+#liste_notations .nom_auteur,
+#liste_notations .notation_auteur,
+#liste_notations .supprimer_auteur {
+    display: inline-block;
+    width: 200px;
+}
