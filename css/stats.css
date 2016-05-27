@@ -20,7 +20,7 @@
     height:500px;
 }
 
-.graph_possessions {
+.graph_possessions, .graph_auteurs {
     background-color: white;
 }
 

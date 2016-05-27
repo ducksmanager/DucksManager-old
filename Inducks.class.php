@@ -71,9 +71,14 @@ class Inducks {
 	}
 
 	static function get_auteur($nom_auteur_abrege) {
-			$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$nom_auteur_abrege.'\'';
-			$resultat_requete = Inducks::requete_select($requete);
-			return $resultat_requete[0]['fullname']; 
+		$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$nom_auteur_abrege.'\'';
+		$resultat_requete = Inducks::requete_select($requete);
+		if (count($resultat_requete) === 0) {
+			return null;
+		}
+		else {
+			return $resultat_requete[0]['fullname'];
+		}
 	}
 
 	static function get_vrai_magazine($pays,$magazine) {
@@ -312,10 +317,10 @@ if (isset($_POST['get_pays'])) {
 	if ($_POST['inclure_tous_pays']) {
 		?><option id="all"><?=TOUS_PAYS?><?php
 	}
-	$selected = $_POST['selected'];
+	$selected = isset($_POST['selected']) ? $_POST['selected'] : 'fr';
 
 	foreach($liste_pays_courte as $id=>$pays) {
-		if (($selected && $id === $selected) || $pays === 'France')
+		if ($selected && $id === $selected)
 			echo '<option selected="selected" id="'.$id.'">'.$pays;
 		else
 			echo '<option id="'.$id.'">'.$pays;
