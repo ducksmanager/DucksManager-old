@@ -263,7 +263,10 @@ class Liste {
 						<?php
 					}
 				}
-				?><br /><br /><hr /><?php
+				?><br /><br />
+				<?=STATISTIQUES_QUOTIDIENNES?>
+				<br /><br />
+				<hr /><?php
 				if (isset($_POST['auteur_nom'])) {
 					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
 				}
