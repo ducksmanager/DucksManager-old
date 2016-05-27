@@ -134,7 +134,7 @@ class Liste {
 	}
 
 	function statistiques($onglet) {
-				$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
 		$counts= [];
 		foreach($this->collection as $pays=>$numeros_pays) {
@@ -227,64 +227,73 @@ class Liste {
 				<?php
 			break;
 			case 'auteurs':
-				if (isset($_POST['auteur_nom'])) {
-					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
-				}
 				$requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
 				$resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
 				if (count($resultat_auteurs_surveilles)!=0) {
-					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat <> \'0000-00-00\'';
+					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user;
 					$resultat_calcul_effectue=DM_Core::$d->requete_select($requete_calcul_effectue);
 					if ($resultat_calcul_effectue[0]['cpt']==0) {
-						echo CALCULS_PAS_ENCORE_FAITS.'<br />';
+						echo AUCUN_AUTEUR_SURVEILLE;
 					}
 					else {
 						$types = ['abs' => AFFICHER_VALEURS_REELLES, 'pct'=> AFFICHER_POURCENTAGES]; ?>
 
+						<div id="aucun_resultat_stats_auteur" class="hidden">
+							<?=CALCULS_PAS_ENCORE_FAITS?>
+						</div>
 						<div id="chargement_stats_auteur">
 							<?=CHARGEMENT?>...
 						</div>
-						<div id="fin_stats_auteur" class="hidden">
-							<?php foreach($types as $type=>$label) {
-								?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
-									 onclick="toggleGraphs('auteurs')">
-								<?=$label?>
-								</a><?php
-							}?>
-						</div>
-						
+
 						<div id="canvas-holder" class="hidden">
-							<?php foreach($types as $type=>$label) {
-								?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"
-										  width="100%" height="500px"></canvas><?php
-							}?>
-						</div><?php
+						<?php foreach($types as $type=>$label) {
+							?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"
+									  width="100%" height="500px"></canvas><?php
+						}?>
+						</div>
+						<br />
+						<div id="fin_stats_auteur" class="hidden">
+						<?php foreach($types as $type=>$label) {
+							?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
+								 onclick="toggleGraphs('auteurs')">
+							<?=$label?>
+							</a><?php
+						}?>
+						</div>
+						<?php
 					}
 				}
-				?><br /><br />
-				<?php
-				echo STATISTIQUES_AUTEURS_INTRO_1.'<br />';
-				echo STATISTIQUES_AUTEURS_INTRO_2.'<br />';
+				?><br /><br /><hr /><?php
+				if (isset($_POST['auteur_nom'])) {
+					DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
+				}
 				?>
-				<!-- <u>Note : </u>Seuls les histoires publi&eacute;es en France seront compt&eacute;es dans les statistiques.<br /> -->
-				<form method="post" action="?action=stats&onglet=auteurs">
+				<br /><br />
+				<?=AUTEURS_FAVORIS_INTRO_1?>
+				<a target="_blank" href="/?action=agrandir&onglet=auteurs_favoris"><?=AUTEURS_FAVORIS_INTRO_2?></a>
+				<br />
+				<?=STATISTIQUES_AUTEURS_INTRO?>
+				<br /><br />
+				<form method="post" action="?action=stats&amp;onglet=auteurs">
 					<input type="text" name="auteur_cherche" id="auteur_cherche" value="" size="40"/>
 					<div class="update" id="liste_auteurs"></div>
 					<input type="hidden" id="auteur_nom" name="auteur_nom" />
 					<input type="hidden" id="auteur_id" name="auteur_id" />
-								<img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none"/>
+					<img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none" />
 					<input type="submit" value="Ajouter" />
 				</form>
 				<div id="auteurs_ajoutes">
-				<br /><br />
-				<?php
-				echo LISTE_AUTEURS_INTRO.'<br />';
-				DM_Core::$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,false);
-				?>
-				</div>
-				<br />
-				<?=STATISTIQUES_QUOTIDIENNES?>
-				<?php
+					<br /><br />
+					<?=LISTE_AUTEURS_INTRO?>
+					<?php
+					$requete_auteurs_surveilles="
+						SELECT NomAuteur, NomAuteurAbrege, Notation
+						FROM auteurs_pseudos
+						WHERE ID_User=$id_user AND DateStat = '0000-00-00'";
+					DM_Core::$d->afficher_liste_auteurs_surveilles(DM_Core::$d->requete_select($requete_auteurs_surveilles));
+					?>
+				</div><?php
+				break;
 			break;
 		}
 	}

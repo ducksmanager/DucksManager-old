@@ -99,58 +99,64 @@ function afficher_histogramme_stats_auteurs() {
 		onSuccess : function(transport) {
 			var data = transport.responseJSON;
 
-			var noms_complets_auteurs = data.labels;
+			if (data.datasets.possedees.data.length) {
+				var noms_complets_auteurs = data.labels;
 
-			Chart.defaults.global.maintainAspectRatio = false;
-			var config = {
-				type: 'bar',
-				options: {
-					title:{
-						display:true,
-						text: data.title
-					},
-					responsive: true,
-					scales: {
-						xAxes: [{
-							stacked: true,
-							ticks: {
-								autoSkip: false
-							}
-						}],
-						yAxes: [{
-							stacked: true
-						}]
-					},
-					tooltips: {
-						enabled: true,
-						mode: 'label',
-						callbacks: {
-							title: function(tooltipItems) {
-								return noms_complets_auteurs[tooltipItems[0].xLabel];
+				Chart.defaults.global.maintainAspectRatio = false;
+				var config = {
+					type: 'bar',
+					options: {
+						title:{
+							display:true,
+							text: data.title
+						},
+						responsive: true,
+						scales: {
+							xAxes: [{
+								stacked: true,
+								ticks: {
+									autoSkip: false
+								}
+							}],
+							yAxes: [{
+								stacked: true
+							}]
+						},
+						tooltips: {
+							enabled: true,
+							mode: 'label',
+							callbacks: {
+								title: function(tooltipItems) {
+									return noms_complets_auteurs[tooltipItems[0].xLabel];
+								}
 							}
 						}
 					}
-				}
-			};
+				};
 
-			var config_abs = Object.clone(config);
-			config_abs.data = Object.clone(data);
-			config_abs.data.datasets = [data.datasets.possedees, data.datasets.manquantes];
-			new Chart($$('.graph_auteurs.abs')[0].getContext('2d'), config_abs);
+				var config_abs = Object.clone(config);
+				config_abs.data = Object.clone(data);
+				config_abs.data.datasets = [data.datasets.possedees, data.datasets.manquantes];
+				new Chart($$('.graph_auteurs.abs')[0].getContext('2d'), config_abs);
 
-			var config_cpt = Object.clone(config);
-			config_cpt.data = Object.clone(data);
-			config_cpt.data.datasets = [data.datasets.possedees_pct, data.datasets.manquantes_pct];
-			config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
-				return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
-			};
-			new Chart($$('.graph_auteurs.pct')[0].getContext('2d'), config_cpt);
+				var config_cpt = Object.clone(config);
+				config_cpt.data = Object.clone(data);
+				config_cpt.data.datasets = [data.datasets.possedees_pct, data.datasets.manquantes_pct];
+				config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
+					return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
+				};
+				new Chart($$('.graph_auteurs.pct')[0].getContext('2d'), config_cpt);
 
-			$('canvas-holder')
-				.setStyle({width: 250 + 50*data.labels.length + 'px'});
+				$('canvas-holder')
+					.setStyle({width: 250 + 50*data.labels.length + 'px'});
+
+				$$('#canvas-holder, #fin_stats_auteur').invoke('removeClassName', 'hidden');
+			}
+			else {
+				$('aucun_resultat_stats_auteur').removeClassName('hidden');
+			}
 
 			$('chargement_stats_auteur').addClassName('hidden');
-			$$('#canvas-holder, #fin_stats_auteur').invoke('removeClassName', 'hidden');
 		}
 	});
 }
@@ -306,7 +312,7 @@ function init_notations() {
 				el_li.down('.nom_auteur').update(notation.NomAuteur);
 				el_li.down('.notation_auteur').writeAttribute('id', 'notation_auteur_' + notation.NomAuteurAbrege);
 				el_li.down('.supprimer_auteur').down('a').writeAttribute('id', 'supprimer_auteur_' + notation.NomAuteurAbrege).observe('click', function() {
-					supprimer_auteur(this.id.replace(/^[^_]+_/,''));
+					supprimer_auteur(this.id.replace(/^.*_([^_]+)$/,'$1'));
 				});
 				liste_notations.insert(el_li);
 

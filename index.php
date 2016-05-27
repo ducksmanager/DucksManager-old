@@ -196,7 +196,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             if (isset($_GET['onglet_magazine'])) {
                 $onglet_magazine=$_GET['onglet_magazine'];
                 if ($onglet_magazine=='new') {
-                    ?>initPays();<?php
+                    ?>initPays(false,'fr');<?php
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
@@ -216,7 +216,11 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             if (isset($_GET['onglet'])) {
             	switch($_GET['onglet']) {
 					case 'auteurs':
-						?>init_autocompleter_auteurs();afficher_histogramme_stats_auteurs()<?php
+						?>
+                        init_autocompleter_auteurs();
+                        init_notations();
+                        afficher_histogramme_stats_auteurs();
+                        <?php
 					break;
 					case 'achats':
 						?>afficher_histogramme_achats();<?php
@@ -231,12 +235,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             }
             break;
         case 'agrandir':
-            if (isset($_GET['onglet']) && $_GET['onglet']=='auteurs_favoris') {
-                ?>init_autocompleter_auteurs();
-                init_notations();<?php
-            }
             ?>
-            initPays(true, <?=empty($_GET['pays']) ? 'null' : ("'".mysql_real_escape_string($_GET['pays'])."'")?>);<?php
+            initPays(true, '<?=empty($_GET['pays']) ? 'all' : $_GET['pays']?>');<?php
             break;
     }
     ?>">
@@ -1163,100 +1163,41 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         DM_Core::$d->liste_numeros_externes_dispos($id_user);
                                         break;
                                     case 'auteurs_favoris':
-                                        $onglets_auteurs= [RESULTATS_SUGGESTIONS_MAGS=> ['resultats',SUGGESTIONS_ACHATS],
-                                                               PREFERENCES_AUTEURS=> ['preferences',PREFERENCES_AUTEURS]];
-                                        if (!isset($_GET['onglet_auteur']))
-                                            $onglet_auteurs='resultats';
-                                        else
-                                            $onglet_auteurs=$_GET['onglet_auteur'];
-                                        Affichage::onglets($onglet_auteurs,$onglets_auteurs,'onglet_auteur','?action=agrandir&amp;onglet=auteurs_favoris');
-                                        echo PRESENTATION_AUTEURS_FAVORIS;
-                                        switch ($onglet_auteurs) {
-                                            case 'resultats':
-                                                $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
-                                                $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
-                                                ?>
-                                                <br /><br />
-                                                <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?><br />
-                                                <?php
-                                                $auteur_note_existe=false;
-                                                foreach($resultat_auteurs_surveilles as $auteur_surveille) {
-                                                    if ($auteur_surveille['Notation']!=-1) {
-                                                        $auteur_note_existe=true;
-                                                    }
-                                                }
-                                                if (count($resultat_auteurs_surveilles)>0) {
-                                                    if (!$auteur_note_existe) echo AUTEURS_NON_NOTES;
-                                                    else {
-                                                        ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
-                                                        <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
-                                                            <option id="chargement_pays"><?=CHARGEMENT?>...
-                                                        </select>
-                                                        <div id="suggestions"><?php
-                                                            include_once 'Stats.class.php';
-                                                            $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'all') ? $_GET['pays'] : null;
-                                                            Stats::showSuggestedPublications($pays);
-                                                        ?></div><?php
-                                                    }
-                                                }
-                                                else echo AUCUN_AUTEUR_SURVEILLE.' '.AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET;
-                                                
-                                                break;
-                                            case 'preferences':
-                                                if (isset($_POST['auteur_nom'])) {
-                                                    DM_Core::$d->ajouter_auteur($_POST['auteur_id'],$_POST['auteur_nom']);
-                                                }
-                                                ?>
-                                                <br /><br />
-                                                <?=AUTEURS_FAVORIS_INTRO_1?>
-                                                <br />
-                                                <?=STATISTIQUES_AUTEURS_INTRO_2?>
-                        <br /><br />
-                        <form method="post" action="?action=agrandir&amp;onglet=auteurs_favoris&amp;onglet_auteur=preferences">
-                            <input type="text" name="auteur_cherche" id="auteur_cherche" value="" size="40"/>
-                            <div class="update" id="liste_auteurs"></div>
-                            <input type="hidden" id="auteur_nom" name="auteur_nom" />
-                            <input type="hidden" id="auteur_id" name="auteur_id" />
-                            <img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none" />
-                            <input type="submit" value="Ajouter" />
-                        </form>
-                        <hr />
-                        <div id="auteurs_ajoutes">
-                            <br /><br />
-                                                    <?php
-                                                    echo LISTE_AUTEURS_INTRO;
-                                                    if (isset($_POST['auteur0'])) {
-                                                        $recommandations_liste_mags=($_POST['proposer_magazines_possedes']==='on'?1:0);
-                                                        $requete_update_recommandations_liste_mags='UPDATE users SET RecommandationsListeMags='.$recommandations_liste_mags.' '
-                                                                .'WHERE ID='.$id_user;
-                                                        DM_Core::$d->requete($requete_update_recommandations_liste_mags);
-                                                    }
-                                                    $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
-                                                    if (isset($_POST['auteur0'])) {
-	                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
-	                                                    foreach($resultat_auteurs_surveilles as $auteur) {
-	                                                        $i=0;
-	                                                        while (isset($_POST['auteur'.$i])) {
-	                                                            if ($_POST['auteur'.$i] == $auteur['NomAuteurAbrege']) {
-                                                                    $notation=empty($_POST['notation'.$i]) ? -1 : $_POST['notation'.$i];
-                                                                    $requete_notation='UPDATE auteurs_pseudos SET Notation='.$notation.' '
-		                                                                             .'WHERE DateStat = \'0000-00-00\' AND NomAuteurAbrege = \''.$_POST['auteur'.$i].'\' '
-		                                                                             .'AND ID_user='.$id_user;
-                                                                    DM_Core::$d->requete($requete_notation);
-	                                                            }
-	                                                            $i++;
-	                                                        }
-	                                                    }
-													}
-                                                    $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
-                                                    DM_Core::$d->liste_auteurs_surveilles($resultat_auteurs_surveilles,true);
-                                                    ?>
-                                                </div><?php
-                                                break;
+                                        $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
+                                        $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+                                        ?>
+                                        <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="/?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
+                                        <?=EXPLICATION_NOTATION_AUTEURS3?>
+                                        <br /><br />
+                                        <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?>
+                                        <br /><br />
+                                        <?php
+                                        $auteur_note_existe=false;
+                                        foreach($resultat_auteurs_surveilles as $auteur_surveille) {
+                                            if ($auteur_surveille['Notation']!=-1) {
+                                                $auteur_note_existe=true;
+                                            }
                                         }
-                                        break;
-                                    case 'completer_series':
-                                        echo INTRO_COMPLETER_SERIES.'<br /><br />';
+                                        if (count($resultat_auteurs_surveilles)>0) {
+                                            if (!$auteur_note_existe) {
+                                                echo AUTEURS_NON_NOTES;
+                                            }
+                                            else {
+                                                ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
+                                                <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
+                                                    <option id="chargement_pays"><?=CHARGEMENT?>...
+                                                </select>
+                                                <div id="suggestions"><?php
+                                                    include_once 'Stats.class.php';
+                                                    $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'all') ? $_GET['pays'] : null;
+                                                    Stats::showSuggestedPublications($pays);
+                                                ?></div><?php
+                                            }
+                                        }
+                                        else {
+                                            echo AUCUN_AUTEUR_SURVEILLE.' '.AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET;
+                                        }
+
                                         break;
                                 }
 

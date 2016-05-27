@@ -422,7 +422,7 @@ class Database {
 		}
 	}
 	
-function ajouter_auteur($id,$nom) {
+function ajouter_auteur($idAuteur,$nomAuteur) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_auteurs_surveilles="
             SELECT COUNT(NomAuteurAbrege) AS cpt
@@ -433,22 +433,23 @@ function ajouter_auteur($id,$nom) {
 			?><div class="error"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
-            $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$id'";
-            $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
-            if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
-                ?><div class="error"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
-            }
-            else {
-                $requete_ajout_auteur="
-                    INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat)
-                    VALUES ('$nom', '$id', $id_user, 0, '0000-00-00')";
-                DM_Core::$d->requete($requete_ajout_auteur);
+            if (!is_null(Inducks::get_auteur($idAuteur))) {
+                $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$idAuteur'";
+                $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
+                if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
+                    ?><div class="error"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
+                }
+                else {
+                    $requete_ajout_auteur="
+                        INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat)
+                        VALUES ('$nomAuteur', '$idAuteur', $id_user, 0, '0000-00-00')";
+                    DM_Core::$d->requete($requete_ajout_auteur);
+                }
             }
         }
 	}
 
-	function liste_auteurs_surveilles($auteurs_surveilles,$affiche_notation) {
-		
+	function afficher_liste_auteurs_surveilles($auteurs_surveilles) {
 		if (count($auteurs_surveilles)==0) {
 			echo AUCUN_AUTEUR_SURVEILLE;
 			?><br /><?php
