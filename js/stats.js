@@ -253,6 +253,10 @@ function afficher_histogramme_achats() {
 				}
 			};
 
+			$('canvas-holder')
+				.setStyle({width: 30*dates.length + 'px'})
+				.removeClassName('hidden');
+
 			var config_nouv = Object.clone(config);
 			config_nouv.data = { datasets: achats_pour_graph.nouv, labels: dates };
 			new Chart($$('.graph_achats.nouv')[0].getContext('2d'), config_nouv);
@@ -263,10 +267,6 @@ function afficher_histogramme_achats() {
 
 			$('fin_achats').removeClassName('hidden');
 			$('message_achats').addClassName('hidden');
-
-			$('canvas-holder')
-				.setStyle({width: 30*dates.length + 'px'})
-				.removeClassName('hidden');
 
 		}
 	});
