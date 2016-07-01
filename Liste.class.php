@@ -208,12 +208,12 @@ class Liste {
 				<div id="message_achats"><?=CHARGEMENT?>...</div>
 				
 				<div id="fin_achats" class="hidden">
-					<?php foreach($types as $type=>$label) {
-						?><a class="graph_type noborder <?=$type==='nouv' ? 'bold' : ''?>" href="javascript:void(0)"
-							 onclick="toggleGraphs('achats')">
-						<?=$label?>
-						</a><?php
-					}?>
+<!--					--><?php //foreach($types as $type=>$label) {
+//						?><!--<a class="graph_type noborder --><?//=$type==='nouv' ? 'bold' : ''?><!-- " href="javascript:void(0)"-->
+<!--							 onclick="toggleGraphs('achats')">-->
+<!--						--><?//=$label?>
+<!--						</a>--><?php
+//					}?>
 				</div>
 				
 				<br />
