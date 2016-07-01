@@ -47,7 +47,6 @@ class Inducks {
 					return [];
 				}
 				elseif ($output === ERREUR_CONNEXION_INDUCKS) {
-					echo ERREUR_CONNEXION_INDUCKS;
 					return [];
 				}
 				else {
