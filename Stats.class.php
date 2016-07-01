@@ -224,27 +224,46 @@ class Stats {
 		$id_user=static::$id_user;
 
 		$requete_achats = "
-			SELECT DATE_FORMAT(Date,'%Y-%m') AS Mois,CONCAT(Pays, '/', Magazine) AS Publicationcode, Count(Numero) AS cpt
+			SELECT DATE_FORMAT(Date,'%Y-%m') AS Mois, CONCAT(Pays, '/', Magazine) AS Publicationcode, Count(Numero) AS cpt
 			FROM numeros n
 			  LEFT JOIN achats USING (ID_Acquisition)
 			WHERE ID_Utilisateur=$id_user
 			GROUP BY YEAR(Date), MONTH(Date), Pays,Magazine
 			ORDER BY YEAR(Date), MONTH(Date)
 		";
+
 		$resultat_achats = DM_Core::$d->requete_select($requete_achats);
 
 		$premier_achat = null;
-		$achats_magazines = array();
+		$achats_magazines_nouv = [];
+		$achats_magazines_tot = [];
+		$achats_magazines_current = [];
 
-		foreach($resultat_achats as $achat) {
-			if (is_null($premier_achat) && !is_null($achat['Mois'])) {
-				$premier_achat = $achat;
+		foreach($resultat_achats as $i=>$achat) {
+			$cpt = (int) $achat['cpt'];
+
+			if (!array_key_exists($achat['Publicationcode'], $achats_magazines_current)) {
+				$achats_magazines_current[$achat['Publicationcode']] = $cpt;
+			}
+			else {
+				$achats_magazines_current[$achat['Publicationcode']] += $cpt;
 			}
 
-			if (!array_key_exists($achat['Publicationcode'], $achats_magazines)) {
-				$achats_magazines[$achat['Publicationcode']] = array();
+			if (!is_null($achat['Mois'])) {
+				if (!array_key_exists($achat['Publicationcode'], $achats_magazines_nouv)) {
+					$achats_magazines_nouv[$achat['Publicationcode']] = [];
+					$achats_magazines_tot [$achat['Publicationcode']] = [];
+				}
+				$achats_magazines_nouv[$achat['Publicationcode']][$achat['Mois']]
+					= $cpt;
+
+				$achats_magazines_tot[$achat['Publicationcode']][$achat['Mois']]
+					= $achats_magazines_current[$achat['Publicationcode']];
+
+				if (is_null($premier_achat)) {
+					$premier_achat = $achat;
+				}
 			}
-			$achats_magazines[$achat['Publicationcode']][$achat['Mois']] = (int) $achat['cpt'];
 		}
 
 		$publication_codes = array_map(function($achat) {
@@ -257,7 +276,8 @@ class Stats {
 			'labels_pays_longs' => $noms_complets_pays,
 			'labels_magazines_longs' => $noms_complets_magazines,
 			'datasets' => array(
-				'nouv' => $achats_magazines
+				'nouv' => $achats_magazines_nouv,
+				'tot' => $achats_magazines_nouv
 			),
 			'premier_achat' => $premier_achat,
 			'title' => ACHATS
