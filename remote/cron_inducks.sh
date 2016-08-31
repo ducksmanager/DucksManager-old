@@ -12,6 +12,7 @@ set -x
 cd ${inducks_path}
 rm -rf *
 wget http://coa.inducks.org/inducks/isv.7z && 7zr x isv.7z && rm isv.7z
+for f in ${isv_path}/*.isv; do iconv -f utf-8 -t utf-8 -c "$f" > "$f.clean" && mv -f "$f.clean" "$f"; done # Ignore lines with invalid UTF-8 characters
 mv ${isv_path}/createtables.sql ${inducks_path}
 
 cd ${sh_dir}
