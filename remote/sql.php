@@ -9,10 +9,10 @@ include_once('auth.php');
 if (isset($_GET['req'])) {
 	$requete=str_replace("\'","'",$_GET['req']);
 	$resultats_tab= [];
-	$resultats=mysql_query($requete);
+	$resultats=Database::$handle->query($requete);
 	$debut=true;
 	$champs= [];
-	while($resultat = mysql_fetch_array($resultats)) {
+	while($resultat = $resultats->fetch_array(MYSQLI_ASSOC)) {
 		if ($debut) {
 			foreach(array_keys($resultat) as $cle)
 				if (!is_int($cle))
@@ -32,7 +32,7 @@ if (isset($_GET['req'])) {
 	else {
 		echo serialize($resultats_tab);
 	}
-	mysql_close();
+	mysqli_close(Database::$handle);
 }
 else
 	echo 'Pas de requete';

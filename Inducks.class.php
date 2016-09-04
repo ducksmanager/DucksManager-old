@@ -18,9 +18,9 @@ class Inducks {
 
 	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
 		if ($nomServeur==='serveur_virtuel' && false) {
-			mysql_select_db('coa');
+			mysqli_select_db(Database::$handle, 'coa');
 			$resultat = DM_Core::$d->requete_select($requete);
-			mysql_select_db(ServeurDb::$nom_db_DM);
+			mysqli_select_db(Database::$handle, ServeurDb::$nom_db_DM);
 			return $resultat;
 		}
 		else {
