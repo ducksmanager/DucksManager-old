@@ -16,4 +16,4 @@ if (!isset($_GET['mdp']) || !ServeurDb::verifPassword($_GET['mdp'])) {
 	exit();
 }
 
-mysql_query('SET NAMES UTF8');
+Database::$handle->query('SET NAMES UTF8');

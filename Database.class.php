@@ -27,6 +27,9 @@ class Database {
 	var $user;
 	var $password;
 
+	/** @var $handle mysqli  */
+	public static $handle = null;
+
 
 	function __construct() {
 			return ServeurDb::connect();
@@ -38,15 +41,15 @@ class Database {
 	}
 
 	function requete_select($requete, $forceMemeServeur=false) {
-		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel() && mysql_current_db() !== 'coa') {
+		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel() && get_current_db() !== 'coa') {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		else {
-			$requete_resultat=mysql_query($requete);
-			if (!is_resource($requete_resultat))
+			$requete_resultat=self::$handle->query($requete);
+			if ($requete_resultat === false)
 				return [];
 			$arr=[];
-			while($arr_tmp=mysql_fetch_array($requete_resultat, MYSQL_ASSOC))
+			while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC))
 					array_push($arr,$arr_tmp);
 			return $arr;
 		}
@@ -58,7 +61,7 @@ class Database {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		else {
-			return mysql_query($requete);
+			return self::$handle->query($requete);
 		}
 	}
 	
@@ -378,7 +381,7 @@ class Database {
 
 		}
 		if (isset($requete))
-			mysql_query($requete);
+			self::$handle->query($requete);
 	}
 
 	function toList($id_user=false) {
@@ -715,7 +718,8 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
         }
 
         $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
-                                          WHERE ID_Utilisateur = '.mysql_real_escape_string($id_user).' AND Cle=\''.mysql_real_escape_string($cle).'\'';
+                                          WHERE ID_Utilisateur = '.mysqli_real_escape_string(Database::$handle, $id_user).' 
+                                          AND Cle=\''.mysqli_real_escape_string(Database::$handle, $cle).'\'';
         if (count(DM_Core::$d->requete_select($requete_verifier_lien_partage)) > 0) {
             return $id_user;
         }
@@ -725,9 +729,14 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
     }
 }
 
-function mysql_current_db() {
-	$r = mysql_query("SELECT DATABASE()") or die(mysql_error());
-	return mysql_result($r,0);
+function get_current_db() {
+	$result = Database::$handle->query("SELECT DATABASE()") or die(Database::$handle->error);
+    if ($row=$result->fetch_array(MYSQLI_NUM)) {
+        return $row[0][0];
+    }
+    else {
+        return null;
+    }
 }
 
 if (isset($_POST['database'])) {
@@ -861,8 +870,8 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['changer_notation'])) {
 		DM_Core::$d->modifier_note_auteur(
-		    mysql_real_escape_string($_POST['auteur']),
-		    mysql_real_escape_string($_POST['notation'])
+		    mysqli_real_escape_string(Database::$handle, $_POST['auteur']),
+		    mysqli_real_escape_string(Database::$handle, $_POST['notation'])
         );
 	}
 	else if (isset($_POST['supprimer_auteur'])) {

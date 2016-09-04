@@ -14,7 +14,7 @@ $version=isset($_GET['version']) ? $_GET['version'] : '1.0';
 if (isset($_GET['storycode'])) {
 	$final=new stdClass();
 	
-	$code=mysql_real_escape_string($_GET['storycode']);
+	$code=mysqli_real_escape_string(Database::$handle, $_GET['storycode']);
 	$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber, inducks_publication.title AS title '
 			.'FROM inducks_issue '
 			.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
@@ -23,11 +23,11 @@ if (isset($_GET['storycode'])) {
 			.'WHERE storycode = \''.$code.'\' '
 			.'ORDER BY publicationcode, issuenumber';
 	$resultats_tab= [];
-	$resultats=mysql_query($requete);
+	$resultats=Database::$handle->query($requete);
 	
 	$noms_magazines= [];
 	$numeros= [];
-	while($resultat = mysql_fetch_array($resultats)) {
+	while($resultat = $resultats->fetch_array(MYSQLI_ASSOC)) {
 		$numero=new stdClass();
 		$numero->magazine=$resultat['publicationcode'];
 		$numero->numero=$resultat['issuenumber'];
@@ -51,7 +51,7 @@ if (isset($_GET['storycode'])) {
 else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 	if (isset($_GET['coa'])) {
 		ServeurDb::connect('coa');
-		mysql_query('SET NAMES UTF8');
+        Database::$handle->query('SET NAMES UTF8');
 		$retour=new stdClass();
 		$retour->static=new stdClass();
 		
@@ -63,8 +63,8 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 							   .'ORDER BY countryname';
 			if (isset($_GET['debug']))
 				echo $requete_liste_pays;
-			$resultats_liste_pays=mysql_query($requete_liste_pays);
-			while($pays = mysql_fetch_array($resultats_liste_pays)) {
+			$resultats_liste_pays=Database::$handle->query($requete_liste_pays);
+			while($pays = $resultats_liste_pays->fetch_array(MYSQLI_ASSOC)) {
 				$liste_pays[$pays['countrycode']]=$pays['countryname'];
 			}
 			$retour->static->pays=$liste_pays;
@@ -77,8 +77,8 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 								    .'ORDER BY publicationcode';
 			if (isset($_GET['debug']))
 				echo $requete_liste_magazines;
-			$resultats_liste_magazines=mysql_query($requete_liste_magazines);
-			while($magazine = mysql_fetch_array($resultats_liste_magazines)) {
+			$resultats_liste_magazines=Database::$handle->query($requete_liste_magazines);
+			while($magazine = $resultats_liste_magazines->fetch_array(MYSQLI_ASSOC)) {
 				$liste_magazines[$magazine['publicationcode']]=$magazine['title'];
 			}
 			$retour->static->magazines=$liste_magazines;
@@ -90,8 +90,8 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 								  .'WHERE publicationcode=\''.$_GET['magazine'].'\'';
 			if (isset($_GET['debug']))
 				echo $requete_liste_numeros;
-			$resultats_liste_numeros=mysql_query($requete_liste_numeros);
-			while($numero = mysql_fetch_array($resultats_liste_numeros)) {
+			$resultats_liste_numeros=Database::$handle->query($requete_liste_numeros);
+			while($numero = $resultats_liste_numeros->fetch_array(MYSQLI_ASSOC)) {
 				$liste_numeros[]=$numero['issuenumber'];
 			}
 			$retour->static->numeros=$liste_numeros;
@@ -101,8 +101,8 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 	else { 
 		Inducks::$use_local_db=false;
 		// R�cup�ration des informations sur la collection de l'utilisateur
-		$pseudo=mysql_real_escape_string($_GET['pseudo_user']);
-		$mdp=mysql_real_escape_string($_GET['mdp_user']);
+		$pseudo=mysqli_real_escape_string(Database::$handle, $_GET['pseudo_user']);
+		$mdp=mysqli_real_escape_string(Database::$handle, $_GET['mdp_user']);
 			
 		$requete='SELECT ID FROM users WHERE username=\''.$pseudo.'\' AND password=\''.$mdp.'\'';
 		$resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
@@ -158,7 +158,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 					}
 					else {
 						ServeurDb::connect('coa');
-						mysql_query('SET NAMES UTF8');
+                        Database::$handle->query('SET NAMES UTF8');
 						foreach($resultats as $resultat) {
 							$retour=new stdClass();
 							$numeros= [];
@@ -195,8 +195,8 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 															 .'INNER JOIN inducks_countryname ON inducks_publication.countrycode = inducks_countryname.countrycode '
 															 .'WHERE inducks_countryname.languagecode=\'fr\' '
 															 .'  AND inducks_publication.publicationcode=\''.$nom_abrege.'\'';
-								$resultats_nom_complet_magazine=mysql_query($requete_nom_complet_magazine);
-								while($resultat_nom_magazine = mysql_fetch_array($resultats_nom_complet_magazine)) {					
+								$resultats_nom_complet_magazine=Database::$handle->query($requete_nom_complet_magazine);
+								while($resultat_nom_magazine = $resultats_nom_complet_magazine->fetch_array(MYSQLI_ASSOC)) {
 									list($nom_pays,$nom_magazine)=explode('/',$nom_abrege);
 									$pays[$nom_pays]=$resultat_nom_magazine['countryname'];
 									$magazines[$nom_abrege]=$resultat_nom_magazine['title'];

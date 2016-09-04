@@ -1209,7 +1209,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                 	if (isset($_POST['ajouter'])) {
 										$erreur=false;
 										foreach (['nom','adresse_complete','coordX', 'coordY', 'commentaire'] as $champ) {
-											$_POST[$champ]=mysql_real_escape_string($_POST[$champ]);
+											$_POST[$champ]=mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
 											if (empty($_POST[$champ])) {
 												$erreur=true;
 												?><div style="color:red"><?=CHAMP_OBLIGATOIRE_1.ucfirst($champ).CHAMP_OBLIGATOIRE_2?></div><?php

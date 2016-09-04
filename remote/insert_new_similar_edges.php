@@ -3,7 +3,7 @@ include_once('../Inducks.class.php');
 Inducks::$use_local_db=false;
 ServeurDb::connect('coa');
 
-mysql_query('SET NAMES UTF8');
+Database::$handle->query('SET NAMES UTF8');
 
 
 $regex_numeros_JM_valides='#[0-9]+#is';

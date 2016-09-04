@@ -100,12 +100,10 @@ class ProfilDB {
 
 	function connexion($db) {
 		if (!$this->server) return false;
-		if (!$idbase = @mysql_pconnect($this->server, $this->user, $this->password))
-			return false;
-		$database=is_null($db) ? ServeurDb::$nom_db_DM : $db;
-		if (!mysql_select_db($database))
-			return false;
-		return true;
+
+        Database::$handle = mysqli_connect($this->server, $this->user, $this->password, is_null($db) ? ServeurDb::$nom_db_DM : $db);
+
+        return ! Database::$handle->connect_errno;
 	}
 }
 

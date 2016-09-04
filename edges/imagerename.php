@@ -1,5 +1,5 @@
 <?php include_once('../Database.class.php');
-if (isLocalhost()) {?>
+if (isLocalHost()) {?>
 	<form method="get">
 		Pays : <input type="text" name="pays" />
 		<input type="submit" value="OK" />
@@ -9,8 +9,8 @@ if (isLocalhost()) {?>
 if (isset($_GET['nouveau_nom']) && !empty($_GET['nouveau_nom'])) {
 	$pays=$_GET['pays'];
 	$rename_file=$_GET['rename_file'] !== 'false';
-	$ancien_nom=mysql_real_escape_string($_GET['ancien_nom']);
-	$nouveau_nom=mysql_real_escape_string($_GET['nouveau_nom']);
+	$ancien_nom=mysqli_real_escape_string(Database::$handle, $_GET['ancien_nom']);
+	$nouveau_nom=mysqli_real_escape_string(Database::$handle, $_GET['nouveau_nom']);
 	if ($rename_file) {
 		$filename=$pays.'/elements/'.$ancien_nom;
 		$filenewname=$pays.'/elements/'.$nouveau_nom;
@@ -30,14 +30,14 @@ if (isset($_GET['nouveau_nom']) && !empty($_GET['nouveau_nom'])) {
 		echo $requete_maj;
 		echo '</textarea>';
 		
-		if (isLocalhost()) {
+		if (isLocalHost()) {
 			$url_complete_serveur_virtuel = ServeurDb::getUrlServeurVirtuel()
 										   .substr($_SERVER["REQUEST_URI"],strpos($_SERVER["REQUEST_URI"],'/',2));
 			?><br /><iframe style="width:800px; height: 200px" src="<?=$url_complete_serveur_virtuel?>"></iframe><?php
 		}		
 	}
 }
-if (isLocalhost() && isset($_GET['pays']) && !empty($_GET['pays'])) {
+if (isLocalHost() && isset($_GET['pays']) && !empty($_GET['pays'])) {
 	$pays=$_GET['pays'];
 	?>
 	<form method="get">

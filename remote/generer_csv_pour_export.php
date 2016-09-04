@@ -4,17 +4,17 @@ include_once('auth.php');
 
 function exporter($requete, $cheminCsv)
 {
-    $result = mysql_query($requete);
+    $result = Database::$handle->query($requete);
     if ($result) {
-        $num_fields = mysql_num_fields($result);
+        $num_fields = $result->field_count;
         $headers = array();
         for ($i = 0; $i < $num_fields; $i++) {
-            $headers[] = mysql_field_name($result, $i);
+            $headers[] = $result->fetch_field_direct($i);
         }
         $fp = fopen($cheminCsv, 'w');
         if ($fp && $result) {
             fputcsv($fp, $headers);
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
                 fputcsv($fp, array_values($row));
             }
         }
