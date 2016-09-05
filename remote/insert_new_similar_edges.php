@@ -20,7 +20,7 @@ $requete_doublons_deja_dispo="SELECT Numero FROM tranches_doublons "
 							."  AND CONCAT(Pays,'/',Magazine)='fr/JM'";
 if (isset($_GET['dbg']))
 	echo $requete_doublons_deja_dispo;
-$resultats_doublons_deja_dispo=Inducks::requete_select($requete_doublons_deja_dispo,'db301759616','ducksmanager.net');
+$resultats_doublons_deja_dispo=DM_Core::$d->requete_select($requete_doublons_deja_dispo);
 
 if (isset($_GET['dbg'])) {
 	print_r( $resultats_doublons_deja_dispo);
@@ -53,12 +53,12 @@ if (count($doublons_a_ajouter) > 0) {
 	
 	if (isset($_GET['dbg']))
 		echo $requete_ajout_doublons.'<br />';
-	Inducks::requete_select($requete_ajout_doublons,'db301759616','ducksmanager.net');
+    DM_Core::$d->requete_select($requete_ajout_doublons);
 }
 
 $requete_tranches_deja_pretes="SELECT issuenumber FROM tranches_pretes "
 							."WHERE publicationcode='fr/JM' ";
-$resultats_tranches_deja_pretes=Inducks::requete_select($requete_tranches_deja_pretes,'db301759616','ducksmanager.net');
+$resultats_tranches_deja_pretes=DM_Core::$d->requete_select($requete_tranches_deja_pretes);
 $tranches_deja_dispo= [];
 $tranches_a_ajouter= [];
 
@@ -80,5 +80,5 @@ if (count($tranches_a_ajouter) > 0) {
 	
 	if (isset($_GET['dbg']))
 		echo $requete_ajout_tranches.'<br />';
-	Inducks::requete_select($requete_ajout_tranches,'db301759616','ducksmanager.net');
+    DM_Core::$d->requete_select($requete_ajout_tranches);
 }

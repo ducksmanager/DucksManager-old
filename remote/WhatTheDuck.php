@@ -105,7 +105,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 		$mdp=mysqli_real_escape_string(Database::$handle, $_GET['mdp_user']);
 			
 		$requete='SELECT ID FROM users WHERE username=\''.$pseudo.'\' AND password=\''.$mdp.'\'';
-		$resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+		$resultats=DM_Core::$d->requete_select($requete);
 		
 		if (isset($_GET['debug']))
 			echo $requete.'<br />';
@@ -147,7 +147,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 							$requete='INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur) '
 									.'VALUES(\''.$pays.'\', \''.$magazine.'\', \''.$numero.'\', \''.$etat.'\', -2, '.$id_utilisateur.')';
 						}
-						$resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+						$resultats=DM_Core::$d->requete_select($requete);
 						
 						if (isset($_GET['debug']))
 							echo $requete.'<br />';
@@ -165,7 +165,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 							$pays= [];
 							$magazines= [];
 							$requete_numeros='SELECT * FROM numeros WHERE ID_Utilisateur='.$resultat['ID'].' ORDER BY Pays, Magazine, Numero';
-							$resultats_numeros=Inducks::requete_select($requete_numeros,'db301759616','ducksmanager.net');
+							$resultats_numeros=DM_Core::$d->requete_select($requete_numeros);
 							foreach($resultats_numeros as $resultat_numero) {
 								$pays_magazine=$resultat_numero['Pays'].'/'.$resultat_numero['Magazine'];
 								$numero=$resultat_numero['Numero'];

@@ -40,7 +40,7 @@ class Database {
 			$this->password=$password;
 	}
 
-	function requete_select($requete, $forceMemeServeur=false) {
+	function requete_select($requete, $forceMemeServeur=true) {
 		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel() && get_current_db() !== 'coa') {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
@@ -55,7 +55,7 @@ class Database {
 		}
 	}
 
-	function requete($requete, $forceMemeServeur=false) {
+	function requete($requete, $forceMemeServeur=true) {
 		require_once('Inducks.class.php');
 		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel()) {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
