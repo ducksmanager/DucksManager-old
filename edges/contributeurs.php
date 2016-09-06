@@ -6,7 +6,7 @@ if (isset($_GET['contributions'])) {
 	$requete_contributions='SELECT publicationcode, issuenumber FROM tranches_pretes '
 						  .'WHERE photographes REGEXP \'(^|,)('.$_GET['contributeur'].')($|,)\' '
 						  .'ORDER BY publicationcode';
-	$resultat_contributions=DM_Core::$d->requete_select($requete_contributions);
+	$resultat_contributions=DM_Core::$d->requete_select_distante($requete_contributions);
 
 	$contributions= [];
 	foreach($resultat_contributions as $contribution) {
@@ -40,7 +40,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 	$requete_tranche_prete='SELECT 1 FROM tranches_pretes '
 								   .'WHERE publicationcode=\''.$publicationcode.'\' '
 								     .'AND issuenumber=\''.$issuenumber.'\'';
-	if (count(DM_Core::$d->requete_select($requete_tranche_prete)) == 0) {
+	if (count(DM_Core::$d->requete_select_distante($requete_tranche_prete)) == 0) {
 		echo 'La tranche '.$publicationcode.' '.$issuenumber.' n\'est pas pr&ecirc;te'."\n";
 	}
 	else {
@@ -48,7 +48,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 									   .'WHERE publicationcode=\''.$publicationcode.'\' '
 										 .'AND issuenumber=\''.$issuenumber.'\' '
 										 .'AND photographes REGEXP \'(^|,)('.$contributeur.')($|,)\' ';
-		$contribution_existe=count(DM_Core::$d->requete_select($requete_contribution_existante))> 0;
+		$contribution_existe=count(DM_Core::$d->requete_select_distante($requete_contribution_existante))> 0;
 		if ($contribution_existe) {
 			echo $contributeur.' est d&eacute;j&agrave; marqu&eacute; '
 				.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
@@ -58,7 +58,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 					.'SET photographes=CONCAT(IFNULL(photographes,\'\'), \','.$contributeur.'\') '
 					.'WHERE publicationcode=\''.$publicationcode.'\' '
 					  .'AND issuenumber=\''.$issuenumber.'\'';
-			DM_Core::$d->requete($requete);
+			DM_Core::$d->requete_distante($requete);
 			echo $contributeur.' ajout&eacute; '
 				.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
 		}
@@ -66,7 +66,7 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 }
 
 $requete_utilisateurs='SELECT username FROM users ORDER BY UPPER(username)';
-$resultat_utilisateurs=DM_Core::$d->requete_select($requete_utilisateurs);
+$resultat_utilisateurs=DM_Core::$d->requete_select_distante($requete_utilisateurs);
 $utilisateurs= [];
 foreach($resultat_utilisateurs as $utilisateur) {
 	$utilisateurs[]=utf8_decode($utilisateur['username']);
@@ -153,7 +153,7 @@ foreach($resultat_utilisateurs as $utilisateur) {
 					$requete_nb_contributions='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
 											  .'WHERE photographes REGEXP \'(^|,)('.$utilisateur.')($|,)\' '
 											  .'ORDER BY publicationcode';
-					$resultat=DM_Core::$d->requete_select($requete_nb_contributions);
+					$resultat=DM_Core::$d->requete_select_distante($requete_nb_contributions);
 					if (isset($resultat[0])) {
 						?><option title="<?=$resultat[0]['cpt']?> contributions"><?=$utilisateur?></option><?php
 					}

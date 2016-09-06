@@ -20,10 +20,10 @@ if (isset($_GET['nouveau_nom']) && !empty($_GET['nouveau_nom'])) {
 			echo 'Renommage OK';
 		}
 		$requete_maj='UPDATE edgecreator_valeurs SET Option_valeur=\''.$nouveau_nom.'\' WHERE Option_valeur=\''.$ancien_nom.'\'';
-		DM_Core::$d->requete($requete_maj);
+		DM_Core::$d->requete_distante($requete_maj);
 		
 		$requete_maj_tranches_en_cours='UPDATE tranches_en_cours_valeurs SET Option_valeur=\''.$nouveau_nom.'\' WHERE Option_valeur=\''.$ancien_nom.'\'';
-		DM_Core::$d->requete($requete_maj_tranches_en_cours);
+		DM_Core::$d->requete_distante($requete_maj_tranches_en_cours);
 		
 		echo '<br /><textarea cols="150" rows="5">';
 		echo $requete_maj_tranches_en_cours."\n";

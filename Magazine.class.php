@@ -71,19 +71,19 @@ class Magazine extends DM_Core{
         if (is_null($this->redirige_depuis)) {
             $requete='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet,NeParaitPlus) '
                     .'VALUES(\''.$this->pays_abrege.'\',\''.$this->nom_abrege.'\',\''.str_replace("'", "\'", $this->nom_complet).'\','.$this->ne_parait_plus.')';
-            DM_Core::$d->requete($requete);
+            DM_Core::$d->requete_distante($requete);
         }
         else {
             $requete_get_nom_complet='SELECT NomComplet FROM magazines WHERE PaysAbrege = \''.$this->pays_abrege.'\' AND NomAbrege = \''.$this->nom_abrege.'\'';
-            $resultat_get_nom_complet=DM_Core::$d->requete_select($requete_get_nom_complet);
+            $resultat_get_nom_complet=DM_Core::$d->requete_select_distante($requete_get_nom_complet);
             $nom_complet=$resultat_get_nom_complet[0]['NomComplet'];
             $requete='INSERT INTO magazines(PaysAbrege,NomAbrege,NomComplet,RedirigeDepuis) '
                     .'VALUES(\''.$this->pays_abrege.'\',\''.$this->nom_abrege.'\',\''.$nom_complet.'\',\''.$this->redirige_depuis.'\')';
-            DM_Core::$d->requete($requete);
+            DM_Core::$d->requete_distante($requete);
         }
         echo $requete.'<br />';
     }
     static function viderDB() {
-        DM_Core::$d->requete('TRUNCATE magazines');
+        DM_Core::$d->requete_distante('TRUNCATE magazines');
     }
 }

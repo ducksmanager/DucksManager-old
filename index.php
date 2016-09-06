@@ -435,7 +435,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     }
                                     else {
 										$requete_verifier_email='SELECT username, Email FROM users WHERE Email = \''.$_POST['email'].'\'';
-										$resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
+										$resultat_verifier_email=DM_Core::$d->requete_select_distante($requete_verifier_email);
                                         if (count($resultat_verifier_email) ==0) {
                                             echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
                                         }
@@ -451,7 +451,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 											}
 											
 											$requete_maj_mdp='UPDATE users SET password=sha1(\''.$mdp_temporaire.'\') WHERE Email = \''.$_POST['email'].'\'';
-											DM_Core::$d->requete($requete_maj_mdp);
+											DM_Core::$d->requete_distante($requete_maj_mdp);
                                             
 											$entete = "MIME-Version: 1.0\r\n";
                                             $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
@@ -563,18 +563,18 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         if (isset($_POST['texture1'])) {
                                             for ($i = 1; $i <= 2; $i++) {
                                                 $requete_update_texture = 'UPDATE users SET Bibliotheque_Texture' . $i . '=\'' . $_POST['texture' . $i] . '\' WHERE id=' . $id_user;
-                                                DM_Core::$d->requete($requete_update_texture);
+                                                DM_Core::$d->requete_distante($requete_update_texture);
                                                 $requete_update_sous_texture = 'UPDATE users SET Bibliotheque_Sous_Texture' . $i . '=\'' . $_POST['sous_texture' . $i] . '\' WHERE id=' . $id_user;
-                                                DM_Core::$d->requete($requete_update_sous_texture);
+                                                DM_Core::$d->requete_distante($requete_update_sous_texture);
                                             }
                                             $requete_suppr_ordres = 'DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user;
-                                            DM_Core::$d->requete($requete_suppr_ordres);
+                                            DM_Core::$d->requete_distante($requete_suppr_ordres);
                                             foreach ($_POST as $index => $valeur) {
                                                 if (strpos($index, 'magazine_') !== false) {
                                                     list($pays, $magazine) = explode('_', substr($index, strlen('magazine_')));
                                                     $requete_ajout_ordre = 'INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
                                                         . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',' . $valeur . ',' . $id_user . ')';
-                                                    DM_Core::$d->requete($requete_ajout_ordre);
+                                                    DM_Core::$d->requete_distante($requete_ajout_ordre);
 
                                                 }
                                             }
@@ -615,7 +615,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         <div id="liste_magazines">
                                             <?php
                                             $requete_ordre_magazines = 'SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user . ' ORDER BY Ordre';
-                                            $resultat_ordre_magazines = DM_Core::$d->requete_select($requete_ordre_magazines);
+                                            $resultat_ordre_magazines = DM_Core::$d->requete_select_distante($requete_ordre_magazines);
                                             $publication_codes = [];
                                             foreach ($resultat_ordre_magazines as $magazine) {
                                                 $publication_codes[] = $magazine['Pays'] . '/' . $magazine['Magazine'];
@@ -757,7 +757,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                     case 'contributeurs':
                                         $requete_contributeurs = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
-                                        $contributeurs = DM_Core::$d->requete_select($requete_contributeurs);
+                                        $contributeurs = DM_Core::$d->requete_select_distante($requete_contributeurs);
                                         ?>
                                         <div style="border:1px solid white">
                                             <h2 style="text-align:center"><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
@@ -794,7 +794,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     </div><?php
                                 }
                                 $requete_maj_dernier_acces = 'UPDATE users SET DernierAcces=CURRENT_TIMESTAMP WHERE ID='.$id_user;
-                                DM_Core::$d->requete($requete_maj_dernier_acces);
+                                DM_Core::$d->requete_distante($requete_maj_dernier_acces);
 
                                 $l=DM_Core::$d->toList($id_user);
                                 if (isset($_GET['supprimer_magazine'])) {
@@ -822,7 +822,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         	else {
 												$erreur=null;
 												$requete_verif_mot_de_passe='SELECT Email FROM users WHERE ID='.$id_user.' AND password=sha1(\''.$_POST['ancien_mdp'].'\')';
-												$mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
+												$mot_de_passe_ok = count(DM_Core::$d->requete_select_distante($requete_verif_mot_de_passe)) > 0;
 												if ($mot_de_passe_ok) {
 													$mot_de_passe_nouveau = $_POST['nouveau_mdp'];
 													$mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
@@ -834,7 +834,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 													}
 													else {
 														$requete_modif_mdp='UPDATE users SET password=sha1(\''.$mot_de_passe_nouveau.'\') WHERE ID='.$id_user;
-														DM_Core::$d->requete($requete_modif_mdp);
+														DM_Core::$d->requete_distante($requete_modif_mdp);
 														echo MOT_DE_PASSE_CHANGE;
 													}
 												}
@@ -846,17 +846,17 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 		                                            echo MODIFICATIONS_OK.'<br />';
 		                                            $est_partage=isset($_POST['partage']) && $_POST['partage']=='on'?'1':'0';
 		                                            $est_video=isset($_POST['video']) && $_POST['video']=='on'?'1':'0';
-		                                            DM_Core::$d->requete('UPDATE users SET AccepterPartage='.$est_partage.', AfficherVideo='.$est_video.', '
-		                                                                .'Email=\''.$_POST['email'].'\' '
-		                                                                .'WHERE ID='.$id_user);
+		                                            DM_Core::$d->requete_distante('UPDATE users SET AccepterPartage=' . $est_partage . ', AfficherVideo=' . $est_video . ', '
+                                                        . 'Email=\'' . $_POST['email'] . '\' '
+                                                        . 'WHERE ID=' . $id_user);
 		                                        }
 		                                        else {
 													?><span style="color:red"><?=$erreur?></span><?php
 		                                    	}
                                         	}
                                         }
-                                        $resultat_partage=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
-                                        $resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
+                                        $resultat_partage=DM_Core::$d->requete_select_distante('SELECT AccepterPartage FROM users WHERE ID=' . $id_user);
+                                        $resultat_email=DM_Core::$d->requete_select_distante('SELECT Email FROM users WHERE ID=' . $id_user);
                                         ?>
                                         <form action="?action=gerer&amp;onglet=compte" method="post">
                                         <br /><?=ADRESSE_EMAIL?> : <br />
@@ -904,15 +904,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 	                                                switch ($action) {
 	                                                    case 'vider':
 	                                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-	                                                        DM_Core::$d->requete($requete);
+	                                                        DM_Core::$d->requete_distante($requete);
 	                                                        echo NUMEROS_SUPPRIMES.'.<br />';
 	                                                        break;
 	                                                    case 'supprimer':
 	                                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-	                                                        DM_Core::$d->requete($requete);
+	                                                        DM_Core::$d->requete_distante($requete);
 	                                                        echo NUMEROS_SUPPRIMES.'<br />';
 	                                                        $requete_compte='DELETE FROM users WHERE ID='.$id_user;
-	                                                        DM_Core::$d->requete($requete_compte);
+	                                                        DM_Core::$d->requete_distante($requete_compte);
 	                                                        session_destroy();
 	                                                        echo COMPTE_SUPPRIME_DECONNECTE.'<br />';
 	                                                        break;
@@ -1069,7 +1069,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             ?>
                                                 <?php if (isset($_GET['afficher_video']) && $_GET['afficher_video']==0) {
                                                     $requete_cacher_video='UPDATE users SET AfficherVideo=0 WHERE ID='.$id_user;
-                                                    DM_Core::$d->requete($requete_cacher_video);
+                                                    DM_Core::$d->requete_distante($requete_cacher_video);
                                                 }
                                                 if (DM_Core::$d->user_afficher_video()) { ?>
                                                     <br /><br />
@@ -1164,7 +1164,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         break;
                                     case 'auteurs_favoris':
                                         $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
-                                        $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+                                        $resultat_auteurs_surveilles=DM_Core::$d->requete_select_distante($requete_auteurs_surveilles);
                                         ?>
                                         <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="/?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
                                         <?=EXPLICATION_NOTATION_AUTEURS3?>
@@ -1217,7 +1217,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 										}
 										if (!$erreur) {
 	                                		$requete='INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse_complete'].'\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', '.$_POST['coordX'].', '.$_POST['coordY'].', 0)';
-                                            DM_Core::$d->requete($requete);
+                                            DM_Core::$d->requete_distante($requete);
 
                                             $entete = "MIME-Version: 1.0\r\n";
                                             $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
@@ -1428,7 +1428,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             <tr style="height:20px">
                 <td align="center" style="vertical-align:middle;padding-left:4px;width: 242px;">
                         <?php
-                        $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
+                        $resultat_cpt_users=DM_Core::$d->requete_select_distante('SELECT count(username) as cpt_users FROM users');
                         echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
                         ?>
                 </td>

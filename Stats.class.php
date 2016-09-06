@@ -14,10 +14,10 @@ class Stats {
 	static function getPublicationData() {
 		$counts= [];
 		$total=0;
-		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select(
-			'SELECT Pays,Magazine,Count(Numero) AS cpt
+		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select_distante(
+            'SELECT Pays,Magazine,Count(Numero) AS cpt
 			 FROM numeros
-			 WHERE ID_Utilisateur='.static::$id_user.'
+			 WHERE ID_Utilisateur=' . static::$id_user . '
 			 GROUP BY Pays,Magazine
 			 ORDER BY cpt'
 		);
@@ -61,10 +61,10 @@ class Stats {
 	}
 
 	static function getConditionData() {
-		$resultat=DM_Core::$d->requete_select('
+		$resultat=DM_Core::$d->requete_select_distante('
 			SELECT Count(Numero) AS c
 			FROM numeros
-			WHERE ID_Utilisateur='.static::$id_user
+			WHERE ID_Utilisateur=' . static::$id_user
 		);
 
 		$data = [];
@@ -74,11 +74,11 @@ class Stats {
 		$total=$resultat[0]['c'];
 		$autres=0;
 		foreach(Database::$etats as $etat_court=>$infos_etat) {
-			$resultat=DM_Core::$d->requete_select('
+			$resultat=DM_Core::$d->requete_select_distante('
 				SELECT Count(Numero) AS c
 				FROM numeros
-				WHERE ID_Utilisateur='.static::$id_user.'
-				  AND Etat = \''.$etat_court.'\''
+				WHERE ID_Utilisateur=' . static::$id_user . '
+				  AND Etat = \'' . $etat_court . '\''
 			);
 			$cpt=$resultat[0]['c'];
 			if ($cpt==0) continue;
@@ -232,7 +232,7 @@ class Stats {
 			ORDER BY YEAR(Date), MONTH(Date)
 		";
 
-		$resultat_achats = DM_Core::$d->requete_select($requete_achats);
+		$resultat_achats = DM_Core::$d->requete_select_distante($requete_achats);
 
 		$premier_achat = null;
 		$achats_magazines_nouv = [];

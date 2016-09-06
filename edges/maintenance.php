@@ -2,7 +2,7 @@
 include_once('../Database.class.php');
 
 $requete_nb_tranches='SELECT COUNT(*) AS nb FROM tranches_pretes';
-$resultat_nb_tranches=DM_Core::$d->requete_select($requete_nb_tranches);
+$resultat_nb_tranches=DM_Core::$d->requete_select_distante($requete_nb_tranches);
 
 echo $resultat_nb_tranches[0]['nb'].' tranches pr&ecirc;tes.';
 
@@ -11,7 +11,7 @@ echo 'Recherche des images inexistantes : <br />';
 $requete_noms_images='SELECT Pays, Magazine, Option_valeur, Numero_debut, Numero_fin '
 					.'FROM edgecreator_modeles_vue '
 					.'WHERE Option_nom="Source" AND Nom_fonction="Image" AND username="brunoperel"';
-$resultat_noms_images=DM_Core::$d->requete_select($requete_noms_images);
+$resultat_noms_images=DM_Core::$d->requete_select_distante($requete_noms_images);
 
 ob_start();
 $numeros_inducks= [];

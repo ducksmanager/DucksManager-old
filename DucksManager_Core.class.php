@@ -44,12 +44,12 @@ class DM_Core {
     }
 }
 if (!isset(DM_Core::$d))
-DM_Core::$d=new Database();
+DM_Core::$d=new Database(false);
 if (!DM_Core::$d) {
     echo PROBLEME_BD;
     exit(-1);
 }
-DM_Core::$d->requete('SET NAMES UTF8');
+DM_Core::$d->requete_distante('SET NAMES UTF8');
 class InducksISV {
     var $nom;
     var $url;

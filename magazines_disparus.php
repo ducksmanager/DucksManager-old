@@ -1,7 +1,7 @@
 <?php
 require_once('DucksManager_Core.class.php');
 $requete_tous_magazines_possedes='SELECT DISTINCT Pays,Magazine FROM numeros ORDER BY Pays, Magazine';
-$resultat_tous_magazines_possedes=DM_Core::$d->requete_select($requete_tous_magazines_possedes);
+$resultat_tous_magazines_possedes=DM_Core::$d->requete_select_distante($requete_tous_magazines_possedes);
 $pays_tmp='';
 
 foreach($resultat_tous_magazines_possedes as $pays_magazine) {

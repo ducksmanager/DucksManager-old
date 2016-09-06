@@ -31,8 +31,8 @@ class Database {
 	public static $handle = null;
 
 
-	function __construct() {
-			return ServeurDb::connect();
+	function __construct($db_locale) {
+		return ServeurDb::connect();
 	}
 
 	function connect($user,$password) {
@@ -40,37 +40,36 @@ class Database {
 			$this->password=$password;
 	}
 
-	function requete_select($requete, $forceMemeServeur=true) {
-		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel() && get_current_db() !== 'coa') {
-			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
+	function requete_select($requete) {
+		$requete_resultat=self::$handle->query($requete);
+		if ($requete_resultat === false)
+			return [];
+		$arr=[];
+		while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC)) {
+			array_push($arr,$arr_tmp);
 		}
-		else {
-			$requete_resultat=self::$handle->query($requete);
-			if ($requete_resultat === false)
-				return [];
-			$arr=[];
-			while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC))
-					array_push($arr,$arr_tmp);
-			return $arr;
-		}
+		return $arr;
 	}
 
-	function requete($requete, $forceMemeServeur=true) {
+	function requete($requete) {
 		require_once('Inducks.class.php');
-		if (!$forceMemeServeur && ServeurDb::isServeurVirtuel()) {
-			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
-		}
-		else {
-			return self::$handle->query($requete);
-		}
+		return self::$handle->query($requete);
 	}
-	
+
+	function requete_select_distante($requete) {
+		return Inducks::requete_select($requete,get_current_db());
+	}
+
+	function requete_distante($requete) {
+		return Inducks::requete_select($requete,get_current_db());
+	}
+
 	function user_to_id($user) {
 		if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
 				$user=$_COOKIE['user'];
 		}
 		$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
-		$resultat=DM_Core::$d->requete_select($requete);
+		$resultat=DM_Core::$d->requete_select_distante($requete);
 		if (count($resultat) === 0) {
 			return null;
 		}
@@ -83,20 +82,20 @@ class Database {
 		}
 		else {
 			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
-			return (count(DM_Core::$d->requete_select($requete))>0);
+			return (count(DM_Core::$d->requete_select_distante($requete))>0);
 		}
 	}
 
 	function user_exists($user) {
 		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
-		return (count(DM_Core::$d->requete_select($requete))>0);
+		return (count(DM_Core::$d->requete_select_distante($requete))>0);
 
 	}
 
 	function user_is_beta() {
 		if (isset($_SESSION['user'])) {
 			$requete_beta_user='SELECT BetaUser FROM users WHERE username = \''.$_SESSION['user'].'\'';
-			$resultat_beta=DM_Core::$d->requete_select($requete_beta_user);
+			$resultat_beta=DM_Core::$d->requete_select_distante($requete_beta_user);
 			return $resultat_beta[0]['BetaUser']==1;
 		}
 		return false;
@@ -105,7 +104,7 @@ class Database {
 	function user_afficher_video() {
 		if (isset($_SESSION['user'])) {
 			$requete_afficher_video='SELECT AfficherVideo FROM users WHERE username = \''.$_SESSION['user'].'\'';
-			$resultat_afficher_video=DM_Core::$d->requete_select($requete_afficher_video);
+			$resultat_afficher_video=DM_Core::$d->requete_select_distante($requete_afficher_video);
 			return $resultat_afficher_video[0]['AfficherVideo']==1;
 		}
 		return false;
@@ -114,7 +113,7 @@ class Database {
 	function nouveau_user($user,$email,$pass) {
 		date_default_timezone_set('Europe/Paris');
 		$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
-		if (false===DM_Core::$d->requete($requete)) {
+		if (false===DM_Core::$d->requete_distante($requete)) {
 			echo ERREUR_EXECUTION_REQUETE;
 			return false;
 		}
@@ -123,32 +122,32 @@ class Database {
 	
 	function maintenance_ordre_magazines($id_user) {
 		$requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_get_max_ordre=DM_Core::$d->requete_select($requete_get_max_ordre);
+		$resultat_get_max_ordre=DM_Core::$d->requete_select_distante($requete_get_max_ordre);
 		$max=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
 		$cpt=0;				 
 		$l=DM_Core::$d->toList($id_user);
 		foreach($l->collection as $pays=>$magazines) {
 			foreach(array_keys($magazines) as $magazine) {
 				$requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
-				$resultat_verif_ordre_existe=DM_Core::$d->requete_select($requete_verif_ordre_existe);
+				$resultat_verif_ordre_existe=DM_Core::$d->requete_select_distante($requete_verif_ordre_existe);
 				$ordre_existe=count($resultat_verif_ordre_existe) > 0;
 				if (!$ordre_existe) {
 					$requete_set_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
 									  .'VALUES (\''.$pays.'\',\''.$magazine.'\','.($max+1).','.$id_user.')';
-					DM_Core::$d->requete($requete_set_ordre);
+					DM_Core::$d->requete_distante($requete_set_ordre);
 					$max++;
 				}
 				$cpt++;
 			}
 		}
 		$requete_liste_ordres='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_liste_ordres=DM_Core::$d->requete_select($requete_liste_ordres);
+		$resultat_liste_ordres=DM_Core::$d->requete_select_distante($requete_liste_ordres);
 		foreach($resultat_liste_ordres as $ordre) {
 			$pays=$ordre['Pays'];
 			$magazine=$ordre['Magazine'];
 			if (!array_key_exists($pays, $l->collection) || !array_key_exists($magazine, $l->collection[$pays])) {
 				$requete_suppr_ordre='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
-				DM_Core::$d->requete($requete_suppr_ordre);
+				DM_Core::$d->requete_distante($requete_suppr_ordre);
 			}
 		}
 	}
@@ -168,7 +167,7 @@ class Database {
 	}
 
 	function liste_numeros_externes_dispos($id_user) {
-		$resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
+		$resultat_email=DM_Core::$d->requete_select_distante('SELECT Email FROM users WHERE ID='.$id_user);
 		
 		$requete_ventes_utilisateurs = 'SELECT users.ID, users.username, numeros.Pays, numeros.Magazine, numeros.Numero '
 									  .'FROM users '
@@ -182,7 +181,7 @@ class Database {
   										.'AND numeros.ID_Utilisateur <> '.$id_user.' '
   										.'AND users.Email <> \'\' '
 										.'ORDER BY users.username, numeros.Pays, numeros.Magazine, numeros.Numero';
-		$resultat_ventes_utilisateurs = DM_Core::$d->requete_select($requete_ventes_utilisateurs);
+		$resultat_ventes_utilisateurs = DM_Core::$d->requete_select_distante($requete_ventes_utilisateurs);
 		if (count($resultat_ventes_utilisateurs) > 0) {
 			if (empty($resultat_email[0]['Email'])) {
 				?><br />
@@ -223,7 +222,7 @@ class Database {
 		date_default_timezone_set('Europe/Paris');
 		
 		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
-		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
+		$message_deja_envoye=count(DM_Core::$d->requete_select_distante($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
 			if ($message_deja_envoye) {?>
 				<span class="confirmation">
@@ -232,7 +231,7 @@ class Database {
 			}
 			else {
 				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
-				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
+				$resultat_emails=DM_Core::$d->requete_select_distante($requete_emails);
 				if (count($resultat_emails) != 2) {
 					?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
 				}
@@ -257,7 +256,7 @@ class Database {
 					if (mail($email_vendeur, EMAIL_ACHAT_VENTE_TITRE, $contenu_mail,$entete)) {
 						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
-						DM_Core::$d->requete($requete_ajout_message);
+						DM_Core::$d->requete_distante($requete_ajout_message);
 					}
 					else {
 						?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
@@ -350,7 +349,7 @@ class Database {
 					$debut=false;
 				}
 				//echo $requete_insert;
-				DM_Core::$d->requete($requete_insert);
+				DM_Core::$d->requete_distante($requete_insert);
 				$requete_update='UPDATE numeros SET ';
 
 				$arr=[$etat=>['non_marque','Etat=\''.$intitule.'\''],
@@ -376,7 +375,7 @@ class Database {
 					$debut=false;
 				}
 				$requete_update.='))';
-				DM_Core::$d->requete($requete_update);
+				DM_Core::$d->requete_distante($requete_update);
 				echo $requete_update;
 
 		}
@@ -390,7 +389,7 @@ class Database {
 			if ($id_user!==false) 
 				$requete.='WHERE (ID_Utilisateur='.$id_user.') ';
 			$requete.='ORDER BY Pays, Magazine, Numero';
-			$resultat=DM_Core::$d->requete_select($requete);
+			$resultat=DM_Core::$d->requete_select_distante($requete);
 			$l=new Liste();
 			foreach ($resultat as $infos) {
 				if (array_key_exists($infos['Pays'],$l->collection)) {
@@ -413,14 +412,14 @@ class Database {
 		
 	function get_auteur($nom_abrege) {
 		$requete_auteur_existe='SELECT NomAuteurComplet FROM auteurs WHERE NomAuteurAbrege = \''.$nom_abrege.'\'';
-		$resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
+		$resultat_auteur_existe=DM_Core::$d->requete_select_distante($requete_auteur_existe);
 		if (count($resultat_auteur_existe)>0) {
 			return $resultat_auteur_existe[0]['NomAuteurComplet'];
 		}
 		else {
 			$nom_auteur_complet=Inducks::get_auteur($nom_abrege);
 			$requete_ajout_auteur='INSERT INTO auteurs(NomAuteurAbrege,NomAuteurComplet) VALUES (\''.$nom_abrege.'\',\''.$nom_auteur_complet.'\')';
-			DM_Core::$d->requete($requete_ajout_auteur);
+			DM_Core::$d->requete_distante($requete_ajout_auteur);
 			return $nom_auteur_complet;
 		}
 	}
@@ -431,14 +430,14 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
             SELECT COUNT(NomAuteurAbrege) AS cpt
             FROM auteurs_pseudos
             WHERE DateStat = '0000-00-00' AND ID_User=$id_user";
-		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete_select($requete_nb_auteurs_surveilles);
+		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete_select_distante($requete_nb_auteurs_surveilles);
 		if (count($resultat_nb_auteurs_surveilles) > 0 && $resultat_nb_auteurs_surveilles[0]['cpt'] >= 5) {
 			?><div class="error"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
             if (!is_null(Inducks::get_auteur($idAuteur))) {
                 $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$idAuteur'";
-                $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
+                $resultat_auteur_existe=DM_Core::$d->requete_select_distante($requete_auteur_existe);
                 if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
                     ?><div class="error"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
@@ -446,7 +445,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
                     $requete_ajout_auteur="
                         INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat)
                         VALUES ('$nomAuteur', '$idAuteur', $id_user, 0, '0000-00-00')";
-                    DM_Core::$d->requete($requete_ajout_auteur);
+                    DM_Core::$d->requete_distante($requete_ajout_auteur);
                 }
             }
         }
@@ -471,7 +470,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 	}
 	
 	function get_notes_auteurs($id_user) {
-		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat = \'0000-00-00\'');
+		return $this->requete_select_distante('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat = \'0000-00-00\'');
 	}
 	
 	function modifier_note_auteur($auteur, $note) {
@@ -483,7 +482,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
           WHERE DateStat = '0000-00-00' 
             AND NomAuteurAbrege = '$auteur'
             AND ID_user=$id_user";
-        DM_Core::$d->requete($requete_notation);
+        DM_Core::$d->requete_distante($requete_notation);
 	}
 
 	function sous_liste($pays,$magazine) {
@@ -504,23 +503,23 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 		$requete='SELECT 1 FROM users '
 				.'WHERE ID='.$id_user.' AND (Email IS NULL OR Email=\'\') '
 				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
-		return count($this->requete_select($requete)) == 1; 
+		return count($this->requete_select_distante($requete)) == 1;
 	}
 	
 	function get_niveaux() {
 		$requete_nb_photographies ='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
 								  .'WHERE photographes REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\' '
 								  .'ORDER BY publicationcode';
-		$resultat_nb_photographies=DM_Core::$d->requete_select($requete_nb_photographies);
+		$resultat_nb_photographies=DM_Core::$d->requete_select_distante($requete_nb_photographies);
 
 		$requete_nb_creations =	   'SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
 								  .'WHERE createurs REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\' '
 								  .'ORDER BY createurs';
-		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
+		$resultat_nb_creations=DM_Core::$d->requete_select_distante($requete_nb_creations);
 
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
-		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
+		$resultat_nb_bouquineries=DM_Core::$d->requete_select_distante($requete_nb_bouquineries);
 		$nb = ['Photographe'=> $resultat_nb_photographies[0]['cpt'],
 					'Concepteur'	=> $resultat_nb_creations[0]['cpt'],
 					'Duckhunter'	=> $resultat_nb_bouquineries[0]['cpt']];
@@ -552,7 +551,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 							 .'FROM users '
 							 .'WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE "test%"';
 
-		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
+		$resultat_inscriptions = DM_Core::$d->requete_select_distante($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
 			ajouter_evenement(
 				$evenements->evenements,
@@ -575,7 +574,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 				  GROUP BY users.ID, DATE(DateAjout)
 				  HAVING COUNT(Numero) > 0
 				  ORDER BY DateAjout DESC';
-		$resultat_derniers_ajouts = DM_Core::$d->requete_select($requete);
+		$resultat_derniers_ajouts = DM_Core::$d->requete_select_distante($requete);
 		foreach($resultat_derniers_ajouts as $ajout) {
 			preg_match('#([^/]+/[^/]+)#', $ajout['NumeroExemple'], $publicationcode);
 			$evenements->publicationcodes[]=$publicationcode[0];
@@ -600,7 +599,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 							   WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 		
 
-		$resultat_bouquineries = DM_Core::$d->requete_select($requete_bouquineries);
+		$resultat_bouquineries = DM_Core::$d->requete_select_distante($requete_bouquineries);
 		foreach($resultat_bouquineries as $bouquinerie) {
 			$evenement = ['nom_bouquinerie'=>$bouquinerie['Nom']];
 			ajouter_evenement(
@@ -620,7 +619,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
                               AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
                             ORDER BY DateAjout DESC, collaborateurs";
 
-		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
+		$resultat_tranches = DM_Core::$d->requete_select_distante($requete_tranches);
         $groupe_precedent = null;
         $evenement = null;
 		foreach($resultat_tranches as $tranche_prete) {
@@ -708,7 +707,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
              ORDER BY DiffSecondes ASC
              LIMIT 5';
         }
-        return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
+        return DM_Core::$d->requete_select_distante($requete_tranches_collection_ajoutees);
     }
 
     function get_id_user_partage_bibliotheque($user, $cle) {
@@ -720,7 +719,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
         $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
                                           WHERE ID_Utilisateur = '.mysqli_real_escape_string(Database::$handle, $id_user).' 
                                           AND Cle=\''.mysqli_real_escape_string(Database::$handle, $cle).'\'';
-        if (count(DM_Core::$d->requete_select($requete_verifier_lien_partage)) > 0) {
+        if (count(DM_Core::$d->requete_select_distante($requete_verifier_lien_partage)) > 0) {
             return $id_user;
         }
         else {
@@ -767,7 +766,7 @@ if (isset($_POST['database'])) {
 		$id_acquisition=$date_acquisition;
 		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
 			$requete_id_acquisition='SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND Date = \''.$date_acquisition.'\' GROUP BY ID_Acquisition';
-			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
+			$resultat_acqusitions=DM_Core::$d->requete_select_distante($requete_id_acquisition);
 			//echo $requete_id_acquisition;
 			if ($resultat_acqusitions[0]['cpt'] ==0)
 				$id_acquisition=-1;
@@ -813,32 +812,32 @@ if (isset($_POST['database'])) {
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
 								   .'FROM achats '
 								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
-		$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
+		$compte_acquisition_date=DM_Core::$d->requete_select_distante($requete_acquisition_existe);
 		if ($compte_acquisition_date[0]['c']!=0) {
 			echo 'Date';exit(0);
 		}
 
-		DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
+		DM_Core::$d->requete_distante('INSERT INTO achats(ID_User,Date,Description)'
 				   			.' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
 		$requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
-		$liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
+		$liste_acquisitions=DM_Core::$d->requete_select_distante($requete_acquisition);
 
 	}
 	else if (isset($_POST['modif_acquisition'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		DM_Core::$d->requete('UPDATE achats SET Date=\''.$_POST['date'].'\',Description=\''.$_POST['description'].'\' WHERE ID_User='.$id_user.' AND ID_Acquisition=\''.$_POST['id_acquisition'].'\'');
+		DM_Core::$d->requete_distante('UPDATE achats SET Date=\''.$_POST['date'].'\',Description=\''.$_POST['description'].'\' WHERE ID_User='.$id_user.' AND ID_Acquisition=\''.$_POST['id_acquisition'].'\'');
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
 		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$requete='DELETE FROM achats WHERE ID_User='.$id_user.' AND ID_Acquisition='.$_POST['supprimer_acquisition'];
 		echo $requete;
-		DM_Core::$d->requete($requete);
+		DM_Core::$d->requete_distante($requete);
 	}
 	else if (isset($_POST['liste_achats'])) {
 		//print_r($_SESSION);acquisitions
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
+		$liste_achats=DM_Core::$d->requete_select_distante('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
 		$tab_achats=[];
 		$cpt_strlen=0;
 		foreach ($liste_achats as $achat) {
@@ -876,14 +875,14 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
+		DM_Core::$d->requete_distante('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
 	}
 	elseif (isset($_POST['liste_bouquineries'])) {
 		$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
 							 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 							 .'WHERE Actif=1';
-		$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
+		$resultat_bouquineries=DM_Core::$d->requete_select_distante($requete_bouquineries);
 		foreach($resultat_bouquineries as &$bouquinerie) {
 			$i=0;
 			while (array_key_exists($i, $bouquinerie)) {
@@ -904,7 +903,7 @@ if (isset($_POST['database'])) {
 }
 elseif (isset($_GET['test_bd_inducks'])) {
 	$requete_alias = 'SELECT charactercode, charactername FROM inducks_characteralias';
-	$resultat_alias = DM_Core::$d->requete_select($requete_alias);
+	$resultat_alias = DM_Core::$d->requete_select_distante($requete_alias);
 	?><table><tr><td>Code</td><td>Name</td></tr><?php
 	foreach($resultat_alias as $resultat) {
 		?><tr><td><?=$resultat['charactercode']?></td><td><?=$resultat['charactername']?></td></tr><?php

@@ -19,7 +19,7 @@ class Inducks {
 	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
 		if ($nomServeur==='serveur_virtuel') {
 			mysqli_select_db(Database::$handle, 'coa');
-			$resultat = DM_Core::$d->requete_select($requete);
+			$resultat = DM_Core::$d->requete_select_distante($requete);
 			mysqli_select_db(Database::$handle, ServeurDb::$nom_db_DM);
 			return $resultat;
 		}
@@ -28,11 +28,7 @@ class Inducks {
 				ServeurCoa::initCoaServers();
 			}
 
-			if ($nomServeur === 'serveur_virtuel') {
-				$coaServers = ServeurCoa::$coa_servers;
-			} else {
-				$coaServers = [ServeurCoa::$ducksmanager_server];
-			}
+			$coaServers = [ServeurCoa::$ducksmanager_server];
 
 			foreach($coaServers as $coaServerName=>$coaServer) {
 				$output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete), $timeout, isset($_GET['dbg']));
@@ -82,7 +78,7 @@ class Inducks {
 
 	static function get_vrai_magazine($pays,$magazine) {
 		$requete_get_redirection='SELECT NomAbrege FROM magazines WHERE PaysAbrege = \''.$pays.'\' AND RedirigeDepuis = \''.$magazine.'\'';
-		$resultat_get_redirection=DM_Core::$d->requete_select($requete_get_redirection);
+		$resultat_get_redirection=DM_Core::$d->requete_select_distante($requete_get_redirection);
 		if (count($resultat_get_redirection) > 0)
 			return $resultat_get_redirection[0]['NomAbrege'];
 		return $magazine;
@@ -286,7 +282,7 @@ class Inducks {
 			$liste_magazines[]="'".$publicationcode."'";
 		}
 	   	$requete_get_ne_parait_plus='SELECT CONCAT(PaysAbrege,\'/\',NomAbrege) AS publicationcode, NeParaitPlus FROM magazines WHERE publicationcode IN ('.implode(',',$liste_magazines).')';
-	   	$resultat_get_ne_parait_plus=DM_Core::$d->requete_select($requete_get_ne_parait_plus);
+	   	$resultat_get_ne_parait_plus=DM_Core::$d->requete_select_distante($requete_get_ne_parait_plus);
 
 		$magazines_ne_paraissant_plus= [];
 		foreach($resultat_get_ne_parait_plus as $resultat) {

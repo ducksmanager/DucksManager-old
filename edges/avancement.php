@@ -35,7 +35,7 @@ if (isset($_GET['wanted'])) {
     $requete_plus_demandes='SELECT Count(Numero) as cpt, Pays, Magazine, Numero '
                           .'FROM numeros '
                           .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
-    $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
+    $resultat_plus_demandes=DM_Core::$d->requete_select_distante($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
 
@@ -55,7 +55,7 @@ if (isset($_GET['wanted'])) {
 		list($magazine,$numero)=Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
 		$publicationcode = $pays.'/'.$magazine;
         $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
-        $est_dispo=count(DM_Core::$d->requete_select($requete_est_dispo)) > 0;
+        $est_dispo=count(DM_Core::$d->requete_select_distante($requete_est_dispo)) > 0;
         if (!$est_dispo) {
 			$numeros_demandes[]= ['cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero];
 			if ($cptwanted++ >= $_GET['wanted'])
@@ -94,7 +94,7 @@ else {
 
 $requete_pays_magazines_tranches_pretes='SELECT DISTINCT publicationcode FROM tranches_pretes ORDER BY publicationcode';
 
-$resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete_select($requete_pays_magazines_tranches_pretes);
+$resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete_select_distante($requete_pays_magazines_tranches_pretes);
 
 $cpt_dispos=0;
 $publicationcodes= [];
@@ -108,7 +108,7 @@ foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	list($pays,$magazine)=explode('/',$publicationcode);
 	echo '<br /><br />(<img src="../images/flags/'.$pays.'.png" /> '.$magazine.') '.$liste_magazines[$publicationcode].'<br />';
 	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\'';
-	$resultat_tranches_pretes_magazine=DM_Core::$d->requete_select($requete_tranches_pretes_magazine);
+	$resultat_tranches_pretes_magazine=DM_Core::$d->requete_select_distante($requete_tranches_pretes_magazine);
 	$tranches_pretes= [];
 	foreach($resultat_tranches_pretes_magazine as $tranche_prete_magazine) {
 		$tranches_pretes[]=$tranche_prete_magazine['issuenumber'];

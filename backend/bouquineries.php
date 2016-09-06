@@ -11,12 +11,12 @@ if (isset($_POST['ID'])) {
             Actif=1
         WHERE ID='.$_POST['ID'];
 
-    DM_Core::$d->requete($requete_maj_bouquinerie);
+    DM_Core::$d->requete_distante($requete_maj_bouquinerie);
 }
 
 $requete = 'SELECT * from bouquineries WHERE Actif=0';
 
-$resultats = DM_Core::$d->requete_select($requete);
+$resultats = DM_Core::$d->requete_select_distante($requete);
 
 if (count($resultats) > 0) {
     $champs = array_keys($resultats[0]);

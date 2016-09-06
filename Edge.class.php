@@ -110,7 +110,7 @@ class Edge {
 				'SELECT Numero,NumeroReference '
 			   .'FROM tranches_doublons '
 			   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero IN ('.implode(',', $numeros_subarray).') ';
-			$resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
+			$resultat_numero_reference=DM_Core::$d->requete_select_distante($requete_recherche_numero_reference);
 			foreach($resultat_numero_reference as $numero_reference) {
 				$numeros_clean_et_references[$numero_reference['Numero']]['reference']
 					=$numero_reference['NumeroReference'];
@@ -204,7 +204,7 @@ class Edge {
         $total_numeros_visibles=0;
         DM_Core::$d->maintenance_ordre_magazines($id_user);
         $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
-        $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+        $resultat_ordre_magazines=DM_Core::$d->requete_select_distante($requete_ordre_magazines);
         $publication_codes= [];
         foreach($resultat_ordre_magazines as $ordre) {
             $pays=$ordre['Pays'];
@@ -245,7 +245,7 @@ class Edge {
         $textures = [];
         for ($i = 1; $i <= 2; $i++) {
             $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
-            $resultat_textures = DM_Core::$d->requete_select($requete_textures);
+            $resultat_textures = DM_Core::$d->requete_select_distante($requete_textures);
             $textures[] = $resultat_textures[0]['Bibliotheque_Texture' . $i];
             $textures[] = $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i];
         }
@@ -256,7 +256,7 @@ class Edge {
 	}
 
 }
-DM_Core::$d->requete('SET NAMES UTF8');
+DM_Core::$d->requete_distante('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
     $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
 	include_once ('locales/lang.php');
@@ -305,14 +305,14 @@ elseif (isset($_POST['get_bibliotheque'])) {
     }
     else {
         $requete_grossissement = 'SELECT username, Bibliotheque_Grossissement FROM users WHERE ID = \'' . $id_user . '\'';
-        $resultat_grossissement = DM_Core::$d->requete_select($requete_grossissement);
+        $resultat_grossissement = DM_Core::$d->requete_select_distante($requete_grossissement);
         $username = $resultat_grossissement[0]['username'];
         $grossissement = $resultat_grossissement[0]['Bibliotheque_Grossissement'];
 
         $textures = [];
         for ($i = 1; $i <= 2; $i++) {
             $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
-            $resultat_textures = DM_Core::$d->requete_select($requete_textures);
+            $resultat_textures = DM_Core::$d->requete_select_distante($requete_textures);
             $textures[$i - 1] = [
                 'texture' => $resultat_textures[0]['Bibliotheque_Texture' . $i],
                 'sous_texture' => $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i]
@@ -342,7 +342,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
 elseif (isset($_POST['get_texture'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	$requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
-	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
+	$resultat_texture=DM_Core::$d->requete_select_distante($requete_texture);
 	$rep = "edges/textures";
 	$dir = opendir($rep);
 	while ($f = readdir($dir)) {
@@ -362,7 +362,7 @@ elseif (isset($_POST['get_texture'])) {
 elseif (isset($_POST['get_sous_texture'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	$requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
-	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
+	$resultat_texture=DM_Core::$d->requete_select_distante($requete_texture);
 
 	$rep = 'edges/textures/'.$_POST['texture'].'/miniatures';
 	$dir = opendir($rep);
@@ -484,7 +484,7 @@ function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
 	$e->magazine=$magazine;
 	$e->numero=$numero;
 	$requete_est_visible='SELECT issuenumber FROM tranches_pretes WHERE publicationcode = \''.($pays.'/'.$magazine).'\' AND issuenumber = \''.$numero.'\'';
-	$e->est_visible=count(DM_Core::$d->requete_select($requete_est_visible)) > 0;
+	$e->est_visible=count(DM_Core::$d->requete_select_distante($requete_est_visible)) > 0;
 		
 	if ($get_html)
 		return [$e->getImgHTML($regen),$e->est_visible];

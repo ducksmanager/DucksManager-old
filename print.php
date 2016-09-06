@@ -39,7 +39,7 @@ if (!isset($_SESSION['user'])) {
     ?><br /><a href="?action=open"><?=CONNEXION_COMPTE?></a><?php
     exit(0);
 }
-DM_Core::$d->requete_select('SELECT DISTINCT Pays,Magazine,Numero,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros WHERE (ID_Utilisateur=1) ORDER BY Pays, Magazine, Numero');
+DM_Core::$d->requete_select_distante('SELECT DISTINCT Pays,Magazine,Numero,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros WHERE (ID_Utilisateur=1) ORDER BY Pays, Magazine, Numero');
 
 $id_user = DM_Core::$d->user_to_id($_SESSION['user']);
 global $l;
@@ -52,19 +52,19 @@ if (isset($_POST['magazine'])) {
 
 $parametres_generaux=new parametres_generaux();
 $requete_est_init='SELECT Count(Position_Liste) as cpt_boites FROM parametres_listes WHERE `ID_Utilisateur`='.$id_user;
-$resultat_est_init=DM_Core::$d->requete_select($requete_est_init);
+$resultat_est_init=DM_Core::$d->requete_select_distante($requete_est_init);
 $est_init=$resultat_est_init[0]['cpt_boites']==0;
 if ($est_init) {
     foreach($parametres_generaux->getListeParametresModifiables() as $nom_parametre=>$parametre) {
         $requete_ajouter_boite='INSERT INTO parametres_listes(`ID_Utilisateur`,`Pays`,`Magazine`,`Type_Liste`,`Position_Liste`,`Parametre`,`Valeur`) VALUES '
                               .'('.$id_user.',NULL,NULL,NULL,-1,\''.$nom_parametre.'\',\''.$parametre->valeur_defaut.'\')';
-        DM_Core::$d->requete($requete_ajouter_boite);
+        DM_Core::$d->requete_distante($requete_ajouter_boite);
     }
 }
 else {
     foreach($parametres_generaux->getListeParametresModifiables() as $nom_parametre=>$parametre) {
         $requete_get_valeur='SELECT Valeur FROM parametres_listes WHERE ID_Utilisateur='.$id_user.' AND Position_Liste = -1 AND Parametre = \''.$nom_parametre.'\'';
-        $resultat_get_valeur=DM_Core::$d->requete_select($requete_get_valeur);
+        $resultat_get_valeur=DM_Core::$d->requete_select_distante($requete_get_valeur);
         if (count($resultat_get_valeur) > 0)
             $parametres_generaux->parametres->$nom_parametre->valeur=$resultat_get_valeur[0]['Valeur'];
     }
@@ -78,13 +78,13 @@ else {
             foreach ($l->collection as $pays => $magazines) {
                 foreach ($magazines as $nom_magazine => $magazine) {
                     $requete_get_boite='SELECT Pays,Magazine,Type_Liste,Position_Liste FROM parametres_listes WHERE (ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$nom_magazine.'\') GROUP BY Position_Liste ORDER BY Position_Liste';
-                    $resultat_get_boite=DM_Core::$d->requete_select($requete_get_boite);
+                    $resultat_get_boite=DM_Core::$d->requete_select_distante($requete_get_boite);
                     $est_init_magazine=count($resultat_get_boite) == 0;
                     if ($est_init_magazine) {
                         $type_liste = 'dmspiral';
                         Liste::init_parametres_boite($pays,$nom_magazine,$type_liste,$i);
                     }
-                    $resultat_get_boite=DM_Core::$d->requete_select($requete_get_boite);
+                    $resultat_get_boite=DM_Core::$d->requete_select_distante($requete_get_boite);
 
                     $proprietes_boite=$resultat_get_boite[0];
                     $type_liste = $proprietes_boite['Type_Liste'];
@@ -93,7 +93,7 @@ else {
                     $o_tmp=new $type_liste;
                     foreach($o_tmp->getListeParametresModifiables() as $nom_parametre=>$parametre) {
                         $requete_get_parametre='SELECT Valeur FROM parametres_listes WHERE Position_Liste='.$proprietes_boite['Position_Liste'].' AND Parametre = \''.$nom_parametre.'\' AND ID_Utilisateur='.$id_user;
-                        $resultat_get_parametre=DM_Core::$d->requete_select($requete_get_parametre);
+                        $resultat_get_parametre=DM_Core::$d->requete_select_distante($requete_get_parametre);
                         if (count($resultat_get_parametre) > 0)
                             $o_tmp->parametres->$nom_parametre->valeur=$resultat_get_parametre[0]['Valeur'];
                     }

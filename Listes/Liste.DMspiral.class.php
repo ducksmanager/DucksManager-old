@@ -195,7 +195,7 @@ class dmspiral extends Format_liste {
 		}
 
 		$requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.DM_Core::$d->user_to_id($_SESSION['user']).')';
-		$resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
+		$resultat_numeros_possedes=DM_Core::$d->requete_select_distante($requete_numeros_possedes);
 		foreach($resultat_numeros_possedes as $numero) {
 			if (0!=(intval($numero['Numero']))) {
 				$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;

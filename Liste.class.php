@@ -228,10 +228,10 @@ class Liste {
 			break;
 			case 'auteurs':
 				$requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
-				$resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+				$resultat_auteurs_surveilles=DM_Core::$d->requete_select_distante($requete_auteurs_surveilles);
 				if (count($resultat_auteurs_surveilles)!=0) {
 					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user;
-					$resultat_calcul_effectue=DM_Core::$d->requete_select($requete_calcul_effectue);
+					$resultat_calcul_effectue=DM_Core::$d->requete_select_distante($requete_calcul_effectue);
 					if ($resultat_calcul_effectue[0]['cpt']==0) {
 						echo AUCUN_AUTEUR_SURVEILLE;
 					}
@@ -293,7 +293,7 @@ class Liste {
 						SELECT NomAuteur, NomAuteurAbrege, Notation
 						FROM auteurs_pseudos
 						WHERE ID_User=$id_user AND DateStat = '0000-00-00'";
-					DM_Core::$d->afficher_liste_auteurs_surveilles(DM_Core::$d->requete_select($requete_auteurs_surveilles));
+					DM_Core::$d->afficher_liste_auteurs_surveilles(DM_Core::$d->requete_select_distante($requete_auteurs_surveilles));
 					?>
 				</div><?php
 				break;
@@ -310,7 +310,7 @@ class Liste {
 					foreach($numeros as $numero) {
 						$requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
 								.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
-						DM_Core::$d->requete($requete);
+						DM_Core::$d->requete_distante($requete);
 						$cpt++;
 					}
 				}
@@ -327,7 +327,7 @@ class Liste {
 					foreach($numeros as $numero) {
 						$num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
 						$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
-						DM_Core::$d->requete($requete);
+						DM_Core::$d->requete_distante($requete);
 						$cpt++;
 					}
 				}
@@ -519,13 +519,13 @@ class Liste {
 			if ($o_tmp->getListeParametresModifiables() == new stdClass()) {
 				$requete_ajouter_boite='INSERT INTO parametres_listes(`ID_Utilisateur`,`Pays`,`Magazine`,`Type_Liste`,`Position_Liste`,`Parametre`,`Valeur`) VALUES '
 									  .'('.$id_user.',\''.$pays.'\',\''.$magazine.'\',\''.$type_liste.'\','.$position_liste.',NULL,NULL)';
-				DM_Core::$d->requete($requete_ajouter_boite);
+				DM_Core::$d->requete_distante($requete_ajouter_boite);
 			}
 			else {
 				foreach($o_tmp->getListeParametresModifiables() as $nom_parametre=>$parametre) {
 					$requete_ajouter_boite='INSERT INTO parametres_listes(`ID_Utilisateur`,`Pays`,`Magazine`,`Type_Liste`,`Position_Liste`,`Parametre`,`Valeur`) VALUES '
 										  .'('.$id_user.',\''.$pays.'\',\''.$magazine.'\',\''.$type_liste.'\','.$position_liste.',\''.$nom_parametre.'\',\''.$parametre->valeur_defaut.'\')';
-					DM_Core::$d->requete($requete_ajouter_boite);
+					DM_Core::$d->requete_distante($requete_ajouter_boite);
 				}
 			}
 		}
@@ -541,7 +541,7 @@ class Liste {
 			foreach ($parametres as $parametre => $valeur) {
 				$requete_modifier_parametre = 'UPDATE parametres_listes SET Valeur=\'' . $valeur . '\' '
 					. 'WHERE ID_Utilisateur=' . $id_user . ' AND Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' AND Parametre = \'' . $parametre . '\'';
-				DM_Core::$d->requete($requete_modifier_parametre);
+				DM_Core::$d->requete_distante($requete_modifier_parametre);
 			}
 		}
 }
@@ -573,14 +573,14 @@ elseif(isset($_POST['sous_liste'])) {
 			foreach($fusions as $fusion) {
 				$pays_et_magazine_fusion=explode('_',$fusion);
 				$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays = \''.$pays_et_magazine_fusion[0].'\' AND Magazine = \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
-				$resultat_get_type_liste=DM_Core::$d->requete_select($requete_get_type_liste);
+				$resultat_get_type_liste=DM_Core::$d->requete_select_distante($requete_get_type_liste);
 				if (count($resultat_get_type_liste) > 0) {
 					$type_liste=$resultat_get_type_liste[0]['Type_Liste'];
 
 					if (isset($_POST['type_liste']) && $_POST['type_liste'] != $type_liste) {
 						if (isset($_POST['confirmation_remplacement'])) {
 							$requete_effacer_parametres_courants='DELETE FROM parametres_listes WHERE Pays = \''.$pays_et_magazine_fusion[0].'\' AND Magazine = \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
-							DM_Core::$d->requete($requete_effacer_parametres_courants);
+							DM_Core::$d->requete_distante($requete_effacer_parametres_courants);
 						}
 						else {	
 							header("X-JSON: " . json_encode(['message'=>'Les parametres de la boite seront reinitialises si vous changez son type d\'affichage. Confirmer ?']));
@@ -595,7 +595,7 @@ elseif(isset($_POST['sous_liste'])) {
 	}
 	else {
 		$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
-		$resultat_get_type_liste=DM_Core::$d->requete_select($requete_get_type_liste);
+		$resultat_get_type_liste=DM_Core::$d->requete_select_distante($requete_get_type_liste);
 		if (count($resultat_get_type_liste) > 0) {
 			$type_liste=$resultat_get_type_liste[0]['Type_Liste'];
 		}
@@ -657,7 +657,7 @@ elseif (isset($_POST['update_parametres_generaux'])) {
 	foreach($parametres as $parametre=>$valeur) {
 		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
 								   .'WHERE ID_Utilisateur='.$id_user.' AND Position_Liste=-1 AND Parametre = \''.$parametre.'\'';
-		DM_Core::$d->requete($requete_modifier_parametre);
+		DM_Core::$d->requete_distante($requete_modifier_parametre);
 	}
 }
 elseif (isset($_POST['parametres'])) {
@@ -665,12 +665,12 @@ elseif (isset($_POST['parametres'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	list($pays,$magazine)=explode('_',$_POST['id_magazine']);
 	$requete_get_parametres='SELECT Type_Liste,Parametre,Valeur FROM parametres_listes WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
-	$resultat_get_parametres=DM_Core::$d->requete_select($requete_get_parametres);
+	$resultat_get_parametres=DM_Core::$d->requete_select_distante($requete_get_parametres);
 	if (count($resultat_get_parametres) == 0) {
 		$type_liste=$_POST['type_liste'];
 		$position_liste=$_POST['position_liste'];
 		Liste::init_parametres_boite($pays, $magazine, $type_liste,$position_liste);
-		$resultat_get_parametres=DM_Core::$d->requete_select($requete_get_parametres);
+		$resultat_get_parametres=DM_Core::$d->requete_select_distante($requete_get_parametres);
 	}
 	$type_liste=$resultat_get_parametres[0]['Type_Liste'];
 	

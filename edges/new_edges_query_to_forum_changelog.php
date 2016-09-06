@@ -29,7 +29,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
     if (isset($_GET['publier'])) {
         $requete='INSERT INTO tranches_pretes ('.implode(',',array_keys($valeurs)).') VALUES (\''.implode($valeurs, '\', \'').'\')';
-        DM_Core::$d->requete($requete);
+        DM_Core::$d->requete_distante($requete);
         copy($url, $chemin);
 
         $requete_tranche_publiee = 'UPDATE tranches_en_cours_modeles SET PretePourPublication=0 WHERE ID='.$id;

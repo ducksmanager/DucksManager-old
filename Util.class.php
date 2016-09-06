@@ -98,7 +98,7 @@ class Util {
 
 	static function magazinesSupprimesInducks() {
 		$requete_magazines='SELECT Pays, Magazine FROM numeros GROUP BY Pays, Magazine ORDER BY Pays, Magazine';
-		$resultat_magazines=DM_Core::$d->requete_select($requete_magazines);
+		$resultat_magazines=DM_Core::$d->requete_select_distante($requete_magazines);
 		$pays='';
 		$magazines_inducks= [];
 		foreach($resultat_magazines as $pays_magazine) {
