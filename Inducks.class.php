@@ -31,7 +31,7 @@ class Inducks {
 			$coaServers = [ServeurCoa::$ducksmanager_server];
 
 			foreach($coaServers as $coaServerName=>$coaServer) {
-				$output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete), $timeout, isset($_GET['dbg']));
+				$output=Util::get_query_results_from_remote($coaServer, $requete, $db);
 				if (isset($_GET['brut'])) {
 					echo 'Requete : '.$requete.'<br />'
 						.'Retour brut : <pre>'.$output.'</pre>'
@@ -39,14 +39,11 @@ class Inducks {
 					debug_print_backtrace();
 					echo '</pre>';
 				}
-				if (empty($output)) {
-					return [];
-				}
-				elseif ($output === ERREUR_CONNEXION_INDUCKS) {
+				if (is_null($output)) {
 					return [];
 				}
 				else {
-					$unserialized = @unserialize($output);
+					$unserialized = json_decode($output, true);
 					if (is_array($unserialized)) {
 						list($champs,$resultats) = $unserialized;
 						foreach($champs as $i_champ=>$nom_champ) {

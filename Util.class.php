@@ -32,15 +32,44 @@ class Util {
 			return ERREUR_CONNEXION_INDUCKS;
 		}
 	}
-	
-	static function get_secured_page(ServeurCoa $coaServer, $url, $timeout, $dbg) {
-		$baseUrl = $coaServer->getUrl().'/'.$coaServer->web_root;
-		$fullUrl = $baseUrl.'/'.$url.'&mdp='.sha1($coaServer->db_password);
-		if ($dbg) {
-			echo $fullUrl.'<br /><br />';
-		}
-		return Util::get_page($fullUrl, $timeout);
-	}
+
+	static function get_query_results_from_remote(ServerCoa $coaServer, $query, $db) {
+        $context = stream_context_create( [
+            'http'=> [
+                'method' => 'POST',
+                'header' => implode("\r\n",
+                    [
+                        'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->db_password),
+                        'Content-Type: application/x-www-form-urlencoded',
+                        'Cache-Control: no-cache',
+                        'x-wtd-version: 1.0',
+                    ]),
+                'content' => http_build_query(
+                    [
+                        'query' => $query,
+                        'db' => $db
+                    ]
+                )
+            ]
+        ]);
+        $handle = fopen($coaServer->getUrl().'/'.$coaServer->web_root.'/rawsql', "r", null, $context);
+
+        if (isset($_GET['dbg'])) {
+            echo $query."\n";
+        }
+        if ($handle) {
+            $buffer = "";
+            while (!feof($handle)) {
+                $buffer .= fgets($handle, 4096);
+            }
+            fclose($handle);
+
+            return $buffer;
+        }
+        else {
+            return null;
+        }
+    }
 
 	static function start_log($nom) {
 
