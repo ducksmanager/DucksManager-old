@@ -43,15 +43,9 @@ class Inducks {
 					return [];
 				}
 				else {
-					$unserialized = json_decode($output, true);
-					if (is_array($unserialized)) {
-						list($champs,$resultats) = $unserialized;
-						foreach($champs as $i_champ=>$nom_champ) {
-							foreach($resultats as $i=>$resultat) {
-								$resultats[$i][$nom_champ]=$resultat[$nom_champ];
-							}
-						}
-						return $resultats;
+					$results = json_decode($output, true);
+					if (is_array($results)) {
+						return $results;
 					}
 					else {
 						unset(ServeurCoa::$coa_servers[$coaServerName]);
