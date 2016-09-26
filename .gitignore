@@ -3,3 +3,4 @@ piwik
 *.properties
 *.csv
 *.ini
+!coa.sample.ini
