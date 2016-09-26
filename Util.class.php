@@ -33,13 +33,13 @@ class Util {
 		}
 	}
 
-	static function get_query_results_from_remote(ServerCoa $coaServer, $query, $db) {
+	static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
         $context = stream_context_create( [
             'http'=> [
                 'method' => 'POST',
                 'header' => implode("\r\n",
                     [
-                        'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->db_password),
+                        'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->role_password),
                         'Content-Type: application/x-www-form-urlencoded',
                         'Cache-Control: no-cache',
                         'x-wtd-version: 1.0',

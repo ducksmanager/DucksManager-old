@@ -16,44 +16,34 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
-		if ($nomServeur==='serveur_virtuel') {
-			mysqli_select_db(Database::$handle, 'coa');
-			$resultat = DM_Core::$d->requete_select($requete);
-			mysqli_select_db(Database::$handle, ServeurDb::$nom_db_DM);
-			return $resultat;
+	static function requete_select($requete, $db = 'db_coa') {
+		if (count(ServeurCoa::$coa_servers) === 0) {
+			ServeurCoa::initCoaServers();
 		}
-		else {
-			if (count(ServeurCoa::$coa_servers) === 0) {
-				ServeurCoa::initCoaServers();
+
+		foreach(ServeurCoa::$coa_servers as $coaServerName=>$coaServer) {
+			$output=Util::get_query_results_from_remote($coaServer, $requete, $db);
+			if (isset($_GET['brut'])) {
+				echo 'Requete : '.$requete.'<br />'
+					.'Retour brut : <pre>'.$output.'</pre>'
+					.'Stacktrace : <pre>';
+				debug_print_backtrace();
+				echo '</pre>';
 			}
-
-			$coaServers = [ServeurCoa::$ducksmanager_server];
-
-			foreach($coaServers as $coaServerName=>$coaServer) {
-				$output=Util::get_query_results_from_remote($coaServer, $requete, $db);
-				if (isset($_GET['brut'])) {
-					echo 'Requete : '.$requete.'<br />'
-						.'Retour brut : <pre>'.$output.'</pre>'
-						.'Stacktrace : <pre>';
-					debug_print_backtrace();
-					echo '</pre>';
-				}
-				if (is_null($output)) {
-					return [];
+			if (is_null($output)) {
+				return [];
+			}
+			else {
+				$results = json_decode($output, true);
+				if (is_array($results)) {
+					return $results;
 				}
 				else {
-					$results = json_decode($output, true);
-					if (is_array($results)) {
-						return $results;
-					}
-					else {
-						unset(ServeurCoa::$coa_servers[$coaServerName]);
-					}
+					unset(ServeurCoa::$coa_servers[$coaServerName]);
 				}
 			}
-			return [];
 		}
+		return [];
 	}
 
 	static function get_auteur($nom_auteur_abrege) {

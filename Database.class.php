@@ -58,11 +58,11 @@ class Database {
 	}
 
 	function requete_select_distante($requete) {
-		return Inducks::requete_select($requete,get_current_db());
+		return Inducks::requete_select($requete, 'db');
 	}
 
 	function requete_distante($requete) {
-		return Inducks::requete_select($requete,get_current_db());
+		return Inducks::requete_select($requete, 'db');
 	}
 
 	function user_to_id($user) {
