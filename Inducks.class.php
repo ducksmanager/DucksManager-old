@@ -16,10 +16,10 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
+	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel') {
 		if ($nomServeur==='serveur_virtuel') {
 			mysqli_select_db(Database::$handle, 'coa');
-			$resultat = DM_Core::$d->requete_select_distante($requete);
+			$resultat = DM_Core::$d->requete_select($requete);
 			mysqli_select_db(Database::$handle, ServeurDb::$nom_db_DM);
 			return $resultat;
 		}

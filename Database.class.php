@@ -42,8 +42,9 @@ class Database {
 
 	function requete_select($requete) {
 		$requete_resultat=self::$handle->query($requete);
-		if ($requete_resultat === false)
+		if (is_bool($requete_resultat)) {
 			return [];
+		}
 		$arr=[];
 		while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC)) {
 			array_push($arr,$arr_tmp);
