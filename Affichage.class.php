@@ -310,22 +310,25 @@ class Affichage {
 	static function valider_formulaire_inscription($user, $pass, $pass2) {
 		$erreur=null;
 		if (isset($user)) {
-			if (strlen($user) <3) {
-				$erreur=UTILISATEUR_3_CHAR_ERREUR;
+			if (preg_match('#^[-_A-Za-z0-9]{3,15}$#', $user) === 0) {
+				return UTILISATEUR_INVALIDE;
 			}
 			if (strlen($pass) <6) {
-				$erreur=MOT_DE_PASSE_6_CHAR_ERREUR;
+				return MOT_DE_PASSE_6_CHAR_ERREUR;
 			}
 			elseif ($pass !== $pass2) {
-				$erreur=MOTS_DE_PASSE_DIFFERENTS;
+				return MOTS_DE_PASSE_DIFFERENTS;
 			}
 			else {
 				if (DM_Core::$d->user_exists($user)) {
-					$erreur=UTILISATEUR_EXISTANT;
+					return UTILISATEUR_EXISTANT;
 				}
 			}
 		}
-		return $erreur;
+		else {
+			return UTILISATEUR_INVALIDE;
+		}
+		return null;
 	}
 
     static function partager_page() {

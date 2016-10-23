@@ -465,7 +465,7 @@ define('TRANCHE_NON_DISPONIBLE3',' to help us !');
 define('TRAVAUX_SECTION','This page is under (re)construction !');
 define('TYPE_LISTE','List type');
 define('TYPE_LISTE_GLOBAL','Global list type');
-define('UTILISATEUR_3_CHAR_ERREUR','Choose a username with at least 3 characters.');
+define('UTILISATEUR_INVALIDE','Invalid username. Choisissez a username with at least 3 characters and containing only letters, digits and dashes.');
 define('UTILISATEUR_EXISTANT','This username is already in use!');
 define('UTILISATEUR_VALIDE','Valid username');
 define('UTILISATEURS_INSCRITS','users have signed up<br />on DucksManager');
