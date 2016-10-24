@@ -88,7 +88,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script>
         <script type="text/javascript" src="prototype-1.7.3.js"></script>
-        <script type="text/javascript" src="js/chart.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
         <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
         <script type='text/javascript' src='js/starbox.js'></script>
         <script type="text/javascript" src="js/pluit-carousel.js"></script>
