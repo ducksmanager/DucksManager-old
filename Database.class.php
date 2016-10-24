@@ -66,30 +66,30 @@ class Database {
 	}
 	
 	function user_to_id($user) {
-			if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
-					$user=$_COOKIE['user'];
-			}
-			$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
-			$resultat=DM_Core::$d->requete_select($requete);
-            if (count($resultat) === 0) {
-                return null;
-            }
-			return $resultat[0]['ID'];
+		if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
+				$user=$_COOKIE['user'];
+		}
+		$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
+		$resultat=DM_Core::$d->requete_select($requete);
+		if (count($resultat) === 0) {
+			return null;
+		}
+		return $resultat[0]['ID'];
 	}
 
 	function user_connects($user,$pass) {
-			if (!$this->user_exists($user)) {
-				return false;
-			}
-			else {
-				$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
-				return (count(DM_Core::$d->requete_select($requete))>0);
-			}
+		if (!$this->user_exists($user)) {
+			return false;
+		}
+		else {
+			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
+			return (count(DM_Core::$d->requete_select($requete))>0);
+		}
 	}
 
 	function user_exists($user) {
-			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
-			return (count(DM_Core::$d->requete_select($requete))>0);
+		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
+		return (count(DM_Core::$d->requete_select($requete))>0);
 
 	}
 
@@ -112,13 +112,13 @@ class Database {
 	}
 
 	function nouveau_user($user,$email,$pass) {
-			date_default_timezone_set('Europe/Paris');
-			$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
-			if (false===DM_Core::$d->requete($requete)) {
-				echo ERREUR_EXECUTION_REQUETE;
-				return false;
-			}
-			return true;
+		date_default_timezone_set('Europe/Paris');
+		$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
+		if (false===DM_Core::$d->requete($requete)) {
+			echo ERREUR_EXECUTION_REQUETE;
+			return false;
+		}
+		return true;
 	}
 	
 	function maintenance_ordre_magazines($id_user) {
@@ -394,12 +394,12 @@ class Database {
 			$l=new Liste();
 			foreach ($resultat as $infos) {
 				if (array_key_exists($infos['Pays'],$l->collection)) {
-						if (array_key_exists($infos['Magazine'],$l->collection[$infos['Pays']])) {
-							array_push($l->collection[$infos['Pays']][$infos['Magazine']],[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]);
-						}
-						else {
-							$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
-						}
+					if (array_key_exists($infos['Magazine'],$l->collection[$infos['Pays']])) {
+						array_push($l->collection[$infos['Pays']][$infos['Magazine']],[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]);
+					}
+					else {
+						$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
+					}
 				}
 				else {
 					$l->collection[$infos['Pays']]=[$infos['Magazine']=>0];
@@ -792,18 +792,18 @@ if (isset($_POST['database'])) {
 			Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
 		}
 		else {
-					echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
-					?><br /><br /><?php
-					echo QUESTION_SUPPRIMER_MAGAZINE;
-					$l_magazine=$l->sous_liste($pays,$magazine);
-					
-					$l_magazine->afficher('Classique');
-					?><br />
-					<a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
-					<a href="?action=gerer"><?=NON?></a><?php
-					if (!Util::isLocalHost())
-						@mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
-				}
+			echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
+			?><br /><br /><?php
+			echo QUESTION_SUPPRIMER_MAGAZINE;
+			$l_magazine=$l->sous_liste($pays,$magazine);
+
+			$l_magazine->afficher('Classique');
+			?><br />
+			<a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
+			<a href="?action=gerer"><?=NON?></a><?php
+			if (!Util::isLocalHost())
+				@mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
+		}
 	}
 	else if (isset($_POST['acquisition'])) {
 		//print_r($_SESSION);
@@ -811,15 +811,15 @@ if (isset($_POST['database'])) {
 
 		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
-										   .'FROM achats '
-										   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
-				$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
+								   .'FROM achats '
+								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
+		$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
 		if ($compte_acquisition_date[0]['c']!=0) {
 			echo 'Date';exit(0);
 		}
 
 		DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
-				   .' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
+				   			.' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
 		$requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
 		$liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
 
@@ -879,27 +879,27 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
 	}
-elseif (isset($_POST['liste_bouquineries'])) {
-			$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
-								 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
-                                 .'WHERE Actif=1';
-			$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
-			foreach($resultat_bouquineries as &$bouquinerie) {
-				$i=0;
-				while (array_key_exists($i, $bouquinerie)) {
-					unset ($bouquinerie[$i]);
-					$i++;
-				}
-
+	elseif (isset($_POST['liste_bouquineries'])) {
+		$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
+							 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
+							 .'WHERE Actif=1';
+		$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
+		foreach($resultat_bouquineries as &$bouquinerie) {
+			$i=0;
+			while (array_key_exists($i, $bouquinerie)) {
+				unset ($bouquinerie[$i]);
+				$i++;
 			}
-			$json=json_encode($resultat_bouquineries);
-			echo $json;
+
 		}
+		$json=json_encode($resultat_bouquineries);
+		echo $json;
+	}
 	else { // Vérification de l'utilisateur
-			if (DM_Core::$d->user_exists($_POST['user']))
-					echo UTILISATEUR_EXISTANT;
-			else
-					echo 'OK, '.UTILISATEUR_VALIDE;
+		if (DM_Core::$d->user_exists($_POST['user']))
+			echo UTILISATEUR_EXISTANT;
+		else
+			echo 'OK, '.UTILISATEUR_VALIDE;
 	}
 }
 elseif (isset($_GET['test_bd_inducks'])) {
