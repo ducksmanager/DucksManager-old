@@ -525,9 +525,9 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 					'Concepteur'	=> $resultat_nb_creations[0]['cpt'],
 					'Duckhunter'	=> $resultat_nb_bouquineries[0]['cpt']];
 
-		$limites=['Photographe'=>['Avance' => 50, 'Intermediaire' => 10, 'Debutant' => 1],
-					   'Concepteur'	=>['Avance' => 10, 'Intermediaire' => 3,  'Debutant' => 1],
-					   'Duckhunter' =>['Avance' =>  5, 'Intermediaire' => 3,  'Debutant' => 1]];
+		$limites=['Photographe'=>['avance' => 50, 'intermediaire' => 10, 'debutant' => 1],
+					   'Concepteur'	=>['avance' => 10, 'intermediaire' => 3,  'debutant' => 1],
+					   'Duckhunter' =>['avance' =>  5, 'intermediaire' => 3,  'debutant' => 1]];
 		$cpt_et_niveaux=[];
 		foreach($nb as $type=>$cpt) {
 			$cpt_et_niveaux[$type]=null;
