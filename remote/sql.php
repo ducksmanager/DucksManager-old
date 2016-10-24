@@ -21,7 +21,7 @@ if (isset($_GET['req'])) {
 		}
 		$valeurs= [];
 		foreach($resultat as $cle=>$valeur)
-			if (is_int($cle))
+			if (!is_int($cle))
 				$valeurs[$cle]=$valeur;
 		$resultats_tab[]=$valeurs;
 	}
