@@ -96,7 +96,7 @@ class ProfilDB {
 	var $user;
 	var $password;
 
-	function ProfilDB() { }
+	function __construct() { }
 
 	function connexion($db) {
 		if (!$this->server) return false;
