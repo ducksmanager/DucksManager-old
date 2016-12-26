@@ -1,14 +1,11 @@
-var l10n_calculs_auteurs=new Array('calcul_en_cours','calcul_termine');
-var l10n_cacher_afficher_aide=new Array('cacher_aide','afficher_aide');
+var l10n_calculs_auteurs=['calcul_en_cours','calcul_termine'];
+var l10n_cacher_afficher_aide=['cacher_aide','afficher_aide'];
 var l10n_divers=new Array('chargement');
 
-var types_listes=new Array();
-var parametres=new Array();
-var lists_to_update=new Array();
+var types_listes=[];
+var parametres=[];
 var id_magazine_selectionne=null;
-var printMenu;
 var magazineMenu;
-var statAjax;
 var prevent_click=false;
 var nom_magazine_draggable;
 var nom_magazine_droppable;
@@ -16,7 +13,7 @@ var draggable_id;
 var droppable_id;
 var description_liste_en_cours=null;
 
-var l10n_print=new Array();
+var l10n_print=[];
 
 function implement_draganddrop(box) {
     new Draggable(box,
@@ -54,7 +51,7 @@ function implement_draganddrop(box) {
 
 function implement_dragsanddrops() {
     l10n_action('fillArray',l10n_divers,'l10n_divers');
-    l10n_action('fillArray',new Array('erreur_fusion_listes_types_differents','magazines_multiples'),'l10n_print');
+    l10n_action('fillArray',['erreur_fusion_listes_types_differents','magazines_multiples'],'l10n_print');
     l10n_action('remplirSpanName',l10n_cacher_afficher_aide);
     
     
@@ -65,7 +62,7 @@ function implement_dragsanddrops() {
             var listes=transport.headerJSON;
             var i=0;
             for (var liste_abrege in listes) {
-                var liste=new Object();
+                var liste={};
                 liste.name=listes[liste_abrege];
                 liste.className=liste_abrege;
                 types_listes[i]=liste;
@@ -80,7 +77,7 @@ function implement_dragsanddrops() {
         hoverClass:'hover',
         constraint: false,
         starteffect:function(element) {
-            type_liste=element.down('.contenu_liste').title;
+            var type_liste=element.down('.contenu_liste').title;
             afficher_infos_type_liste(type_liste);
             var box=(element.hasClassName('draggable_box')) ? element : element.up('.draggable_box');
             afficher_parametres_box(box);
@@ -120,8 +117,6 @@ function implement_dragsanddrops() {
             }
         });
     });
-    //creer_menu_print();
-    //creer_menu_magazine();
 }
 
 function creer_slider(element) {
@@ -167,7 +162,7 @@ function creer_slider(element) {
         afficher_sv_en_cours();
         var valeurs=element.up('div').select('.valeur_courante').invoke('getValue');
         var noms=element.up('div').select('.details_parametre').invoke('readAttribute','id');
-        var parametres_update=new Object();
+        var parametres_update={};
         valeurs.each(function(valeur,i) {
             parametres_update[noms[i]]=valeur;
         });
@@ -271,31 +266,6 @@ function ajouter_texte_sliders() {
     $('contenu_'+nom_onglet).insert('Les rectangles verts correspondent aux valeurs par d&eacute;faut.');
 }
 
-function creer_menu_print() {
-
-    printMenu = [
-    {
-        separator: true
-    },/*{
-        className: 'deplacer_avant',
-        groupName: 'deplacer_avant',
-        nextSpanName: 'nom_magazine_droppable'
-    },{
-        className: 'deplacer_apres',
-        groupName: 'deplacer_apres',
-        nextSpanName: 'nom_magazine_droppable'
-    },*/{
-        className: 'fusionner_les_deux',
-        groupName: 'fusionner_les_deux'
-    }];
-    new Proto.Menu({
-      selector:  '#body',
-      className: 'menu desktop large',
-      menuItems: printMenu,
-      type:      'print'
-    });
-}
-
 function creer_menu_magazine() {
     magazineMenu = [
     {
@@ -330,7 +300,7 @@ function creer_menu_magazine() {
 	    	var listes=transport.headerJSON;
                 var i=0;
                 for (var liste_abrege in listes) {
-                    var liste=new Object();
+                    var liste={};
                     liste.name=listes[liste_abrege];
                     liste.className=liste_abrege;
                     types_listes[i]=liste;
@@ -377,14 +347,6 @@ function ac_return(field, item){
 	$('auteur_nom').value=field.value.replace(regex_nettoyage_nom,'');
     $('auteur_id').value=item.down('[name="nom_auteur"]').readAttribute('title');
     $('auteur_cherche').value=$('auteur_cherche').value.replace(regex_nettoyage_nom,'');
-}
-
-function ajouter_auteur() {
-    var nom_auteur=new Element('div').update($('auteur_cherche').value);
-    var abbrev_auteur=new Element('div',{
-        'class':'abbrev'
-    }).update($('auteur_id'));
-    $('auteurs_ajoutes').insert(nom_auteur).insert(abbrev_auteur);
 }
 
 function modifier_type_liste(box,type_liste,confirmer) {

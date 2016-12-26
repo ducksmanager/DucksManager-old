@@ -321,7 +321,6 @@ elseif (isset($_POST['get_cover'])) {
 						 .'INNER JOIN inducks_entryurl ON inducks_entry.entrycode = inducks_entryurl.entrycode '
 						 .'WHERE inducks_issue.publicationcode = \''.$_POST['pays'].'/'.$_POST['magazine'].'\' '
 						 .'AND (REPLACE(issuenumber,\' \',\'\') = \''.$_POST['numero'].'\' '.(is_null($numero_alternatif) ? '':'OR REPLACE(issuenumber,\' \',\'\') REGEXP \''.$numero_alternatif.'\'').') '
-						 //.'AND inducks_entryurl.sitecode = \'webusers\' '
 						 .'GROUP BY inducks_entry.entrycode '
 						 .'ORDER BY position';
 	$resultat_get_extraits=Inducks::requete_select($requete_get_extraits);

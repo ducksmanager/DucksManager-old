@@ -277,7 +277,6 @@ define('MERCI_COMPREHENSION','Merci de votre compr&eacute;hension.');
 define('MERCI_CONTRIBUTION','Merci pour votre contribution !');
 define('MINUTES','minute(s)');
 define('MISE_A_JOUR','Mise &agrave; jour...');
-define('MODIFIER_ACQUISITION','Modifier cette acquisition');
 define('MODIFICATIONS_OK','Vos modifications ont &eacute;t&eacute; prises en compte.');
 define('MONTRER_MAGAZINES_PAYS','Montrer les magazines de ');
 define('MOT_DE_PASSE','Mot de passe');

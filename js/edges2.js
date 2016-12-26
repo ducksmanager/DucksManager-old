@@ -4,7 +4,6 @@ var current_couv;
 var current_animation;
 var largeur_image;
 var hauteur_image;
-var largeur_couverture;
 var action_en_cours=false;
 var couverture_ouverte=false;
 var ouvrirApres=false;
@@ -13,7 +12,6 @@ var hauteur_section;
 var couverture;
 var ouverture_couverture;
 var hauteur_etage;
-var grossissement;
 var nb_etageres;
 var nb_etageres_terminees;
 var bulle=null;
@@ -21,7 +19,6 @@ var numero_bulle=null;
 var extraits;
 var extrait_courant;
 var chargement_extrait=false;
-var requete_infos=null;
 var temps_dernier_mouseover=0;
 
 function ouvrir_tranche() {
@@ -75,13 +72,12 @@ function ouvrir_tranche() {
             }
             couverture.src=transport.headerJSON['cover'];
             current_couv=new Element('div', {'id':'page_droite_avant'})
-                    .setStyle({'position':'absolute','height':hauteur_image+'px','width':parseInt(couverture.width*(hauteur_image/couverture.height))+'px','display':'none',
-                               'left':(getScreenCenterX()+tranche_en_cours.width)+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_avant');
+                .setStyle({'position':'absolute','height':hauteur_image+'px','width':parseInt(couverture.width*(hauteur_image/couverture.height))+'px','display':'none',
+                           'left':(getScreenCenterX()+tranche_en_cours.width)+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
+                .addClassName('page_avant');
             var current_couv_im=new Element('img',{'id':'page_droite_avant_im','src':couverture.src,'height':'100%','width':parseInt(couverture.width*(hauteur_image/couverture.height))+'px'});
             current_couv.update(current_couv_im);
             $('body').insert(current_couv);
-            //current_couv.setStyle({'display':'none'});
             current_couv_im.observe('click', fermer_tranche);
                 
             current_couv_im.observe('load',function() {
@@ -144,7 +140,7 @@ function creer_div_apercus() {
                                'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
                     .addClassName('page_arriere');
                     
-    $('body')./*insert(page_precedente).*/insert(page_suivante)
+    $('body').insert(page_suivante)
              .insert(page_gauche_arriere).insert(page_gauche_avant)
              .insert(page_droite_arriere);
     page_suivante.observe('click',function() {
@@ -169,7 +165,6 @@ function creer_div_apercus() {
                     new Effect.BlindLeft('page_droite_avant',{
                     duration:0.75,
                     afterFinish:function() {
-                        //$('page_droite_avant').remove();
                         new Effect.Morph('page_gauche_avant',{style:'width:'+getLargeur()
                         });
                         intervertir_page('droite');      
@@ -196,10 +191,7 @@ function creer_div_apercus() {
                         ], {
                         duration: 0.75,
                         afterFinish:function() {
-                            new Effect.Parallel([
-                                //new Effect.Morph('page_gauche_avant',{'style':'width:'+getLargeur()+'px'}),
-                                new Effect.Morph('page_gauche_avant_im',{'style':'width:'+getLargeur()})
-                            ]);
+                            new Effect.Morph('page_gauche_avant_im',{'style':'width:'+getLargeur()});
                             intervertir_page('droite');
                             $('page_gauche_avant_im').observe('click',back_to_cover);
                             $('page_droite_avant').observe('click',back_to_cover);
@@ -254,22 +246,12 @@ function maj_div_apercus() {
     else
         $('page_suivante')
             .update(extraits[extrait_courant].page<0?'Suivante':'Page '+extraits[extrait_courant].page);
-    /*
-    if (extrait_courant==0)
-        $('page_precedente').setStyle({'display':'none'});
-    else if (extrait_courant==1)
-        $('page_precedente').update('Fermer');
-    else
-        $('page_precedente')
-            .update('Page '+extraits[extrait_courant-2].page);
-    */
    chargement_extrait=false;
 }
 
 function back_to_cover() {
     if ($('page_gauche_arriere'))
         $('page_gauche_arriere').remove();
-    //$('page_precedente').remove();
     $('page_suivante').remove();            
 
     maj_page('page_droite_arriere',couverture.src);
@@ -297,8 +279,6 @@ function fermer() {
     if (action_en_cours || ouverture_couverture)
         return;
     action_en_cours=true;
-    //if ($('page_precedente'))
-    //    $('page_precedente').remove();
     var largeur=getLargeur();
     if ($('page_suivante'))
         $('page_suivante').remove();
@@ -443,7 +423,6 @@ function charger_recherche() {
 	);
 }
 
-var a2a_config = {};
 var zone_partager_bibliotheque;
 
 function afficher_lien_partage() {
@@ -605,7 +584,7 @@ function ouvrirInfoBulle(tranche) {
 function ouvrirInfoBulleEffectif(tranche,timestamp) {
     if (temps_dernier_mouseover != timestamp)
         return;
-    nouveau_numero_bulle=getInfosNumero(tranche.id);
+    var nouveau_numero_bulle=getInfosNumero(tranche.id);
     if (numerosIdentiques(nouveau_numero_bulle, numero_bulle))
         return;
     numero_bulle=nouveau_numero_bulle;

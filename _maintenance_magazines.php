@@ -31,7 +31,7 @@ foreach($l->collection as $pays => $magazines) {
                         list($pays_resolution,$magazine_resolution,$numero_resolution)=$resolution;
                         $requete_update='UPDATE numeros SET Pays=\''.$pays_resolution.'\', Magazine=\''.$magazine_resolution.'\', Numero=\''.$numero_resolution.'\' '
                                        .'WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine_dm.'\' AND Numero = \''.$num_dm.'\')';
-                        echo $requete_update.'<br />';//DM_Core::$d->requete($requete_update);
+                        echo $requete_update.'<br />';
                         DM_Core::$d->requete($requete_update);
                         echo '==&gt; R&eacute;solution propos&eacute;e : '.implode('-',$resolution).'<br />';
                     }

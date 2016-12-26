@@ -164,8 +164,7 @@ class collectable extends Format_liste {
 					for($i=1;$i<=100;$i++) {
 						if ($i % ($this->p('nb_numeros_ligne')) == 1) {
 							if ($i!=1) {
-							?><tr><?php
-								/*?><td></td><?php*/
+								?><tr><?php
 							}
 						}
 						?><td<?php 
@@ -201,9 +200,6 @@ class collectable extends Format_liste {
 						}
 					}
 
-					/*else {
-							echo '<td>'.$total_magazine.'</td></tr><tr>';
-					}*/
 					if (count($liste_non_numeriques)>0) {
 						?><tr>
 							<td colspan="<?=$this->p('nb_numeros_ligne')?>">

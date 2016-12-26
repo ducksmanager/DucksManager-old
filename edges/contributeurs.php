@@ -137,10 +137,6 @@ foreach($resultat_utilisateurs as $utilisateur) {
 			}
 		});
 	}
-
-	function isInteger(s) {
-		return s.toString().search(/^[0-9]+$/) == 0;
-	}
 </script>
 
 </head>

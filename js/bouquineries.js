@@ -78,7 +78,7 @@ function creer_marqueur(adresse,position) {
 	});
 
 	google.maps.event.addListener(marker, 'click', function() {
-		for (id_adresse in adresses) {
+		for (var id_adresse in adresses) {
 			if (infowindows.hasOwnProperty(id_adresse)) {
 				infowindows[id_adresse].close(map,marker);
 				if (marker.title == adresses[id_adresse].Nom)

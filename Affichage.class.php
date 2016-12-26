@@ -102,7 +102,15 @@ class Affichage {
 		?></ul>
 		<?php
 	}
-	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
+
+    /**
+     * @param Liste $liste
+     * @param $pays
+     * @param $magazine
+     * @param $numeros
+     * @param $sous_titres
+     */
+    static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
 		$liste->nettoyer_collection();
 		$nb_possedes=0;
 		$numeros2= [];
@@ -161,7 +169,6 @@ class Affichage {
 			</tr>
 		</table>
 		<?php
-		//echo '<pre>';print_r($liste);echo '</pre>';
 		foreach($numeros2 as $numero=>$infos) {
 			$etat=$infos->etat;
 			$id_acquisition=$infos->id_acquisition;

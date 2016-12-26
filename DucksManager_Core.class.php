@@ -22,7 +22,6 @@ class DM_Core {
     static function multipleConstructFromIsv($type_o,InducksISV $isv) {
         $page=Util::get_page($isv->url);
         $tab=str_getcsv($page, '^');
-        //echo '<pre>';print_r($tab);echo '</pre>';
         $liste= [];
         for ($i=count($isv->champs);$i<count($tab)-1;$i+=count($isv->champs)) {
             $o=new $type_o;

@@ -55,10 +55,6 @@ class Liste {
 	}
 
 	function fusionnerAvec($liste_autre) {
-		/*echo 'Fusion de : ';
-		echo '<pre>';print_r($this->collection);echo '</pre>';
-		echo 'avec : ';
-		echo '<pre>';print_r($liste_autre->collection);echo '</pre>';*/
 		foreach($liste_autre->collection as $pays=>$numeros_pays) {
 			foreach($numeros_pays as $magazine=>$numeros) {
 				foreach($numeros as $numero_etat_av_date) {
@@ -207,14 +203,7 @@ class Liste {
 
 				<div id="message_achats"><?=CHARGEMENT?>...</div>
 				
-				<div id="fin_achats" class="hidden">
-<!--					--><?php //foreach($types as $type=>$label) {
-//						?><!--<a class="graph_type noborder --><?//=$type==='nouv' ? 'bold' : ''?><!-- " href="javascript:void(0)"-->
-<!--							 onclick="toggleGraphs('achats')">-->
-<!--						--><?//=$label?>
-<!--						</a>--><?php
-//					}?>
-				</div>
+				<div id="fin_achats" class="hidden"></div>
 				
 				<br />
 

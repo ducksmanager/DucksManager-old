@@ -64,7 +64,7 @@ class Database {
 			return self::$handle->query($requete);
 		}
 	}
-	
+
 	function user_to_id($user) {
 		if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
 				$user=$_COOKIE['user'];
@@ -125,7 +125,7 @@ class Database {
 		$requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
 		$resultat_get_max_ordre=DM_Core::$d->requete_select($requete_get_max_ordre);
 		$max=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
-		$cpt=0;				 
+		$cpt=0;
 		$l=DM_Core::$d->toList($id_user);
 		foreach($l->collection as $pays=>$magazines) {
 			foreach(array_keys($magazines) as $magazine) {
@@ -349,7 +349,7 @@ class Database {
 					$requete_insert.=','.$this->user_to_id($_SESSION['user']).')';
 					$debut=false;
 				}
-				//echo $requete_insert;
+
 				DM_Core::$d->requete($requete_insert);
 				$requete_update='UPDATE numeros SET ';
 
@@ -407,25 +407,10 @@ class Database {
 
 				}
 			}
-			//echo '<pre>';print_r($l);echo '</pre>';
 			return $l;
 	}
-		
-	function get_auteur($nom_abrege) {
-		$requete_auteur_existe='SELECT NomAuteurComplet FROM auteurs WHERE NomAuteurAbrege = \''.$nom_abrege.'\'';
-		$resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
-		if (count($resultat_auteur_existe)>0) {
-			return $resultat_auteur_existe[0]['NomAuteurComplet'];
-		}
-		else {
-			$nom_auteur_complet=Inducks::get_auteur($nom_abrege);
-			$requete_ajout_auteur='INSERT INTO auteurs(NomAuteurAbrege,NomAuteurComplet) VALUES (\''.$nom_abrege.'\',\''.$nom_auteur_complet.'\')';
-			DM_Core::$d->requete($requete_ajout_auteur);
-			return $nom_auteur_complet;
-		}
-	}
 	
-function ajouter_auteur($idAuteur,$nomAuteur) {
+	function ajouter_auteur($idAuteur,$nomAuteur) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_auteurs_surveilles="
             SELECT COUNT(NomAuteurAbrege) AS cpt
@@ -504,7 +489,7 @@ function ajouter_auteur($idAuteur,$nomAuteur) {
 		$requete='SELECT 1 FROM users '
 				.'WHERE ID='.$id_user.' AND (Email IS NULL OR Email=\'\') '
 				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
-		return count($this->requete_select($requete)) == 1; 
+		return count($this->requete_select($requete)) == 1;
 	}
 	
 	function get_niveaux() {
@@ -752,7 +737,6 @@ if (isset($_POST['database'])) {
 	}
 
 	else if (isset($_POST['update'])) {
-		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$l=DM_Core::$d->toList($id_user);
 		$liste=explode(',',$_POST['list_to_update']);
@@ -768,7 +752,6 @@ if (isset($_POST['database'])) {
 		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
 			$requete_id_acquisition='SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND Date = \''.$date_acquisition.'\' GROUP BY ID_Acquisition';
 			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
-			//echo $requete_id_acquisition;
 			if ($resultat_acqusitions[0]['cpt'] ==0)
 				$id_acquisition=-1;
 			else
@@ -782,7 +765,6 @@ if (isset($_POST['database'])) {
 		}
 	}
 	else if (isset($_POST['affichage'])) {
-		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$l=DM_Core::$d->toList($id_user);
 		$pays=$_POST['pays'];
@@ -806,7 +788,6 @@ if (isset($_POST['database'])) {
 		}
 	}
 	else if (isset($_POST['acquisition'])) {
-		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 
 		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
@@ -824,19 +805,13 @@ if (isset($_POST['database'])) {
 		$liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
 
 	}
-	else if (isset($_POST['modif_acquisition'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-		DM_Core::$d->requete('UPDATE achats SET Date=\''.$_POST['date'].'\',Description=\''.$_POST['description'].'\' WHERE ID_User='.$id_user.' AND ID_Acquisition=\''.$_POST['id_acquisition'].'\'');
-	}
 	else if(isset($_POST['supprimer_acquisition'])) {
-		//print_r($_SESSION);
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$requete='DELETE FROM achats WHERE ID_User='.$id_user.' AND ID_Acquisition='.$_POST['supprimer_acquisition'];
 		echo $requete;
 		DM_Core::$d->requete($requete);
 	}
 	else if (isset($_POST['liste_achats'])) {
-		//print_r($_SESSION);acquisitions
 		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
 		$tab_achats=[];
@@ -902,15 +877,7 @@ if (isset($_POST['database'])) {
 			echo 'OK, '.UTILISATEUR_VALIDE;
 	}
 }
-elseif (isset($_GET['test_bd_inducks'])) {
-	$requete_alias = 'SELECT charactercode, charactername FROM inducks_characteralias';
-	$resultat_alias = DM_Core::$d->requete_select($requete_alias);
-	?><table><tr><td>Code</td><td>Name</td></tr><?php
-	foreach($resultat_alias as $resultat) {
-		?><tr><td><?=$resultat['charactercode']?></td><td><?=$resultat['charactername']?></td></tr><?php
-	}
-	?></table><?php
-}
+
 function note_to_pouces($num,$note) {
 	ob_start();
 	for ($i=1;$i<=10;$i++) {

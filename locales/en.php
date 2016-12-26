@@ -278,7 +278,6 @@ define('MERCI_COMPREHENSION','Thank you for your understanding.');
 define('MERCI_CONTRIBUTION','Thanks for your contribution !');
 define('MINUTES','minute(s)');
 define('MISE_A_JOUR','Updating...');
-define('MODIFIER_ACQUISITION','Change this purchase');
 define('MODIFICATIONS_OK','Your changes have been applied.');
 define('MONTRER_MAGAZINES_PAYS','Show publications of ');
 define('MOT_DE_PASSE','Password');

@@ -1,4 +1,5 @@
 function l10n_action(fonction,index,param) {
+    var index_param;
     if (typeof index!='string') {
         index_param=index.join('~')+'~';
     }
