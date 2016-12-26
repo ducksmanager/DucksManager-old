@@ -34,36 +34,28 @@ class Util {
 	}
 
 	static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
-        $context = stream_context_create( [
-            'http'=> [
-                'method' => 'POST',
-                'header' => implode("\r\n",
-                    [
-                        'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->role_password),
-                        'Content-Type: application/x-www-form-urlencoded',
-                        'Cache-Control: no-cache',
-                        'x-dm-version: 1.0',
-                    ]),
-                'content' => http_build_query(
-                    [
-                        'query' => $query,
-                        'db' => $db
-                    ]
-                )
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl().'/'.$coaServer->web_root.'/rawsql');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(
+            [
+                'query' => $query,
+                'db' => $db
             ]
-        ]);
-        $handle = fopen($coaServer->getUrl().'/'.$coaServer->web_root.'/rawsql', "r", null, $context);
+        ));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->role_password),
+            'Content-Type: application/x-www-form-urlencoded',
+            'Cache-Control: no-cache',
+            'x-dm-version: 1.0',
+        ));
 
-        if (isset($_GET['dbg'])) {
-            echo $query."\n";
-        }
-        if ($handle) {
-            $buffer = "";
-            while (!feof($handle)) {
-                $buffer .= fgets($handle, 4096);
-            }
-            fclose($handle);
+        $buffer = curl_exec($ch);
+        curl_close($ch);
 
+        if ($buffer) {
             return $buffer;
         }
         else {
