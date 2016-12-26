@@ -22,10 +22,7 @@ global $numeros_inducks;
 		list($html, $pourcentage_visible)=Edge::getPourcentageVisible($id_user, true);
 		echo $html;
 		echo Edge::getEtagereHTML(false);
-		//Util::ecrire_dans_fichier('./edges/_tmp/'.$rand.'.html', $html);
-		echo '';
-		/*?>
-	<div style="display:none" id="num_gen" name="<?=$rand?>"></div><?php */?>
+		echo '';?>
 	<div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
 	<div id="nb_numeros_visibles" style="display:none" name="<?=$pourcentage_visible?>"></div>
 	<div id="hauteur_etage" style="display:none" name="<?=Etagere::$hauteur_max_etage?>"></div>

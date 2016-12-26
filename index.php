@@ -321,18 +321,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                         		continue;
                             foreach($menu->items as $j=>$item) {
                                 if ($item->nom==$action) {
-                                    /*if (isset($infos_sous_item['coa_related'])) {
-                                        require_once('Util.class.php');
-                                        $contenu_page=Util::get_page('http://coa.inducks.org/maccount.php');
-                                        if (!(strpos($contenu_page,'is experiencing technical difficulties') === false)) {
-                                            ?>
-                                            <span style="color:red;"><?=PHRASE_MAINTENANCE_INDUCKS1?>
-                                                    <a href="coa.inducks.org">COA</a>,
-                                                    <?=PHRASE_MAINTENANCE_INDUCKS2?><br />
-                                                    <?=PHRASE_MAINTENANCE_INDUCKS3?></span><br /><br />
-                                            <?php
-                                        }
-                                    }*/
                                     if ($item->est_prive=='always' && !isset($_SESSION['user'])) {
                                         echo IDENTIFICATION_OBLIGATOIRE.'<br />';
                                         echo COMMENT_S_IDENTIFIER;
@@ -578,10 +566,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                                 }
                                             }
-                                            /*if (!is_numeric($_POST['grossissement']))
-                                                $_POST['grossissement']='taille_reelle';*/
-                                            /*$requete_update_grossissement='UPDATE users SET Bibliotheque_Grossissement=\''.$_POST['grossissement'].'\' WHERE id='.$id_user;
-                                            DM_Core::$d->requete($requete_update_grossissement);*/
                                         }
                                         ?>
                                         <form method="post" action="?action=bibliotheque&amp;onglet=options">
@@ -648,31 +632,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             }
                                             ?>
                                         </div>
-                                        <?php /*
-                                            <span style="text-decoration:underline"><?=TAILLE_TRANCHES?> : </span><br />
-                                            <select style="width:300px;" id="grossissement" name="grossissement">
-                                            <?php
-                                            $requete_grossissement='SELECT Bibliotheque_Grossissement FROM users WHERE id='.$id_user;
-                                            $resultat_grossissement=DM_Core::$d->requete_select($requete_grossissement);
-                                            if (count($resultat_grossissement)==0)
-                                                $grossissement=Edge::$grossissement;
-                                            else
-                                                $grossissement=$resultat_grossissement[0]['Bibliotheque_Grossissement'];
-                                            $options_grossissement=array(1,1.5,2);
-                                            foreach($options_grossissement as $option) {
-                                                ?><option <?php
-                                                if ($option==$grossissement || (!is_numeric($option) && $grossissement==='taille_reelle')) {
-                                                    ?>selected="selected"<?php
-                                                }
-                                                ?>
-                                                ><?=$option?></option>
-                                                <?php
-                                            }
-                                            ?>
-                                            </select>
-                                            <br /><br />
-                                            <?php */
-                                        ?>
                                         <br/>
                                         <input type="submit" class="valider" value="<?= VALIDER ?>"/>
                                         </form>
@@ -1195,7 +1154,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             }
                                         }
                                         else {
-                                            echo AUCUN_AUTEUR_SURVEILLE.' '.AUCUN_AUTEUR_SURVEILLE_CLIQUER_ONGLET;
+                                            echo AUCUN_AUTEUR_SURVEILLE;
                                         }
 
                                         break;

@@ -74,7 +74,7 @@ function afficher_histogramme_possessions(data) {
 			$$('#fin_classement, #canvas-holder').invoke('removeClassName', 'hidden');
 			$('barre_pct_classement').addClassName('hidden');
 			$$('#barre_pct_classement, #chargement_classement_termine, #prefixe_message_classement, #message_classement')
-				.invoke('update')
+				.invoke('update');
 
 			var config_abs = Object.clone(config);
 			config_abs.data = Object.clone(data);

@@ -11,27 +11,6 @@
     cursor:move;
 }
 
-/*div.widget {
-    border: 1px dashed #000;
-}
-div.widget div.corner {
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    background: url(images/draggable-icon.gif) left top no-repeat;
-    cursor: pointer;
-}
-
-div.content {
-    margin: 10px auto 10px 20px;
-    padding: 10px;
-    height: 900px;
-    width: 600px;
-}*/
-/*.espacement {
-    height:25px;
-}*/
-
 .hover_espacement {
     background-color:salmon;
 }
@@ -60,7 +39,7 @@ div.content {
 #info {
     position:fixed;
     overflow:auto;
-    top:0%;
+    top:0;
     right:0;
     border-left:1px dotted black;
     width:350px;

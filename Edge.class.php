@@ -423,13 +423,7 @@ elseif (isset($_POST['generer_image'])) {
 	$image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
 	$image_texture2=imagecreatefromjpeg('edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg');
 	$pos=json_decode(str_replace('\"','"',$_POST['pos']));
-	
-	/*$xml='<xml>'."\n"
-		.'<texture1>'.'edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg'.'</texture1>'."\n"
-		.'<texture2>'.'edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg'.'</texture2>'."\n"
-		.'<largeur>'.$largeur.'</largeur>'."\n"
-		.jsonToXML($pos)
-		.'</xml>';*/
+
 	$contenu=implode("\n", [$texture1.'/'.$sous_texture1,$texture2.'/'.$sous_texture2,$largeur,str_replace('\"','"',$_POST['pos'])]);
 	Util::ecrire_dans_fichier('edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.json', $contenu, false);
 	include_once('ServeurDb.class.php');

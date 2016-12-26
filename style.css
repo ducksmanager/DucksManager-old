@@ -127,12 +127,6 @@ a.important:HOVER {
 	padding: 45px 20px 20px 20px;
 	overflow-x:auto;
 }
-/*
-.num_manque, .num_possede {
-    background-image: url('images/icones/view.png');
-    background-position: left center;
-    background-repeat:no-repeat;
-}*/
 
 .num_manque {
 	width:100%;

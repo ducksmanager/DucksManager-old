@@ -6,11 +6,11 @@
  * @requires      prototype.js 1.6
 */
 var achats_affiches=false;
-var l10n=new Array('date_question','date_invalide','description_question','selectionner_date_achat',
-    'description','description_invalide','acquisition_existante','mise_a_jour');
-var protos=new Array();
+var l10n=['date_question','date_invalide','description_question','selectionner_date_achat',
+    'description','description_invalide','acquisition_existante','mise_a_jour'];
+var protos=[];
 var l10n_items;
-var parametres_bd=new Object();
+var parametres_bd={};
 
 if (Object.isUndefined(Proto)) {
     var Proto = { };
@@ -19,7 +19,7 @@ if (Object.isUndefined(Proto)) {
 
 Proto.Menu = Class.create({
     initialize: function() {
-        l10n_items=new Array();
+        l10n_items=[];
         var e = Prototype.emptyFunction;
         this.ie = Prototype.Browser.IE;
         this.options = Object.extend({
@@ -272,27 +272,28 @@ Proto.Menu = Class.create({
                     'id':'nouvel_achat',
                     'align':'center'
                 });
-                nouvel_achat_o=new Object();
-                nouvel_achat_o['name']='nouvelle_date_achat';
-                nouvel_achat_o['className']='n_date';
-                nouvel_achat_o['groupName']='achat';
-                nouvel_achat_o['selected']=false;
+                var nouvel_achat_o = {
+                    name: 'nouvelle_date_achat',
+                    className: 'n_date',
+                    groupName: 'achat',
+                    selected: false
+                };
                 var nouvel_achat=new Element('li').update(Object.extend(
                     new Element('a', {
                         id:'creer_date_achat',
                         href: 'javascript:return false;',
                         name: nouvel_achat_o.groupName,
-                        'class': 'enabled'
+                        class: 'enabled'
                     }))
-                .observe('click', function (event) {
+                .observe('click', function () {
                     if ($('nouvelle_description'))
                         return;
                     var nouvelle_date_li=new Element('li');
                     var nouvelle_date_input1=new Element('input',{
-                        'id':'nouvelle_description',
-                        'type':'text',
-                        'size':30,
-                        'maxlength':30
+                        id:'nouvelle_description',
+                        type:'text',
+                        size:30,
+                        maxlength:30
                     });
                     var nouvelle_date_input2=new Element('input',{
                         'id':'nouvelle_date',
@@ -315,8 +316,8 @@ Proto.Menu = Class.create({
                         });
                     else
                         $('dates_existantes').next().insert(nouvelle_date_li);
-                    nouvelle_date_ok.observe('click', function (event) {
-                        date_valide=true;
+                    nouvelle_date_ok.observe('click', function () {
+                        var date_valide=true;
                         var date_entree=$('nouvelle_date').getValue();
                         if (!isDate(date_entree) || !date_entree)
                             date_valide=false;
@@ -419,8 +420,8 @@ Proto.Menu = Class.create({
                 sous_menu.insert(section_achats_existants).insert(liste_achats).insert(section_nouvel_achat).insert(nouvel_achat);
                 $('body').insert(sous_menu);
                 l10n_action('fillArray',l10n,'l10n');
-                l10n_action('remplirSpan',new Array('creer_date_achat','nouvel_achat','dates_existantes',
-                    'numero_selectionne','numeros_selectionnes'));
+                l10n_action('remplirSpan',['creer_date_achat','nouvel_achat','dates_existantes',
+                    'numero_selectionne','numeros_selectionnes']);
                 break;
         }
         protos[this.options.type]=this;
@@ -449,7 +450,7 @@ Proto.Menu = Class.create({
                 break;
             case 'magazine':
                 var draggable_box=$(e.target).hasClassName('draggable_box') ? $(e.target): $(e.target).up('.draggable_box');
-                id_magazine_selectionne=toMagazineID(draggable_box);
+                var id_magazine_selectionne=toMagazineID(draggable_box);
                 $(this.getId('entete')).update(draggable_box.down('.titre_magazine').readAttribute('name'));
 
                 // Cr�ation du sous-menu des magazines pouvant �tre extraits
@@ -501,19 +502,20 @@ Proto.Menu = Class.create({
                         var parametres_ul=$$('#sous_menu_parametres_liste ul')[0];
                         var id_magazine=transport.request.parameters.id_magazine;
                         parametres_ul.update();
-                        var parametres=new Object();
+                        var parametres={};
                         parametres_bd[id_magazine]=JSON.parse($(id_magazine).down('.contenu_liste').down().src.split('&')[2].split('=')[1].replace(new RegExp(/\|/g),'"'));
                         
                         $('contenu_boite_selectionnee').update();
                         toggle_item_menu($$('[name="parametres"]')[0]);
                         toggle_item_menu($$('[name="boite_selectionnee"]')[0]);
                         for(var i in transport.headerJSON) {
-                            parametres[i]=new Object();
-                            parametres[i].nom=i;
-                            parametres[i].min=parseInt(transport.headerJSON[i]['min']);
-                            parametres[i].max=parseInt(transport.headerJSON[i]['max']);
-                            parametres[i].valeur_defaut=parseInt(transport.headerJSON[i]['valeur_defaut']);
-                            parametres[i].valeur=parseInt(parametres_bd[id_magazine][i].valeur);
+                            parametres[i]= {
+                                nom: i,
+                                min: parseInt(transport.headerJSON[i]['min']),
+                                max: parseInt(transport.headerJSON[i]['max']),
+                                valeur_defaut: parseInt(transport.headerJSON[i]['valeur_defaut']),
+                                valeur: parseInt(parametres_bd[id_magazine][i].valeur)
+                            };
                             var bouton_moins=new Element('button',{'name':parametres[i].nom,'class':'moins'}).update('-');
                             var bouton_plus=new Element('button',{'name':parametres[i].nom,'class':'plus'}).update('+');
                             parametres_ul.insert(new Element('li').update(Object.extend(
@@ -659,7 +661,7 @@ function action_onclick(proto,e) {
                 var etat;
                 var date_achat;
                 var av;
-                var liste_sel_num=new Array();
+                var liste_sel_num=[];
                 $$('.selected').each(function(item) {
                     var nom_groupe_selected=item.readAttribute('name').substring(0, item.readAttribute('name').indexOf('_'));
                     var classes=item.classNames().toArray();
@@ -691,7 +693,6 @@ function action_onclick(proto,e) {
                 if (proto.ie) proto.shim.hide();
                 proto.container.hide();
                 update_numeros(liste_sel_num,etat,date_achat,av);
-            //target._callback(proto.event);
             }
             else if(target.hasClassName("date")) {
                 if (!achats_affiches) {
@@ -760,11 +761,9 @@ function action_onclick(proto,e) {
                         method: 'post',
                         parameters:'sous_liste=true'
                         +'&type_liste='+type_liste+'&fusions='+fusions,
-                        onSuccess:function(transport,json) {
+                        onSuccess:function(transport) {
                             var ancien_id_general=$(draggable_id).readAttribute('id').substring('box_'.length);
                             $(draggable_id).down('.contenu_liste').update(transport.responseText);
-                            //var nouveau_titre=$(draggable_id).down('.titre_magazine').readAttribute('name')
-                            //                + ' - '+ $(droppable_id).down('.titre_magazine').readAttribute('name');
                             var nouveau_titre=l10n_print['magazines_multiples']+' : '+fusions.replace(/([_])/g, "/").replace(/([-])/g, " - ");
                             var nouvel_id=transport.request.parameters.fusions;
                             $(draggable_id).down('.titre_magazine').update(nouveau_titre)
@@ -839,14 +838,13 @@ function action_onclick(proto,e) {
 }
 
 function update_numeros(liste,etat,date_achat,av) { 
-    liste_serialized=liste.join();
+    var liste_serialized=liste.join();
     var pays=$('pays').innerHTML;
     var magazine=$('magazine').innerHTML;
     new Ajax.Request('Database.class.php', {
         method: 'post',
         parameters:'database=true&update=true&pays='+pays+'&magazine='+magazine+'&list_to_update='+liste_serialized+'&etat='+etat+'&date_acquisition='+date_achat+'&av='+av,
-        onSuccess:function(transport,json) {
-            //var a;
+        onSuccess:function() {
             window.location.replace("?action=gerer&onglet=ajout_suppr&onglet_magazine="+pays+"/"+magazine);
         }
     });
@@ -896,7 +894,6 @@ function elementToTypeListe(element) {
 
 function afficher_infos_type_liste(type_liste) {
     $('contenu_index_aide').update($('titre_index_aide').update(l10n_divers['chargement']+'...'));
-    //toggle_item_menu($$('[name="index_aide"]')[0]);
     description_liste_en_cours=type_liste;
     new Ajax.Request('Liste.class.php', {
         method: 'post',

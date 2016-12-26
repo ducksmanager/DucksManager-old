@@ -22,7 +22,6 @@ require_once('Listes/Format_liste.php');?>
         <link rel="stylesheet" type="text/css" href="scriptaculous.css" />
         <link rel="icon" type="image/png" href="favicon.png" />
         <link rel="stylesheet" type="text/css" href="csstabs.css">
-        <link rel="stylesheet" type="text/css" href="csstabs.css">
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <script type="text/javascript" src="prototype-1.7.3.js"></script>
         <script type="text/javascript" src="js/l10n.js"></script>

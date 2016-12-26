@@ -1,17 +1,10 @@
-var couvertures;
-
 var nom_pays_old="";
 var nom_magazine_old="";
-var fic_liste_tmp=null;
-var user_inducks=null;
-var pass_inducks=null;
 var pays_sel=null;
 var magazine_sel=null;
 var myMenuItems;
 var etats_charges=false;
-var tab_achats=new Array();
-var nouvel_achat_o;
-
+var tab_achats=[];
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
@@ -101,12 +94,11 @@ function get_achats(continue_id) {
 			  className: 'menu desktop',
 			  menuItems: myMenuItems
 			});
-            var arr_l10n=new Array(
-                            'conserver_etat_actuel','marquer_non_possede','marquer_possede',
+            var arr_l10n=['conserver_etat_actuel','marquer_non_possede','marquer_possede',
                             'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
                             'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
                             'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
-                            'enregistrer_changements');
+                            'enregistrer_changements'];
             l10n_action('remplirSpanName',arr_l10n);
             
             $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num').invoke(
@@ -235,69 +227,12 @@ function callback_tranches_chargees(tooltip_content) {
 	new Opentip(element_texte_hover, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null });
 }
 
-function griser(caller) {
-	var griser;
-	var checkbox_use_same=$('use_same');
-	var id_caller=(caller.originalTarget?caller.originalTarget.id:caller.id);
-	if ((id_caller=='use_same_text' && !checkbox_use_same.checked)
-	  ||(id_caller=='use_same' && checkbox_use_same.checked)) {
-		griser=true;
-	}
-	else {
-		if ((id_caller=='use_same_text' && checkbox_use_same.checked)
-	  	  ||(id_caller=='use_same' && !checkbox_use_same.checked)) {
-			griser=false;
-		}
-	}
-	var textes=new Array('user_text','pass_text','pass_text2');
-	var inputs=new Array('user','pass','pass2');
-	
-	if (griser) {
-		$('use_same').checked=true;
-		textes.each(function(texte) {
-			$(texte).setStyle({'color':'gray'});
-		});
-		inputs.each(function(input) {
-			$(input).setStyle({'backgroundColor':'gray','borderColor':'gray'});
-			//$(input).setAttribute('disabled', 'disabled');
-		});
-		$('user').value=user_inducks;
-		$('pass').value=pass_inducks;
-		$('pass2').value=pass_inducks;
-	}
-	else {
-		$('use_same').checked=false;
-		textes.each(function(texte) {
-			$(texte).setStyle({'color':'white'});
-		});
-		inputs.each(function(input) {
-			$(input).setStyle({'backgroundColor':'white','borderColor':'white'});
-			$(input).removeAttribute('disabled');
-		});
-		$('user').value='';
-		$('pass').value='';
-		$('pass2').value='';
-	}
-}
-
-function connexion(user,pass) {
-	new Ajax.Request('Database.class.php', {
-		   method: 'post',
-		   parameters:'database=true&user='+user+'&pass='+pass+'&connexion=true',
-		   onSuccess:function(transport,json) {
-		    	if (transport.responseText.indexOf('invalides')!=-1) {
-		    		afficher_form_open();
-		    	}
-		   }
-	});
-}
-
 function initPays(inclure_tous_pays, selected) {
     if (!$('liste_pays')) return;
     new Ajax.Request('Inducks.class.php', {
            method: 'post',
            parameters:'get_pays=true&inclure_tous_pays='+inclure_tous_pays+'&selected='+selected,
-           onSuccess:function(transport,json) {
+           onSuccess:function(transport) {
                 $('liste_pays').update(transport.responseText);
                 if ($('liste_magazines'))
                     select_magazine();
@@ -323,13 +258,12 @@ function initTextures() {
 
 function select_sous_texture (n) {
     if (!$('sous_texture'+n)) return;
-    var el_select=$('texture'+n);
-    var myAjax = new Ajax.Request('Edge.class.php', {
-           method: 'post',
-           parameters:'get_sous_texture=true&texture='+$('texture'+n).options[$('texture'+n).options.selectedIndex].value+'&n='+n,
-           onSuccess:function(transport) {
-                $('sous_texture'+n).update(transport.responseText);
-           }
+    new Ajax.Request('Edge.class.php', {
+	   method: 'post',
+	   parameters:'get_sous_texture=true&texture='+$('texture'+n).options[$('texture'+n).options.selectedIndex].value+'&n='+n,
+	   onSuccess:function(transport) {
+			$('sous_texture'+n).update(transport.responseText);
+	   }
     });
 }
 function select_magazine(valeur_magazine) {
@@ -395,7 +329,7 @@ function select_numero() {
 		new Ajax.Request('Inducks.class.php', {
 		   method: 'post',
 		   parameters:'get_numeros=true&pays='+id_pays+'&magazine='+id_magazine,
-		   onSuccess:function(transport,json) {
+		   onSuccess:function(transport) {
 		   		$('liste_numeros').update(transport.responseText);
 		   		if ($('liste_etats'))
 		   			select_etats(); 
@@ -405,10 +339,10 @@ function select_numero() {
 }
 
 function select_etats() {
-	var myAjax = new Ajax.Request('Database.class.php', {
+	new Ajax.Request('Database.class.php', {
 	   method: 'post',
 	   parameters:'database=true&liste_etats=true',
-	   onSuccess:function(transport,json) {
+	   onSuccess:function(transport) {
 			$('liste_etats').update();
 			var reg=new RegExp("~", "g");
 	    	var etats=transport.responseText.split(reg);
@@ -425,21 +359,20 @@ function select_etats() {
 }
 
 function afficher_numeros(pays,magazine) {
-        if (pays == null || magazine == null) {
-            var el_select=$('liste_magazines');
-            if (el_select.options[0].id=='vide') {
-                    l10n_action('alert','selectionner_magazine');
-                    return;
-            }
-            var id_magazine=el_select.options[el_select.options.selectedIndex].id;
-            magazine_sel=id_magazine;
-            pays=pays_sel;
-            magazine=magazine_sel;
-            if (!pays || !magazine) {
-                    l10n_action('alert','remplir_pays_et_magazine');
-                    return;
-            }
-        }
+	if (pays == null || magazine == null) {
+		var el_select=$('liste_magazines');
+		if (el_select.options[0].id=='vide') {
+			l10n_action('alert','selectionner_magazine');
+			return;
+		}
+		magazine_sel=el_select.options[el_select.options.selectedIndex].id;
+		pays=pays_sel;
+		magazine=magazine_sel;
+		if (!pays || !magazine) {
+				l10n_action('alert','remplir_pays_et_magazine');
+				return;
+		}
+	}
 	new Ajax.Request('Database.class.php', {
            method: 'post',
            parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
@@ -451,12 +384,4 @@ function afficher_numeros(pays,magazine) {
 	            }
            }
 	});
-}
-
-function afficher_form_open() {
-	var contenu='<form method="post" action="?action=open">'
-			   +'<table border="0"><tr><td>Nom d\'utilisateur :</td><td><input type="text" name="user" /></td></tr>'
-			   +'<tr><td>Mot de passe :</td><td><input type="password" name="pass" /></td></tr>'
-			   +'<tr><td align="center" colspan="2"><input type="submit" value="Connexion"/></td></tr></table></form>';
-	$('contenu').insert(contenu);
 }

@@ -206,7 +206,6 @@ class dmspiral extends Format_liste {
 				else
 					$this->marquer_numero ($image, $numero['Numero']);
 			}
-			//break;
 		}
 		/** REMPLISSAGE **/
 
