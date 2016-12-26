@@ -172,17 +172,6 @@ class Inducks {
 		return [];
 	}
 
-	static function get_covers($pays,$magazine) {
-		$liste= [];
-		$page=Util::get_page('http://coa.inducks.org/publication.php?pg=img&c=' . $pays . '/' . $magazine);
-		$regex_couverture='#<img border=0 src="([^"]+)"></a><br>\(?<a href=issue\.php[^>]+>(?:<span[^>]+>)?([^<]+)</a>\)?#is';
-		preg_match_all($regex_couverture,$page,$couvertures);
-		foreach(array_keys($couvertures[0]) as $i) {
-			$liste[$couvertures[2][$i]]=$couvertures[1][$i];
-		}
-		return $liste;
-	}
-
 	static function get_pays() {
 		$requete='SELECT countrycode, countryname FROM inducks_countryname WHERE languagecode = \''.$_SESSION['lang'].'\' ORDER BY countryname';
 		$resultat_requete=Inducks::requete_select($requete);
@@ -294,15 +283,6 @@ class Inducks {
 		}
 	   	return $magazines_ne_paraissant_plus;
 	}
-
-	static function numero_to_page($pays,$magazine,$numero) {
-		$magazine=strtoupper($magazine);
-		list($urls,$numeros)=Inducks::get_numeros($pays, $magazine,"urls",true);
-		if (false!==($i=array_search($numero, $numeros)))
-			return Util::get_page('http://coa.inducks.org/' . $urls[$i]);
-		else
-			return ERREUR_CONNEXION_INDUCKS;
-	}
 }
 
 require_once('ServeurDb.class.php');
@@ -370,9 +350,6 @@ elseif (isset($_POST['get_cover'])) {
 		$resultats['cover']='images/cover_not_found.png';
 
 	echo header("X-JSON: " . json_encode($resultats));
-}
-elseif (isset($_POST['get_covers'])) {
-	echo header("X-JSON: " . json_encode(Inducks::get_covers($_POST['pays'], $_POST['magazine'])));
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
 	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
