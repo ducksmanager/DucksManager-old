@@ -26,8 +26,8 @@ class Edge {
 	static $largeur_numeros_precedents=0;
 	static $d;
 	static $sans_etageres = false;
-	
-	function __construct($pays=null,$magazine=null,$numero=null,$numero_reference=null,$image_seulement=false) {
+
+    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $image_seulement = false) {
 		if (is_null($pays))
 			return;
 		$this->magazine_est_inexistant=false;
@@ -46,7 +46,12 @@ class Edge {
 			$this->image=@imagecreatefrompng($url_image);
 		}
 		else {
-			$this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero_reference);
+		    if (is_null($visible)) {
+			    $this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero_reference);
+            }
+            else {
+                $this->est_visible = $visible;
+            }
 
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
@@ -75,7 +80,8 @@ class Edge {
 			}
 			$this->html=$this->getImgHTML();
 		}
-	}
+        $this->visible = $visible;
+    }
 
 	function getLargeurHauteurDefaut() {
 		return [$this->largeur,$this->hauteur];
@@ -95,15 +101,21 @@ class Edge {
 	
 	
 	static function get_numeros_clean($pays,$magazine,$numeros) {
+        $chunk_size = 250;
+
 		$numeros_clean_et_references= [];
 		foreach($numeros as $i=>$numero) {
 			$numero=$numero[0];
 			$numero_clean=self::get_numero_clean($numero);
 			$numeros[$i]="'".$numero_clean."'";
-			$numeros_clean_et_references[$numero]= ['clean'=>$numero_clean,'reference'=>$numero_clean];
+			$numeros_clean_et_references[$numero]= [
+                'clean'=>$numero_clean,
+                'reference'=>$numero_clean,
+                'visible' => false
+            ];
 		}
 		
-		$numeros_subarrays=array_chunk($numeros, 250);
+		$numeros_subarrays=array_chunk($numeros, $chunk_size);
 		
 		foreach($numeros_subarrays as $numeros_subarray) {
 			$requete_recherche_numero_reference=
@@ -118,13 +130,28 @@ class Edge {
 		}
 
 		$vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
-		if ($vrai_magazine != $magazine) {
+		if ($vrai_magazine !== $magazine) {
 			foreach($numeros_clean_et_references as $numero) {
 				$numero_clean = is_array($numero) ? $numero['clean'] : $numero;
 				list($vrai_magazine,$vrai_numero) = Inducks::get_vrais_magazine_et_numero($pays,$magazine,$numero_clean);
 				$numeros_clean_et_references[$numero_clean]['reference']=$vrai_numero;
 			}
 		}
+
+        $numeros_references = array_map(function ($numero) {
+            return $numero['reference'];
+        }, $numeros_clean_et_references);
+
+        $requete_visibilite_numeros = "
+              SELECT issuenumber
+              FROM tranches_pretes
+              WHERE publicationcode = '$pays/$magazine'
+                AND issuenumber IN ('" . implode("', '", $numeros_references) . "')";
+        $resultat_visibilite_numeros = DM_Core::$d->requete_select_distante($requete_visibilite_numeros);
+
+        foreach($resultat_visibilite_numeros as $numero) {
+            $numeros_clean_et_references[$numero]['visible'] = true;
+        }
 
 		return [$vrai_magazine, $numeros_clean_et_references];
 	}
@@ -222,12 +249,13 @@ class Edge {
             if ($get_html === true)
                 sort($numeros);
             $total_numeros+=count($numeros);
+
             list($magazine, $numeros_clean_et_references) = self::get_numeros_clean($pays, $magazine, $numeros);
             foreach($numeros_clean_et_references as $numero) {
                 if (!array_key_exists('clean', $numero)) {
                     $numero['clean'] = $numero['reference'];
                 }
-                $e=new Edge($pays, $magazine, $numero['clean'],$numero['reference']);
+                $e=new Edge($pays, $magazine, $numero['clean'], $numero['reference'], $numero['visible'], false);
 
                 if ($get_html) {
                     $texte_final.=$e->html;
@@ -285,7 +313,7 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
 		Edge::$grossissement_affichage=$_GET['grossissement'];
 	if (!isset($_GET['debug']))
 		header('Content-type: image/png');
-	$e=new Edge($_GET['pays'],$_GET['magazine'],$_GET['numero'],$_GET['numero'],true);
+	$e=new Edge($_GET['pays'], $_GET['magazine'], $_GET['numero'], $_GET['numero'], null, true);
 	imagepng($e->image);
 }
 elseif (isset($_POST['get_bibliotheque'])) {
@@ -381,18 +409,9 @@ elseif (isset($_POST['partager_bibliotheque'])) {
     Affichage::partager_page();
 }
 
-function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
-	$e=new Edge();
-	$e->pays=$pays;
-	$e->magazine=$magazine;
-	$e->numero=$numero;
+function getEstVisible($pays,$magazine,$numero) {
 	$requete_est_visible='SELECT issuenumber FROM tranches_pretes WHERE publicationcode = \''.($pays.'/'.$magazine).'\' AND issuenumber = \''.$numero.'\'';
-	$e->est_visible=count(DM_Core::$d->requete_select($requete_est_visible)) > 0;
-		
-	if ($get_html)
-		return [$e->getImgHTML($regen),$e->est_visible];
-	else
-		return $e->est_visible;
+	return count(DM_Core::$d->requete_select($requete_est_visible)) > 0;
 }
 
 function imagecreatefrompng_getimagesize($chemin) {
