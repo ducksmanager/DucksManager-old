@@ -51,7 +51,6 @@ if (isset($_GET['storycode'])) {
 else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 	if (isset($_GET['coa'])) {
 		ServeurDb::connect('coa');
-        Database::$handle->query('SET NAMES UTF8');
 		$retour=new stdClass();
 		$retour->static=new stdClass();
 		
@@ -158,7 +157,6 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 					}
 					else {
 						ServeurDb::connect('coa');
-                        Database::$handle->query('SET NAMES UTF8');
 						foreach($resultats as $resultat) {
 							$retour=new stdClass();
 							$numeros= [];

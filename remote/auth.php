@@ -15,5 +15,3 @@ if (!isset($_GET['mdp']) || !ServeurDb::verifPassword($_GET['mdp'])) {
 	echo 'Erreur d\'authentification';
 	exit();
 }
-
-Database::$handle->query('SET NAMES UTF8');

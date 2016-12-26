@@ -42,7 +42,7 @@ class Util {
                         'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->role_password),
                         'Content-Type: application/x-www-form-urlencoded',
                         'Cache-Control: no-cache',
-                        'x-wtd-version: 1.0',
+                        'x-dm-version: 1.0',
                     ]),
                 'content' => http_build_query(
                     [

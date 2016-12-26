@@ -88,7 +88,7 @@ class Database {
 	}
 
 	function user_exists($user) {
-		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
+		$requete='SELECT username FROM users WHERE username =\''.$user.'\'';
 		return (count(DM_Core::$d->requete_select_distante($requete))>0);
 
 	}

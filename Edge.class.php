@@ -40,7 +40,7 @@ class Edge {
 		$url_image=$dossier_image.$this->magazine.'.'.$this->numero_reference.'.png';
 		if ($image_seulement) {
 			if (!file_exists($url_image)) {
-				mkdir($dossier_image, 0777, true);
+				@mkdir($dossier_image, 0777, true);
 				imagepng($this->dessiner_defaut(),$url_image);
 			}
 			$this->image=@imagecreatefrompng($url_image);
@@ -64,7 +64,7 @@ class Edge {
 					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
 
 				if (!$this->image_existe) {
-					@imagepng($this->dessiner_defaut(),$url_image);
+					imagepng($this->dessiner_defaut(),$url_image);
 				}
 
 				$this->est_visible=false;
@@ -163,7 +163,7 @@ class Edge {
 		 			 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
 		$this->dessiner_contour();
 		$gris_250=imagecolorallocate($this->image, 250,250,250);
-		imageantialias($this->image, true);
+		//imageantialias($this->image, true);
 		imagefilledrectangle($this->image, $this->largeur/4,$this->largeur/4, $this->largeur*3/4,$this->largeur*3/4,$gris_250);
 		return $this->image;
 	}
@@ -256,7 +256,7 @@ class Edge {
 	}
 
 }
-DM_Core::$d->requete_distante('SET NAMES UTF8');
+
 if (isset($_POST['get_visible'])) {
     $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
 	include_once ('locales/lang.php');

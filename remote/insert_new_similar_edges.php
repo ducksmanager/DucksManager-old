@@ -3,9 +3,6 @@ include_once('../Inducks.class.php');
 Inducks::$use_local_db=false;
 ServeurDb::connect('coa');
 
-Database::$handle->query('SET NAMES UTF8');
-
-
 $regex_numeros_JM_valides='#[0-9]+#is';
 $numero_reference=2963;
 $requete='SELECT issuenumber FROM inducks_issue '
