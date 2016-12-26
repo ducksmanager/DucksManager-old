@@ -122,34 +122,44 @@ class Database {
 	}
 	
 	function maintenance_ordre_magazines($id_user) {
+		$l=DM_Core::$d->toList($id_user);
+
 		$requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
 		$resultat_get_max_ordre=DM_Core::$d->requete_select_distante($requete_get_max_ordre);
-		$max=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
-		$cpt=0;				 
-		$l=DM_Core::$d->toList($id_user);
-		foreach($l->collection as $pays=>$magazines) {
-			foreach(array_keys($magazines) as $magazine) {
-				$requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
-				$resultat_verif_ordre_existe=DM_Core::$d->requete_select_distante($requete_verif_ordre_existe);
-				$ordre_existe=count($resultat_verif_ordre_existe) > 0;
-				if (!$ordre_existe) {
-					$requete_set_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
-									  .'VALUES (\''.$pays.'\',\''.$magazine.'\','.($max+1).','.$id_user.')';
-					DM_Core::$d->requete_distante($requete_set_ordre);
-					$max++;
-				}
-				$cpt++;
+		$max_ordre=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
+
+		$magazines_collection = array();
+		foreach($l->collection as $pays=>$magazines_pays) {
+			foreach(array_keys($magazines_pays) as $magazine) {
+			    $magazines_collection[] = implode('/', [$pays, $magazine]);
 			}
+        }
+
+		$requete_verif_ordre_existe = "SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=$id_user";
+		$resultat_verif_ordre_existe = DM_Core::$d->requete_select_distante($requete_verif_ordre_existe);
+		$ordres_existants = array();
+		array_walk($resultat_verif_ordre_existe, function($ordre) use (&$ordres_existants) {
+		    $ordres_existants[] = implode('/', [$ordre['Pays'], $ordre['Magazine']]);
+		});
+
+		$ordres_manquants = array_diff($magazines_collection, $ordres_existants);
+
+		foreach($ordres_manquants as $ordre_manquant) {
+            $max_ordre++;
+            list($pays, $magazine) = explode('/', $ordre_manquant);
+            $requete_set_ordre="INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur)
+                                VALUES ('$pays', '$magazine', $max_ordre, $id_user)";
+            DM_Core::$d->requete_distante($requete_set_ordre);
 		}
-		$requete_liste_ordres='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_liste_ordres=DM_Core::$d->requete_select_distante($requete_liste_ordres);
-		foreach($resultat_liste_ordres as $ordre) {
-			$pays=$ordre['Pays'];
-			$magazine=$ordre['Magazine'];
-			if (!array_key_exists($pays, $l->collection) || !array_key_exists($magazine, $l->collection[$pays])) {
-				$requete_suppr_ordre='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
-				DM_Core::$d->requete_distante($requete_suppr_ordre);
-			}
+
+		$ordres_obsoletes = array_diff($ordres_existants, $magazines_collection);
+
+		foreach($ordres_obsoletes as $ordre_obsolete) {
+            list($pays, $magazine) = explode('/', $ordre_obsolete);
+
+            $requete_suppr_ordre="DELETE FROM bibliotheque_ordre_magazines 
+                                  WHERE ID_Utilisateur=$id_user AND Pays = '$pays' AND Magazine = '$magazine'";
+            DM_Core::$d->requete_distante($requete_suppr_ordre);
 		}
 	}
 
