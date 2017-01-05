@@ -17,7 +17,7 @@ class ServeurDb {
 	 * @return ProfilDB
 	 */
 	static function getPiwikServer() {
-		return self::getProfil('serveur_virtuel');
+		return self::getProfil('dedibox2');
 	}
 
 	static function initDBServers() {

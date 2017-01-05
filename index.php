@@ -70,7 +70,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
-            var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=ServeurDb::getPiwikServer()->ip?>/piwik/");
+            var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=ServeurDb::getPiwikServer()->domain?>/piwik/");
             document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
             </script>
             <script type="text/javascript">
