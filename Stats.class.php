@@ -54,7 +54,7 @@ class Stats {
 		}
 		if ($autres > 0) {
 			$data[]=$autres;
-			$labels[]=AUTRES.' ('.$nb_magazines_autres.' '.PUBLICATIONS__LOWERCASE.')';
+			$labels[]=AUTRES.' ('.$nb_magazines_autres.' '.strtolower(PUBLICATIONS).')';
 			$colors[]= '#843598';
 		}
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];

@@ -392,7 +392,6 @@ define('PUB_WHATTHEDUCK_2',', l\'application mobile de DucksManager !');
 define('PUB_WHATTHEDUCK_3','Disponible gratuitement sur les t&eacute;l&eacute;phones et tablettes Android.');
 define('PUBLICATION','Publication');
 define('PUBLICATIONS','Publications');
-define('PUBLICATIONS__LOWERCASE','publications');
 define('PUBLICATIONS_COURT','Ma collection de magazines');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Quelles op&eacute;rations souhaitez-vous ex&eacute;cuter ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
