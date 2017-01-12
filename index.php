@@ -87,7 +87,43 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
         </script>
+
+        <!-- Bootstrap -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
         <script type="text/javascript" src="prototype-1.7.3.js"></script>
+        <script>
+            (function() {
+                var isBootstrapEvent = false;
+                if (window.jQuery) {
+                    var all = jQuery('*');
+                    jQuery.each(['hide.bs.dropdown',
+                        'hide.bs.collapse',
+                        'hide.bs.modal',
+                        'hide.bs.tooltip',
+                        'hide.bs.popover',
+                        'hide.bs.tab'], function(index, eventName) {
+                        all.on(eventName, function( event ) {
+                            isBootstrapEvent = true;
+                        });
+                    });
+                }
+                var originalHide = Element.hide;
+                Element.addMethods({
+                    hide: function(element) {
+                        if(isBootstrapEvent) {
+                            isBootstrapEvent = false;
+                            return element;
+                        }
+                        return originalHide(element);
+                    }
+                });
+            })();
+        </script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
         <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
         <script type='text/javascript' src='js/starbox.js'></script>
@@ -200,13 +236,9 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
-                    ?>montrer_magazines();
-                    afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
+                    ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
                 }
             }
-            else {
-				?>montrer_magazines();<?php
-			}
             ?>charger_recherche();<?php
             break;
         case 'bouquineries':
@@ -812,7 +844,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     $onglet='ajout_suppr';
                                 else
                                     $onglet=$_GET['onglet'];
-                                Affichage::onglets($onglet,$onglets,'onglet','?action=gerer');
+                                Affichage::onglets($onglet, $onglets, 'onglet', '?action=gerer');
                                 switch($onglet) {
                                     case 'compte':
                                         if (isset($_POST['submit_options'])) {
@@ -966,25 +998,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         else {
 											list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
                                         }
-                                        $onglets_pays[NOUVEAU_MAGAZINE]= ['new',AJOUTER_MAGAZINE];
-                                        if (!isset($_GET['onglet_magazine'])) {
-											reset($onglets_pays);                                            
-											$premier_pays=current($onglets_pays);
-											$onglet_pays=$premier_pays[0];
-                                            $onglet_magazine=null;
-                                        }
-                                        else {
-                                            if (isset($_POST['magazine'])) {
-                                                $onglet_pays=$_POST['pays'];
-                                                $onglet_magazine=$_POST['pays'].'/'.$_POST['magazine'];
-                                            }
-                                            else {
-                                                $onglet_pays=substr($_GET['onglet_magazine'],0,  strpos($_GET['onglet_magazine'], '/'));
-                                                $onglet_magazine=$_GET['onglet_magazine'];
-                                            }
-                                        }
 
-                                        if ($onglet_magazine=='new' && !isset($_POST['magazine'])) {
+                                        if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
                                             echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
                                             ?>
                         <br /><br />
@@ -1062,9 +1077,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             </div>
                                             <?php
 
-											Affichage::onglets($onglet_pays,$onglets_pays,'','','onglets_pays');
-											Affichage::onglets($onglet_magazine,$onglets_magazines,'onglet_magazine','?action=gerer&amp;onglet=ajout_suppr','onglets_magazines');
-											
+                                            Affichage::onglets_magazines($onglets_pays,$onglets_magazines);
+
                                             if (isset($onglet_magazine) && isset($pays)) {
                                             ?>
                                                 <?php if (isset($_GET['afficher_video']) && $_GET['afficher_video']==0) {
@@ -1155,7 +1169,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     $onglet='achat_vente';
                                 else
                                     $onglet=$_GET['onglet'];
-                                Affichage::onglets($onglet,$onglets,'onglet','?action=agrandir');
+                                Affichage::onglets($onglet, $onglets, 'onglet', '?action=agrandir');
                                 switch($onglet) {
                                     case 'achat_vente':
                                         echo INTRO_ACHAT_VENTE;

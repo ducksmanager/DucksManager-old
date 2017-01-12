@@ -268,6 +268,7 @@ define('LICENCE_INDUCKS3','All the pictures of Disney characters and products be
 define('LIEN_FORUM_DES_FANS','official DucksManager message board !');
 define('LISTE_AUTEURS_INTRO','You\'re following the following authors : ');
 define('LISTE_BOUQUINERIES','List of second-hand bookshops');
+define('LISTE_MAGAZINES','Publication list');
 define('LISTES_IDENTIQUES','Your Inducks and DucksManager collections are identical, no action is required.');
 define('MAINTENANCE','Maintenance');
 define('MAUVAIS','Bad');

@@ -5,43 +5,84 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 class Affichage {
 
-	static function onglets($onglet_courant,$tab_onglets,$argument,$prefixe,$id=null) {
+    static function onglets_magazines($onglets_pays,$onglets_magazines) {
+        $magazine_courant = isset($_GET['onglet_magazine']) ? $_GET['onglet_magazine'] : null;
+        $pays_courant = is_null($magazine_courant) ? null : explode('/', $magazine_courant)[0];
+        ?>
+        <nav class="magazines_possedes navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#"><?=LISTE_MAGAZINES?></a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <?php foreach($onglets_pays as $nom_pays => $details_pays) {
+                            $nom_pays_abrege=$details_pays[0];
+                            ?><li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <img class="flag" src="images/flags/<?=$nom_pays_abrege?>.png" />
+                                    <span class="<?=$pays_courant === $nom_pays_abrege ? 'bold' : '' ?>">
+                                        <?=$nom_pays?>
+                                    </span>
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <?php foreach(array_filter($onglets_magazines, function($nom_magazine_abrege) use($nom_pays_abrege) {
+                                        return explode('/', $nom_magazine_abrege)[0] === $nom_pays_abrege;
+                                    }, ARRAY_FILTER_USE_KEY) as $magazine) { ?>
+                                        <li>
+                                            <a href="?action=gerer&amp;onglet=ajout_suppr&onglet_magazine=<?=$magazine[0]?>">
+                                                <span class="<?=$magazine[0] === $magazine_courant ? 'bold' : '' ?>">
+                                                    <?=$magazine[1]?>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </li>
+                        <?php } ?>
+                        <li>
+                            <a href="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new" role="button">
+                                <?=NOUVEAU_MAGAZINE?>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <?php
+    }
+
+	static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
 			$onmouseover='';
 			$onmouseout='';
-			$id=is_null($id) ? '':$id;
 			?><ul <?=empty($id)?'':('id="'.$id.'"')?> class="tabnav"><?php
 			foreach($tab_onglets as $nom_onglet=>$infos_lien) {
-				$pays=$id=='onglets_pays' ? $infos_lien[0] : substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
-				$contenu_lien_onglet=$id=='onglets_magazines' ? $infos_lien[1] : $nom_onglet;
 				?><li class="<?php
-				if ($infos_lien[1]==AJOUTER_MAGAZINE) {
-				   echo 'nouveau ';
-				   $lien='?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new';
-				}
-				else
-					$lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
+
+                $lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
 				if ($infos_lien[0]==$onglet_courant)
 				   echo 'active ';
 				if (empty($prefixe)) {
-					$nom = $pays;
+					$nom = substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
 				}
 				else {
-					switch($argument) {
-						case 'onglet_magazine':
-							$nom='magazine';
-						break;
-						default:
-							if (in_array($argument, ['onglet_aide','onglet_type_param','previews']))
-								$nom=$infos_lien[0];
-							else
-								$nom='';
-						break;
-					}
+                    if (in_array($argument, ['onglet_aide','onglet_type_param','previews']))
+                        $nom=$infos_lien[0];
+                    else
+                        $nom='';
 				}
 				switch($prefixe) {
 					case '':
 						$onmouseout='';
-						$onmouseover='montrer_magazines(\''.$pays.'\')';
 					break;
 					case '?';
 						$onclick='toggle_item_menu(this)';
@@ -53,24 +94,13 @@ class Affichage {
 					   onmouseout="<?=$onmouseout?>"
 					   <?=(isset($onclick)?'onclick="'.$onclick.'"':'')?>
 					   href="<?=$lien?>">
-				<?php
-				if ($id=='onglets_pays' && $infos_lien[0]!='new') {
-					?>
-					<img src="images/flags/<?=$pays?>.png" alt="<?=$pays?>" /><span><?=$infos_lien[1]?></span>
-					<?php
-				}
-				else {
-					echo $contenu_lien_onglet;
-				}
-				?>
-					</a></li>
+				        <?=$nom_onglet?>
+					</a>
+                </li>
 				<?php
 		}
 		?></ul>
-		<?php 
-		if ($id!='onglets_pays') {
-			?><br /><?php
-		}
+		<?php
 	}
 	static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
 		$liste->nettoyer_collection();
@@ -94,7 +124,6 @@ class Affichage {
 						
 		
 		$cpt=0;
-		//print_r($liste->collection[$pays][$magazine]);
 		?>
 		<span id="pays" style="display:none"><?=$pays?></span>
 		<span id="magazine" style="display:none"><?=$magazine?></span>
@@ -106,6 +135,7 @@ class Affichage {
 		<table border="0" width="100%">
 			<tr>
 				<td rowspan="2">
+                    <img class="flag" src="images/flags/<?=$pays?>.png" />
 					<span style="font-size:15pt;font-weight:bold;"><?=$nom_complet?></span>
 				</td>
 				<td align="right">

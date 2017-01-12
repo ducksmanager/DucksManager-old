@@ -267,6 +267,7 @@ define('LICENCE_INDUCKS3','Toutes les images de personnages et / ou produits Dis
 define('LIEN_FORUM_DES_FANS','forum officiel de DucksManager !');
 define('LISTE_AUTEURS_INTRO','Vous suivez les auteurs suivants : ');
 define('LISTE_BOUQUINERIES','Liste des bouquineries');
+define('LISTE_MAGAZINES','Liste des magazines');
 define('LISTES_IDENTIQUES','Vos collections Inducks et DucksManager sont identiques. Aucune action n\'est requise.');
 define('MAINTENANCE','Maintenance');
 define('MAUVAIS','Mauvais');
