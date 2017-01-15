@@ -224,6 +224,7 @@ define('IDENTIFICATION_OBLIGATOIRE','Vous devez &ecirc;tre connect&eacute;(e) po
 define('IDENTIFIEZ_VOUS','Identifiez-vous pour acc&eacute;der &agrave; votre compte DucksManager.');
 define('IDENTIFIEZ_VOUS_BACKEND','Identifiez-vous.');
 define('IE_INF_A_9_NON_SUPPORTE', 'D&eacute;sol&eacute;, Internet Explorer n\'est pas support&eacute; qu\'&agrave; partir de la version 9 pour cette fonctionnalit&eacute;');
+define('IMPORT_INDUCKS_DESACTIVE','L\'import de collection Inducks est actuellement désactivé.');
 define('IMPORTER','Importer');
 define('IMPORTER_INDUCKS','Importer ma collection Inducks');
 define('IMPRIMER_COLLECTION','Imprimer ma collection');

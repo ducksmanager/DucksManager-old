@@ -383,7 +383,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);   
                                     }
                                     else {
-                                        $rawdata_valide=(Inducks::liste_numeros_valide($_POST['rawData']));
+                                        $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
                                         if ($rawdata_valide) {
                                             list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
                                             if ($est_succes) {
@@ -419,6 +419,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                     }
                                 }
                                 if (!isset($_POST['rawData']) || isset($rawdata_valide) && !$rawdata_valide) {
+                                    echo IMPORT_INDUCKS_DESACTIVE;
+                                    /*
                                     ?><table border="0" style="width:90%;height:70%" cellspacing="5">
                                         <tr>
                                             <td>
@@ -442,7 +444,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             </td>
                                          </tr>
                                     </table>
-                                <?php
+                                <?php */
                                 }
                             break;
                             case 'new':

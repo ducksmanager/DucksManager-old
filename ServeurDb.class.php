@@ -78,7 +78,7 @@ class ServeurDb {
 	public static function getRemoteUrl($page, $server = null)
 	{
 		if (is_null($server)) {
-			$server = 'dedibox';
+			$server = 'dedibox2';
 		}
 		$serveurCoaPrincipal = ServeurCoa::getCoaServer($server);
 		return implode('/', [

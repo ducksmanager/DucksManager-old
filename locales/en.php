@@ -225,6 +225,7 @@ define('IDENTIFICATION_OBLIGATOIRE','You must be logged in to access this page!'
 define('IDENTIFIEZ_VOUS','Login in order to access your DucksManager account.');
 define('IDENTIFIEZ_VOUS_BACKEND','Login.');
 define('IE_INF_A_9_NON_SUPPORTE', 'Sorry, Internet Explorer is only supported from version 9 for this feature');
+define('IMPORT_INDUCKS_DESACTIVE','The Inducks collection import is currently disabled.');
 define('IMPORTER','Import');
 define('IMPORTER_INDUCKS','Import my Inducks collection');
 define('IMPRIMER_COLLECTION','Print my collection');
