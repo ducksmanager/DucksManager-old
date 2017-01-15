@@ -1,0 +1,35 @@
+body {
+    font-size: 11px;
+    font-family: inherit;
+    color: inherit;
+    line-height: inherit;
+}
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+table {
+    border-spacing: inherit;
+    border-collapse: inherit;
+}
+
+td {
+    padding: 1px;
+}
+
+button, input, optgroup, select, textarea {
+    color: black;
+    font-size: 13px;
+}
+
+.navbar-brand {
+    height: inherit !important;
+}
+
+* {
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
+}
