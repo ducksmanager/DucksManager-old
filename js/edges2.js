@@ -396,7 +396,7 @@ function charger_tranche_suivante(element) {
     var tranche2=Event.element(element);
     var suivant=tranche2.next();
     if (suivant && suivant.className.indexOf('tranche') == -1) {
-        if (tranche2.up('#bibliotheque')) { // Contexte bibliothèque
+        if (tranche2.up('#bibliotheque')) { // Contexte bibliothï¿½que
             nb_etageres_terminees++;
             $('pct_bibliotheque').setStyle({'width': parseInt(100 * nb_etageres_terminees / nb_etageres) + '%'});
             var tranche_suivante = suivant.next().next();
@@ -409,7 +409,7 @@ function charger_tranche_suivante(element) {
             else
                 charger_tranche(tranche_suivante);
         }
-        else { // Contexte affichage dans les événements récents
+        else { // Contexte affichage dans les ï¿½vï¿½nements rï¿½cents
             callback_tranches_chargees(tranche2.up('.tooltip_content'));
         }
     }
@@ -467,41 +467,6 @@ function afficher_lien_partage() {
 			}
 		});
 	});
-}
-
-function creer_image() {
-    var pos={};
-    pos['tranches']={};
-    pos['etageres']={};
-	$('bibliotheque').select('.tranche,.etagere').each(function(element) {
-        var type_element=element.hasClassName('etagere') ? 'etageres' : 'tranches';
-        var src=type_element == 'etageres' ? 'etageres' : element.readAttribute('src').replace(new RegExp('=','g'),'_');
-        var position=[element.cumulativeOffset()['left'],element.cumulativeOffset()['top'],element.readAttribute('width'),element.readAttribute('height')].join(',');
-        if (!(pos[type_element][src]))
-            pos[type_element][src]=[];
-        pos[type_element][src].push(position);
-    });
-    for (var type in pos)
-        for (var i in pos[type])
-            pos[type][i]=pos[type][i].join('-');
-    pos=JSON.stringify(pos);
-    new Ajax.Request('Edge.class.php', {
-         method: 'post',
-         parameters:'generer_image=true&pos='+pos+'&largeur='+largeur_section+'&texture1='+texture1+'&sous_texture1='+sous_texture1+'&texture2='+texture2+'&sous_texture2='+sous_texture2,
-         onSuccess:function(transport) {
-             if (transport.responseText.indexOf('Fatal error') != -1)
-                 afficher_erreur_image_bibliotheque();
-             else
-                 $('recherche_bibliotheque').insert({'before':new Element('div').setStyle({'float':'left'}).update(transport.responseText)});
-         },
-         onError:function() {
-             afficher_erreur_image_bibliotheque();
-         }
-    });
-}
-
-function afficher_erreur_image_bibliotheque() {
-    $('recherche_bibliotheque').insert({'before':new Element('div').setStyle({'float':'left'}).update('Il manque de la m&eacute;moire ! Vendez une partie de votre collection ou achetez un serveur au webmaster !')});
 }
 
 function recherche() {

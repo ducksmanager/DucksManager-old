@@ -59,7 +59,9 @@ class dmspiral extends Format_liste {
 		$titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
 		
 		$image=imagecreatetruecolor(100+(48+$this->p('nb_centaines')/2)*$this->p('epaisseur')-10+$this->p('marge')+10, $this->p('epaisseur')*$this->p('nb_centaines')+$this->p('hauteur_centrale')+2+$this->p('marge')*2);
-		imageantialias($image, true);
+        if (function_exists('imageantialias')) {
+		    imageantialias($image, true);
+        }
 		imagecolorallocate($image, 255,255,255);
 		$gris_clair=imagecolorallocate($image, $this->p('nuance_gris_fond'),$this->p('nuance_gris_fond'),$this->p('nuance_gris_fond'));
 		imagefill($image, 0,0, $gris_clair);

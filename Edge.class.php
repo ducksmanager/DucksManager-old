@@ -163,7 +163,9 @@ class Edge {
 		 			 $noir,'edges/Verdana.ttf','['.$this->pays.' / '.$this->magazine.' / '.$this->numero.']');
 		$this->dessiner_contour();
 		$gris_250=imagecolorallocate($this->image, 250,250,250);
-		imageantialias($this->image, true);
+		if (function_exists('imageantialias')) {
+		    imageantialias($this->image, true);
+        }
 		imagefilledrectangle($this->image, $this->largeur/4,$this->largeur/4, $this->largeur*3/4,$this->largeur*3/4,$gris_250);
 		return $this->image;
 	}
@@ -381,101 +383,6 @@ elseif (isset($_POST['get_sous_texture'])) {
 }
 elseif (isset($_POST['partager_bibliotheque'])) {
     Affichage::partager_page();
-}
-elseif (isset($_POST['generer_image'])) {
-	error_reporting(E_ALL);
-	$nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.jpg';
-	$images= ['texture1','sous_texture1','texture2','sous_texture2'];
-	$variables= ['largeur','texture1','sous_texture1','texture2','sous_texture2'];
-	foreach($variables as $variable)
-		${$variable}=$_POST[$variable];
-	
-	$largeur=intval($largeur)-20;
-
-	$image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
-	$image_texture2=imagecreatefromjpeg('edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg');
-	$pos=json_decode(str_replace('\"','"',$_POST['pos']));
-	
-	/*$xml='<xml>'."\n"
-		.'<texture1>'.'edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg'.'</texture1>'."\n"
-		.'<texture2>'.'edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg'.'</texture2>'."\n"
-		.'<largeur>'.$largeur.'</largeur>'."\n"
-		.jsonToXML($pos)
-		.'</xml>';*/
-	$contenu=implode("\n", [$texture1.'/'.$sous_texture1,$texture2.'/'.$sous_texture2,$largeur,str_replace('\"','"',$_POST['pos'])]);
-	Util::ecrire_dans_fichier('edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'.json', $contenu, false);
-	include_once('ServeurDb.class.php');
-	?>
-	<a style="float:left;border-bottom:1px dashed white" target="_blank" href="javascript:void(0)"
-	   onclick="window.open('<?= ServeurDb::getRemoteUrl('Merge.class.php') ?>?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>','Download')">
-		<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
-	</a><?php
-}
-elseif (isset($_POST['generer_images_etageres'])) {
-	error_reporting(E_ALL);
-	$images= ['texture1','sous_texture1','texture2','sous_texture2'];
-	$variables= ['largeur','texture1','sous_texture1','texture2','sous_texture2'];
-	foreach($variables as $variable)
-		${$variable}=$_POST[$variable];
-		
-	$largeur=intval($largeur)-20;
-
-	$image_texture1=imagecreatefromjpeg('edges/textures/'.$texture1.'/'.$sous_texture1.'.jpg');
-	$image_texture2=imagecreatefromjpeg('edges/textures/'.$texture2.'/'.$sous_texture2.'.jpg');
-	$pos=json_decode(str_replace('\"','"',$_POST['pos']));
-	foreach($pos as $type_element=>$pos_elements) {
-		foreach($pos_elements as $i=>$pos_element) {
-			$pos->$type_element->$i=explode('-',$pos->$type_element->$i);
-		}
-	}
-	$max_y=0;
-	$pos_sup_gauche= [];
-	foreach($pos->etageres->etageres as $i=>$pos_etagere) {
-		$pos_etagere_courante=explode(',',$pos_etagere);
-		if ($i==0)
-			$pos_sup_gauche=$pos_etagere_courante;
-		if ($pos_etagere_courante[1] > $max_y)
-			$max_y=$pos_etagere_courante[1];
-	}
-	$min_y=$pos_sup_gauche[1];
-	
-	$id_premiere_tranche=0;
-	foreach($pos->etageres->etageres as $num_etagere=>$pos_etagere) {
-		$pos_etagere_courante=explode(',',$pos_etagere);
-		if (isset($pos->etageres->etageres[$num_etagere+1]))
-			$pos_etagere_suivante=explode(',',$pos->etageres->etageres[$num_etagere+1]);
-		else
-			$pos_etagere_suivante=explode(',',$pos->etageres->etageres[$num_etagere]);
-	   	$hauteur=$pos_etagere_suivante[1]-$pos_etagere_courante[1];
-	   	if ($hauteur ==0) // Cas de la dernière étagère, vide
-	   		$hauteur=16;
-		$im=imagecreatetruecolor($largeur, $hauteur);
-		
-		for ($i=0;$i<$largeur;$i+=imagesx($image_texture1))
-			for ($j=0;$j<$hauteur;$j+=imagesy($image_texture1))
-				imagecopy ($im, $image_texture1, $i, $j, 0, 0, imagesx($image_texture1), imagesy($image_texture1));
-			imagecopyresampled($im, $image_texture2, 0, 0, 0, 0, $largeur, 16, imagesx($image_texture2), 16);
-		foreach($pos->tranches as $src_tranche=>$pos_tranches) {
-			$image_tranche=imagecreatefrompng(preg_replace('#\?.*#is', '', $src_tranche));
-			foreach($pos_tranches as $pos_tranche) {
-				$pos_courante=explode(',',$pos_tranche);
-				if ($pos_courante[1]-$pos_sup_gauche[1]+$pos_courante[3] > $pos_etagere_courante[1]+$hauteur) {
-			   		continue;
-				}
-				imagecopyresampled($im, $image_tranche, $pos_courante[0]-$pos_sup_gauche[0], $pos_courante[1]-$pos_etagere_courante[1], 0, 0, $pos_courante[2], $pos_courante[3], imagesx($image_tranche), imagesy($image_tranche));   
-			}
-			imagedestroy($image_tranche);
-		}
-		$nom_fichier='edges/_tmp/'.$_SESSION['user'].'-'.md5($_SESSION['user']).'-'.$num_etagere.'.jpg';
-		imagejpeg($im,$nom_fichier);
-		imagedestroy($im);
-	}
-	
-	?><a style="float:left;border-bottom:1px dashed white" target="_blank" href="<?= ServeurDb::getRemoteUrl('Merge.class.php') ?>?user=<?=$_SESSION['user']?>-<?=md5($_SESSION['user'])?>&nb=<?=count($pos->etageres->etageres)?>&largeur=<?=$largeur?>">
-		<?=BIBLIOTHEQUE_SAUVEGARDER_IMAGE?>
-	</a>
-   	<?php
-	
 }
 
 function getEstVisible($pays,$magazine,$numero, $get_html=false, $regen=false) {
