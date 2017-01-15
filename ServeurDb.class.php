@@ -95,13 +95,14 @@ class ProfilDB {
 	var $server;
 	var $user;
 	var $password;
+	var $port = 3306;
 
 	function __construct() { }
 
 	function connexion($db) {
 		if (!$this->server) return false;
 
-        Database::$handle = mysqli_connect($this->server, $this->user, $this->password, is_null($db) ? ServeurDb::$nom_db_DM : $db);
+        Database::$handle = mysqli_connect($this->server, $this->user, $this->password, is_null($db) ? ServeurDb::$nom_db_DM : $db, $this->port);
 
         return ! Database::$handle->connect_errno;
 	}
