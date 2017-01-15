@@ -9,7 +9,7 @@ function exporter($requete, $cheminCsv)
         $num_fields = $result->field_count;
         $headers = array();
         for ($i = 0; $i < $num_fields; $i++) {
-            $headers[] = $result->fetch_field_direct($i);
+            $headers[] = $result->fetch_field_direct($i)->name;
         }
         $fp = fopen($cheminCsv, 'w');
         if ($fp && $result) {
