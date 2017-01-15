@@ -188,6 +188,34 @@ class Util {
 		return $destination;
 	}
 
+    static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl().'/'.$coaServer->web_root.'/rawsql');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(
+            [
+                'query' => $query,
+                'db' => $db
+            ]
+        ));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->role_password),
+            'Content-Type: application/x-www-form-urlencoded',
+            'Cache-Control: no-cache',
+            'x-dm-version: 1.0',
+        ));
+        $buffer = curl_exec($ch);
+        curl_close($ch);
+        if ($buffer) {
+            return $buffer;
+        }
+        else {
+            return null;
+        }
+    }
+
 }
 
 if (isset($_GET['magazines_supprimes'])) {

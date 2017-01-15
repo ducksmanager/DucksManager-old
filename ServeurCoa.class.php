@@ -13,6 +13,7 @@ class ServeurCoa {
     var $ip;
     var $machine_id;
     var $restart_token;
+    var $role_password;
     var $web_root;
     var $db_user;
     var $db_password;

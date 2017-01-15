@@ -16,57 +16,58 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete_select($requete,$db='coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
-		if ($nomServeur==='serveur_virtuel' && false) {
-			mysqli_select_db(Database::$handle, 'coa');
-			$resultat = DM_Core::$d->requete_select($requete);
-			mysqli_select_db(Database::$handle, ServeurDb::$nom_db_DM);
-			return $resultat;
-		}
-		else {
-			if (count(ServeurCoa::$coa_servers) === 0) {
-				ServeurCoa::initCoaServers();
-			}
+	static function requete_select($requete,$db='db_coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
+        if (count(ServeurCoa::$coa_servers) === 0) {
+            ServeurCoa::initCoaServers();
+        }
 
-			if ($nomServeur === 'serveur_virtuel') {
-				$coaServers = ServeurCoa::$coa_servers;
-			} else {
-				$coaServers = [ServeurCoa::$ducksmanager_server];
-			}
+        if ($nomServeur === 'serveur_virtuel') {
+            $coaServers = ServeurCoa::$coa_servers;
+        } else {
+            $coaServers = [ServeurCoa::$ducksmanager_server];
+        }
 
-			foreach($coaServers as $coaServerName=>$coaServer) {
-				$output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete), $timeout, isset($_GET['dbg']));
-				if (isset($_GET['brut'])) {
-					echo 'Requete : '.$requete.'<br />'
-						.'Retour brut : <pre>'.$output.'</pre>'
-						.'Stacktrace : <pre>';
-					debug_print_backtrace();
-					echo '</pre>';
-				}
-				if (empty($output)) {
-					return [];
-				}
-				elseif ($output === ERREUR_CONNEXION_INDUCKS) {
-					return [];
-				}
-				else {
-					$unserialized = @unserialize($output);
-					if (is_array($unserialized)) {
-						list($champs,$resultats) = $unserialized;
-						foreach($champs as $i_champ=>$nom_champ) {
-							foreach($resultats as $i=>$resultat) {
-								$resultats[$i][$nom_champ]=$resultat[$nom_champ];
-							}
-						}
-						return $resultats;
-					}
-					else {
-						unset(ServeurCoa::$coa_servers[$coaServerName]);
-					}
-				}
-			}
-			return [];
-		}
+        foreach($coaServers as $coaServerName=>$coaServer) {
+            if (isset($coaServer->role_password)) { // DM server
+                $output=Util::get_query_results_from_remote($coaServer, $requete, $db);
+            }
+            else {
+                $output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete), $timeout, isset($_GET['dbg']));
+            }
+            if (isset($_GET['brut'])) {
+                echo 'Requete : '.$requete.'<br />'
+                    .'Retour brut : <pre>'.$output.'</pre>'
+                    .'Stacktrace : <pre>';
+                debug_print_backtrace();
+                echo '</pre>';
+            }
+
+            if (empty($output) || $output === ERREUR_CONNEXION_INDUCKS) {
+                return [];
+            }
+            else {
+                if (isset($coaServer->role_password)) { // DM server
+                    $results = json_decode($output, true);
+                    if (is_array($results)) {
+                        return $results;
+                    }
+                }
+                else {
+                    $unserialized = @unserialize($output);
+                    if (is_array($unserialized)) {
+                        list($champs,$resultats) = $unserialized;
+                        foreach($champs as $i_champ=>$nom_champ) {
+                            foreach($resultats as $i=>$resultat) {
+                                $resultats[$i][$nom_champ]=$resultat[$nom_champ];
+                            }
+                        }
+                        return $resultats;
+                    }
+                }
+                unset(ServeurCoa::$coa_servers[$coaServerName]);
+            }
+        }
+        return [];
 	}
 
 	static function get_auteur($nom_auteur_abrege) {

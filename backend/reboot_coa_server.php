@@ -23,7 +23,7 @@ function call_online_api($token, $http_method, $endpoint, $get = array(), $post 
     return curl_exec($call);
 }
 
-$coaMachine = ServeurCoa::getCoaServer('dedibox');
+$coaMachine = ServeurCoa::getCoaServer('dedibox2');
 
 echo call_online_api(
     $coaMachine->restart_token,
