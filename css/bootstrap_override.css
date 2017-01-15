@@ -33,3 +33,7 @@ button, input, optgroup, select, textarea {
     -moz-box-sizing: initial;
     box-sizing: initial;
 }
+
+img {
+    vertical-align: inherit;
+}
