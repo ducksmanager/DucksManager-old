@@ -425,6 +425,7 @@ define('STATISTIQUES_QUOTIDIENNES','Les statistiques sont mises &agrave; jour qu
 define('SUCCES','Succ&egrave;s!');
 define('SUGGESTIONS_ACHATS','Suggestions d\'achats');
 define('SUGGESTIONS_ACHATS_QUOTIDIENNES','Les suggestions d\'achat sont mises &agrave; jour quotidiennement.');
+define('SUGGESTIONS_PUBLICATIONS_DESACTIVE', 'Les suggestions d\'achat sont actuellement désactivées.');
 define('SUPPRESSION_ACQUISITION_CONFIRMATION','Confirmez-vous la suppression de cette acquisition ?\nLes numéros correspondant à cette date d\'acquisition seront conservés.');
 define('SUPPRIMER','Supprimer');
 define('SUPPRIMER_ACQUISITION','Supprimer cette acquisition');

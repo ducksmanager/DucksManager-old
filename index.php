@@ -1199,6 +1199,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 echo AUTEURS_NON_NOTES;
                                             }
                                             else {
+                                                echo SUGGESTIONS_PUBLICATIONS_DESACTIVE;
+                                                /*
                                                 ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
                                                 <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
                                                     <option id="chargement_pays"><?=CHARGEMENT?>...
@@ -1207,7 +1209,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                     include_once 'Stats.class.php';
                                                     $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'all') ? $_GET['pays'] : null;
                                                     Stats::showSuggestedPublications($pays);
-                                                ?></div><?php
+                                                */?></div><?php
                                             }
                                         }
                                         else {

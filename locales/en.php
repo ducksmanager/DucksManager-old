@@ -426,6 +426,7 @@ define('STATISTIQUES_QUOTIDIENNES','The statistics are updated every day.');
 define('SUCCES','Success!');
 define('SUGGESTIONS_ACHATS','Issues purchase suggestions');
 define('SUGGESTIONS_ACHATS_QUOTIDIENNES','The suggestions are updated every day.');
+define('SUGGESTIONS_PUBLICATIONS_DESACTIVE', 'The author suggestions are currently disabled.');
 define('SUPPRESSION_ACQUISITION_CONFIRMATION','Do you confirm the removal of this purchase ?\nThe issues corresponding to this purchase will not be removed from your collection.');
 define('SUPPRIMER','Remove');
 define('SUPPRIMER_ACQUISITION','Remove this purchase');
