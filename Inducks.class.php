@@ -28,7 +28,7 @@ class Inducks {
         }
 
         foreach($coaServers as $coaServerName=>$coaServer) {
-            if (isset($coaServer->role_password)) { // DM server
+            if (isset($coaServer->role_passwords)) { // DM server
                 $output=Util::get_query_results_from_remote($coaServer, $requete, $db);
             }
             else {
@@ -46,7 +46,7 @@ class Inducks {
                 return [];
             }
             else {
-                if (isset($coaServer->role_password)) { // DM server
+                if (isset($coaServer->role_passwords)) { // DM server
                     $results = json_decode($output, true);
                     if (is_array($results)) {
                         return $results;

@@ -13,7 +13,7 @@ class ServeurCoa {
     var $ip;
     var $machine_id;
     var $restart_token;
-    var $role_password;
+    var $role_passwords;
     var $web_root;
     var $db_user;
     var $db_password;
@@ -32,6 +32,14 @@ class ServeurCoa {
         foreach($configured_coa_servers as $name=>$coaServer) {
             /** @var ServeurCoa $coaServerObject */
             $coaServerObject = Util::cast(ServeurCoa::class, json_decode(json_encode($coaServer)));
+            if (isset($coaServerObject->role_passwords)) {
+                $roles = [];
+                array_walk($coaServerObject->role_passwords, function($role) use (&$roles) {
+                    list($roleName, $rolePassword) = explode(':', $role);
+                    $roles[$roleName] = $rolePassword;
+                });
+                $coaServerObject->role_passwords = $roles;
+            }
             if ($coaServerObject->complete_coa_tables) {
                 self::$coa_servers[$name] = $coaServerObject;
             }

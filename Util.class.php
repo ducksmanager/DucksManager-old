@@ -189,19 +189,29 @@ class Util {
 	}
 
     static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
+	    $parameters = [
+            'query' => $query,
+            'db' => $db
+        ];
+        return self::get_service_results($coaServer, '/rawsql', 'rawsql', $parameters);
+    }
+
+    /**
+     * @param ServeurCoa $coaServer
+     * @param string $role
+     * @param array $parameters
+     * @return mixed|null
+     */
+    public static function get_service_results(ServeurCoa $coaServer, $path, $role, $parameters)
+    {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl().'/'.$coaServer->web_root.'/rawsql');
+        curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl() . '/' . $coaServer->web_root . $path);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(
-            [
-                'query' => $query,
-                'db' => $db
-            ]
-        ));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Authorization: Basic ' . base64_encode('rawsql:'.$coaServer->role_password),
+            'Authorization: Basic ' . base64_encode(implode(':', [$role, $coaServer->role_passwords[$role]])),
             'Content-Type: application/x-www-form-urlencoded',
             'Cache-Control: no-cache',
             'x-dm-version: 1.0',
@@ -210,8 +220,7 @@ class Util {
         curl_close($ch);
         if ($buffer) {
             return $buffer;
-        }
-        else {
+        } else {
             return null;
         }
     }
