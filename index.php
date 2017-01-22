@@ -30,7 +30,7 @@ else {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
 			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
-			setCookie('pass',sha1($_COOKIE['pass']),time()+3600);
+			setCookie('pass',$_COOKIE['pass'],time()+3600);
 		}
 	}
 }
