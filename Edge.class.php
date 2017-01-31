@@ -337,10 +337,6 @@ elseif (isset($_POST['get_bibliotheque'])) {
         echo json_encode(['titre' => $titre, 'contenu' => $contenu, 'textures' => $textures]);
     }
 }
-
-/*
- * Table bibliotheque_options
-*/
 elseif (isset($_POST['get_texture'])) {
 	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
 	$requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';

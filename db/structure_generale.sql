@@ -100,25 +100,6 @@ CREATE TABLE `bibliotheque_contributeurs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `bibliotheque_options`
---
-
-DROP TABLE IF EXISTS `bibliotheque_options`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `bibliotheque_options` (
-  `Pays` varchar(3) COLLATE latin1_german2_ci DEFAULT NULL,
-  `Magazine` varchar(6) COLLATE latin1_german2_ci DEFAULT NULL,
-  `Numero` varchar(8) COLLATE latin1_german2_ci DEFAULT NULL,
-  `CouleurR` tinyint(8) unsigned DEFAULT '0',
-  `CouleurG` tinyint(8) unsigned DEFAULT '0',
-  `CouleurB` tinyint(8) unsigned DEFAULT '0',
-  `Autre` text COLLATE latin1_german2_ci,
-  UNIQUE KEY `Index 1` (`Pays`,`Magazine`,`Numero`,`Autre`(100))
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `bibliotheque_ordre_magazines`
 --
 
