@@ -285,34 +285,10 @@ class Stats {
 	}
 
 	static function getAuthorStoriesData() {
-		$id_user=static::$id_user;
-
 		$title = POSSESSION_HISTOIRES_AUTEURS;
-		
 		$legend = [HISTOIRES_POSSEDEES, HISTOIRES_NON_POSSEDEES];
 
-		$requete_auteurs = "
-			SELECT a_h.personcode, p.fullname, COUNT(a_h.storycode) AS cpt
-			FROM dm_stats.auteurs_histoires a_h
-			INNER JOIN coa.inducks_person p ON a_h.personcode = p.personcode
-			GROUP BY a_h.personcode
-		";
-
-		$resultat_auteurs = Inducks::requete_select($requete_auteurs, 'dm_stats');
-		$auteurs = [];
-
-		foreach($resultat_auteurs as $auteur) {
-			$auteurs[$auteur['personcode']] = ['fullname' => $auteur['fullname'], 'cpt' => $auteur['cpt']];
-		}
-
-		$requete_stats_auteurs = "
-			SELECT u_h_m.personcode, COUNT(u_h_m.storycode) AS cpt
-			FROM dm_stats.utilisateurs_histoires_manquantes u_h_m
-			WHERE u_h_m.ID_User = $id_user
-			GROUP BY u_h_m.personcode
-		";
-
-		$resultat_stats_auteurs = Inducks::requete_select($requete_stats_auteurs, 'dm_stats');
+        $resultat_stats_auteurs = Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'GET', '/collection/stats/watchedauthorsstorycount', 'ducksmanager', []);
 
 		$possedees = [
 			'label' => HISTOIRES_POSSEDEES,
@@ -331,9 +307,9 @@ class Stats {
 		$labels = [];
 
 		foreach($resultat_stats_auteurs as $stat_utilisateur_auteur) {
-			$auteur = $stat_utilisateur_auteur['personcode'];
-			$total_auteur = $auteurs[$auteur]['cpt'];
-			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur['cpt'];
+			$auteur = $stat_utilisateur_auteur['fullname'];
+			$total_auteur = $stat_utilisateur_auteur['storycount'];
+			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur['missingstorycount'];
 			$possedees_auteur_pct = round(100*($possedees_auteur/$total_auteur));
 
 			$possedees['data'][]  = $possedees_auteur;
@@ -342,7 +318,7 @@ class Stats {
 			$possedees_pct['data'][] = $possedees_auteur_pct;
 			$manquantes_pct['data'][] = 100 - $possedees_auteur_pct;
 
-			$labels[]=$auteurs[$auteur]['fullname'];
+			$labels[]=$auteur;
 		}
 
 
@@ -358,84 +334,41 @@ class Stats {
 	}
 
 	static function showSuggestedPublications($pays) {
-		$id_user=static::$id_user;
-		
-		$condition_pays = is_null($pays) ? '' : "AND u_p_s.publicationcode LIKE '$pays/%'";
 
-		$requete_suggestions_publications = "
-			SELECT 
-				u_p_s.publicationcode, u_p_s.issuenumber, u_p_s.Score, p.fullname as author,
-				GROUP_CONCAT(u_p_m.storycode SEPARATOR '---') AS storycodes,
-				GROUP_CONCAT(s.title SEPARATOR '---') AS storytitles,
-				GROUP_CONCAT(s.storycomment SEPARATOR '---') AS storycomments
-			FROM dm_stats.utilisateurs_publications_suggerees u_p_s
-			  INNER JOIN dm_stats.utilisateurs_publications_manquantes u_p_m
-				ON u_p_s.ID_User = u_p_m.ID_User AND u_p_s.publicationcode = u_p_m.publicationcode AND u_p_s.issuenumber = u_p_m.issuenumber
-			  INNER JOIN coa.inducks_person p
-				ON u_p_m.personcode = p.personcode
-			  INNER JOIN coa.inducks_story s 
-			  	ON u_p_m.storycode = s.storycode
-			WHERE u_p_s.ID_User=$id_user $condition_pays
-			GROUP BY u_p_s.publicationcode, u_p_s.issuenumber, u_p_m.personcode
-			ORDER BY u_p_s.Score DESC
-			LIMIT 20
-		";
-		$resultat_suggestions_publications = Inducks::requete_select($requete_suggestions_publications, 'dm_stats');
+        $suggestions = Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'GET', '/collection/stats/suggestedissues', 'ducksmanager', [$pays]);
 
-		if (count($resultat_suggestions_publications) === 0) {
+		if (count($suggestions['issues']) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php
 		}
 		else {
-			$min_score = $resultat_suggestions_publications[count($resultat_suggestions_publications) - 1]['Score'];
-			$max_score = $resultat_suggestions_publications[0]['Score'];
-	
-			$publicationcodes = array_map(function($suggestion) {
-				return $suggestion['publicationcode'];
-			}, $resultat_suggestions_publications);
-	
-			$resultat_suggestions_publications_groupes = [];
-			array_walk($resultat_suggestions_publications, function ($suggestion) use (&$resultat_suggestions_publications_groupes, $min_score, $max_score) {
-				$issue = implode(' ', array($suggestion['publicationcode'], $suggestion['issuenumber']));
-				if (!array_key_exists($issue, $resultat_suggestions_publications_groupes)) {
-					$resultat_suggestions_publications_groupes[$issue] = [
-						'publicationcode' => $suggestion['publicationcode'],
-						'issuenumber' => $suggestion['issuenumber'],
-						'Score' => $suggestion['Score'],
-						'Importance' => $suggestion['Score'] === $max_score ? 1 : ($suggestion['Score'] === $min_score ? 3 : 2),
-						'stories' => [],
-					];
-				}
-				$resultat_suggestions_publications_groupes[$issue]['stories'][$suggestion['author']] = [
-					'titles' => explode('---', $suggestion['storytitles']),
-					'comments' => explode('---', $suggestion['storycomments']),
-					'codes' => explode('---', $suggestion['storycodes'])
-				];
-			});
-	
-			list($liste_pays_complets,$liste_magazines_complets) = Inducks::get_noms_complets($publicationcodes);
-	
-			foreach($resultat_suggestions_publications_groupes as $suggestion) {
-				list($pays,$magazine) = explode('/', $suggestion['publicationcode']);
+			$minScore = $suggestions['minScore'];
+			$maxScore = $suggestions['maxScore'];
+
+			foreach($suggestions['issues'] as $issuecode => $issue) {
+			    $publicationcode = $issue['publicationcode'];
+                $country = explode('/', $publicationcode)[0];
+                $issuenumber = $issue['issuenumber'];
+			    $importance = $issue['score'] === $maxScore ? 1 : ($issue['score'] === $minScore ? 3 : 2);
 				?>
 				<div>
-					<span class="numero top<?=$suggestion['Importance']?>"><?php
+					<span class="numero top<?=$importance?>"><?php
 					Affichage::afficher_texte_numero(
-						$pays,
-						$liste_magazines_complets[$suggestion['publicationcode']],
-						$suggestion['issuenumber']
+                        $country,
+                        $suggestions['publicationTitles'][$publicationcode],
+                        $issuenumber
 					);
 					?>&nbsp;</span><?=NUMERO_CONTIENT?>
 				</div>
 				<ul class="liste_histoires"><?php
-				foreach($suggestion['stories'] as $author => $stories) {
+				foreach($issue['stories'] as $author => $storiesOfAuthor) {
 					?><li>
 						<div>
-							<?=implode(' ', [count($stories['codes']), count($stories['codes']) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $author])?>
+							<?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions['authors'][$author]])?>
 						</div>
 						<ul class="liste_histoires">
-							<?php foreach($stories['codes'] as $i_code => $code) {
+							<?php foreach($storiesOfAuthor as $storyCode) {
 								?><li>
-									<?php Affichage::afficher_texte_histoire($code, $stories['titles'][$i_code], $stories['comments'][$i_code]);
+									<?php Affichage::afficher_texte_histoire($storyCode, @$suggestions['storyDetails'][$storyCode]['title'], @$suggestions['storyDetails'][$storyCode]['storycomment']);
 								?></li>
 								<?php
 							}?>
@@ -449,6 +382,10 @@ class Stats {
 }
 
 Stats::$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+
+if (count(ServeurCoa::$coa_servers) === 0) {
+    ServeurCoa::initCoaServers();
+}
 
 if (isset($_POST['graph'])) {
 

@@ -193,36 +193,56 @@ class Util {
             'query' => $query,
             'db' => $db
         ];
-        return self::get_service_results($coaServer, '/rawsql', 'rawsql', $parameters);
+        return self::get_service_results($coaServer, 'POST', '/rawsql', 'rawsql', $parameters);
     }
 
     /**
      * @param ServeurCoa $coaServer
+     * @param $method
+     * @param $path
      * @param string $role
      * @param array $parameters
      * @return mixed|null
      */
-    public static function get_service_results(ServeurCoa $coaServer, $path, $role, $parameters)
+    public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl() . '/' . $coaServer->web_root . $path);
+        switch($method) {
+            case 'POST':
+                curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl() . '/' . $coaServer->web_root . $path);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+            break;
+            case 'GET':
+                curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl() . '/' . $coaServer->web_root . $path . '/' . implode(',', $parameters));
+            break;
+        }
+        curl_setopt($ch, CURLOPT_POST, $method === 'POST');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        $headers = array(
             'Authorization: Basic ' . base64_encode(implode(':', [$role, $coaServer->role_passwords[$role]])),
             'Content-Type: application/x-www-form-urlencoded',
             'Cache-Control: no-cache',
             'x-dm-version: 1.0',
-        ));
-        $buffer = curl_exec($ch);
-        curl_close($ch);
-        if ($buffer) {
-            return $buffer;
-        } else {
-            return null;
+        );
+        if (isset($_COOKIE['user'])) {
+            $headers[] = 'x-dm-user: ' . $_COOKIE['user'];
+            $headers[] = 'x-dm-pass: ' . $_COOKIE['pass'];
         }
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $buffer = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
+            $results = json_decode($buffer, true);
+            if (is_array($results)) {
+                return $results;
+            }
+        }
+        return [];
     }
 
 }

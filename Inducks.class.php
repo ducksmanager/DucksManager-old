@@ -43,14 +43,12 @@ class Inducks {
             }
 
             if (empty($output) || $output === ERREUR_CONNEXION_INDUCKS) {
+                unset(ServeurCoa::$coa_servers[$coaServerName]);
                 return [];
             }
             else {
                 if (isset($coaServer->role_passwords)) { // DM server
-                    $results = json_decode($output, true);
-                    if (is_array($results)) {
-                        return $results;
-                    }
+                    return $output;
                 }
                 else {
                     $unserialized = @unserialize($output);
@@ -64,7 +62,6 @@ class Inducks {
                         return $resultats;
                     }
                 }
-                unset(ServeurCoa::$coa_servers[$coaServerName]);
             }
         }
         return [];
@@ -315,7 +312,7 @@ if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();
 
 	if ($_POST['inclure_tous_pays']) {
-		?><option id="all"><?=TOUS_PAYS?><?php
+		?><option id="ALL"><?=TOUS_PAYS?><?php
 	}
 	$selected = isset($_POST['selected']) ? $_POST['selected'] : 'fr';
 
