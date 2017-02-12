@@ -204,18 +204,23 @@ class Util {
      * @param array $parameters
      * @return mixed|null
      */
-    public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters)
+    public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters = [])
     {
         $ch = curl_init();
+        $url = '';
         switch($method) {
             case 'POST':
-                curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl() . '/' . $coaServer->web_root . $path);
+                $url = $coaServer->getUrl() . '/' . $coaServer->web_root . $path;
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
             break;
             case 'GET':
-                curl_setopt($ch, CURLOPT_URL, $coaServer->getUrl() . '/' . $coaServer->web_root . $path . '/' . implode(',', $parameters));
+                $url = $coaServer->getUrl() . '/' . $coaServer->web_root . $path;
+                if (count($parameters) > 0) {
+                    $url .= '/' . implode('/', $parameters);
+                }
             break;
         }
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, $method === 'POST');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
