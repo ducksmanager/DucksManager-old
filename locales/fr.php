@@ -409,6 +409,7 @@ define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Remplissez les informations ci-dessous 
 define('REMPLIR_PAYS_ET_MAGAZINE','Vous devez remplir les champs correspondant au pays et au nom du magazine\n pour lequel vous souhaitez ajouter des num&eacute;ros !');
 define('RESULTAT_NUMEROS_INDUCKS','DucksManager a trouv&eacute; les num&eacute;ros suivants sur votre compte Inducks.');
 define('SALUTATION','Bonjour %s,');
+define('SANS_TITRE', 'Sans titre');
 define('SAVE_ENREGISTRER_CHANGEMENTS','Enregistrer les changements');
 define('SELECTIONNER_DATE_ACHAT','Vous devez selectionner une date d\'achat !');
 define('SELECTIONNER_MAGAZINE','Veuillez s&eacute;lectionner un magazine !');
@@ -446,7 +447,6 @@ define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Texture de l\'&eacute;tag&egrave;re');
 define('TEXTURE__BOIS','Bois');
 define('TITRE','DucksManager : Gestion de collection de bandes dessinées Disney');
-define('TITRE_INCONNU', 'Titre inconnu');
 define('TITRE_PAGE_ACCUEIL','Bienvenue !');
 define('TITRE_PAGE_AGRANDIR','Agrandir ma collection');
 define('TITRE_PAGE_BIBLIOTHEQUE','Bibliotheque DucksManager');

@@ -273,7 +273,7 @@ class Liste {
 				?>
 				<br /><br />
 				<?=AUTEURS_FAVORIS_INTRO_1?>
-				<a target="_blank" href="/?action=agrandir&onglet=auteurs_favoris"><?=AUTEURS_FAVORIS_INTRO_2?></a>
+				<a target="_blank" href="?action=agrandir&onglet=auteurs_favoris"><?=AUTEURS_FAVORIS_INTRO_2?></a>
 				<br />
 				<?=STATISTIQUES_AUTEURS_INTRO?>
 				<br /><br />

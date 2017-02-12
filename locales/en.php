@@ -410,6 +410,7 @@ define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Fill in the following fields in order D
 define('REMPLIR_PAYS_ET_MAGAZINE','You must fill the fields corresponding to the country and the magazine\n for which you want to add some issues');
 define('RESULTAT_NUMEROS_INDUCKS','DucksManager found the following issues on your Inducks account.');
 define('SALUTATION','Hi %s,');
+define('SANS_TITRE', 'No title');
 define('SAVE_ENREGISTRER_CHANGEMENTS','Save changes');
 define('SELECTIONNER_DATE_ACHAT','You must select a purchase date!');
 define('SELECTIONNER_MAGAZINE','Please select a magazine');
@@ -447,7 +448,6 @@ define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Shelf texture');
 define('TEXTURE__BOIS','Wood');
 define('TITRE','DucksManager : Your Disney comics collection manager');
-define('TITRE_INCONNU', 'Unknown title');
 define('TITRE_PAGE_ACCUEIL','Welcome !');
 define('TITRE_PAGE_AGRANDIR','Expand your collection');
 define('TITRE_PAGE_BIBLIOTHEQUE','The DucksManager bookcase');

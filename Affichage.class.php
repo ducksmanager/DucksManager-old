@@ -330,7 +330,7 @@ class Affichage {
 	static function afficher_texte_histoire($code, $title, $comment)
 	{
 		if (empty($title)) {
-			$title = TITRE_INCONNU.($comment ? ' ('.$comment.') ' : '');
+			$title = SANS_TITRE.($comment ? ' ('.$comment.') ' : '');
 		}
 		?><?=$title?>&nbsp;<a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search=">
 			<?=VOIR_PLUS?>

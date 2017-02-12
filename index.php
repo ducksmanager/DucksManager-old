@@ -268,7 +268,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
             break;
         case 'agrandir':
             ?>
-            initPays(true, '<?=empty($_GET['pays']) ? 'all' : $_GET['pays']?>');<?php
+            initPays(true, '<?=empty($_GET['pays']) ? 'ALL' : $_GET['pays']?>');<?php
             break;
     }
     ?>">
@@ -1182,7 +1182,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                         $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
                                         $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                                         ?>
-                                        <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="/?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
+                                        <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
                                         <?=EXPLICATION_NOTATION_AUTEURS3?>
                                         <br /><br />
                                         <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?>
@@ -1199,17 +1199,16 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 echo AUTEURS_NON_NOTES;
                                             }
                                             else {
-                                                echo SUGGESTIONS_PUBLICATIONS_DESACTIVE;
-                                                /*
+
                                                 ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
                                                 <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
                                                     <option id="chargement_pays"><?=CHARGEMENT?>...
                                                 </select>
                                                 <div id="suggestions"><?php
                                                     include_once 'Stats.class.php';
-                                                    $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'all') ? $_GET['pays'] : null;
+                                                    $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
                                                     Stats::showSuggestedPublications($pays);
-                                                */?></div><?php
+                                                ?></div><?php
                                             }
                                         }
                                         else {
