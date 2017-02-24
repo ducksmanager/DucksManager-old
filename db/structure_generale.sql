@@ -256,25 +256,6 @@ CREATE TABLE `numeros_recommandes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `parametres_listes`
---
-
-DROP TABLE IF EXISTS `parametres_listes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `parametres_listes` (
-  `ID_Utilisateur` int(10) DEFAULT NULL,
-  `Pays` varchar(3) COLLATE latin1_german2_ci DEFAULT NULL,
-  `Magazine` varchar(6) COLLATE latin1_german2_ci DEFAULT NULL,
-  `Type_Liste` varchar(20) COLLATE latin1_german2_ci DEFAULT NULL,
-  `Position_Liste` int(4) DEFAULT NULL,
-  `Parametre` varchar(30) COLLATE latin1_german2_ci DEFAULT NULL,
-  `Valeur` varchar(20) COLLATE latin1_german2_ci DEFAULT NULL,
-  KEY `Index 1` (`ID_Utilisateur`,`Pays`,`Magazine`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `pays`
 --
 

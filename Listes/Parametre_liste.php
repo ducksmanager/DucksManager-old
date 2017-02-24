@@ -10,7 +10,7 @@ class Parametre_liste {
 		$this->valeur_defaut=$defaut;
 	}
 	function verif($valeur) {
-		echo 'Cette fonction ne peut pas �tre appel�e directement (valeur : '.$valeur.')';
+		echo 'Cette fonction ne peut pas être appelée directement (valeur : '.$valeur.')';
 	}
 }
 
@@ -45,16 +45,5 @@ class Parametre_fixe  {
 	var $valeur;
 	function __construct($valeur) {
 		$this->valeur=$valeur;
-	}
-}
-
-class parametres_generaux extends Format_liste {
-	function __construct() {
-		$this->ajouter_parametres([
-			'espacement_boites'=>new Parametre_min_max('Espacement inter-boites',5,40,25,25),
-			'bordure_boites_r'=>new Parametre_min_max('Bordure - rouge',0,255,255,255),
-			'bordure_boites_v'=>new Parametre_min_max('Bordure - vert',0,255,0,0),
-			'bordure_boites_b'=>new Parametre_min_max('Bordure - bleu',0,255,0,0)]);
-		
 	}
 }

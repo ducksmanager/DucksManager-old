@@ -10,11 +10,9 @@ var l10n=['date_question','date_invalide','description_question','selectionner_d
     'description','description_invalide','acquisition_existante','mise_a_jour'];
 var protos=[];
 var l10n_items;
-var parametres_bd={};
 
 if (Object.isUndefined(Proto)) {
     var Proto = { };
-
 }
 
 Proto.Menu = Class.create({
@@ -87,12 +85,6 @@ Proto.Menu = Class.create({
                             });
                         item.groupName=groupname_name[0];
                         break;
-                    case 'print' : case 'magazine' :
-                        contenu_lien=new Element('span',{
-                            'name':item.groupName
-                            });
-                        name=item.groupName;
-                        break;
                 }
             }
             var lien=new Element('a', {
@@ -149,75 +141,23 @@ Proto.Menu = Class.create({
                         });
                         $$('.sous_menu.date')[0].addClassName('selected');
                     }
-                    break;
-                case 'magazine':
-                    if (this.container.visible() && !e.isRightClick()) {
-                        this.cacher_tous_menus(e);
-                    }
-                    break;
+                break;
             }
         }.bind(this));
 
         switch (this.options.type) {
-            case 'gestion_numeros' : case 'magazine':
+            case 'gestion_numeros':
                 $$(this.options.selector).invoke('observe', Prototype.Browser.Opera ? 'click' : 'contextmenu', function(e){
                     if (Prototype.Browser.Opera && !e.ctrlKey) {
                         return;
                     }
                     this.show(e);
                 }.bind(this));
-                break;
+            break;
         }
 
         /** Sous-menu **/
         switch (this.options.type) {
-            case 'magazine':
-                var sous_menu=new Element('div',{
-                    'id':'sous_menu_type_liste'
-                })
-                .addClassName('menu desktop')
-                .setStyle({
-                    'display':'none'
-                });
-
-                var listes=new Element('ul');
-                types_listes.each(function(liste) {
-                    listes.insert(new Element('li').update(Object.extend(
-                        new Element('a', {
-                            href: 'javascript:return false;',
-                            name: liste.name,
-                            'class': 'item_sous_menu enabled type_liste '+liste.className
-                        }))
-                    .observe('click', function (e) {
-                        action_onclick(protos['magazine'], e);
-                    })
-                    .observe('mouseover', function (e) {
-                        action_onmouseover(protos['magazine'], e);
-                    })
-                    .update(liste.name)));
-                });
-                sous_menu.insert(listes);
-                body.insert(sous_menu);
-                        
-                var sous_menu_parametres=new Element('div',{
-                    'id':'sous_menu_parametres_liste'
-                })
-                .addClassName('menu desktop small')
-                .setStyle({
-                    'display':'none'
-                });
-
-                var parametres_ul=new Element('ul');
-                parametres_ul.insert(new Element('li').update(Object.extend(
-                    new Element('a', {
-                        href: 'javascript:return false;',
-                        name: 'chargement',
-                        'class': 'item_sous_menu enabled type_liste chargement'
-                    }))
-                .update('Chargement...')));
-                sous_menu_parametres.insert(parametres_ul);
-                body.insert(sous_menu_parametres);
-                break;
             case 'gestion_numeros' :
                 var sous_menu=new Element('div',{
                     'id':'sous_menu_achat_associer_date_achat'
@@ -318,17 +258,20 @@ Proto.Menu = Class.create({
                     else
                         $('dates_existantes').next().insert(nouvelle_date_li);
                     nouvelle_date_ok.observe('click', function () {
-                        var date_valide=true;
-                        var date_entree=$('nouvelle_date').getValue();
+                      var date_valide=true;
+                      var nouvelleDate = $('nouvelle_date');
+                      var nouvelleDescription = $('nouvelle_description');
+
+                      var date_entree=nouvelleDate.getValue();
                         if (!isDate(date_entree) || !date_entree)
                             date_valide=false;
-                        if (!date_valide) {
-                            $('nouvelle_date').setStyle({
+                      if (!date_valide) {
+                            nouvelleDate.setStyle({
                                 'fontStyle':'italic',
                                 'color':'red'
                             });
-                            $('nouvelle_date').value=l10n['date_invalide'];
-                            $('nouvelle_description').focus();
+                            nouvelleDate.value=l10n['date_invalide'];
+                            nouvelleDescription.focus();
                             setTimeout(function() {
                                 $('nouvelle_date').setStyle({
                                     'fontStyle':'',
@@ -343,11 +286,11 @@ Proto.Menu = Class.create({
                         if (description_entree.textLength>30 || description_entree=='')
                             description_valide=false;
                         if (!description_valide) {
-                            $('nouvelle_description').setStyle({
+                            nouvelleDescription.setStyle({
                                 'fontStyle':'italic',
                                 'color':'red'
                             });
-                            $('nouvelle_description').writeAttribute({
+                            nouvelleDescription.writeAttribute({
                                 'value':l10n['description_question']
                                 });
                             setTimeout(function() {
@@ -370,11 +313,13 @@ Proto.Menu = Class.create({
                             onSuccess:function(transport,json) {
 
                                 if (transport.responseText=='Date') {
-                                    $('nouvelle_description').setStyle({
+                                  var nouvelleDescription = $('nouvelle_description');
+
+                                  nouvelleDescription.setStyle({
                                         'fontStyle':'italic',
                                         'color':'red'
                                     });
-                                    $('nouvelle_description').value=l10n['acquisition_existante'];
+                                    nouvelleDescription.value=l10n['acquisition_existante'];
                                     setTimeout(function() {
                                         $('nouvelle_description').setStyle({
                                             'fontStyle':'',
@@ -448,122 +393,7 @@ Proto.Menu = Class.create({
                     }
                     bcl=false;
                 }
-                break;
-            case 'magazine':
-                var draggable_box=$(e.target).hasClassName('draggable_box') ? $(e.target): $(e.target).up('.draggable_box');
-                var id_magazine_selectionne=toMagazineID(draggable_box);
-                $(this.getId('entete')).update(draggable_box.down('.titre_magazine').readAttribute('name'));
-
-                // Cr�ation du sous-menu des magazines pouvant �tre extraits
-                if ($('sous_menu_extraire'))
-                    $('sous_menu_extraire').remove();
-                if (id_magazine_selectionne.match(/[^_]+_[^-]+\-[^_]+_/)) { // + d'un magazine dans la boite'
-                    $('menu_contextuel_magazine').down('.extraire').removeClassName('disabled');
-                    $('menu_contextuel_magazine').down('.extraire').addClassName('enabled');
-                    var sous_menu=new Element('div',{
-                        'id':'sous_menu_extraire'
-                    })
-                    .addClassName('menu desktop')
-                    .setStyle({
-                        'display':'none'
-                    });
-
-                    var magazines=id_magazine_selectionne.split('-');
-                    var magazines_a_extraire=new Element('ul');
-                    magazines.each(function(magazine) {
-                        var pays_magazine=magazine.split('_');
-                        var pays=pays_magazine[0];
-                        magazine=pays_magazine[1];
-                        magazines_a_extraire.insert(new Element('li').update(Object.extend(
-                            new Element('a', {
-                                href: 'javascript:return false;',
-                                name: pays+'_'+magazine,
-                                'class': 'enabled '+magazine
-                            })
-                            .setStyle({
-                                'background':'url("images/flags/'+pays+'.png") no-repeat scroll 2px 50% #F9F8F7'
-                                }))
-                        .observe('click', function (e) {
-                            action_onclick(protos['magazine'], e);
-                        })
-                        .update(magazine)));
-                    });
-                    sous_menu.insert(magazines_a_extraire);
-                    $('body').insert(sous_menu);
-                }
-                else {
-                    $('menu_contextuel_magazine').down('.extraire').removeClassName('enabled');
-                    $('menu_contextuel_magazine').down('.extraire').addClassName('disabled');
-                }
-                    
-                new Ajax.Request('Liste.class.php', {
-                    method: 'post',
-                    parameters:'parametres=true&id_magazine='+id_magazine_selectionne,
-                    onSuccess:function(transport) {
-                        var parametres_ul=$$('#sous_menu_parametres_liste ul')[0];
-                        var id_magazine=transport.request.parameters.id_magazine;
-                        parametres_ul.update();
-                        var parametres={};
-                        parametres_bd[id_magazine]=JSON.parse($(id_magazine).down('.contenu_liste').down().src.split('&')[2].split('=')[1].replace(new RegExp(/\|/g),'"'));
-                        
-                        $('contenu_boite_selectionnee').update();
-                        toggle_item_menu($$('[name="parametres"]')[0]);
-                        toggle_item_menu($$('[name="boite_selectionnee"]')[0]);
-                        for(var i in transport.headerJSON) {
-                            parametres[i]= {
-                                nom: i,
-                                min: parseInt(transport.headerJSON[i]['min']),
-                                max: parseInt(transport.headerJSON[i]['max']),
-                                valeur_defaut: parseInt(transport.headerJSON[i]['valeur_defaut']),
-                                valeur: parseInt(parametres_bd[id_magazine][i].valeur)
-                            };
-                            var bouton_moins=new Element('button',{'name':parametres[i].nom,'class':'moins'}).update('-');
-                            var bouton_plus=new Element('button',{'name':parametres[i].nom,'class':'plus'}).update('+');
-                            parametres_ul.insert(new Element('li').update(Object.extend(
-                                new Element('a', {
-                                    href: 'javascript:return false;',
-                                    name: parametres[i].nom,
-                                    'class': 'item_sous_menu enabled parametre '+parametres[i].nom
-                                }))
-                            .observe('click', function (e) {
-                                action_onclick(protos['magazine'], e);
-                            })
-                            .observe('mouseover', function (e) {
-                                action_onmouseover(protos['magazine'], e);
-                            })
-                            .update(parametres[i].nom)))
-                            .insert(bouton_moins)
-                            .insert(new Element('input',{
-                                'name':parametres[i].nom,
-                                'type':'text',
-                                'value':parametres[i].valeur,
-                                'readonly':'readonly'
-                            }))
-                            .insert(bouton_plus);
-                            var slider=$('contenu_general').down('table').clone(true);
-                            slider.down('td').update(parametres[i].nom);
-                            slider.down('.details_parametre').writeAttribute({'id':parametres[i].nom});
-                            slider.down('.valeur_courante').setValue(parametres[i].valeur);
-                            slider.down('.min').setValue(parametres[i].min);
-                            slider.down('.max').setValue(parametres[i].max);
-                            $('contenu_boite_selectionnee').insert(slider);
-                            creer_slider(slider);
-                            
-                            [bouton_moins,bouton_plus].invoke('observe','click',function(e) {
-                                var est_plus=Event.element(e).hasClassName('plus');
-                                var nom_parametre=Event.element(e).readAttribute('name');
-                                var input=Event.element(e).next();
-                                if ((!est_plus && parseInt(parametres[nom_parametre].min)<parseInt(input.value)) || (est_plus && parseInt(parametres[nom_parametre].max)>parseInt(input.value))) {
-                                    parametres[nom_parametre].valeur= parseInt(parametres[nom_parametre].valeur)+(est_plus ? 1 : -1);
-                                    Event.element(e).up().down('input').writeAttribute({'value':parametres[nom_parametre].valeur});
-                                    update_list(id_magazine,$(id_magazine).down('.contenu_liste').title,JSON.stringify(parametres));
-                                }
-                            });
-                        }
-                    }
-                });
-                    
-                break;
+            break;
         }
         this.options.beforeShow(e);
         var x = Event.pointer(e).x,
@@ -639,10 +469,6 @@ function action_onmouseover(proto,e) {
                 });
             }
         }
-    }
-    else if (target.hasClassName('type_liste')) {
-        var type_liste=elementToTypeListe(target);
-        afficher_infos_type_liste(type_liste);
     }
 }
 
@@ -738,103 +564,6 @@ function action_onclick(proto,e) {
             }
 
             break;
-        case 'print':
-            e.stop();
-            if (target.tagName=='SPAN')
-                target=target.up();
-            var draggable=$(draggable_id);
-            var droppable=$(droppable_id);
-            var draggable_id_general=draggable.readAttribute('id').substring('box_'.length);
-            var droppable_id_general=droppable.readAttribute('id').substring('box_'.length);
-            if (target.hasClassName('fusionner_les_deux')) {
-                if (draggable.down('.contenu_liste').readAttribute('name')
-                    != droppable.down('.contenu_liste').readAttribute('name')) {
-                    alert(l10n_print['erreur_fusion_listes_types_differents']);
-                    $(draggable_id).setStyle({
-                        'zIndex':'',
-                        'top':''
-                    });
-                }
-                else {
-                    var type_liste=draggable.down('.contenu_liste').readAttribute('name');
-                    var fusions=draggable_id_general+'-'+droppable_id_general;
-                    new Ajax.Request('Liste.class.php', {
-                        method: 'post',
-                        parameters:'sous_liste=true'
-                        +'&type_liste='+type_liste+'&fusions='+fusions,
-                        onSuccess:function(transport) {
-                            var ancien_id_general=$(draggable_id).readAttribute('id').substring('box_'.length);
-                            $(draggable_id).down('.contenu_liste').update(transport.responseText);
-                            var nouveau_titre=l10n_print['magazines_multiples']+' : '+fusions.replace(/([_])/g, "/").replace(/([-])/g, " - ");
-                            var nouvel_id=transport.request.parameters.fusions;
-                            $(draggable_id).down('.titre_magazine').update(nouveau_titre)
-                            .writeAttribute({
-                                'name':nouveau_titre
-                            });
-                            $('espacement_'+$(droppable_id).readAttribute('id').substring('box_'.length)).remove();
-                            $(droppable_id).remove();
-                            $(draggable_id).setStyle({
-                                'zIndex':'',
-                                'top':''
-                            });
-                            $(draggable_id).writeAttribute({
-                                'id':'box_'+nouvel_id
-                                });
-                            $(ancien_id_general).writeAttribute({
-                                'id':nouvel_id
-                            });
-                            $(ancien_id_general+'_contenu').writeAttribute({
-                                'id':nouvel_id+'_contenu'
-                                });
-                            $('espacement_'+ancien_id_general).writeAttribute({
-                                'id':'espacement_'+nouvel_id
-                                });
-                        }
-                    });
-                }
-            }
-            else if (target.hasClassName('deplacer_avant')) {
-                droppable.insert({
-                    'before':draggable
-                });
-                draggable.setStyle({
-                    'zIndex':'',
-                    'top':'',
-                    'marginLeft':''
-                });
-                droppable.insert({
-                    'before':$('espacement_'+draggable_id_general)
-                    });
-            }
-            else if (target.hasClassName('deplacer_apres')) {
-                droppable.insert({
-                    'after':draggable
-                });
-                draggable.setStyle({
-                    'zIndex':'',
-                    'top':'',
-                    'marginLeft':''
-                });
-                droppable.insert({
-                    'after':$('espacement_'+draggable_id_general)
-                    });
-            }
-            if (protos[proto.options.type].ie)
-                protos[proto.options.type].shim.hide();
-            protos[proto.options.type].container.hide();
-                
-            proto.cacher_tous_menus(e);
-            break;
-
-        case 'magazine':
-            if (target.up('#sous_menu_type_liste')) { // Sous-menu type de liste
-                modifier_type_liste(id_magazine_selectionne,elementToTypeListe(target));
-            }
-            else if (target.up('#sous_menu_extraire')) { // Sous-menu Extraire
-                extraire_magazine(id_magazine_selectionne,target.name);
-            }
-            proto.cacher_tous_menus(e);
-            break;
     }
 }
 
@@ -881,66 +610,4 @@ function today() {
     if (mois<10) mois='0'+mois;
     var annee=la_date.getFullYear();
     return annee+'-'+mois+'-'+jour;
-}
-
-function elementToTypeListe(element) {
-    var classes=$w(element.className);
-    for(var i=0;i<classes.length;i++) {
-        if (['item_sous_menu', 'enabled', 'type_liste'].indexOf(classes[i])==-1) {
-            return classes[i];
-        }
-    }
-    return null;
-}
-
-function afficher_infos_type_liste(type_liste) {
-    $('contenu_index_aide').update($('titre_index_aide').update(l10n_divers['chargement']+'...'));
-    description_liste_en_cours=type_liste;
-    new Ajax.Request('Liste.class.php', {
-        method: 'post',
-        parameters:'get_description=true&type_liste='+type_liste,
-        onSuccess:function(transport) {
-            if (description_liste_en_cours!=transport.request.parameters.type_liste)
-                return;
-            var resultat=transport.headerJSON;
-            $('titre_index_aide').update(resultat.titre);
-            $('contenu_index_aide').insert(resultat.contenu);
-        }
-    });
-}
-
-function changer_position_liste(pays_magazine,pays_magazine_precedent,pays_magazine_suivant,position_liste) {
-    new Ajax.Request('Liste.class.php', {
-        method: 'post',
-        parameters:'changer_position_liste=true&pays_magazine='+pays_magazine+'&precedent='+pays_magazine_precedent+'&suivant='+pays_magazine_suivant+'&nouvelle_position='+position_liste,
-        onSuccess:function() {
-            
-        }
-    });
-}
-
-function update_list(magazine_selectionne,type_liste,parametres) {
-    new Ajax.Request('Liste.class.php', {
-        method: 'post',
-        parameters:'update_list=true&pays_magazine='+magazine_selectionne+'&type_liste='+type_liste+'&parametres='+parametres,
-        onSuccess:function(transport) {
-           $(magazine_selectionne).down('.contenu_liste').update(transport.responseText);
-           fin_update();
-        }
-    });
-}
-
-function update_parametres_generaux(parametres) {
-    new Ajax.Request('Liste.class.php', {
-        method: 'post',
-        parameters:'update_parametres_generaux=true&parametres='+parametres,
-        onSuccess:function() {
-           fin_update();
-        }
-    });
-}
-
-function fin_update() {
-    afficher_termine();
-    setTimeout(afficher_vide,1000);
 }

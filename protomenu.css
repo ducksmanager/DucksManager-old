@@ -36,11 +36,6 @@ div.menu input {
 	list-style-position: outside;
 }
 
-.sous_menu {
-	/*background:transparent url(images/fleche_sous_menu.png) no-repeat scroll 100% 50%;*/
-}
-
-
 /* FIREFOX STYLES */
 
 .menu.firefox {
@@ -144,28 +139,6 @@ div.menu input {
 	line-height: 1px !important;
 }
 
-.menu.desktop a.deplacer_avant {
-  background: #f9f8f7 url(images/deplacer_haut.png) 2px 50% no-repeat;
-}
-.menu.desktop a.deplacer_apres {
-  background: #f9f8f7 url(images/deplacer_bas.png) 2px 50% no-repeat;
-}
-.menu.desktop a.fusionner_les_deux {
-  background: #f9f8f7 url(images/fusionner.png) 2px 50% no-repeat;
-}
-
-.menu.desktop a.type_liste {
-  background: #f9f8f7 url(images/type_liste.png) 2px 50% no-repeat;
-}
-.menu.desktop a.extraire {
-  background: #f9f8f7 url(images/layers.png) 2px 50% no-repeat;
-}
-.menu.desktop a.fusionner_tout {
-  background: #f9f8f7 url(images/fusionner_tout.png) 2px 50% no-repeat;
-}
-.menu.desktop a.type_liste_global {
-  background: #f9f8f7 url(images/type_liste_global.png) 2px 50% no-repeat;
-}
 a.classique {
   background: #ffffff url(images/list.png) 2px 50% no-repeat;
 }
@@ -224,18 +197,7 @@ a.dmspiral {
 .menu.desktop a.save {
   background: #f9f8f7 url(images/page_save.png) 2px 50% no-repeat;
 }
-.menu.desktop a.xsl {
-  background: #f9f8f7 url(images/page_excel.png) 2px 50% no-repeat;
-}
-.menu.desktop a.doc {
-  background: #f9f8f7 url(images/page_word.png) 2px 50% no-repeat;
-}
-.menu.desktop a.pdf {
-  background: #f9f8f7 url(images/page_acrobat.png) 2px 50% no-repeat;
-}
-.menu.desktop a.send {
-  background: #f9f8f7 url(images/email.png) 2px 50% no-repeat;
-}
+
 /* we need explicit enabled class to overcome css deficiences (without creating unnecessary markup) 
 */
 .menu.desktop a.enabled:hover {
@@ -255,20 +217,6 @@ a.dmspiral {
 .menu.desktop a.save.enabled:hover {
 	background-color: green;
 	color: #fff;
-}
-/*
-.editer_date {
-	background:url("images/editer.png") no-repeat scroll 215px center transparent;
-}
-.supprimer_date {
-	background:url("images/supprimer.png") no-repeat scroll right center transparent;
-}*/
-        
-#sous_menu_parametres_liste input {
-    margin:0;
-    width: 35px;
-    text-align: center;
-    background-color: white;
 }
 
 .menu.desktop a.parametre.enabled:hover {

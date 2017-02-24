@@ -291,37 +291,37 @@ class Liste {
 	}
 
 	function add_to_database($id_user) {
-			$cpt=0;
-			foreach($this->collection as $pays=>$numeros_pays) {
-				if ($pays=='country')
-					continue;
-				foreach($numeros_pays as $magazine=>$numeros) {
-					foreach($numeros as $numero) {
-						$requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
-								.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
-						DM_Core::$d->requete($requete);
-						$cpt++;
-					}
+		$cpt=0;
+		foreach($this->collection as $pays=>$numeros_pays) {
+			if ($pays=='country')
+				continue;
+			foreach($numeros_pays as $magazine=>$numeros) {
+				foreach($numeros as $numero) {
+					$requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
+							.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
+					DM_Core::$d->requete($requete);
+					$cpt++;
 				}
 			}
-			return $cpt;
+		}
+		return $cpt;
 	}
 
-		function remove_from_database($id_user) {
-			$cpt=0;
-			foreach($this->collection as $pays=>$numeros_pays) {
-				if ($pays=='country')
-					continue;
-				foreach($numeros_pays as $magazine=>$numeros) {
-					foreach($numeros as $numero) {
-						$num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
-						$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
-						DM_Core::$d->requete($requete);
-						$cpt++;
-					}
+	function remove_from_database($id_user) {
+		$cpt=0;
+		foreach($this->collection as $pays=>$numeros_pays) {
+			if ($pays=='country')
+				continue;
+			foreach($numeros_pays as $magazine=>$numeros) {
+				foreach($numeros as $numero) {
+					$num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
+					$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
+					DM_Core::$d->requete($requete);
+					$cpt++;
 				}
 			}
-			return $cpt;
+		}
+		return $cpt;
 	}
 
 	function synchro_to_database($ajouter_numeros=true,$supprimer_numeros=false) {
@@ -438,10 +438,12 @@ class Liste {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
 				foreach($this->collection[$pays][$magazine] as $numero_liste) {
 					if ($numero_liste[0]==$numero) {
-						return [$numero_liste[0],
-									 array_key_exists($numero_liste[1],Database::$etats) ? $numero_liste[1] : 'indefini',
-									 $numero_liste[2],
-									 $numero_liste[3]];
+						return [
+							$numero_liste[0],
+						 	array_key_exists($numero_liste[1],Database::$etats) ? $numero_liste[1] : 'indefini',
+							$numero_liste[2],
+							$numero_liste[3]
+						];
 					}
 				}
 			}
@@ -462,222 +464,35 @@ class Liste {
 		}
 		$this->collection=$collection2;
 	}
-		
-		function get_liste_auto($pays,$magazine) {
-			$nb_non_numeriques=0;
-			self::set_types_listes();
-			foreach($this->collection[$pays][$magazine] as $numero_et_etat) {
-				$numero = $numero_et_etat[0];
-				if (!(collectable::est_listable($numero)))
-					$nb_non_numeriques++;
-			}
-			return 'dmspiral';
-		}
 
-		static function import($liste_texte) {
-			$l=new Liste($liste_texte);
-			if ($l->collection == []) {
-				echo AUCUN_NUMERO_INDUCKS;
-				return [false,0,0];
+	static function import($liste_texte) {
+		$l=new Liste($liste_texte);
+		$ajouts = 0;
+		$suppressions = 0;
+		if ($l->collection == []) {
+			echo AUCUN_NUMERO_INDUCKS;
+			return [false,0,0];
+		}
+		else {
+			if (isset($_SESSION['user'])) {
+				$id_user = DM_Core::$d->user_to_id($_SESSION['user']);
+				$l_ducksmanager = DM_Core::$d->toList($id_user);
+				list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
+				if ($ajouts==0 && $suppressions==0) {
+					echo LISTES_IDENTIQUES;
+					return [true,0,0];
+				}
 			}
 			else {
-				if (isset($_SESSION['user'])) {
-					$id_user = DM_Core::$d->user_to_id($_SESSION['user']);
-					$l_ducksmanager = DM_Core::$d->toList($id_user);
-					list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
-					if ($ajouts==0 && $suppressions==0) {
-						echo LISTES_IDENTIQUES;
-						return [true,0,0];
-					}
-				}
-				else {
-					echo RESULTAT_NUMEROS_INDUCKS;
-					$l->afficher('Classique');
-				}
-				return [true,$ajouts, $suppressions];
+				echo RESULTAT_NUMEROS_INDUCKS;
+				$l->afficher('Classique');
 			}
+			return [true,$ajouts, $suppressions];
 		}
-		
-		static function init_parametres_boite($pays,$magazine,$type_liste,$position_liste) {
-			@session_start();
-			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-			if (file_exists('Listes/Liste.'.$type_liste.'.class.php'))
-				include_once('Listes/Liste.'.$type_liste.'.class.php');
-
-			$o_tmp=new $type_liste;
-			if ($o_tmp->getListeParametresModifiables() == new stdClass()) {
-				$requete_ajouter_boite='INSERT INTO parametres_listes(`ID_Utilisateur`,`Pays`,`Magazine`,`Type_Liste`,`Position_Liste`,`Parametre`,`Valeur`) VALUES '
-									  .'('.$id_user.',\''.$pays.'\',\''.$magazine.'\',\''.$type_liste.'\','.$position_liste.',NULL,NULL)';
-				DM_Core::$d->requete($requete_ajouter_boite);
-			}
-			else {
-				foreach($o_tmp->getListeParametresModifiables() as $nom_parametre=>$parametre) {
-					$requete_ajouter_boite='INSERT INTO parametres_listes(`ID_Utilisateur`,`Pays`,`Magazine`,`Type_Liste`,`Position_Liste`,`Parametre`,`Valeur`) VALUES '
-										  .'('.$id_user.',\''.$pays.'\',\''.$magazine.'\',\''.$type_liste.'\','.$position_liste.',\''.$nom_parametre.'\',\''.$parametre->valeur_defaut.'\')';
-					DM_Core::$d->requete($requete_ajouter_boite);
-				}
-			}
-		}
-	
-		/**
-		 * @param $parametres
-		 * @param $id_user
-		 * @param $pays
-		 * @param $magazine
-		 */
-		static function maj_parametres($parametres, $id_user, $pays, $magazine)
-		{
-			foreach ($parametres as $parametre => $valeur) {
-				$requete_modifier_parametre = 'UPDATE parametres_listes SET Valeur=\'' . $valeur . '\' '
-					. 'WHERE ID_Utilisateur=' . $id_user . ' AND Pays = \'' . $pays . '\' AND Magazine = \'' . $magazine . '\' AND Parametre = \'' . $parametre . '\'';
-				DM_Core::$d->requete($requete_modifier_parametre);
-			}
-		}
+	}
 }
 if (isset($_POST['parametres']))
 	$_POST['parametres'] = str_replace('\"', '"', $_POST['parametres']);
-
-if (isset($_POST['types_listes'])) {
-	header("X-JSON: " . json_encode(Liste::set_types_listes()));
-}
-elseif(isset($_POST['sous_liste'])) {
-	@session_start();
-	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-	$l=DM_Core::$d->toList($id_user);
-	if (isset($_POST['pays'])) {
-		$pays=$_POST['pays'];
-		$magazine=$_POST['magazine'];
-		$type_liste=$_POST['type_liste'];
-		$sous_liste=$l->sous_liste($pays,$magazine);
-	}
-	else
-		$sous_liste=new Liste();
-	if (isset($_POST['parametres']))
-		$parametres=json_decode($_POST['parametres']);
-	else
-		$parametres=new stdClass();
-	if (isset($_POST['type_liste'])) {
-		if (isset($_POST['fusions'])) {
-			$fusions=explode('-',$_POST['fusions']);
-			foreach($fusions as $fusion) {
-				$pays_et_magazine_fusion=explode('_',$fusion);
-				$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays = \''.$pays_et_magazine_fusion[0].'\' AND Magazine = \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
-				$resultat_get_type_liste=DM_Core::$d->requete_select($requete_get_type_liste);
-				if (count($resultat_get_type_liste) > 0) {
-					$type_liste=$resultat_get_type_liste[0]['Type_Liste'];
-
-					if (isset($_POST['type_liste']) && $_POST['type_liste'] != $type_liste) {
-						if (isset($_POST['confirmation_remplacement'])) {
-							$requete_effacer_parametres_courants='DELETE FROM parametres_listes WHERE Pays = \''.$pays_et_magazine_fusion[0].'\' AND Magazine = \''.$pays_et_magazine_fusion[1].'\' AND ID_Utilisateur='.$id_user;
-							DM_Core::$d->requete($requete_effacer_parametres_courants);
-						}
-						else {	
-							header("X-JSON: " . json_encode(['message'=>'Les parametres de la boite seront reinitialises si vous changez son type d\'affichage. Confirmer ?']));
-							exit(0);
-						}
-					}
-				}
-			}
-			$type_liste=$_POST['type_liste'];
-			$parametres= [];
-		}
-	}
-	else {
-		$requete_get_type_liste='SELECT Type_Liste FROM parametres_listes WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
-		$resultat_get_type_liste=DM_Core::$d->requete_select($requete_get_type_liste);
-		if (count($resultat_get_type_liste) > 0) {
-			$type_liste=$resultat_get_type_liste[0]['Type_Liste'];
-		}
-		else 
-			$type_liste='dmspiral';
-	}
-	if (isset($_POST['fusions'])) {
-		$fusions=explode('-',$_POST['fusions']);
-		foreach($fusions as $fusion) {
-			$pays_et_magazine_fusion=explode('_',$fusion);
-			$sous_liste->fusionnerAvec($l->sous_liste($pays_et_magazine_fusion[0],$pays_et_magazine_fusion[1]));
-		}
-	}
-	$sous_liste->afficher($type_liste,$parametres);
-}
-elseif(isset($_GET['liste_exemple'])) {
-	$l=new Liste();
-	$l->ListeExemple();
-		if (file_exists('Listes/Liste.'.$_GET['type_liste'].'.class.php'))
-			include_once('Listes/Liste.'.$_GET['type_liste'].'.class.php');
-	$objet =new $_GET['type_liste']();
-		?>
-		<html>
-			<head>
-				<meta content="text/html; charset=ISO-8859-1"
-					  http-equiv="content-type">
-				<title><?php echo TITRE;?></title>
-				<link rel="stylesheet" type="text/css" href="style.css">
-			</head>
-			<body>
-			<?php $objet->afficher($l->collection).'</font>';?>
-			</body>
-		</html>
-		<?php
-}
-elseif (isset($_POST['get_description'])) {
-	 if (file_exists('Listes/Liste.'.$_POST['type_liste'].'.class.php'))
-		include_once('Listes/Liste.'.$_POST['type_liste'].'.class.php');
-	$a=new ReflectionProperty($_POST['type_liste'], 'titre');
-	$b=new $_POST['type_liste'];
-	header("X-JSON: " . json_encode(['titre'=>$a->getValue(),'contenu'=>$b->description]));
-}
-elseif (isset($_POST['update_list'])) {
-	@session_start();
-	$parametres=json_decode($_POST['parametres']);
-	list($pays,$magazine)=explode('_',$_POST['pays_magazine']);
-	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-	$l = DM_Core::$d->toList($id_user);
-	Liste::maj_parametres($parametres, $id_user, $pays, $magazine);
-	
-	$sous_liste = new Liste();
-	$sous_liste = $l->sous_liste($pays, $magazine);
-	echo $sous_liste->afficher($_POST['type_liste'],$parametres);
-}
-elseif (isset($_POST['update_parametres_generaux'])) {
-	@session_start();
-	$parametres=json_decode($_POST['parametres']);
-	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-	foreach($parametres as $parametre=>$valeur) {
-		$requete_modifier_parametre='UPDATE parametres_listes SET Valeur=\''.$valeur.'\' '
-								   .'WHERE ID_Utilisateur='.$id_user.' AND Position_Liste=-1 AND Parametre = \''.$parametre.'\'';
-		DM_Core::$d->requete($requete_modifier_parametre);
-	}
-}
-elseif (isset($_POST['parametres'])) {
-	@session_start();
-	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
-	list($pays,$magazine)=explode('_',$_POST['id_magazine']);
-	$requete_get_parametres='SELECT Type_Liste,Parametre,Valeur FROM parametres_listes WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
-	$resultat_get_parametres=DM_Core::$d->requete_select($requete_get_parametres);
-	if (count($resultat_get_parametres) == 0) {
-		$type_liste=$_POST['type_liste'];
-		$position_liste=$_POST['position_liste'];
-		Liste::init_parametres_boite($pays, $magazine, $type_liste,$position_liste);
-		$resultat_get_parametres=DM_Core::$d->requete_select($requete_get_parametres);
-	}
-	$type_liste=$resultat_get_parametres[0]['Type_Liste'];
-	
-	$parametres=new stdClass();
-	foreach($resultat_get_parametres as $parametre) {
-		$nom_parametre=$parametre['Parametre'];
-		$parametres->$nom_parametre=$parametre['Valeur'];
-	}
-	if (file_exists('Listes/Liste.'.$type_liste.'.class.php'))
-		include_once('Listes/Liste.'.$type_liste.'.class.php');
-	$liste_courante=new $type_liste;
-	if (count($resultat_get_parametres) > 0) {
-		foreach($parametres as $nom_parametre=>$parametre)
-			$liste_courante->parametres->$nom_parametre->valeur=$parametre;
-	}
-	Liste::maj_parametres($parametres, $id_user, $pays, $magazine);
-	header("X-JSON: " . json_encode($liste_courante->getListeParametresModifiables()));
-}
 
 function startswith($hay, $needle) { // From http://sunfox.org/blog/2007/03/21/startswith-et-endswith-en-php/
 	return $needle === $hay or strpos($hay, $needle) === 0;
