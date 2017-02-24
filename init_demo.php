@@ -76,29 +76,7 @@ if (!$dernier_init_est_recent) {
 	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Carl Barks', 'CB', ".$id_user_demo.", 516, 140, 153, '2011-12-27', -1);
 	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Don Rosa', 'DR', ".$id_user_demo.", 90, 24, 2, '2011-12-27', -1);
 	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Barks,Carl', 'CB', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 6);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Rosa, Don', 'DR', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 8);
-	
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 30', 48, ".$id_user_demo.", 'CB=21,DR=2', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('es', 'BCB', '3', 46, ".$id_user_demo.", 'CB=23', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'PM', '331', 45, ".$id_user_demo.", 'CB=21,DR=1', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 42', 42, ".$id_user_demo.", 'CB=15,DR=4', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('es', 'BCB', '2', 40, ".$id_user_demo.", 'CB=20', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 43', 40, ".$id_user_demo.", 'CB=17,DR=2', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 35', 40, ".$id_user_demo.", 'CB=20', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 41', 39, ".$id_user_demo.", 'CB=15,DR=3', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 28', 38, ".$id_user_demo.", 'CB=13,DR=4', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 34', 36, ".$id_user_demo.", 'CB=15,DR=2', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('es', 'BCB', '4', 34, ".$id_user_demo.", 'CB=17', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 39', 33, ".$id_user_demo.", 'CB=12,DR=3', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 38', 32, ".$id_user_demo.", 'CB=10,DR=4', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 25', 32, ".$id_user_demo.", 'CB=7,DR=6', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 29', 31, ".$id_user_demo.", 'CB=11,DR=3', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'PM', '337', 30, ".$id_user_demo.", 'CB=15', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 24', 29, ".$id_user_demo.", 'CB=10,DR=3', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'PM', '343', 28, ".$id_user_demo.", 'CB=14', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'ALPM', 'B 31', 55, ".$id_user_demo.", 'CB=26,DR=1', NULL);
-	INSERT INTO `numeros_recommandes` (`Pays`, `Magazine`, `Numero`, `Notation`, `ID_Utilisateur`, `Texte`, `Storycodes`) VALUES ('fr', 'DDD', '4', 62, ".$id_user_demo.", 'CB=31', NULL);";
-	
+	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Rosa, Don', 'DR', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 8);";
 	
 	$requete_reset_user=str_replace("\n",'',explode(';',$requete_reset_user));
 	
