@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 include_once('../Database.class.php');
 include_once('../authentification.php');
 
-function call_online_api($token, $http_method, $endpoint, $get = array(), $post = array())
+function call_online_api($token, $http_method, $endpoint, $get = [], $post = [])
 {
     if (!empty($get)) {
         $endpoint .= '?' . http_build_query($get);
@@ -12,7 +12,7 @@ function call_online_api($token, $http_method, $endpoint, $get = array(), $post 
 
     $call = curl_init();
     curl_setopt($call, CURLOPT_URL, 'https://api.online.net/api/v1' . $endpoint);
-    curl_setopt($call, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . $token, 'X-Pretty-JSON: 1'));
+    curl_setopt($call, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token, 'X-Pretty-JSON: 1']);
     curl_setopt($call, CURLOPT_RETURNTRANSFER, true);
 
     if ($http_method == 'POST') {
@@ -30,5 +30,5 @@ echo call_online_api(
     'POST',
     '/server/reboot/'.$coaMachine->machine_id,
     null,
-    array('reason' => 'Server unresponsive')
+    ['reason' => 'Server unresponsive']
 );

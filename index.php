@@ -18,19 +18,19 @@ else  {
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
-	setCookie('user','',time()-3600);
-	setCookie('pass','',time()-3600);
+	setcookie('user','',time()-3600);
+	setcookie('pass','',time()-3600);
 }
 else {
 	if (isset($_SESSION['user']) && isset($_SESSION['pass']) && !isset($_COOKIE['user']) ) {
-		setCookie('user',$_SESSION['user'],time()+3600);
-		setCookie('pass',$_SESSION['pass'],time()+3600);
+		setcookie('user',$_SESSION['user'],time()+3600);
+		setcookie('pass',$_SESSION['pass'],time()+3600);
 	}
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
-			setCookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
-			setCookie('pass',$_COOKIE['pass'],time()+3600);
+			setcookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
+			setcookie('pass',$_COOKIE['pass'],time()+3600);
 		}
 	}
 }

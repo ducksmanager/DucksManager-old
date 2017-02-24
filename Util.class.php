@@ -224,12 +224,12 @@ class Util {
         curl_setopt($ch, CURLOPT_POST, $method === 'POST');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $headers = array(
+        $headers = [
             'Authorization: Basic ' . base64_encode(implode(':', [$role, $coaServer->role_passwords[$role]])),
             'Content-Type: application/x-www-form-urlencoded',
             'Cache-Control: no-cache',
             'x-dm-version: 1.0',
-        );
+        ];
         if (isset($_COOKIE['user'])) {
             $headers[] = 'x-dm-user: ' . $_COOKIE['user'];
             $headers[] = 'x-dm-pass: ' . $_COOKIE['pass'];

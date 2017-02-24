@@ -878,17 +878,6 @@ if (isset($_POST['database'])) {
 	}
 }
 
-function note_to_pouces($num,$note) {
-	ob_start();
-	for ($i=1;$i<=10;$i++) {
-		$orientation=$i<=5?'bas':'haut';
-		$pouce_rempli=$note>=$i;
-		?><img alt="+" id="pouce<?=$num?>_<?=$i?>" height="15" src="images/pouce_<?=$orientation.($pouce_rempli?'':'_blanc')?>.png" onclick="valider_note(<?=$num?>)" onmouseover="hover(<?=$num?>,<?=$i?>)"/><?php
-	}
-	ob_end_flush();
-}
-
-
 function ajouter_evenement(&$evenements, $diff_secondes, $type_evenement, $utilisateur, $evenement=[]) {
 	$evenement['diffsecondes'] = $diff_secondes;
 	$evenement['utilisateur'] = $utilisateur;

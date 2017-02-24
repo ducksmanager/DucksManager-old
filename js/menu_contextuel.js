@@ -20,6 +20,8 @@ if (Object.isUndefined(Proto)) {
 Proto.Menu = Class.create({
     initialize: function() {
         l10n_items=[];
+        var body = $('body');
+
         var e = Prototype.emptyFunction;
         this.ie = Prototype.Browser.IE;
         this.options = Object.extend({
@@ -195,7 +197,7 @@ Proto.Menu = Class.create({
                     .update(liste.name)));
                 });
                 sous_menu.insert(listes);
-                $('body').insert(sous_menu);
+                body.insert(sous_menu);
                         
                 var sous_menu_parametres=new Element('div',{
                     'id':'sous_menu_parametres_liste'
@@ -214,7 +216,7 @@ Proto.Menu = Class.create({
                     }))
                 .update('Chargement...')));
                 sous_menu_parametres.insert(parametres_ul);
-                $('body').insert(sous_menu_parametres);
+                body.insert(sous_menu_parametres);
                 break;
             case 'gestion_numeros' :
                 var sous_menu=new Element('div',{
@@ -245,8 +247,7 @@ Proto.Menu = Class.create({
 		                        	new Ajax.Request('Database.class.php', {
 		                                 method: 'post',
 		                                 parameters:'database=true&supprimer_acquisition='+id_achat,
-		                                 onSuccess:function(transport,json) {
-		                                	 $('achat_'+id_achat).remove();
+		                                 onSuccess:function() {
 		                                	 $('achat_'+id_achat).remove();
 		                                	 $$('.bloc_details .achat_'+id_achat).invoke('down','img').invoke('remove');
 		                                	 alert('La date d\'achat a ete supprimee');
@@ -418,7 +419,7 @@ Proto.Menu = Class.create({
                 .update(nouvel_achat_o.name));
 
                 sous_menu.insert(section_achats_existants).insert(liste_achats).insert(section_nouvel_achat).insert(nouvel_achat);
-                $('body').insert(sous_menu);
+                body.insert(sous_menu);
                 l10n_action('fillArray',l10n,'l10n');
                 l10n_action('remplirSpan',['creer_date_achat','nouvel_achat','dates_existantes',
                     'numero_selectionne','numeros_selectionnes']);

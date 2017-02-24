@@ -89,7 +89,7 @@ foreach($resultat_utilisateurs as $utilisateur) {
 	var contributeur;
 	
 	$(window).load(function() {
-		$('#utilisateurs').change(function(ui,event) {
+		$('#utilisateurs').change(function() {
 			charger_contributions($('#utilisateurs').val());
 		});
 

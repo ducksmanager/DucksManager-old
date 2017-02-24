@@ -7,7 +7,7 @@ function exporter($requete, $cheminCsv)
     $result = Database::$handle->query($requete);
     if ($result) {
         $num_fields = $result->field_count;
-        $headers = array();
+        $headers = [];
         for ($i = 0; $i < $num_fields; $i++) {
             $headers[] = $result->fetch_field_direct($i)->name;
         }

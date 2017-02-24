@@ -272,16 +272,16 @@ class Stats {
 
 		list($noms_complets_pays,$noms_complets_magazines)=Inducks::get_noms_complets($publication_codes);
 
-		return array(
+		return [
 			'labels_pays_longs' => $noms_complets_pays,
 			'labels_magazines_longs' => $noms_complets_magazines,
-			'datasets' => array(
+			'datasets' => [
 				'nouv' => $achats_magazines_nouv,
 				'tot' => $achats_magazines_nouv
-			),
+            ],
 			'premier_achat' => $premier_achat,
 			'title' => ACHATS
-		);
+        ];
 	}
 
 	static function getAuthorStoriesData() {

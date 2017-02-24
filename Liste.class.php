@@ -19,7 +19,7 @@ class Liste {
 			if (strpos($f,'Debug')!==false)
 				continue;
 			if(is_file($rep.$f)) {
-				if (startsWith($f,$prefixe) && endsWith($f,$suffixe)) {
+				if (startswith($f,$prefixe) && endswith($f,$suffixe)) {
 					$nom=substr($f,strlen($prefixe),strlen($f)-strlen($suffixe)-strlen($prefixe));
 					
 					include_once('Listes/Liste.'.$nom.'.class.php');
