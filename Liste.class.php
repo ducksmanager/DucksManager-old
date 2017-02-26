@@ -272,7 +272,7 @@ class Liste {
 					<input type="hidden" id="auteur_nom" name="auteur_nom" />
 					<input type="hidden" id="auteur_id" name="auteur_id" />
 					<img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none" />
-					<input type="submit" value="Ajouter" />
+					<input type="submit" value="<?=AJOUTER?>" />
 				</form>
 				<div id="auteurs_ajoutes">
 					<br /><br />
