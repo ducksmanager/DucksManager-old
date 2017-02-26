@@ -55,6 +55,7 @@ class LigneVide extends Item{
 }
 
 class Menu extends Item{
+	/** @var Item[] $items */
 	var $items;
 
 	function __construct($nom, $est_prive, $items) {
@@ -70,8 +71,11 @@ class Menu extends Item{
         
         ?><br /><br /><?php
 	}
-	
-	static function afficherMenus($menus) {
+
+    /**
+     * @param Menu[] $menus
+     */
+    static function afficherMenus($menus) {
 		foreach($menus as $menu) {
 			$menu->afficher();
 		}

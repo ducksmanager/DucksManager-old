@@ -254,7 +254,6 @@ CREATE TABLE `users` (
   `AccepterPartage` tinyint(1) NOT NULL,
   `DateInscription` date NOT NULL DEFAULT '0000-00-00',
   `EMail` varchar(50) NOT NULL,
-  `RecommandationsListeMags` tinyint(1) NOT NULL DEFAULT '1',
   `BetaUser` tinyint(3) unsigned NOT NULL,
   `AfficherVideo` tinyint(1) NOT NULL DEFAULT '1',
   `Bibliotheque_Texture1` varchar(20) NOT NULL DEFAULT 'bois',
