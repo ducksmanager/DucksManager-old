@@ -434,6 +434,10 @@ define('SUPPRIMER_NUMEROS_NON_INDUCKS','Supprimer de DucksManager les num&eacute
 define('SUR','sur');
 define('TAILLE_TRANCHES','Taille des tranches');
 define('TAILLE_REELLE','Taille r&eacute;elle');
+define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_1','Les statistiques d\'auteur sont de retour !');
+define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2','Indiquez quels sont vos auteurs Disney pr&eacute;f&eacute;r&eacute;s sur la');
+define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3','page de vos auteurs favoris');
+define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4','et d&eacute;couvrez les num&eacute;ros qui vous manquent pour poss&eacute;der toutes leurs histoires.');
 define('TERMINE','Termin&eacute;.');
 define('TEXTE_DUCKHUNT_TOUR_1','Qu\'est-ce que le DuckHunt Tour ? ');
 define('TEXTE_DUCKHUNT_TOUR_2','Le principe : silloner les routes de France &agrave; la recherche de bouquinistes dans lesquels d&eacute;nicher des magazines Disney.');

@@ -147,10 +147,14 @@ class Edge {
               FROM tranches_pretes
               WHERE publicationcode = '$pays/$magazine'
                 AND issuenumber IN ('" . implode("', '", $numeros_references) . "')";
-        $resultat_visibilite_numeros = DM_Core::$d->requete_select_distante($requete_visibilite_numeros);
+        $resultat_visibilite_numeros = DM_Core::$d->requete_select($requete_visibilite_numeros);
 
         foreach($resultat_visibilite_numeros as $numero) {
-            $numeros_clean_et_references[$numero]['visible'] = true;
+            array_walk($numeros_clean_et_references, function(&$value) use($numero) {
+                if ($value['reference'] === $numero['issuenumber']) {
+                    $value['visible'] = true;
+                }
+            });
         }
 
 		return [$vrai_magazine, $numeros_clean_et_references];

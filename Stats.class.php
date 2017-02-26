@@ -335,7 +335,7 @@ class Stats {
 
 	static function showSuggestedPublications($pays) {
 
-        $suggestions = Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'GET', '/collection/stats/suggestedissues', 'ducksmanager', [$pays]);
+        $suggestions = Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'GET', '/collection/stats/suggestedissues', 'ducksmanager', is_null($pays) ? [] : [$pays]);
 
 		if (count($suggestions['issues']) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php
