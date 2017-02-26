@@ -1018,6 +1018,15 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                 }
 											}
 											else {
+											    if (date('Y-m-d') < '2017-03-15') {
+											        ?><br />
+                                                    <div class="alert alert-info">
+                                                        <strong><?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_1?></strong>
+                                                        <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2?>
+                                                        <b><a target="_blank" href="?action=stats&onglet=auteurs"><?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3?></a></b>
+                                                        <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4?>
+                                                    </div><?php
+                                                }
                                                 ?><?= POSSESSION_MAGAZINES_1 ?> <?= $nb_numeros ?> <?= NUMEROS ?>.
                                                   <?= POSSESSION_MAGAZINES_2 ?> <?= $nb_magazines ?>
                                                   <?= POSSESSION_MAGAZINES_3 ?> <?= $nb_pays ?> <?= PAYS ?>.
