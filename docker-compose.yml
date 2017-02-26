@@ -1,0 +1,14 @@
+version: '2'
+services:
+  web:
+    build: .
+    ports:
+     - "8000:80"
+    volumes:
+     - .:/var/www/html/DucksManager
+  db_dm:
+    build: ../mariadb-server-setup-helper
+    ports:
+      - "44002:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme
