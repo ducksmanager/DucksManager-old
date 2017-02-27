@@ -9,7 +9,6 @@ if (isset($_GET['lang'])) {
 }
 include_once ('locales/lang.php');
 include_once ('Database.class.php');
-include_once ('Magazine.class.php');
 require_once('Format_liste.php');
 class collectable extends Format_liste {
 	static $titre='CollecTable';
