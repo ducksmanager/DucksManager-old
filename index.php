@@ -144,7 +144,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 break;
                 case 'bouquineries':
                     ?>
-                    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+                    <script type="text/javascript" src="js/bouquineries.js"></script>
+                    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&libraries=places"></script>
                     <?php
                 break;
                 case 'bibliotheque':
@@ -240,10 +241,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                 }
             }
             ?>charger_recherche();<?php
-            break;
+        break;
         case 'bouquineries':
             ?>initializeAutocomplete();<?php
-        break;
+            break;
         case 'stats':
             if (isset($_GET['onglet'])) {
             	switch($_GET['onglet']) {
