@@ -76,7 +76,7 @@ if (!$dernier_init_est_recent) {
 	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Barks,Carl', 'CB', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 6);
 	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Rosa, Don', 'DR', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 8);";
 	
-	$requete_reset_user=str_replace("\n",'',explode(';',$requete_reset_user));
+	$requete_reset_user=str_replace("\n",'', array_filter(explode(';', $requete_reset_user)));
 	
 	foreach($requete_reset_user as $requete) {
 		DM_Core::$d->requete($requete);
