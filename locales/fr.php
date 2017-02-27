@@ -155,8 +155,6 @@ define('DMSPIRAL_MOINS_3','Ce mode de liste est actuellement en d&eacute;veloppe
 define('DMSPIRAL_PLUS_1','Assez esth&eacute;tique');
 define('DMSPIRAL_PLUS_2','Peut prendre en compte l\'&eacute;tat du num&eacute;ro (Mauvais &eacute;tat, bon &eacute;tat,...)');
 define('DMSPIRAL_PLUS_3','Reconaissance rapide des s&eacute;ries de num&eacute;ros et des num&eacute;ros manquants');
-define('DUCKHUNT_TOUR','Le DuckHunt Tour');
-define('DUCKHUNT_TOUR_2011_1','Edition 2011');
 define('EMAIL_ACHAT_VENTE_2','Vous pouvez r&eacute;pondre directement &agrave; cet e-mail pour lui proposer un prix et un moyen de lui transmettre vos num&eacute;ros.');
 define('EMAIL_ACHAT_VENTE_3','Bonne vente, et &agrave; bient&ocirc;t sur DucksManager !');
 define('EMAIL_ACHAT_VENTE_TITRE','Un utilisateur est intéressé par vos numéros en vente sur DucksManager');
@@ -374,7 +372,6 @@ define('PRESENTATION_BIBLIOTHEQUE_TITRE','Votre biblioth&egrave;que, comme si vo
 define('PRESENTATION_BOUQUINERIE1','Vous connaissez une bouquinerie sympa ? Faites-en profiter d\'autres collectionneurs !');
 define('PRESENTATION_DEMO_TITRE','Bienvenue dans le mode d&eacute;mo !');
 define('PRESENTATION_DEMO','Prenez le temps de d&eacute;couvrir les fonctionnalit&eacute;s de DucksManager.<br /><br />Vous pouvez ajouter ou supprimer des num&eacute;ros de la collection de demo, mais souvenez-vous que toutes les heures les modifications entr&eacute;es par les utilisateurs seront effac&eacute;es.<br />Si vous souhaitez vous d&eacute;connecter afin de vous inscrire ou de vous connecter avec votre compte r&eacute;el, cliquez sur le lien "D&eacute;connexion" dans le menu &agrave; gauche de cette page.<br />Prochaine remise &agrave; z&eacute;ro dans ');
-define('PRESENTATION_DUCKHUNT_TOUR','Pr&eacute;sentation du DuckHunt Tour');
 define('PRESENTATION_GENERALE','Une gestion de collection compl&egrave;te, des statistiques personnalis&eacute;es, un &eacute;ventail d\'outils pour agrandir votre collection, et bien d\'autres choses...');
 define('PRESENTATION_GERER_1','Notre outil de s&eacute;lection de num&eacute;ros  permet de r&eacute;f&eacute;rencer votre collection de magazines Disney en toute simplicit&eacute;.');
 define('PRESENTATION_GERER_2','Envie de m&eacute;moriser les moindres d&eacute;tails de votre collection ? Avec DucksManager un clic droit suffit !');
@@ -439,12 +436,6 @@ define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2','Indiquez quels sont vos auteurs D
 define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3','page de vos auteurs favoris');
 define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4','et d&eacute;couvrez les num&eacute;ros qui vous manquent pour poss&eacute;der toutes leurs histoires.');
 define('TERMINE','Termin&eacute;.');
-define('TEXTE_DUCKHUNT_TOUR_1','Qu\'est-ce que le DuckHunt Tour ? ');
-define('TEXTE_DUCKHUNT_TOUR_2','Le principe : silloner les routes de France &agrave; la recherche de bouquinistes dans lesquels d&eacute;nicher des magazines Disney.');
-define('TEXTE_DUCKHUNT_TOUR_3','L\'objectif du Duckhunt Tour est multiple :<br />
-								<ul style="padding-left:20px;"><li>D\'un point de vue personnel, il me permet &agrave; la fois de me d&eacute;tendre en conduisant dans des r&eacute;gions que je connais peu, et &agrave; la fois de fouiner dans des bouquineries pour agrandir ma collection.<br /></li>
-								<li>D\'un point de vue plus altruiste, je r&eacute;pertorierai au fur et &agrave; mesure de mon p&eacute;riple les bouquinistes qui selon moi valent le coup d\'&ecirc;tre visit&eacute;s pour les fans de Ducks, et je les indiquerai ensuite dans la section <a href="?action=bouquineries">Trouver des bouquineries</a> de DucksManager. Qui sait, vous habitez peut-&ecirc;tre &agrave; cot&eacute; d\'une caverne d\'Ali Baba !!</li></ul>');
-define('TEXTE_DUCKHUNT_TOUR_2011_1','Pour l\'&eacute;dition 2011 qui a eu lieu du 1er au 5 d&eacute;cembre, j\'ai d&eacute;cid&eacute; de parcourir le Poitou-Charentes et le Sud des Pays de la Loire');
 define('TEXTE_FORUMDESFANS','Un bug ? Une suggestion &agrave; proposer ? Visitez le ');
 define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Texture de l\'&eacute;tag&egrave;re');
@@ -454,7 +445,6 @@ define('TITRE_PAGE_ACCUEIL','Bienvenue !');
 define('TITRE_PAGE_AGRANDIR','Agrandir ma collection');
 define('TITRE_PAGE_BIBLIOTHEQUE','Bibliotheque DucksManager');
 define('TITRE_PAGE_BOUQUINERIES','Trouver des bouquineries');
-define('TITRE_PAGE_DUCKHUNT_TOUR','Le DuckHunt Tour');
 define('TITRE_PAGE_GERER','Gestion de ma collection');
 define('TITRE_PAGE_INDUCKS','Connexion au compte Inducks');
 define('TITRE_PAGE_OPEN','Connexion');

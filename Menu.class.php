@@ -84,20 +84,18 @@ class Menu extends Item{
 
 $menus= [
 	new Menu(COLLECTION, 'no',
-			 [new Item('new', 'never', NOUVELLE_COLLECTION),
-				   new Item('open', 'never', OUVRIR_COLLECTION),
-				   new Item('bibliotheque', 'always__limited_external_access', BIBLIOTHEQUE_COURT),
-				   new Item('gerer', 'always', GERER_COLLECTION),
-				   new Item('stats', 'always', STATISTIQUES_COLLECTION),
-				   new Item('agrandir', 'always', AGRANDIR_COLLECTION),
-				   new Item('print', 'always', IMPRIMER_COLLECTION),
-				   new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS),
-				   new Item('logout', 'always', DECONNEXION)
-			 ]),
-	new Menu(DUCKHUNT_TOUR, 'no',
-			[new Item('duckhunt_tour', 'no', PRESENTATION_DUCKHUNT_TOUR),
-				  new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES)]
-			),
+         [new Item('new', 'never', NOUVELLE_COLLECTION),
+               new Item('open', 'never', OUVRIR_COLLECTION),
+               new Item('bibliotheque', 'always__limited_external_access', BIBLIOTHEQUE_COURT),
+               new Item('gerer', 'always', GERER_COLLECTION),
+               new Item('stats', 'always', STATISTIQUES_COLLECTION),
+               new Item('agrandir', 'always', AGRANDIR_COLLECTION),
+               new Item('print', 'always', IMPRIMER_COLLECTION),
+               new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS),
+               new Item('logout', 'always', DECONNEXION)
+         ]
+    ),
+	new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES),
 	new LigneVide(),
 	new Item('demo','never',DEMO_MENU)
 ];

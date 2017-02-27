@@ -1258,56 +1258,6 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 						<?php
 						break;
 						
-						case 'duckhunt_tour':
-						?>
-						<h2>
-						<?=DUCKHUNT_TOUR?>
-						</h2>
-						<br />
-						<?php
-						echo TEXTE_DUCKHUNT_TOUR_1.'<br /><br />';
-						echo TEXTE_DUCKHUNT_TOUR_2.'<br /><br />';
-						echo TEXTE_DUCKHUNT_TOUR_3.'<br /><br />';
-						?>
-						<hr />
-						<h3>
-						<?=DUCKHUNT_TOUR_2011_1?>
-						</h3>
-						<br />
-
-						<?php
-						echo TEXTE_DUCKHUNT_TOUR_2011_1.'<br />';
-						?>
-						<table style="width: 100%; border: 0">
-							<tr>
-								<td style="width:273px"><img src="images/duckhunt_tour_2011.png" /></td>
-								<td>
-									<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.fr/maps?saddr=libourne&amp;daddr=saintes+to:la+rochelle+to:Beaulieu-Sous-la-Roche+to:Nantes+to:Saint-Nazaire+to:Angers+to:Avrill%C3%A9+to:Laval+to:Change,+Mayenne,+Pays+de+la+Loire+to:Le+Mans+to:blois+to:tours+to:Montmorillon+to:Poitiers+to:Saint-Maixent-l'%C3%89cole+to:Niort+to:m%C3%A9rignac&amp;hl=fr&amp;ie=UTF8&amp;sll=46.505954,-1.230469&amp;sspn=5.44462,14.27124&amp;geocode=FWZRrQId70b8_yn7BnAWT0lVDTHw4RZIF2UGBA%3BFS8AugId01X2_ylVtrfUV_0ASDEU_3AchsfvVA%3BFclZwAIdXW_u_yl1PSXJg1MBSDFAlu5gktMFBA%3BFRE-yAIdsm3n_ylvCK844DcESDGZXNhevR-9Jg%3BFcN-0AIdK0vo_ymtrqjwge4FSDEw7Q0eUjcNBA%3BFRpW0QIdKDje_ykT78I8j2UFSDE9H35eDebfZA%3BFZN21AIdImj3_ymdjuUA2ngISDEwnA0eUjcNBA%3BFbff1AId2_z2_ykdFBprxn4ISDHvBrnoflBflg%3BFSec3QIdpj_0_ynBa1n86f0ISDHgFg0eUjcNBA%3BFYDt3QIdVPbz_ymrsBfEVQIJSDFwGw0eUjcNBA%3BFd6D3AIdhAsDACkxqvMU0ojiRzF_4H1qTF0CaQ%3BFXAi1gId0GMUACld0sgjlVfjRzGwKTgF18gNBA%3BFWAt0wIdKHMKAClVmpdKs9X8RzEwhDgF18gNBA%3BFUNjxAId0D4NACmLtkm69zv8RzEFV_CQAV3uoQ%3BFQDCxgIdlzEFACmrs55Dcr79RzGTkODFGSPelw%3BFW01xAIdbuX8_ynPRvrIRkQHSDHQJuhgktMFBA%3BFQTYwgIdd-j4_yn1htYRMjAHSDHAKuhgktMFBA%3BFU1HrAIdGvz1_ym3I4C629lUDTF2HoHc9b1EVg&amp;vpsrc=0&amp;mra=ls&amp;t=m&amp;ll=46.475699,-0.428467&amp;spn=5.447645,14.27124&amp;output=embed"></iframe>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="2">Pour l'&eacute;dition 2011, 24 bouquineries et
-									centres Emma&ucirc;s ont &eacute;t&eacute; recherch&eacute;s.<br />
-									Parmi ces 24,
-									<ul style="padding-left:20px;">
-										<li>19 ont &eacute;t&eacute; trouv&eacute;s.</li>
-										<li>15 &eacute;taient ouverts lors de notre passage.</li>
-										<li><b>5 se sont r&eacute;v&eacute;l&eacute;s &ecirc;tre des lieux
-											&agrave; d&eacute;couvrir pour tout fan de magazines Disney
-											qui se respecte, et ont par cons&eacute;quence &eacute;t&eacute; ajout&eacute;s &agrave; la 
-											<a href="?action=bouquineries">Carte des bouquineries de DucksManager</a>.</b></li>
-									</ul> La m&eacute;daille d'or revient au sympathique
-									bouquiniste de Saintes, rue Cl&eacute;menceau, qui regorge de
-									vieux Mickey Parade, y compris dans l'arri&egrave;re boutique.<br />
-									<br /> Les d&eacute;tails sur chacune des bouquineries : <br />
-									<iframe style="width: 90%; height: 500px"
-										src="duckhunt_tour_2011.htm"></iframe>
-								</td>
-							</tr>
-						</table>
-						<?php
-						break;
-						
 						default:?>
 						<div id="carousel-1"
 							class="pluit-carousel top-stories-skin">
