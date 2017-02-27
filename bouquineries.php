@@ -8,11 +8,11 @@
 			#map_canvas { height: 100% }
             .template { display: none; }
 		</style>
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&callback=initialize" async defer></script>
 		<script type="text/javascript" src="prototype-1.7.3.js"></script>
 		<script type="text/javascript" src="js/bouquineries.js"></script>
 	</head>
-	<body onload="initialize()">
+	<body>
 		<div id="map_canvas" style="width:100%; height:100%"></div>
         <div class="template infoWindow">
             <div id="siteNotice">
