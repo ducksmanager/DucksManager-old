@@ -22,7 +22,6 @@ if (!$dernier_init_est_recent) {
 	DELETE FROM numeros WHERE ID_Utilisateur=".$id_user_demo.";
 	DELETE FROM achats WHERE ID_User=".$id_user_demo.";
 	DELETE FROM auteurs_pseudos WHERE ID_user=".$id_user_demo.";
-	DELETE FROM numeros_recommandes WHERE ID_Utilisateur=".$id_user_demo.";
 	
 	UPDATE `users` SET `Bibliotheque_Texture1` = 'bois', 
 					   `Bibliotheque_Sous_Texture1` = 'HONDURAS MAHOGANY', 

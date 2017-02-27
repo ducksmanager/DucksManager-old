@@ -36,23 +36,6 @@ CREATE TABLE `achats` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `auteurs`
---
-
-DROP TABLE IF EXISTS `auteurs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `auteurs` (
-  `ID_auteur` int(11) NOT NULL AUTO_INCREMENT,
-  `NomAuteur` varchar(20) NOT NULL,
-  `NbHistoires` int(11) NOT NULL,
-  `NbHistoires_old` int(11) NOT NULL,
-  `DateMAJ` date NOT NULL,
-  PRIMARY KEY (`ID_auteur`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `auteurs_pseudos`
 --
 
@@ -140,23 +123,6 @@ CREATE TABLE `bouquineries` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `bouquineries_exemples`
---
-
-DROP TABLE IF EXISTS `bouquineries_exemples`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `bouquineries_exemples` (
-  `ID_Bouquinerie` int(11) NOT NULL,
-  `PaysNumero` varchar(4) NOT NULL,
-  `MagazineNumero` varchar(7) NOT NULL,
-  `Numero` int(11) NOT NULL,
-  `Prix` smallint(6) NOT NULL,
-  `Etat` enum('Passable','Moyen','Bon','Excellent','Indéfini') NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `demo`
 --
 
@@ -201,22 +167,6 @@ CREATE TABLE `magazines` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `modules`
---
-
-DROP TABLE IF EXISTS `modules`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `modules` (
-  `username` varchar(15) NOT NULL,
-  `agenda_id` varchar(140) NOT NULL,
-  `module_name` varchar(35) NOT NULL,
-  `module_arg_name` varchar(30) NOT NULL,
-  `module_arg_value` varchar(30) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `numeros`
 --
 
@@ -236,53 +186,6 @@ CREATE TABLE `numeros` (
   UNIQUE KEY `Pays` (`Pays`,`Magazine`,`Numero`,`ID_Utilisateur`),
   KEY `ID` (`ID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=110845 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `numeros_recommandes`
---
-
-DROP TABLE IF EXISTS `numeros_recommandes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `numeros_recommandes` (
-  `Pays` varchar(3) COLLATE latin1_german2_ci NOT NULL,
-  `Magazine` varchar(6) COLLATE latin1_german2_ci NOT NULL,
-  `Numero` varchar(10) COLLATE latin1_german2_ci NOT NULL,
-  `Notation` tinyint(3) NOT NULL,
-  `ID_Utilisateur` int(11) NOT NULL,
-  `Texte` text COLLATE latin1_german2_ci NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `pays`
---
-
-DROP TABLE IF EXISTS `pays`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pays` (
-  `NomAbrege` varchar(10) COLLATE latin1_german2_ci DEFAULT NULL,
-  `NomComplet` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `L10n` varchar(5) COLLATE latin1_german2_ci DEFAULT 'fr',
-  UNIQUE KEY `Cle` (`NomAbrege`,`NomComplet`,`L10n`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `traitement_stats`
---
-
-DROP TABLE IF EXISTS `traitement_stats`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `traitement_stats` (
-  `Auteur` varchar(20) NOT NULL,
-  `Page` int(11) NOT NULL,
-  `NbHistoires` int(11) NOT NULL,
-  `NbHistoires_tmp` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -319,21 +222,6 @@ CREATE TABLE `tranches_pretes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `tranches_previews`
---
-
-DROP TABLE IF EXISTS `tranches_previews`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tranches_previews` (
-  `ID_Session` varchar(32) COLLATE latin1_german2_ci DEFAULT NULL,
-  `ID_Preview` int(11) NOT NULL AUTO_INCREMENT,
-  `Options` varchar(2000) COLLATE latin1_german2_ci DEFAULT '0',
-  KEY `Index 1` (`ID_Preview`)
-) ENGINE=MyISAM AUTO_INCREMENT=82 DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `users`
 --
 
@@ -347,7 +235,6 @@ CREATE TABLE `users` (
   `AccepterPartage` tinyint(1) NOT NULL,
   `DateInscription` date NOT NULL DEFAULT '0000-00-00',
   `EMail` varchar(50) NOT NULL,
-  `RecommandationsListeMags` tinyint(1) NOT NULL DEFAULT '1',
   `BetaUser` tinyint(3) unsigned NOT NULL,
   `AfficherVideo` tinyint(1) NOT NULL DEFAULT '1',
   `Bibliotheque_Texture1` varchar(20) NOT NULL DEFAULT 'bois',

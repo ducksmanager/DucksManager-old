@@ -156,8 +156,6 @@ define('DMSPIRAL_MOINS_3','This list mode is currently under development');
 define('DMSPIRAL_PLUS_1','Quite nice visually');
 define('DMSPIRAL_PLUS_2','Can take into account the issues conditions (Bad condition, good condition,...)');
 define('DMSPIRAL_PLUS_3','Easy viewing of issues series or missing issues');
-define('DUCKHUNT_TOUR','The DuckHunt Tour');
-define('DUCKHUNT_TOUR_2011_1','2011 Edition');
 define('EMAIL_ACHAT_VENTE_2','You can answer directly to this e-mail to propose him or her a price and discuss about a way to send these issues.');
 define('EMAIL_ACHAT_VENTE_3','Happy selling, and see you soon on DucksManager !');
 define('EMAIL_ACHAT_VENTE_TITRE','A user is interested by some items of your DucksManager collection');
@@ -375,7 +373,6 @@ define('PRESENTATION_BIBLIOTHEQUE_TITRE','Your bookcase, like if you\'re in fron
 define('PRESENTATION_BOUQUINERIE1','You have visited in a cool second-hand bookshop ? Let the other visitors know!');
 define('PRESENTATION_DEMO_TITRE','Welcome in the demo mode !');
 define('PRESENTATION_DEMO','Take the time to discover how DucksManager will change the way you manage your Disney comic books collection.<br /><br />You can add or remove issues from the demo collection, but remember that every hour all the user-generated data will be removed.<br />If you want to log out of the demo mode in order to sign up or to login to your real collection, use the link in the left menu.<br />Next account reset in ');
-define('PRESENTATION_DUCKHUNT_TOUR','Presentation of the DuckHunt Tour');
 define('PRESENTATION_GENERALE','A complete collection management, customized statistics, a large range of tools to grow up your collection, and much more...');
 define('PRESENTATION_GERER_1','Our selection tool allows you to index your whole Disney issues collection in a matter of minutes.');
 define('PRESENTATION_GERER_2','Want DucksManager to remember the most precise details of your collection ? A right click will be enough!');
@@ -440,12 +437,6 @@ define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2','Enter the names of your favorite 
 define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3','favorite authors page');
 define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4','and discover what issues you should buy in order to have all their stories.');
 define('TERMINE','Done.');
-define('TEXTE_DUCKHUNT_TOUR_1','"DuckHunt Tour ? What\'s that ?"');
-define('TEXTE_DUCKHUNT_TOUR_2','The principle : drive on the French roads to find second-hand bookshops in which Disney comic books can potentially be found.');
-define('TEXTE_DUCKHUNT_TOUR_3','The aim of the DuckHunt Tour are :<br />
-								<ul style="padding-left:20px;"><li>From a personal point of view, the Tour allows me to relax while driving in regions I don\'t really know, and to rummage through the bookshops to find things to make my own collection evolve.<br /></li>
-								<li>From a more altruistic point of view, I will note, all along my trip, the bookshops I visit, and which in my opinion are worth making a detour for the Ducks fans. I will add these places to the <a href="?action=bouquineries">Search for second-hand bookshops</a> section of DucksManager. Who knows, maybe you\'re living just a couple of miles from a treasure trove !</li></ul>');
-define('TEXTE_DUCKHUNT_TOUR_2011_1','For the 2011 Tour, which occurred from the 1st to the 5th of December, I travelled in the North-West of France ("Poitou-Charentes" and "Pays de la Loire").');
 define('TEXTE_FORUMDESFANS','A bug ? A suggestion to propose ? Visit the ');
 define('TEXTURE', 'Texture');
 define('TEXTURE_ETAGERE', 'Shelf texture');
@@ -455,7 +446,6 @@ define('TITRE_PAGE_ACCUEIL','Welcome !');
 define('TITRE_PAGE_AGRANDIR','Expand your collection');
 define('TITRE_PAGE_BIBLIOTHEQUE','The DucksManager bookcase');
 define('TITRE_PAGE_BOUQUINERIES','Second-hand bookshops');
-define('TITRE_PAGE_DUCKHUNT_TOUR','The DuckHunt Tour');
 define('TITRE_PAGE_GERER','Collection management');
 define('TITRE_PAGE_INDUCKS','Connection to Inducks');
 define('TITRE_PAGE_OPEN','Login to the DucksManager account');
