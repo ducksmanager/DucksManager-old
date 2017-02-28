@@ -194,9 +194,11 @@ class Inducks {
 
 		$publication_codes_chunks=array_chunk($publication_codes, 100);
 		foreach($publication_codes_chunks as $publication_codes_chunk) {
-			$liste_pays = array_map(function($publication_code) {
-                return "'".explode('/',$publication_code)[0]."'";
-            }, $publication_codes_chunk);
+			$liste_pays = array_unique(
+                array_map(function($publication_code) {
+                    return "'".explode('/',$publication_code)[0]."'";
+                }, $publication_codes_chunk)
+            );
 			$requete_noms_pays='SELECT countrycode, countryname FROM inducks_countryname '
 							  .'WHERE languagecode=\''.$_SESSION['lang'].'\' '
 							    .'AND countrycode IN ('.implode(',',$liste_pays).')';
