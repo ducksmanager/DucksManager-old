@@ -93,6 +93,7 @@ define('CLASSIQUE_MOINS_3','Don\'t tell me that you find this list stylish ! ;-)
 define('CLASSIQUE_NOM','the classic list');
 define('CLASSIQUE_PLUS_1','More adapted for collections with less than 500 issues.');
 define('CLIQUEZ_ICI','Click here');
+define('CLIQUEZ_SUR_MAGAZINE_POUR_EDITER','Click on one of the publications to edit its list!');
 define('COA_KO_1','The Disney publications database is currently unavailable.');
 define('COA_KO_2','You will be able to use your DucksManager account as soon as the connection is alive again.');
 define('COLLECTABLE_DEMO','to view our 1min30 video explaining how CollecTable works !');
@@ -269,6 +270,7 @@ define('LISTE_AUTEURS_INTRO','You\'re following the following authors : ');
 define('LISTE_BOUQUINERIES','List of second-hand bookshops');
 define('LISTE_MAGAZINES','Publication list');
 define('LISTES_IDENTIQUES','Your Inducks and DucksManager collections are identical, no action is required.');
+define('MAGAZINES','publications');
 define('MAINTENANCE','Maintenance');
 define('MAUVAIS','Bad');
 define('MAX_AUTEURS_SURVEILLES_ATTEINT','You have reached the maximum amount of watched authors. Remove existing authors from your list in order to watch other ones.');
@@ -357,10 +359,9 @@ define('PHRASE_MAINTENANCE_INDUCKS3','Some Web pages of DucksManager may not wor
 define('POSSESSIONS','Possessions');
 define('POSSESSIONS_COURT','My possessions');
 define('POSSESSION_HISTOIRES_AUTEURS','Possession of issues');
-define('POSSESSION_MAGAZINES_1','You have got');
+define('POSSESSION_MAGAZINES_INTRO','You have got');
 define('POSSESSION_MAGAZINES_2','Your collection is made up of');
 define('POSSESSION_MAGAZINES_3','different magazines from');
-define('POSSESSION_MAGAZINES_4','Click on one of the publications to edit its list!');
 define('POSSESSION_NUMEROS','Issues possession');
 define('POURCENTAGE_COLLECTION_VISIBLE','% of the collection can be viewed in the bookcase.');
 define('PRESENTATION','Presentation');

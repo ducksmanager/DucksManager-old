@@ -533,22 +533,19 @@ class Database {
 		$evenements->evenements = [];
 
 		/* Inscriptions */
-		$requete_inscriptions='SELECT users.ID, users.username, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
+		$requete_inscriptions='SELECT users.ID, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
 							 .'FROM users '
 							 .'WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE "test%"';
 
 		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
 			ajouter_evenement(
-				$evenements->evenements,
-				$inscription['DiffSecondes'],
-				'inscriptions',
-				$inscription['username']);
+				$evenements->evenements, [], $inscription['DiffSecondes'], 'inscriptions', $inscription['ID']);
 		}
 		
 		/* Ajouts aux collections */
 		$evenements->publicationcodes = [];
-		$requete='SELECT users.ID, users.username,
+		$requete='SELECT users.ID AS ID_Utilisateur,
 				  	     (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes, COUNT(Numero) AS cpt,
 				  		 (SELECT CONCAT(Pays,\'/\',Magazine,\'/\',Numero)
 						  FROM numeros n
@@ -556,7 +553,7 @@ class Database {
 						  LIMIT 1) AS NumeroExemple
 				  FROM numeros
 				  INNER JOIN users ON numeros.ID_Utilisateur=users.ID
-				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH) AND users.username<>"demo" AND users.username NOT LIKE "test%"
+				  WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH) AND users.username<>\'demo\' AND users.username NOT LIKE \'test%\'
 				  GROUP BY users.ID, DATE(DateAjout)
 				  HAVING COUNT(Numero) > 0
 				  ORDER BY DateAjout DESC';
@@ -572,16 +569,11 @@ class Database {
 							   'cpt'		   =>intval($ajout['cpt'])-1];
 			
 			ajouter_evenement(
-				$evenements->evenements,
-				$ajout['DiffSecondes'],
-				'ajouts',
-				$ajout['username'],
-				$evenement);
+				$evenements->evenements, $evenement, $ajout['DiffSecondes'], 'ajouts', $ajout['ID_Utilisateur']);
 		}
 		
 		/* Propositions de bouquineries */
-		$requete_bouquineries='SELECT users.ID, users.username, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
-							   FROM bouquineries INNER JOIN users ON bouquineries.ID_Utilisateur=users.ID
+		$requete_bouquineries='SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
 							   WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 		
 
@@ -589,11 +581,7 @@ class Database {
 		foreach($resultat_bouquineries as $bouquinerie) {
 			$evenement = ['nom_bouquinerie'=>$bouquinerie['Nom']];
 			ajouter_evenement(
-					$evenements->evenements,
-					$bouquinerie['DiffSecondes'],
-					'bouquineries',
-					$bouquinerie['username'],
-					$evenement);
+					$evenements->evenements, $evenement, $bouquinerie['DiffSecondes'], 'bouquineries', $bouquinerie['ID_Utilisateur']);
 		}
 		
 		/* Ajouts de tranches */
@@ -626,11 +614,7 @@ class Database {
             else {
                 if (!is_null($evenement)) {
                     ajouter_evenement(
-                        $evenements->evenements,
-                        $groupe_precedent['DiffSecondes'],
-                        'tranches_pretes',
-                        $groupe_precedent['Collaborateurs'],
-                        $evenement);
+                        $evenements->evenements, $evenement, $groupe_precedent['DiffSecondes'], 'tranches_pretes', null, $groupe_precedent['Collaborateurs']);
                 }
                 $evenement = ['numeros' => [$numero_complet]];
             }
@@ -639,11 +623,7 @@ class Database {
 
         if (count($resultat_tranches) > 0) {
             ajouter_evenement(
-                $evenements->evenements,
-                $groupe_courant['DiffSecondes'],
-                'tranches_pretes',
-                $groupe_courant['Collaborateurs'],
-                $evenement);
+                $evenements->evenements, $evenement, $groupe_courant['DiffSecondes'], 'tranches_pretes', null,$groupe_courant['Collaborateurs']);
         }
 
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
@@ -651,7 +631,9 @@ class Database {
 		
 		$evenements_slice=[];
 		$cpt=0;
-		
+
+		$tous_id_utilisateurs = [];
+
 		// Filtre : les 20 plus récents seulement
 		foreach($evenements->evenements as $diff_secondes=>$evenements_types) {
 			$evenements_slice[$diff_secondes]=new stdClass();
@@ -663,11 +645,16 @@ class Database {
 						break 3;
 					}
 					$evenements_slice_type[]=$evenement;
+					if (!is_null($evenement->id_utilisateur)) {
+					    $tous_id_utilisateurs[]= $evenement->id_utilisateur;
+                    }
 					$cpt++;
 				}
 				$evenements_slice[$diff_secondes]->$type=$evenements_slice_type;
 			}	
 		}
+
+		$evenements->ids_utilisateurs=$tous_id_utilisateurs;
 		$evenements->evenements=$evenements_slice;
 		return $evenements;
 	}
@@ -711,6 +698,22 @@ class Database {
         else {
             return null;
         }
+    }
+
+    public function get_details_collections($utilisateurs) {
+	    $concat_utilisateurs = implode(',', $utilisateurs);
+	    $requete_details_collections = "
+          SELECT users.ID AS ID_Utilisateur, users.username AS Username, 
+                 COUNT(DISTINCT Pays) AS NbPays, COUNT(DISTINCT Pays, Magazine) AS NbMagazines, COUNT(Numero) AS NbNumeros
+          FROM users
+          LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
+          WHERE users.ID IN ($concat_utilisateurs)
+          GROUP BY users.ID";
+
+	    $resultats = DM_Core::$d->requete_select($requete_details_collections);
+	    return array_combine(array_map(function($resultat) {
+	        return $resultat['ID_Utilisateur'];
+	    }, $resultats), array_values($resultats));
     }
 }
 
@@ -878,9 +881,10 @@ if (isset($_POST['database'])) {
 	}
 }
 
-function ajouter_evenement(&$evenements, $diff_secondes, $type_evenement, $utilisateur, $evenement=[]) {
+function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evenement, $id_utilisateur = null, $noms_utilisateurs = null) {
 	$evenement['diffsecondes'] = $diff_secondes;
-	$evenement['utilisateur'] = $utilisateur;
+	$evenement['id_utilisateur'] = $id_utilisateur;
+	$evenement['noms_utilisateurs'] = $noms_utilisateurs;
 	if (!array_key_exists($diff_secondes, $evenements)) {
 		$evenements[$diff_secondes]=new stdClass();
 	}

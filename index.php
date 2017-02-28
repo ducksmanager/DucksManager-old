@@ -1028,11 +1028,10 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4?>
                                                     </div><?php
                                                 }
-                                                ?><?= POSSESSION_MAGAZINES_1 ?> <?= $nb_numeros ?> <?= NUMEROS ?>.
-                                                  <?= POSSESSION_MAGAZINES_2 ?> <?= $nb_magazines ?>
-                                                  <?= POSSESSION_MAGAZINES_3 ?> <?= $nb_pays ?> <?= PAYS ?>.
+                                                ?><?= POSSESSION_MAGAZINES_INTRO ?>
+                                                <?php Affichage::afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros); ?>
                                                 <br/>
-                                                  <?= POSSESSION_MAGAZINES_4 ?><br/><br/>
+                                                  <?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
                                                 <br/>
                                             <?php
                                             }

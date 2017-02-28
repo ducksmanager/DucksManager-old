@@ -228,6 +228,7 @@ class Affichage {
 		Edge::$grossissement_defaut = 1;
 
 		$magazines_complets=Inducks::get_noms_complets_magazines($evenements->publicationcodes);
+		$details_collections=DM_Core::$d->get_details_collections($evenements->ids_utilisateurs);
 
 		foreach($evenements->evenements as $evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
@@ -235,12 +236,14 @@ class Affichage {
 					?><div class="evenement_<?=$type?>"><?php
 					switch($type) {
 						case 'inscriptions':
-							?><b><?=$evenement->utilisateur?></b> <?=NEWS_S_EST_INSCRIT?>
+							Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+							?><?=NEWS_S_EST_INSCRIT?>
 						<?php 
 						break;
 						case 'bouquineries':
-							?><b><?=utf8_decode($evenement->utilisateur)?></b> <?=NEWS_A_AJOUTE_BOUQUINERIE.' '
-								   ?><i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
+                            Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);?>
+                            <?=NEWS_A_AJOUTE_BOUQUINERIE.' ' ?>
+                            <i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
 						<?php 
 						break;
 						case 'ajouts':
@@ -248,8 +251,9 @@ class Affichage {
 							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
 								$evenement->cpt++;
 								continue;
-							}	
-							?><b><?=$evenement->utilisateur?></b> <?=NEWS_A_AJOUTE?> 
+							}
+                            Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+							?><?=NEWS_A_AJOUTE?>
 							<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
 							<?php 
 							if ($evenement->cpt > 0) {
@@ -265,7 +269,7 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}
-							$contributeurs = array_filter(array_unique($evenement->utilisateur));
+							$contributeurs = array_filter(array_unique($evenement->noms_utilisateurs));
                             $str_contributeurs = '<b>'.utf8_decode(implode('</b>, <b>', $contributeurs)).'</b>';
                             $str_contributeurs = str_replace_last(',', ' '.ET.' ', $str_contributeurs);
 
@@ -334,6 +338,19 @@ class Affichage {
 		?><span class="nowrap"><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?></span><?php
 	}
 
+	static function afficher_texte_utilisateur($infos_utilisateur) {
+        $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
+        ?><a href="javascript:void(0)" class="has_tooltip underlined"><b><?=$nom_utilisateur?></b></a>
+        <div class="cache tooltip_content">
+            <h4><?=$nom_utilisateur?></h4>
+            <?php if ($infos_utilisateur['NbNumeros'] > 0) { ?>
+                <div>
+                    <?php Affichage::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], true) ?>
+                </div>
+            <?php } ?>
+        </div><?php
+    }
+
 	static function afficher_texte_histoire($code, $title, $comment)
 	{
 		if (empty($title)) {
@@ -381,6 +398,20 @@ class Affichage {
             <a class="noborder a2a_button_twitter"></a>
             <a class="noborder a2a_button_google_plus"></a>
         </div><?php
+    }
+
+    public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $simple = false)
+    {
+        if ($simple) {
+            echo $nb_numeros.' '.NUMEROS . '<br />'
+                . $nb_magazines . ' ' . MAGAZINES . '<br />'
+                . $nb_pays . ' ' .  PAYS;
+        }
+        else {
+            echo $nb_numeros.' '.NUMEROS . '<br />'
+                . POSSESSION_MAGAZINES_2 . ' ' . $nb_magazines . ' '
+                . POSSESSION_MAGAZINES_3 . ' ' . $nb_pays . ' ' .  PAYS. '.';
+        }
     }
 }
 

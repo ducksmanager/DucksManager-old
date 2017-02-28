@@ -218,6 +218,10 @@ function charger_evenements() {
 				   element_conteneur_bibliotheque = element.next('.tooltip_content');
 				   charger_tranche(element_conteneur_bibliotheque.down('.tranche'));
 			   });
+			   $$('.evenement_inscriptions a.has_tooltip, .evenement_bouquineries a.has_tooltip, .evenement_ajouts a.has_tooltip').each(function(element) {
+                   var tooltip_content = element.next('.tooltip_content');
+                   new Opentip(element, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null });
+			   });
 		   }
 	});
 }

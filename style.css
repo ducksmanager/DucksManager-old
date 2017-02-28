@@ -39,6 +39,10 @@ a:HOVER {
 	max-width: 500px !important;
 }
 
+.opentip-container h4 {
+	margin-top: 0;
+}
+
 a, a:HOVER {
 	text-decoration: none;
 	white-space: nowrap;
