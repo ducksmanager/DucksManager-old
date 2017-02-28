@@ -30,7 +30,7 @@ class Stats {
 			$total+=$cpt;
 			$publication_codes[]=$publicationcode;
 		}
-		list($noms_pays,$noms_magazines)=Inducks::get_noms_complets($publication_codes);
+		$noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
 
 		$autres=0;
 		$nb_magazines_autres=0;
@@ -113,7 +113,8 @@ class Stats {
 					$publication_codes[]=$pays.'/'.$magazine;
 				}
 			}
-			list($noms_complets_pays,$noms_complets_magazines)=Inducks::get_noms_complets($publication_codes);
+			$noms_complets_pays = Inducks::get_noms_complets_pays($publication_codes);
+			$noms_complets_magazines = Inducks::get_noms_complets_magazines($publication_codes);
 
 			foreach(json_decode($_POST['ids']) as $i=>$pays) {
 				foreach($infos[$i]->total as $magazine=>$total) {
@@ -270,7 +271,8 @@ class Stats {
 			return $achat['Publicationcode'];
 		}, $resultat_achats);
 
-		list($noms_complets_pays,$noms_complets_magazines)=Inducks::get_noms_complets($publication_codes);
+		$noms_complets_pays = Inducks::get_noms_complets_pays($publication_codes);
+		$noms_complets_magazines = Inducks::get_noms_complets_magazines($publication_codes);
 
 		return [
 			'labels_pays_longs' => $noms_complets_pays,

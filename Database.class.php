@@ -195,7 +195,7 @@ class Database {
 			foreach ($resultat_ventes_utilisateurs as $vente) {
 				$publication_codes[]=$vente['Pays'].'/'.$vente['Magazine'];
 			}
-			list($liste_pays,$liste_magazines)=$noms_complets_magazines=Inducks::get_noms_complets($publication_codes);
+			$liste_magazines=Inducks::get_noms_complets_magazines($publication_codes);
 			$username_courant = '';
 			foreach ($resultat_ventes_utilisateurs as $vente) {
 				$publicationcode=$vente['Pays'].'/'.$vente['Magazine'];

@@ -537,8 +537,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                         $publication_codes[] = $tranche['publicationcode'];
                                                     }
                                                     $publication_codes = array_unique($publication_codes);
-                                                    list($pays_complets, $magazines_complets) = Inducks::get_noms_complets($publication_codes);
-
+                                                    $magazines_complets = Inducks::get_noms_complets_magazines($publication_codes);
                                                     ?>
                                                     <div>
                                                         <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
@@ -639,7 +638,8 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                             foreach ($resultat_ordre_magazines as $magazine) {
                                                 $publication_codes[] = $magazine['Pays'] . '/' . $magazine['Magazine'];
                                             }
-                                            list($noms_pays, $noms_magazines) = Inducks::get_noms_complets($publication_codes);
+                                            $noms_pays = Inducks::get_noms_complets_pays($publication_codes);
+                                            $noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
                                             foreach ($resultat_ordre_magazines as $magazine) {
                                                 $num_ordre = $magazine['Ordre'];
                                                 $nom_pays = $magazine['Pays'];

@@ -48,7 +48,8 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     }
 }
 
-list($noms_pays,$noms_magazines) = Inducks::get_noms_complets(array_keys($numeros));
+$noms_pays = Inducks::get_noms_complets_pays(array_keys($numeros));
+$noms_magazines = Inducks::get_noms_complets_magazines(array_keys($numeros));
 
 $code_ajouts = [];
 $code_images_ajouts = [];

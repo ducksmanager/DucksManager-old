@@ -238,7 +238,7 @@ class collectable extends Format_liste {
 				$nb_magazines+=count($numeros_pays);
 			}
 
-			if ($nb_magazines > 1) {
+			if ($nb_magazines >= 1) {
 				?>
 					<td class="legende_magazines">
 						<table><?php
@@ -248,7 +248,7 @@ class collectable extends Format_liste {
 						$publication_codes[]=$pays.'/'.$magazine;
 					}
 				}
-				list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+				$noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
 				$i=0;
 							?><tr>
 								<td align="center" colspan="4">

@@ -109,7 +109,8 @@ class Liste {
 		if (!is_null($pays_magazine_supplementaire)) {
 			$publication_codes[]=$pays_magazine_supplementaire;
 		}
-		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+		$noms_pays = Inducks::get_noms_complets_pays($publication_codes);
+		$noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
 		foreach(array_keys($noms_pays) as $nom_abrege) {
 			$noms_pays[$noms_pays[$nom_abrege]]= [$nom_abrege, $noms_pays[$nom_abrege]];
 			unset($noms_pays[$nom_abrege]);

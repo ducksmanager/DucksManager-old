@@ -20,7 +20,9 @@ class classique extends Format_liste {
 				$publication_codes[]=$pays.'/'.$magazine;
 			}
 		}
-		list($noms_pays,$noms_magazines) = Inducks::get_noms_complets($publication_codes);
+		$noms_pays = Inducks::get_noms_complets_pays($publication_codes);
+		$noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
+
 		foreach($liste as $pays=>$numeros_pays) {
 			?><br /><b><i><?=$noms_pays[$pays]?></i></b><br /><?php
 			foreach($numeros_pays as $magazine=>$numeros) {

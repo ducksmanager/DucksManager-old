@@ -67,7 +67,7 @@ if (isset($_GET['wanted'])) {
 		$publicationcodes[]=$numero_demande['publicationcode'];
 	}
 	$publicationcodes=array_unique($publicationcodes);
-	list($liste_pays,$liste_magazines)=Inducks::get_noms_complets($publicationcodes);
+	$liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 
 	foreach($numeros_demandes as $numero_demande) {
 		$publicationcode=$numero_demande['publicationcode'];
@@ -101,7 +101,7 @@ $publicationcodes= [];
 foreach($resultat_pays_magazines_tranches_pretes as $publicationcode) {
 	$publicationcodes[]=$publicationcode['publicationcode'];
 }
-list($liste_pays,$liste_magazines)=Inducks::get_noms_complets($publicationcodes);
+$liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 $numeros_inducks=Inducks::get_numeros_liste_publications($publicationcodes);
 foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 	$publicationcode=$infos_numero['publicationcode'];

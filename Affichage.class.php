@@ -227,7 +227,7 @@ class Affichage {
 		Edge::$sans_etageres = true;
 		Edge::$grossissement_defaut = 1;
 
-		list($pays_complets,$magazines_complets)=Inducks::get_noms_complets($evenements->publicationcodes);
+		$magazines_complets=Inducks::get_noms_complets_magazines($evenements->publicationcodes);
 
 		foreach($evenements->evenements as $evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
