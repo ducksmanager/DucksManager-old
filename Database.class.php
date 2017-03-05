@@ -493,15 +493,18 @@ class Database {
 	}
 	
 	function get_niveaux() {
-		$requete_nb_photographies ='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
-								  .'WHERE photographes REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\'';
+		$id_user=$this->user_to_id($_SESSION['user']);
+
+		$requete_nb_photographies ="
+            SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs 
+            WHERE contribution = 'photographe' AND contributeur = $id_user";
 		$resultat_nb_photographies=DM_Core::$d->requete_select($requete_nb_photographies);
 
-		$requete_nb_creations =	   'SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
-								  .'WHERE createurs REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\'';
+		$requete_nb_creations =	"
+            SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs 
+            WHERE contribution = 'createur' AND contributeur = $id_user";
 		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
 
-		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
 
@@ -571,13 +574,16 @@ class Database {
 		}
 		
 		/* Ajouts de tranches */
-		$requete_tranches= "SELECT publicationcode, issuenumber, CONCAT(photographes, ',', createurs) AS collaborateurs, DATE(dateajout) DateAjout,
-                                   (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes,
-                                   CONCAT(publicationcode,'/',issuenumber) AS Numero
-                            FROM tranches_pretes
-                            WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
-                              AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
-                            ORDER BY DateAjout DESC, collaborateurs";
+		$requete_tranches= "
+            SELECT publicationcode, issuenumber, GROUP_CONCAT(contributeur) AS collaborateurs, DATE(dateajout) DateAjout,
+               (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes,
+               CONCAT(publicationcode,'/',issuenumber) AS Numero
+            FROM tranches_pretes
+            INNER JOIN tranches_pretes_contributeurs USING (publicationcode, issuenumber)
+            WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+              AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
+            GROUP BY publicationcode, issuenumber
+            ORDER BY DateAjout DESC, collaborateurs";
 
 		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
         $groupe_precedent = null;
@@ -633,6 +639,9 @@ class Database {
 					$evenements_slice_type[]=$evenement;
 					if (!is_null($evenement->id_utilisateur)) {
 					    $tous_id_utilisateurs[]= $evenement->id_utilisateur;
+                    }
+					if (!is_null($evenement->ids_utilisateurs)) {
+					    $tous_id_utilisateurs = array_merge($tous_id_utilisateurs, $evenement->ids_utilisateurs);
                     }
 					$cpt++;
 				}
@@ -693,15 +702,15 @@ class Database {
                 users.ID AS ID_Utilisateur, users.username AS Username, 
                 COUNT(DISTINCT numeros.Pays) AS NbPays, COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines, COUNT(numeros.Numero) AS NbNumeros,
                 (
-                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes
-                 WHERE photographes REGEXP CONCAT('(^|,)(', users.username, ')($|,)')
+                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs
+                 WHERE contributeur = users.ID AND contribution='photographe'
                 ) AS NbPhotographies,
                 (
-                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes
-                 WHERE createurs REGEXP CONCAT('(^|,)(', users.username, ')($|,)')
+                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs
+                 WHERE contributeur = users.ID AND contribution='createur'
                 ) AS NbCreations,
                 (
-                 SELECT COUNT(bouquineries.Nom) FROM db301759616.bouquineries
+                 SELECT COUNT(bouquineries.Nom) FROM bouquineries
                  WHERE bouquineries.ID_Utilisateur=users.ID AND bouquineries.Actif=1
                 ) AS NbBouquineries
             FROM users
@@ -884,7 +893,7 @@ if (isset($_POST['database'])) {
 function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evenement, $id_utilisateur = null, $noms_utilisateurs = null) {
 	$evenement['diffsecondes'] = $diff_secondes;
 	$evenement['id_utilisateur'] = $id_utilisateur;
-	$evenement['noms_utilisateurs'] = $noms_utilisateurs;
+	$evenement['ids_utilisateurs'] = $noms_utilisateurs;
 	if (!array_key_exists($diff_secondes, $evenements)) {
 		$evenements[$diff_secondes]=new stdClass();
 	}

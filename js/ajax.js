@@ -214,11 +214,11 @@ function charger_evenements() {
 		   parameters:'database=true&evenements_recents=true',
 		   onSuccess:function(transport) {
 			   $('evenements').innerHTML = transport.responseText;
-			   $$('.evenement_tranches_pretes a.has_tooltip').each(function(element) {
+			   $$('#evenements a.has_tooltip.edge_tooltip').each(function(element) {
 				   element_conteneur_bibliotheque = element.next('.tooltip_content');
 				   charger_tranche(element_conteneur_bibliotheque.down('.tranche'));
 			   });
-			   $$('.evenement_inscriptions a.has_tooltip, .evenement_bouquineries a.has_tooltip, .evenement_ajouts a.has_tooltip').each(function(element) {
+			   $$('#evenements a.has_tooltip.user_tooltip').each(function(element) {
                    var tooltip_content = element.next('.tooltip_content');
                    new Opentip(element, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null, className: "profil" });
 			   });
@@ -228,7 +228,7 @@ function charger_evenements() {
 }
 
 function callback_tranches_chargees(tooltip_content) {
-	var element_texte_hover = tooltip_content.previous('a.has_tooltip');
+	var element_texte_hover = tooltip_content.previous('a.has_tooltip.edge_tooltip');
 	new Opentip(element_texte_hover, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null, className: "tranches" });
 }
 

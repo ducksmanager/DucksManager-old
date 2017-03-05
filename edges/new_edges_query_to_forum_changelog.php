@@ -20,8 +20,6 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     $valeurs= [];
     $valeurs['publicationcode']=$publicationcode;
     $valeurs['issuenumber']=$numero;
-    $valeurs['photographes']=$photographes;
-    $valeurs['createurs']=$createurs;
 
     $chemin = $pays .'/gen/'. $magazine .'.'. $numero .'.png';
 
@@ -30,6 +28,27 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     if (isset($_GET['publier'])) {
         $requete='INSERT INTO tranches_pretes ('.implode(',',array_keys($valeurs)).') VALUES (\''.implode($valeurs, '\', \'').'\')';
         DM_Core::$d->requete($requete);
+
+        foreach($photographes as $utilisateur_photographe) {
+            $requete = 'SELECT ID FROM users WHERE username=\''.$utilisateur_photographe.'\'';
+            $resultat = DM_Core::$d->requete_select($requete);
+            $id_utilisateur = $resultat[0]['ID'];
+
+            $requete="INSERT INTO tranches_pretes_contributeurs(publicationcode, issuenumber, contributeur, contribution) 
+                      VALUES ('$publicationcode','$numero',$id_utilisateur,'photographe')";
+            DM_Core::$d->requete($requete);
+        }
+
+        foreach($createurs as $utilisateur_createur) {
+            $requete = 'SELECT ID FROM users WHERE username=\''.$utilisateur_createur.'\'';
+            $resultat = DM_Core::$d->requete_select($requete);
+            $id_utilisateur = $resultat[0]['ID'];
+
+            $requete="INSERT INTO tranches_pretes_contributeurs(publicationcode, issuenumber, contributeur, contribution) 
+                      VALUES ('$publicationcode','$numero',$id_utilisateur,'createur')";
+            DM_Core::$d->requete($requete);
+        }
+
         copy($url, $chemin);
 
         $requete_tranche_publiee = 'UPDATE tranches_en_cours_modeles SET PretePourPublication=0 WHERE ID='.$id;

@@ -221,6 +221,18 @@ CREATE TABLE `tranches_pretes` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+DROP TABLE IF EXISTS `tranches_pretes_contributeurs`;
+CREATE TABLE tranches_pretes_contributeurs
+(
+  publicationcode VARCHAR(15) NOT NULL,
+  issuenumber VARCHAR(30) NOT NULL,
+  contributeur INT(11) NOT NULL,
+  contribution ENUM('photographe', 'createur') DEFAULT 'createur' NOT NULL,
+  CONSTRAINT `PRIMARY` PRIMARY KEY (publicationcode, issuenumber, contributeur, contribution)
+);
+CREATE INDEX tranches_pretes_contributeurs_publicationcode_issuenumber_index ON tranches_pretes_contributeurs (publicationcode, issuenumber);
+CREATE INDEX tranches_pretes_contributeurs_contributeur_index ON tranches_pretes_contributeurs (contributeur);
+
 --
 -- Table structure for table `users`
 --

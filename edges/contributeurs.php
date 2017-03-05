@@ -3,9 +3,14 @@ include_once('../Database.class.php');
 include_once('../authentification.php');
 
 if (isset($_GET['contributions'])) {
-	$requete_contributions='SELECT publicationcode, issuenumber FROM tranches_pretes '
-						  .'WHERE photographes REGEXP \'(^|,)('.$_GET['contributeur'].')($|,)\' '
-						  .'ORDER BY publicationcode';
+    $requete_utilisateur='SELECT ID FROM users WHERE username = '.$_GET['contributeur'];
+    $resultat_utilisateurs=DM_Core::$d->requete_select($requete_utilisateur);
+    $id_utilisateur = $resultat_utilisateurs[0]['ID'];
+
+	$requete_contributions="
+        SELECT publicationcode, issuenumber
+        FROM tranches_pretes_contributeurs
+        WHERE contribution = 'photographe' AND contributeur = $id_utilisateur";
 	$resultat_contributions=DM_Core::$d->requete_select($requete_contributions);
 
 	$contributions= [];
@@ -44,20 +49,23 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 		echo 'La tranche '.$publicationcode.' '.$issuenumber.' n\'est pas pr&ecirc;te'."\n";
 	}
 	else {
-		$requete_contribution_existante='SELECT 1 FROM tranches_pretes '
+        $requete_utilisateur='SELECT ID FROM users WHERE username = '.$contributeur;
+        $resultat_utilisateurs=DM_Core::$d->requete_select($requete_utilisateur);
+        $id_utilisateur = $resultat_utilisateurs[0]['ID'];
+
+		$requete_contribution_existante='SELECT 1 FROM tranches_pretes_contributeurs '
 									   .'WHERE publicationcode=\''.$publicationcode.'\' '
 										 .'AND issuenumber=\''.$issuenumber.'\' '
-										 .'AND photographes REGEXP \'(^|,)('.$contributeur.')($|,)\' ';
+                                         .'AND contribution = \'photographe\' AND contributeur = '.$id_utilisateur;
 		$contribution_existe=count(DM_Core::$d->requete_select($requete_contribution_existante))> 0;
 		if ($contribution_existe) {
 			echo $contributeur.' est d&eacute;j&agrave; marqu&eacute; '
 				.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
 		}
 		else {
-			$requete='UPDATE tranches_pretes '
-					.'SET photographes=CONCAT(IFNULL(photographes,\'\'), \','.$contributeur.'\') '
-					.'WHERE publicationcode=\''.$publicationcode.'\' '
-					  .'AND issuenumber=\''.$issuenumber.'\'';
+			$requete = "
+              INSERT INTO tranches_pretes_contributeurs(publicationcode, issuenumber, contributeur, contribution) 
+              VALUES (\''.$publicationcode.'\', \''.$issuenumber.'\', '.$contributeur.', \'photographe\'')";
 			DM_Core::$d->requete($requete);
 			echo $contributeur.' ajout&eacute; '
 				.'comme contributeur &agrave; '.$publicationcode.' '.$issuenumber."\n";
@@ -65,11 +73,11 @@ function ajouter_contributeur($publicationcode, $issuenumber, $contributeur) {
 	}
 }
 
-$requete_utilisateurs='SELECT username FROM users ORDER BY UPPER(username)';
+$requete_utilisateurs='SELECT ID, username FROM users ORDER BY UPPER(username)';
 $resultat_utilisateurs=DM_Core::$d->requete_select($requete_utilisateurs);
 $utilisateurs= [];
 foreach($resultat_utilisateurs as $utilisateur) {
-	$utilisateurs[]=utf8_decode($utilisateur['username']);
+	$utilisateurs[$utilisateur['username']]=utf8_decode($utilisateur['username']);
 }
 
 ?>
@@ -145,9 +153,9 @@ foreach($resultat_utilisateurs as $utilisateur) {
 	<tr>
 		<td>
 			<select id="utilisateurs">
-				<?php foreach($utilisateurs as $utilisateur) {
-					$requete_nb_contributions='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
-											  .'WHERE photographes REGEXP \'(^|,)('.$utilisateur.')($|,)\' '
+				<?php foreach($utilisateurs as $id_utilisateur => $utilisateur) {
+					$requete_nb_contributions='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs '
+											  .'WHERE contribution=\'photographe\' AND contributeur = '.$id_utilisateur.' '
 											  .'ORDER BY publicationcode';
 					$resultat=DM_Core::$d->requete_select($requete_nb_contributions);
 					if (isset($resultat[0])) {

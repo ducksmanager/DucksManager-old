@@ -275,12 +275,14 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}
-							$contributeurs = array_filter(array_unique($evenement->noms_utilisateurs));
-                            $str_contributeurs = '<b>'.utf8_decode(implode('</b>, <b>', $contributeurs)).'</b>';
-                            $str_contributeurs = str_replace_last(',', ' '.ET.' ', $str_contributeurs);
+							$contributeurs = array_filter(array_unique($evenement->ids_utilisateurs));
+							foreach($contributeurs as $i => $idContributeur) {
+                                Affichage::afficher_texte_utilisateur($details_collections[$idContributeur]);
+                                ?><?= $i < count($contributeurs) -2 ? ', ' : ($i < count($contributeurs) - 1 ? ' ' . ET . ' ' : '');
+                            }
 
-							?><?=$str_contributeurs?> <?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
-							<a href="javascript:void(0)" class="has_tooltip underlined">
+							?><?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
+							<a href="javascript:void(0)" class="has_tooltip edge_tooltip underlined">
 								<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);?>
 								<?php
 								$nb_autres_numeros = count($evenement->numeros) - 1;
@@ -346,7 +348,7 @@ class Affichage {
 
 	static function afficher_texte_utilisateur($infos_utilisateur) {
         $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
-        ?><a href="javascript:void(0)" class="has_tooltip underlined"><b><?=$nom_utilisateur?></b></a>
+        ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=$nom_utilisateur?></i></b></a>
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
             <div>
