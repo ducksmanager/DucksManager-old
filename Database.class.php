@@ -494,13 +494,11 @@ class Database {
 	
 	function get_niveaux() {
 		$requete_nb_photographies ='SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
-								  .'WHERE photographes REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\' '
-								  .'ORDER BY publicationcode';
+								  .'WHERE photographes REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\'';
 		$resultat_nb_photographies=DM_Core::$d->requete_select($requete_nb_photographies);
 
 		$requete_nb_creations =	   'SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes '
-								  .'WHERE createurs REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\' '
-								  .'ORDER BY createurs';
+								  .'WHERE createurs REGEXP \'(^|,)('.$_SESSION['user'].')($|,)\'';
 		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
 
 		$id_user=$this->user_to_id($_SESSION['user']);
