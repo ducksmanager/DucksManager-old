@@ -5,6 +5,12 @@ if (isset($_GET['lang'])) {
 include_once ('locales/lang.php');
 class Affichage {
 
+    static $niveaux_medailles=[
+        'Photographe' => [1 => 1, 2 => 10, 3 => 50],
+        'Concepteur'  => [1 => 1, 2 => 3,  3 => 10],
+        'Duckhunter'  => [1 => 1, 2 => 3,  3 =>  5]
+    ];
+
     static function onglets_magazines($onglets_pays,$onglets_magazines) {
         $magazine_courant = isset($_GET['onglet_magazine']) ? $_GET['onglet_magazine'] : null;
         $pays_courant = is_null($magazine_courant) ? null : explode('/', $magazine_courant)[0];
@@ -343,11 +349,9 @@ class Affichage {
         ?><a href="javascript:void(0)" class="has_tooltip underlined"><b><?=$nom_utilisateur?></b></a>
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
-            <?php if ($infos_utilisateur['NbNumeros'] > 0) { ?>
-                <div>
-                    <?php Affichage::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], true) ?>
-                </div>
-            <?php } ?>
+            <div>
+                <?php Affichage::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPhotographies'], $infos_utilisateur['NbCreations'], $infos_utilisateur['NbBouquineries']) ?>
+            </div>
         </div><?php
     }
 
@@ -400,18 +404,50 @@ class Affichage {
         </div><?php
     }
 
-    public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $simple = false)
+    public static function afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros) {
+        echo $nb_numeros.' '.NUMEROS . '<br />'
+            . POSSESSION_MAGAZINES_2 . ' ' . $nb_magazines . ' '
+            . POSSESSION_MAGAZINES_3 . ' ' . $nb_pays . ' ' .  PAYS. '.';
+    }
+
+    public static function get_medailles($nbPhotographiesCreationsBouquineries) {
+        $cpt_et_niveaux=[];
+        foreach($nbPhotographiesCreationsBouquineries as $type=>$cpt) {
+            $cpt_et_niveaux[$type]=null;
+            foreach (Affichage::$niveaux_medailles[$type] as $niveau=> $cpt_min) {
+                if ($cpt >= $cpt_min) {
+                    $cpt_et_niveaux[$type]=['Niveau'=>$niveau,'Cpt'=>$cpt];
+                }
+            }
+        }
+        return $cpt_et_niveaux;
+    }
+
+    public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $nbPhotographies, $nbCreations, $nbBouquineries)
     {
-        if ($simple) {
-            echo $nb_numeros.' '.NUMEROS . '<br />'
-                . $nb_magazines . ' ' . MAGAZINES . '<br />'
-                . $nb_pays . ' ' .  PAYS;
+        $medailles = Affichage::get_medailles([
+            'Photographe'=> $nbPhotographies,
+            'Concepteur' => $nbCreations,
+            'Duckhunter' => $nbBouquineries
+        ]);
+        foreach($medailles as $type=>$cpt_et_niveau) {
+            if (!is_null($cpt_et_niveau)) {
+                $niveau=$cpt_et_niveau['Niveau'];
+                ?>
+                <div class="medaille_profil">
+                    <img src="images/medailles/<?=$type?>_<?=$niveau?>_fond.png" /><br />
+                    <b><?=constant('TITRE_MEDAILLE_'.strtoupper($type))?><br /><?=NIVEAU?> <?=str_replace('avance', 'avancé', $niveau)?></b>
+                </div><?php
+            }
         }
-        else {
-            echo $nb_numeros.' '.NUMEROS . '<br />'
-                . POSSESSION_MAGAZINES_2 . ' ' . $nb_magazines . ' '
-                . POSSESSION_MAGAZINES_3 . ' ' . $nb_pays . ' ' .  PAYS. '.';
-        }
+        ?>
+        <div class="clear"><?php
+            if ($nb_numeros > 0) {
+                echo $nb_numeros.' '.NUMEROS . '<br />'
+                   . $nb_magazines . ' ' . MAGAZINES . '<br />'
+                   . $nb_pays . ' ' .  PAYS;
+            }
+        ?></div><?php
     }
 }
 

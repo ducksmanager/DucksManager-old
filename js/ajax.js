@@ -220,15 +220,16 @@ function charger_evenements() {
 			   });
 			   $$('.evenement_inscriptions a.has_tooltip, .evenement_bouquineries a.has_tooltip, .evenement_ajouts a.has_tooltip').each(function(element) {
                    var tooltip_content = element.next('.tooltip_content');
-                   new Opentip(element, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null });
+                   new Opentip(element, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null, className: "profil" });
 			   });
+
 		   }
 	});
 }
 
 function callback_tranches_chargees(tooltip_content) {
 	var element_texte_hover = tooltip_content.previous('a.has_tooltip');
-	new Opentip(element_texte_hover, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null });
+	new Opentip(element_texte_hover, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null, className: "tranches" });
 }
 
 function initPays(inclure_tous_pays, selected) {

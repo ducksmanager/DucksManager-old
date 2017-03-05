@@ -504,24 +504,12 @@ class Database {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
-		$nb = ['Photographe'=> $resultat_nb_photographies[0]['cpt'],
-					'Concepteur'	=> $resultat_nb_creations[0]['cpt'],
-					'Duckhunter'	=> $resultat_nb_bouquineries[0]['cpt']];
 
-		$limites=['Photographe'=>['avance' => 50, 'intermediaire' => 10, 'debutant' => 1],
-					   'Concepteur'	=>['avance' => 10, 'intermediaire' => 3,  'debutant' => 1],
-					   'Duckhunter' =>['avance' =>  5, 'intermediaire' => 3,  'debutant' => 1]];
-		$cpt_et_niveaux=[];
-		foreach($nb as $type=>$cpt) {
-			$cpt_et_niveaux[$type]=null;
-			foreach ($limites[$type] as $niveau=>$cpt_min) {
-				if ($cpt >= $cpt_min) {
-					$cpt_et_niveaux[$type]=['Niveau'=>$niveau,'Cpt'=>$cpt];
-					break;
-				}
-			}
-		}	
-		return $cpt_et_niveaux;
+		return Affichage::get_medailles([
+            'Photographe'=> $resultat_nb_photographies[0]['cpt'],
+            'Concepteur' => $resultat_nb_creations[0]['cpt'],
+            'Duckhunter' => $resultat_nb_bouquineries[0]['cpt']
+        ]);
 	}
 	
 	function get_evenements_recents() {
@@ -698,15 +686,29 @@ class Database {
         }
     }
 
-    public function get_details_collections($utilisateurs) {
-	    $concat_utilisateurs = implode(',', $utilisateurs);
+    public function get_details_collections($idsUtilisateurs) {
+	    $concat_utilisateurs = implode(',', $idsUtilisateurs);
 	    $requete_details_collections = "
-          SELECT users.ID AS ID_Utilisateur, users.username AS Username, 
-                 COUNT(DISTINCT Pays) AS NbPays, COUNT(DISTINCT Pays, Magazine) AS NbMagazines, COUNT(Numero) AS NbNumeros
-          FROM users
-          LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
-          WHERE users.ID IN ($concat_utilisateurs)
-          GROUP BY users.ID";
+            SELECT 
+                users.ID AS ID_Utilisateur, users.username AS Username, 
+                COUNT(DISTINCT numeros.Pays) AS NbPays, COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines, COUNT(numeros.Numero) AS NbNumeros,
+                (
+                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes
+                 WHERE photographes REGEXP CONCAT('(^|,)(', users.username, ')($|,)')
+                ) AS NbPhotographies,
+                (
+                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes
+                 WHERE createurs REGEXP CONCAT('(^|,)(', users.username, ')($|,)')
+                ) AS NbCreations,
+                (
+                 SELECT COUNT(bouquineries.Nom) FROM db301759616.bouquineries
+                 WHERE bouquineries.ID_Utilisateur=users.ID AND bouquineries.Actif=1
+                ) AS NbBouquineries
+            FROM users
+            
+            LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
+            WHERE users.ID IN ($concat_utilisateurs)
+            GROUP BY users.ID";
 
 	    $resultats = DM_Core::$d->requete_select($requete_details_collections);
 	    return array_combine(array_map(function($resultat) {

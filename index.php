@@ -1029,7 +1029,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
                                                     </div><?php
                                                 }
                                                 ?><?= POSSESSION_MAGAZINES_INTRO ?>
-                                                <?php Affichage::afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros); ?>
+                                                <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
                                                 <br/>
                                                   <?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
                                                 <br/>
