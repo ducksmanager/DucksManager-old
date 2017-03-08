@@ -207,14 +207,13 @@ class Util {
     public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters = [])
     {
         $ch = curl_init();
-        $url = '';
+        $url = $coaServer->getUrl() . '/' . $coaServer->web_root . $path;
+
         switch($method) {
             case 'POST':
-                $url = $coaServer->getUrl() . '/' . $coaServer->web_root . $path;
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
             break;
             case 'GET':
-                $url = $coaServer->getUrl() . '/' . $coaServer->web_root . $path;
                 if (count($parameters) > 0) {
                     $url .= '/' . implode('/', $parameters);
                 }
