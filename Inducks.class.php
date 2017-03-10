@@ -16,7 +16,7 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete_select($requete,$db='db_coa',$nomServeur='serveur_virtuel', $timeout=3.0) {
+	static function requete_select($requete, $db = 'db_coa', $nomServeur = 'serveur_virtuel') {
         if (count(ServeurCoa::$coa_servers) === 0) {
             ServeurCoa::initCoaServers();
         }
@@ -32,7 +32,8 @@ class Inducks {
                 $output=Util::get_query_results_from_remote($coaServer, $requete, $db);
             }
             else {
-                $output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete), $timeout, isset($_GET['dbg']));
+                $output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete),
+                    isset($_GET['dbg']));
             }
             if (isset($_GET['brut'])) {
                 echo 'Requete : '.$requete.'<br />'

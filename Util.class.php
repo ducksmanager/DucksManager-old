@@ -4,18 +4,8 @@ if (!isset($no_database))
 
 class Util {
 	static $nom_fic;
-	static function get_page($url, $timeout = 0) {
-		if ($timeout > 0) {
-			$context = stream_context_create( [
-				'http'=> [
-					'timeout' => $timeout
-				]
-			]);
-			$handle = @fopen($url, "r", null, $context);
-		}
-		else {
-			$handle = @fopen($url, "r");
-		}
+	static function get_page($url) {
+		$handle = @fopen($url, "r");
 
 		if (isset($_GET['dbg'])) {
 			echo $url;
@@ -33,13 +23,13 @@ class Util {
 		}
 	}
 	
-	static function get_secured_page(ServeurCoa $coaServer, $url, $timeout, $dbg) {
+	static function get_secured_page(ServeurCoa $coaServer, $url, $dbg) {
 		$baseUrl = $coaServer->getUrl().'/'.$coaServer->web_root;
 		$fullUrl = $baseUrl.'/'.$url.'&mdp='.sha1($coaServer->db_password);
 		if ($dbg) {
 			echo $fullUrl.'<br /><br />';
 		}
-		return Util::get_page($fullUrl, $timeout);
+		return Util::get_page($fullUrl);
 	}
 
 	static function start_log($nom) {
