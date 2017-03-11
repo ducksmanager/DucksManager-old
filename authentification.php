@@ -7,7 +7,7 @@ if (!is_null($user)) {
 	$requete_identifiants_valides='SELECT 1 FROM users WHERE username=\''.$user.'\' AND password=\''.$pass.'\'';
 	$identifiants_valides=count(DM_Core::$d->requete_select($requete_identifiants_valides)) == 1;
 	if ($identifiants_valides) {
-		$requete_permission='SELECT 1 FROM edgecreator_droits WHERE username=\''.$user.'\' AND privilege=\'Admin\'';
+		$requete_permission='SELECT 1 FROM users_permissions WHERE username=\''.$user.'\' AND role=\'EdgeCreator\' AND privilege=\'Admin\'';
 		$permission_valide=count(DM_Core::$d->requete_select($requete_permission)) == 1;
 		if ($permission_valide) {
 			$_SESSION['user']=$user;
