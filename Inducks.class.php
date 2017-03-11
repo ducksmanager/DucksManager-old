@@ -339,10 +339,10 @@ elseif (isset($_POST['get_cover'])) {
 	foreach($resultat_get_extraits as $extrait) {
 		switch($extrait['sitecode']) {
 			case 'webusers': case 'thumbnails':
-				$url='http://outducks.org/webusers/'.$extrait['url'];
+				$url='https://outducks.org/webusers/'.$extrait['url'];
 			break;
 			default:
-				$url='http://outducks.org/'.$extrait['sitecode'].'/'.$extrait['url'];
+				$url='https://outducks.org/'.$extrait['sitecode'].'/'.$extrait['url'];
 		}
 
 		if (count($resultats) == 0)
