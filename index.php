@@ -1072,7 +1072,7 @@ $id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) :
 
                                                 <table width="100%">
                                                 <tr><td>
-                                                <span id="liste_numeros"><?=CHARGEMENT.'...'?></span>
+                                                <span id="liste_numeros" class="possedes manquants"><?=CHARGEMENT.'...'?></span>
                                                 </td><td>
                                             </td></tr></table>
                                             <?php

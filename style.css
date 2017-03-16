@@ -146,6 +146,11 @@ a.important:HOVER {
 	padding: 45px 20px 20px 20px;
 }
 
+#liste_numeros .num_manque,
+#liste_numeros .num_possede {
+	display: none;
+}
+
 .num_manque {
 	width:100%;
 	background-color:black;
@@ -160,6 +165,11 @@ a.important:HOVER {
 	cursor:default;
 	height:16px;
 	padding-top:4px;
+}
+
+#liste_numeros.manquants .num_manque,
+#liste_numeros.possedes .num_possede {
+	display: block;
 }
 
 .num_checked {

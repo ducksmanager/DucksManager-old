@@ -73,23 +73,8 @@ function stop_selection(sel) {
 }
 
 function changer_affichage(type_numeros) {
-	$('nb_selection').update(0);
 	$('menu_contextuel').hide();
-	if ($('sel_numeros_'+type_numeros).checked) {
-		$$('.num_'+type_numeros).each (function(numero) {
-			numero.setStyle({'display':''});
-		});
-	}
-	else {
-		$$('.num_'+type_numeros).each (function(numero) {
-			numero.setStyle({'display':'none'});
-			var i=0;
-			while ($('n'+i)) {
-				$('n'+i).removeClassName('num_checked');
-				i++;
-			}
-		});
-	}
+	$('liste_numeros').toggleClassName(type_numeros, $('sel_numeros_'+type_numeros).checked);
 }
 
 function pre_select(element) {
