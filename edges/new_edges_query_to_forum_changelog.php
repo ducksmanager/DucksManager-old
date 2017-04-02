@@ -6,6 +6,8 @@ include_once('../authentification.php');
 $requete_tranches_pretes_pour_publication = 'SELECT * FROM tranches_en_cours_modeles WHERE PretePourPublication=1';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
 
+$url_gen_edgecreator = ServeurDb::getUrlServeurVirtuel().':8002/DucksManager';
+
 $urls_images= [];
 $numeros= [];
 foreach($tranches_pretes_pour_publication as $tranche) {
@@ -14,8 +16,8 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     $magazine = $tranche['Magazine'];
     $publicationcode = $pays.'/'.$magazine;
     $numero = $tranche['Numero'];
-    $photographes = $tranche['photographes'];
-    $createurs = $tranche['createurs'];
+    $photographes = explode(',', $tranche['photographes']);
+    $createurs = explode(',', $tranche['createurs']);
 
     $valeurs= [];
     $valeurs['publicationcode']=$publicationcode;
@@ -23,7 +25,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
     $chemin = $pays .'/gen/'. $magazine .'.'. $numero .'.png';
 
-    $url = ServeurDb::getUrlServeurVirtuel().'/DucksManager/edges/'.$chemin;
+    $url = $url_gen_edgecreator.'/edges/'.$chemin;
 
     if (isset($_GET['publier'])) {
         $requete='INSERT INTO tranches_pretes ('.implode(',',array_keys($valeurs)).') VALUES (\''.implode($valeurs, '\', \'').'\')';
@@ -80,7 +82,10 @@ foreach($numeros as $publicationcode=>$numeros_et_contributeurs) {
         .($pays=='fr' ? '':' ('.$noms_pays[$pays].')')
         .' n&deg; '.implode(', ',$numeros_et_contributeurs['numeros']);
 
-    $contributeurs=array_diff($numeros_et_contributeurs['contributeurs'], $contributeurs_non_remercies);
+    $contributeurs=array_diff(
+        array_merge($numeros_et_contributeurs['contributeurs'][0], $numeros_et_contributeurs['contributeurs'][1]),
+        $contributeurs_non_remercies
+    );
     if (count($contributeurs) > 0) {
         $contributeurs = array_unique($contributeurs);
         $code_ajout.= ' (Merci '.implode(', ',$contributeurs).')';
