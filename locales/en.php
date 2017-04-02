@@ -361,7 +361,7 @@ define('POSSESSIONS','Possessions');
 define('POSSESSIONS_COURT','My possessions');
 define('POSSESSION_HISTOIRES_AUTEURS','Possession of issues');
 define('POSSESSION_MAGAZINES_INTRO','You have got');
-define('POSSESSION_MAGAZINES_2','Your collection is made up of');
+define('POSSESSION_MAGAZINES_2','Your collection is made out of');
 define('POSSESSION_MAGAZINES_3','different magazines from');
 define('POSSESSION_NUMEROS','Issues possession');
 define('POURCENTAGE_COLLECTION_VISIBLE','% of the collection can be viewed in the bookcase.');
