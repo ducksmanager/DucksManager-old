@@ -27,4 +27,6 @@ RUN cd /usr/src && \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN mkdir -p /var/www/html/DucksManager/edges && chown -R www-data:www-data /var/www/html/DucksManager/edges && chmod a+w -R /var/www/html/DucksManager/edges
+RUN mkdir -p /var/www/html/DucksManager/edges && \
+    chown -R www-data:www-data /var/www/html/DucksManager/edges && \
+    chmod a+w -R /var/www/html/DucksManager/edges
