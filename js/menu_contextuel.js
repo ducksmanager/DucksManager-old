@@ -240,6 +240,7 @@ Proto.Menu = Class.create({
                         'id':'nouvelle_date',
                         'type':'text',
                         'size':30,
+                        'readonly':'readonly',
                         'maxlength':10
                     }).setValue(today());
                     var nouvelle_date_ok=new Element('input',{
@@ -257,6 +258,15 @@ Proto.Menu = Class.create({
                         });
                     else
                         $('dates_existantes').next().insert(nouvelle_date_li);
+
+                    jQuery('#nouvelle_date').datepicker({
+                        format: "yyyy-mm-dd",
+                        keyboardNavigation: false,
+                        maxViewMode: 2,
+                        autoclose: true,
+                        language: locale === 'fr' ? 'fr' : 'en-GB'
+                    });
+
                     nouvelle_date_ok.observe('click', function () {
                       var date_valide=true;
                       var nouvelleDate = $('nouvelle_date');
