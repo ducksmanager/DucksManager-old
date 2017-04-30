@@ -1342,7 +1342,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 						    new Pluit.Carousel('#carousel-1', {
 						      circular: true
 						    });
-						  </script>
+                        </script>
 
 						<div style="margin-right: 6px; border-top: 1px solid white; border-bottom: 1px solid white; text-align: center;">
 							<?=PRESENTATION_GENERALE?>
@@ -1353,9 +1353,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 						</div>
 						<?php encart_WhatTheDuck();?>
 						<br />
-						
-                                <?php
-                                break;
+                            <?php
+                            break;
                         }
                         fin_de_page();
 
