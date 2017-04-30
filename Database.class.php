@@ -30,6 +30,10 @@ class Database {
 	/** @var $handle mysqli  */
 	public static $handle = null;
 
+	public static function escape($string) {
+        return self::$handle->real_escape_string($string);
+	}
+
 
 	function __construct() {
 			return ServeurDb::connect();
@@ -281,107 +285,85 @@ class Database {
 	}
 	
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-		if ($etat=='possede') $etat='indefini';
+		if ($etat==='possede') $etat='indefini';
+
+		$id_user=$this->user_to_id($_SESSION['user']);
+
 		switch($etat) {
 			case 'non_possede':
-				$requete='DELETE FROM numeros WHERE (ID_Utilisateur=\''.$this->user_to_id($_SESSION['user']).'\') AND (';
-				$debut=true;
-				foreach($liste as $numero) {
-					if (!$debut)
-						$requete.=' OR ';
-					$requete.='Numero = \''.$numero.'\'';
-					$debut=false;
-				}
-				$requete.=')';
+			    $liste_str = array_map(function($numero) {
+                    return DM_Core::$d->escape($numero);
+			    }, $liste);
+
+		        self::$handle->query("
+                  DELETE FROM numeros
+                  WHERE ID_Utilisateur=$id_user
+                    AND Numero IN (".implode(',', $liste_str).")"
+                );
 			break;
 			default:
+				$champs = ['Pays', 'Magazine', 'Numero', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
+                if ($etat !== 'non_marque') {
+                    $champs[] = 'Etat';
+                }
+				$liste_user=$this->toList($id_user);
 
-				$intitule=$etat=='non_marque'?'':$etat;
-				$requete_insert='INSERT INTO numeros(Pays,Magazine,Numero,';
-				$arr=[$etat=>['non_marque','Etat'],
-						   $id_acquisition=>[-2,'ID_Acquisition'],
-						   $av=>[-1,'AV']
-						  ];
-				$debut=true;
-				foreach($arr as $indice=>$valeur) {
-					if (!($debut)) {
-						if ($etat=='non_marque') {
-							$debut=false;
-							continue;
-						}
-						else
-							$requete_insert.=',';
-					}
-					$requete_insert.=$valeur[1];
-					$debut=false;
-				}
-				$requete_insert.=',ID_Utilisateur) VALUES ';
-				$debut=true;
-				$liste_user=$this->toList($this->user_to_id($_SESSION['user']));
+                $valeurs = [];
 				$liste_deja_possedes=[];
 				foreach($liste as $numero) {
 					if ($liste_user->est_possede($pays,$magazine,$numero)) {
-						array_push($liste_deja_possedes,$numero);
-						continue;
+						$liste_deja_possedes[] = $numero;
 					}
-					if (!$debut)
-						$requete_insert.=', ';
+					else {
+                        $data_numero = [$pays,$magazine,$numero,$id_acquisition,$av,$id_user];
+                        if ($etat !== 'non_marque') {
+                            $data_numero[] = $etat;
+                        }
 
-					$requete_insert.='(\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',';
-
-					$arr=[$etat=>['non_marque','\''.$intitule.'\''],
-							   $id_acquisition=>[-2,$id_acquisition],
-							   $av=>[-1,$av]
-							  ];
-					$debut=true;
-					foreach($arr as $indice=>$valeur) {
-						if (!($debut)) {
-							if ($etat=='non_marque') {
-								$debut=false;
-								continue;
-							}
-							else
-								$requete_insert.=',';
-						}
-						$requete_insert.=$valeur[1];
-						$debut=false;
-					}
-					$requete_insert.=','.$this->user_to_id($_SESSION['user']).')';
-					$debut=false;
+                        $valeurs[] = array_map(function($valeur) {
+                            return "'".DM_Core::$d->escape($valeur)."'";
+                        }, $data_numero);
+                    }
 				}
 
-				DM_Core::$d->requete($requete_insert);
-				$requete_update='UPDATE numeros SET ';
+				$valeurs_str = array_map(function($data_numero) {
+				    return '('.implode(',', $data_numero).')';
+				}, $valeurs);
 
-				$arr=[$etat=>['non_marque','Etat=\''.$intitule.'\''],
-						   $id_acquisition=>[-2,'ID_Acquisition='.$id_acquisition],
-						   $av=>[-1,'AV='.$av]
-						  ];
-				$debut=true;
-				foreach($arr as $indice=>$valeur) {
-					if ($indice!=$valeur[0]) {
-						if (!$debut)
-							$requete_update.=',';
-						$requete_update.=$valeur[1];
-						$debut=false;
-					}
+				DM_Core::$d->requete("
+                  INSERT INTO numeros(".implode(',',$champs).")
+                  VALUES ".implode(',', $valeurs_str)
+                );
+
+				$changements = [];
+
+				if ($etat !== 'non_marque') {
+				    $changements[] = "Etat='$etat'";
 				}
 
-				$requete_update.=' WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$this->user_to_id($_SESSION['user']).' AND (';
-				$debut=true;
-				foreach($liste_deja_possedes as $numero) {
-					if (!$debut)
-						$requete_update.='OR ';
-					$requete_update.='Numero = \''.$numero.'\' ';
-					$debut=false;
+				if ($id_acquisition !== -2) {
+				    $changements[] = "ID_Acquisition='$id_acquisition'";
 				}
-				$requete_update.='))';
-				DM_Core::$d->requete($requete_update);
-				echo $requete_update;
 
+				if ($av !== -1) {
+				    $changements[] = "AV='$av'";
+				}
+
+				$numeros_update = array_map(function($numero) {
+                    return "'".DM_Core::$d->escape($numero)."'";
+				}, $liste_deja_possedes);
+
+				if (count($numeros_update) > 0) {
+                    DM_Core::$d->requete("
+                      UPDATE numeros
+                      SET ".implode(',', $changements)."
+                      WHERE Pays='$pays'
+                        AND Magazine='$magazine'
+                        AND ID_Utilisateur=$id_user
+                        AND Numero IN (".implode(',', $numeros_update).")"
+                    );
+                }
 		}
-		if (isset($requete))
-			self::$handle->query($requete);
 	}
 
 	function toList($id_user=false) {
