@@ -32,8 +32,9 @@ class Liste {
 	}
 	
 	function __construct($texte=false) {
-		if (!$texte)
-					return;
+		if (!$texte) {
+		    return;
+        }
 		$this->texte=$texte;
 		$this->lire();
 	}
@@ -82,10 +83,14 @@ class Liste {
 
 	function sous_liste($pays,$magazine=false) {
 		$nouvelle_liste=new Liste();
-		if (!$magazine)
-					$nouvelle_liste->collection= [$pays=> [$this->collection[$pays]]];
-		else
-					$nouvelle_liste->collection= [$pays=> [$magazine=>$this->collection[$pays][$magazine]]];
+		if (!$magazine) {
+            $nouvelle_liste->collection= [$pays=> [$this->collection[$pays]]];
+        }
+		else {
+		    if (isset($this->collection[$pays][$magazine])) {
+                $nouvelle_liste->collection= [$pays=> [$magazine=>$this->collection[$pays][$magazine]]];
+            }
+        }
 		return $nouvelle_liste;
 	}
 
@@ -411,7 +416,8 @@ class Liste {
 	function afficher($type,$parametres=null) {
 		$type=strtolower($type);
 		if (@require_once('Listes/Liste.'.$type.'.class.php')) {
-			$o=new $type();
+            /** @var Liste $o */
+            $o=new $type();
 			if (!is_null($parametres)) {
 				foreach($parametres as $nom_parametre=>$parametre)
 					$o->parametres->$nom_parametre=$parametre;

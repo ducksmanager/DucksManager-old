@@ -764,23 +764,8 @@ if (isset($_POST['database'])) {
 		$l=DM_Core::$d->toList($id_user);
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
-		list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
-		if ($numeros!=false) {
-			Affichage::afficher_numeros($l,$pays,$magazine,$numeros,$sous_titres);
-		}
-		else {
-			echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
-			?><br /><br /><?php
-			echo QUESTION_SUPPRIMER_MAGAZINE;
-			$l_magazine=$l->sous_liste($pays,$magazine);
 
-			$l_magazine->afficher('Classique');
-			?><br />
-			<a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
-			<a href="?action=gerer"><?=NON?></a><?php
-			if (!Util::isLocalHost())
-				@mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
-		}
+		Affichage::afficher_numeros($l, $pays, $magazine);
 	}
 	else if (isset($_POST['acquisition'])) {
 		$id_user=$_SESSION['id_user'];

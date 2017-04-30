@@ -113,120 +113,134 @@ class Affichage {
      * @param Liste $liste
      * @param $pays
      * @param $magazine
-     * @param $numeros
-     * @param $sous_titres
      */
-    static function afficher_numeros($liste,$pays,$magazine,$numeros,$sous_titres) {
-		$liste->nettoyer_collection();
-		$nb_possedes=0;
-		$numeros2= [];
-		foreach($numeros as $i=>$numero) {
-			$infos_numero=$liste->infos_numero($pays,$magazine,$numero);
-			$o=new stdClass();
-			$o->est_possede=false;
-			if (!is_null($infos_numero)) {
-				$nb_possedes++;
-				$o->est_possede=true;
-			}
-			$o->etat=$infos_numero[1];
-			$o->av=$infos_numero[2];
-			$o->id_acquisition=$infos_numero[3];
-			$o->sous_titre=$sous_titres[$i];
-			$numeros2[$numero]=$o;
-		}
-		$nb_non_possedes=count($numeros)-$nb_possedes;
-						
-		
-		$cpt=0;
-		?>
-		<span id="pays" style="display:none"><?=$pays?></span>
-		<span id="magazine" style="display:none"><?=$magazine?></span>
-		<?php
-		$id_user=$_SESSION['id_user'];
-		$nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
-		?>
-		<br />
-		<table border="0" width="100%">
-			<tr>
-				<td rowspan="2">
-                    <img class="flag" src="images/flags/<?=$pays?>.png" />
-					<span style="font-size:15pt;font-weight:bold;"><?=$nom_complet?></span>
-				</td>
-				<td align="right">
-					<table>
-						<tr>
-							<td>
-								<input type="checkbox" id="sel_numeros_possedes" checked="checked" onclick="changer_affichage('possedes')"/>
-							</td>
-							<td>
-								<?=AFFICHER_NUMEROS_POSSEDES?> (<?=$nb_possedes?>)
-							</td>
-						</tr>
-						<tr>
-							<td align="right">
-								<input type="checkbox" id="sel_numeros_manquants" checked="checked" onclick="changer_affichage('manquants')"/>
-							</td>
-							<td>
-								<?=AFFICHER_NUMEROS_MANQUANTS?> (<?=$nb_non_possedes?>)
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-		<?php
-		foreach($numeros2 as $numero=>$infos) {
-			$etat=$infos->etat;
-			$id_acquisition=$infos->id_acquisition;
-			$av=$infos->av;
-			$sous_titre=$infos->sous_titre;
-			$possede=$infos->est_possede;
-			?>
-			<div class="num_<?=$possede ? 'possede' : 'manque'?>" 
-				 id="n<?=($cpt)?>" title="<?=$numero?>">
-                <a name="<?=$numero?>"></a>
-                <img class="preview" src="images/icones/view.png" />
-                <span class="num">n&deg;<?=$numero?>&nbsp;
-                    <span class="soustitre"><?=$sous_titre?></span>
-                </span>
-                    <?php
+    static function afficher_numeros($liste, $pays, $magazine) {
+        list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
 
-                    if ($possede) {
-                        ?><div class="bloc_details">
-                            <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
-                        </div><?php
-                        if (!in_array($id_acquisition, [-1,-2])) {
-                            $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
-                            $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
-                            if (count($resultat_date)>0) {
-                                $regex_date='#([^-]+)-([^-]+)-(.+)#is';
-                                $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
-                                $id=$resultat_date[0]['ID_Acquisition'];
-                                if (!is_null($date) && !empty($date)) {
-                                    ?>
-                                        <div class="details_numero detail_date" class="achat_<?=$id?>">
-                                            <img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
-                                        </div><?php
+        if ($numeros==false) {
+            echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
+            ?><br /><br /><?php
+            echo QUESTION_SUPPRIMER_MAGAZINE;
+            $l_magazine=$liste->sous_liste($pays,$magazine);
+
+            $l_magazine->afficher('Classique');
+            ?><br />
+            <a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
+            <a href="?action=gerer"><?=NON?></a><?php
+            if (!Util::isLocalHost())
+                @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
+        }
+        else {
+            $liste->nettoyer_collection();
+            $nb_possedes=0;
+            $numeros2 = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
+                $infos_numero=$liste->infos_numero($pays,$magazine,$numero);
+                $o=new stdClass();
+                $o->est_possede=false;
+                if (!is_null($infos_numero)) {
+                    $nb_possedes++;
+                    $o->est_possede=true;
+                }
+                $o->etat=$infos_numero[1];
+                $o->av=$infos_numero[2];
+                $o->id_acquisition=$infos_numero[3];
+                $o->sous_titre=$sous_titre;
+
+                return $o;
+            }, $numeros,$sous_titres);
+
+            $nb_non_possedes=count($numeros)-$nb_possedes;
+
+            $cpt=0;
+            ?>
+            <span id="pays" style="display:none"><?=$pays?></span>
+            <span id="magazine" style="display:none"><?=$magazine?></span>
+            <?php
+            $id_user=$_SESSION['id_user'];
+            $nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
+            ?>
+            <br />
+            <table border="0" width="100%">
+                <tr>
+                    <td rowspan="2">
+                        <img class="flag" src="images/flags/<?=$pays?>.png" />
+                        <span style="font-size:15pt;font-weight:bold;"><?=$nom_complet?></span>
+                    </td>
+                    <td align="right">
+                        <table>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" id="sel_numeros_possedes" checked="checked" onclick="changer_affichage('possedes')"/>
+                                </td>
+                                <td>
+                                    <?=AFFICHER_NUMEROS_POSSEDES?> (<?=$nb_possedes?>)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="right">
+                                    <input type="checkbox" id="sel_numeros_manquants" checked="checked" onclick="changer_affichage('manquants')"/>
+                                </td>
+                                <td>
+                                    <?=AFFICHER_NUMEROS_MANQUANTS?> (<?=$nb_non_possedes?>)
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <?php
+            foreach($numeros2 as $numero=>$infos) {
+                $etat=$infos->etat;
+                $id_acquisition=$infos->id_acquisition;
+                $av=$infos->av;
+                $sous_titre=$infos->sous_titre;
+                $possede=$infos->est_possede;
+                ?>
+                <div class="num_<?=$possede ? 'possede' : 'manque'?>"
+                     id="n<?=($cpt++)?>" title="<?=$numero?>">
+                    <a name="<?=$numero?>"></a>
+                    <img class="preview" src="images/icones/view.png" />
+                    <span class="num">n&deg;<?=$numero?>&nbsp;
+                        <span class="soustitre"><?=$sous_titre?></span>
+                    </span>
+                        <?php
+
+                        if ($possede) {
+                            ?><div class="bloc_details">
+                                <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
+                            </div><?php
+                            if (!in_array($id_acquisition, [-1,-2])) {
+                                $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
+                                $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
+                                if (count($resultat_date)>0) {
+                                    $regex_date='#([^-]+)-([^-]+)-(.+)#is';
+                                    $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+                                    $id=$resultat_date[0]['ID_Acquisition'];
+                                    if (!is_null($date) && !empty($date)) {
+                                        ?>
+                                            <div class="details_numero detail_date" class="achat_<?=$id?>">
+                                                <img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
+                                            </div><?php
+                                    }
                                 }
                             }
+                            else { ?>
+                                <div class="details_numero detail_date"></div><?php
+                            }
+                            ?><div class="details_numero detail_a_vendre"><?php
+                            if ($av) {
+                                ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
+                            }
+                            ?></div>
+                         </div><?php
                         }
-                        else { ?>
-                            <div class="details_numero detail_date"></div><?php
-                        }
-                        ?><div class="details_numero detail_a_vendre"><?php
-                        if ($av) {
-                            ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
-                        }
-                        ?></div>
-                     </div><?php
-                    }
-                ?>
+                    ?>
+                    </div>
                 </div>
-            </div>
-            <?php
-            $cpt++;
-		}
-	}
+                <?php
+            }
+        }
+    }
 	
 	static function afficher_evenements_recents($evenements) {
 		include_once('Edge.class.php');
