@@ -242,7 +242,7 @@ class Database {
 				}
 				else {
 					foreach($resultat_emails as $resultat) {
-						if ($resultat['username'] == $_SESSION['user'])
+						if ($resultat['username'] === $_SESSION['user'])
 							$email_acheteur=$resultat['Email'];
 						else
 							$email_vendeur=$resultat['Email'];	
@@ -726,12 +726,13 @@ if (isset($_POST['database'])) {
 				echo 'Identifiants invalides!';
 			else {
 				$_SESSION['user']=$_POST['user'];
+			    $_SESSION['id_user']=DM_Core::$d->user_to_id($_SESSION['user']);
 			}
 		}
 	}
 
 	else if (isset($_POST['update'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$l=DM_Core::$d->toList($id_user);
 		$liste=explode(',',$_POST['list_to_update']);
 		$pays=$_POST['pays'];
@@ -744,7 +745,7 @@ if (isset($_POST['database'])) {
 		$date_acquisition=$_POST['date_acquisition'];
 		$id_acquisition=$date_acquisition;
 		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
-			$requete_id_acquisition='SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='.DM_Core::$d->user_to_id($_SESSION['user']).' AND Date = \''.$date_acquisition.'\' GROUP BY ID_Acquisition';
+			$requete_id_acquisition="SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND Date = '$date_acquisition' GROUP BY ID_Acquisition";
 			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
 			if ($resultat_acqusitions[0]['cpt'] ==0)
 				$id_acquisition=-1;
@@ -759,7 +760,7 @@ if (isset($_POST['database'])) {
 		}
 	}
 	else if (isset($_POST['affichage'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$l=DM_Core::$d->toList($id_user);
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
@@ -782,7 +783,7 @@ if (isset($_POST['database'])) {
 		}
 	}
 	else if (isset($_POST['acquisition'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 
 		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
 		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
@@ -800,13 +801,13 @@ if (isset($_POST['database'])) {
 
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$requete='DELETE FROM achats WHERE ID_User='.$id_user.' AND ID_Acquisition='.$_POST['supprimer_acquisition'];
 		echo $requete;
 		DM_Core::$d->requete($requete);
 	}
 	else if (isset($_POST['liste_achats'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
 		$tab_achats=[];
 		$cpt_strlen=0;
@@ -831,7 +832,7 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->liste_etats();
 	}
 	else if (isset($_POST['liste_notations'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$resultat_notations=DM_Core::$d->get_notes_auteurs($id_user);
 		
         header('Content-Type: application/json');
@@ -844,7 +845,7 @@ if (isset($_POST['database'])) {
         );
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
 	}

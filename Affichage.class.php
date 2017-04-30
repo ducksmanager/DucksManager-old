@@ -142,7 +142,7 @@ class Affichage {
 		<span id="pays" style="display:none"><?=$pays?></span>
 		<span id="magazine" style="display:none"><?=$magazine?></span>
 		<?php
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
 		?>
 		<br />
@@ -392,7 +392,7 @@ class Affichage {
 	}
 
     static function partager_page() {
-        $id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+        $id_user=$_SESSION['id_user'];
         $cle = Util::get_random_string();
         $requete_ajout_acces = 'INSERT INTO bibliotheque_acces_externes(ID_Utilisateur, Cle) VALUES ('.$id_user.', \''.$cle.'\')';
         DM_Core::$d->requete($requete_ajout_acces);

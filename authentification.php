@@ -12,6 +12,7 @@ if (!is_null($user)) {
 		if ($permission_valide) {
 			$_SESSION['user']=$user;
 			$_SESSION['pass']=$pass;
+			$_SESSION['id_user']=DM_Core::$d->user_to_id($user);
 			$erreur='';
 		}
 		else {

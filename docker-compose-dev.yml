@@ -1,0 +1,18 @@
+version: '2'
+services:
+  web:
+    extends:
+      file: docker-compose.yml
+      service: web
+    volumes:
+     - .:/var/www/html/DucksManager
+     - ../EdgeCreator:/var/www/html/EdgeCreator
+     - ./php.xdebug.ini:/usr/local/etc/php/php.ini
+  db_dm:
+    extends:
+      file: docker-compose.yml
+      service: db_dm
+networks:
+  default:
+    external:
+      name: dm_network

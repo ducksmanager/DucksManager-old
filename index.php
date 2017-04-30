@@ -29,6 +29,8 @@ else {
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
+            $_SESSION['id_user']=$_SESSION['id_user'];
+
 			setcookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
 			setcookie('pass',$_COOKIE['pass'],time()+3600);
 		}
@@ -40,7 +42,7 @@ if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
 else
     $titre=TITRE_PAGE_ACCUEIL;
-$id_user=isset($_SESSION['user']) ? DM_Core::$d->user_to_id($_SESSION['user']) : null;
+$id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -1448,6 +1450,7 @@ function formulaire_inscription() {
 function creer_id_session($user,$pass) {
     $_SESSION['user']=$user;
     $_SESSION['pass']=sha1($pass);
+    $_SESSION['id_user']=DM_Core::$d->user_to_id($_SESSION['user']);
 
     ?><script type="text/javascript">
         document.location.replace("?action=gerer");

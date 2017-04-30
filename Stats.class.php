@@ -383,7 +383,7 @@ class Stats {
 	}
 }
 
-Stats::$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+Stats::$id_user=$_SESSION['id_user'];
 
 if (count(ServeurCoa::$coa_servers) === 0) {
     ServeurCoa::initCoaServers();

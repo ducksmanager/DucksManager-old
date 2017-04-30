@@ -330,7 +330,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
         $titre = BIBLIOTHEQUE_DE.$user;
     }
     else {
-        $id_user = DM_Core::$d->user_to_id($_SESSION['user']);
+        $id_user = $_SESSION['id_user'];
         $titre = BIBLIOTHEQUE_COURT;
     }
 
@@ -370,7 +370,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
     }
 }
 elseif (isset($_POST['get_texture'])) {
-	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+	$id_user=$_SESSION['id_user'];
 	$requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
 	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
 	$rep = "edges/textures";
@@ -390,7 +390,7 @@ elseif (isset($_POST['get_texture'])) {
 }
 
 elseif (isset($_POST['get_sous_texture'])) {
-	$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+	$id_user=$_SESSION['id_user'];
 	$requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
 	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
 

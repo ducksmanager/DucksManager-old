@@ -131,7 +131,7 @@ class Liste {
 	}
 
 	function statistiques($onglet) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 
 		$counts= [];
 		foreach($this->collection as $pays=>$numeros_pays) {
@@ -326,7 +326,7 @@ class Liste {
 	}
 
 	function synchro_to_database($ajouter_numeros=true,$supprimer_numeros=false) {
-			$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+			$id_user=$_SESSION['id_user'];
 			$l_ducksmanager=DM_Core::$d->toList($id_user);
 			$l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
 	}
@@ -343,7 +343,7 @@ class Liste {
 	}
 
 	function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {
-		$id_user=DM_Core::$d->user_to_id($_SESSION['user']);
+		$id_user=$_SESSION['id_user'];
 		$numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
 
 		$liste_a_supprimer=new Liste();
@@ -476,7 +476,7 @@ class Liste {
 		}
 		else {
 			if (isset($_SESSION['user'])) {
-				$id_user = DM_Core::$d->user_to_id($_SESSION['user']);
+				$id_user = $_SESSION['id_user'];
 				$l_ducksmanager = DM_Core::$d->toList($id_user);
 				list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
 				if ($ajouts==0 && $suppressions==0) {
