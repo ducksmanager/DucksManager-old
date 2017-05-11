@@ -365,8 +365,35 @@ function select_etats() {
 	});
 }
 
+function init_nav() {
+    jQuery('#nav')
+        .addClass('shown')
+        .affix({
+            offset: {
+                top: function() {
+                    return jQuery('#liste_numeros').offset().top - jQuery(window).height() + 150;
+                }
+            }
+        });
+
+    jQuery(window).on('scroll', function () {
+        var footer = jQuery('#footer');
+        var borderBeforeFooter = 4;
+        var maxMarginBottom = footer.height() + borderBeforeFooter;
+
+        var scrollTop = jQuery('body').scrollTop();
+        var scrollTopForVisibleFooter = scrollTop + jQuery(window).height() + borderBeforeFooter - footer.offset().top;
+
+        jQuery('#nav').css({
+            'bottom': scrollTopForVisibleFooter <= 0
+                ? 0
+                : Math.min(maxMarginBottom, scrollTopForVisibleFooter) + 'px'
+        });
+    });
+}
 function afficher_numeros(pays,magazine) {
-	if (pays == null || magazine == null) {
+
+    if (pays == null || magazine == null) {
 		var el_select=$('liste_magazines');
 		if (el_select.options[0].id=='vide') {
 			l10n_action('alert','selectionner_magazine');
@@ -386,6 +413,7 @@ function afficher_numeros(pays,magazine) {
            onSuccess:function(transport) {
                 $('liste_numeros').update(transport.responseText);
                 init_observers_gerer_numeros();
+                init_nav();
 	            if (location.hash) {
 	                $('liste_numeros').select('[name="'+location.hash.replace(/#/,'')+'"]')[0].scrollIntoView(true);
 	            }

@@ -66,6 +66,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link rel="stylesheet" type="text/css" href="css/opentip.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
+        <link rel="stylesheet" type="text/css" href="css/sticky-footer.css" />
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('ServeurDb.class.php');
@@ -217,7 +218,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         
     }
     ?>
-    <body id="body" style="margin:0" onload="charger_evenements();<?php
+    <body id="body" onload="charger_evenements();<?php
     switch($action) {
         case 'open':
             break;
@@ -279,8 +280,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
     }
     ?>">
-    <table
-        style="text-align: left; color: white; background-color: rgb(61, 75, 95); width: 100%; height: 100%;border:0"
+    <table id="main" class="with-sticky-footer"
         cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
@@ -1078,7 +1078,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                                                 <table width="100%">
                                                 <tr><td>
-                                                <span id="liste_numeros" class="possedes manquants"><?=CHARGEMENT.'...'?></span>
+                                                <div id="liste_numeros" class="possedes manquants"><?=CHARGEMENT.'...'?></div>
                                                 </td><td>
                                             </td></tr></table>
                                             <?php
@@ -1365,12 +1365,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
             </tr>
             <tr style="height:3px;background-color:black;"><td colspan="3"></td></tr>
-            <tr style="height:20px">
+            <tr id="footer">
                 <td align="center" style="vertical-align:middle;padding-left:4px;width: 242px;">
-                        <?php
-                        $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
-                        echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
-                        ?>
+                    <?php
+                    $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
+                    echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
+                    ?>
                 </td>
                 <td align="center">
                     <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
@@ -1402,6 +1402,14 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             </tr>
         </tbody>
     </table>
+
+    <div id="nav">
+        <div class="navbar navbar-default navbar-static">
+            <div class="container">
+                Footer
+            </div>
+        </div>
+    </div>
 </body>
 </html>
     <?php

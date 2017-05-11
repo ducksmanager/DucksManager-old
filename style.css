@@ -1,7 +1,10 @@
 html, body {
-	height:100%;
 	padding:0;
 	margin:0;
+}
+
+body {
+	background-color: rgb(61, 75, 95) !important;
 	font:11px verdana,arial,sans-serif;
 	line-height:15px;
 }
@@ -33,6 +36,15 @@ a.noborder, a.noborder:HOVER {
 
 a:HOVER {
 	border-bottom: 1px dashed #ffffff !important;
+}
+
+table#main {
+	text-align: left;
+	color: white;
+	background-color: rgb(61, 75, 95);
+	width: 100%;
+	height: 100%;
+	border:0;
 }
 
 .opentip-container.style-tranches {
@@ -144,6 +156,10 @@ a.important:HOVER {
 
 #contenu {
 	padding: 45px 20px 20px 20px;
+}
+
+#liste_numeros {
+	margin-bottom: 70px;
 }
 
 #liste_numeros .num_manque,

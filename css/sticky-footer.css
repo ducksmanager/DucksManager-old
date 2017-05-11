@@ -1,0 +1,30 @@
+#nav {
+    display: none;
+}
+
+#nav.shown {
+    display: block;
+}
+
+#nav.affix {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index:10;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+#nav.affix .navbar {
+    margin-bottom: 0;
+    border: 0;
+}
+
+#sidebar.affix-top {
+    position: static;
+}
+
+#sidebar.affix {
+    position: fixed;
+    top: 80px;
+}
