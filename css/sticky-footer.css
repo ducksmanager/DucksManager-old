@@ -1,12 +1,25 @@
-#nav {
+#update_menu {
     display: none;
+    background: transparent;
 }
 
-#nav.shown {
+#update_menu.shown {
     display: block;
 }
 
-#nav.affix {
+#update_menu #selection_numeros_wrapper {
+    text-align: center;
+}
+
+#update_menu #selection_numeros_wrapper #selection_numeros {
+    background: #f8f8f8;
+    border-radius: 5px 5px 0 0;
+    padding: 4px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+#update_menu.affix {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -15,9 +28,47 @@
     transition: all .2s ease-in-out;
 }
 
-#nav.affix .navbar {
+#update_menu.affix .navbar {
+    background: transparent;
     margin-bottom: 0;
     border: 0;
+    border-radius: 0;
+}
+
+#update_menu.affix #update_options {
+    background-color: #f8f8f8;
+    padding: 0;
+    white-space: nowrap;
+}
+
+#update_menu.affix #update_options .row {
+    margin: 0;
+}
+
+#update_menu.affix #update_options .row .option_wrapper {
+    padding: 0;
+}
+
+#update_menu.affix #update_options .option_nom {
+    padding: 0;
+    text-align: right;
+}
+
+#update_menu.affix #update_options .option_valeur {
+    padding: 3px 0 0;
+    text-align: center;
+}
+
+#update_menu.affix #update_options .option_valeur h5 {
+    display: inline-block;
+    padding-right: 18px;
+    background: transparent url(../images/icones/pencil.png) right no-repeat;
+}
+
+#update_menu.affix #update_options #save {
+    color: white;
+    background: green;
+    text-align: center;
 }
 
 #sidebar.affix-top {

@@ -366,28 +366,32 @@ function select_etats() {
 }
 
 function init_nav() {
-    jQuery('#nav')
+    var minDistanceFromIssueList = 150;
+
+    jQuery('#update_menu')
         .addClass('shown')
         .affix({
             offset: {
                 top: function() {
-                    return jQuery('#liste_numeros').offset().top - jQuery(window).height() + 150;
+                    return jQuery('#liste_numeros').offset().top - jQuery(window).height() + minDistanceFromIssueList;
                 }
             }
-        });
+        })
+        .find('.navbar')
+            .css({paddingLeft: jQuery('#menu_gauche').width() + 2});
 
     jQuery(window).on('scroll', function () {
         var footer = jQuery('#footer');
-        var borderBeforeFooter = 4;
+        var borderBeforeFooter = 3;
         var maxMarginBottom = footer.height() + borderBeforeFooter;
 
         var scrollTop = jQuery('body').scrollTop();
-        var scrollTopForVisibleFooter = scrollTop + jQuery(window).height() + borderBeforeFooter - footer.offset().top;
+        var distanceFromBottomForVisibleFooter = scrollTop + jQuery(window).height() + borderBeforeFooter - footer.offset().top;
 
-        jQuery('#nav').css({
-            'bottom': scrollTopForVisibleFooter <= 0
+        jQuery('#update_menu').css({
+            bottom: distanceFromBottomForVisibleFooter <= 0
                 ? 0
-                : Math.min(maxMarginBottom, scrollTopForVisibleFooter) + 'px'
+                : Math.min(maxMarginBottom, distanceFromBottomForVisibleFooter) + 'px'
         });
     });
 }

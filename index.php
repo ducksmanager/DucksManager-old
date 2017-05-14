@@ -314,7 +314,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 </td>
             </tr>
             <tr style="height:100%">
-                <td style="height: 441px; vertical-align: top; width: 300px; background-color: rgb(200, 137, 100);">
+                <td id="menu_gauche">
                     <table style="height:100%; width:100%" cellspacing="0"><tbody>
                             <tr>
                                 <td id="colonne_gauche" valign="top" style="padding:5px;">
@@ -1403,10 +1403,42 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         </tbody>
     </table>
 
-    <div id="nav">
+    <div id="update_menu">
         <div class="navbar navbar-default navbar-static">
-            <div class="container">
-                Footer
+            <div id="selection_numeros_wrapper">
+                <div id="selection_numeros">
+                    2 éléments sélectionnés
+                </div>
+            </div>
+            <div id="update_options" class="container-fluid">
+                <div class="row">
+                    <?php $options = [
+                        [
+                            'nom' => 'Condition',
+                            'defaut' => 'Bon état'
+                        ],
+                        [
+                            'nom' => 'Date d\'achat',
+                            'defaut' => 'Aucune'
+                        ],
+                        [
+                            'nom' => 'A vendre',
+                            'defaut' => 'Non'
+                        ]
+                    ];
+                    foreach($options as $option) {
+                        ?>
+                        <div class="col-lg-1 option_nom">
+                            <h4><?=$option['nom']?></h4>
+                        </div>
+                        <div class="col-lg-2 option_valeur">
+                            <h5><?=$option['defaut']?></h5>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <div class="col-lg-2 pull-right" id="save"><h4>Sauvegarder</h4></div>
+                </div>
             </div>
         </div>
     </div>

@@ -47,6 +47,12 @@ table#main {
 	border:0;
 }
 
+td#menu_gauche {
+	vertical-align: top;
+	width: 300px;
+	background-color: rgb(200, 137, 100);
+}
+
 .opentip-container.style-tranches {
 	max-width: 500px !important;
 }
