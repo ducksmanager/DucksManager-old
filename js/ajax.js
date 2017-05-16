@@ -365,6 +365,17 @@ function select_etats() {
 	});
 }
 
+function position_nav() {
+    var footer = jQuery('#footer');
+    var borderBeforeFooter = 3;
+
+    var heightOfFooterSeen = jQuery(window).height() + jQuery('body').scrollTop() - footer.offset().top + borderBeforeFooter;
+
+    jQuery('#update_menu')
+		.css({ bottom: Math.max(0, heightOfFooterSeen) + 'px' })
+		.affix('checkPosition')
+}
+
 function init_nav() {
     var minDistanceFromIssueList = 150;
 
@@ -373,27 +384,18 @@ function init_nav() {
         .affix({
             offset: {
                 top: function() {
-                    return jQuery('#liste_numeros').offset().top - jQuery(window).height() + minDistanceFromIssueList;
+                    return Math.max(0, jQuery('#liste_numeros').offset().top - jQuery(window).height() + minDistanceFromIssueList);
                 }
             }
         })
         .find('.navbar')
             .css({paddingLeft: jQuery('#menu_gauche').width() + 2});
 
-    jQuery(window).on('scroll', function () {
-        var footer = jQuery('#footer');
-        var borderBeforeFooter = 3;
-        var maxMarginBottom = footer.height() + borderBeforeFooter;
+    position_nav();
 
-        var scrollTop = jQuery('body').scrollTop();
-        var distanceFromBottomForVisibleFooter = scrollTop + jQuery(window).height() + borderBeforeFooter - footer.offset().top;
-
-        jQuery('#update_menu').css({
-            bottom: distanceFromBottomForVisibleFooter <= 0
-                ? 0
-                : Math.min(maxMarginBottom, distanceFromBottomForVisibleFooter) + 'px'
-        });
-    });
+    jQuery(window)
+		.resize(position_nav)
+		.scroll(position_nav);
 }
 function afficher_numeros(pays,magazine) {
 
