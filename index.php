@@ -1415,15 +1415,24 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <?php $options = [
                         [
                             'nom' => 'Condition',
-                            'defaut' => 'Bon état'
+                            'defaut' => 'Bon état',
+                            'alternatives' => [
+                                'non_possede' => ETAT_MARQUER_NON_POSSEDE,
+                                'possede' => ETAT_MARQUER_POSSEDE,
+                                'mauvais' => ETAT_MAUVAIS,
+                                'moyen' => ETAT_MOYEN,
+                                'bon' => ETAT_BON
+                            ]
                         ],
                         [
                             'nom' => 'Date d\'achat',
-                            'defaut' => 'Aucune'
+                            'defaut' => 'Aucune',
+                            'alternatives' => []
                         ],
                         [
                             'nom' => 'A vendre',
-                            'defaut' => 'Non'
+                            'defaut' => 'Non',
+                            'alternatives' => []
                         ]
                     ];
                     foreach($options as $option) {
@@ -1432,6 +1441,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <h4><?=$option['nom']?></h4>
                         </div>
                         <div class="col-lg-2 option_valeur">
+                            <div class="list-group alternatives"><?php
+                                foreach($option['alternatives'] as $id_alternative=>$alternative) { ?>
+                                    <button type="button" class="list-group-item alternative <?=$id_alternative?>"><?=$alternative?></button>
+                                <?php } ?>
+                            </div>
                             <h5><?=$option['defaut']?></h5>
                         </div>
                         <?php

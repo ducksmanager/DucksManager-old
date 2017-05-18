@@ -52,9 +52,55 @@
     text-align: right;
 }
 
+#update_menu.affix #update_options .option_nom h4 {
+    font-weight: bold;
+}
+
 #update_menu.affix #update_options .option_valeur {
     padding: 3px 0 0;
     text-align: center;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 37px;
+    width: 100%;
+    opacity: 0.9;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative {
+    background-position: 3px 50%;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.non_possede {
+    background-color: darkgrey;
+    background-image: url(../images/non_possede.png);
+    color: white;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.possede {
+    background-image: url(../images/possede.png);
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.mauvais {
+    background-color: #f2dede;
+    background-image: url(../images/mauvais.png);
+    color: #a94442;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.moyen {
+    background-color: #fcf8e3;
+    background-image: url(../images/moyen.png);
+    color: #8a6d3b;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.bon {
+    background-color: #dff0d8;
+    background-image: url(../images/bon.png);
+    color: #3c763d;
 }
 
 #update_menu.affix #update_options .option_valeur h5 {

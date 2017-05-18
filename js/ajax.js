@@ -397,6 +397,7 @@ function init_nav() {
 		.resize(position_nav)
 		.scroll(position_nav);
 }
+
 function afficher_numeros(pays,magazine) {
 
     if (pays == null || magazine == null) {
