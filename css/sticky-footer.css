@@ -106,7 +106,17 @@
 #update_menu.affix #update_options .option_valeur h5 {
     display: inline-block;
     padding-right: 18px;
-    background: transparent url(../images/icones/pencil.png) right no-repeat;
+}
+
+#update_menu.affix #update_options .option_valeur .edit {
+    background: transparent url(../images/icones/pencil.png) no-repeat;
+    position: absolute;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin-top: 6px;
+    margin-left: 6px;
+    cursor: pointer;
 }
 
 #update_menu.affix #update_options #save {

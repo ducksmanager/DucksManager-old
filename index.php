@@ -1441,11 +1441,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <h4><?=$option['nom']?></h4>
                         </div>
                         <div class="col-lg-2 option_valeur">
-                            <div class="list-group alternatives"><?php
+                            <div class="list-group alternatives hidden"><?php
                                 foreach($option['alternatives'] as $id_alternative=>$alternative) { ?>
                                     <button type="button" class="list-group-item alternative <?=$id_alternative?>"><?=$alternative?></button>
                                 <?php } ?>
                             </div>
+                            <div class="edit">&nbsp;</div>
                             <h5><?=$option['defaut']?></h5>
                         </div>
                         <?php

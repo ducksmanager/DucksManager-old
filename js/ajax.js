@@ -389,7 +389,15 @@ function init_nav() {
             }
         })
         .find('.navbar')
-            .css({paddingLeft: jQuery('#menu_gauche').width() + 2});
+            .css({paddingLeft: jQuery('#menu_gauche').width() + 2})
+			.find('.option_valeur')
+				.mouseleave(function() {
+					jQuery(this).find('.alternatives').addClass('hidden');
+				})
+				.find('.edit')
+					.mouseover(function() {
+						jQuery(this).siblings('.alternatives').removeClass('hidden');
+					});
 
     position_nav();
 
