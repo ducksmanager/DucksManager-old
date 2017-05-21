@@ -372,22 +372,12 @@ function position_nav() {
     var heightOfFooterSeen = jQuery(window).height() + jQuery('body').scrollTop() - footer.offset().top + borderBeforeFooter;
 
     jQuery('#update_menu')
-		.css({ bottom: Math.max(0, heightOfFooterSeen) + 'px' })
-		.affix('checkPosition')
+		.css({ bottom: Math.max(0, heightOfFooterSeen) + 'px' });
 }
 
 function init_nav() {
-    var minDistanceFromIssueList = 150;
-
     jQuery('#update_menu')
         .addClass('shown')
-        .affix({
-            offset: {
-                top: function() {
-                    return Math.max(0, jQuery('#liste_numeros').offset().top - jQuery(window).height() + minDistanceFromIssueList);
-                }
-            }
-        })
         .find('.navbar')
             .css({paddingLeft: jQuery('#menu_gauche').width() + 2})
 			.find('.option_valeur')

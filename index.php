@@ -1403,7 +1403,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         </tbody>
     </table>
 
-    <div id="update_menu">
+    <div id="update_menu" class="affix">
         <div class="navbar navbar-default navbar-static">
             <div id="selection_numeros_wrapper">
                 <div id="selection_numeros">
