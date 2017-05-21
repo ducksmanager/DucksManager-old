@@ -303,7 +303,7 @@ class Database {
 			break;
 			default:
 				$champs = ['Pays', 'Magazine', 'Numero', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
-                if ($etat !== 'non_marque') {
+                if ($etat !== 'ne_pas_changer') {
                     $champs[] = 'Etat';
                 }
 				$liste_user=$this->toList($id_user);
@@ -316,7 +316,7 @@ class Database {
 					}
 					else {
                         $data_numero = [$pays,$magazine,$numero,$id_acquisition,$av,$id_user];
-                        if ($etat !== 'non_marque') {
+                        if ($etat !== 'ne_pas_changer') {
                             $data_numero[] = $etat;
                         }
 
@@ -337,7 +337,7 @@ class Database {
 
 				$changements = [];
 
-				if ($etat !== 'non_marque') {
+				if ($etat !== 'ne_pas_changer') {
 				    $changements[] = "Etat='$etat'";
 				}
 

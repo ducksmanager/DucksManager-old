@@ -72,35 +72,67 @@
 #update_menu.affix #update_options .option_valeur .alternatives .alternative {
     background-position: 3px 50%;
     background-repeat: no-repeat;
-    padding-left: 20px;
+    padding-left: 26px;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.non_possede {
+#update_menu.affix #update_options .option_valeur .alternatives .alternative .alternative-choice {
+    position: absolute;
+    width: 100%;
+    margin-left: -30px;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.checked .alternative-choice {
+    background: transparent url(../images/icones/accept.png) no-repeat right 0;
+    font-weight: bold;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives .alternative.ne_pas_changer {
+    background-image: none;
+    text-align: center;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.non_possede {
     background-color: darkgrey;
     background-image: url(../images/non_possede.png);
     color: white;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.possede {
+#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.possede {
     background-image: url(../images/possede.png);
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.mauvais {
+#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.mauvais {
     background-color: #f2dede;
     background-image: url(../images/mauvais.png);
     color: #a94442;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.moyen {
+#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.moyen {
     background-color: #fcf8e3;
     background-image: url(../images/moyen.png);
     color: #8a6d3b;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.bon {
+#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.bon {
     background-color: #dff0d8;
     background-image: url(../images/bon.png);
     color: #3c763d;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives.purchase_date .alternative.pas_date {
+    background-image: url(../images/pas_page_date.png);
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives.purchase_date .alternative.date {
+    background-image: url(../images/page_date.png);
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives.for_sale .alternative.a_vendre {
+    background-image: url(../images/av_petit.png);
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives.for_sale .alternative.pas_a_vendre {
+    background-image: url(../images/pas_av_petit.png);
 }
 
 #update_menu.affix #update_options .option_valeur h5 {
