@@ -376,18 +376,34 @@ function position_nav() {
 }
 
 function init_nav() {
-    jQuery('#update_menu')
+    var navbar = jQuery('#update_menu')
         .addClass('shown')
-        .find('.navbar')
-            .css({paddingLeft: jQuery('#menu_gauche').width() + 2})
-			.find('.option_valeur')
-				.mouseleave(function() {
-					jQuery(this).find('.alternatives').addClass('hidden');
-				})
-				.find('.edit')
-					.mouseover(function() {
-						jQuery(this).siblings('.alternatives').removeClass('hidden');
-					});
+        .find('.navbar');
+
+    navbar.css({paddingLeft: jQuery('#menu_gauche').width() + 2});
+
+    var valeurs = navbar.find('.option_valeur');
+
+    valeurs.mouseleave(function() {
+		jQuery(this).find('.alternatives').addClass('invisible');
+	});
+
+    valeurs
+		.find('.alternative')
+			.click(function() {
+				var alternatives_wrapper = jQuery(this).closest('.alternatives');
+				alternatives_wrapper.find('.alternative').removeClass('checked');
+				alternatives_wrapper.addClass('invisible animated');
+                alternatives_wrapper.closest('.option_valeur').find('.valeur').html(jQuery(this).text());
+
+                jQuery(this).addClass('checked');
+			});
+
+    valeurs
+		.find('.edit')
+			.mouseover(function() {
+				jQuery(this).siblings('.alternatives').removeClass('invisible animated');
+			});
 
     position_nav();
 

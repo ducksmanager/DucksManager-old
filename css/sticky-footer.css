@@ -73,6 +73,20 @@
     background-position: 3px 50%;
     background-repeat: no-repeat;
     padding-left: 26px;
+    opacity: 1;
+    visibility: visible;
+}
+
+
+#update_menu.affix #update_options .option_valeur .alternatives.invisible {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#update_menu.affix #update_options .option_valeur .alternatives.invisible.animated {
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.5s linear;
 }
 
 #update_menu.affix #update_options .option_valeur .alternatives .alternative .alternative-choice {
@@ -155,13 +169,4 @@
     color: white;
     background: green;
     text-align: center;
-}
-
-#sidebar.affix-top {
-    position: static;
-}
-
-#sidebar.affix {
-    position: fixed;
-    top: 80px;
 }
