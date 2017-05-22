@@ -298,6 +298,7 @@ define('MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU','This email doesn\'t match any
 define('MOT_DE_PASSE_OUBLIE_EXPLICATION','A temporary password will be sent at the email address hereunder :');
 define('MOTS_DE_PASSE_DIFFERENTS','The two passwords are different!');
 define('MOYEN','Not so good');
+define('NE_PAS_CHANGER','Do not change');
 define('NEWS_A_AJOUTE_BOUQUINERIE','has reviewed the second-hand bookshop');
 define('NEWS_TITRE','Recently on DucksManager...');
 define('NEWS_A_AJOUTE','has added');

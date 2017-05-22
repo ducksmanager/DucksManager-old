@@ -297,6 +297,7 @@ define('MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU','Cet e-mail ne correspond &agr
 define('MOT_DE_PASSE_OUBLIE_EXPLICATION','Un mot de passe temporaire va vous &ecirc;tre envoy&eacute; &agrave; l\'adresse e-mail que vous indiquerez ci-dessous :');
 define('MOTS_DE_PASSE_DIFFERENTS','Les deux mots de passe ne correspondent pas !');
 define('MOYEN','Moyen');
+define('NE_PAS_CHANGER','Ne pas changer');
 define('NEWS_A_AJOUTE_BOUQUINERIE','a propos&eacute; la bouquinerie');
 define('NEWS_A_AJOUTE','a ajout&eacute;');
 define('NEWS_A_SA_COLLECTION','&agrave; sa collection');

@@ -1416,9 +1416,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         [
                             'nom' => 'Condition',
                             'id' => 'condition',
-                            'defaut' => 'Bon état',
+                            'defaut' => 'ne_pas_changer',
                             'alternatives' => [
-                                'ne_pas_changer' => ETAT_CONSERVER_ETAT_ACTUEL,
+                                'ne_pas_changer' => NE_PAS_CHANGER,
                                 'non_possede' => ETAT_MARQUER_NON_POSSEDE,
                                 'possede' => ETAT_MARQUER_POSSEDE,
                                 'mauvais' => ETAT_MAUVAIS,
@@ -1429,9 +1429,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         [
                             'nom' => 'Date d\'achat',
                             'id' => 'purchase_date',
-                            'defaut' => 'Aucune',
+                            'defaut' => 'ne_pas_changer',
                             'alternatives' => [
-                                'ne_pas_changer' => ACHAT_CONSERVER_DATE_ACHAT,
+                                'ne_pas_changer' => NE_PAS_CHANGER,
                                 'pas_date' => ACHAT_DESASSOCIER_DATE_ACHAT,
                                 'date' => ACHAT_ASSOCIER_DATE_ACHAT
                             ]
@@ -1439,9 +1439,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         [
                             'nom' => 'A vendre',
                             'id' => 'for_sale',
-                            'defaut' => 'Non',
+                            'defaut' => 'ne_pas_changer',
                             'alternatives' => [
-                                'ne_pas_changer' => VENTE_CONSERVER_VOLONTE_VENTE,
+                                'ne_pas_changer' => NE_PAS_CHANGER,
                                 'a_vendre' => VENTE_MARQUER_A_VENDRE,
                                 'pas_a_vendre' => VENTE_MARQUER_PAS_A_VENDRE
                             ]
@@ -1455,7 +1455,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         <div class="col-lg-2 option_valeur">
                             <div class="list-group alternatives <?=$option['id']?> invisible"><?php
                                 foreach($option['alternatives'] as $id_alternative=>$alternative) { ?>
-                                    <button type="button" class="list-group-item alternative <?=$id_alternative?> <?=$id_alternative==='ne_pas_changer' ? 'checked' : ''?>">
+                                    <button type="button" name="<?=$id_alternative?>" class="list-group-item alternative <?=$id_alternative?>">
                                         <div class="alternative-choice">
                                             &nbsp;
                                         </div>
@@ -1464,7 +1464,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 <?php } ?>
                             </div>
                             <div class="edit">&nbsp;</div>
-                            <h5 class="valeur"><?=$option['defaut']?></h5>
+                            <h5 class="valeur"></h5>
                         </div>
                         <?php
                     }

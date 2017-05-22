@@ -394,7 +394,7 @@ function init_nav() {
 				var alternatives_wrapper = jQuery(this).closest('.alternatives');
 				alternatives_wrapper.find('.alternative').removeClass('checked');
 				alternatives_wrapper.addClass('invisible animated');
-                alternatives_wrapper.closest('.option_valeur').find('.valeur').html(jQuery(this).text());
+                alternatives_wrapper.closest('.option_valeur').changer_valeur(jQuery(this).attr('name'), jQuery(this).text());
 
                 jQuery(this).addClass('checked');
 			});
@@ -405,12 +405,22 @@ function init_nav() {
 				jQuery(this).siblings('.alternatives').removeClass('invisible animated');
 			});
 
+    valeurs.find('.alternatives').each(function() {
+    	jQuery(this).find('.alternative').eq(0).trigger('click');
+    });
+
     position_nav();
 
     jQuery(window)
 		.resize(position_nav)
 		.scroll(position_nav);
 }
+
+jQuery.fn.changer_valeur = function(nom, valeur) {
+    this.each(function(){
+        jQuery(this).find('.valeur').attr({ name: nom }).text(valeur);
+    });
+};
 
 function afficher_numeros(pays,magazine) {
 
