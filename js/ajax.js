@@ -382,19 +382,22 @@ function init_nav() {
 
     navbar.css({paddingLeft: jQuery('#menu_gauche').width() + 2});
 
-    var valeurs = navbar.find('.option_valeur');
+    var valeurs = navbar.find('.option');
 
     valeurs.mouseleave(function() {
-		jQuery(this).find('.alternatives').addClass('invisible');
+		jQuery(this).find('.alternatives').addClass('hidden invisible');
 	});
 
     valeurs
 		.find('.alternative')
 			.click(function() {
-				var alternatives_wrapper = jQuery(this).closest('.alternatives');
+				var alternatives_wrapper = jQuery(this).closest('.option');
+                alternatives_wrapper.find('.alternatives').addClass('invisible animated');
+                setTimeout(function() {
+                    alternatives_wrapper.find('.alternatives').addClass('hidden');
+				}, 500);
 				alternatives_wrapper.find('.alternative').removeClass('checked');
-				alternatives_wrapper.addClass('invisible animated');
-                alternatives_wrapper.closest('.option_valeur').changer_valeur(jQuery(this).attr('name'), jQuery(this).text());
+                alternatives_wrapper.find('.option_valeur').changer_valeur(jQuery(this).attr('name'), jQuery(this).attr('value-short'));
 
                 jQuery(this).addClass('checked');
 			});
@@ -402,7 +405,7 @@ function init_nav() {
     valeurs
 		.find('.edit')
 			.mouseover(function() {
-				jQuery(this).siblings('.alternatives').removeClass('invisible animated');
+				jQuery(this).siblings('.alternatives').removeClass('hidden invisible animated');
 			});
 
     valeurs.find('.alternatives').each(function() {

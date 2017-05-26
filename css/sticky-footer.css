@@ -35,21 +35,16 @@
 
 #update_menu.affix #update_options {
     background-color: #f8f8f8;
-    padding: 0;
-    white-space: nowrap;
+    height: 75px;
 }
 
-#update_menu.affix #update_options .row {
-    margin: 0;
+#update_menu.affix #update_options > .row {
+    height: 100%;
+    text-align: center;
 }
 
-#update_menu.affix #update_options .row .option_wrapper {
-    padding: 0;
-}
-
-#update_menu.affix #update_options .option_nom {
-    padding: 0;
-    text-align: right;
+#update_menu.affix #update_options .option {
+    cursor: pointer;
 }
 
 #update_menu.affix #update_options .option_nom h4 {
@@ -57,116 +52,119 @@
 }
 
 #update_menu.affix #update_options .option_valeur {
-    padding: 3px 0 0;
     text-align: center;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives {
+#update_menu.affix #update_options .option_nom .alternatives {
     position: absolute;
     bottom: 0;
     margin-bottom: 37px;
-    width: 100%;
+    margin-right: 45px;
     opacity: 0.9;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative {
-    background-position: 3px 50%;
+#update_menu.affix #update_options .option_nom .alternatives .alternative {
+    background-position: 2px 50%;
     background-repeat: no-repeat;
-    padding-left: 26px;
+    padding-left: 25px;
+    padding-right: 0;
     opacity: 1;
     visibility: visible;
 }
 
 
-#update_menu.affix #update_options .option_valeur .alternatives.invisible {
+#update_menu.affix #update_options .option_nom .alternatives.invisible {
     visibility: hidden;
     opacity: 0;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.invisible.animated {
+#update_menu.affix #update_options .option_nom .alternatives.invisible.animated {
     opacity: 0;
     visibility: hidden;
     transition: visibility 0s, opacity 0.5s linear;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative .alternative-choice {
+#update_menu.affix #update_options .option_nom .alternatives .alternative .alternative-choice {
     position: absolute;
     width: 100%;
     margin-left: -30px;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.checked .alternative-choice {
+#update_menu.affix #update_options .option_nom .alternatives .alternative.checked .alternative-choice {
     background: transparent url(../images/icones/accept.png) no-repeat right 0;
     font-weight: bold;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives .alternative.ne_pas_changer {
+#update_menu.affix #update_options .option_nom .alternatives .alternative.ne_pas_changer {
     background-image: none;
     text-align: center;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.non_possede {
+#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.non_possede {
     background-color: darkgrey;
     background-image: url(../images/non_possede.png);
     color: white;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.possede {
+#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.possede {
     background-image: url(../images/possede.png);
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.mauvais {
+#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.mauvais {
     background-color: #f2dede;
     background-image: url(../images/mauvais.png);
     color: #a94442;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.moyen {
+#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.moyen {
     background-color: #fcf8e3;
     background-image: url(../images/moyen.png);
     color: #8a6d3b;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.condition .alternative.bon {
+#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.bon {
     background-color: #dff0d8;
     background-image: url(../images/bon.png);
     color: #3c763d;
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.purchase_date .alternative.pas_date {
+#update_menu.affix #update_options .option_nom .alternatives.purchase_date .alternative.pas_date {
     background-image: url(../images/pas_page_date.png);
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.purchase_date .alternative.date {
+#update_menu.affix #update_options .option_nom .alternatives.purchase_date .alternative.date {
     background-image: url(../images/page_date.png);
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.for_sale .alternative.a_vendre {
+#update_menu.affix #update_options .option_nom .alternatives.for_sale .alternative.a_vendre {
     background-image: url(../images/av_petit.png);
 }
 
-#update_menu.affix #update_options .option_valeur .alternatives.for_sale .alternative.pas_a_vendre {
+#update_menu.affix #update_options .option_nom .alternatives.for_sale .alternative.pas_a_vendre {
     background-image: url(../images/pas_av_petit.png);
 }
 
 #update_menu.affix #update_options .option_valeur h5 {
     display: inline-block;
-    padding-right: 18px;
 }
 
-#update_menu.affix #update_options .option_valeur .edit {
+#update_menu.affix #update_options .option_nom .edit {
     background: transparent url(../images/icones/pencil.png) no-repeat;
     position: absolute;
     float: left;
     width: 16px;
     height: 16px;
     margin-top: 6px;
-    margin-left: 6px;
-    cursor: pointer;
+    /* margin-left: 6px; */
 }
 
 #update_menu.affix #update_options #save {
     color: white;
     background: green;
     text-align: center;
+    height: 100%
+}
+
+#update_menu.affix #update_options #save h4 {
+    padding-top: 18px;
 }

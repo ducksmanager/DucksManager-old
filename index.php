@@ -1432,8 +1432,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
                                 'ne_pas_changer' => NE_PAS_CHANGER,
-                                'pas_date' => ACHAT_DESASSOCIER_DATE_ACHAT,
-                                'date' => ACHAT_ASSOCIER_DATE_ACHAT
+                                'pas_date' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
+                                'date' => [ACHAT_ASSOCIER_DATE_ACHAT, ACHAT_ASSOCIER_DATE_ACHAT_COURT]
                             ]
                         ],
                         [
@@ -1442,29 +1442,40 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
                                 'ne_pas_changer' => NE_PAS_CHANGER,
-                                'a_vendre' => VENTE_MARQUER_A_VENDRE,
-                                'pas_a_vendre' => VENTE_MARQUER_PAS_A_VENDRE
+                                'a_vendre' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
+                                'pas_a_vendre' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
                             ]
                         ]
                     ];
                     foreach($options as $option) {
                         ?>
-                        <div class="col-lg-1 option_nom">
-                            <h4><?=$option['nom']?></h4>
-                        </div>
-                        <div class="col-lg-2 option_valeur">
-                            <div class="list-group alternatives <?=$option['id']?> invisible"><?php
-                                foreach($option['alternatives'] as $id_alternative=>$alternative) { ?>
-                                    <button type="button" name="<?=$id_alternative?>" class="list-group-item alternative <?=$id_alternative?>">
-                                        <div class="alternative-choice">
-                                            &nbsp;
-                                        </div>
-                                        <?=$alternative?>
-                                    </button>
-                                <?php } ?>
+                        <div class="col-lg-2">
+                            <div class="row option">
+                                <div class="option_nom col-lg-12">
+                                    <div class="list-group row alternatives <?=$option['id']?> invisible"><?php
+                                        foreach($option['alternatives'] as $id_alternative=>$alternative) {
+                                            if (is_array($alternative)) {
+                                                list($alternative_texte, $alternative_texte_court) = $alternative;
+                                            }
+                                            else {
+                                                $alternative_texte = $alternative_texte_court = $alternative;
+                                            }
+                                            ?>
+                                            <button type="button" name="<?=$id_alternative?>" value-short="<?=$alternative_texte_court?>" class="list-group-item col-lg-12 alternative <?=$id_alternative?>">
+                                                <div class="alternative-choice">
+                                                    &nbsp;
+                                                </div>
+                                                <?=$alternative_texte?>
+                                            </button>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="edit">&nbsp;</div>
+                                    <h4><?=$option['nom']?></h4>
+                                </div>
+                                <div class="col-lg-12 col-md-4 option_valeur">
+                                    <h5 class="valeur"></h5>
+                                </div>
                             </div>
-                            <div class="edit">&nbsp;</div>
-                            <h5 class="valeur"></h5>
                         </div>
                         <?php
                     }
