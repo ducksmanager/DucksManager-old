@@ -1407,7 +1407,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <div class="navbar navbar-default navbar-static">
             <div id="selection_numeros_wrapper">
                 <div id="selection_numeros">
-                    2 éléments sélectionnés
+                    <span class="nb_selectionnes">0</span> élément(s) sélectionné(s)
                 </div>
             </div>
             <div id="update_options" class="container-fluid">
@@ -1450,7 +1450,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     foreach($options as $option) {
                         ?>
                         <div class="col-lg-2">
-                            <div class="row option">
+                            <div class="row option" name="<?=$option['id']?>">
                                 <div class="option_nom col-lg-12">
                                     <div class="list-group row alternatives <?=$option['id']?> invisible"><?php
                                         foreach($option['alternatives'] as $id_alternative=>$alternative) {

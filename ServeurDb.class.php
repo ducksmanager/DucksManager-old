@@ -11,7 +11,7 @@ class ServeurDb {
 	/** @var $db_servers ProfilDB */
 	static $current_db_server;
 
-	static $nom_db_DM = 'db301759616';
+	static $nom_db_DM = 'dm';
 
 	/**
 	 * @return ProfilDB
@@ -111,7 +111,10 @@ class ProfilDB {
 }
 
 function isLocalHost() {
-	return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
+    $configuredLocalhostServer = ServeurDb::$db_servers['localhost'];
+	return !(isset($_SERVER['HTTP_HOST'])
+        && strpos($_SERVER['HTTP_HOST'],'localhost') === false
+        && strpos($_SERVER['HTTP_HOST'],$configuredLocalhostServer->domain) === false);
 }
 
 ServeurDb::initDBServers();

@@ -133,6 +133,12 @@ function get_achats(continue_id) {
 	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
 	                        element=element.up('div');
 		        		stop_selection(element);
+
+		        		var nb_selectionnes = jQuery('#liste_numeros .num_checked').length;
+                        jQuery('#update_menu')
+							.toggleClass('shown', nb_selectionnes > 0)
+							.find('.navbar .nb_selectionnes').text(nb_selectionnes);
+
 						event.stopPropagation();
 		        	}
 		        }
@@ -377,7 +383,6 @@ function position_nav() {
 
 function init_nav() {
     var navbar = jQuery('#update_menu')
-        .addClass('shown')
         .find('.navbar');
 
     navbar.css({paddingLeft: jQuery('#menu_gauche').width() + 2});
