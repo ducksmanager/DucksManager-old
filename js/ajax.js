@@ -417,6 +417,19 @@ function init_nav() {
     	jQuery(this).find('.alternative').eq(0).trigger('click');
     });
 
+    navbar.find('#save').click(function() {
+    	var numeros = jQuery.map(jQuery('#liste_numeros .num_checked'), function(element) {
+    		return jQuery(element).attr('title');
+    	});
+    	var section_options = jQuery('#update_options');
+    	var valeurs_options = [];
+    	jQuery.each(section_options.find('.option'), function(i, section_option) {
+    		valeurs_options[jQuery(section_option).attr('name')] = jQuery(section_option).find('.valeur').attr('name');
+		});
+
+        update_numeros(numeros, valeurs_options['condition'], valeurs_options['purchase_date'], valeurs_options['for_sale']);
+	});
+
     position_nav();
 
     jQuery(window)
