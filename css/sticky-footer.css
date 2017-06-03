@@ -128,11 +128,11 @@
     color: #3c763d;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.purchase_date .alternative.pas_date {
+#update_menu.affix #update_options .option_nom .alternatives.purchase_id .alternative.pas_date {
     background-image: url(../images/pas_page_date.png);
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.purchase_date .alternative.date {
+#update_menu.affix #update_options .option_nom .alternatives.purchase_id .alternative.date {
     background-image: url(../images/page_date.png);
 }
 

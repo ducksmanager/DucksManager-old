@@ -1428,11 +1428,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         ],
                         [
                             'nom' => 'Date d\'achat',
-                            'id' => 'purchase_date',
+                            'id' => 'purchase_id',
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
                                 'ne_pas_changer' => NE_PAS_CHANGER,
-                                'pas_date' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
+                                '-1' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
                                 'date' => [ACHAT_ASSOCIER_DATE_ACHAT, ACHAT_ASSOCIER_DATE_ACHAT_COURT]
                             ]
                         ],
@@ -1442,8 +1442,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
                                 'ne_pas_changer' => NE_PAS_CHANGER,
-                                'a_vendre' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
-                                'pas_a_vendre' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
+                                '1' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
+                                '0' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
                             ]
                         ]
                     ];

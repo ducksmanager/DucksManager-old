@@ -303,7 +303,7 @@ class Database {
 			break;
 			default:
 				$champs = ['Pays', 'Magazine', 'Numero', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
-                if ($etat !== 'ne_pas_changer') {
+                if (!is_null($etat)) {
                     $champs[] = 'Etat';
                 }
 				$liste_user=$this->toList($id_user);
@@ -316,7 +316,7 @@ class Database {
 					}
 					else {
                         $data_numero = [$pays,$magazine,$numero,$id_acquisition,$av,$id_user];
-                        if ($etat !== 'ne_pas_changer') {
+                        if (!is_null($etat)) {
                             $data_numero[] = $etat;
                         }
 
@@ -337,15 +337,15 @@ class Database {
 
 				$changements = [];
 
-				if ($etat !== 'ne_pas_changer') {
+				if (!is_null($etat)) {
 				    $changements[] = "Etat='$etat'";
 				}
 
-				if ($id_acquisition !== -2) {
+				if (!is_null($id_acquisition)) {
 				    $changements[] = "ID_Acquisition='$id_acquisition'";
 				}
 
-				if ($av !== -1) {
+				if (!is_null($av)) {
 				    $changements[] = "AV='$av'";
 				}
 
@@ -732,26 +732,24 @@ if (isset($_POST['database'])) {
 	}
 
 	else if (isset($_POST['update'])) {
-		$id_user=$_SESSION['id_user'];
-		$l=DM_Core::$d->toList($id_user);
 		$liste=explode(',',$_POST['list_to_update']);
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
-		$etat=$_POST['etat'];
-		if ($_POST['av']=='true'||$_POST['av']=='-1')
-			$av=($_POST['av']=='true')?1:0;
-		else
-			$av=$_POST['av'];
-		$date_acquisition=$_POST['date_acquisition'];
-		$id_acquisition=$date_acquisition;
-		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
-			$requete_id_acquisition="SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND Date = '$date_acquisition' GROUP BY ID_Acquisition";
-			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
-			if ($resultat_acqusitions[0]['cpt'] ==0)
-				$id_acquisition=-1;
-			else
-				$id_acquisition=$resultat_acqusitions[0]['ID_Acquisition'];
+		$etat=$_POST['etat'] === 'ne_pas_changer' ? null : $_POST['etat'];
+		$av = in_array($_POST['av'], ['0', '1']) ? $_POST['av'] : null;
+		$id_acquisition=$_POST['date_acquisition'];
+		if ($id_acquisition === 'ne_pas_changer') {
+		    $id_acquisition = null;
 		}
+		else {
+            if ($id_acquisition > 0) {
+		        $id_user=$_SESSION['id_user'];
+                $requete_id_acquisition="SELECT ID_Acquisition FROM achats WHERE ID_User='$id_user'";
+                if (count(DM_Core::$d->requete_select($requete_id_acquisition)) === 0) {
+                    $id_acquisition=-1;
+                }
+            }
+        }
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
 	else if (isset($_POST['evenements_recents'])) {

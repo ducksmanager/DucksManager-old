@@ -427,7 +427,7 @@ function init_nav() {
     		valeurs_options[jQuery(section_option).attr('name')] = jQuery(section_option).find('.valeur').attr('name');
 		});
 
-        update_numeros(numeros, valeurs_options['condition'], valeurs_options['purchase_date'], valeurs_options['for_sale']);
+        update_numeros(numeros, valeurs_options['condition'], valeurs_options['purchase_id'], valeurs_options['for_sale']);
 	});
 
     position_nav();
