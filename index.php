@@ -344,11 +344,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <?php if (!isset($_GET['action'])) {
                         ?>
                         <h3><?=BIENVENUE?></h3>
+                        <div class="alert alert-warning"><?=BUG_AFFICHAGE_NUMEROS_ACCUEIL?></div>
                         <?php
                     }
                     ?>
                     <div id="contenu">
-
                         <?php
                         echo $texte_debut;
                         if (isset($_SESSION['user']) && $action !== 'logout' && !Inducks::connexion_ok()) {
@@ -804,6 +804,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 }
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
+
+                                <div class="alert alert-warning"><?=BUG_AFFICHAGE_NUMEROS?></div>
+
                                 <?php
                                 $onglets= [
                                         GESTION_NUMEROS_COURT=> ['ajout_suppr',GESTION_NUMEROS],

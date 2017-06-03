@@ -133,7 +133,7 @@ class Affichage {
         else {
             $liste->nettoyer_collection();
             $nb_possedes=0;
-            $numeros2 = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
+            $numeros = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
                 $infos_numero=$liste->infos_numero($pays,$magazine,$numero);
                 $o=new stdClass();
                 $o->est_possede=false;
@@ -145,6 +145,7 @@ class Affichage {
                 $o->av=$infos_numero[2];
                 $o->id_acquisition=$infos_numero[3];
                 $o->sous_titre=$sous_titre;
+                $o->numero=$numero;
 
                 return $o;
             }, $numeros,$sous_titres);
@@ -189,7 +190,8 @@ class Affichage {
                 </tr>
             </table>
             <?php
-            foreach($numeros2 as $numero=>$infos) {
+            foreach($numeros as $infos) {
+                $numero=$infos->numero;
                 $etat=$infos->etat;
                 $id_acquisition=$infos->id_acquisition;
                 $av=$infos->av;
