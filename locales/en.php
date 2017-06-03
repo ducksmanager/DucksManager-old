@@ -73,7 +73,7 @@ define('BIENVENUE','Welcome on DucksManager !');
 define('BOITE_SELECTIONNEE','Selected box');
 define('BON','Good');
 define('BUG_AFFICHAGE_NUMEROS','Due to a bug, the issue numbers shown on this page were incorrect. This bug has now been fixed. Thank you for your understanding.');
-define('BUG_AFFICHAGE_NUMEROS_ACCUEIL','Due to a bug, the issue numbers shown on the collection management page were incorrect. This bug has now been fixed. Thank you for your understanding.');
+define('BUG_AFFICHAGE_NUMEROS_ACCUEIL','Due to a bug, the issue numbers shown on the collection management page were incorrect. This bug has now been fixed. Thank you for your understanding. ');
 define('CACHER_VIDEO','Hide the video');
 define('CACHER_AIDE','Hide help panel');
 define('CALCUL','Calculation');
