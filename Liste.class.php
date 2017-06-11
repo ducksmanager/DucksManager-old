@@ -153,8 +153,11 @@ class Liste {
 		Affichage::onglets($onglet,$onglets,'onglet','?action=stats');
 
 		if (count($counts)==0) {
-			echo AUCUN_NUMERO_POSSEDE_1.'<a href="?action=gerer&onglet=ajout_suppr">'.ICI.'</a> '
-							.AUCUN_NUMERO_POSSEDE_2;
+            ?><div class="alert alert-info">
+                <?=AUCUN_NUMERO_POSSEDE_1?>
+                <a href="?action=gerer&onglet=ajout_suppr"><?=ICI?></a>
+                <?=AUCUN_NUMERO_POSSEDE_2?></div>
+            <?php
 			return;
 		}
 		switch($onglet) {

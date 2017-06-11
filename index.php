@@ -1413,16 +1413,16 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 }
 
 function formulaire_inscription() {
-	$user= $_POST['user' ];
-	$pass= $_POST['pass' ];
-	$pass2=$_POST['pass2'];
-	$email=$_POST['email'];
-	$rawData=$_POST['rawData'];
+	$user= $_POST['user' ] ?? '';
+	$pass= $_POST['pass' ] ?? null;
+	$pass2=$_POST['pass2'] ?? null;
+	$email=$_POST['email'] ?? '';
+	$rawData=$_POST['rawData'] ?? null;
 	$erreur=null;
     if (isset($user)) {
 		$erreur=Affichage::valider_formulaire_inscription($user, $pass, $pass2);
         if (!is_null($erreur)) {
-            ?><span style="color:red"><?=$erreur?></span><?php
+            ?><div class="alert alert-danger"><?=$erreur?></div><?php
         }
     }
     if (!isset($user) || !is_null($erreur)) {
@@ -1432,8 +1432,8 @@ function formulaire_inscription() {
         if (isset($rawData)) {
             ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
         }?>
-        <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text">&nbsp;</td></tr>
-            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="" /></td></tr>
+        <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text" value="<?=$user?>">&nbsp;</td></tr>
+            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="<?=$email?>" /></td></tr>
             <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input name="pass" type="password" /></td></tr>
             <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input name="pass2" type="password" /></td></tr>
             <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" /></td></tr></table>

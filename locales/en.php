@@ -38,7 +38,7 @@ define('AUCUNE_NOTE','No scoring');
 define('AUCUN_AUTEUR_SURVEILLE','You don\'t have any favorite author yet.');
 define('AUCUN_NUMERO_IMPORTE','No issue reported for magazine ');
 define('AUCUN_NUMERO_INDUCKS','DucksManager didn\'t find any issue in your Inducks account!');
-define('AUCUN_NUMERO_POSSEDE_1','You don\'t possess any comic!Click ');
+define('AUCUN_NUMERO_POSSEDE_1','You don\'t possess any comic book! Click ');
 define('AUCUN_NUMERO_POSSEDE_2','in order to add some comics to your collection!');
 define('AUCUN_NUMERO_PROPOSE','For now, you already have in your collection the issues proposed by other DucksManager users.');
 define('AUCUNE_SUGGESTION','You already possess all the issues containing stories from your favorite authors for the selected country.');
