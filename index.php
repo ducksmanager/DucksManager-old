@@ -1419,13 +1419,13 @@ function formulaire_inscription() {
 	$email=$_POST['email'] ?? '';
 	$rawData=$_POST['rawData'] ?? null;
 	$erreur=null;
-    if (isset($user)) {
+    if (isset($_POST['user' ])) {
 		$erreur=Affichage::valider_formulaire_inscription($user, $pass, $pass2);
         if (!is_null($erreur)) {
             ?><div class="alert alert-danger"><?=$erreur?></div><?php
         }
     }
-    if (!isset($user) || !is_null($erreur)) {
+    if (!isset($_POST['user' ]) || !is_null($erreur)) {
         ?>
         <form method="post" action="?action=new">
         <?php
