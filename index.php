@@ -344,7 +344,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <?php if (!isset($_GET['action'])) {
                         ?>
                         <h3><?=BIENVENUE?></h3>
-                        <div class="alert alert-warning"><?=BUG_AFFICHAGE_NUMEROS_ACCUEIL?></div>
 
                         <?php
                     }
