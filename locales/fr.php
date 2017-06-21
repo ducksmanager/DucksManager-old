@@ -71,8 +71,6 @@ define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Sauvegarder l\'image de cette biblioth&
 define('BIENVENUE','Bienvenue sur DucksManager !');
 define('BOITE_SELECTIONNEE','Boite s&eacute;lectionn&eacute;e');
 define('BON','Bon');
-define('BUG_AFFICHAGE_NUMEROS','En raison d\'un bug, les num&eacute;ros affich&eacute;s sur cette page &eacute;taient incorrects. Ce probl&egrave;me a &eacute;t&eacute; corrig&eacute;. Merci pour votre compr&eacute;hension.');
-define('BUG_AFFICHAGE_NUMEROS_ACCUEIL','En raison d\'un bug, les num&eacute;ros affich&eacute;s sur la page de gestion des num&eacute;ros &eacute;taient incorrects. Ce probl&egrave;me est maintenant corrig&eacute;. Merci pour votre compr&eacute;hension.');
 define('CACHER_VIDEO','Ne pas afficher la vid&eacute;o');
 define('CACHER_AIDE','Cacher l\'aide');
 define('CALCUL','Calcul');

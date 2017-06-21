@@ -806,8 +806,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
 
-                                <div class="alert alert-warning"><?=BUG_AFFICHAGE_NUMEROS?></div>
-
                                 <?php
                                 $onglets= [
                                         GESTION_NUMEROS_COURT=> ['ajout_suppr',GESTION_NUMEROS],
