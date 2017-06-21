@@ -506,8 +506,11 @@ class Database {
 		/* Inscriptions */
 		$requete_inscriptions="
           SELECT users.ID, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes
-          FROM users INNER JOIN numeros ON users.ID = numeros.ID_Utilisateur
-          WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE 'test%'
+          FROM users
+          WHERE EXISTS(
+            SELECT 1 FROM numeros WHERE users.ID = numeros.ID_Utilisateur
+          )
+            AND DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE 'test%'
         ";
 
 		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
