@@ -359,7 +359,10 @@ class Affichage {
     }
 	
 	static function afficher_texte_numero($pays, $magazine, $numero) {
-		?><span class="nowrap"><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?></span><?php
+        $magazine_parts = explode(' ', $magazine);
+		?><span class="nowrap">
+            <img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine_parts[0]?>
+        </span> <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
 	}
 
 	static function afficher_texte_utilisateur($infos_utilisateur) {
