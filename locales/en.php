@@ -67,7 +67,7 @@ define('BIBLIOTHEQUE_OPTIONS','Allows you to set up options for the display of y
 define('BIBLIOTHEQUE_OPTIONS_COURT','Bookcase options');
 define('BIBLIOTHEQUE_PARTICIPER','Help us displaying nice bookcases for all the DucksManager users !');
 define('BIBLIOTHEQUE_PARTICIPER_COURT','Participate !');
-define('BIBLIOTHEQUE_PROPOSITION_PARTAGE','Proud of your collection collection ? Show your bookcase to your friends !');
+define('BIBLIOTHEQUE_PROPOSITION_PARTAGE','Proud of your collection ? Show your bookcase to your friends !');
 define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Save a picture of this library');
 define('BIENVENUE','Welcome on DucksManager !');
 define('BOITE_SELECTIONNEE','Selected box');
