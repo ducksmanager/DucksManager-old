@@ -387,7 +387,7 @@ define('PRIX_HONNETES','Nous comptons sur votre honn&ecirc;tet&eacute; concernan
 define('PROBLEME_BD','Probl&egrave;me avec la base de donn&eacute;es !');
 define('PROPOSE_LES_NUMEROS','propose les num&eacute;ros suivants en vente :');
 define('PROPOSER_BOUQUINERIE','Proposer une bouquinerie');
-define('PUB_WHATTHEDUCK_1','Nouveau ! Gardez votre collection avec vous en toutes circonstances gr&acirc;ce &agrave; ');
+define('PUB_WHATTHEDUCK_1','Nouveau ! Photographiez vos num&eacute;ros pour les ajouter &agrave; votre collection avec ');
 define('PUB_WHATTHEDUCK_2',', l\'application mobile de DucksManager !');
 define('PUB_WHATTHEDUCK_3','Disponible gratuitement sur les t&eacute;l&eacute;phones et tablettes Android.');
 define('PUBLICATION','Publication');

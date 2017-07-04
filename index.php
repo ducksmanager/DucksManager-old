@@ -1461,13 +1461,15 @@ function encart_WhatTheDuck() {
 ?>
 	<div style="width:300px;margin-top:20px;border:1px solid white">
 		<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
-		<p style="margin-left:10px">
-			<?=PUB_WHATTHEDUCK_1?>
-			<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
-			<?=PUB_WHATTHEDUCK_2?>
-			<br />
-			<?=PUB_WHATTHEDUCK_3?>
-		</p>
+		<div style="margin-left:10px; text-align: center">
+            <div style="text-align: left">
+                <?=PUB_WHATTHEDUCK_1?>
+                <a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PUB_WHATTHEDUCK_2?>
+            </div>
+            <?=PUB_WHATTHEDUCK_3?><br /><br />
+            <iframe width="200" height="315" src="https://www.youtube.com/embed/KBbq49Y_4AE?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
+            <br /><br />
+        </div>
 	</div><?php 
 }
 ?>

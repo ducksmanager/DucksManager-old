@@ -388,7 +388,7 @@ define('PRIX_HONNETES','We are counting on your honnesty concerning the prices y
 define('PROBLEME_BD','Problem when connecting to the database!');
 define('PROPOSE_LES_NUMEROS','wants to sell the following issues :');
 define('PROPOSER_BOUQUINERIE','Propose a second-hand bookshop');
-define('PUB_WHATTHEDUCK_1','New ! Keep an eye on your comics collection at any time thanks to ');
+define('PUB_WHATTHEDUCK_1','New ! Take a picture of Disney issues to add them to your collection using ');
 define('PUB_WHATTHEDUCK_2',', DucksManager\'s mobile app !');
 define('PUB_WHATTHEDUCK_3','Available for free on Google Play.');
 define('PUBLICATION','Publication');
