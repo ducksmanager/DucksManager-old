@@ -32,17 +32,22 @@ if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
         die ('Valeur du wanted invalide');
     }
-    $requete_plus_demandes='SELECT Count(Numero) as cpt, Pays, Magazine, Numero '
-                          .'FROM numeros '
-                          .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
-    $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
-    $cpt=-1;
-    $cptwanted=0;
+    $requete_plus_demandes="
+      SELECT Count(Numero) as cpt, Pays, Magazine, Numero
+      FROM numeros ";
 
     if (isset($_GET['user'])) {
         $id_user=DM_Core::$d->user_to_id($_GET['user']);
         $l=DM_Core::$d->toList($id_user);
+        $requete_plus_demandes.=" WHERE CONCAT(Pays, '/', Magazine, ' ', Numero) IN (
+            SELECT CONCAT(Pays, '/', Magazine, ' ', Numero) FROM numeros
+            WHERE ID_Utilisateur=$id_user) ";
     }
+
+    $requete_plus_demandes.= 'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
+    $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
+    $cpt=-1;
+    $cptwanted=0;
 
     echo '--- WANTED ---';
 	$numeros_demandes= [];
