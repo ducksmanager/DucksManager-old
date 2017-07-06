@@ -32,19 +32,24 @@ if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
         die ('Valeur du wanted invalide');
     }
-    $requete_plus_demandes="
-      SELECT Count(Numero) as cpt, Pays, Magazine, Numero
-      FROM numeros ";
+    $requete_plus_demandes='SELECT Count(Numero) as cpt, Pays, Magazine, Numero '
+                          .'FROM numeros '
+                          .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
 
     if (isset($_GET['user'])) {
         $id_user=DM_Core::$d->user_to_id($_GET['user']);
-        $l=DM_Core::$d->toList($id_user);
-        $requete_plus_demandes.=" WHERE CONCAT(Pays, '/', Magazine, ' ', Numero) IN (
-            SELECT CONCAT(Pays, '/', Magazine, ' ', Numero) FROM numeros
-            WHERE ID_Utilisateur=$id_user) ";
+        $requete_plus_demandes="
+            SELECT
+              (select Count(Numero) AS cpt from numeros tot where numeros.Pays = tot.Pays and numeros.Magazine = tot.Magazine and numeros.Numero = tot.Numero) as cpt,
+              Pays,
+              Magazine,
+              Numero
+            FROM numeros
+            WHERE ID_Utilisateur = $id_user
+            ORDER BY cpt DESC, Pays, Magazine, Numero
+        ";
     }
 
-    $requete_plus_demandes.= 'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
     $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
@@ -84,11 +89,10 @@ if (isset($_GET['wanted'])) {
 		if (is_null($nom_magazine_complet)) {
 			$nom_magazine_complet = $publicationcode;
 		}
-        $est_possede = isset($l) && $l->est_possede($pays,$magazine,$numero);
-		?><br /><u><?=$cpt?> utilisateurs <?=($est_possede ? "<b><i>dont {$_GET['user']}</i></b>" : "")?> poss&egrave;dent le num&eacute;ro :</u><br />
+		?><br /><u><?=$cpt?> utilisateurs <?=isset($_GET['user']) ? "<b><i>dont {$_GET['user']}</i></b>" : ""?> poss&egrave;dent le num&eacute;ro :</u><br />
 		&nbsp;
-			<img src="../images/flags/<?=$pays?>.png" /> 
-			<?=$nom_magazine_complet?> n&deg;<?=$numero?>
+        <img src="../images/flags/<?=$pays?>.png" />
+        <?=$nom_magazine_complet?> n&deg;<?=$numero?>
 		<br /><?php
 	}
 }
