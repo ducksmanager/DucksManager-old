@@ -648,7 +648,7 @@ class Database {
              FROM tranches_pretes tp, numeros n
              WHERE n.ID_Utilisateur = '.$id_user.'
              AND CONCAT(publicationcode,\'/\',issuenumber) = CONCAT(n.Pays,\'/\',n.Magazine,\'/\',n.Numero)
-             AND tp.dateajout > \'2013-07-01\'';
+             AND DATEDIFF(NOW(), tp.dateajout) < 90';
 
         if ($depuis_derniere_visite_seulement) {
             $requete_tranches_collection_ajoutees.='
