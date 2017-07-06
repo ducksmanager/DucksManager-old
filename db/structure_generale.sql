@@ -214,8 +214,6 @@ DROP TABLE IF EXISTS `tranches_pretes`;
 CREATE TABLE `tranches_pretes` (
   `publicationcode` varchar(12) COLLATE latin1_german2_ci NOT NULL DEFAULT '',
   `issuenumber` varchar(10) COLLATE latin1_german2_ci NOT NULL DEFAULT '',
-  `photographes` text COLLATE latin1_german2_ci,
-  `createurs` text COLLATE latin1_german2_ci,
   `dateajout` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`publicationcode`,`issuenumber`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_german2_ci;
