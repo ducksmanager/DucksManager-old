@@ -63,7 +63,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link rel="stylesheet" type="text/css" href="bibliotheque.css">
         <link rel="stylesheet" type="text/css" href="pluit-carousel.css">
         <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
-        <link rel="stylesheet" type="text/css" href="css/opentip.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
         <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">

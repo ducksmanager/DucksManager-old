@@ -37,3 +37,8 @@ button, input, optgroup, select, textarea {
 img {
     vertical-align: inherit;
 }
+
+.popover {
+    max-width: inherit;
+    color: black;
+}

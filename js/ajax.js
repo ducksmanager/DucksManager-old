@@ -222,7 +222,13 @@ function charger_evenements() {
 			   });
 			   $$('#evenements a.has_tooltip.user_tooltip').each(function(element) {
                    var tooltip_content = element.next('.tooltip_content');
-                   new Opentip(element, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null, className: "profil" });
+                   jQuery(element).popover({
+                       content: tooltip_content.down('div').innerHTML,
+                       title: tooltip_content.down('h4').innerHTML,
+                       placement: 'top',
+					   html: true,
+					   trigger: 'hover'
+                   });
 			   });
 
 		   }
@@ -231,7 +237,12 @@ function charger_evenements() {
 
 function callback_tranches_chargees(tooltip_content) {
 	var element_texte_hover = tooltip_content.previous('a.has_tooltip.edge_tooltip');
-	new Opentip(element_texte_hover, tooltip_content.innerHTML, { delay: 0, fixed: true, stem: false, showEffect: null, className: "tranches" });
+    jQuery(element_texte_hover).popover({
+        content: tooltip_content.innerHTML,
+        placement: 'top',
+        html: true,
+        trigger: 'hover'
+    });
 }
 
 function initPays(inclure_tous_pays, selected) {

@@ -15,15 +15,15 @@ var hauteur_etage;
 var nb_etageres;
 var nb_etageres_terminees;
 var bulle=null;
-var numero_bulle=null;
 var extraits;
 var extrait_courant;
 var chargement_extrait=false;
-var temps_dernier_mouseover=0;
 
 function ouvrir_tranche() {
     if (action_en_cours || extrait_courant>0)
         return;
+    jQuery('.popover').popover('destroy');
+
     extraits=[];
     extrait_courant=-1;
     ouverture_couverture=true;
@@ -555,6 +555,8 @@ function init_ordre_magazines() {
     });
 }
 
+var bulle_recente = null;
+
 function init_observers_tranches() {
     $$('.tranche').invoke(
         'observe',
@@ -570,46 +572,46 @@ function init_observers_tranches() {
         function(event) {
             if (action_en_cours ||couverture_ouverte)
                 return;
-            ouvrirInfoBulle(Event.element(event));
+            var tranche = Event.element(event);
+
+            bulle_recente = tranche.id;
+            ouvrirInfoBulleEffectif(tranche);
         }
     );
+
+    jQuery('body').on('hidden.bs.tooltip', function() {
+        var tooltips = jQuery('.tooltip').not('.in');
+        if (tooltips) {
+            tooltips.remove();
+        }
+    });
 }
 
-function ouvrirInfoBulle(tranche) {
-    var timestamp=new Date().getTime();
-    temps_dernier_mouseover=timestamp;
-    setTimeout(function() {ouvrirInfoBulleEffectif(tranche,timestamp)},500);
-}
+function ouvrirInfoBulleEffectif(tranche) {
+    jQuery('.popover').popover('destroy');
+    var numero_bulle=getInfosNumero(tranche.id);
 
-function ouvrirInfoBulleEffectif(tranche,timestamp) {
-    if (temps_dernier_mouseover != timestamp)
-        return;
-    var nouveau_numero_bulle=getInfosNumero(tranche.id);
-    if (numerosIdentiques(nouveau_numero_bulle, numero_bulle))
-        return;
-    numero_bulle=nouveau_numero_bulle;
-    var pos_left=tranche.offsetLeft+300 >= $('body').offsetWidth ? $('body').offsetWidth - 310 : tranche.offsetLeft;
-    if (bulle == null) {
-        bulle=new Element('div',{'id':'infobulle'})
-            .addClassName('bulle')
-            .setStyle({'top':(tranche.offsetTop-50)+'px', 'left':pos_left+'px'});
-        $('body').insert(bulle);
-    }
-    else {
-        $(bulle).setStyle({'top':(tranche.offsetTop-50)+'px', 'left':pos_left+'px'})
-                .update();
-    }
     new Ajax.Request('Edge.class.php', {
         method: 'post',
         parameters:'get_visible=true&est_partage_bibliotheque='+est_partage_bibliotheque+'&debug='+debug
 				 +'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
-            var parametres=[];
-            parametres['pays']=transport.request.parameters.pays;
-            parametres['magazine']=transport.request.parameters.magazine;
-            parametres['numero']=transport.request.parameters.numero;
-            if ($(bulle) && numerosIdentiques(parametres,numero_bulle))
-                $(bulle).update(transport.responseText);
+            if (bulle_recente === tranche.id) {
+                var data = transport.responseJSON;
+
+                jQuery(tranche)
+                    .popover({
+                        container: 'body',
+                        content: data.content,
+                        title: data.title,
+                        trigger: 'hover',
+                        placement: 'top',
+                        position: 'in right',
+                        animation: false,
+                        html: true
+                    })
+                    .popover('show')
+            }
         }
     });
 

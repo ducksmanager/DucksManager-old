@@ -35,18 +35,6 @@ a:HOVER {
 	border-bottom: 1px dashed #ffffff !important;
 }
 
-.opentip-container.style-tranches {
-	max-width: 500px !important;
-}
-
-.opentip-container.style-profil {
-	max-width: 600px !important;
-}
-
-.opentip-container h4 {
-	margin-top: 0;
-}
-
 a, a:HOVER {
 	text-decoration: none;
 	white-space: nowrap;
@@ -73,10 +61,6 @@ a.important:HOVER {
 
 .nowrap {
     white-space: nowrap;
-}
-
-.opentip .nowrap {
-    white-space: inherit;
 }
 
 #medailles_et_login .medaille {
@@ -107,16 +91,16 @@ a.important:HOVER {
     margin-top: 0;
 }
 
-#recemment #evenements div {
+#recemment #evenements div.evenement {
 	margin-top: 12px;
 }
 
-#recemment #evenements div .date {
+#recemment #evenements div.evenement .date {
 	color: #444;
 	float: right;
 }
 
-#recemment #evenements a {
+#recemment #evenements div.evenement a {
 	color: black;
 }
 

@@ -255,7 +255,7 @@ class Affichage {
 		foreach($evenements->evenements as $evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $evenement) {
-					?><div class="evenement_<?=$type?>"><?php
+					?><div class="evenement evenement_<?=$type?>"><?php
 					switch($type) {
 						case 'inscriptions':
 							Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
