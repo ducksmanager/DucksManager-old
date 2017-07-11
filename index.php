@@ -136,7 +136,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <script type="text/javascript" src="js/my_scriptaculous.js"></script>
         <script type="text/javascript" src="js/l10n.js"></script>
         <script type="text/javascript" src="js/ajax.js"></script>
-        <script type="text/javascript" src="js/opentip/opentip-prototype-excanvas.min.js"></script>
         <script type="text/javascript" src="js/moment.min.js"></script>
         <script type="text/javascript" src="js/edges2.js"></script><?php
 

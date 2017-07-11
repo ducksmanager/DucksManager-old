@@ -27,13 +27,12 @@ function ouvrir_tranche() {
     extraits=[];
     extrait_courant=-1;
     ouverture_couverture=true;
-    if (couverture_ouverte && tranche_bib != tranche_en_cours) {
+    if (couverture_ouverte && tranche_bib !== tranche_en_cours) {
         ouvrirApres=true;
         fermer();
         return;
     }
-    if ($('infobulle'))
-        $('infobulle').remove();
+    $('infobulle') && $('infobulle').remove();
     bulle=null;
     action_en_cours=true;
     var infos=getInfosNumero(tranche_bib.id);
@@ -60,8 +59,7 @@ function ouvrir_tranche() {
         method: 'post',
         parameters:'get_cover=true&debug='+debug+'&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
         onSuccess:function(transport) {
-            if ($('infobulle'))
-                $('infobulle').remove();
+            $('infobulle') && $('infobulle').remove();
             if (transport.headerJSON==null)
                 return;
             couverture_ouverte=true;
@@ -95,16 +93,14 @@ function ouvrir_tranche() {
                     duration: 1,
                     afterFinish:function() {
                         ouverture_couverture=false;
-                        if ($('animation'))
-                            $('animation').remove();
+                        $('animation') && $('animation').remove();
                         
                         if (extraits.length>0 && !$('lien_apercus')) {
                             creer_div_apercus();
                         }
                     }
                 });
-                if ($('animation'))
-                    $('animation').remove();
+                $('animation') && $('animation').remove();
                 action_en_cours=false;
             });
         }
@@ -151,7 +147,7 @@ function creer_div_apercus() {
             back_to_cover();
         }
         else {
-            if (extraits[extrait_courant].page % 2 == 1) { // Page impaire
+            if (extraits[extrait_courant].page % 2 === 1) { // Page impaire
                 maj_page('page_gauche_arriere','page_invisible');
                 $('page_gauche_arriere')
                     .setStyle({'width':'0px'});
@@ -208,7 +204,7 @@ function creer_div_apercus() {
 }
 
 function getLargeur() {
-    return $('page_droite_avant').getStyle('width')=='0px'
+    return $('page_droite_avant').getStyle('width')==='0px'
             ?$('page_droite_arriere').getStyle('width')
             :$('page_droite_avant').getStyle('width');
 }
@@ -250,8 +246,7 @@ function maj_div_apercus() {
 }
 
 function back_to_cover() {
-    if ($('page_gauche_arriere'))
-        $('page_gauche_arriere').remove();
+    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
     $('page_suivante').remove();            
 
     maj_page('page_droite_arriere',couverture.src);
@@ -260,12 +255,10 @@ function back_to_cover() {
     intervertir_page('droite');
     new Effect.BlindLeft('page_gauche_avant', {
         afterFinish:function() {
-            if ($('page_gauche_avant'))
-                $('page_gauche_avant').remove();
+            $('page_gauche_avant') && $('page_gauche_avant').remove();
             new Effect.Morph('page_droite_avant_im',{style:'width:'+getLargeur(),
                 afterFinish:function() {
-                    if ($('page_droite_arriere'))
-                        $('page_droite_arriere').remove();
+                    $('page_droite_arriere') && $('page_droite_arriere').remove();
                     $('page_droite_avant').observe('click', fermer_tranche);
                     extrait_courant=-1;
                     creer_div_apercus();
@@ -280,14 +273,10 @@ function fermer() {
         return;
     action_en_cours=true;
     var largeur=getLargeur();
-    if ($('page_suivante'))
-        $('page_suivante').remove();
-    if ($('page_gauche_avant'))
-        $('page_gauche_avant').remove();
-    if ($('page_gauche_arriere'))
-        $('page_gauche_arriere').remove();
-    if ($('page_droite_arriere'))
-        $('page_droite_arriere').remove();
+    $('page_suivante') && $('page_suivante').remove();
+    $('page_gauche_avant') && $('page_gauche_avant').remove();
+    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
+    $('page_droite_arriere') && $('page_droite_arriere').remove();
     $('page_droite_avant_im').setStyle({'width':largeur});
     new Effect.Parallel([
         new Effect.BlindLeft($('page_droite_avant'), {sync:true}),
@@ -306,7 +295,7 @@ function fermer() {
                     $$('.lien_apercus').invoke('remove');
                     action_en_cours=false;
                     couverture_ouverte=false;
-                    if (ouvrirApres==true)
+                    if (ouvrirApres)
                         ouvrir_tranche();
                 }
             });
@@ -320,6 +309,10 @@ function charger_bibliotheque() {
 
 	var conteneur=$('conteneur_bibliotheque');
 	var section=$('bibliotheque');
+    section.observe('mousedown', function() {
+        jQuery('.popover').popover('destroy');
+    });
+
 	largeur_section=section.clientWidth;
 	hauteur_section=section.clientHeight;
 	$('pourcentage_collection_visible').setStyle({'display':'none'});
@@ -587,6 +580,9 @@ function init_observers_tranches() {
     });
 }
 
+var timeout_before_popover_hide= 500;
+var popover_id_mouseout_timeout = null;
+
 function ouvrirInfoBulleEffectif(tranche) {
     jQuery('.popover').popover('destroy');
     var numero_bulle=getInfosNumero(tranche.id);
@@ -611,6 +607,27 @@ function ouvrirInfoBulleEffectif(tranche) {
                         html: true
                     })
                     .popover('show')
+                    .on('hide.bs.popover', function(e) {
+                        if (popover_id_mouseout_timeout !== tranche.id) {
+                            popover_id_mouseout_timeout = tranche.id;
+
+                            setTimeout(function() {
+                                if (popover_id_mouseout_timeout) {
+                                    popover_id_mouseout_timeout = null;
+                                    jQuery(tranche).unbind('hide.bs.popover').popover('hide');
+                                }
+                            }, timeout_before_popover_hide);
+
+                            e.preventDefault();
+                        }
+                    });
+                jQuery('.popover')
+                    .mouseenter(function() {
+                        popover_id_mouseout_timeout = null;
+                    })
+                    .mouseleave(function() {
+                        jQuery(tranche).unbind('hide.bs.popover').popover('hide');
+                    });
             }
         }
     });
@@ -625,14 +642,6 @@ function getInfosNumero (texte) {
     infos['magazine']=magazine_numero[0].toLowerCase();
     infos['numero']=magazine_numero[1];
     return infos;
-}
-
-function numerosIdentiques(numero1, numero2) {
-    if (numero1 == null | numero2 == null)
-        return false;
-    return numero1['pays'] == numero2['pays']
-        && numero1['magazine'] == numero2['magazine']
-        && numero1['numero'] == numero2['numero'];
 }
 
 function getScreenCenterY() {
