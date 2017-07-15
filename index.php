@@ -776,11 +776,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                                         $contributeurs = array_merge($contributeurs_internes, $contributeurs_externes);
                                         ?>
-                                        <div style="border:1px solid white">
-                                            <h2 style="text-align:center"><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
+                                        <div id="contributeurs">
+                                            <h2><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
                                             <?php
                                             foreach ($contributeurs as $contributeur) {
-                                                ?><div style="font-size:18px;line-height:20px;"><?php
+                                                ?><div class="contributeur"><?php
 
                                                 if (isset($contributeur['ID'])) {
                                                     Affichage::afficher_texte_utilisateur($details_collections[$contributeur['ID']]);

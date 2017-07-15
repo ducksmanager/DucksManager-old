@@ -121,3 +121,17 @@
 .magazine_deplacable .handle {
     cursor:move;
 }
+
+#contributeurs {
+    border:1px solid white;
+}
+
+#contributeurs h2 {
+    text-align:center;
+}
+
+.contributeur {
+    padding-left: 10px;
+    font-size:18px;
+    line-height:22px;
+}
