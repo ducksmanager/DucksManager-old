@@ -445,7 +445,7 @@ define('TEXTURE_ETAGERE', 'Shelf texture');
 define('TEXTURE__BOIS','Wood');
 define('TITRE','DucksManager : Your Disney comics collection manager');
 define('TITRE_MEDAILLE_CONCEPTEUR','Edge designer');
-define('TITRE_MEDAILLE_PHOTOGRAPHE','Edge photograph');
+define('TITRE_MEDAILLE_PHOTOGRAPHE','Edge photographer');
 define('TITRE_MEDAILLE_DUCKHUNTER','Duckhunter');
 define('TITRE_PAGE_ACCUEIL','Welcome !');
 define('TITRE_PAGE_AGRANDIR','Expand your collection');
