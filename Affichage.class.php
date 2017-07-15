@@ -367,7 +367,7 @@ class Affichage {
 
 	static function afficher_texte_utilisateur($infos_utilisateur) {
         $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
-        ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=$nom_utilisateur?></i></b></a>
+        ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=utf8_encode($nom_utilisateur)?></i></b></a>
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
             <div>

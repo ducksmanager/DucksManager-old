@@ -754,17 +754,41 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         break;
 
                                     case 'contributeurs':
-                                        $requete_contributeurs = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
-                                        $contributeurs = DM_Core::$d->requete_select($requete_contributeurs);
+                                        $requete_contributeurs_internes = "
+                                            SELECT distinct ID, username AS Nom, '' AS Texte from users
+                                            inner join tranches_pretes_contributeurs c on users.ID = c.contributeur";
+                                        $contributeurs_internes = DM_Core::$d->requete_select($requete_contributeurs_internes);
+
+                                        $ids_contributeurs_internes = array_map(function($contributeur) {
+                                            return $contributeur['ID'];
+                                        }, $contributeurs_internes);
+                                        usort($contributeurs_internes, function($a, $b) {
+                                            return strcmp(strtolower($a['Nom']), strtolower($b['Nom']));
+                                        });
+
+                                        $details_collections=DM_Core::$d->get_details_collections($ids_contributeurs_internes);
+
+                                        $requete_contributeurs_externes = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
+                                        $contributeurs_externes = DM_Core::$d->requete_select($requete_contributeurs_externes);
+                                        usort($contributeurs_externes, function($a, $b) {
+                                            return strcmp(strtolower($a['Nom']), strtolower($b['Nom']));
+                                        });
+
+                                        $contributeurs = array_merge($contributeurs_internes, $contributeurs_externes);
                                         ?>
                                         <div style="border:1px solid white">
                                             <h2 style="text-align:center"><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
                                             <?php
                                             foreach ($contributeurs as $contributeur) {
-                                                ?>
-                                                <span
-                                                    style="font-size:18px;line-height:20px;"><?= $contributeur['Nom'] ?></span> <?= $contributeur['Texte'] ?>
-                                                <br/>
+                                                ?><div style="font-size:18px;line-height:20px;"><?php
+
+                                                if (isset($contributeur['ID'])) {
+                                                    Affichage::afficher_texte_utilisateur($details_collections[$contributeur['ID']]);
+                                                }
+                                                else {
+                                                    echo utf8_encode($contributeur['Nom']).' '.$contributeur['Texte'];
+                                                }
+                                                ?></div>
                                             <?php
                                             }
                                             ?>

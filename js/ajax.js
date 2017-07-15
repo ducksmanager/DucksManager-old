@@ -220,19 +220,23 @@ function charger_evenements() {
 				   element_conteneur_bibliotheque = element.next('.tooltip_content');
 				   charger_tranche(element_conteneur_bibliotheque.down('.tranche'));
 			   });
-			   $$('#evenements a.has_tooltip.user_tooltip').each(function(element) {
-                   var tooltip_content = element.next('.tooltip_content');
-                   jQuery(element).popover({
-                       content: tooltip_content.down('div').innerHTML,
-                       title: tooltip_content.down('h4').innerHTML,
-                       placement: 'top',
-					   html: true,
-					   trigger: 'hover'
-                   });
-			   });
+			   charger_tooltips_utilisateurs();
 
 		   }
 	});
+}
+
+function charger_tooltips_utilisateurs() {
+    $$('a.has_tooltip.user_tooltip').each(function(element) {
+        var tooltip_content = element.next('.tooltip_content');
+        jQuery(element).popover({
+            content: tooltip_content.down('div').innerHTML,
+            title: tooltip_content.down('h4').innerHTML,
+            placement: 'top',
+            html: true,
+            trigger: 'hover'
+        });
+    });
 }
 
 function callback_tranches_chargees(tooltip_content) {
