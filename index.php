@@ -29,7 +29,6 @@ else {
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
-            $_SESSION['id_user']=$_SESSION['id_user'];
 
 			setcookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
 			setcookie('pass',$_COOKIE['pass'],time()+3600);
@@ -53,16 +52,16 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <meta http-equiv="Expires" content="0" />
         <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
         <title><?=$titre.' - DucksManager'?></title>
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <link rel="stylesheet" type="text/css" href="scriptaculous.css">
-        <link rel="stylesheet" type="text/css" href="autocompleter.css">
-        <link rel="stylesheet" type="text/css" href="csstabs.css">
-        <link rel="stylesheet" type="text/css" href="bibliotheque.css">
-        <link rel="stylesheet" type="text/css" href="pluit-carousel.css">
-        <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/scriptaculous.css">
+        <link rel="stylesheet" type="text/css" href="css/autocompleter.css">
+        <link rel="stylesheet" type="text/css" href="css/csstabs.css">
+        <link rel="stylesheet" type="text/css" href="css/bibliotheque.css">
+        <link rel="stylesheet" type="text/css" href="css/pluit-carousel.css">
+        <link rel="stylesheet" type="text/css" href="css/pluit-carousel-skins.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
-        <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="css/protomenu.css" type="text/css" media="screen">
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('ServeurDb.class.php');
         if (!isLocalHost()) {?>
@@ -70,13 +69,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             <script type="text/javascript">
             var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=ServeurDb::getPiwikServer()->domain?>/piwik/");
             document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-            </script>
-            <script type="text/javascript">
+
             try {
-            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
-            piwikTracker.setCustomVariable(1, "Utilisateur", "<?=$_SESSION['user']?>", "visit"); 
-            piwikTracker.trackPageView();
-            piwikTracker.enableLinkTracking();
+                var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+                piwikTracker.setCustomVariable(1, "Utilisateur", "<?=$_SESSION['user']?>", "visit");
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
             } catch( err ) {}
             </script>
             <!-- End Piwik Tag -->
@@ -88,12 +86,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         </script>
 
         <!-- Bootstrap -->
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap-datepicker3.min.css">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
-        <script type="text/javascript" src="prototype-1.7.3.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.min.js"></script>
         <script>
             (function() {
                 var isBootstrapEvent = false;
@@ -123,17 +121,21 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             })();
         </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="js/bootstrap-datepicker.min.js"></script>
-        <script src="js/bootstrap-datepicker.fr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.fr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.en-GB.min.js"></script>
 
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
-        <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/effects.min.js"></script>
+        <script type="text/javascript" src="js/scriptaculous/src/effects2.js"></script>
+
         <script type='text/javascript' src='js/starbox.js'></script>
         <script type="text/javascript" src="js/pluit-carousel.js"></script>
         <script type="text/javascript" src="js/my_scriptaculous.js"></script>
         <script type="text/javascript" src="js/l10n.js"></script>
         <script type="text/javascript" src="js/ajax.js"></script>
-        <script type="text/javascript" src="js/moment.min.js"></script>
         <script type="text/javascript" src="js/edges2.js"></script><?php
 
         if (!is_null($action)) {
@@ -189,7 +191,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 case 'agrandir':
                     ?><script type="text/javascript" src="js/stats.js"></script><?php
             }
-            ?><script src="js/divers.js"></script><?php
         }
         ?>
     </head>

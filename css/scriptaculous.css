@@ -1,0 +1,123 @@
+.draggable_box {
+	border-width:1px;
+        border-style:solid;
+	padding:5px;
+        background-color:white;
+        display: table;
+        position: relative;
+}
+
+.titre_magazine {
+    cursor:move;
+}
+
+.hover_espacement {
+    background-color:salmon;
+}
+
+.separation {
+    width:100%;
+}
+.box_options {
+	display: none;
+	width: 100%;
+	top: 0;
+	padding-left:2px;
+	text-align: right;
+}
+
+.options_text {
+	cursor:pointer;
+	background-color:black;
+	color:white;
+	float:right;
+}
+
+.options_text_selected {
+}
+
+#info {
+    position:fixed;
+    overflow:auto;
+    top:0;
+    right:0;
+    border-left:1px dotted black;
+    width:350px;
+    height:100%;
+    padding:20px 6px 4px 6px;
+    z-index:1001;
+    background-color:white;
+}
+
+#info .contenu {
+    margin-bottom: 25px;
+}
+
+#section_imprimer {
+    position:absolute;
+    left:0;
+    top:0;
+    text-align:left;
+}
+
+#section_imprimer button {
+    margin-left: -1px;
+    margin-top: -1px;
+}
+
+.toggle_info {
+    background-color: white;
+    color: blue;
+    position: fixed;
+    right: 20px;
+    top: 0;
+    z-index: 1002;
+}
+
+.valeur_courante {
+    float: right;
+    width: 50px;
+}
+
+.slider_fixe {
+    z-index:1;
+    background-color:green;
+}
+
+#infos_sv {
+    right:0;
+    bottom:0;
+    position:fixed;
+    color:gray;
+    z-index:1002;
+}
+
+.types_listes {
+    list-style-type: none;
+}
+
+.types_listes li {
+    margin-bottom: 7px;
+}
+
+.types_listes li a{
+    cursor:default;
+}
+
+.types_listes li a.selected{
+    border:1px solid black;
+}
+
+.cache { display:none; }
+
+#info button {
+    right:6px;
+    position:absolute;
+}
+
+div.slider { width:256px; margin:10px 0; background-color:#ccc; height:10px; position: relative; }
+div.slider div.handle { width:10px; height:15px; background-color:#f00; cursor:move; position: absolute; }
+
+.collectable_liste_numeros tr td { /* Pour IE */
+    border-color:gray;
+}

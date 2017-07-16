@@ -1,0 +1,76 @@
+ul.tabnav {
+    font:bold 11px verdana,arial,sans-serif;
+    list-style-type:none;
+    margin:1px;
+    padding:0 0 24px 0;
+}
+
+ul.tabnav li {
+    background-color:rgb(200, 137, 100);
+    float:left;
+    height:21px;
+    margin:2px 2px 0;
+}
+ul.tabnav li.nouveau {
+    background-color: orange;
+}
+
+ul.tabnav li.active {
+    border-bottom:1px solid #FFFFFF;
+}
+
+ul.tabnav li.active a {
+    color:#000000;
+}
+
+ul.tabnav li.cache {
+	display: none !important;
+}
+
+ul#onglets_pays {
+    margin-top: 50px;
+	white-space: nowrap;
+}
+
+ul#onglets_magazines {
+	position: absolute;
+}
+
+ul#onglets_magazines.tabnav li {
+	outline: 2px solid rgb(61, 75, 95);
+	float: none;
+	background-color: transparent;
+}
+
+ul#onglets_magazines.tabnav li.active {
+	border-bottom: none;
+}
+
+ul#onglets_magazines.tabnav li.active a {
+	border-bottom: 1px solid #FFFFFF;
+}
+
+ul#onglets_magazines.tabnav li a {
+	background-color: rgb(200, 137, 100);
+}
+.tabnav a {
+    color:#666666;
+    display:block;
+    float:left;
+    padding:4px;
+    border-bottom: 0;
+}
+.tabnav a:hover {
+    background:none repeat scroll 0 0 #FFFFFF !important;
+	color: black;
+}
+
+.tabnav li a img {
+    border:0;
+    margin-top:1px;
+}
+
+.tabnav li a span {
+    vertical-align:top;
+    margin-left:2px;
+}

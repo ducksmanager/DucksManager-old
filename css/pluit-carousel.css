@@ -75,7 +75,7 @@
   display: block;
   overflow: hidden;
   text-indent: -100em;
-  background: url(images/carousel_nav.png) no-repeat 0 0;
+  background: url(../images/carousel_nav.png) no-repeat 0 0;
   outline: none;
 }
 

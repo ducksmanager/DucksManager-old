@@ -94,15 +94,15 @@
 }
 
 #page_suivante {
-    background-image:url('images/fleche_droite.png');
+    background-image:url('../images/fleche_droite.png');
 }
 
 #page_precedente {
-    background-image:url('images/fleche_gauche.png');
+    background-image:url('../images/fleche_gauche.png');
 }
 
 .page_invisible {
-    background-image:url('images/page_invisible_motif.jpg');
+    background-image:url('../images/page_invisible_motif.jpg');
 }
 
 .page_arriere {
