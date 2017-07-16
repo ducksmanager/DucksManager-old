@@ -129,25 +129,25 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/effects.min.js"></script>
-        <script type="text/javascript" src="js/scriptaculous/src/effects2.js"></script>
+        <script type="text/javascript" src="js/scriptaculous/src/effects2.js?VERSION"></script>
 
-        <script type='text/javascript' src='js/starbox.js'></script>
-        <script type="text/javascript" src="js/pluit-carousel.js"></script>
-        <script type="text/javascript" src="js/my_scriptaculous.js"></script>
-        <script type="text/javascript" src="js/l10n.js"></script>
-        <script type="text/javascript" src="js/ajax.js"></script>
-        <script type="text/javascript" src="js/edges2.js"></script><?php
+        <script type="text/javascript" src="js/starbox.js?VERSION"></script>
+        <script type="text/javascript" src="js/pluit-carousel.js?VERSION"></script>
+        <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
+        <script type="text/javascript" src="js/l10n.js?VERSION"></script>
+        <script type="text/javascript" src="js/ajax.js?VERSION"></script>
+        <script type="text/javascript" src="js/edges2.js?VERSION"></script><?php
 
         if (!is_null($action)) {
-            ?><script type="text/javascript" src="js/sel_num.js"></script><?php
+            ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
 			if (!isset($_GET['action'])) $_GET['action']='';            
 			switch($_GET['action']) {
                 case 'gerer':
-                    ?><script type="text/javascript" src="js/menu_contextuel.js"></script><?php
+                    ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script><?php
                 break;
                 case 'bouquineries':
                     ?>
-                    <script type="text/javascript" src="js/bouquineries.js"></script>
+                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
                     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&libraries=places"></script>
                     <?php
                 break;
@@ -179,17 +179,17 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     if (!isset($_GET['onglet'])) {
                         $_GET['onglet']='magazines';
                     }
-                    ?><script type="text/javascript" src="js/stats.js"></script><?php
+                    ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
 
                     switch($_GET['onglet']) {
                         case 'possessions': ?>
-                            <script type="text/javascript" src="js/chargement.js"></script>
+                            <script type="text/javascript" src="js/chargement.js?VERSION"></script>
                         <?php
                         break;
                     }
                 break;
                 case 'agrandir':
-                    ?><script type="text/javascript" src="js/stats.js"></script><?php
+                    ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
             }
         }
         ?>
