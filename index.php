@@ -54,9 +54,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
         <title><?=$titre.' - DucksManager'?></title>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <!--[if IE]>
-              <style type="text/css" media="all">@import "fix-ie.css";</style>
-        <![endif]-->
         <link rel="stylesheet" type="text/css" href="scriptaculous.css">
         <link rel="stylesheet" type="text/css" href="autocompleter.css">
         <link rel="stylesheet" type="text/css" href="csstabs.css">
@@ -94,7 +91,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap-datepicker3.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
         <script type="text/javascript" src="prototype-1.7.3.js"></script>
         <script>

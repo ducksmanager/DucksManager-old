@@ -1,10 +1,4 @@
 <?php
-error_reporting(E_ALL);
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
-include_once('locales/lang.php');
-include_once('Util.class.php');
 include_once('Database.class.php');
 class Inducks {
 	static $noms_complets;
