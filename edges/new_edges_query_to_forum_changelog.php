@@ -6,7 +6,7 @@ include_once('../authentification.php');
 $requete_tranches_pretes_pour_publication = 'SELECT * FROM tranches_en_cours_modeles WHERE PretePourPublication=1';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
 
-$url_gen_edgecreator = ServeurDb::getUrlServeurVirtuel().':8002/DucksManager';
+$url_gen_edgecreator = ServeurDb::getUrlServeurVirtuel().':8002';
 
 $urls_images= [];
 $numeros= [];
