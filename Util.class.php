@@ -33,17 +33,16 @@ class Util {
 	}
 
 	static function start_log($nom) {
-
-			ob_start();
-			self::$nom_fic=$nom.'.txt';
+        ob_start();
+        self::$nom_fic=$nom.'.txt';
 	}
 
 	static function stop_log() {
-			$handle = fopen(self::$nom_fic, 'a');
-			$tab_debug=ob_get_contents();
-			ob_end_clean();
-			fwrite($handle, $tab_debug);
-			fclose($handle);
+        $handle = fopen(self::$nom_fic, 'a');
+        $tab_debug=ob_get_contents();
+        ob_end_clean();
+        fwrite($handle, $tab_debug);
+        fclose($handle);
 	}
 
 	static function getBrowser() {
@@ -177,6 +176,28 @@ class Util {
 		}
 		return $destination;
 	}
+
+    /**
+     * @return DateTime
+     */
+    static function get_derniere_visite_utilisateur() {
+        $lastVisitXPath = '//result/lastVisits/row[position()=2]/lastActionTimestamp';
+
+        $piwik = parse_ini_file('piwik.ini');
+
+        $xml_obj = @simplexml_load_file("https://".ServeurDb::getPiwikServer()->domain ."/piwik/?module=API&method=Live.getVisitorProfile&idSite=1&format=xml&segment=customVariableValue1=={$_SESSION['user']}&limitVisits=2&token_auth={$piwik['token_auth']}");
+
+        if ($xml_obj === false) {
+            return null;
+        }
+        else {
+            $lastVisit = $xml_obj->xpath($lastVisitXPath);
+            if ($lastVisit === false || count($lastVisit) === 0) {
+                return null;
+            }
+            return new DateTime(date('Y-m-d H:i:s', (integer) $lastVisit[0]));
+        }
+    }
 
     static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
 	    $parameters = [

@@ -800,24 +800,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             break;
 
                             case 'gerer':
-                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
-                                $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
-                                if ($nb_nouvelles_tranches > 0) {
-                                    ?><div class="confirmation">
-                                    <?php
-                                        echo $nb_nouvelles_tranches.' ';
-                                        if ($nb_nouvelles_tranches === 1) {
-                                            echo BIBLIOTHEQUE_NOUVELLE_TRANCHE;
-                                        }
-                                        else {
-                                            echo BIBLIOTHEQUE_NOUVELLES_TRANCHES;
-                                        }
-                                    ?>
-                                    </div><?php
-                                }
-                                $requete_maj_dernier_acces = 'UPDATE users SET DernierAcces=CURRENT_TIMESTAMP WHERE ID='.$id_user;
-                                DM_Core::$d->requete($requete_maj_dernier_acces);
-
                                 $l=DM_Core::$d->toList($id_user);
                                 if (isset($_GET['supprimer_magazine'])) {
                                     list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
@@ -1062,7 +1044,18 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <br/>
                                                   <?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
                                                 <br/>
-                                            <?php
+                                                <?php
+
+                                                $derniere_visite = Util::get_derniere_visite_utilisateur();
+                                                if (!is_null($derniere_visite)) {
+                                                    $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, $derniere_visite);
+                                                    $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
+                                                    if ($nb_nouvelles_tranches > 0) {
+                                                        ?><div class="alert alert-info">
+                                                            <?= $nb_nouvelles_tranches.' '.($nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE : BIBLIOTHEQUE_NOUVELLES_TRANCHES) ?>
+                                                        </div><?php
+                                                    }
+                                                }
                                             }
                                             ?><?=RECHERCHE_MAGAZINE_1?>&nbsp;
                                             <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
