@@ -68,7 +68,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             <!-- Piwik -->
             <script type="text/javascript">
                 var _paq = [];
-                _paq.push(["setCustomVariable", 1, "Utilisateur", "", "visit"]);
+                _paq.push(["setCustomVariable", 1, "Utilisateur", "<?=$_SESSION['user']?>", "visit"]);
                 _paq.push(['trackPageView']);
                 _paq.push(['enableLinkTracking']);
                 (function() {
