@@ -67,18 +67,20 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
-            var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=ServeurDb::getPiwikServer()->domain?>/piwik/");
-            document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-
-            try {
-                var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
-                piwikTracker.setCustomVariable(1, "Utilisateur", "<?=$_SESSION['user']?>", "visit");
-                piwikTracker.trackPageView();
-                piwikTracker.enableLinkTracking();
-            } catch( err ) {}
+                var _paq = [];
+                _paq.push(["setCustomVariable", 1, "Utilisateur", "", "visit"]);
+                _paq.push(['trackPageView']);
+                _paq.push(['enableLinkTracking']);
+                (function() {
+                    var u="https://dedibox2-bperel.homenet.org/piwik/";
+                    _paq.push(['setTrackerUrl', u+'piwik.php']);
+                    _paq.push(['setSiteId', '1']);
+                    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+                })();
             </script>
-            <!-- End Piwik Tag -->
-        <?php
+            <!-- End Piwik Code -->
+            <?php
         }?>
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
