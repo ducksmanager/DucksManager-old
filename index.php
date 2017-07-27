@@ -36,6 +36,17 @@ else {
 	}
 }
 
+$locales = [];
+foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
+    if(is_file('locales/'.$nom_langue.'.php')) {
+        $nouvelle_url = str_replace('&','&amp;',$_SERVER['QUERY_STRING']);
+        $nouvelle_url = preg_replace('#\??(?:&amp;)?lang=[a-z]+#u','',$nouvelle_url);
+        $nouvelle_url = '?'.(empty($nouvelle_url) ? '' : $nouvelle_url.'&amp;').'lang='.$nom_langue;
+
+        $locales[$nom_langue] = $nouvelle_url;
+    }
+}
+
 $action=isset($_GET['action'])?$_GET['action']:null;
 if (defined('TITRE_PAGE_'.strtoupper($action)))
     $titre=constant('TITRE_PAGE_'.strtoupper($action));
@@ -62,6 +73,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
         <link rel="stylesheet" href="css/protomenu.css" type="text/css" media="screen">
+        <?php
+        foreach($locales as $nom_langue=>$nouvelle_url) {
+            ?><link rel="alternate" hreflang="<?=$nom_langue?>" href="<?=$nouvelle_url?>" /><?php
+        }
+        ?>
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('ServeurDb.class.php');
         if (!isLocalHost()) {?>
@@ -211,9 +227,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             creer_id_session($_POST['user'],$_POST['pass']);
         }
     }
-    else {
-        
-    }
+
     ?>
     <body id="body" style="margin:0" onload="charger_evenements();<?php
     switch($action) {
@@ -1372,9 +1386,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <?php
                             break;
                         }
-                        fin_de_page();
+                        fin_de_page($locales);
 
-                        function fin_de_page() {
+                        function fin_de_page($locales) {
                             ?>
 					</div>
                 </td>
@@ -1383,10 +1397,10 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             <tr style="height:3px;background-color:black;"><td colspan="3"></td></tr>
             <tr style="height:20px">
                 <td align="center" style="vertical-align:middle;padding-left:4px;width: 242px;">
-                        <?php
-                        $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
-                        echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
-                        ?>
+                    <?php
+                    $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
+                    echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
+                    ?>
                 </td>
                 <td align="center">
                     <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
@@ -1400,18 +1414,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 </td>
                 <td style="vertical-align:top;" align="right">
                 	<?php
-					foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
-						if(is_file('locales/'.$nom_langue.'.php')) {
-							$nouvelle_url = str_replace('&','&amp;',$_SERVER['QUERY_STRING']);
-							$nouvelle_url = preg_replace('#\??(?:&amp;)?lang=[a-z]+#u','',$nouvelle_url);
-							$nouvelle_url = '?'.(empty($nouvelle_url) ? '' : $nouvelle_url.'&amp;')
-										   .'lang='.$nom_langue;
-							?>
-							<a class="drapeau_langue" href="<?=$nouvelle_url?>">
-								<img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
-							</a>
-							<?php
-                    	}
+					foreach($locales as $nom_langue=>$nouvelle_url) {
+                        ?>
+                        <a class="drapeau_langue" href="<?=$nouvelle_url?>">
+                            <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
+                        </a>
+                        <?php
                     }
                 	?>
                 </td>
