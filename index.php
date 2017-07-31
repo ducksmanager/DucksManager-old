@@ -88,8 +88,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 _paq.push(['trackPageView']);
                 _paq.push(['enableLinkTracking']);
                 (function() {
-                    var u="<?=ServeurDb::getPiwikServer()->domain?>";
-                    _paq.push(['setTrackerUrl', u+'piwik.php']);
+                    var u="https://<?=ServeurDb::getPiwikServer()->domain?>";
+                    _paq.push(['setTrackerUrl', u+'/piwik/piwik.php']);
                     _paq.push(['setSiteId', '1']);
                     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
                     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
