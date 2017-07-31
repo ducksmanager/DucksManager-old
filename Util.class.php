@@ -185,7 +185,7 @@ class Util {
 
         $piwik = parse_ini_file('piwik.ini');
 
-        $xml_obj = @simplexml_load_file("https://".ServeurDb::getPiwikServer()->domain ."/piwik/?module=API&method=Live.getVisitorProfile&idSite=1&format=xml&segment=customVariableValue1=={$_SESSION['user']}&limitVisits=2&token_auth={$piwik['token_auth']}");
+        $xml_obj = @simplexml_load_file("https://".ServeurDb::getPiwikServer()->ip ."/piwik/?module=API&method=Live.getVisitorProfile&idSite=1&format=xml&segment=customVariableValue1=={$_SESSION['user']}&limitVisits=2&token_auth={$piwik['token_auth']}");
 
         if ($xml_obj === false) {
             return null;
