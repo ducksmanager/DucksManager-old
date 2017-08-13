@@ -548,7 +548,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                             echo IE_INF_A_9_NON_SUPPORTE;
                                         } else {
                                             if (!$est_partage_bibliotheque) {
-                                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, false);
+                                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user);
                                                 if (count($resultat_tranches_collection_ajoutees) > 0) {
                                                     $publication_codes = [];
                                                     foreach ($resultat_tranches_collection_ajoutees as $tranche) {
