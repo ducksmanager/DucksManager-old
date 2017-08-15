@@ -672,6 +672,7 @@ class Database {
             return null;
         }
 
+    	// TODO Use DM server service
         $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
                                           WHERE ID_Utilisateur = '.mysqli_real_escape_string(Database::$handle, $id_user).' 
                                           AND Cle=\''.mysqli_real_escape_string(Database::$handle, $cle).'\'';

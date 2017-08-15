@@ -411,6 +411,7 @@ class Affichage {
 	}
 
     static function partager_page() {
+    	// TODO Use DM server service
         $id_user=$_SESSION['id_user'];
         $cle = Util::get_random_string();
         $requete_ajout_acces = 'INSERT INTO bibliotheque_acces_externes(ID_Utilisateur, Cle) VALUES ('.$id_user.', \''.$cle.'\')';
