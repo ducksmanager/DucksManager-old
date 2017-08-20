@@ -8,10 +8,10 @@ require_once('../Util.class.php');
 if (isset($_GET['user'])) {
     $nom_fichier_data='edges/_tmp/'.$_GET['user'].'.json';
     $nom_image='edges/_tmp/'.$_GET['user'].'.png';
-    $contenu=Util::get_page('http://www.ducksmanager.net/'.$nom_fichier_data);
+    $contenu=Util::get_page('https://www.ducksmanager.net/'.$nom_fichier_data);
     list($texture1,$texture2,$largeur,$pos)=explode("\n",$contenu);
-    $image_texture1=use_or_fetch('http://www.ducksmanager.net/edges/textures/'.$texture1.'.jpg');
-    $image_texture2=use_or_fetch('http://www.ducksmanager.net/edges/textures/'.$texture2.'.jpg');
+    $image_texture1=use_or_fetch('https://www.ducksmanager.net/edges/textures/'.$texture1.'.jpg');
+    $image_texture2=use_or_fetch('https://www.ducksmanager.net/edges/textures/'.$texture2.'.jpg');
     $pos=json_decode($pos);
 
     foreach($pos as $type_element=>$pos_elements) {
@@ -46,7 +46,7 @@ if (isset($_GET['user'])) {
     imagedestroy($image_texture2);
 
     foreach($pos->tranches as $src_tranche=>$pos_tranches) {
-        $src_tranche='http://www.ducksmanager.net/'.str_replace('_','=',$src_tranche);
+        $src_tranche='https://www.ducksmanager.net/'.str_replace('_','=',$src_tranche);
         $image_tranche= use_or_fetch($src_tranche);
         foreach($pos_tranches as $i=>$pos_tranche) {
             if ($debug) echo '<br />'.$i.' : '.($pos_courante[0]-$pos_sup_gauche[0]).','.($pos_courante[1]-$pos_sup_gauche[1]);

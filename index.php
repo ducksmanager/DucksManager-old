@@ -1,4 +1,14 @@
-<?php header('Content-Type: text/html; charset=utf-8');
+<?php
+require_once('Util.class.php');
+
+if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off')){
+    $redirect = 'https://ducksmanager.net' . $_SERVER['REQUEST_URI'];
+    header('HTTP/1.1 301 Moved Permanently');
+    header('Location: ' . $redirect);
+    exit();
+}
+
+header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
 date_default_timezone_set('Europe/Paris');
@@ -9,7 +19,6 @@ require_once('Liste.class.php');
 require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
-require_once('Util.class.php');
 if (Util::isLocalHost() || isset($_GET['dbg'])) {
 	error_reporting(E_ALL);
 }
@@ -1244,7 +1253,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                             $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
                                             $entete .= "To: admin@ducksmanager.net\r\n";
                                             $entete .= "From: admin@ducksmanager.net\r\n";
-                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="http://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
+                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="https://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
                                             ?>
                                             <span style="color: red">
                                                 <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>
