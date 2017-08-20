@@ -190,7 +190,7 @@ class Database {
 		if (count($resultat_ventes_utilisateurs) > 0) {
 			if (empty($resultat_email[0]['Email'])) {
 				?><br />
-				<span class="warning">
+				<span class="alert alert-warning">
 					<?=ATTENTION_EMAIL_VIDE_ACHAT?>
                   	<a target="_blank" href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
             	</span><?php
@@ -230,7 +230,7 @@ class Database {
 		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
 			if ($message_deja_envoye) {?>
-				<span class="confirmation">
+				<span class="alert alert-success">
 					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
 				</span><?php
 			}
@@ -238,7 +238,7 @@ class Database {
 				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
 				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
 				if (count($resultat_emails) != 2) {
-					?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
+					?><span class="alert alert-danger"><?=ENVOI_EMAIL_ECHEC?></span><?php
 				}
 				else {
 					foreach($resultat_emails as $resultat) {
@@ -259,12 +259,12 @@ class Database {
                         .'<br /><br /><br />'.EMAIL_ACHAT_VENTE_3
                         .'<br /><br />'.EMAIL_SIGNATURE;
 					if (mail($email_vendeur, EMAIL_ACHAT_VENTE_TITRE, $contenu_mail,$entete)) {
-						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
+						?><span class="alert alert-success"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);
 					}
 					else {
-						?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
+						?><span class="alert alert-danger"><?=ENVOI_EMAIL_ECHEC?></span><?php
 					}
 				}
 			}
@@ -272,7 +272,7 @@ class Database {
 		else {
 			?><br /><?php
 			if ($message_deja_envoye) {?>
-				<span class="confirmation">
+				<span class="alert alert-success">
 					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
 				</span><?php
 			}
@@ -400,14 +400,14 @@ class Database {
             WHERE DateStat = '0000-00-00' AND ID_User=$id_user";
 		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete_select($requete_nb_auteurs_surveilles);
 		if (count($resultat_nb_auteurs_surveilles) > 0 && $resultat_nb_auteurs_surveilles[0]['cpt'] >= 5) {
-			?><div class="error"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
+			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
             if (!is_null(Inducks::get_auteur($idAuteur))) {
                 $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$idAuteur'";
                 $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
                 if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
-                    ?><div class="error"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
+                    ?><div class="alert alert-danger"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
                 else {
                     $requete_ajout_auteur="

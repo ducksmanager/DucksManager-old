@@ -263,29 +263,6 @@ a.important:HOVER {
     font-weight: bold;
 }
 
-.error, .warning, .confirmation {
-	margin-right: 10px;
-	margin-bottom: 23px;
-	font-weight: bold;
-	border-width: 1px;
-	border-style: solid;
-}
-
-.error {
-	color: red;
-	border-color: red;
-}
-
-.warning {
-	color: orange;
-	border-color: orange;
-}
-
-.confirmation {
-	color: green;
-	border-color: green;
-}
-
 .preview {
     float:left;
     margin-top: -2px;

@@ -364,7 +364,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         <?php
                         echo $texte_debut;
                         if (isset($_SESSION['user']) && $action !== 'logout' && !Inducks::connexion_ok()) {
-							?><div class="error"><?=COA_KO_1?><br /><?=COA_KO_2?></div><?php
+							?><div class="alert alert-danger"><?=COA_KO_1?><br /><?=COA_KO_2?></div><?php
 							fin_de_page($locales);
 						}
                         foreach($menus as $i=>$menu) {
@@ -958,7 +958,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         break;
                                     case 'ajout_suppr':
                                     	if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
-                                    		?><div class="warning">
+                                    		?><div class="alert alert-warning">
                                     			<?=ATTENTION_VENTE_SANS_EMAIL?>
                                     			<a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
                                     		</div><?php
