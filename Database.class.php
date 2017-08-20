@@ -643,11 +643,18 @@ class Database {
 
     /**
      * @param $id_user
-     * @param DateTime $depuis
+     * @param boolean $depuis_derniere_visite
      * @return array
     */
-    public function get_tranches_collection_ajoutees($id_user, $depuis = null)
+    public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite = false)
     {
+        $derniere_visite = null;
+        if ($depuis_derniere_visite) {
+            $derniere_visite = Util::get_derniere_visite_utilisateur();
+            if (is_null($derniere_visite)) {
+                return [];
+            }
+        }
         $requete_tranches_collection_ajoutees =
             "SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
              FROM tranches_pretes tp, numeros n
@@ -655,9 +662,9 @@ class Database {
              AND CONCAT(publicationcode,'/',issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
              AND DATEDIFF(NOW(), tp.dateajout) < 90";
 
-        if (!is_null($depuis)) {
+        if (!is_null($derniere_visite)) {
             $requete_tranches_collection_ajoutees.="
-                AND tp.dateajout>'{$depuis->format('Y-m-d H:i:s')}'";
+                AND tp.dateajout>'{$derniere_visite->format('Y-m-d H:i:s')}'";
         }
         $requete_tranches_collection_ajoutees.="
             ORDER BY DiffSecondes ASC

@@ -388,7 +388,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                     }
                                 }
                             }
-                        }             
+                        }
+
                         switch($action) {
                             case 'inducks':
                                 if (isset($_POST['rawData'])) {
@@ -1068,17 +1069,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                   <?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
                                                 <br/>
                                                 <?php
-
-                                                $derniere_visite = Util::get_derniere_visite_utilisateur();
-                                                if (!is_null($derniere_visite)) {
-                                                    $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, $derniere_visite);
-                                                    $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
-                                                    if ($nb_nouvelles_tranches > 0) {
-                                                        ?><div class="alert alert-info">
-                                                            <?= $nb_nouvelles_tranches.' '.($nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE : BIBLIOTHEQUE_NOUVELLES_TRANCHES) ?>
-                                                        </div><?php
-                                                    }
-                                                }
+                                                Affichage::afficher_dernieres_tranches_publiees();
                                             }
                                             ?><?=RECHERCHE_MAGAZINE_1?>&nbsp;
                                             <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>

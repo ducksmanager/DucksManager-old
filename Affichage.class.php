@@ -299,14 +299,14 @@ class Affichage {
 
 							?><?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
 							<a href="javascript:void(0)" class="has_tooltip edge_tooltip underlined">
-								<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);?>
-								<?php
-								$nb_autres_numeros = count($evenement->numeros) - 1;
-								if ($nb_autres_numeros > 0) {
-									?>
-										<?=ET?> <?=($nb_autres_numeros)?>
-										<?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
-								<?php } ?>
+                                <?php
+                                $nb_autres_numeros = count($evenement->numeros) - 1;
+                                echo self::get_texte_numero_multiple(
+                                        $numero->Pays,
+                                        $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                        $numero->Numero,
+                                        $nb_autres_numeros
+                                );?>
 							</a>
 							<span class="cache tooltip_content">
 								<?php
@@ -316,7 +316,11 @@ class Affichage {
 								}
 								echo Edge::getEtagereHTML(true);
 								foreach($evenement->numeros as $numero) {
-									Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);
+									Affichage::afficher_texte_numero(
+									        $numero->Pays,
+                                            $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                            $numero->Numero
+                                    );
 									?><br /><?php
 								}
 								?>
@@ -331,6 +335,32 @@ class Affichage {
 			}
 		}
 	}
+
+    static function afficher_dernieres_tranches_publiees() {
+        $id_user = isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
+
+        $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
+        $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
+
+        if ($nb_nouvelles_tranches > 0) {
+            ?>
+            <div class="alert alert-info">
+            <?php
+            $premiere_tranche = $resultat_tranches_collection_ajoutees[0];
+            $magazines_complets = Inducks::get_noms_complets_magazines([$premiere_tranche['publicationcode']]);
+            echo sprintf(
+                $nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE : BIBLIOTHEQUE_NOUVELLES_TRANCHES,
+                $nb_nouvelles_tranches,
+                Affichage::get_texte_numero_multiple(
+                    explode('/', $premiere_tranche['publicationcode'])[0],
+                    $magazines_complets[$premiere_tranche['publicationcode']],
+                    $premiere_tranche['issuenumber'],
+                    $nb_nouvelles_tranches - 1
+                )
+            ); ?>
+            </div><?php
+        }
+    }
 
     static function afficher_temps_passe($diff_secondes) {
         ?><span class="date">&nbsp;<?=NEWS_IL_Y_A_PREFIXE?>
@@ -364,6 +394,17 @@ class Affichage {
             <img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine_parts[0]?>
         </span> <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
 	}
+
+	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros) {
+        ob_start();
+        self::afficher_texte_numero($pays,$magazine_complet,$numero);
+        if ($nb_autres_numeros > 0) {
+            ?>
+            <?=ET?> <?=($nb_autres_numeros)?>
+            <?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?><?php
+        }
+        return ob_get_clean();
+    }
 
 	static function afficher_texte_utilisateur($infos_utilisateur) {
         $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
