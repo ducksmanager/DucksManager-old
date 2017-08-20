@@ -435,10 +435,6 @@ define('SUPPRIMER_NUMEROS_NON_INDUCKS','Remove from DucksManager the issues whic
 define('SUR','of');
 define('TAILLE_TRANCHES','Size of the edges');
 define('TAILLE_REELLE','Real size');
-define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_1','The author stats are back!');
-define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2','Enter the names of your favorite Disney authors on the');
-define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3','favorite authors page');
-define('TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4','and discover what issues you should buy in order to have all their stories.');
 define('TERMINE','Done.');
 define('TEXTE_FORUMDESFANS','A bug ? A suggestion to propose ? Visit the ');
 define('TEXTURE', 'Texture');

@@ -1054,15 +1054,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 }
 											}
 											else {
-											    if (date('Y-m-d') < '2017-03-15') {
-											        ?><br />
-                                                    <div class="alert alert-info">
-                                                        <strong><?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_1?></strong>
-                                                        <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2?>
-                                                        <b><a target="_blank" href="?action=stats&onglet=auteurs"><?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3?></a></b>
-                                                        <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4?>
-                                                    </div><?php
-                                                }
                                                 ?><?= POSSESSION_MAGAZINES_INTRO ?>
                                                 <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
                                                 <br/>
