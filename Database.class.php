@@ -225,7 +225,8 @@ class Database {
 	
 	function bloc_envoi_message_achat_vente($username) {
 		date_default_timezone_set('Europe/Paris');
-		
+
+		// TODO Use DM server service
 		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
 		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
@@ -260,6 +261,7 @@ class Database {
                         .'<br /><br />'.EMAIL_SIGNATURE;
 					if (mail($email_vendeur, EMAIL_ACHAT_VENTE_TITRE, $contenu_mail,$entete)) {
 						?><span class="alert alert-success"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
+						// TODO Use DM server service
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);
 					}
