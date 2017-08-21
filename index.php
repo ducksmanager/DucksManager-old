@@ -660,6 +660,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         DM_Core::$d->maintenance_ordre_magazines($id_user);?>
                                         <div id="liste_magazines">
                                             <?php
+
+                                            // TODO Use DM server service
                                             $requete_ordre_magazines = 'SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user . ' ORDER BY Ordre';
                                             $resultat_ordre_magazines = DM_Core::$d->requete_select($requete_ordre_magazines);
                                             $publication_codes = [];

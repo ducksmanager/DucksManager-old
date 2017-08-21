@@ -236,6 +236,8 @@ class Edge {
         $total_numeros=0;
         $total_numeros_visibles=0;
         DM_Core::$d->maintenance_ordre_magazines($id_user);
+
+        // TODO Use DM server service
         $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
         $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
         $publication_codes= [];
