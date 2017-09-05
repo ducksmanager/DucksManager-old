@@ -1,0 +1,46 @@
+.update {
+	position: absolute;
+	width: 250px;
+	background-color: white;
+	border: 1px solid #888;
+	margin: 0;
+	padding: 0;
+	color:black;
+}
+
+ul.contacts {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+}
+
+ul.contacts li.selected {
+	background-color: #ffb;
+	cursor: pointer;
+}
+
+li.contact {
+	list-style-type: none;
+	display: block;
+	margin: 0;
+	padding: 2px;
+	height: 32px;
+}
+
+li.contact div.image {
+	float: left;
+	width: 32px;
+	height: 32px;
+	margin-right: 8px;
+}
+
+li.contact div.nom {
+	font-weight: bold;
+	font-size: 12px;
+	line-height: 1.2em;
+}
+
+.abbrev {
+	display:none;
+}

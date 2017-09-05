@@ -9,6 +9,7 @@ $database=isset($_GET['coa']) ? 'coa' : 'db301759616';
 include_once ('auth.php');
 
 $version=isset($_GET['version']) ? $_GET['version'] : '1.0';
+$language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ? 'fr' : 'en') : 'en';
 
 
 if (isset($_GET['storycode'])) {
@@ -59,7 +60,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 			$liste_pays= [];
 			$requete_liste_pays='SELECT countrycode, countryname '
 							   .'FROM inducks_countryname '
-							   .'WHERE languagecode=\'fr\' and countryname <>\'fake\' '
+							   .'WHERE languagecode=\''.$language.'\' and countryname <>\'fake\' '
 							   .'ORDER BY countryname';
 			if (isset($_GET['debug']))
 				echo $requete_liste_pays;
@@ -193,7 +194,7 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 								$requete_nom_complet_magazine='SELECT inducks_countryname.countryname as countryname, inducks_publication.title as title '
 															 .'FROM inducks_publication '
 															 .'INNER JOIN inducks_countryname ON inducks_publication.countrycode = inducks_countryname.countrycode '
-															 .'WHERE inducks_countryname.languagecode=\'fr\' '
+															 .'WHERE inducks_countryname.languagecode=\''.$language.'\' '
 															 .'  AND inducks_publication.publicationcode=\''.$nom_abrege.'\'';
 								$resultats_nom_complet_magazine=Database::$handle->query($requete_nom_complet_magazine);
 								while($resultat_nom_magazine = $resultats_nom_complet_magazine->fetch_array(MYSQLI_ASSOC)) {

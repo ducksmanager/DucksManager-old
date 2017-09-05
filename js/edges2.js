@@ -15,25 +15,24 @@ var hauteur_etage;
 var nb_etageres;
 var nb_etageres_terminees;
 var bulle=null;
-var numero_bulle=null;
 var extraits;
 var extrait_courant;
 var chargement_extrait=false;
-var temps_dernier_mouseover=0;
 
 function ouvrir_tranche() {
     if (action_en_cours || extrait_courant>0)
         return;
+    jQuery('.popover').popover('destroy');
+
     extraits=[];
     extrait_courant=-1;
     ouverture_couverture=true;
-    if (couverture_ouverte && tranche_bib != tranche_en_cours) {
+    if (couverture_ouverte && tranche_bib !== tranche_en_cours) {
         ouvrirApres=true;
         fermer();
         return;
     }
-    if ($('infobulle'))
-        $('infobulle').remove();
+    $('infobulle') && $('infobulle').remove();
     bulle=null;
     action_en_cours=true;
     var infos=getInfosNumero(tranche_bib.id);
@@ -60,8 +59,7 @@ function ouvrir_tranche() {
         method: 'post',
         parameters:'get_cover=true&debug='+debug+'&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
         onSuccess:function(transport) {
-            if ($('infobulle'))
-                $('infobulle').remove();
+            $('infobulle') && $('infobulle').remove();
             if (transport.headerJSON==null)
                 return;
             couverture_ouverte=true;
@@ -95,16 +93,14 @@ function ouvrir_tranche() {
                     duration: 1,
                     afterFinish:function() {
                         ouverture_couverture=false;
-                        if ($('animation'))
-                            $('animation').remove();
+                        $('animation') && $('animation').remove();
                         
                         if (extraits.length>0 && !$('lien_apercus')) {
                             creer_div_apercus();
                         }
                     }
                 });
-                if ($('animation'))
-                    $('animation').remove();
+                $('animation') && $('animation').remove();
                 action_en_cours=false;
             });
         }
@@ -151,7 +147,7 @@ function creer_div_apercus() {
             back_to_cover();
         }
         else {
-            if (extraits[extrait_courant].page % 2 == 1) { // Page impaire
+            if (extraits[extrait_courant].page % 2 === 1) { // Page impaire
                 maj_page('page_gauche_arriere','page_invisible');
                 $('page_gauche_arriere')
                     .setStyle({'width':'0px'});
@@ -208,7 +204,7 @@ function creer_div_apercus() {
 }
 
 function getLargeur() {
-    return $('page_droite_avant').getStyle('width')=='0px'
+    return $('page_droite_avant').getStyle('width')==='0px'
             ?$('page_droite_arriere').getStyle('width')
             :$('page_droite_avant').getStyle('width');
 }
@@ -250,8 +246,7 @@ function maj_div_apercus() {
 }
 
 function back_to_cover() {
-    if ($('page_gauche_arriere'))
-        $('page_gauche_arriere').remove();
+    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
     $('page_suivante').remove();            
 
     maj_page('page_droite_arriere',couverture.src);
@@ -260,12 +255,10 @@ function back_to_cover() {
     intervertir_page('droite');
     new Effect.BlindLeft('page_gauche_avant', {
         afterFinish:function() {
-            if ($('page_gauche_avant'))
-                $('page_gauche_avant').remove();
+            $('page_gauche_avant') && $('page_gauche_avant').remove();
             new Effect.Morph('page_droite_avant_im',{style:'width:'+getLargeur(),
                 afterFinish:function() {
-                    if ($('page_droite_arriere'))
-                        $('page_droite_arriere').remove();
+                    $('page_droite_arriere') && $('page_droite_arriere').remove();
                     $('page_droite_avant').observe('click', fermer_tranche);
                     extrait_courant=-1;
                     creer_div_apercus();
@@ -280,14 +273,10 @@ function fermer() {
         return;
     action_en_cours=true;
     var largeur=getLargeur();
-    if ($('page_suivante'))
-        $('page_suivante').remove();
-    if ($('page_gauche_avant'))
-        $('page_gauche_avant').remove();
-    if ($('page_gauche_arriere'))
-        $('page_gauche_arriere').remove();
-    if ($('page_droite_arriere'))
-        $('page_droite_arriere').remove();
+    $('page_suivante') && $('page_suivante').remove();
+    $('page_gauche_avant') && $('page_gauche_avant').remove();
+    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
+    $('page_droite_arriere') && $('page_droite_arriere').remove();
     $('page_droite_avant_im').setStyle({'width':largeur});
     new Effect.Parallel([
         new Effect.BlindLeft($('page_droite_avant'), {sync:true}),
@@ -306,7 +295,7 @@ function fermer() {
                     $$('.lien_apercus').invoke('remove');
                     action_en_cours=false;
                     couverture_ouverte=false;
-                    if (ouvrirApres==true)
+                    if (ouvrirApres)
                         ouvrir_tranche();
                 }
             });
@@ -320,6 +309,10 @@ function charger_bibliotheque() {
 
 	var conteneur=$('conteneur_bibliotheque');
 	var section=$('bibliotheque');
+    section.observe('mousedown', function() {
+        jQuery('.popover').popover('destroy');
+    });
+
 	largeur_section=section.clientWidth;
 	hauteur_section=section.clientHeight;
 	$('pourcentage_collection_visible').setStyle({'display':'none'});
@@ -555,6 +548,8 @@ function init_ordre_magazines() {
     });
 }
 
+var bulle_recente = null;
+
 function init_observers_tranches() {
     $$('.tranche').invoke(
         'observe',
@@ -570,46 +565,70 @@ function init_observers_tranches() {
         function(event) {
             if (action_en_cours ||couverture_ouverte)
                 return;
-            ouvrirInfoBulle(Event.element(event));
+            var tranche = Event.element(event);
+
+            bulle_recente = tranche.id;
+            ouvrirInfoBulleEffectif(tranche);
         }
     );
+
+    jQuery('body').on('hidden.bs.tooltip', function() {
+        var tooltips = jQuery('.tooltip').not('.in');
+        if (tooltips) {
+            tooltips.remove();
+        }
+    });
 }
 
-function ouvrirInfoBulle(tranche) {
-    var timestamp=new Date().getTime();
-    temps_dernier_mouseover=timestamp;
-    setTimeout(function() {ouvrirInfoBulleEffectif(tranche,timestamp)},500);
-}
+var timeout_before_popover_hide= 500;
+var popover_id_mouseout_timeout = null;
 
-function ouvrirInfoBulleEffectif(tranche,timestamp) {
-    if (temps_dernier_mouseover != timestamp)
-        return;
-    var nouveau_numero_bulle=getInfosNumero(tranche.id);
-    if (numerosIdentiques(nouveau_numero_bulle, numero_bulle))
-        return;
-    numero_bulle=nouveau_numero_bulle;
-    var pos_left=tranche.offsetLeft+300 >= $('body').offsetWidth ? $('body').offsetWidth - 310 : tranche.offsetLeft;
-    if (bulle == null) {
-        bulle=new Element('div',{'id':'infobulle'})
-            .addClassName('bulle')
-            .setStyle({'top':(tranche.offsetTop-50)+'px', 'left':pos_left+'px'});
-        $('body').insert(bulle);
-    }
-    else {
-        $(bulle).setStyle({'top':(tranche.offsetTop-50)+'px', 'left':pos_left+'px'})
-                .update();
-    }
+function ouvrirInfoBulleEffectif(tranche) {
+    jQuery('.popover').popover('destroy');
+    var numero_bulle=getInfosNumero(tranche.id);
+
     new Ajax.Request('Edge.class.php', {
         method: 'post',
         parameters:'get_visible=true&est_partage_bibliotheque='+est_partage_bibliotheque+'&debug='+debug
 				 +'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
-            var parametres=[];
-            parametres['pays']=transport.request.parameters.pays;
-            parametres['magazine']=transport.request.parameters.magazine;
-            parametres['numero']=transport.request.parameters.numero;
-            if ($(bulle) && numerosIdentiques(parametres,numero_bulle))
-                $(bulle).update(transport.responseText);
+            if (bulle_recente === tranche.id) {
+                var data = transport.responseJSON;
+
+                jQuery(tranche)
+                    .popover({
+                        container: 'body',
+                        content: data.content,
+                        title: data.title,
+                        trigger: 'hover',
+                        placement: 'top',
+                        position: 'in right',
+                        animation: false,
+                        html: true
+                    })
+                    .popover('show')
+                    .on('hide.bs.popover', function(e) {
+                        if (popover_id_mouseout_timeout !== tranche.id) {
+                            popover_id_mouseout_timeout = tranche.id;
+
+                            setTimeout(function() {
+                                if (popover_id_mouseout_timeout) {
+                                    popover_id_mouseout_timeout = null;
+                                    jQuery(tranche).unbind('hide.bs.popover').popover('hide');
+                                }
+                            }, timeout_before_popover_hide);
+
+                            e.preventDefault();
+                        }
+                    });
+                jQuery('.popover')
+                    .mouseenter(function() {
+                        popover_id_mouseout_timeout = null;
+                    })
+                    .mouseleave(function() {
+                        jQuery(tranche).unbind('hide.bs.popover').popover('hide');
+                    });
+            }
         }
     });
 
@@ -623,14 +642,6 @@ function getInfosNumero (texte) {
     infos['magazine']=magazine_numero[0].toLowerCase();
     infos['numero']=magazine_numero[1];
     return infos;
-}
-
-function numerosIdentiques(numero1, numero2) {
-    if (numero1 == null | numero2 == null)
-        return false;
-    return numero1['pays'] == numero2['pays']
-        && numero1['magazine'] == numero2['magazine']
-        && numero1['numero'] == numero2['numero'];
 }
 
 function getScreenCenterY() {

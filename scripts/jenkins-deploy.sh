@@ -6,6 +6,9 @@ wget --auth-no-challenge --http-user=$API_USER --http-password=$API_PASS "$JENKI
 
 xpath -q -e "//changeSet/item/path/file[not(../editType/text() = 'delete')]/text()" changeset.xml | uniq > changeset.txt
 
+echo "index.php" >> changeset.txt
+echo "bouquineries.php" >> changeset.txt
+
 mkdir files
 cd files
 
@@ -14,5 +17,6 @@ mkdir -p $BASE
 
 wget -xi ../changeset.txt --base=https://$BASE
 
+sed -i "s/VERSION/`git rev-parse HEAD`/g" $BASE/index.php $BASE/bouquineries.php
 
 ls -la $BASE

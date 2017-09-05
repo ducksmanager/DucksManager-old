@@ -1,6 +1,16 @@
-<?php header('Content-Type: text/html; charset=utf-8');
+<?php
+require_once('Util.class.php');
+
+if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off')){
+    $redirect = 'https://ducksmanager.net' . $_SERVER['REQUEST_URI'];
+    header('HTTP/1.1 301 Moved Permanently');
+    header('Location: ' . $redirect);
+    exit();
+}
+
+header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le pass�
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
 date_default_timezone_set('Europe/Paris');
 require_once('_priv/Admin.priv.class.php');
 require_once('travaux.php');
@@ -9,7 +19,6 @@ require_once('Liste.class.php');
 require_once('Menu.class.php');
 require_once('Affichage.class.php');
 require_once('Inducks.class.php');
-require_once('Util.class.php');
 if (Util::isLocalHost() || isset($_GET['dbg'])) {
 	error_reporting(E_ALL);
 }
@@ -29,12 +38,22 @@ else {
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
-            $_SESSION['id_user']=$_SESSION['id_user'];
 
 			setcookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
 			setcookie('pass',$_COOKIE['pass'],time()+3600);
 		}
 	}
+}
+
+$locales = [];
+foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
+    if(is_file('locales/'.$nom_langue.'.php')) {
+        $nouvelle_url = str_replace('&','&amp;',$_SERVER['QUERY_STRING']);
+        $nouvelle_url = preg_replace('#\??(?:&amp;)?lang=[a-z]+#u','',$nouvelle_url);
+        $nouvelle_url = '?'.(empty($nouvelle_url) ? '' : $nouvelle_url.'&amp;').'lang='.$nom_langue;
+
+        $locales[$nom_langue] = $nouvelle_url;
+    }
 }
 
 $action=isset($_GET['action'])?$_GET['action']:null;
@@ -53,39 +72,41 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <meta http-equiv="Expires" content="0" />
         <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
         <title><?=$titre.' - DucksManager'?></title>
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <!--[if IE]>
-              <style type="text/css" media="all">@import "fix-ie.css";</style>
-        <![endif]-->
-        <link rel="stylesheet" type="text/css" href="scriptaculous.css">
-        <link rel="stylesheet" type="text/css" href="autocompleter.css">
-        <link rel="stylesheet" type="text/css" href="csstabs.css">
-        <link rel="stylesheet" type="text/css" href="bibliotheque.css">
-        <link rel="stylesheet" type="text/css" href="pluit-carousel.css">
-        <link rel="stylesheet" type="text/css" href="pluit-carousel-skins.css">
-        <link rel="stylesheet" type="text/css" href="css/opentip.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/scriptaculous.css">
+        <link rel="stylesheet" type="text/css" href="css/autocompleter.css">
+        <link rel="stylesheet" type="text/css" href="css/csstabs.css">
+        <link rel="stylesheet" type="text/css" href="css/bibliotheque.css">
+        <link rel="stylesheet" type="text/css" href="css/pluit-carousel.css">
+        <link rel="stylesheet" type="text/css" href="css/pluit-carousel-skins.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
         <link rel="stylesheet" type="text/css" href="css/sticky-footer.css" />
-        <link rel="stylesheet" href="protomenu.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="css/protomenu.css" type="text/css" media="screen">
+        <?php
+        foreach($locales as $nom_langue=>$nouvelle_url) {
+            ?><link rel="alternate" hreflang="<?=$nom_langue?>" href="<?=$nouvelle_url?>" /><?php
+        }
+        ?>
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once('ServeurDb.class.php');
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
-            var pkBaseURL = ((("https:" == document.location.protocol) ? "https://" : "http://")+"<?=ServeurDb::getPiwikServer()->domain?>/piwik/");
-            document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+                var _paq = [];
+                _paq.push(["setCustomVariable", 1, "Utilisateur", "<?=$_SESSION['user']?>", "visit"]);
+                _paq.push(['trackPageView']);
+                _paq.push(['enableLinkTracking']);
+                (function() {
+                    var u="https://<?=ServeurDb::getPiwikServer()->domain?>/piwik/";
+                    _paq.push(['setTrackerUrl', u+'piwik.php']);
+                    _paq.push(['setSiteId', '1']);
+                    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+                })();
             </script>
-            <script type="text/javascript">
-            try {
-            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
-            piwikTracker.setCustomVariable(1, "Utilisateur", "<?=$_SESSION['user']?>", "visit"); 
-            piwikTracker.trackPageView();
-            piwikTracker.enableLinkTracking();
-            } catch( err ) {}
-            </script>
-            <!-- End Piwik Tag -->
-        <?php
+            <!-- End Piwik Code -->
+            <?php
         }?>
         <script type="text/javascript">
             var debug=<?=isset($_GET['debug']) ? 'true':'false'?>;
@@ -93,12 +114,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         </script>
 
         <!-- Bootstrap -->
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap-datepicker3.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
-        <script type="text/javascript" src="prototype-1.7.3.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.min.js"></script>
         <script>
             (function() {
                 var isBootstrapEvent = false;
@@ -128,30 +149,33 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             })();
         </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="js/bootstrap-datepicker.min.js"></script>
-        <script src="js/bootstrap-datepicker.fr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.fr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.en-GB.min.js"></script>
 
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
-        <script type="text/javascript" src="js/scriptaculous/src/scriptaculous.js"></script>
-        <script type='text/javascript' src='js/starbox.js'></script>
-        <script type="text/javascript" src="js/pluit-carousel.js"></script>
-        <script type="text/javascript" src="js/my_scriptaculous.js"></script>
-        <script type="text/javascript" src="js/l10n.js"></script>
-        <script type="text/javascript" src="js/ajax.js"></script>
-        <script type="text/javascript" src="js/opentip/opentip-prototype-excanvas.min.js"></script>
-        <script type="text/javascript" src="js/moment.min.js"></script>
-        <script type="text/javascript" src="js/edges2.js"></script><?php
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/effects.min.js"></script>
+        <script type="text/javascript" src="js/scriptaculous/src/effects2.js?VERSION"></script>
+
+        <script type="text/javascript" src="js/starbox.js?VERSION"></script>
+        <script type="text/javascript" src="js/pluit-carousel.js?VERSION"></script>
+        <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
+        <script type="text/javascript" src="js/l10n.js?VERSION"></script>
+        <script type="text/javascript" src="js/ajax.js?VERSION"></script>
+        <script type="text/javascript" src="js/edges2.js?VERSION"></script><?php
 
         if (!is_null($action)) {
-            ?><script type="text/javascript" src="js/sel_num.js"></script><?php
+            ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
 			if (!isset($_GET['action'])) $_GET['action']='';            
 			switch($_GET['action']) {
                 case 'gerer':
-                    ?><script type="text/javascript" src="js/menu_contextuel.js"></script><?php
+                    ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script><?php
                 break;
                 case 'bouquineries':
                     ?>
-                    <script type="text/javascript" src="js/bouquineries.js"></script>
+                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
                     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&libraries=places"></script>
                     <?php
                 break;
@@ -183,19 +207,18 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     if (!isset($_GET['onglet'])) {
                         $_GET['onglet']='magazines';
                     }
-                    ?><script type="text/javascript" src="js/stats.js"></script><?php
+                    ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
 
                     switch($_GET['onglet']) {
                         case 'possessions': ?>
-                            <script type="text/javascript" src="js/chargement.js"></script>
+                            <script type="text/javascript" src="js/chargement.js?VERSION"></script>
                         <?php
                         break;
                     }
                 break;
                 case 'agrandir':
-                    ?><script type="text/javascript" src="js/stats.js"></script><?php
+                    ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
             }
-            ?><script src="js/divers.js"></script><?php
         }
         ?>
     </head>
@@ -214,9 +237,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             creer_id_session($_POST['user'],$_POST['pass']);
         }
     }
-    else {
-        
-    }
+
     ?>
     <body id="body" onload="charger_evenements();<?php
     switch($action) {
@@ -348,12 +369,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     }
                     ?>
                     <div id="contenu">
-
                         <?php
                         echo $texte_debut;
                         if (isset($_SESSION['user']) && $action !== 'logout' && !Inducks::connexion_ok()) {
-							?><div class="error"><?=COA_KO_1?><br /><?=COA_KO_2?></div><?php
-							fin_de_page();
+							?><div class="alert alert-danger"><?=COA_KO_1?><br /><?=COA_KO_2?></div><?php
+							fin_de_page($locales);
 						}
                         foreach($menus as $i=>$menu) {
                         	if (! isset($menu->items))
@@ -367,7 +387,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                     }
                                 }
                             }
-                        }             
+                        }
+
                         switch($action) {
                             case 'inducks':
                                 if (isset($_POST['rawData'])) {
@@ -536,7 +557,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                             echo IE_INF_A_9_NON_SUPPORTE;
                                         } else {
                                             if (!$est_partage_bibliotheque) {
-                                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, false);
+                                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user);
                                                 if (count($resultat_tranches_collection_ajoutees) > 0) {
                                                     $publication_codes = [];
                                                     foreach ($resultat_tranches_collection_ajoutees as $tranche) {
@@ -638,6 +659,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         DM_Core::$d->maintenance_ordre_magazines($id_user);?>
                                         <div id="liste_magazines">
                                             <?php
+
+                                            // TODO Use DM server service
                                             $requete_ordre_magazines = 'SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user . ' ORDER BY Ordre';
                                             $resultat_ordre_magazines = DM_Core::$d->requete_select($requete_ordre_magazines);
                                             $publication_codes = [];
@@ -756,17 +779,41 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         break;
 
                                     case 'contributeurs':
-                                        $requete_contributeurs = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
-                                        $contributeurs = DM_Core::$d->requete_select($requete_contributeurs);
+                                        $requete_contributeurs_internes = "
+                                            SELECT distinct ID, username AS Nom, '' AS Texte from users
+                                            inner join tranches_pretes_contributeurs c on users.ID = c.contributeur";
+                                        $contributeurs_internes = DM_Core::$d->requete_select($requete_contributeurs_internes);
+
+                                        $ids_contributeurs_internes = array_map(function($contributeur) {
+                                            return $contributeur['ID'];
+                                        }, $contributeurs_internes);
+                                        usort($contributeurs_internes, function($a, $b) {
+                                            return strcmp(strtolower($a['Nom']), strtolower($b['Nom']));
+                                        });
+
+                                        $details_collections=DM_Core::$d->get_details_collections($ids_contributeurs_internes);
+
+                                        $requete_contributeurs_externes = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
+                                        $contributeurs_externes = DM_Core::$d->requete_select($requete_contributeurs_externes);
+                                        usort($contributeurs_externes, function($a, $b) {
+                                            return strcmp(strtolower($a['Nom']), strtolower($b['Nom']));
+                                        });
+
+                                        $contributeurs = array_merge($contributeurs_internes, $contributeurs_externes);
                                         ?>
-                                        <div style="border:1px solid white">
-                                            <h2 style="text-align:center"><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
+                                        <div id="contributeurs">
+                                            <h2><?= INTRO_CONTRIBUTEURS_BIBLIOTHEQUE ?></h2>
                                             <?php
                                             foreach ($contributeurs as $contributeur) {
-                                                ?>
-                                                <span
-                                                    style="font-size:18px;line-height:20px;"><?= $contributeur['Nom'] ?></span> <?= $contributeur['Texte'] ?>
-                                                <br/>
+                                                ?><div class="contributeur"><?php
+
+                                                if (isset($contributeur['ID'])) {
+                                                    Affichage::afficher_texte_utilisateur($details_collections[$contributeur['ID']]);
+                                                }
+                                                else {
+                                                    echo utf8_encode($contributeur['Nom']).' '.$contributeur['Texte'];
+                                                }
+                                                ?></div>
                                             <?php
                                             }
                                             ?>
@@ -778,24 +825,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             break;
 
                             case 'gerer':
-                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
-                                $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
-                                if ($nb_nouvelles_tranches > 0) {
-                                    ?><div class="confirmation">
-                                    <?php
-                                        echo $nb_nouvelles_tranches.' ';
-                                        if ($nb_nouvelles_tranches === 1) {
-                                            echo BIBLIOTHEQUE_NOUVELLE_TRANCHE;
-                                        }
-                                        else {
-                                            echo BIBLIOTHEQUE_NOUVELLES_TRANCHES;
-                                        }
-                                    ?>
-                                    </div><?php
-                                }
-                                $requete_maj_dernier_acces = 'UPDATE users SET DernierAcces=CURRENT_TIMESTAMP WHERE ID='.$id_user;
-                                DM_Core::$d->requete($requete_maj_dernier_acces);
-
                                 $l=DM_Core::$d->toList($id_user);
                                 if (isset($_GET['supprimer_magazine'])) {
                                     list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
@@ -804,6 +833,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 }
                                 ?>
                                 <h2><?=GESTION_COLLECTION?></h2><br />
+
                                 <?php
                                 $onglets= [
                                         GESTION_NUMEROS_COURT=> ['ajout_suppr',GESTION_NUMEROS],
@@ -939,7 +969,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         break;
                                     case 'ajout_suppr':
                                     	if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
-                                    		?><div class="warning">
+                                    		?><div class="alert alert-warning">
                                     			<?=ATTENTION_VENTE_SANS_EMAIL?>
                                     			<a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
                                     		</div><?php
@@ -1025,21 +1055,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 }
 											}
 											else {
-											    if (date('Y-m-d') < '2017-03-15') {
-											        ?><br />
-                                                    <div class="alert alert-info">
-                                                        <strong><?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_1?></strong>
-                                                        <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_2?>
-                                                        <b><a target="_blank" href="?action=stats&onglet=auteurs"><?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_3?></a></b>
-                                                        <?=TEMP_STATISTIQUES_AUTEUR_DE_RETOUR_4?>
-                                                    </div><?php
-                                                }
                                                 ?><?= POSSESSION_MAGAZINES_INTRO ?>
                                                 <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
                                                 <br/>
                                                   <?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
                                                 <br/>
-                                            <?php
+                                                <?php
+                                                Affichage::afficher_dernieres_tranches_publiees();
                                             }
                                             ?><?=RECHERCHE_MAGAZINE_1?>&nbsp;
                                             <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
@@ -1214,7 +1236,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                             $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
                                             $entete .= "To: admin@ducksmanager.net\r\n";
                                             $entete .= "From: admin@ducksmanager.net\r\n";
-                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="http://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
+                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="https://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
                                             ?>
                                             <span style="color: red">
                                                 <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>
@@ -1356,9 +1378,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <?php
                             break;
                         }
-                        fin_de_page();
+                        fin_de_page($locales);
 
-                        function fin_de_page() {
+                        function fin_de_page($locales) {
                             ?>
 					</div>
                 </td>
@@ -1384,18 +1406,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 </td>
                 <td style="vertical-align:top;" align="right">
                 	<?php
-					foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
-						if(is_file('locales/'.$nom_langue.'.php')) {
-							$nouvelle_url = str_replace('&','&amp;',$_SERVER['QUERY_STRING']);
-							$nouvelle_url = preg_replace('#\??(?:&amp;)?lang=[a-z]+#u','',$nouvelle_url);
-							$nouvelle_url = '?'.(empty($nouvelle_url) ? '' : $nouvelle_url.'&amp;')
-										   .'lang='.$nom_langue;
-							?>
-							<a class="drapeau_langue" href="<?=$nouvelle_url?>">
-								<img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
-							</a>
-							<?php
-                    	}
+					foreach($locales as $nom_langue=>$nouvelle_url) {
+                        ?>
+                        <a class="drapeau_langue" href="<?=$nouvelle_url?>">
+                            <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
+                        </a>
+                        <?php
                     }
                 	?>
                 </td>
@@ -1492,27 +1508,27 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 }
 
 function formulaire_inscription() {
-	$user= $_POST['user' ];
-	$pass= $_POST['pass' ];
-	$pass2=$_POST['pass2'];
-	$email=$_POST['email'];
-	$rawData=$_POST['rawData'];
+	$user= $_POST['user' ] ?? '';
+	$pass= $_POST['pass' ] ?? null;
+	$pass2=$_POST['pass2'] ?? null;
+	$email=$_POST['email'] ?? '';
+	$rawData=$_POST['rawData'] ?? null;
 	$erreur=null;
-    if (isset($user)) {
+    if (isset($_POST['user' ])) {
 		$erreur=Affichage::valider_formulaire_inscription($user, $pass, $pass2);
         if (!is_null($erreur)) {
-            ?><span style="color:red"><?=$erreur?></span><?php
+            ?><div class="alert alert-danger"><?=$erreur?></div><?php
         }
     }
-    if (!isset($user) || !is_null($erreur)) {
+    if (!isset($_POST['user' ]) || !is_null($erreur)) {
         ?>
         <form method="post" action="?action=new">
         <?php
         if (isset($rawData)) {
             ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
         }?>
-        <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text">&nbsp;</td></tr>
-            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="" /></td></tr>
+        <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text" value="<?=$user?>">&nbsp;</td></tr>
+            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="<?=$email?>" /></td></tr>
             <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input name="pass" type="password" /></td></tr>
             <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input name="pass2" type="password" /></td></tr>
             <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" /></td></tr></table>
@@ -1543,13 +1559,15 @@ function encart_WhatTheDuck() {
 ?>
 	<div style="width:300px;margin-top:20px;border:1px solid white">
 		<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
-		<p style="margin-left:10px">
-			<?=PUB_WHATTHEDUCK_1?>
-			<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a>
-			<?=PUB_WHATTHEDUCK_2?>
-			<br />
-			<?=PUB_WHATTHEDUCK_3?>
-		</p>
+		<div style="margin-left:10px; text-align: center">
+            <div style="text-align: left">
+                <?=PUB_WHATTHEDUCK_1?>
+                <a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PUB_WHATTHEDUCK_2?>
+            </div>
+            <?=PUB_WHATTHEDUCK_3?><br /><br />
+            <iframe width="200" height="315" src="https://www.youtube.com/embed/KBbq49Y_4AE?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
+            <br /><br />
+        </div>
 	</div><?php 
 }
 ?>

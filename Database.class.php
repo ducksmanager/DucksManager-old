@@ -190,7 +190,7 @@ class Database {
 		if (count($resultat_ventes_utilisateurs) > 0) {
 			if (empty($resultat_email[0]['Email'])) {
 				?><br />
-				<span class="warning">
+				<span class="alert alert-warning">
 					<?=ATTENTION_EMAIL_VIDE_ACHAT?>
                   	<a target="_blank" href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
             	</span><?php
@@ -225,12 +225,13 @@ class Database {
 	
 	function bloc_envoi_message_achat_vente($username) {
 		date_default_timezone_set('Europe/Paris');
-		
+
+		// TODO Use DM server service
 		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
 		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
 			if ($message_deja_envoye) {?>
-				<span class="confirmation">
+				<span class="alert alert-success">
 					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
 				</span><?php
 			}
@@ -238,7 +239,7 @@ class Database {
 				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
 				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
 				if (count($resultat_emails) != 2) {
-					?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
+					?><span class="alert alert-danger"><?=ENVOI_EMAIL_ECHEC?></span><?php
 				}
 				else {
 					foreach($resultat_emails as $resultat) {
@@ -259,12 +260,13 @@ class Database {
                         .'<br /><br /><br />'.EMAIL_ACHAT_VENTE_3
                         .'<br /><br />'.EMAIL_SIGNATURE;
 					if (mail($email_vendeur, EMAIL_ACHAT_VENTE_TITRE, $contenu_mail,$entete)) {
-						?><span class="confirmation"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
+						?><span class="alert alert-success"><?=CONFIRMATION_ENVOI_MESSAGE.$username?></span><?php
+						// TODO Use DM server service
 						$requete_ajout_message='INSERT INTO emails_ventes (username_achat, username_vente, date) VALUES (\''.$_SESSION['user'].'\', \''.$username.'\', \''.date('Y-m-d',mktime(0,0)).'\')';
 						DM_Core::$d->requete($requete_ajout_message);
 					}
 					else {
-						?><span class="warning"><?=ENVOI_EMAIL_ECHEC?></span><?php
+						?><span class="alert alert-danger"><?=ENVOI_EMAIL_ECHEC?></span><?php
 					}
 				}
 			}
@@ -272,7 +274,7 @@ class Database {
 		else {
 			?><br /><?php
 			if ($message_deja_envoye) {?>
-				<span class="confirmation">
+				<span class="alert alert-success">
 					<?=CONFIRMATION_ENVOI_MESSAGE.$username?>
 				</span><?php
 			}
@@ -400,14 +402,14 @@ class Database {
             WHERE DateStat = '0000-00-00' AND ID_User=$id_user";
 		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete_select($requete_nb_auteurs_surveilles);
 		if (count($resultat_nb_auteurs_surveilles) > 0 && $resultat_nb_auteurs_surveilles[0]['cpt'] >= 5) {
-			?><div class="error"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
+			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
             if (!is_null(Inducks::get_auteur($idAuteur))) {
                 $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$idAuteur'";
                 $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
                 if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
-                    ?><div class="error"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
+                    ?><div class="alert alert-danger"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
                 else {
                     $requete_ajout_auteur="
@@ -504,9 +506,14 @@ class Database {
 		$evenements->evenements = [];
 
 		/* Inscriptions */
-		$requete_inscriptions='SELECT users.ID, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes '
-							 .'FROM users '
-							 .'WHERE DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE "test%"';
+		$requete_inscriptions="
+          SELECT users.ID, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateInscription)) AS DiffSecondes
+          FROM users
+          WHERE EXISTS(
+            SELECT 1 FROM numeros WHERE users.ID = numeros.ID_Utilisateur
+          )
+            AND DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE 'test%'
+        ";
 
 		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
@@ -636,27 +643,35 @@ class Database {
 		return $evenements;
 	}
 
-    public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite_seulement)
+    /**
+     * @param $id_user
+     * @param boolean $depuis_derniere_visite
+     * @return array
+    */
+    public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite = false)
     {
+        $derniere_visite = null;
+        if ($depuis_derniere_visite) {
+            $derniere_visite = Util::get_derniere_visite_utilisateur();
+            if (is_null($derniere_visite)) {
+                return [];
+            }
+        }
         $requete_tranches_collection_ajoutees =
-            'SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
+            "SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
              FROM tranches_pretes tp, numeros n
-             WHERE n.ID_Utilisateur = '.$id_user.'
-             AND CONCAT(publicationcode,\'/\',issuenumber) = CONCAT(n.Pays,\'/\',n.Magazine,\'/\',n.Numero)
-             AND tp.dateajout > \'2013-07-01\'';
+             WHERE n.ID_Utilisateur = '$id_user'
+             AND CONCAT(publicationcode,'/',issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
+             AND DATEDIFF(NOW(), tp.dateajout) < 90";
 
-        if ($depuis_derniere_visite_seulement) {
-            $requete_tranches_collection_ajoutees.='
-             AND tranches_pretes.dateajout>(
-               SELECT DernierAcces
-               FROM users
-               WHERE ID='.$id_user.' AND DernierAcces > \'0000-00-00\')';
+        if (!is_null($derniere_visite)) {
+            $requete_tranches_collection_ajoutees.="
+                AND tp.dateajout>'{$derniere_visite->format('Y-m-d H:i:s')}'";
         }
-        else {
-            $requete_tranches_collection_ajoutees.='
-             ORDER BY DiffSecondes ASC
-             LIMIT 5';
-        }
+        $requete_tranches_collection_ajoutees.="
+            ORDER BY DiffSecondes ASC
+            LIMIT 5";
+
         return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
     }
 
@@ -666,6 +681,7 @@ class Database {
             return null;
         }
 
+    	// TODO Use DM server service
         $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
                                           WHERE ID_Utilisateur = '.mysqli_real_escape_string(Database::$handle, $id_user).' 
                                           AND Cle=\''.mysqli_real_escape_string(Database::$handle, $cle).'\'';

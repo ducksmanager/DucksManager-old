@@ -133,7 +133,7 @@ class Affichage {
         else {
             $liste->nettoyer_collection();
             $nb_possedes=0;
-            $numeros2 = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
+            $numeros = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
                 $infos_numero=$liste->infos_numero($pays,$magazine,$numero);
                 $o=new stdClass();
                 $o->est_possede=false;
@@ -145,6 +145,7 @@ class Affichage {
                 $o->av=$infos_numero[2];
                 $o->id_acquisition=$infos_numero[3];
                 $o->sous_titre=$sous_titre;
+                $o->numero=$numero;
 
                 return $o;
             }, $numeros,$sous_titres);
@@ -189,7 +190,8 @@ class Affichage {
                 </tr>
             </table>
             <?php
-            foreach($numeros2 as $numero=>$infos) {
+            foreach($numeros as $infos) {
+                $numero=$infos->numero;
                 $etat=$infos->etat;
                 $id_acquisition=$infos->id_acquisition;
                 $av=$infos->av;
@@ -253,7 +255,7 @@ class Affichage {
 		foreach($evenements->evenements as $evenements_date) {
 			foreach($evenements_date as $type=>$evenements_type) {
 				foreach($evenements_type as $evenement) {
-					?><div class="evenement_<?=$type?>"><?php
+					?><div class="evenement evenement_<?=$type?>"><?php
 					switch($type) {
 						case 'inscriptions':
 							Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
@@ -297,14 +299,14 @@ class Affichage {
 
 							?><?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
 							<a href="javascript:void(0)" class="has_tooltip edge_tooltip underlined">
-								<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);?>
-								<?php
-								$nb_autres_numeros = count($evenement->numeros) - 1;
-								if ($nb_autres_numeros > 0) {
-									?>
-										<?=ET?> <?=($nb_autres_numeros)?>
-										<?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?>
-								<?php } ?>
+                                <?php
+                                $nb_autres_numeros = count($evenement->numeros) - 1;
+                                echo self::get_texte_numero_multiple(
+                                        $numero->Pays,
+                                        $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                        $numero->Numero,
+                                        $nb_autres_numeros
+                                );?>
 							</a>
 							<span class="cache tooltip_content">
 								<?php
@@ -314,7 +316,11 @@ class Affichage {
 								}
 								echo Edge::getEtagereHTML(true);
 								foreach($evenement->numeros as $numero) {
-									Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero);
+									Affichage::afficher_texte_numero(
+									        $numero->Pays,
+                                            $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                            $numero->Numero
+                                    );
 									?><br /><?php
 								}
 								?>
@@ -329,6 +335,32 @@ class Affichage {
 			}
 		}
 	}
+
+    static function afficher_dernieres_tranches_publiees() {
+        $id_user = isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
+
+        $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
+        $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
+
+        if ($nb_nouvelles_tranches > 0) {
+            ?>
+            <div class="alert alert-info">
+            <?php
+            $premiere_tranche = $resultat_tranches_collection_ajoutees[0];
+            $magazines_complets = Inducks::get_noms_complets_magazines([$premiere_tranche['publicationcode']]);
+            echo sprintf(
+                $nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE : BIBLIOTHEQUE_NOUVELLES_TRANCHES,
+                $nb_nouvelles_tranches,
+                Affichage::get_texte_numero_multiple(
+                    explode('/', $premiere_tranche['publicationcode'])[0],
+                    $magazines_complets[$premiere_tranche['publicationcode']],
+                    $premiere_tranche['issuenumber'],
+                    $nb_nouvelles_tranches - 1
+                )
+            ); ?>
+            </div><?php
+        }
+    }
 
     static function afficher_temps_passe($diff_secondes) {
         ?><span class="date">&nbsp;<?=NEWS_IL_Y_A_PREFIXE?>
@@ -357,12 +389,26 @@ class Affichage {
     }
 	
 	static function afficher_texte_numero($pays, $magazine, $numero) {
-		?><span class="nowrap"><img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine.' '.$numero?></span><?php
+        $magazine_parts = explode(' ', $magazine);
+		?><span class="nowrap">
+            <img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine_parts[0]?>
+        </span> <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
 	}
+
+	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros) {
+        ob_start();
+        self::afficher_texte_numero($pays,$magazine_complet,$numero);
+        if ($nb_autres_numeros > 0) {
+            ?>
+            <?=ET?> <?=($nb_autres_numeros)?>
+            <?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?><?php
+        }
+        return ob_get_clean();
+    }
 
 	static function afficher_texte_utilisateur($infos_utilisateur) {
         $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
-        ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=$nom_utilisateur?></i></b></a>
+        ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=utf8_encode($nom_utilisateur)?></i></b></a>
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
             <div>
@@ -406,12 +452,13 @@ class Affichage {
 	}
 
     static function partager_page() {
+    	// TODO Use DM server service
         $id_user=$_SESSION['id_user'];
         $cle = Util::get_random_string();
         $requete_ajout_acces = 'INSERT INTO bibliotheque_acces_externes(ID_Utilisateur, Cle) VALUES ('.$id_user.', \''.$cle.'\')';
         DM_Core::$d->requete($requete_ajout_acces);
         ?><div class="a2a_kit a2a_kit_size_32 a2a_default_style"
-               data-a2a-url="http://www.ducksmanager.net/?action=bibliotheque&user=<?=$_SESSION['user']?>&key=<?=$cle?>"
+               data-a2a-url="https://www.ducksmanager.net/?action=bibliotheque&user=<?=$_SESSION['user']?>&key=<?=$cle?>"
                data-a2a-title="Ma bibliothèque DucksManager">
             <a class="noborder a2a_button_email"></a>
             <a class="noborder a2a_button_facebook"></a>

@@ -3,3 +3,8 @@ piwik
 *.properties
 *.csv
 *.ini
+edges/*/elements
+edges/*/gen
+edges/*/photos
+edges/images_myfonts
+images/edges

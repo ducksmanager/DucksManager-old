@@ -93,10 +93,6 @@ a.important:HOVER {
     white-space: nowrap;
 }
 
-.opentip .nowrap {
-    white-space: inherit;
-}
-
 #medailles_et_login .medaille {
 	height: 120px;
 	margin-left: 5px;
@@ -125,16 +121,16 @@ a.important:HOVER {
     margin-top: 0;
 }
 
-#recemment #evenements div {
+#recemment #evenements div.evenement {
 	margin-top: 12px;
 }
 
-#recemment #evenements div .date {
+#recemment #evenements div.evenement .date {
 	color: #444;
 	float: right;
 }
 
-#recemment #evenements a {
+#recemment #evenements div.evenement a {
 	color: black;
 }
 
@@ -195,7 +191,7 @@ a.important:HOVER {
 }
 
 .num_checked {
-	background:url('checkedbox.png') no-repeat right center;
+	background:url('../checkedbox.png') no-repeat right center;
 	border:1px solid white;
 }
 
@@ -213,7 +209,7 @@ a.important:HOVER {
 
 .num_bon_checked {
 	width:100%;
-	background:url('checkedbox.png') no-repeat right center #2CA77B;
+	background:url('../checkedbox.png') no-repeat right center #2CA77B;
 	cursor:default;
 	height:16px;
 }
@@ -301,29 +297,6 @@ a.important:HOVER {
     font-weight: bold;
 }
 
-.error, .warning, .confirmation {
-	margin-right: 10px;
-	margin-bottom: 23px;
-	font-weight: bold;
-	border-width: 1px;
-	border-style: solid;
-}
-
-.error {
-	color: red;
-	border-color: red;
-}
-
-.warning {
-	color: orange;
-	border-color: orange;
-}
-
-.confirmation {
-	color: green;
-	border-color: green;
-}
-
 .preview {
     float:left;
     margin-top: -2px;
@@ -376,13 +349,13 @@ a.drapeau_langue, a.drapeau_langue:HOVER, a.drapeau_langue img {
 }
 
 td#zone_logo1 {
-	background: rgb(200, 137, 100) url('Proposition logo_1.jpg') no-repeat top center;
+	background: rgb(200, 137, 100) url('../Proposition logo_1.jpg') no-repeat top center;
 	background-size: 659px 182px;
 	height: 180px;
 }
 
 td#zone_logo2 {
-	background: rgb(61, 75, 95) url('Proposition logo_2.png') no-repeat top center;
+	background: rgb(61, 75, 95) url('../Proposition logo_2.png') no-repeat top center;
 	background-size: 659px 42px;
 	padding-left:5px;
 	vertical-align: top;

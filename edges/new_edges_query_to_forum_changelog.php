@@ -6,10 +6,11 @@ include_once('../authentification.php');
 $requete_tranches_pretes_pour_publication = 'SELECT * FROM tranches_en_cours_modeles WHERE PretePourPublication=1';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
 
-$url_gen_edgecreator = ServeurDb::getUrlServeurVirtuel().':8002/DucksManager';
+$url_gen_edgecreator = ServeurDb::getUrlServeurVirtuel().':8002';
 
 $urls_images= [];
 $numeros= [];
+
 foreach($tranches_pretes_pour_publication as $tranche) {
     $pays = $tranche['Pays'];
     $id = $tranche['ID'];
@@ -53,8 +54,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
         copy($url, $chemin);
 
-        $requete_tranche_publiee = 'UPDATE tranches_en_cours_modeles SET PretePourPublication=0 WHERE ID='.$id;
-        $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranche_publiee, ServeurDb::$nom_db_DM, 'serveur_virtuel');
+        Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'POST', "/edgecreator/model/v2/$id/readytopublish/0", 'edgecreator', []);
 
     }
     $urls_images[]=$url;

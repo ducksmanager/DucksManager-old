@@ -73,9 +73,9 @@ foreach($doublons_a_ajouter as $doublon_a_ajouter) {
 if (count($tranches_a_ajouter) > 0) {
 	$mini_requetes_ajout= [];
 	foreach($tranches_a_ajouter as $numero)
-		$mini_requetes_ajout[]="('fr/JM','$numero',NULL,NULL,NOW())";
+		$mini_requetes_ajout[]="('fr/JM','$numero',NOW())";
 	
-	$requete_ajout_tranches.='INSERT INTO tranches_pretes(publicationcode,issuenumber,photographes,createurs,dateajout) '
+	$requete_ajout_tranches.='INSERT INTO tranches_pretes(publicationcode,issuenumber,dateajout) '
 							.'VALUES '.implode(',',$mini_requetes_ajout);
 	
 	if (isset($_GET['dbg']))

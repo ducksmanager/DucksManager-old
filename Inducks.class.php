@@ -1,10 +1,4 @@
 <?php
-error_reporting(E_ALL);
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
-include_once('locales/lang.php');
-include_once('Util.class.php');
 include_once('Database.class.php');
 class Inducks {
 	static $noms_complets;
@@ -411,13 +405,12 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 			$liste_magazines[]= ['code'=>$code,
 									 'titre'=>$title];
 		}
-		if (count($liste_magazines) > 10) {
-			$liste_magazines=array_slice($liste_magazines, 0,10);
-			$liste_magazines['limite']=true;
-		}
 	}
-	$requete='SELECT publicationcode, Count(issuenumber) AS cpt FROM inducks_issue WHERE publicationcode LIKE \''.$pays.'/%\' GROUP BY publicationcode';
-	$resultat_requete=Inducks::requete_select($requete);
+
+    if (count($liste_magazines) > 10) {
+        $liste_magazines=array_slice($liste_magazines, 0,10);
+        $liste_magazines['limite']=true;
+    }
 
 	echo header("X-JSON: " . json_encode($liste_magazines));
 }

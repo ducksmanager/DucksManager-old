@@ -236,6 +236,8 @@ class Edge {
         $total_numeros=0;
         $total_numeros_visibles=0;
         DM_Core::$d->maintenance_ordre_magazines($id_user);
+
+        // TODO Use DM server service
         $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
         $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
         $publication_codes= [];
@@ -292,13 +294,17 @@ class Edge {
 }
 DM_Core::$d->requete('SET NAMES UTF8');
 if (isset($_POST['get_visible'])) {
+    header('Content-type: application/json');
+
     $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
 	include_once ('locales/lang.php');
-	$nom_complet_magazine=Inducks::get_nom_complet_magazine($_POST['pays'], $_POST['magazine']);
-	?>
-	<div class="titre_magazine"><?=$nom_complet_magazine?></div><br />
-	<div class="numero_magazine">n&deg;<?=$_POST['numero']?></div><br />
-	<?php
+
+	ob_start();
+    $magazine_complet = array_values(Inducks::get_noms_complets_magazines([$_POST['pays'].'/'.$_POST['magazine']]))[0];
+	Affichage::afficher_texte_numero($_POST['pays'], $magazine_complet, $_POST['numero']);
+    $titre = ob_get_clean();
+
+    ob_start();
 	if (!getEstVisible($_POST['pays'], strtoupper($_POST['magazine']), $_POST['numero'])) {
 		?>
         <?=TRANCHE_NON_DISPONIBLE1?><br /><?php
@@ -310,7 +316,10 @@ if (isset($_POST['get_visible'])) {
         }
 	}
 	?>
-    <div style="position:absolute;width:100%;text-align:center;border-top:1px solid black;bottom:10px"><?=DECOUVRIR_COUVERTURE?></div><?php
+    <?=DECOUVRIR_COUVERTURE?><?php
+    $contenu = ob_get_clean();
+
+    echo json_encode(['title' => $titre, 'content' => $contenu]);
 }
 elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
 	if (isset($_GET['grossissement']))

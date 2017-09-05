@@ -18,7 +18,7 @@ if (!isset($_GET['mdp']) || !ServeurDb::verifPassword($_GET['mdp'])) {
 Database::$handle->query('SET NAMES UTF8');
 if (isset($_GET['rawData_file'])) {
 	$rawdatafile=$_GET['rawData_file'];
-    $contenu=Util::get_page('http://www.ducksmanager.net/_tmp/rawdata_'.$rawdatafile.'.txt');
+    $contenu=Util::get_page('https://www.ducksmanager.net/_tmp/rawdata_'.$rawdatafile.'.txt');
 	if (isset($_GET['dbg']))
 		echo 'Contenu en entree : '.$contenu.'<br /><br />';
     $lignes=explode("\n",$contenu);

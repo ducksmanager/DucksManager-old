@@ -3,7 +3,7 @@
 sh_dir=$1
 
 properties_file=/home/coa/coa.properties
-export_page=http://www.ducksmanager.net/remote/generer_csv_pour_export.php
+export_page=https://www.ducksmanager.net/remote/generer_csv_pour_export.php
 
 cd ${sh_dir}
 
