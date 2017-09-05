@@ -35,7 +35,6 @@
 
 #update_menu.affix #update_options {
     background-color: #f8f8f8;
-    height: 75px;
 }
 
 #update_menu.affix #update_options > .row {
@@ -61,6 +60,12 @@
     margin-bottom: 37px;
     margin-right: 45px;
     opacity: 0.9;
+}
+
+@media (max-width: 1200px) {
+    #update_menu.affix #update_options .option_nom .alternatives {
+        margin-bottom: 24px;
+    }
 }
 
 #update_menu.affix #update_options .option_nom .alternatives .alternative {
@@ -167,4 +172,5 @@
 
 #update_menu.affix #update_options #save h4 {
     padding-top: 18px;
+    padding-bottom: 18px;
 }

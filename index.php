@@ -1496,7 +1496,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         <?php
                     }
                     ?>
-                    <div class="col-lg-2 pull-right" id="save"><h4>Sauvegarder</h4></div>
+                    <div class="col-md-12 col-md-push-0 col-lg-2 col-lg-push-3" id="save"><h4>Sauvegarder</h4></div>
                 </div>
             </div>
         </div>
