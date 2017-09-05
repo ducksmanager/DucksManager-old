@@ -275,7 +275,7 @@ Proto.Menu = Class.create({
                       var date_entree=nouvelleDate.getValue();
                         if (!isDate(date_entree) || !date_entree)
                             date_valide=false;
-                      if (!date_valide) {
+                        if (!date_valide) {
                             nouvelleDate.setStyle({
                                 'fontStyle':'italic',
                                 'color':'red'

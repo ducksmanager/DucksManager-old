@@ -72,7 +72,6 @@ define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Save a picture of this library');
 define('BIENVENUE','Welcome on DucksManager !');
 define('BOITE_SELECTIONNEE','Selected box');
 define('BON','Good');
-define('BUG_BIBLIOTHEQUE_ACCUEIL','Due to a bug, the bookcase wasn\'t shown. This bug has now been fixed. Thank you for your understanding.');
 define('CACHER_VIDEO','Hide the video');
 define('CACHER_AIDE','Hide help panel');
 define('CALCUL','Calculation');
