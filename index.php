@@ -1449,7 +1449,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
                                 'ne_pas_changer' => NE_PAS_CHANGER,
-                                '-1' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
+                                'pas_date' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
                                 'date' => [ACHAT_ASSOCIER_DATE_ACHAT, ACHAT_ASSOCIER_DATE_ACHAT_COURT]
                             ]
                         ],
@@ -1459,8 +1459,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
                                 'ne_pas_changer' => NE_PAS_CHANGER,
-                                '1' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
-                                '0' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
+                                'a_vendre' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
+                                'pas_a_vendre' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
                             ]
                         ]
                     ];
@@ -1486,6 +1486,36 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                             </button>
                                         <?php } ?>
                                     </div>
+                                    <?php if ($option['id'] === 'purchase_id') { ?>
+                                    <div class="list-group row alternatives <?=$option['id']?> purchase_selection col-lg-push-12 invisible" style="
+
+">
+                                        <input type="text" value="" size="15" class="list-group-item col-lg-12 alternative purchase_search" placeholder="Type to search">
+                                        <div class="list-group-item col-lg-12 alternative purchase_dates">
+                                            <button type="button" name="date" value-short="Link"
+                                                    class="list-group-item col-lg-12 alternative date">
+                                                <div class="alternative-choice">
+                                                    &nbsp;
+                                                </div>
+                                                Date description
+                                            </button>
+                                            <button type="button" name="date" value-short="Link"
+                                                    class="list-group-item col-lg-12 alternative date">
+                                                <div class="alternative-choice">
+                                                    &nbsp;
+                                                </div>
+                                                Date description
+                                            </button>
+                                            <button type="button" name="date" value-short="Link"
+                                                    class="list-group-item col-lg-12 alternative date">
+                                                <div class="alternative-choice">
+                                                    &nbsp;
+                                                </div>
+                                                Date description
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <?php } ?>
                                     <div class="edit">&nbsp;</div>
                                     <h4><?=$option['nom']?></h4>
                                 </div>

@@ -68,6 +68,33 @@
     }
 }
 
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection {
+    left: 100%;
+    margin-left: -20px;
+    margin-right: -20px;
+    width: 100%;
+    display: block !important;
+    opacity: 1 !important;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates {
+    height: 71px;
+    overflow-y: auto;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates,
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search {
+    padding-right: 26px;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection button {
+    border-top: none;
+    border-right: none;
+    border-radius: 0;
+}
+
 #update_menu.affix #update_options .option_nom .alternatives .alternative {
     background-position: 2px 50%;
     background-repeat: no-repeat;
@@ -160,14 +187,14 @@
     width: 16px;
     height: 16px;
     margin-top: 6px;
-    /* margin-left: 6px; */
 }
 
 #update_menu.affix #update_options #save {
     color: white;
     background: green;
     text-align: center;
-    height: 100%
+    height: 100%;
+    padding-left: 30px;
 }
 
 #update_menu.affix #update_options #save h4 {

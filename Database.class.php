@@ -344,11 +344,13 @@ class Database {
 				}
 
 				if (!is_null($id_acquisition)) {
-				    $changements[] = "ID_Acquisition='$id_acquisition'";
+				    $valeur = $av === 'pas_date' ? -1 : $av;
+				    $changements[] = "ID_Acquisition='$valeur'";
 				}
 
 				if (!is_null($av)) {
-				    $changements[] = "AV='$av'";
+				    $valeur = $av === 'a_vendre' ? 1 : 0;
+				    $changements[] = "AV='$valeur'";
 				}
 
 				$numeros_update = array_map(function($numero) {
