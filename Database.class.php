@@ -551,7 +551,7 @@ class Database {
 		}
 		
 		/* Propositions de bouquineries */
-		$requete_bouquineries='SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
+		$requete_bouquineries='SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes FROM bouquineries
 							   WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 		
 
