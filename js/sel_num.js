@@ -92,32 +92,3 @@ function unlighten (element) {
 		element.removeClass('survole');
 	}
 }
-
-function isDate(d) {
-    // Cette fonction permet de v�rifier la validit� d'une date au format jj/mm/aa ou jj/mm/aaaa
-    // Par Romuald
-
-    if (d == "") // si la variable est vide on retourne faux
-        return false;
-
-    e = new RegExp("^([0-9]{4})\-[0-9]{1,2}\-[0-9]{1,2}$");
-
-    if (!e.test(d)) // On teste l'expression r�guli�re pour valider la forme de la date
-        return false; // Si pas bon, retourne faux
-
-    // On s�pare la date en 3 variables pour v�rification, parseInt() converti du texte en entier
-    a = parseInt(d.split("-")[0], 10); // ann�e
-    m = parseInt(d.split("-")[1], 10); // mois
-    j = parseInt(d.split("-")[2], 10); // jour
-
-    // D�finition du dernier jour de f�vrier
-    // Ann�e bissextile si annn�e divisible par 4 et que ce n'est pas un si�cle, ou bien si divisible par 400
-    if (a % 4 == 0 && a % 100 != 0 || a % 400 == 0) fev = 29;
-    else fev = 28;
-
-    // Nombre de jours pour chaque mois
-    nbJours = [31, fev, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    // Enfin, retourne vrai si le jour est bien entre 1 et le bon nombre de jours, idem pour les mois, sinon retourn faux
-    return ( m >= 1 && m <= 12 && j >= 1 && j <= nbJours[m - 1] );
-}

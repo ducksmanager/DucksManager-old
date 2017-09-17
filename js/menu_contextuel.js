@@ -268,101 +268,100 @@ Proto.Menu = Class.create({
                     });
 
                     nouvelle_date_ok.observe('click', function () {
-                      var date_valide=true;
-                      var nouvelleDate = $('nouvelle_date');
-                      var nouvelleDescription = $('nouvelle_description');
+                        var date_valide = true;
+                        var nouvelleDate = $('nouvelle_date');
+                        var nouvelleDescription = $('nouvelle_description');
 
-                      var date_entree=nouvelleDate.getValue();
-                        if (!isDate(date_entree) || !date_entree)
-                            date_valide=false;
-                        if (!date_valide) {
+                        var date_entree = nouvelleDate.getValue();
+                        if (!(moment(date_entree).isValid()) || !date_entree) {
+                            date_valide = false;
                             nouvelleDate.setStyle({
-                                'fontStyle':'italic',
-                                'color':'red'
+                                'fontStyle': 'italic',
+                                'color': 'red'
                             });
-                            nouvelleDate.value=l10n['date_invalide'];
+                            nouvelleDate.value = l10n['date_invalide'];
                             nouvelleDescription.focus();
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 $('nouvelle_date').setStyle({
-                                    'fontStyle':'',
-                                    'color':''
+                                    'fontStyle': '',
+                                    'color': ''
                                 });
-                                $('nouvelle_date').value=date_entree;
-                            },2000);
+                                $('nouvelle_date').value = date_entree;
+                            }, 2000);
                         }
-                        var description_entree=$F('nouvelle_description');
+                        var description_entree = $F('nouvelle_description');
 
-                        var description_valide=true;
-                        if (description_entree.textLength>30 || description_entree=='')
-                            description_valide=false;
+                        var description_valide = true;
+                        if (description_entree.textLength > 30 || description_entree == '')
+                            description_valide = false;
                         if (!description_valide) {
                             nouvelleDescription.setStyle({
-                                'fontStyle':'italic',
-                                'color':'red'
+                                'fontStyle': 'italic',
+                                'color': 'red'
                             });
                             nouvelleDescription.writeAttribute({
-                                'value':l10n['description_question']
-                                });
-                            setTimeout(function() {
+                                'value': l10n['description_question']
+                            });
+                            setTimeout(function () {
                                 $('nouvelle_description').setStyle({
-                                    'fontStyle':'',
-                                    'color':''
+                                    'fontStyle': '',
+                                    'color': ''
                                 });
                                 $('nouvelle_description').writeAttribute({
-                                    'value':date_entree
+                                    'value': date_entree
                                 });
-                            },2000);
+                            }, 2000);
                         }
                         if (!description_valide || !date_valide)
                             return;
-                        var reg_date=new RegExp("-","g");
-                        var date=date_entree.split(reg_date);
+                        var reg_date = new RegExp("-", "g");
+                        var date = date_entree.split(reg_date);
                         new Ajax.Request('Database.class.php', {
                             method: 'post',
-                            parameters:'database=true&acquisition=true&afficher_non_defini=false&date_annee='+date[0]+'&date_mois='+date[1]+'&date_jour='+date[2]+'&description='+description_entree,
-                            onSuccess:function(transport,json) {
+                            parameters: 'database=true&acquisition=true&afficher_non_defini=false&date_annee=' + date[0] + '&date_mois=' + date[1] + '&date_jour=' + date[2] + '&description=' + description_entree,
+                            onSuccess: function (transport, json) {
 
-                                if (transport.responseText=='Date') {
-                                  var nouvelleDescription = $('nouvelle_description');
+                                if (transport.responseText == 'Date') {
+                                    var nouvelleDescription = $('nouvelle_description');
 
-                                  nouvelleDescription.setStyle({
-                                        'fontStyle':'italic',
-                                        'color':'red'
+                                    nouvelleDescription.setStyle({
+                                        'fontStyle': 'italic',
+                                        'color': 'red'
                                     });
-                                    nouvelleDescription.value=l10n['acquisition_existante'];
-                                    setTimeout(function() {
+                                    nouvelleDescription.value = l10n['acquisition_existante'];
+                                    setTimeout(function () {
                                         $('nouvelle_description').setStyle({
-                                            'fontStyle':'',
-                                            'color':''
+                                            'fontStyle': '',
+                                            'color': ''
                                         });
-                                        $('nouvelle_description').value=description_entree;
-                                    },2000);
+                                        $('nouvelle_description').value = description_entree;
+                                    }, 2000);
                                 }
                                 else {
-                                    var nouvelle_date_a=new Element('a',{
-                                        'class':'enabled',
-                                        'href':'javascript:;',
-                                        'name':'achat'
+                                    var nouvelle_date_a = new Element('a', {
+                                        'class': 'enabled',
+                                        'href': 'javascript:;',
+                                        'name': 'achat'
                                     });
                                     nouvelle_date_a.setStyle({
-                                        'display':'block'
+                                        'display': 'block'
                                     });
-                                    nouvelle_date_a.update('Achat "'+description_entree+'"<br />'+date[0]+'-'+date[1]+'-'+date[2]);
+                                    nouvelle_date_a.update('Achat "' + description_entree + '"<br />' + date[0] + '-' + date[1] + '-' + date[2]);
                                     nouvelle_date_li.update(nouvelle_date_a)
-                                    .observe('click', function (e) {
-                                        $$('a[name="'+e.target.name+'"]').each(function(item) {
-                                            item.removeClassName('selected');
-                                        });
-
-                                    });
-                                    var ajoute=false;
-                                    $$('.date2').each(function(element) {
-                                        var date_courante=element.lastChild.textContent;
-                                        if (!ajoute&&est_superieure_a(date_courante, date[2]+'-'+date[1]+'-'+date[0])) {
-                                            element.parentNode.insert({
-                                                'before':nouvelle_date_li
+                                        .observe('click', function (e) {
+                                            $$('a[name="' + e.target.name + '"]').each(function (item) {
+                                                item.removeClassName('selected');
                                             });
-                                            ajoute=true;
+
+                                        });
+                                    var ajoute = false;
+                                    $$('.date2').each(function (element) {
+                                        var date_courante = element.lastChild.textContent;
+                                        if (!ajoute && est_superieure_a(date_courante, date[2] + '-' + date[1] + '-' + date[0])) {
+                                            element.parentNode.insert({
+                                                'before': nouvelle_date_li
+                                            });
+                                            ajoute = true;
                                         }
                                     });
                                 }
