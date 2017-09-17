@@ -80,8 +80,7 @@
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates {
     height: 71px;
     overflow-y: auto;
-    padding-bottom: 0;
-    padding-top: 0;
+    padding: 0;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates,
@@ -89,10 +88,21 @@
     padding-right: 26px;
 }
 
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search {
+    padding-right: 2px;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .description {
+    width: 200px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .day {
     float: right;
     color: grey;
-    padding-right: 5px;
+    padding-right: 25px;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection button {
@@ -104,7 +114,7 @@
 #update_menu.affix #update_options .option_nom .alternatives .alternative {
     background-position: 2px 50%;
     background-repeat: no-repeat;
-    padding-left: 25px;
+    padding-left: 24px;
     padding-right: 0;
     opacity: 1;
     visibility: visible;

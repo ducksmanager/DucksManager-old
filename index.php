@@ -1487,49 +1487,19 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         <?php } ?>
                                     </div>
                                     <?php if ($option['id'] === 'purchase_id') { ?>
-                                    <div class="list-group row alternatives <?=$option['id']?> purchase_selection col-lg-push-12 invisible" style="
-
-">
-                                        <input type="text" value="" size="15" class="list-group-item col-lg-12 alternative purchase_search" placeholder="Type to search">
-                                        <div class="list-group-item col-lg-12 alternative purchase_dates">
-                                            <button type="button" name="date"
-                                                    class="list-group-item col-lg-12 alternative date day-row">
-                                                <div class="alternative-choice">
-                                                    &nbsp;
-                                                </div>
-                                                <span class="description">
-                                                    Description
-                                                </span>
-                                                <div class="day">
-                                                    Date
-                                                </div>
-                                            </button>
-                                            <button type="button" name="date"
-                                                    class="list-group-item col-lg-12 alternative date day-row">
-                                                <div class="alternative-choice">
-                                                    &nbsp;
-                                                </div>
-                                                <span class="description">
-                                                    Description
-                                                </span>
-                                                <div class="day">
-                                                    Date
-                                                </div>
-                                            </button>
-                                            <button type="button" name="date"
-                                                    class="list-group-item col-lg-12 alternative date day-row">
-                                                <div class="alternative-choice">
-                                                    &nbsp;
-                                                </div>
-                                                <span class="description">
-                                                    Description
-                                                </span>
-                                                <div class="day">
-                                                    Date
-                                                </div>
-                                            </button>
+                                        <div class="list-group row alternatives <?= $option['id'] ?> purchase_selection col-lg-push-12 invisible">
+                                            <input type="text" value="" size="15"
+                                                   class="list-group-item col-lg-12 alternative purchase_search"
+                                                   placeholder="Type to search">
+                                            <div class="list-group-item col-lg-12 alternative purchase_dates">
+                                                <button type="button" name="date"
+                                                        class="template list-group-item col-lg-12 alternative date day-row">
+                                                    <div class="alternative-choice">&nbsp;</div>
+                                                    <span class="description"></span>
+                                                    <div class="day"></div>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
                                     <?php } ?>
                                     <div class="edit">&nbsp;</div>
                                     <h4><?=$option['nom']?></h4>

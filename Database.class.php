@@ -809,25 +809,8 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['liste_achats'])) {
 		$id_user=$_SESSION['id_user'];
-		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
-		$tab_achats=[];
-		$cpt_strlen=0;
-		foreach ($liste_achats as $achat) {
-			$id_achat=$achat['ID_Acquisition'];
-			if ($_POST['continue'] != -1) {
-			 	if ($_POST['continue']==$id_achat) {
-					$_POST['continue'] = -1;
-				}
-				else continue;
-			}
-			$o_achat=new stdClass();
-			$o_achat->id=$id_achat;
-			$o_achat->description=$achat['Description'];
-			$o_achat->date=$achat['Date'];
-			$tab_achats[]=$o_achat;
-			$cpt_strlen+=strlen(json_encode($o_achat));
-		}
-		echo json_encode($tab_achats);
+		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, date_format(Date,"%Y-%m-%d") AS Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
+		echo json_encode($liste_achats);
 	}
 	else if (isset($_POST['liste_etats'])) {
 		DM_Core::$d->liste_etats();

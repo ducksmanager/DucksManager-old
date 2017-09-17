@@ -9,100 +9,28 @@ var couverture_preview;
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
-	get_achats(-1);
+	get_achats();
 }
 
-function get_achats(continue_id) {
+function get_achats() {
     couverture_preview = jQuery('#couverture_preview');
 
     new Ajax.Request('Database.class.php', {
         method: 'post',
-        parameters: 'database=true&liste_achats=true&continue=' + continue_id,
+        parameters: 'database=true&liste_achats=true',
         onSuccess: function (transport) {
-            var achats_courants = JSON.parse(transport.responseText);
-            for (var i = 0; i < achats_courants.length; i++) {
-                if (achats_courants[i]['continue']) {
-                    get_achats(achat['id']);
-                    return;
-                }
-                var achat = achats_courants[i];
-                achat['name'] = 'Achat "' + achat.description + '"<br />' + achat.date;
-                achat['className'] = 'date2';
-                achat['groupName'] = 'achat';
-                achat['selected'] = false;
-                achat['id'] = achat.id;
-                tab_achats[tab_achats.length] = achat;
-            }
-            myMenuItems = [
-                {
-                    separator: true
-                }, {
-                    className: 'non_marque',
-                    groupName: 'etat_conserver_etat_actuel',
-                    selected: true
-                }, {
-                    className: 'non_possede',
-                    groupName: 'etat_marquer_non_possede'
-                }, {
-                    className: 'possede',
-                    groupName: 'etat_marquer_possede'
-                }, {
-                    className: 'mauvais',
-                    groupName: 'etat_marquer_mauvais_etat'
-                }, {
-                    className: 'moyen',
-                    groupName: 'etat_marquer_etat_moyen'
-                }, {
-                    className: 'bon',
-                    groupName: 'etat_marquer_bon_etat'
-                }, {
-                    separator: true
-                }, {
-                    className: 'non_date',
-                    groupName: 'achat_conserver_date_achat',
-                    selected: true
-                }, {
-                    className: 'pas_date',
-                    groupName: 'achat_desassocier_date_achat'
-                }, {
-                    className: 'date',
-                    groupName: 'achat_associer_date_achat',
-                    subMenu: true
-                }
-            ];
-            var myMenuItems2 = [
-                {
-                    separator: true
-                }, {
-                    className: 'non_marque_a_vendre',
-                    groupName: 'vente_conserver_volonte_vente',
-                    selected: true
-                }, {
-                    className: 'a_vendre',
-                    groupName: 'vente_marquer_a_vendre'
-                }, {
-                    className: 'pas_a_vendre',
-                    groupName: 'vente_marquer_pas_a_vendre'
-                }, {
-                    separator: true
-                }, {
-                    className: 'save',
-                    groupName: 'save_enregistrer_changements'
-                }];
-            myMenuItems = myMenuItems.concat(myMenuItems2);
+            var achats = JSON.parse(transport.responseText);
 
-            new Proto.Menu({
-                type: 'gestion_numeros',
-                selector: '#liste_numeros',
-                className: 'menu desktop',
-                menuItems: myMenuItems
-            });
-            var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
-                'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
-                'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
-                'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
-                'enregistrer_changements'];
-            l10n_action('remplirSpanName', arr_l10n);
+            var purchase_dates_wrapper = jQuery('#update_options .purchase_dates');
+            var template = purchase_dates_wrapper.find('.alternative.date.template');
+
+            for (var i = 0; i < achats.length; i++) {
+                var item = template.clone(true).removeClass('template').data(achats[i]);
+                item.find('.description').text(achats[i].Description);
+                item.find('.day').text(achats[i].Date);
+
+                purchase_dates_wrapper.append(item);
+            }
 
             jQuery('.num_wrapper')
                 .mouseover(
@@ -406,7 +334,7 @@ function init_nav() {
 
     valeurs.find('.purchase_search').keyup(function() {
     	var searchValue = jQuery(this).val().toLowerCase();
-    	jQuery('.purchase_selection .date.day').each(function() {
+    	jQuery('.purchase_dates .date.day-row').each(function() {
     		var el = jQuery(this);
             el.toggleClass('hidden', el.text().trim().toLowerCase().indexOf(searchValue) === -1);
 		});
