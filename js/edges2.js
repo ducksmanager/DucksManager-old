@@ -55,56 +55,82 @@ function ouvrir_tranche() {
                 .update(new Element('img',{'src':'loading.gif'}));
             $('bibliotheque').insert(current_animation);
         }});
-    new Ajax.Request('Inducks.class.php', {
-        method: 'post',
-        parameters:'get_cover=true&debug='+debug+'&pays='+infos['pays']+'&magazine='+infos['magazine']+'&numero='+infos['numero'],
-        onSuccess:function(transport) {
+
+    jQuery.post('Inducks.class.php', {
+        get_cover: 'true',
+        debug: debug,
+        pays: infos['pays'],
+        magazine: infos['magazine'],
+        numero: infos['numero']
+    })
+        .done(function (data) {
             $('infobulle') && $('infobulle').remove();
-            if (transport.headerJSON==null)
-                return;
-            couverture_ouverte=true;
-            var i=0;
-            while (transport.headerJSON[i]) {
-                extraits[i]=transport.headerJSON[i];
-                i++;
-            }
-            couverture.src=transport.headerJSON['cover'];
-            current_couv=new Element('div', {'id':'page_droite_avant'})
-                .setStyle({'position':'absolute','height':hauteur_image+'px','width':parseInt(couverture.width*(hauteur_image/couverture.height))+'px','display':'none',
-                           'left':(getScreenCenterX()+tranche_en_cours.width)+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                .addClassName('page_avant');
-            var current_couv_im=new Element('img',{'id':'page_droite_avant_im','src':couverture.src,'height':'100%','width':parseInt(couverture.width*(hauteur_image/couverture.height))+'px'});
-            current_couv.update(current_couv_im);
-            $('body').insert(current_couv);
-            current_couv_im.observe('click', fermer_tranche);
-                
-            current_couv_im.observe('load',function() {
-                current_couv.setStyle({'width':parseInt(couverture.width*(hauteur_image/couverture.height))+'px'});
-                if (!ouverture_couverture)
-                    return;
-                
-                tranche_en_cours.setStyle({'width':tranche_en_cours.width+'px','height':tranche_en_cours.height+'px'});
-                new Effect.Parallel([
-                    new Effect.Morph(current_couv, {'width':parseInt(couverture.width/(hauteur_image/couverture.height))+'px', sync:true}),
-                    new Effect.BlindRight(current_couv, {sync:true}),    
-                    new Effect.Move(current_couv, {'mode':'absolute', 'x':getScreenCenterX(), 'y':getScreenCenterY()-hauteur_image/2, sync:true}),
-                    new Effect.BlindLeft(tranche_en_cours, {sync:true})
-                     ], {
-                    duration: 1,
-                    afterFinish:function() {
-                        ouverture_couverture=false;
-                        $('animation') && $('animation').remove();
-                        
-                        if (extraits.length>0 && !$('lien_apercus')) {
-                            creer_div_apercus();
-                        }
-                    }
+            if (data) {
+                couverture_ouverte = true;
+                var i = 0;
+                while (data[i]) {
+                    extraits[i] = data[i];
+                    i++;
+                }
+                couverture.src = data.cover;
+                current_couv = new Element('div', {'id': 'page_droite_avant'})
+                    .setStyle({
+                        'position': 'absolute',
+                        'height': hauteur_image + 'px',
+                        'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px',
+                        'display': 'none',
+                        'left': (getScreenCenterX() + tranche_en_cours.width) + 'px',
+                        'top': (getScreenCenterY() - hauteur_image / 2) + 'px'
+                    })
+                    .addClassName('page_avant');
+                var current_couv_im = new Element('img', {
+                    'id': 'page_droite_avant_im',
+                    'src': couverture.src,
+                    'height': '100%',
+                    'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px'
                 });
-                $('animation') && $('animation').remove();
-                action_en_cours=false;
-            });
-        }
-    });
+                current_couv.update(current_couv_im);
+                $('body').insert(current_couv);
+                current_couv_im.observe('click', fermer_tranche);
+
+                current_couv_im.observe('load', function () {
+                    current_couv.setStyle({'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px'});
+                    if (!ouverture_couverture)
+                        return;
+
+                    tranche_en_cours.setStyle({
+                        'width': tranche_en_cours.width + 'px',
+                        'height': tranche_en_cours.height + 'px'
+                    });
+                    new Effect.Parallel([
+                        new Effect.Morph(current_couv, {
+                            'width': parseInt(couverture.width / (hauteur_image / couverture.height)) + 'px',
+                            sync: true
+                        }),
+                        new Effect.BlindRight(current_couv, {sync: true}),
+                        new Effect.Move(current_couv, {
+                            'mode': 'absolute',
+                            'x': getScreenCenterX(),
+                            'y': getScreenCenterY() - hauteur_image / 2,
+                            sync: true
+                        }),
+                        new Effect.BlindLeft(tranche_en_cours, {sync: true})
+                    ], {
+                        duration: 1,
+                        afterFinish: function () {
+                            ouverture_couverture = false;
+                            $('animation') && $('animation').remove();
+
+                            if (extraits.length > 0 && !$('lien_apercus')) {
+                                creer_div_apercus();
+                            }
+                        }
+                    });
+                    $('animation') && $('animation').remove();
+                    action_en_cours = false;
+                });
+            }
+        });
 }
 
 function fermer_tranche() {

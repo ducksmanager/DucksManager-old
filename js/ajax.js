@@ -5,6 +5,7 @@ var magazine_sel=null;
 var myMenuItems;
 var etats_charges=false;
 var tab_achats=[];
+var couverture_preview;
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
@@ -12,6 +13,8 @@ function init_observers_gerer_numeros() {
 }
 
 function get_achats(continue_id) {
+    couverture_preview = jQuery('#couverture_preview');
+
     new Ajax.Request('Database.class.php', {
         method: 'post',
         parameters: 'database=true&liste_achats=true&continue=' + continue_id,
@@ -104,74 +107,72 @@ function get_achats(continue_id) {
             jQuery('.num_wrapper')
                 .mouseover(function () {
                     jQuery('.survole').removeClass('survole');
-                    lighten(jQuery(this).closest('div:not(.preview)'));
+                    lighten(jQuery(this).closest('.num_wrapper'));
                 })
                 .mouseout(function () {
-                    unlighten(jQuery(this).closest('div:not(.preview)'));
+                    unlighten(jQuery(this).closest('.num_wrapper'));
                 })
                 .mouseup(function (event) {
-                    if (isLeftClick(event)) {
-                        stop_selection(jQuery(this).closest('div:not(.preview)'));
+                    if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+                        stop_selection(jQuery(this).closest('.num_wrapper'));
                         event.stopPropagation();
                     }
                 })
                 .mousedown(function (event) {
-                    if (isLeftClick(event)) {
-                        start_selection(jQuery(this).closest('div:not(.preview)'));
+                    if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+                        start_selection(jQuery(this).closest('.num_wrapper'));
                     }
                 })
                 .mousemove(function () {
-                    pre_select(jQuery(this).closest('div:not(.preview)'));
+                    pre_select(jQuery(this).closest('.num_wrapper'));
                 });
 
-            $$('.preview').invoke('observe', 'click', function (event) {
-                var element = Event.element(event);
-                element.writeAttribute({'src': 'loading.gif'});
-                var pays = $('pays').innerHTML;
-                var magazine = $('magazine').innerHTML;
-                var numero = element.up('div').title;
-                if ($('couverture_preview').down('img')) {
-                    $('couverture_preview').down('img').remove();
-                }
-                new Ajax.Request('Inducks.class.php', {
-                    method: 'post',
-                    parameters: 'get_cover=true&debug=' + debug + '&pays=' + pays + '&magazine=' + magazine + '&numero=' + numero,
-                    onSuccess: function (transport) {
-                        element.writeAttribute({'src': 'images/icones/view.png'});
-                        if (transport.headerJSON == null) {
-                            maj_image($('couverture_preview'), 'images/cover_not_found.png', numero);
-                        }
-                        else {
-                            maj_image($('couverture_preview'), transport.headerJSON['cover'], numero);
-                        }
-                    },
-                    onError: function () {
-                        element.writeAttribute({'src': 'images/icones/view.png'});
-                        maj_image($('couverture_preview'), 'images/cover_not_found.png', numero);
-                    }
-                });
+            jQuery('.preview').click(function(event) {
+                var element = jQuery(this);
+                element.attr({src: 'loading.gif'});
+
+                var numero_wrapper = element.closest('.num_wrapper');
+
+                couverture_preview.find('img').remove();
+
+                jQuery.post('Inducks.class.php', {
+                    get_cover: 'true',
+                    debug: debug,
+                    pays: jQuery('#pays').text(),
+                    magazine: jQuery('#magazine').text(),
+                    numero: numero_wrapper.attr('title')
+                })
+                    .done(function (data) {
+                        maj_image(jQuery('#couverture_preview'), (data && data.cover) || 'images/cover_not_found.png', numero_wrapper);
+                    })
+                    .fail(function () {
+                        maj_image(jQuery('#couverture_preview'), 'images/cover_not_found.png', numero_wrapper);
+                    })
+                    .always(function() {
+                        element.attr({src: 'images/icones/view.png'});
+                    });
+                event.stopPropagation();
+
             });
 
-            $('couverture_preview').down('.fermer')
-                .setOpacity(0.5)
-                .observe('click', function () {
-                    $('couverture_preview').down('img').remove();
-                    $('couverture_preview').down('.fermer').addClassName('cache');
+            couverture_preview.find('.fermer')
+                .click(function () {
+                    jQuery(this).addClass('cache');
+                    couverture_preview.find('img').remove();
                 });
-
-            var image_checked = new Image;
-            image_checked.src = "checkedbox.png";
         }
     });
 }
 
-function maj_image(element, image, numero) {
-    var largeur_image=$('colonne_gauche').scrollWidth;
-	element.setStyle({'width':largeur_image+'px',
-		  			  'top':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top'])+'px'});
+function maj_image(element, image, numero_wrapper) {
+    var largeur_image=jQuery('#colonne_gauche').prop('scrollWidth');
+	element.css({
+        width: largeur_image+'px',
+        top: numero_wrapper.offset().top +'px'
+	});
 
-    element.down('.fermer').removeClassName('cache');
-    element.insert(new Element('img').writeAttribute({'src':image}));
+    element.find('>.fermer').removeClass('cache');
+    element.append(jQuery('<img>').attr({'src':image}));
 }
 
 function charger_evenements() {

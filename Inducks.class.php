@@ -353,7 +353,8 @@ elseif (isset($_POST['get_cover'])) {
 	if (count($resultat_get_extraits) == 0)
 		$resultats['cover']='images/cover_not_found.png';
 
-	echo header("X-JSON: " . json_encode($resultats));
+    header('Content-Type: application/json');
+	echo json_encode($resultats);
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
 	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
