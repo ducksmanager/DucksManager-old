@@ -1444,16 +1444,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             ]
                         ],
                         [
-                            'nom' => 'Date d\'achat',
-                            'id' => 'purchase_id',
-                            'defaut' => 'ne_pas_changer',
-                            'alternatives' => [
-                                'ne_pas_changer' => NE_PAS_CHANGER,
-                                'pas_date' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
-                                'date' => [ACHAT_ASSOCIER_DATE_ACHAT, ACHAT_ASSOCIER_DATE_ACHAT_COURT]
-                            ]
-                        ],
-                        [
                             'nom' => 'A vendre',
                             'id' => 'for_sale',
                             'defaut' => 'ne_pas_changer',
@@ -1461,6 +1451,16 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 'ne_pas_changer' => NE_PAS_CHANGER,
                                 'a_vendre' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
                                 'pas_a_vendre' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
+                            ]
+                        ],
+                        [
+                            'nom' => 'Date d\'achat',
+                            'id' => 'purchase_id',
+                            'defaut' => 'ne_pas_changer',
+                            'alternatives' => [
+                                'ne_pas_changer' => NE_PAS_CHANGER,
+                                'pas_date' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
+                                'date' => [ACHAT_ASSOCIER_DATE_ACHAT, ACHAT_ASSOCIER_DATE_ACHAT_COURT]
                             ]
                         ]
                     ];
@@ -1492,26 +1492,41 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 ">
                                         <input type="text" value="" size="15" class="list-group-item col-lg-12 alternative purchase_search" placeholder="Type to search">
                                         <div class="list-group-item col-lg-12 alternative purchase_dates">
-                                            <button type="button" name="date" value-short="Link"
-                                                    class="list-group-item col-lg-12 alternative date">
+                                            <button type="button" name="date"
+                                                    class="list-group-item col-lg-12 alternative date day-row">
                                                 <div class="alternative-choice">
                                                     &nbsp;
                                                 </div>
-                                                Date description
+                                                <span class="description">
+                                                    Description
+                                                </span>
+                                                <div class="day">
+                                                    Date
+                                                </div>
                                             </button>
-                                            <button type="button" name="date" value-short="Link"
-                                                    class="list-group-item col-lg-12 alternative date">
+                                            <button type="button" name="date"
+                                                    class="list-group-item col-lg-12 alternative date day-row">
                                                 <div class="alternative-choice">
                                                     &nbsp;
                                                 </div>
-                                                Date description
+                                                <span class="description">
+                                                    Description
+                                                </span>
+                                                <div class="day">
+                                                    Date
+                                                </div>
                                             </button>
-                                            <button type="button" name="date" value-short="Link"
-                                                    class="list-group-item col-lg-12 alternative date">
+                                            <button type="button" name="date"
+                                                    class="list-group-item col-lg-12 alternative date day-row">
                                                 <div class="alternative-choice">
                                                     &nbsp;
                                                 </div>
-                                                Date description
+                                                <span class="description">
+                                                    Description
+                                                </span>
+                                                <div class="day">
+                                                    Date
+                                                </div>
                                             </button>
                                         </div>
                                     </div>

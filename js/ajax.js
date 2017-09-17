@@ -432,17 +432,25 @@ function init_nav() {
     	jQuery(this).find('.alternative').eq(0).trigger('click');
     });
 
+    valeurs.find('.purchase_search').keyup(function() {
+    	var searchValue = jQuery(this).val().toLowerCase();
+    	jQuery('.purchase_selection .date.day').each(function() {
+    		var el = jQuery(this);
+            el.toggleClass('hidden', el.text().trim().toLowerCase().indexOf(searchValue) === -1);
+		});
+	});
+
     navbar.find('#save').click(function() {
     	var numeros = jQuery.map(jQuery('#liste_numeros .num_checked'), function(element) {
     		return jQuery(element).attr('title');
     	});
     	var section_options = jQuery('#update_options');
-    	var valeurs_options = [];
+    	var valeurs_options = {};
     	jQuery.each(section_options.find('.option'), function(i, section_option) {
     		valeurs_options[jQuery(section_option).attr('name')] = jQuery(section_option).find('.valeur').attr('name');
 		});
 
-        update_numeros(numeros, valeurs_options['condition'], valeurs_options['purchase_id'], valeurs_options['for_sale']);
+        update_numeros(numeros, valeurs_options.condition, valeurs_options.purchase_id, valeurs_options.for_sale);
 	});
 
     position_nav();

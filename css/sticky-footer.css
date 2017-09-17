@@ -89,6 +89,12 @@
     padding-right: 26px;
 }
 
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .day {
+    float: right;
+    color: grey;
+    padding-right: 5px;
+}
+
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection button {
     border-top: none;
     border-right: none;
@@ -195,6 +201,7 @@
     text-align: center;
     height: 100%;
     padding-left: 30px;
+    cursor: pointer;
 }
 
 #update_menu.affix #update_options #save h4 {
