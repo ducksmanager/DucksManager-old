@@ -12,193 +12,157 @@ function init_observers_gerer_numeros() {
 }
 
 function get_achats(continue_id) {
-	new Ajax.Request('Database.class.php', {
-	   method: 'post',
-	   parameters:'database=true&liste_achats=true&continue='+continue_id,
-	   onSuccess:function(transport) {
-	    	var achats_courants=JSON.parse(transport.responseText);
-	    	for (var i=0; i< achats_courants.length; i++) {
-	    		if (achats_courants[i]['continue']) {
-	    			get_achats(achat['id']);
-	    			return;
-	    		}
-	    		var achat=achats_courants[i];
-	    		achat['name']='Achat "'+achat.description+'"<br />'+achat.date;
-	    		achat['className']='date2';
-	    		achat['groupName']='achat';
-	    		achat['selected']=false;
-	    		achat['id']=achat.id;
-	    		tab_achats[tab_achats.length]=achat;
-	    	}
-			myMenuItems = [
-			  {
-			    separator: true
-			  },{
-			    className: 'non_marque', 
-			    groupName: 'etat_conserver_etat_actuel',
-			    selected: true
-			  },{
-			    className: 'non_possede', 
-			    groupName: 'etat_marquer_non_possede'
-			  },{
-			    className: 'possede',  
-			    groupName: 'etat_marquer_possede'
-			  },{
-			    className: 'mauvais',  
-			    groupName: 'etat_marquer_mauvais_etat'
-			  },{
-			    className: 'moyen',  
-			    groupName: 'etat_marquer_etat_moyen'
-			  },{
-			    className: 'bon',  
-			    groupName: 'etat_marquer_bon_etat'
-			  },{
-			    separator: true
-			  },{
-			    className: 'non_date',
-			    groupName: 'achat_conserver_date_achat',
-			    selected: true
-			  },{
-			    className: 'pas_date',
-			    groupName: 'achat_desassocier_date_achat'
-			  },{
-			    className: 'date',
-			    groupName: 'achat_associer_date_achat',
-			    subMenu : true
-			  }
-			];
-			var myMenuItems2=[
-			    {
-			    separator: true
-			  },{
-			    className: 'non_marque_a_vendre', 
-			    groupName: 'vente_conserver_volonte_vente',
-			    selected: true
-			  },{
-			    className: 'a_vendre', 
-			    groupName: 'vente_marquer_a_vendre'
-			  },{
-			    className: 'pas_a_vendre', 
-			    groupName: 'vente_marquer_pas_a_vendre'
-			  },{
-			    separator: true
-			  },{
-			    className: 'save',
-                            groupName: 'save_enregistrer_changements'
-			  }];
-			myMenuItems=myMenuItems.concat(myMenuItems2);
-			
-			new Proto.Menu({
-                          type: 'gestion_numeros',
-			  selector: '#liste_numeros',
-			  className: 'menu desktop',
-			  menuItems: myMenuItems
-			});
-            var arr_l10n=['conserver_etat_actuel','marquer_non_possede','marquer_possede',
-                            'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
-                            'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
-                            'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
-                            'enregistrer_changements'];
-            l10n_action('remplirSpanName',arr_l10n);
+    new Ajax.Request('Database.class.php', {
+        method: 'post',
+        parameters: 'database=true&liste_achats=true&continue=' + continue_id,
+        onSuccess: function (transport) {
+            var achats_courants = JSON.parse(transport.responseText);
+            for (var i = 0; i < achats_courants.length; i++) {
+                if (achats_courants[i]['continue']) {
+                    get_achats(achat['id']);
+                    return;
+                }
+                var achat = achats_courants[i];
+                achat['name'] = 'Achat "' + achat.description + '"<br />' + achat.date;
+                achat['className'] = 'date2';
+                achat['groupName'] = 'achat';
+                achat['selected'] = false;
+                achat['id'] = achat.id;
+                tab_achats[tab_achats.length] = achat;
+            }
+            myMenuItems = [
+                {
+                    separator: true
+                }, {
+                    className: 'non_marque',
+                    groupName: 'etat_conserver_etat_actuel',
+                    selected: true
+                }, {
+                    className: 'non_possede',
+                    groupName: 'etat_marquer_non_possede'
+                }, {
+                    className: 'possede',
+                    groupName: 'etat_marquer_possede'
+                }, {
+                    className: 'mauvais',
+                    groupName: 'etat_marquer_mauvais_etat'
+                }, {
+                    className: 'moyen',
+                    groupName: 'etat_marquer_etat_moyen'
+                }, {
+                    className: 'bon',
+                    groupName: 'etat_marquer_bon_etat'
+                }, {
+                    separator: true
+                }, {
+                    className: 'non_date',
+                    groupName: 'achat_conserver_date_achat',
+                    selected: true
+                }, {
+                    className: 'pas_date',
+                    groupName: 'achat_desassocier_date_achat'
+                }, {
+                    className: 'date',
+                    groupName: 'achat_associer_date_achat',
+                    subMenu: true
+                }
+            ];
+            var myMenuItems2 = [
+                {
+                    separator: true
+                }, {
+                    className: 'non_marque_a_vendre',
+                    groupName: 'vente_conserver_volonte_vente',
+                    selected: true
+                }, {
+                    className: 'a_vendre',
+                    groupName: 'vente_marquer_a_vendre'
+                }, {
+                    className: 'pas_a_vendre',
+                    groupName: 'vente_marquer_pas_a_vendre'
+                }, {
+                    separator: true
+                }, {
+                    className: 'save',
+                    groupName: 'save_enregistrer_changements'
+                }];
+            myMenuItems = myMenuItems.concat(myMenuItems2);
 
-           var elements_numeros = $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num');
+            new Proto.Menu({
+                type: 'gestion_numeros',
+                selector: '#liste_numeros',
+                className: 'menu desktop',
+                menuItems: myMenuItems
+            });
+            var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
+                'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
+                'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
+                'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
+                'enregistrer_changements'];
+            l10n_action('remplirSpanName', arr_l10n);
 
-           elements_numeros.invoke(
-		        'observe',
-		        'mouseover',
-		        function(event) {
-		        	$$('.survole').invoke('removeClassName','survole');
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-                    lighten(element);
-		          }
-		    ); 
-		    elements_numeros.invoke(
-		        'observe',
-		        'mouseout',
-		        function(event) {
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-		        	unlighten(element);
-		        }
-		    ); 
-		    elements_numeros.invoke(
-		        'observe',
-		        'mouseup',
-		        function(event) {
-		        	if (event.isLeftClick()) {
-			        	var element=Event.element(event);
-	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-	                        element=element.up('div');
-		        		stop_selection(element);
-						event.stopPropagation();
-		        	}
-		        }
-		    ); 
-		    elements_numeros.invoke(
-		        'observe',
-		        'mousedown',
-		        function(event) {
-                    if (event.isLeftClick()) {
-    		        	var element=Event.element(event);
-                        if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                            element=element.up('div');
-                        start_selection(element);
-		        	}
-		        }
-		    );
-		    elements_numeros.invoke(
-		        'observe',
-		        'mousemove',
-		        function(event) {
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-		        	pre_select(element);
-		          }
-		    );  
-                        
-            $$('.preview').invoke('observe','click',function(event) {
-                var element=Event.element(event);
-                element.writeAttribute({'src':'loading.gif'});
-                var pays=$('pays').innerHTML;
-                var magazine=$('magazine').innerHTML;
-                var numero=element.up('div').title;
+            jQuery('.num_wrapper')
+                .mouseover(function () {
+                    jQuery('.survole').removeClass('survole');
+                    lighten(jQuery(this).closest('div:not(.preview)'));
+                })
+                .mouseout(function () {
+                    unlighten(jQuery(this).closest('div:not(.preview)'));
+                })
+                .mouseup(function (event) {
+                    if (isLeftClick(event)) {
+                        stop_selection(jQuery(this).closest('div:not(.preview)'));
+                        event.stopPropagation();
+                    }
+                })
+                .mousedown(function (event) {
+                    if (isLeftClick(event)) {
+                        start_selection(jQuery(this).closest('div:not(.preview)'));
+                    }
+                })
+                .mousemove(function () {
+                    pre_select(jQuery(this).closest('div:not(.preview)'));
+                });
+
+            $$('.preview').invoke('observe', 'click', function (event) {
+                var element = Event.element(event);
+                element.writeAttribute({'src': 'loading.gif'});
+                var pays = $('pays').innerHTML;
+                var magazine = $('magazine').innerHTML;
+                var numero = element.up('div').title;
                 if ($('couverture_preview').down('img')) {
-                	$('couverture_preview').down('img').remove();
+                    $('couverture_preview').down('img').remove();
                 }
                 new Ajax.Request('Inducks.class.php', {
                     method: 'post',
-                    parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
-                    onSuccess:function(transport) {
-                        element.writeAttribute({'src':'images/icones/view.png'});
-                        if (transport.headerJSON==null) {
-                            maj_image($('couverture_preview'),'images/cover_not_found.png', numero);
+                    parameters: 'get_cover=true&debug=' + debug + '&pays=' + pays + '&magazine=' + magazine + '&numero=' + numero,
+                    onSuccess: function (transport) {
+                        element.writeAttribute({'src': 'images/icones/view.png'});
+                        if (transport.headerJSON == null) {
+                            maj_image($('couverture_preview'), 'images/cover_not_found.png', numero);
                         }
                         else {
-                        	maj_image($('couverture_preview'),transport.headerJSON['cover'], numero);
+                            maj_image($('couverture_preview'), transport.headerJSON['cover'], numero);
                         }
                     },
-                    onError:function() {
-                        element.writeAttribute({'src':'images/icones/view.png'});
-                        maj_image($('couverture_preview'),'images/cover_not_found.png', numero);
+                    onError: function () {
+                        element.writeAttribute({'src': 'images/icones/view.png'});
+                        maj_image($('couverture_preview'), 'images/cover_not_found.png', numero);
                     }
                 });
             });
-            
+
             $('couverture_preview').down('.fermer')
-            	.setOpacity(0.5)
-            	.observe('click',function() {
-	            	$('couverture_preview').down('img').remove();
-	            	$('couverture_preview').down('.fermer').addClassName('cache');
-	            });
-            
-		    var image_checked= new Image;
+                .setOpacity(0.5)
+                .observe('click', function () {
+                    $('couverture_preview').down('img').remove();
+                    $('couverture_preview').down('.fermer').addClassName('cache');
+                });
+
+            var image_checked = new Image;
             image_checked.src = "checkedbox.png";
-	   }
-	});
+        }
+    });
 }
 
 function maj_image(element, image, numero) {
@@ -406,4 +370,8 @@ function afficher_numeros(pays,magazine) {
 	            }
            }
 	});
+}
+
+function isLeftClick(event) {
+	return event.which === 1;
 }

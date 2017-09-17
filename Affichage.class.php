@@ -198,7 +198,7 @@ class Affichage {
                 $sous_titre=$infos->sous_titre;
                 $possede=$infos->est_possede;
                 ?>
-                <div class="num_<?=$possede ? 'possede' : 'manque'?>"
+                <div class="num_wrapper num_<?=$possede ? 'possede' : 'manque'?>"
                      id="n<?=($cpt++)?>" title="<?=$numero?>">
                     <a name="<?=$numero?>"></a>
                     <img class="preview" src="images/icones/view.png" />

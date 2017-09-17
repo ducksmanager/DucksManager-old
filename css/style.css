@@ -157,8 +157,10 @@ a.important:HOVER {
 }
 
 .num_checked {
-	background:url('../checkedbox.png') no-repeat right center;
-	border:1px solid white;
+	background-image: url(../checkedbox.png);
+	background-repeat: no-repeat;
+	background-position: right center;
+	outline:1px solid white;
 }
 
 .num_mauvais {
@@ -189,6 +191,11 @@ a.important:HOVER {
 	background-color:#808080;
 	cursor:default;
 	height:16px;
+}
+
+.half_transparent {
+	opacity: 0.5;
+	filter: alpha(opacity=50);
 }
 
 .survole {
