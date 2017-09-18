@@ -5,6 +5,7 @@ var magazine_sel=null;
 var myMenuItems;
 var etats_charges=false;
 var tab_achats=[];
+var couverture_preview;
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
@@ -12,208 +13,179 @@ function init_observers_gerer_numeros() {
 }
 
 function get_achats(continue_id) {
-	new Ajax.Request('Database.class.php', {
-	   method: 'post',
-	   parameters:'database=true&liste_achats=true&continue='+continue_id,
-	   onSuccess:function(transport) {
-	    	var achats_courants=JSON.parse(transport.responseText);
-	    	for (var i=0; i< achats_courants.length; i++) {
-	    		if (achats_courants[i]['continue']) {
-	    			get_achats(achat['id']);
-	    			return;
-	    		}
-	    		var achat=achats_courants[i];
-	    		achat['name']='Achat "'+achat.description+'"<br />'+achat.date;
-	    		achat['className']='date2';
-	    		achat['groupName']='achat';
-	    		achat['selected']=false;
-	    		achat['id']=achat.id;
-	    		tab_achats[tab_achats.length]=achat;
-	    	}
-			myMenuItems = [
-			  {
-			    separator: true
-			  },{
-			    className: 'non_marque', 
-			    groupName: 'etat_conserver_etat_actuel',
-			    selected: true
-			  },{
-			    className: 'non_possede', 
-			    groupName: 'etat_marquer_non_possede'
-			  },{
-			    className: 'possede',  
-			    groupName: 'etat_marquer_possede'
-			  },{
-			    className: 'mauvais',  
-			    groupName: 'etat_marquer_mauvais_etat'
-			  },{
-			    className: 'moyen',  
-			    groupName: 'etat_marquer_etat_moyen'
-			  },{
-			    className: 'bon',  
-			    groupName: 'etat_marquer_bon_etat'
-			  },{
-			    separator: true
-			  },{
-			    className: 'non_date',
-			    groupName: 'achat_conserver_date_achat',
-			    selected: true
-			  },{
-			    className: 'pas_date',
-			    groupName: 'achat_desassocier_date_achat'
-			  },{
-			    className: 'date',
-			    groupName: 'achat_associer_date_achat',
-			    subMenu : true
-			  }
-			];
-			var myMenuItems2=[
-			    {
-			    separator: true
-			  },{
-			    className: 'non_marque_a_vendre', 
-			    groupName: 'vente_conserver_volonte_vente',
-			    selected: true
-			  },{
-			    className: 'a_vendre', 
-			    groupName: 'vente_marquer_a_vendre'
-			  },{
-			    className: 'pas_a_vendre', 
-			    groupName: 'vente_marquer_pas_a_vendre'
-			  },{
-			    separator: true
-			  },{
-			    className: 'save',
-                            groupName: 'save_enregistrer_changements'
-			  }];
-			myMenuItems=myMenuItems.concat(myMenuItems2);
-			
-			new Proto.Menu({
-                          type: 'gestion_numeros',
-			  selector: '#liste_numeros',
-			  className: 'menu desktop',
-			  menuItems: myMenuItems
-			});
-            var arr_l10n=['conserver_etat_actuel','marquer_non_possede','marquer_possede',
-                            'marquer_mauvais_etat','marquer_etat_moyen','marquer_bon_etat',
-                            'conserver_date_achat','desassocier_date_achat','associer_date_achat','nouvelle_date_achat',
-                            'conserver_volonte_vente','marquer_a_vendre','marquer_pas_a_vendre',
-                            'enregistrer_changements'];
-            l10n_action('remplirSpanName',arr_l10n);
+    couverture_preview = jQuery('#couverture_preview');
 
-           var elements_numeros = $$('.num_manque','.num_possede, .num_possede .num, .num_manque .num');
-
-           elements_numeros.invoke(
-		        'observe',
-		        'mouseover',
-		        function(event) {
-		        	$$('.survole').invoke('removeClassName','survole');
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-                    lighten(element);
-		          }
-		    ); 
-		    elements_numeros.invoke(
-		        'observe',
-		        'mouseout',
-		        function(event) {
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-		        	unlighten(element);
-		        }
-		    ); 
-		    elements_numeros.invoke(
-		        'observe',
-		        'mouseup',
-		        function(event) {
-		        	if (event.isLeftClick()) {
-			        	var element=Event.element(event);
-	                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-	                        element=element.up('div');
-		        		stop_selection(element);
-
-		        		var nb_selectionnes = jQuery('#liste_numeros .num_checked').length;
-                        jQuery('#update_menu')
-							.toggleClass('shown', nb_selectionnes > 0)
-							.find('.navbar .nb_selectionnes').text(nb_selectionnes);
-
-						event.stopPropagation();
-		        	}
-		        }
-		    ); 
-		    elements_numeros.invoke(
-		        'observe',
-		        'mousedown',
-		        function(event) {
-                    if (event.isLeftClick()) {
-    		        	var element=Event.element(event);
-                        if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                            element=element.up('div');
-                        start_selection(element);
-		        	}
-		        }
-		    );
-		    elements_numeros.invoke(
-		        'observe',
-		        'mousemove',
-		        function(event) {
-		        	var element=Event.element(event);
-                    if (!(element.tagName=='DIV') && !(element.hasClassName('preview')))
-                        element=element.up('div');
-		        	pre_select(element);
-		          }
-		    );  
-                        
-            $$('.preview').invoke('observe','click',function(event) {
-                var element=Event.element(event);
-                element.writeAttribute({'src':'loading.gif'});
-                var pays=$('pays').innerHTML;
-                var magazine=$('magazine').innerHTML;
-                var numero=element.up('div').title;
-                if ($('couverture_preview').down('img')) {
-                	$('couverture_preview').down('img').remove();
+    new Ajax.Request('Database.class.php', {
+        method: 'post',
+        parameters: 'database=true&liste_achats=true&continue=' + continue_id,
+        onSuccess: function (transport) {
+            var achats_courants = JSON.parse(transport.responseText);
+            for (var i = 0; i < achats_courants.length; i++) {
+                if (achats_courants[i]['continue']) {
+                    get_achats(achat['id']);
+                    return;
                 }
-                new Ajax.Request('Inducks.class.php', {
-                    method: 'post',
-                    parameters:'get_cover=true&debug='+debug+'&pays='+pays+'&magazine='+magazine+'&numero='+numero,
-                    onSuccess:function(transport) {
-                        element.writeAttribute({'src':'images/icones/view.png'});
-                        if (transport.headerJSON==null) {
-                            maj_image($('couverture_preview'),'images/cover_not_found.png', numero);
-                        }
-                        else {
-                        	maj_image($('couverture_preview'),transport.headerJSON['cover'], numero);
-                        }
-                    },
-                    onError:function() {
-                        element.writeAttribute({'src':'images/icones/view.png'});
-                        maj_image($('couverture_preview'),'images/cover_not_found.png', numero);
-                    }
-                });
+                var achat = achats_courants[i];
+                achat['name'] = 'Achat "' + achat.description + '"<br />' + achat.date;
+                achat['className'] = 'date2';
+                achat['groupName'] = 'achat';
+                achat['selected'] = false;
+                achat['id'] = achat.id;
+                tab_achats[tab_achats.length] = achat;
+            }
+            myMenuItems = [
+                {
+                    separator: true
+                }, {
+                    className: 'non_marque',
+                    groupName: 'etat_conserver_etat_actuel',
+                    selected: true
+                }, {
+                    className: 'non_possede',
+                    groupName: 'etat_marquer_non_possede'
+                }, {
+                    className: 'possede',
+                    groupName: 'etat_marquer_possede'
+                }, {
+                    className: 'mauvais',
+                    groupName: 'etat_marquer_mauvais_etat'
+                }, {
+                    className: 'moyen',
+                    groupName: 'etat_marquer_etat_moyen'
+                }, {
+                    className: 'bon',
+                    groupName: 'etat_marquer_bon_etat'
+                }, {
+                    separator: true
+                }, {
+                    className: 'non_date',
+                    groupName: 'achat_conserver_date_achat',
+                    selected: true
+                }, {
+                    className: 'pas_date',
+                    groupName: 'achat_desassocier_date_achat'
+                }, {
+                    className: 'date',
+                    groupName: 'achat_associer_date_achat',
+                    subMenu: true
+                }
+            ];
+            var myMenuItems2 = [
+                {
+                    separator: true
+                }, {
+                    className: 'non_marque_a_vendre',
+                    groupName: 'vente_conserver_volonte_vente',
+                    selected: true
+                }, {
+                    className: 'a_vendre',
+                    groupName: 'vente_marquer_a_vendre'
+                }, {
+                    className: 'pas_a_vendre',
+                    groupName: 'vente_marquer_pas_a_vendre'
+                }, {
+                    separator: true
+                }, {
+                    className: 'save',
+                    groupName: 'save_enregistrer_changements'
+                }];
+            myMenuItems = myMenuItems.concat(myMenuItems2);
+
+            new Proto.Menu({
+                type: 'gestion_numeros',
+                selector: '#liste_numeros',
+                className: 'menu desktop',
+                menuItems: myMenuItems
             });
-            
-            $('couverture_preview').down('.fermer')
-            	.setOpacity(0.5)
-            	.observe('click',function() {
-	            	$('couverture_preview').down('img').remove();
-	            	$('couverture_preview').down('.fermer').addClassName('cache');
-	            });
-            
-		    var image_checked= new Image;
-            image_checked.src = "checkedbox.png";
-	   }
-	});
+            var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
+                'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
+                'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
+                'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
+                'enregistrer_changements'];
+            l10n_action('remplirSpanName', arr_l10n);
+
+            jQuery('.num_wrapper')
+                .mouseover(
+                    function () {
+                        jQuery('.survole').removeClass('survole');
+
+                        lighten(jQuery(this).closest('.num_wrapper'));
+                    })
+                .mouseout(
+                    function () {
+                        unlighten(jQuery(this).closest('.num_wrapper'));
+                    })
+                .mouseup(
+                    function (event) {
+                        if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+
+                            stop_selection(jQuery(this).closest('.num_wrapper'));
+                            var nb_selectionnes = jQuery('#liste_numeros .num_checked').length;
+                            jQuery('#update_menu')
+                                .toggleClass('shown', nb_selectionnes > 0)
+                                .find('.navbar .nb_selectionnes').text(nb_selectionnes);
+                            event.stopPropagation();
+                        }
+                    })
+                .mousedown(
+                    function (event) {
+                        if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+
+                            start_selection(jQuery(this).closest('.num_wrapper'));
+                        }
+                    })
+                .mousemove(
+                    function () {
+                        pre_select(jQuery(this).closest('.num_wrapper'));
+                    });
+
+
+            jQuery('.preview').click(function (event) {
+                var element = jQuery(this);
+                element.attr({src: 'loading.gif'});
+
+                var numero_wrapper = element.closest('.num_wrapper');
+
+                couverture_preview.find('img').remove();
+
+                jQuery.post('Inducks.class.php', {
+                    get_cover: 'true',
+                    debug: debug,
+                    pays: jQuery('#pays').text(),
+                    magazine: jQuery('#magazine').text(),
+                    numero: numero_wrapper.attr('title')
+                })
+                    .done(function (data) {
+                        maj_image(jQuery('#couverture_preview'), (data && data.cover) || 'images/cover_not_found.png', numero_wrapper);
+                    })
+                    .fail(function () {
+                        maj_image(jQuery('#couverture_preview'), 'images/cover_not_found.png', numero_wrapper);
+                    })
+                    .always(function () {
+                        element.attr({src: 'images/icones/view.png'});
+                    });
+                event.stopPropagation();
+
+            });
+
+            couverture_preview.find('.fermer')
+                .click(function () {
+                    jQuery(this).addClass('cache');
+                    couverture_preview.find('img').remove();
+                });
+        }
+    });
 }
 
-function maj_image(element, image, numero) {
-    var largeur_image=$('colonne_gauche').scrollWidth;
-	element.setStyle({'width':largeur_image+'px',
-		  			  'top':($$('[title="'+numero+'"]')[0].cumulativeOffset()['top'])+'px'});
+function maj_image(element, image, numero_wrapper) {
+    var largeur_image=jQuery('#colonne_gauche').prop('scrollWidth');
+	element.css({
+        width: largeur_image+'px',
+        top: numero_wrapper.offset().top +'px'
+	});
 
-    element.down('.fermer').removeClassName('cache');
-    element.insert(new Element('img').writeAttribute({'src':image}));
+    element.find('>.fermer').removeClass('cache');
+    element.append(jQuery('<img>').attr({'src':image}));
 }
 
 function charger_evenements() {
@@ -494,4 +466,8 @@ function afficher_numeros(pays,magazine) {
 	            }
            }
 	});
+}
+
+function isLeftClick(event) {
+	return event.which === 1;
 }

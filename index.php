@@ -356,7 +356,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 										<div id="evenements"><?=CHARGEMENT?>...</div>
 									</div>
                                     <div id="couverture_preview">
-                                    	<div class="fermer cache"><?=FERMER?></div>
+                                    	<div class="fermer half_transparent cache"><?=FERMER?></div>
                                     </div>
                                 </td>
                             </tr></tbody>
