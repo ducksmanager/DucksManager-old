@@ -89,7 +89,7 @@
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search {
-    padding-right: 2px;
+    padding-right: 10px;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .description {
@@ -120,10 +120,13 @@
     visibility: visible;
 }
 
-
 #update_menu.affix #update_options .option_nom .alternatives.invisible {
     visibility: hidden;
     opacity: 0;
+}
+
+#update_menu.affix #update_options .option_nom .purchase_selection.alternatives.invisible {
+    display: none !important;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.invisible.animated {

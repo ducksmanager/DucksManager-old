@@ -2,19 +2,11 @@ var nom_pays_old="";
 var nom_magazine_old="";
 var pays_sel=null;
 var magazine_sel=null;
-var myMenuItems;
 var etats_charges=false;
 var tab_achats=[];
 var couverture_preview;
 
-function init_observers_gerer_numeros() {
-	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
-	get_achats();
-}
-
-function get_achats() {
-    couverture_preview = jQuery('#couverture_preview');
-
+function get_achats(callback) {
     new Ajax.Request('Database.class.php', {
         method: 'post',
         parameters: 'database=true&liste_achats=true',
@@ -32,75 +24,7 @@ function get_achats() {
                 purchase_dates_wrapper.append(item);
             }
 
-            jQuery('.num_wrapper')
-                .mouseover(
-                    function () {
-                        jQuery('.survole').removeClass('survole');
-
-                        lighten(jQuery(this).closest('.num_wrapper'));
-                    })
-                .mouseout(
-                    function () {
-                        unlighten(jQuery(this).closest('.num_wrapper'));
-                    })
-                .mouseup(
-                    function (event) {
-                        if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
-
-                            stop_selection(jQuery(this).closest('.num_wrapper'));
-                            var nb_selectionnes = jQuery('#liste_numeros .num_checked').length;
-                            jQuery('#update_menu')
-                                .toggleClass('shown', nb_selectionnes > 0)
-                                .find('.navbar .nb_selectionnes').text(nb_selectionnes);
-                            event.stopPropagation();
-                        }
-                    })
-                .mousedown(
-                    function (event) {
-                        if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
-
-                            start_selection(jQuery(this).closest('.num_wrapper'));
-                        }
-                    })
-                .mousemove(
-                    function () {
-                        pre_select(jQuery(this).closest('.num_wrapper'));
-                    });
-
-
-            jQuery('.preview').click(function (event) {
-                var element = jQuery(this);
-                element.attr({src: 'loading.gif'});
-
-                var numero_wrapper = element.closest('.num_wrapper');
-
-                couverture_preview.find('img').remove();
-
-                jQuery.post('Inducks.class.php', {
-                    get_cover: 'true',
-                    debug: debug,
-                    pays: jQuery('#pays').text(),
-                    magazine: jQuery('#magazine').text(),
-                    numero: numero_wrapper.attr('title')
-                })
-                    .done(function (data) {
-                        maj_image(jQuery('#couverture_preview'), (data && data.cover) || 'images/cover_not_found.png', numero_wrapper);
-                    })
-                    .fail(function () {
-                        maj_image(jQuery('#couverture_preview'), 'images/cover_not_found.png', numero_wrapper);
-                    })
-                    .always(function () {
-                        element.attr({src: 'images/icones/view.png'});
-                    });
-                event.stopPropagation();
-
-            });
-
-            couverture_preview.find('.fermer')
-                .click(function () {
-                    jQuery(this).addClass('cache');
-                    couverture_preview.find('img').remove();
-                });
+            callback();
         }
     });
 }
@@ -182,6 +106,84 @@ function initTextures() {
                }
         });
     });
+}
+
+function init_liste_numeros() {
+    jQuery('.num_wrapper')
+        .mouseover(
+            function () {
+                jQuery('.survole').removeClass('survole');
+
+                lighten(jQuery(this).closest('.num_wrapper'));
+            })
+        .mouseout(
+            function () {
+                unlighten(jQuery(this).closest('.num_wrapper'));
+            })
+        .mouseup(
+            function (event) {
+                if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+
+                    stop_selection(jQuery(this).closest('.num_wrapper'));
+                    var nb_selectionnes = jQuery('#liste_numeros .num_checked').length;
+                    jQuery('#update_menu')
+                        .toggleClass('shown', nb_selectionnes > 0)
+                        .find('.navbar .nb_selectionnes').text(nb_selectionnes);
+                    event.stopPropagation();
+                }
+            })
+        .mousedown(
+            function (event) {
+                if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+
+                    start_selection(jQuery(this).closest('.num_wrapper'));
+                }
+            })
+        .mousemove(
+            function () {
+                pre_select(jQuery(this).closest('.num_wrapper'));
+            });
+
+
+    jQuery('.preview').click(function (event) {
+        var element = jQuery(this);
+        element.attr({src: 'loading.gif'});
+
+        var numero_wrapper = element.closest('.num_wrapper');
+
+        couverture_preview.find('img').remove();
+
+        jQuery.post('Inducks.class.php', {
+            get_cover: 'true',
+            debug: debug,
+            pays: jQuery('#pays').text(),
+            magazine: jQuery('#magazine').text(),
+            numero: numero_wrapper.attr('title')
+        })
+            .done(function (data) {
+                maj_image(jQuery('#couverture_preview'), (data && data.cover) || 'images/cover_not_found.png', numero_wrapper);
+            })
+            .fail(function () {
+                maj_image(jQuery('#couverture_preview'), 'images/cover_not_found.png', numero_wrapper);
+            })
+            .always(function () {
+                element.attr({src: 'images/icones/view.png'});
+            });
+        event.stopPropagation();
+
+    });
+
+    couverture_preview = jQuery('#couverture_preview');
+
+    couverture_preview.find('.fermer')
+        .click(function () {
+            jQuery(this).addClass('cache');
+            couverture_preview.find('img').remove();
+        });
+
+    if (location.hash) {
+        $('liste_numeros').select('[name="' + location.hash.replace(/#/, '') + '"]')[0].scrollIntoView(true);
+    }
 }
 
 function select_sous_texture (n) {
@@ -311,15 +313,14 @@ function init_nav() {
     valeurs
 		.find('.alternative')
 			.click(function() {
-				var alternatives_wrapper = jQuery(this).closest('.option');
-                alternatives_wrapper.find('.alternatives').addClass('invisible animated');
-                setTimeout(function() {
-                    alternatives_wrapper.find('.alternatives').addClass('hidden');
-				}, 500);
+                var alternative_element = jQuery(this);
+                var alternatives_wrapper = alternative_element.closest('.alternatives');
+                alternatives_wrapper.addClass('invisible animated');
 				alternatives_wrapper.find('.alternative').removeClass('checked');
-                alternatives_wrapper.find('.option_valeur').changer_valeur(jQuery(this).attr('name'), jQuery(this).attr('value-short'));
+                alternative_element.addClass('checked');
 
-                jQuery(this).addClass('checked');
+                alternative_element.closest('.option').find('.option_valeur')
+                    .changer_valeur(alternative_element.attr('name'), alternative_element.attr('value-short'));
 			});
 
     valeurs
@@ -328,9 +329,7 @@ function init_nav() {
 				jQuery(this).siblings('.alternatives').removeClass('hidden invisible animated');
 			});
 
-    valeurs.find('.alternatives').each(function() {
-    	jQuery(this).find('.alternative').eq(0).trigger('click');
-    });
+    valeurs.find('.alternatives').find('.alternative:not(.template):eq(0)').trigger('click');
 
     valeurs.find('.purchase_search').keyup(function() {
     	var searchValue = jQuery(this).val().toLowerCase();
@@ -382,18 +381,15 @@ function afficher_numeros(pays,magazine) {
 				return;
 		}
 	}
-	new Ajax.Request('Database.class.php', {
-           method: 'post',
-           parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
-           onSuccess:function(transport) {
-                $('liste_numeros').update(transport.responseText);
-                init_observers_gerer_numeros();
-                init_nav();
-	            if (location.hash) {
-	                $('liste_numeros').select('[name="'+location.hash.replace(/#/,'')+'"]')[0].scrollIntoView(true);
-	            }
-           }
-	});
+    new Ajax.Request('Database.class.php', {
+        method: 'post',
+        parameters: 'database=true&affichage=true&pays=' + pays + '&magazine=' + magazine,
+        onSuccess: function (transport) {
+            $('liste_numeros').update(transport.responseText);
+            init_liste_numeros();
+            get_achats(init_nav);
+        }
+    });
 }
 
 function isLeftClick(event) {

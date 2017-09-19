@@ -1487,11 +1487,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         <?php } ?>
                                     </div>
                                     <?php if ($option['id'] === 'purchase_id') { ?>
-                                        <div class="list-group row alternatives <?= $option['id'] ?> purchase_selection col-lg-push-12 invisible">
+                                        <div class="list-group row alternatives <?= $option['id'] ?> purchase_selection col-lg-push-12">
                                             <input type="text" value="" size="15"
-                                                   class="list-group-item col-lg-12 alternative purchase_search"
+                                                   class="list-group-item col-lg-12 purchase_search"
                                                    placeholder="Type to search">
-                                            <div class="list-group-item col-lg-12 alternative purchase_dates">
+                                            <div class="list-group-item col-lg-12 purchase_dates">
                                                 <button type="button" name="date"
                                                         class="template list-group-item col-lg-12 alternative date day-row">
                                                     <div class="alternative-choice">&nbsp;</div>
