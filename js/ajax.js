@@ -306,30 +306,39 @@ function init_nav() {
 
     var valeurs = navbar.find('.option');
 
-    valeurs.mouseleave(function() {
-		jQuery(this).find('.alternatives').addClass('hidden invisible');
-	});
+    valeurs
+        .mouseleave(function() {
+            jQuery(this).find('.option_nom>.alternatives').addClass('hidden invisible');
+        })
+        .mouseover(function() {
+            jQuery(this).find('.option_nom>.alternatives:not(.submenu)').removeClass('hidden invisible animated');
+        });
 
     valeurs
 		.find('.alternative')
 			.click(function() {
                 var alternative_element = jQuery(this);
-                var alternatives_wrapper = alternative_element.closest('.alternatives');
-                alternatives_wrapper.addClass('invisible animated');
-				alternatives_wrapper.find('.alternative').removeClass('checked');
-                alternative_element.addClass('checked');
 
-                alternative_element.closest('.option').find('.option_valeur')
-                    .changer_valeur(alternative_element.attr('name'), alternative_element.attr('value-short'));
-			});
+                alternative_element.closest('.option_nom>.alternatives')
+                    .addClass('invisible animated')
+                    .find('.alternative')
+                        .removeClass('checked');
 
-    valeurs
-		.find('.edit')
-			.mouseover(function() {
-				jQuery(this).siblings('.alternatives').removeClass('hidden invisible animated');
-			});
+                alternative_element
+                    .addClass('checked')
+                    .closest('.option').find('.option_valeur')
+                        .changer_valeur(
+                            alternative_element.attr('name'),
+                            alternative_element.attr('value-short')
+                        );
+			})
+            .filter(':not(.day-row)')
+                .mouseover(function() {
+                    jQuery(this).closest('.option_nom').find('.alternatives.submenu')
+                        .toggleClass('hidden invisible animated', !jQuery(this).hasClass('open_submenu'))
+                });
 
-    valeurs.find('.alternatives').find('.alternative:not(.template):eq(0)').trigger('click');
+    valeurs.find('.option_nom>.alternatives>.alternative[name="ne_pas_changer"]').trigger('click');
 
     valeurs.find('.purchase_search').keyup(function() {
     	var searchValue = jQuery(this).val().toLowerCase();
@@ -343,9 +352,8 @@ function init_nav() {
     	var numeros = jQuery.map(jQuery('#liste_numeros .num_checked'), function(element) {
     		return jQuery(element).attr('title');
     	});
-    	var section_options = jQuery('#update_options');
-    	var valeurs_options = {};
-    	jQuery.each(section_options.find('.option'), function(i, section_option) {
+        var valeurs_options = {};
+    	jQuery.each(jQuery('#update_options').find('.option'), function(i, section_option) {
     		valeurs_options[jQuery(section_option).attr('name')] = jQuery(section_option).find('.valeur').attr('name');
 		});
 

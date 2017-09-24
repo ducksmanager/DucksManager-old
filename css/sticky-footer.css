@@ -57,7 +57,7 @@
 #update_menu.affix #update_options .option_nom .alternatives {
     position: absolute;
     bottom: 0;
-    margin-bottom: 37px;
+    margin-bottom: 40px;
     margin-right: 45px;
     opacity: 0.9;
 }
@@ -70,26 +70,37 @@
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection {
     left: 100%;
-    margin-left: -20px;
+    margin-left: -21px;
     margin-right: -20px;
     width: 100%;
     display: block !important;
     opacity: 1 !important;
+    border-radius: 0;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates {
     height: 71px;
     overflow-y: auto;
-    padding: 0;
+    border-radius: 0;
+    padding: 0 0 2px;
+    border-left:0;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates,
-#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search {
-    padding-right: 26px;
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search,
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .day {
+    padding-right: 25px;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search {
-    padding-right: 10px;
+    padding: 5px 9px 5px 15px;
+    border-top-left-radius: 0;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row {
+    line-height: 18px;
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .description {
@@ -102,7 +113,6 @@
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .day {
     float: right;
     color: grey;
-    padding-right: 25px;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection button {
@@ -116,6 +126,7 @@
     background-repeat: no-repeat;
     padding-left: 24px;
     padding-right: 0;
+    border-bottom-left-radius: 0;
     opacity: 1;
     visibility: visible;
 }

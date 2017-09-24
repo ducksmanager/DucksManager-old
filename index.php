@@ -1435,12 +1435,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'id' => 'condition',
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
-                                'ne_pas_changer' => NE_PAS_CHANGER,
-                                'non_possede' => ETAT_MARQUER_NON_POSSEDE,
-                                'possede' => ETAT_MARQUER_POSSEDE,
-                                'mauvais' => ETAT_MAUVAIS,
-                                'moyen' => ETAT_MOYEN,
-                                'bon' => ETAT_BON
+                                'non_possede' => ['texte' => ETAT_MARQUER_NON_POSSEDE],
+                                'possede' => ['texte' => ETAT_MARQUER_POSSEDE],
+                                'mauvais' => ['texte' => ETAT_MAUVAIS],
+                                'moyen' => ['texte' => ETAT_MOYEN],
+                                'bon' => ['texte' => ETAT_BON],
+                                'ne_pas_changer' => ['texte' => NE_PAS_CHANGER]
                             ]
                         ],
                         [
@@ -1448,9 +1448,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'id' => 'for_sale',
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
-                                'ne_pas_changer' => NE_PAS_CHANGER,
-                                'a_vendre' => [VENTE_MARQUER_A_VENDRE, VENTE_MARQUER_A_VENDRE_COURT],
-                                'pas_a_vendre' => [VENTE_MARQUER_PAS_A_VENDRE, VENTE_MARQUER_PAS_A_VENDRE_COURT]
+                                'a_vendre' => ['texte' => VENTE_MARQUER_A_VENDRE, 'texte_court' => VENTE_MARQUER_A_VENDRE_COURT],
+                                'pas_a_vendre' => ['texte' => VENTE_MARQUER_PAS_A_VENDRE, 'texte_court' => VENTE_MARQUER_PAS_A_VENDRE_COURT],
+                                'ne_pas_changer' => ['texte' => NE_PAS_CHANGER]
                             ]
                         ],
                         [
@@ -1458,9 +1458,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             'id' => 'purchase_id',
                             'defaut' => 'ne_pas_changer',
                             'alternatives' => [
-                                'ne_pas_changer' => NE_PAS_CHANGER,
-                                'pas_date' => [ACHAT_DESASSOCIER_DATE_ACHAT, ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
-                                'date' => [ACHAT_ASSOCIER_DATE_ACHAT, ACHAT_ASSOCIER_DATE_ACHAT_COURT]
+                                'date' => ['texte' => ACHAT_ASSOCIER_DATE_ACHAT, 'texte_court' => ACHAT_ASSOCIER_DATE_ACHAT_COURT, 'open_submenu' => true],
+                                'pas_date' => ['texte' => ACHAT_DESASSOCIER_DATE_ACHAT, 'texte_court' => ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
+                                'ne_pas_changer' => ['texte' => NE_PAS_CHANGER]
                             ]
                         ]
                     ];
@@ -1471,23 +1471,19 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 <div class="option_nom col-lg-12">
                                     <div class="list-group row alternatives <?=$option['id']?> invisible"><?php
                                         foreach($option['alternatives'] as $id_alternative=>$alternative) {
-                                            if (is_array($alternative)) {
-                                                list($alternative_texte, $alternative_texte_court) = $alternative;
-                                            }
-                                            else {
-                                                $alternative_texte = $alternative_texte_court = $alternative;
-                                            }
+                                            $classe_open_submenu = array_key_exists('open_submenu', $alternative) ? 'open_submenu' : '';
+                                            $alternative['texte_court'] = $alternative['texte_court'] ?? $alternative['texte'];
                                             ?>
-                                            <button type="button" name="<?=$id_alternative?>" value-short="<?=$alternative_texte_court?>" class="list-group-item col-lg-12 alternative <?=$id_alternative?>">
+                                            <button type="button" name="<?=$id_alternative?>" value-short="<?=$alternative['texte_court']?>" class="list-group-item col-lg-12 alternative <?=$id_alternative?> <?=$classe_open_submenu?>">
                                                 <div class="alternative-choice">
                                                     &nbsp;
                                                 </div>
-                                                <?=$alternative_texte?>
+                                                <?=$alternative['texte']?>
                                             </button>
                                         <?php } ?>
                                     </div>
                                     <?php if ($option['id'] === 'purchase_id') { ?>
-                                        <div class="list-group row alternatives <?= $option['id'] ?> purchase_selection col-lg-push-12">
+                                        <div class="list-group row col-lg-push-12 alternatives submenu <?= $option['id'] ?> invisible purchase_selection">
                                             <input type="text" value="" size="15"
                                                    class="list-group-item col-lg-12 purchase_search"
                                                    placeholder="Type to search">
