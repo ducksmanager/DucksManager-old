@@ -4,6 +4,7 @@ include_once('../Database.class.php');
 include_once('../authentification.php');
 
 if (isset($_POST['ID'])) {
+    date_default_timezone_set('Europe/Paris');
     $date = date("Y-m-d H:i:s");
     $requete_maj_bouquinerie =
         "UPDATE bouquineries
