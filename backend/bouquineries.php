@@ -4,12 +4,14 @@ include_once('../Database.class.php');
 include_once('../authentification.php');
 
 if (isset($_POST['ID'])) {
+    $date = date("Y-m-d H:i:s");
     $requete_maj_bouquinerie =
-        'UPDATE bouquineries
-        SET CoordX='.$_POST['CoordX'].',
-            CoordY='.$_POST['CoordY'].',
-            Actif=1
-        WHERE ID='.$_POST['ID'];
+        "UPDATE bouquineries
+        SET CoordX='{$_POST['CoordX']}',
+            CoordY='{$_POST['CoordY']}',
+            Actif=1,
+            DateAjout='$date'
+        WHERE ID={$_POST['ID']}";
 
     DM_Core::$d->requete($requete_maj_bouquinerie);
 }
