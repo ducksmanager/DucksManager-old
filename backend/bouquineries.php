@@ -14,7 +14,7 @@ if (isset($_POST['ID'])) {
     DM_Core::$d->requete($requete_maj_bouquinerie);
 }
 
-$requete = 'SELECT * from bouquineries WHERE Actif=0';
+$requete = 'SELECT ID, Nom, AdresseComplete, Pays, Commentaire, ID_Utilisateur, DateAjout, CONCAT(CoordX, ",", CoordY) As Coord from bouquineries WHERE Actif=0';
 
 $resultats = DM_Core::$d->requete_select($requete);
 
@@ -22,25 +22,31 @@ if (count($resultats) > 0) {
     $champs = array_keys($resultats[0]);
     $champs_utilises = [];
     ?><table border="1">
-        <tr><form method="post">
+        <tr>
             <?php foreach($champs as $champ) {
                 if (!is_int($champ)) {
                     $champs_utilises[] = $champ;
                     ?><th><?=$champ?></th><?php
                 }
             }?>
-            <th>Validation</th>
         </tr>
         <?php foreach($resultats as $resultat) {
             ?><tr>
                 <?php foreach($champs_utilises as $champ) {
                     ?><td>
                         <?php
-                            if (strpos($champ,'Coord') !== false) {
-                                ?><input type="text" size="10" name="<?=$champ?>" value="<?=$resultat[$champ]?>" /><?php
-                            }
-                            elseif ($champ === 'ID') {
-                                ?><input type="text" readonly size="10" name="<?=$champ?>" value="<?=$resultat[$champ]?>" /><?php
+                            if ($champ === 'Coord') {
+                                ?><form method="post">
+                                    <input type="hidden" name="ID" value="<?=$resultat['ID']?>" />
+                                    <?php
+                                    array_walk(explode(',', $resultat[$champ]), function($coord, $i) {
+                                        $champ = $i === 0 ? 'CoordX': 'CoordY';
+                                        ?><input type="text" size="10" name="<?=$champ?>" value="<?=$coord?>" /><?php
+                                    });
+                                    ?>
+                                    <br />
+                                    <input type="submit" />
+                                </form><?php
                             }
                             else {
                                 echo $resultat[$champ];
@@ -48,8 +54,7 @@ if (count($resultats) > 0) {
                         ?>
                     </td><?php
                 }?>
-                <td><input type="submit" /></td>
-            </form></tr><?php
+            </tr><?php
         }?>
 
     </table><?php
