@@ -103,6 +103,22 @@ class Liste {
 		}
 		return $tab;
 	}
+
+	function get_publication_la_plus_possedee() {
+	    $cpt_numeros = [];
+        foreach($this->collection as $pays=>$numeros_pays) {
+            foreach(array_keys($numeros_pays) as $magazine) {
+                $cpt_numeros[$pays.'/'.$magazine] = count($numeros_pays[$magazine]);
+            }
+        }
+        if (count($cpt_numeros) > 0) {
+            arsort($cpt_numeros);
+            return key($cpt_numeros);
+        }
+        else {
+            return null;
+        }
+    }
 	
 	function liste_magazines($pays_magazine_supplementaire=null,$tri_noms_complets=true) {
 		$publication_codes= [];

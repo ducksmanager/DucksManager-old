@@ -259,6 +259,10 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             }
         break;
         case 'gerer':
+            if (!isset($_GET['onglet_magazine'])) {
+                $l=DM_Core::$d->toList($id_user);
+                $_GET['onglet_magazine'] = $l->get_publication_la_plus_possedee() ?: null;
+            }
             if (isset($_GET['onglet_magazine'])) {
                 $onglet_magazine=$_GET['onglet_magazine'];
                 if ($onglet_magazine=='new') {
