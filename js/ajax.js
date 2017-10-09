@@ -17,9 +17,12 @@ function get_achats(callback) {
             var template = purchase_dates_wrapper.find('.alternative.date.template');
 
             for (var i = 0; i < achats.length; i++) {
-                var item = template.clone(true).removeClass('template').data(achats[i]);
-                item.find('.description').text(achats[i].Description);
-                item.find('.day').text(achats[i].Date);
+                var achat = achats[i];
+                var item = template.clone(true).removeClass('template').data(achat);
+
+                item.attr({ name: achat.ID_Acquisition, 'value-short': achat.Description });
+                item.find('.description').text(achat.Description);
+                item.find('.day').text(achat.Date);
 
                 purchase_dates_wrapper.append(item);
             }
