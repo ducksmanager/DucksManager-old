@@ -259,7 +259,7 @@ class Affichage {
 					switch($type) {
 						case 'inscriptions':
 							Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
-							?><?=NEWS_S_EST_INSCRIT?>
+							?><?=NEWS_A_COMMENCE_COLLECTION?>
 						<?php 
 						break;
 						case 'bouquineries':
