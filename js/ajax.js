@@ -372,7 +372,7 @@ function init_nav() {
 
 jQuery.fn.changer_valeur = function(nom, valeur) {
     this.each(function(){
-        jQuery(this).find('.valeur').attr({ name: nom }).text(valeur);
+        jQuery(this).find('.valeur').attr({ name: nom, 'class': 'valeur alternative ' + nom }).text(valeur);
     });
 };
 

@@ -121,11 +121,11 @@
     border-radius: 0;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives .alternative {
+.alternative {
     background-position: 2px 50%;
     background-repeat: no-repeat;
-    padding-left: 24px;
-    padding-right: 0;
+    padding-left: 24px !important;
+    padding-right: 0 !important;
     border-bottom-left-radius: 0;
     opacity: 1;
     visibility: visible;
@@ -162,52 +162,55 @@
     text-align: center;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.non_possede {
+.alternative.non_possede {
     background-color: darkgrey;
     background-image: url(../images/non_possede.png);
     color: white;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.possede {
+.alternative.possede {
     background-image: url(../images/possede.png);
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.mauvais {
+.alternative.mauvais {
     background-color: #f2dede;
     background-image: url(../images/mauvais.png);
     color: #a94442;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.moyen {
+.alternative.moyen {
     background-color: #fcf8e3;
     background-image: url(../images/moyen.png);
     color: #8a6d3b;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.condition .alternative.bon {
+.alternative.bon {
     background-color: #dff0d8;
     background-image: url(../images/bon.png);
     color: #3c763d;
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.purchase_id .alternative.pas_date {
+.alternative.pas_date {
     background-image: url(../images/pas_page_date.png);
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.purchase_id .alternative.date {
+.alternative.date {
     background-image: url(../images/page_date.png);
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.for_sale .alternative.a_vendre {
+.alternative.a_vendre {
     background-image: url(../images/av_petit.png);
 }
 
-#update_menu.affix #update_options .option_nom .alternatives.for_sale .alternative.pas_a_vendre {
+.alternative.pas_a_vendre {
     background-image: url(../images/pas_av_petit.png);
 }
 
 #update_menu.affix #update_options .option_valeur h5 {
     display: inline-block;
+    white-space: nowrap;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 #update_menu.affix #update_options .option_nom .edit {
