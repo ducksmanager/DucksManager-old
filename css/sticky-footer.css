@@ -99,8 +99,8 @@
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row {
     line-height: 18px;
-    padding-top: 0px;
-    padding-bottom: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 #update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .description {
