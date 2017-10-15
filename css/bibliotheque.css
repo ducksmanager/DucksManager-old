@@ -7,11 +7,19 @@
 }
 
 #recherche_bibliotheque {
-    position: absolute;
     display: none;
     z-index:700;
     margin-top: -4px;
+}
+
+#conteneur_bibliotheque #recherche_bibliotheque {
+    position: absolute;
     background-color:gray;
+}
+
+#conteneur_resultat_recherche {
+    position: absolute;
+    z-index: 300;
 }
 
 .magazine_trouve img {

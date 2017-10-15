@@ -364,7 +364,11 @@ ul#choix_impression ul.caract li{
     cursor: pointer;
 }
 
-.magazines_possedes img.flag {
+#magazines_possedes {
+	margin-top: 25px;
+}
+
+#magazines_possedes img.flag {
 	vertical-align: inherit;
 }
 

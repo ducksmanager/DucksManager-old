@@ -418,16 +418,19 @@ function charger_tranche_suivante(element) {
 }
 
 function charger_recherche() {
-   if ($('recherche_bibliotheque')) {
-       if ($('bibliotheque')) {
+    var element_recherche_bibliotheque = $('recherche_bibliotheque');
+    var conteneur_bibliotheque = $('bibliotheque');
+
+    if (element_recherche_bibliotheque) {
+       if (conteneur_bibliotheque) {
            afficher_lien_partage();
-           $('recherche_bibliotheque').setStyle({'left':($('contenu').cumulativeOffset()['left']
-                                                         +parseInt($('bibliotheque').getStyle('width').substring(0,$('bibliotheque').getStyle('width').length-2))
-                                                         -330)+'px',
-                                                 'display':'block'});
+           element_recherche_bibliotheque.setStyle({
+               left: ($('contenu').cumulativeOffset()['left']
+                   +parseInt(conteneur_bibliotheque.getStyle('width').substring(0,conteneur_bibliotheque.getStyle('width').length-2))-330) +'px',
+               display: 'block'});
        }
 
-       $('recherche_bibliotheque').down('button').observe('click',recherche);
+       element_recherche_bibliotheque.down('button').observe('click',recherche);
    }
 	$('contenu').observe('click', function() {
 		$$('.magazine_trouve, .histoire_trouvee, .resultat_recherche').invoke('remove');
@@ -468,94 +471,122 @@ function afficher_lien_partage() {
 }
 
 function recherche() {
+    var element_recherche_bibliotheque = $('recherche_bibliotheque');
+
     $$('.magazine_trouve, .histoire_trouvee, .fleche_position, .resultat_recherche').invoke('remove');
     $$('.magazine_trouve, .histoire_trouvee').invoke('stopObserving','click');
-    var val_recherche=$('recherche_bibliotheque').down('input').value;
-    $('recherche_bibliotheque').down('button').update(new Element('img',{'src':'loading.gif'}));
+    var val_recherche=element_recherche_bibliotheque.down('input').value;
+    element_recherche_bibliotheque.down('button').update(new Element('img',{'src':'loading.gif'}));
     var recherche_bibliotheque=($('bibliotheque') == null) ? 'false':'true';
     new Ajax.Request('Inducks.class.php', {
         method: 'post',
         parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+recherche_bibliotheque,
         onSuccess:function(transport) {
-            $('recherche_bibliotheque').down('button').update('OK');
+            element_recherche_bibliotheque.down('button').update('OK');
             var resultat=transport.headerJSON;
-            if (!(resultat.direct)) {
-                $('recherche_bibliotheque')
-                    .insert(new Element('div').addClassName('resultat_recherche')
-                                              .insert(resultat[0]?'S&eacute;lectionnez un titre d\'histoire dans la liste.':'Aucun r&eacute;sultat !'));
-            }
-            var i=0;
-            while (resultat[i]) {
+
+            var conteneur_resultats_recherche = new Element('div')
+                .writeAttribute({id: 'conteneur_resultat_recherche'});
+            element_recherche_bibliotheque.insert(conteneur_resultats_recherche);
+
+            if (resultat[0]) {
                 if (resultat.direct) {
-                    var magazine=resultat[i];
-                    magazine.magazine_numero=magazine.pays
-                    					+'/'+magazine.magazine_numero
-                    						.replace(new RegExp('[+]+','g'),'.')
-                    						.replace(new RegExp('[ ]+','g'),'');
+                    var histoire_trouvee_dans_collection = false;
+                }
+                else {
+                    conteneur_resultats_recherche
+                        .insert(new Element('div')
+                            .addClassName('resultat_recherche')
+                            .insert('S&eacute;lectionnez un titre d\'histoire dans la liste.')
+                        );
+                }
+                var i=0;
+                while (resultat[i]) {
+                    if (resultat.direct) {
+                        var magazine=resultat[i];
+                        magazine.magazine_numero=magazine.pays
+                                            +'/'+magazine.magazine_numero
+                                                .replace(new RegExp('[+]+','g'),'.')
+                                                .replace(new RegExp('[ ]+','g'),'');
 
-                    var numero=magazine.magazine_numero.split(new RegExp('\\.','g'))[1];
-                    if ($(magazine.magazine_numero) != null  || !(resultat.direct) || recherche_bibliotheque=='false') {
-                        $('recherche_bibliotheque')
-                        .insert(new Element('div').writeAttribute({'id':'magazine_'+magazine.magazine_numero})
-                                                  .addClassName('magazine_trouve')
-                                                  .insert(new Element('img', {'src':'images/flags/'+magazine.pays+'.png','alt':magazine.pays}))
-                                                  .insert(magazine.titre+' '+numero));
+                        var numero=magazine.magazine_numero.split(new RegExp('\\.','g'))[1];
+                        if ($(magazine.magazine_numero) != null || recherche_bibliotheque=='false') {
+                            histoire_trouvee_dans_collection = true;
+
+                            conteneur_resultats_recherche
+                                .insert(new Element('div')
+                                    .writeAttribute({'id':'magazine_'+magazine.magazine_numero})
+                                    .addClassName('magazine_trouve')
+                                    .insert(new Element('img', {
+                                        src:'images/flags/'+magazine.pays+'.png',
+                                        alt:magazine.pays
+                                    }))
+                                    .insert(magazine.titre+' '+numero));
+                        }
                     }
-                }
-                else {
-                    var histoire=resultat[i];
-                    
-                    $('recherche_bibliotheque')
-                        .insert(new Element('div').addClassName('histoire_trouvee')
-                                                  .writeAttribute({'id':'histoire_'+histoire.code})
-                                                  .insert(histoire.titre));
-                }
-                i++;
-            }
-            if (resultat.direct) {
-                if (typeof ($('recherche_bibliotheque').down('.magazine_trouve')) == 'undefined')
-                    $('recherche_bibliotheque')
-                        .insert(new Element('div').addClassName('resultat_recherche')
-                                                  .insert('Vous ne poss&eacute;dez pas cette histoire.'));
-            }
-            if (resultat.limite) {
-                $('recherche_bibliotheque')
-                    .insert(new Element('div').addClassName('resultat_recherche')
-                                              .insert('Le nombre de r&eacute;sultats est > 10.'));
-                $('recherche_bibliotheque')
-                    .insert(new Element('div').addClassName('resultat_recherche')
-                                              .insert('Pr&eacute;cisez votre recherche'));
-                
-            }
-            $$('.magazine_trouve').invoke('observe','click',function(event) {
-                var element=Event.element(event);
-                var pays_magazine=element.readAttribute('id').substring('magazine_'.length, element.readAttribute('id').length);
-                if (recherche_bibliotheque=='true') {
-                    $$('.fleche_position').invoke('remove');
-                    var tranche_trouvee=$(pays_magazine);
-                    var offset=tranche_trouvee.cumulativeOffset();
-                    var haut=offset['top']-16;
-                    var gauche=offset['left'];
-                    $('body').insert(new Element('img',{'src':'images/icones/arrow_down.png'})
-	                    .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-	                    .addClassName('fleche_position'));
+                    else {
+                        var histoire=resultat[i];
 
-                    $('body').insert(new Element('img',{'src':'images/icones/arrow_up.png'})
-	                    .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-	                    .addClassName('fleche_position'));
-                    window.scrollTo(gauche,haut);
+                        conteneur_resultats_recherche
+                            .insert(new Element('div')
+                                .addClassName('histoire_trouvee')
+                                .writeAttribute({
+                                    id: 'histoire_'+histoire.code
+                                })
+                                .insert(histoire.titre));
+                    }
+                    i++;
                 }
-                else {
-	                location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine='+pays_magazine.replace('.','#'));
+                if (resultat.direct && !histoire_trouvee_dans_collection) {
+                    conteneur_resultats_recherche
+                        .insert(new Element('div').addClassName('resultat_recherche')
+                            .insert('Vous ne poss&eacute;dez pas cette histoire'));
                 }
-            });
-            $$('.histoire_trouvee').invoke('observe','click',function(event) {
-                var element=Event.element(event);
-                var index=element.readAttribute('id').substring('histoire_'.length,element.readAttribute('id').length);
-                $('recherche_bibliotheque').down('input').value='code='+index;
-                $$('.histoire_trouvee, .resultat_recherche').invoke('remove');
-                recherche();
-            });
+                else if (resultat.limite) {
+                    conteneur_resultats_recherche
+                        .insert(new Element('div').addClassName('resultat_recherche')
+                            .insert('Le nombre de r&eacute;sultats est > 10.'));
+                    conteneur_resultats_recherche
+                        .insert(new Element('div').addClassName('resultat_recherche')
+                            .insert('Pr&eacute;cisez votre recherche'));
+                }
+
+                $$('.magazine_trouve').invoke('observe','click',function(event) {
+                    var element=Event.element(event);
+                    var pays_magazine=element.readAttribute('id').substring('magazine_'.length, element.readAttribute('id').length);
+                    if (recherche_bibliotheque=='true') {
+                        $$('.fleche_position').invoke('remove');
+                        var tranche_trouvee=$(pays_magazine);
+                        var offset=tranche_trouvee.cumulativeOffset();
+                        var haut=offset['top']-16;
+                        var gauche=offset['left'];
+                        $('body').insert(new Element('img',{'src':'images/icones/arrow_down.png'})
+                            .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
+                            .addClassName('fleche_position'));
+
+                        $('body').insert(new Element('img',{'src':'images/icones/arrow_up.png'})
+                            .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
+                            .addClassName('fleche_position'));
+                        window.scrollTo(gauche,haut);
+                    }
+                    else {
+                        location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine='+pays_magazine.replace('.','#'));
+                    }
+                });
+                $$('.histoire_trouvee').invoke('observe','click',function(event) {
+                    var element=Event.element(event);
+                    var index=element.readAttribute('id').substring('histoire_'.length,element.readAttribute('id').length);
+                    $('recherche_bibliotheque').down('input').value='code='+index;
+                    $$('.histoire_trouvee, .resultat_recherche').invoke('remove');
+                    recherche();
+                });
+            }
+            else {
+                conteneur_resultats_recherche
+                    .insert(new Element('div')
+                        .addClassName('resultat_recherche')
+                        .insert('Aucun r&eacute;sultat !'));
+            }
         }
     });
 }
