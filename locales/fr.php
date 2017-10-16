@@ -182,7 +182,6 @@ define('ET','et');
 define('ETAT','Etat');
 define('ETAT_BON','En bon &eacute;tat');
 define('ETAT_CONSERVER_ETAT_ACTUEL','Conserver l\'&eacute;tat actuel');
-define('ETAT_EXCELLENT','En excellent &eacute;tat');
 define('ETAT_INDEFINI','En &eacute;tat ind&eacute;fini');
 define('ETAT_MANQUANTS','Manquants');
 define('ETAT_MARQUER_BON_ETAT','Marquer comme en bon &eacute;tat');

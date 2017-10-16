@@ -183,7 +183,6 @@ define('ET','and');
 define('ETAT','Condition');
 define('ETAT_BON','In good condition');
 define('ETAT_CONSERVER_ETAT_ACTUEL','Do not change the condition');
-define('ETAT_EXCELLENT','In excellent condition');
 define('ETAT_INDEFINI','In undefined condition');
 define('ETAT_MANQUANTS','Missing');
 define('ETAT_MARQUER_BON_ETAT','Mark as in good condition');

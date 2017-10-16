@@ -164,33 +164,23 @@ a.important:HOVER {
 }
 
 .num_mauvais {
+	border-radius: 50%;
 	background-color:red;
 }
 
 .num_moyen {
+	border-radius: 50%;
 	background-color:orange;
 }
 
 .num_bon {
+	border-radius: 50%;
 	background-color:#2CA77B;
 }
 
-.num_bon_checked {
-	width:100%;
-	background:url('../checkedbox.png') no-repeat right center #2CA77B;
-	cursor:default;
-	height:16px;
-}
-
-.num_excellent {
-	background-color:#5BADFF;
-}
-
 .num_indefini {
-	width:100%;
+	border-radius: 50%;
 	background-color:#808080;
-	cursor:default;
-	height:16px;
 }
 
 .half_transparent {
@@ -202,7 +192,6 @@ a.important:HOVER {
     opacity:0.7;
     filter : alpha(opacity=70);
     -moz-opacity : 0.7;
-
 }
 
 .colorselector_manque {
@@ -227,12 +216,6 @@ a.important:HOVER {
 	border:1px solid black;
 	cursor:default;
 	background-color:#2CA77B;
-}
-
-.colorselector_excellent {
-	border:1px solid black;
-	cursor:default;
-	background-color:rgb(91,173,255);
 }
 
 .colorselector_indefini {
