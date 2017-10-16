@@ -499,14 +499,15 @@ function recherche() {
             var resultat=transport.headerJSON;
 
             var conteneur_resultats_recherche = new Element('div')
-                .writeAttribute({id: 'conteneur_resultat_recherche'});
+                .writeAttribute({id: 'conteneur_resultat_recherche'})
+                .addClassName('list-group');
             element_recherche_bibliotheque.insert(conteneur_resultats_recherche);
 
             if (resultat['liste_numeros'].length) {
                 if (!resultat.direct) {
                     conteneur_resultats_recherche
                         .insert(new Element('div')
-                            .addClassName('resultat_recherche')
+                            .addClassName('resultat_recherche list-group-item')
                             .insert(l10n_recherche['recherche_magazine_selectionnez_une_histoire'])
                         );
                 }
@@ -524,7 +525,7 @@ function recherche() {
 
                         conteneur_resultats_recherche
                             .insert(new Element('div')
-                                .addClassName('magazine_trouve')
+                                .addClassName('magazine_trouve list-group-item')
                                 .writeAttribute({'id': 'magazine_' + magazine.magazine_numero})
                                 .insert(new Element('img', {
                                     src: 'images/flags/' + magazine.pays + '.png',
@@ -537,7 +538,7 @@ function recherche() {
 
                         conteneur_resultats_recherche
                             .insert(new Element('div')
-                                .addClassName('histoire_trouvee')
+                                .addClassName('histoire_trouvee list-group-item')
                                 .writeAttribute({id: 'histoire_'+histoire.code})
                                 .insert(histoire.titre));
                     }
@@ -546,10 +547,10 @@ function recherche() {
 
                 if (resultat.limite) {
                     conteneur_resultats_recherche
-                        .insert(new Element('div').addClassName('resultat_recherche')
+                        .insert(new Element('div').addClassName('resultat_recherche list-group-item')
                             .insert(l10n_recherche['recherche_magazine_resultats_nombreux_1']));
                     conteneur_resultats_recherche
-                        .insert(new Element('div').addClassName('resultat_recherche')
+                        .insert(new Element('div').addClassName('resultat_recherche list-group-item')
                             .insert(l10n_recherche['recherche_magazine_resultats_nombreux_2']));
                 }
 
@@ -586,7 +587,7 @@ function recherche() {
             else {
                 conteneur_resultats_recherche
                     .insert(new Element('div')
-                        .addClassName('resultat_recherche')
+                        .addClassName('resultat_recherche list-group-item')
                         .insert(resultat.direct && recherche_bibliotheque
                             ? l10n_recherche['recherche_magazine_histoire_non_possedee']
                             : l10n_recherche['recherche_magazine_aucun_resultat']));

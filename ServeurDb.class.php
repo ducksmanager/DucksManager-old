@@ -11,7 +11,7 @@ class ServeurDb {
 	/** @var $db_servers ProfilDB */
 	static $current_db_server;
 
-	static $nom_db_DM = 'db301759616';
+	static $nom_db_DM = 'dm';
 
 	/**
 	 * @return ProfilDB

@@ -20,6 +20,7 @@
 
 #recherche_bibliotheque button {
     width: 30px;
+    margin-top: -3px;
 }
 
 #conteneur_bibliotheque #recherche_bibliotheque {
@@ -39,13 +40,11 @@
 }
 
 .resultat_recherche, .magazine_trouve, .histoire_trouvee {
-    width: 304px;
+    width: 276px;
     height: 18px;
-    line-height: 20px;
-    background-color: white;
+    line-height: 22px;
     color: black;
-    padding: 5px 0 5px 34px;
-    border: 1px solid black;
+    padding: 5px 5px 5px 34px !important;
     overflow-x: hidden;
 }
 

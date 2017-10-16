@@ -400,7 +400,7 @@ define('QUESTION_SUPPRIMER_MAGAZINE','Would you like this magazine to be removed
 define('RECHERCHE_MAGAZINE','Don\'t find the magazine name of one of your issues ?');
 define('RECHERCHE_MAGAZINE_AUCUN_RESULTAT', 'No result.');
 define('RECHERCHE_MAGAZINE_HISTOIRE_NON_POSSEDEE', 'You don\'t own this story.');
-define('RECHERCHE_MAGAZINE_RESULTATS_NOMBREUX_1', 'There are more than 10 matches to this search.');
+define('RECHERCHE_MAGAZINE_RESULTATS_NOMBREUX_1', 'There are more than 10 matches.');
 define('RECHERCHE_MAGAZINE_RESULTATS_NOMBREUX_2', 'Please provide more precise keywords.');
 define('RECHERCHE_MAGAZINE_SELECTIONNEZ_UNE_HISTOIRE', 'Choose a story in the list.');
 define('RECHERCHER_BIBLIOTHEQUE','Find a story in the bookcase :');

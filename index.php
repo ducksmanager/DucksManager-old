@@ -603,7 +603,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <div id="recherche_bibliotheque">
                                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
                                                     <input type="text" name=""/>
-                                                    <button>OK</button>
+                                                    <button class="btn btn-default">OK</button>
                                                 </div>
                                             <?php
                                             } ?>
@@ -1035,7 +1035,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                         <br>
                                         <?= RECHERCHER_GENERAL ?><br/>
                                         <input type="text" name="" />
-                                        <button>OK</button>
+                                        <button class="btn btn-default">OK</button>
                                     </div>
                                 </td>
                             </tr>
@@ -1076,7 +1076,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <div id="recherche_bibliotheque">
                                                     <?= RECHERCHER_GENERAL ?><br/>
                                                     <input type="text" name="" />
-                                                    <button>OK</button>
+                                                    <button class="btn btn-default">OK</button>
                                                 </div>
                                             </div>
                                             <?php
