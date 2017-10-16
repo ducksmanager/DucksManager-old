@@ -527,6 +527,8 @@ function recherche() {
                             .insert(new Element('div')
                                 .addClassName('magazine_trouve list-group-item')
                                 .writeAttribute({'id': 'magazine_' + magazine.magazine_numero})
+                                .insert(new Element('div')
+                                    .addClassName(magazine.etat ? ' details_numero gauche num_' + magazine.etat : ''))
                                 .insert(new Element('img', {
                                     src: 'images/flags/' + magazine.pays + '.png',
                                     alt: magazine.pays

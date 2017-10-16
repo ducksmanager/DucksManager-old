@@ -274,6 +274,11 @@ a.important:HOVER {
     width:16px;
 }
 
+.details_numero.gauche {
+	float: left;
+	margin-left: -25px;
+}
+
 .bloc_details {
     padding-right:20px;
     margin-top:-2px;

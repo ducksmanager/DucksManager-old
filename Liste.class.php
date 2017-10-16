@@ -447,17 +447,17 @@ class Liste {
 			echo ERREUR_TYPE_LISTE_INVALIDE;
 	}
 
-	function est_possede($pays,$magazine,$numero) {
+	function get_etat_numero_possede($pays, $magazine, $numero) {
 		if (array_key_exists($pays,$this->collection)) {
 			if (array_key_exists($magazine,$this->collection[$pays])) {
 				foreach($this->collection[$pays][$magazine] as $numero_liste) {
-					if (nettoyer_numero($numero_liste[0])==$numero) {
-						return true;
+					if (nettoyer_numero($numero_liste[0])===$numero) {
+						return $numero_liste[1];
 					}
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 	function infos_numero($pays,$magazine,$numero) {
 		if (array_key_exists($pays,$this->collection)) {

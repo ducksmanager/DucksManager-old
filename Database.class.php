@@ -313,7 +313,7 @@ class Database {
                 $valeurs = [];
 				$liste_deja_possedes=[];
 				foreach($liste as $numero) {
-					if ($liste_user->est_possede($pays,$magazine,$numero)) {
+					if (!is_null($liste_user->get_etat_numero_possede($pays,$magazine,$numero))) {
 						$liste_deja_possedes[] = $numero;
 					}
 					else {

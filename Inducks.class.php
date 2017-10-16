@@ -373,11 +373,13 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 		    $publicationcode = $resultat['publicationcode'];
             list($pays,$magazine)=explode('/',$publicationcode);
             $issuenumber=$resultat['issuenumber'];
-            if ($_POST['recherche_bibliotheque'] === 'false' || $l->est_possede($pays,$magazine, $issuenumber)) {
+            $etat_numero_possede=$l->get_etat_numero_possede($pays,$magazine, $issuenumber);
+            if (!($_POST['recherche_bibliotheque'] === 'true' && is_null($etat_numero_possede))) {
                 $liste_numeros[$publicationcode.' '.$issuenumber] = [
                     'pays'=>$pays,
                     'publicationcode'=>$publicationcode,
                     'magazine_numero'=>$magazine.'.'.$issuenumber,
+                    'etat'=> $etat_numero_possede
                 ];
             }
         }
@@ -390,6 +392,13 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 
         array_walk($liste_numeros, function(&$numero) use($noms_magazines) {
             $numero['titre'] = $noms_magazines[$numero['publicationcode']];
+        });
+
+        usort($liste_numeros, function($a, $b) {
+            if ($a['etat'] !== $b['etat']) {
+                return !is_null($a['etat']) && is_null($b['etat']) ? -1 : 1;
+            }
+            return $a['pays'].$a['magazine_numero'] < $b['pays'].$b['magazine_numero'] ? -1 : 1;
         });
 	}
 	else {
