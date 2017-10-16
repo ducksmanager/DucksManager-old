@@ -1068,16 +1068,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <br/>
                                                 <?php
                                                 Affichage::afficher_dernieres_tranches_publiees();
-                                            }
-                                            ?><?=RECHERCHE_MAGAZINE?>&nbsp;
-                                            <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
-                                            <b class="toggler_aide_recherche_magazine cache">^</b>
-                                            <div id="aide_recherche_magazine" class="cache">
-                                                <div id="recherche_bibliotheque">
-                                                    <?= RECHERCHER_GENERAL ?><br/>
-                                                    <input type="text" name="" />
-                                                    <button class="btn btn-default">OK</button>
-                                                </div>
+                                            }?>
+                                            <div id="recherche_bibliotheque">
+                                                <?= RECHERCHER_GENERAL ?><br/>
+                                                <input type="text" name="" />
+                                                <button class="btn btn-default">OK</button>
                                             </div>
                                             <?php
 

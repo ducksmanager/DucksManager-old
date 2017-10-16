@@ -446,14 +446,6 @@ function charger_recherche() {
         $('contenu').observe('click', function() {
             $$('.magazine_trouve, .histoire_trouvee, .resultat_recherche').invoke('remove');
         });
-
-        $$('.toggler_aide_recherche_magazine').invoke(
-            'observe',
-            'click',
-            function() {
-                $$('#aide_recherche_magazine, .toggler_aide_recherche_magazine').invoke('toggleClassName','cache');
-            }
-        );
     });
 }
 
