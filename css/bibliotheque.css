@@ -48,6 +48,39 @@
     overflow-x: hidden;
 }
 
+.conteneur_label_histoire {
+    position: absolute;
+    padding: 2px 4px 4px !important;
+    margin: 7px 12px;
+    font-size: 10px !important;
+}
+
+.conteneur_label_histoire span.label_histoire {
+    display: inline-block;
+    max-width: 270px;
+    overflow-x: hidden;
+}
+
+.conteneur_label_histoire a {
+    cursor: pointer;
+    opacity: 0.6;
+    margin: 0 0 0 .3em;
+    border-bottom: 0;
+}
+
+.conteneur_label_histoire a .glyphicon-white {
+    color: #fff;
+}
+
+.conteneur_label_histoire a:hover {
+    opacity: 1.0
+}
+
+.conteneur_label_histoire .remove {
+    vertical-align: bottom;
+    top: 0;
+}
+
 .resultat_recherche {
     font-weight: bold;
 }
