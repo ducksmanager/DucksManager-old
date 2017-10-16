@@ -437,6 +437,11 @@ function charger_recherche() {
            }
 
            element_recherche_bibliotheque.down('button').observe('click',recherche);
+           element_recherche_bibliotheque.down('input').observe('keydown', function(e) {
+               if (e.keyCode === 13) {
+                   recherche();
+               }
+           });
        }
         $('contenu').observe('click', function() {
             $$('.magazine_trouve, .histoire_trouvee, .resultat_recherche').invoke('remove');
