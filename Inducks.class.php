@@ -264,12 +264,13 @@ class Inducks {
 	}
 
 	static function get_issues_from_storycode($story_code) {
-		$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber '
-				.'FROM inducks_issue '
-				.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
-				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE storycode = \''.$story_code.'\' '
-				.'ORDER BY publicationcode, issuenumber';
+		$requete="
+		    SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber
+		    FROM inducks_issue
+		    INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode
+		    INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode
+		    WHERE storycode = '$story_code' AND storycode != ''
+		    ORDER BY publicationcode, issuenumber";
 		return Inducks::requete_select($requete);
 	}
 	static function get_magazines_ne_paraissant_plus($publication_codes) {
@@ -318,7 +319,7 @@ elseif (isset($_POST['get_cover'])) {
 	$resultats= [];
 	$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
 	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) == 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
-	$liste_magazines= [];
+	$retour= [];
 	$_POST['numero']=str_replace(' ','',$_POST['numero']);
 	$_POST['magazine']=strtoupper($_POST['magazine']);
 	$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
@@ -358,62 +359,66 @@ elseif (isset($_POST['get_cover'])) {
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
 	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
-	$liste_magazines= [];
-	if (strpos($nom_histoire, 'code=') === 0) {
-		$liste_magazines['direct']=true;
-		$code=substr($nom_histoire, strlen('code='));
-		$resultat_requete=Inducks::get_issues_from_storycode($code);
-		if (count($resultat_requete) == 0) {
-			// On r�essaie en testant le doublement de chacun des espaces du code d'histoire
-			$i=1;
-			$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
-			while ($code_avec_espaces !== $code) {
-				$resultat_requete = Inducks::get_issues_from_storycode($code_avec_espaces);
-				if (count($resultat_requete) > 0)
-					break;
-				$i++;
-				$code_avec_espaces = Util::remplacerNiemeCaractere($i, ' ', '  ', $code);
-			}
-		}
+	$retour= [];
+    $liste_numeros = [];
 
-		$publication_codes= [];
+	if (strpos($nom_histoire, 'code=') === 0) {
+		$retour['direct']=true;
+		$code=substr($nom_histoire, strlen('code='));
+        $l=DM_Core::$d->toList($_SESSION['id_user']);
+
+		$resultat_requete=Inducks::get_issues_from_storycode($code);
+
 		foreach($resultat_requete as $resultat) {
-			$publication_codes[]=$resultat['publicationcode'];
-		}
-		$noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
-		foreach($resultat_requete as $resultat) {
-			list($pays,$magazine)=explode('/',$resultat['publicationcode']);
-			$nom_complet_magazine=$noms_magazines[$resultat['publicationcode']];
-			$issuenumber=$resultat['issuenumber'];
-			$liste_magazines[]= ['pays'=>$pays,
-									 'magazine_numero'=>$magazine.'.'.$issuenumber,
-									 'nom_magazine'=>$nom_complet_magazine,
-									 'titre'=>$nom_complet_magazine];
-		}
+		    $publicationcode = $resultat['publicationcode'];
+            list($pays,$magazine)=explode('/',$publicationcode);
+            $issuenumber=$resultat['issuenumber'];
+            if ($_POST['recherche_bibliotheque'] === 'false' || $l->est_possede($pays,$magazine, $issuenumber)) {
+                $liste_numeros[$publicationcode.' '.$issuenumber] = [
+                    'pays'=>$pays,
+                    'publicationcode'=>$publicationcode,
+                    'magazine_numero'=>$magazine.'.'.$issuenumber,
+                ];
+            }
+        }
+
+        $noms_magazines = Inducks::get_noms_complets_magazines(
+            array_unique(array_values(array_map(function($numero) {
+                return $numero['publicationcode'];
+            }, $liste_numeros)))
+        );
+
+        array_walk($liste_numeros, function(&$numero) use($noms_magazines) {
+            $numero['titre'] = $noms_magazines[$numero['publicationcode']];
+        });
 	}
 	else {
 		$condition = 'MATCH(inducks_entry.title) AGAINST (\''.implode(',', explode(' ', $nom_histoire)).'\')';
-		$requete='SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title, '
-							     .$condition.' AS score '
-				.'FROM inducks_entry '
-				.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-				.'WHERE '.$condition.' '
-				.'ORDER BY score DESC, title';
+		$requete="
+          SELECT DISTINCT inducks_storyversion.storycode AS storycode, inducks_entry.title AS title, $condition AS score
+          FROM inducks_entry
+          INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode
+          WHERE $condition
+          ORDER BY score DESC, title";
 		$resultat_requete=Inducks::requete_select($requete);
 		foreach($resultat_requete as $resultat) {
 			$code=$resultat['storycode'];
 			$title=$resultat['title'];
-			$liste_magazines[]= ['code'=>$code,
-									 'titre'=>$title];
+            $liste_numeros[]= [
+                'code'=>$code,
+                'titre'=>$title
+            ];
 		}
 	}
 
-    if (count($liste_magazines) > 10) {
-        $liste_magazines=array_slice($liste_magazines, 0,10);
-        $liste_magazines['limite']=true;
+    if (count($liste_numeros) > 10) {
+        $liste_numeros=array_slice($liste_numeros, 0,10);
+        $retour['limite']=true;
     }
 
-	echo header("X-JSON: " . json_encode($liste_magazines));
+    $retour['liste_numeros'] = array_values($liste_numeros);
+
+	echo header("X-JSON: " . json_encode($retour));
 }
 
 function trier_resultats_recherche ($a,$b) {

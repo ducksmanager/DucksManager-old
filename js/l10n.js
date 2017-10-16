@@ -1,4 +1,4 @@
-function l10n_action(fonction,index,param) {
+function l10n_action(fonction,index,param, callback) {
     var index_param;
     if (typeof index!='string') {
         index_param=index.join('~')+'~';
@@ -39,6 +39,8 @@ function l10n_action(fonction,index,param) {
                     }
                 }
             }
+
+            callback && callback();
         }
     });
 }

@@ -7,14 +7,25 @@
 }
 
 #recherche_bibliotheque {
-    display: none;
     z-index:700;
-    margin-top: -4px;
+    background-color: rgb(200, 137, 100);
+    margin-top: 0;
+    padding: 5px;
+    display:inline-block;
+}
+
+#recherche_bibliotheque input {
+    width: 300px;
+}
+
+#recherche_bibliotheque button {
+    width: 30px;
 }
 
 #conteneur_bibliotheque #recherche_bibliotheque {
     position: absolute;
-    background-color:gray;
+    display: none;
+    margin-top: -4px;
 }
 
 #conteneur_resultat_recherche {
@@ -28,13 +39,14 @@
 }
 
 .resultat_recherche, .magazine_trouve, .histoire_trouvee {
-    width:304px;
-    height:20px;
-    background-color:white;
-    color:black;
-    padding-top:5px;
-    padding-left:34px;
-    border:1px solid black;
+    width: 304px;
+    height: 18px;
+    line-height: 20px;
+    background-color: white;
+    color: black;
+    padding: 5px 0 5px 34px;
+    border: 1px solid black;
+    overflow-x: hidden;
 }
 
 .resultat_recherche {

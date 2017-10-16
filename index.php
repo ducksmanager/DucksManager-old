@@ -602,8 +602,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 </div>
                                                 <div id="recherche_bibliotheque">
                                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
-                                                    <input type="text" style="width:300px" name=""/>
-                                                    <button style="width: 30px;">OK</button>
+                                                    <input type="text" name=""/>
+                                                    <button>OK</button>
                                                 </div>
                                             <?php
                                             } ?>
@@ -1029,12 +1029,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 </td>
                                 <td style="vertical-align:top">
                                     <br />
-                                    <?=RECHERCHE_MAGAZINE_1?>
-                                    <?=RECHERCHE_MAGAZINE_2?>
-                                    
-                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0;">
-                                        <input type="text" style="width:300px" name="" />
-                                        <button style="width: 30px;">OK</button>
+                                    <?=RECHERCHE_MAGAZINE?>
+
+                                    <div id="recherche_bibliotheque">
+                                        <br>
+                                        <?= RECHERCHER_GENERAL ?><br/>
+                                        <input type="text" name="" />
+                                        <button>OK</button>
                                     </div>
                                 </td>
                             </tr>
@@ -1068,14 +1069,14 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <?php
                                                 Affichage::afficher_dernieres_tranches_publiees();
                                             }
-                                            ?><?=RECHERCHE_MAGAZINE_1?>&nbsp;
+                                            ?><?=RECHERCHE_MAGAZINE?>&nbsp;
                                             <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
                                             <b class="toggler_aide_recherche_magazine cache">^</b>
                                             <div id="aide_recherche_magazine" class="cache">
-                                                <?=RECHERCHE_MAGAZINE_2?>
-                                                <div id="recherche_bibliotheque" style="display:block;margin-top: 0;">
-                                                    <input type="text" style="width:300px" name="" />
-                                                    <button style="width: 30px;">OK</button>
+                                                <div id="recherche_bibliotheque">
+                                                    <?= RECHERCHER_GENERAL ?><br/>
+                                                    <input type="text" name="" />
+                                                    <button>OK</button>
                                                 </div>
                                             </div>
                                             <?php
