@@ -397,7 +397,7 @@ define('PUBLICATIONS_COURT','My issue collection');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Do you wish to execute these operations ?');
 define('QUESTION_IMPORTER_INDUCKS','Do you wish to import them?');
 define('QUESTION_SUPPRIMER_MAGAZINE','Would you like this magazine to be removed from your collection ? In this case, the following issues will also be removed from your collection :');
-define('RECHERCHE_MAGAZINE','Don\'t find the magazine name of one of your issues ?');
+define('RECHERCHE_MAGAZINE','Can\'t find a magazine name?');
 define('RECHERCHE_MAGAZINE_AUCUN_RESULTAT', 'No result.');
 define('RECHERCHE_MAGAZINE_HISTOIRE_NON_POSSEDEE', 'You don\'t own this story.');
 define('RECHERCHE_MAGAZINE_RESULTATS_NOMBREUX_1', 'There are more than 10 matches.');

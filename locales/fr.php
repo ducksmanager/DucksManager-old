@@ -396,7 +396,7 @@ define('PUBLICATIONS_COURT','Ma collection de magazines');
 define('QUESTION_EXECUTER_OPS_INDUCKS','Quelles op&eacute;rations souhaitez-vous ex&eacute;cuter ?');
 define('QUESTION_IMPORTER_INDUCKS','Voulez-vous les importer ?');
 define('QUESTION_SUPPRIMER_MAGAZINE','Souhaitez-vous supprimer ce magazine de votre collection ? Les num&eacute;ros suivants seront &eacute;galement supprim&eacute;s de votre collection dans ce cas :');
-define('RECHERCHE_MAGAZINE','Vous ne trouvez pas le nom du magazine d\'un des num&eacute;ros de votre collection ?');
+define('RECHERCHE_MAGAZINE','Vous ne trouvez pas le nom du magazine d\'un num&eacute;ro ?');
 define('RECHERCHE_MAGAZINE_AUCUN_RESULTAT', 'Aucun r&eacute;sultat.');
 define('RECHERCHE_MAGAZINE_HISTOIRE_NON_POSSEDEE', 'Vous ne poss&eacute;dez pas cette histoire.');
 define('RECHERCHE_MAGAZINE_RESULTATS_NOMBREUX_1', 'Le nombre de r&eacute;sultats est > 10.');
