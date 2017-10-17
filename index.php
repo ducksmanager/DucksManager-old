@@ -600,7 +600,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                     <span class="nouveau"><?=NOUVEAU?></span>
                                                     <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
                                                 </div>
-                                                <div id="recherche_bibliotheque">
+                                                <div id="recherche_histoire">
                                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
                                                     <input type="text" name=""/>
                                                     <button class="btn btn-default">OK</button>
@@ -1031,7 +1031,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                     <br />
                                     <?=RECHERCHE_MAGAZINE?>
 
-                                    <div id="recherche_bibliotheque">
+                                    <div id="recherche_histoire">
                                         <br>
                                         <?= RECHERCHER_GENERAL ?><br/>
                                         <input type="text" name="" />
@@ -1069,7 +1069,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <?php
                                                 Affichage::afficher_dernieres_tranches_publiees();
                                             }?>
-                                            <div id="recherche_bibliotheque">
+                                            <div id="recherche_histoire">
                                                 <?= RECHERCHER_GENERAL ?><br/>
                                                 <input type="text" name="" />
                                                 <button class="btn btn-default">OK</button>

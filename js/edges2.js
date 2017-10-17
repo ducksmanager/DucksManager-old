@@ -424,20 +424,20 @@ function charger_tranche_suivante(element) {
 
 function charger_recherche() {
     l10n_action('fillArray',l10n_recherche,'l10n_recherche', function() {
-        var element_recherche_bibliotheque = $('recherche_bibliotheque');
+        var element_recherche_histoire = $('recherche_histoire');
         var conteneur_bibliotheque = $('bibliotheque');
 
-        if (element_recherche_bibliotheque) {
+        if (element_recherche_histoire) {
            if (conteneur_bibliotheque) {
                afficher_lien_partage();
-               element_recherche_bibliotheque.setStyle({
-                   left: ($('contenu').cumulativeOffset()['left']
+               element_recherche_histoire.setStyle({
+                   left: ($('contenu').cumulativeOffset().left
                        +parseInt(conteneur_bibliotheque.getStyle('width').substring(0,conteneur_bibliotheque.getStyle('width').length-2))-330) +'px',
                    display: 'block'});
            }
 
-           element_recherche_bibliotheque.down('button').observe('click',recherche);
-           element_recherche_bibliotheque.down('input').observe('keydown', function(e) {
+           element_recherche_histoire.down('button').observe('click',recherche);
+           element_recherche_histoire.down('input').observe('keydown', function(e) {
                if (e.keyCode === 13) {
                    recherche();
                }
@@ -476,8 +476,8 @@ function afficher_lien_partage() {
 
 function recherche() {
     var recherche_bibliotheque=$('bibliotheque') === null ? 'false':'true';
-    var element_recherche_bibliotheque = $('recherche_bibliotheque');
-    var element_recherche_input = element_recherche_bibliotheque.down('input');
+    var element_recherche_histoire = $('recherche_histoire');
+    var element_recherche_input = element_recherche_histoire.down('input');
     $('conteneur_resultat_recherche') && $('conteneur_resultat_recherche').remove();
 
     $$('.magazine_trouve, .histoire_trouvee, .fleche_position, .resultat_recherche').invoke('remove');
@@ -485,19 +485,19 @@ function recherche() {
     var val_recherche=element_recherche_input.value || element_recherche_input.readAttribute('data-code');
 
     if (val_recherche) {
-        element_recherche_bibliotheque.down('button').update(new Element('img',{'src':'loading.gif'}));
+        element_recherche_histoire.down('button').update(new Element('img',{'src':'loading.gif'}));
 
         new Ajax.Request('Inducks.class.php', {
             method: 'post',
             parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+recherche_bibliotheque,
             onSuccess:function(transport) {
-                element_recherche_bibliotheque.down('button').update('OK');
+                element_recherche_histoire.down('button').update('OK');
                 var resultat=transport.headerJSON;
 
                 var conteneur_resultats_recherche = new Element('div')
                     .writeAttribute({id: 'conteneur_resultat_recherche'})
                     .addClassName('list-group');
-                element_recherche_bibliotheque.insert(conteneur_resultats_recherche);
+                element_recherche_histoire.insert(conteneur_resultats_recherche);
 
                 if (resultat['liste_numeros'].length) {
                     if (!resultat.direct) {
@@ -561,13 +561,17 @@ function recherche() {
                             var offset=tranche_trouvee.cumulativeOffset();
                             var haut=offset['top']-16;
                             var gauche=offset['left'];
-                            $('body').insert(new Element('img',{'src':'images/icones/arrow_down.png'})
-                                .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-                                .addClassName('fleche_position'));
-
-                            $('body').insert(new Element('img',{'src':'images/icones/arrow_up.png'})
-                                .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-                                .addClassName('fleche_position'));
+                            $('body')
+                                .insert(
+                                    new Element('img',{'src':'images/icones/arrow_down.png'})
+                                        .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
+                                        .addClassName('fleche_position')
+                                )
+                                .insert(
+                                    new Element('img',{'src':'images/icones/arrow_up.png'})
+                                        .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
+                                        .addClassName('fleche_position')
+                                );
                             window.scrollTo(gauche,haut);
                         }
                         else {
@@ -588,7 +592,7 @@ function recherche() {
                                         .insert(new Element('a')
                                             .update(new Element('i').addClassName('remove glyphicon glyphicon-remove-sign glyphicon-white'))
                                             .observe('click', function() {
-                                                element_recherche_bibliotheque.down('.conteneur_label_histoire').remove();
+                                                element_recherche_histoire.down('.conteneur_label_histoire').remove();
                                                 element_recherche_input.writeAttribute({disabled: false, 'data-code': false}).focus();
                                             }))
                             })

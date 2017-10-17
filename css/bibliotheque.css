@@ -6,7 +6,7 @@
     padding-right:5px;
 }
 
-#recherche_bibliotheque {
+#recherche_histoire {
     z-index:700;
     background-color: rgb(200, 137, 100);
     margin-top: 0;
@@ -14,16 +14,16 @@
     display:inline-block;
 }
 
-#recherche_bibliotheque input {
+#recherche_histoire input {
     width: 300px;
 }
 
-#recherche_bibliotheque button {
+#recherche_histoire button {
     width: 30px;
     margin-top: -3px;
 }
 
-#conteneur_bibliotheque #recherche_bibliotheque {
+#conteneur_bibliotheque #recherche_histoire {
     position: absolute;
     display: none;
     margin-top: -4px;
