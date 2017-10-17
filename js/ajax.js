@@ -371,7 +371,7 @@ function afficher_numeros(pays,magazine, numero) {
                 init_observers_gerer_numeros();
                 numero = numero || location.hash;
 	            if (numero) {
-	                $('liste_numeros').select('[name="'+numero.replace(/#/,'')+'"]')[0].scrollIntoView(true);
+                    indiquer_numero($('liste_numeros').select('[name="'+numero.replace(/#/,'')+'"]')[0].parentNode, 'gauche');
 	            }
            }
 	});

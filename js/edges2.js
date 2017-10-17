@@ -563,24 +563,8 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         if (recherche_bibliotheque === 'true') {
             $$('.fleche_position').invoke('remove');
             var tranche_trouvee = $(pays_magazine);
-            var offset = tranche_trouvee.cumulativeOffset();
-            var haut = offset['top'] - 16;
-            var gauche = offset['left'];
-            $('body')
-                .insert(
-                    new Element('img', {'src': 'images/icones/arrow_down.png'})
-                        .setStyle({'top': (haut) + 'px', 'left': (gauche + tranche_trouvee.width / 2 - 16/2) + 'px'})
-                        .addClassName('fleche_position')
-                )
-                .insert(
-                    new Element('img', {'src': 'images/icones/arrow_up.png'})
-                        .setStyle({
-                            'top': (haut + 16 + tranche_trouvee.height) + 'px',
-                            'left': (gauche + tranche_trouvee.width / 2 - 16/2) + 'px'
-                        })
-                        .addClassName('fleche_position')
-                );
-            window.scrollTo(gauche, haut);
+            indiquer_numero(tranche_trouvee, 'haut');
+            indiquer_numero(tranche_trouvee, 'bas');
         }
         else {
             var publicationcode = pays_magazine.replace('.', '/').split('/');
@@ -615,6 +599,42 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
 
     derniere_action_recherche = moment();
     recherche_en_cours = false;
+}
+
+function indiquer_numero(element, position_fleche) {
+    $$('.fleche_position').invoke('remove');
+
+    var offset = element.cumulativeOffset();
+    var haut = offset.top;
+    var gauche = offset.left;
+
+    var css, src;
+    var cote_fleche= 16;
+
+    switch(position_fleche) {
+        case 'gauche':
+            css = {top: (haut + element.getHeight()/2 - cote_fleche/2 ) + 'px', left: (gauche - cote_fleche) + 'px'};
+            src = 'images/icones/arrow_right.png';
+        break;
+
+        case 'haut':
+            css = {top: (haut - cote_fleche) + 'px', left: (gauche + element.getWidth()/2) + 'px'};
+            src = 'images/icones/arrow_down.png';
+        break;
+
+        case 'bas':
+            css = {top: (haut + element.getHeight()) + 'px', left: (gauche + element.getWidth()/2) + 'px'};
+            src = 'images/icones/arrow_up.png';
+        break;
+    }
+
+    $('body')
+        .insert(
+            new Element('img', {'src': src})
+                .setStyle(css)
+                .addClassName('fleche_position')
+        );
+    window.scrollTo(gauche, haut);
 }
 
 function recherche_histoire(val_recherche) {
