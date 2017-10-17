@@ -28,6 +28,7 @@ function ouvrir_tranche() {
     if (action_en_cours || extrait_courant>0)
         return;
     jQuery('.popover').popover('destroy');
+    $$('.fleche_position').invoke('remove');
 
     extraits=[];
     extrait_courant=-1;
@@ -563,8 +564,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         if (recherche_bibliotheque === 'true') {
             $$('.fleche_position').invoke('remove');
             var tranche_trouvee = $(pays_magazine);
-            indiquer_numero(tranche_trouvee, 'haut');
-            indiquer_numero(tranche_trouvee, 'bas');
+            indiquer_numero(tranche_trouvee, ['haut', 'bas']);
         }
         else {
             var publicationcode = pays_magazine.replace('.', '/').split('/');
@@ -601,7 +601,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
     recherche_en_cours = false;
 }
 
-function indiquer_numero(element, position_fleche) {
+function indiquer_numero(element, positions_fleches) {
     $$('.fleche_position').invoke('remove');
 
     var offset = element.cumulativeOffset();
@@ -611,29 +611,33 @@ function indiquer_numero(element, position_fleche) {
     var css, src;
     var cote_fleche= 16;
 
-    switch(position_fleche) {
-        case 'gauche':
-            css = {top: (haut + element.getHeight()/2 - cote_fleche/2 ) + 'px', left: (gauche - cote_fleche) + 'px'};
-            src = 'images/icones/arrow_right.png';
-        break;
+    for (var i=0; i<positions_fleches.length; i++) {
+        var position_fleche = positions_fleches[i];
 
-        case 'haut':
-            css = {top: (haut - cote_fleche) + 'px', left: (gauche + element.getWidth()/2) + 'px'};
-            src = 'images/icones/arrow_down.png';
-        break;
+        switch(position_fleche) {
+            case 'gauche':
+                css = {top: (haut + element.getHeight()/2 - cote_fleche/2 ) + 'px', left: (gauche - cote_fleche) + 'px'};
+                src = 'images/icones/arrow_right.png';
+            break;
 
-        case 'bas':
-            css = {top: (haut + element.getHeight()) + 'px', left: (gauche + element.getWidth()/2) + 'px'};
-            src = 'images/icones/arrow_up.png';
-        break;
+            case 'haut':
+                css = {top: (haut - cote_fleche) + 'px', left: (gauche + element.getWidth()/2 - cote_fleche/2) + 'px'};
+                src = 'images/icones/arrow_down.png';
+            break;
+
+            case 'bas':
+                css = {top: (haut + element.getHeight()) + 'px', left: (gauche + element.getWidth()/2 - cote_fleche/2) + 'px'};
+                src = 'images/icones/arrow_up.png';
+            break;
+        }
+
+        $('body')
+            .insert(
+                new Element('img', {'src': src})
+                    .setStyle(css)
+                    .addClassName('fleche_position')
+            )
     }
-
-    $('body')
-        .insert(
-            new Element('img', {'src': src})
-                .setStyle(css)
-                .addClassName('fleche_position')
-        );
     window.scrollTo(gauche, haut);
 }
 
