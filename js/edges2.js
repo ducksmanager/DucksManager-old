@@ -436,12 +436,20 @@ function charger_recherche() {
                    display: 'block'});
            }
 
-           element_recherche_histoire.down('button').observe('click',recherche);
-           element_recherche_histoire.down('input').observe('keydown', function(e) {
-               if (e.keyCode === 13) {
-                   recherche();
-               }
+           element_recherche_histoire.down('button').observe('click', function(e) {
+               recherche_histoire();
+               e.stopPropagation();
            });
+           element_recherche_histoire.down('input')
+               .observe('keyup', function(e) {
+                   if (/[\-\!\?\. a-z0-9]/i.test(String.fromCharCode(e.which))) {
+                       recherche_histoire();
+                       e.stopPropagation();
+                   }
+               })
+               .observe('click', function(e) {
+                   e.stopPropagation();
+               });
        }
         $('contenu').observe('click', function() {
             $$('.magazine_trouve, .histoire_trouvee, .resultat_recherche').invoke('remove');
@@ -474,144 +482,188 @@ function afficher_lien_partage() {
 	});
 }
 
-function recherche() {
+var derniere_action_recherche=null;
+var recherches_reportees = [];
+var recherche_en_cours = false;
+
+function traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input, recherche_bibliotheque) {
+    $$('.fleche_position').invoke('remove');
+    var conteneur_resultats_recherche = new Element('div')
+        .writeAttribute({id: 'conteneur_resultat_recherche'})
+        .addClassName('list-group');
+
+    if (resultat['liste_numeros'].length) {
+        if (!resultat.direct) {
+            conteneur_resultats_recherche
+                .insert(new Element('div')
+                    .addClassName('resultat_recherche list-group-item')
+                    .insert(l10n_recherche['recherche_magazine_selectionnez_une_histoire'])
+                );
+        }
+        var i = 0;
+        while (resultat['liste_numeros'][i]) {
+            if (resultat.direct) {
+                var magazine = resultat['liste_numeros'][i];
+
+                magazine.magazine_numero = magazine.pays
+                    + '/' + magazine.magazine_numero
+                        .replace(/[+]+/g, '.')
+                        .replace(/[ ]+/g, '');
+
+                var numero = magazine.magazine_numero.split(new RegExp('\\.', 'g'))[1];
+
+                conteneur_resultats_recherche
+                    .insert(new Element('div')
+                        .addClassName('magazine_trouve list-group-item')
+                        .writeAttribute({'id': 'magazine_' + magazine.magazine_numero})
+                        .insert(new Element('div')
+                            .addClassName(magazine.etat ? ' details_numero gauche num_' + magazine.etat : ''))
+                        .insert(new Element('img', {
+                            src: 'images/flags/' + magazine.pays + '.png',
+                            alt: magazine.pays
+                        }))
+                        .insert(magazine.titre + ' ' + numero));
+            }
+            else {
+                var histoire = resultat['liste_numeros'][i];
+
+                conteneur_resultats_recherche
+                    .insert(new Element('div')
+                        .addClassName('histoire_trouvee list-group-item')
+                        .writeAttribute({id: 'histoire_' + histoire.code})
+                        .insert(histoire.titre));
+            }
+            i++;
+        }
+
+        if (resultat.limite) {
+            conteneur_resultats_recherche
+                .insert(new Element('div').addClassName('resultat_recherche list-group-item')
+                    .insert(l10n_recherche['recherche_magazine_resultats_nombreux_1']));
+            conteneur_resultats_recherche
+                .insert(new Element('div').addClassName('resultat_recherche list-group-item')
+                    .insert(l10n_recherche['recherche_magazine_resultats_nombreux_2']));
+        }
+    }
+    else {
+        conteneur_resultats_recherche
+            .insert(new Element('div')
+                .addClassName('resultat_recherche list-group-item')
+                .insert(resultat.direct && recherche_bibliotheque
+                    ? l10n_recherche['recherche_magazine_histoire_non_possedee']
+                    : l10n_recherche['recherche_magazine_aucun_resultat']));
+    }
+
+    $('conteneur_resultat_recherche') && $('conteneur_resultat_recherche').remove();
+    element_recherche_histoire.insert(conteneur_resultats_recherche);
+
+    $$('.magazine_trouve').invoke('observe', 'click', function (event) {
+        var element = Event.element(event);
+        var pays_magazine = element.readAttribute('id').substring('magazine_'.length, element.readAttribute('id').length);
+        if (recherche_bibliotheque === 'true') {
+            $$('.fleche_position').invoke('remove');
+            var tranche_trouvee = $(pays_magazine);
+            var offset = tranche_trouvee.cumulativeOffset();
+            var haut = offset['top'] - 16;
+            var gauche = offset['left'];
+            $('body')
+                .insert(
+                    new Element('img', {'src': 'images/icones/arrow_down.png'})
+                        .setStyle({'top': (haut) + 'px', 'left': (gauche + tranche_trouvee.width / 2 - 16/2) + 'px'})
+                        .addClassName('fleche_position')
+                )
+                .insert(
+                    new Element('img', {'src': 'images/icones/arrow_up.png'})
+                        .setStyle({
+                            'top': (haut + 16 + tranche_trouvee.height) + 'px',
+                            'left': (gauche + tranche_trouvee.width / 2 - 16/2) + 'px'
+                        })
+                        .addClassName('fleche_position')
+                );
+            window.scrollTo(gauche, haut);
+        }
+        else {
+            var publicationcode = pays_magazine.replace('.', '/').split('/');
+            afficher_numeros(publicationcode[0], publicationcode[1], publicationcode[2]);
+        }
+    });
+
+    $$('.histoire_trouvee').invoke('observe', 'click', function (event) {
+        var element = Event.element(event);
+        var storycode = element.readAttribute('id').substring('histoire_'.length, element.readAttribute('id').length);
+        element_recherche_input
+            .writeAttribute({'data-code': 'code=' + storycode, disabled: 'disabled'})
+            .insert({
+                before:
+                    new Element('span').addClassName('conteneur_label_histoire tag label label-default')
+                        .insert(new Element('span').addClassName('label_histoire').update(element.innerText))
+                        .insert(new Element('a')
+                            .update(new Element('i').addClassName('remove glyphicon glyphicon-remove-sign glyphicon-white'))
+                            .observe('click', function () {
+                                element_recherche_histoire.down('.conteneur_label_histoire').remove();
+                                element_recherche_input.writeAttribute({
+                                    disabled: false,
+                                    'data-code': false
+                                }).focus();
+                            }))
+            })
+            .value = '';
+        $$('.histoire_trouvee, .resultat_recherche').invoke('remove');
+        recherche_histoire();
+        event.stopPropagation();
+    });
+
+    derniere_action_recherche = moment();
+    recherche_en_cours = false;
+}
+
+function recherche_histoire(val_recherche) {
     var recherche_bibliotheque=$('bibliotheque') === null ? 'false':'true';
     var element_recherche_histoire = $('recherche_histoire');
     var element_recherche_input = element_recherche_histoire.down('input');
-    $('conteneur_resultat_recherche') && $('conteneur_resultat_recherche').remove();
+    var recherche_forcee = true;
 
-    $$('.magazine_trouve, .histoire_trouvee, .fleche_position, .resultat_recherche').invoke('remove');
-    $$('.magazine_trouve, .histoire_trouvee').invoke('stopObserving','click');
-    var val_recherche=element_recherche_input.value || element_recherche_input.readAttribute('data-code');
-
-    if (val_recherche) {
-        element_recherche_histoire.down('button').update(new Element('img',{'src':'loading.gif'}));
-
-        new Ajax.Request('Inducks.class.php', {
-            method: 'post',
-            parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+recherche_bibliotheque,
-            onSuccess:function(transport) {
-                element_recherche_histoire.down('button').update('OK');
-                var resultat=transport.headerJSON;
-
-                var conteneur_resultats_recherche = new Element('div')
-                    .writeAttribute({id: 'conteneur_resultat_recherche'})
-                    .addClassName('list-group');
-                element_recherche_histoire.insert(conteneur_resultats_recherche);
-
-                if (resultat['liste_numeros'].length) {
-                    if (!resultat.direct) {
-                        conteneur_resultats_recherche
-                            .insert(new Element('div')
-                                .addClassName('resultat_recherche list-group-item')
-                                .insert(l10n_recherche['recherche_magazine_selectionnez_une_histoire'])
-                            );
-                    }
-                    var i=0;
-                    while (resultat['liste_numeros'][i]) {
-                        if (resultat.direct) {
-                            var magazine=resultat['liste_numeros'][i];
-
-                            magazine.magazine_numero=magazine.pays
-                                                +'/'+magazine.magazine_numero
-                                                    .replace(/[+]+/g,'.')
-                                                    .replace(/[ ]+/g,'');
-
-                            var numero=magazine.magazine_numero.split(new RegExp('\\.','g'))[1];
-
-                            conteneur_resultats_recherche
-                                .insert(new Element('div')
-                                    .addClassName('magazine_trouve list-group-item')
-                                    .writeAttribute({'id': 'magazine_' + magazine.magazine_numero})
-                                    .insert(new Element('div')
-                                        .addClassName(magazine.etat ? ' details_numero gauche num_' + magazine.etat : ''))
-                                    .insert(new Element('img', {
-                                        src: 'images/flags/' + magazine.pays + '.png',
-                                        alt: magazine.pays
-                                    }))
-                                    .insert(magazine.titre + ' ' + numero));
-                        }
-                        else {
-                            var histoire=resultat['liste_numeros'][i];
-
-                            conteneur_resultats_recherche
-                                .insert(new Element('div')
-                                    .addClassName('histoire_trouvee list-group-item')
-                                    .writeAttribute({id: 'histoire_'+histoire.code})
-                                    .insert(histoire.titre));
-                        }
-                        i++;
-                    }
-
-                    if (resultat.limite) {
-                        conteneur_resultats_recherche
-                            .insert(new Element('div').addClassName('resultat_recherche list-group-item')
-                                .insert(l10n_recherche['recherche_magazine_resultats_nombreux_1']));
-                        conteneur_resultats_recherche
-                            .insert(new Element('div').addClassName('resultat_recherche list-group-item')
-                                .insert(l10n_recherche['recherche_magazine_resultats_nombreux_2']));
-                    }
-
-                    $$('.magazine_trouve').invoke('observe','click',function(event) {
-                        var element=Event.element(event);
-                        var pays_magazine=element.readAttribute('id').substring('magazine_'.length, element.readAttribute('id').length);
-                        if (recherche_bibliotheque==='true') {
-                            $$('.fleche_position').invoke('remove');
-                            var tranche_trouvee=$(pays_magazine);
-                            var offset=tranche_trouvee.cumulativeOffset();
-                            var haut=offset['top']-16;
-                            var gauche=offset['left'];
-                            $('body')
-                                .insert(
-                                    new Element('img',{'src':'images/icones/arrow_down.png'})
-                                        .setStyle({'top':(haut)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-                                        .addClassName('fleche_position')
-                                )
-                                .insert(
-                                    new Element('img',{'src':'images/icones/arrow_up.png'})
-                                        .setStyle({'top':(haut+16+tranche_trouvee.height)+'px','left':(gauche-tranche_trouvee.width/2)+'px'})
-                                        .addClassName('fleche_position')
-                                );
-                            window.scrollTo(gauche,haut);
-                        }
-                        else {
-                            var publicationcode = pays_magazine.replace('.','/').split('/');
-                            afficher_numeros(publicationcode[0], publicationcode[1], publicationcode[2]);
-                        }
-                    });
-                    $$('.histoire_trouvee').invoke('observe','click',function(event) {
-                        var element=Event.element(event);
-                        var storycode=element.readAttribute('id').substring('histoire_'.length,element.readAttribute('id').length);
-                        element_recherche_input
-                            .writeAttribute('data-code', 'code='+storycode)
-                            .writeAttribute('disabled','disabled')
-                            .insert({
-                                before:
-                                    new Element('span').addClassName('conteneur_label_histoire tag label label-default')
-                                        .insert(new Element('span').addClassName('label_histoire').update(element.innerText))
-                                        .insert(new Element('a')
-                                            .update(new Element('i').addClassName('remove glyphicon glyphicon-remove-sign glyphicon-white'))
-                                            .observe('click', function() {
-                                                element_recherche_histoire.down('.conteneur_label_histoire').remove();
-                                                element_recherche_input.writeAttribute({disabled: false, 'data-code': false}).focus();
-                                            }))
-                            })
-                            .value = '';
-                        $$('.histoire_trouvee, .resultat_recherche').invoke('remove');
-                        recherche();
-                    });
-                }
-                else {
-                    conteneur_resultats_recherche
-                        .insert(new Element('div')
-                            .addClassName('resultat_recherche list-group-item')
-                            .insert(resultat.direct && recherche_bibliotheque
-                                ? l10n_recherche['recherche_magazine_histoire_non_possedee']
-                                : l10n_recherche['recherche_magazine_aucun_resultat']));
-                }
-            }
-        });
+    if (!val_recherche) {
+        recherche_forcee = false;
+        val_recherche=element_recherche_input.value || element_recherche_input.readAttribute('data-code');
     }
+
+    if (val_recherche && val_recherche.length >= 3 ) {
+        var resultat = localStorage && JSON.parse(localStorage.getItem('get_magazines_histoire.'+val_recherche));
+        if (resultat) {
+            traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input, recherche_bibliotheque);
+        }
+        else {
+            if (!recherche_en_cours && (recherche_forcee || !derniere_action_recherche || moment().diff(derniere_action_recherche, 'milliseconds') > 200)) {
+                element_recherche_histoire.down('button').update(new Element('img',{'src':'loading.gif'}));
+                recherche_en_cours = true;
+
+                new Ajax.Request('Inducks.class.php', {
+                    method: 'post',
+                    parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+recherche_bibliotheque,
+                    onSuccess:function(transport) {
+                        element_recherche_histoire.down('button').update('OK');
+
+                        var resultat=transport.headerJSON;
+                        localStorage && localStorage.setItem('get_magazines_histoire.'+val_recherche, JSON.stringify(resultat));
+
+                        traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input, recherche_bibliotheque);
+                    }
+                });
+            }
+            else {
+                recherches_reportees.push(val_recherche);
+                setTimeout(function() {
+                    if (recherches_reportees.length) {
+                        var derniere_recherche_reportee = recherches_reportees[recherches_reportees.length-1];
+                        recherches_reportees = [];
+                        recherche_histoire(derniere_recherche_reportee);
+                    }
+                }, 250);
+            }
+        }
+    }
+    derniere_action_recherche = moment();
 }
 
 function init_ordre_magazines() {

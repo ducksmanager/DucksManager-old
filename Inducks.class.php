@@ -358,8 +358,8 @@ elseif (isset($_POST['get_cover'])) {
 	echo json_encode($resultats);
 }
 elseif (isset($_POST['get_magazines_histoire'])) {
-	$nom_histoire=str_replace('"','\\"',Util::supprimerAccents(utf8_decode($_POST['histoire'])));
-	$retour= [];
+	$nom_histoire=str_replace('"','\\"',$_POST['histoire']);
+	$retour = [];
     $liste_numeros = [];
 
 	if (strpos($nom_histoire, 'code=') === 0) {
