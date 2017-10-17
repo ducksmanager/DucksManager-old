@@ -91,12 +91,15 @@ function get_achats(continue_id) {
                 }];
             myMenuItems = myMenuItems.concat(myMenuItems2);
 
-            new Proto.Menu({
-                type: 'gestion_numeros',
-                selector: '#liste_numeros',
-                className: 'menu desktop',
-                menuItems: myMenuItems
-            });
+            if (!$('menu_contextuel')) {
+                new Proto.Menu({
+                    type: 'gestion_numeros',
+                    selector: '#liste_numeros',
+                    className: 'menu desktop',
+                    menuItems: myMenuItems
+                });
+            }
+
             var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
                 'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
                 'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
@@ -345,7 +348,7 @@ function select_etats() {
 	});
 }
 
-function afficher_numeros(pays,magazine) {
+function afficher_numeros(pays,magazine, numero) {
 	if (pays == null || magazine == null) {
 		var el_select=$('liste_magazines');
 		if (el_select.options[0].id=='vide') {
@@ -366,8 +369,9 @@ function afficher_numeros(pays,magazine) {
            onSuccess:function(transport) {
                 $('liste_numeros').update(transport.responseText);
                 init_observers_gerer_numeros();
-	            if (location.hash) {
-	                $('liste_numeros').select('[name="'+location.hash.replace(/#/,'')+'"]')[0].scrollIntoView(true);
+                numero = numero || location.hash;
+	            if (numero) {
+	                $('liste_numeros').select('[name="'+numero.replace(/#/,'')+'"]')[0].scrollIntoView(true);
 	            }
            }
 	});

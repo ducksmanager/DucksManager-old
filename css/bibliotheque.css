@@ -51,8 +51,9 @@
 .conteneur_label_histoire {
     position: absolute;
     padding: 2px 4px 4px !important;
-    margin: 7px 12px;
-    font-size: 10px !important;
+    margin: 4px 12px;
+    font-size: 11px !important;
+
 }
 
 .conteneur_label_histoire span.label_histoire {
@@ -63,9 +64,10 @@
 
 .conteneur_label_histoire a {
     cursor: pointer;
+    font-size: 19px;
     opacity: 0.6;
-    margin: 0 0 0 .3em;
-    border-bottom: 0;
+    margin: 0 0 0 6px;
+    border-bottom: 0 !important;
 }
 
 .conteneur_label_histoire a .glyphicon-white {
@@ -78,7 +80,7 @@
 
 .conteneur_label_histoire .remove {
     vertical-align: bottom;
-    top: 0;
+    top: 2px;
 }
 
 .resultat_recherche {
