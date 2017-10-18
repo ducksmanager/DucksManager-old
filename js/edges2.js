@@ -647,7 +647,7 @@ function indiquer_numero(element, positions_fleches) {
                     .addClassName('fleche_position')
             )
     }
-    window.scrollTo(gauche - $('body').getWidth() / 2, haut - $('body').getHeight() / 2);
+    window.scrollTo(gauche - $('body').getWidth() / 2 + element.getWidth()/2, haut - $('body').getHeight() / 2 + element.getHeight()/2);
 }
 
 function recherche_histoire(val_recherche) {
