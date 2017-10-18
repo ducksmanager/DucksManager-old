@@ -424,6 +424,7 @@ function charger_tranche_suivante(element) {
 }
 
 function charger_recherche() {
+    localStorage && localStorage.clear();
     l10n_action('fillArray',l10n_recherche,'l10n_recherche', function() {
         var element_recherche_histoire = $('recherche_histoire');
         var conteneur_bibliotheque = $('bibliotheque');
