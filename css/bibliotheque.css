@@ -60,6 +60,7 @@
     display: inline-block;
     max-width: 270px;
     overflow-x: hidden;
+    cursor: pointer;
 }
 
 .conteneur_label_histoire a {

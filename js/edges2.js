@@ -449,6 +449,7 @@ function charger_recherche() {
                    }
                })
                .observe('click', function(e) {
+                   recherche_histoire();
                    e.stopPropagation();
                });
        }
@@ -572,29 +573,36 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         }
     });
 
-    $$('.histoire_trouvee').invoke('observe', 'click', function (event) {
-        var element = Event.element(event);
+    $$('.histoire_trouvee').invoke('observe', 'click', function (e) {
+        var element = Event.element(e);
         var storycode = element.readAttribute('id').substring('histoire_'.length, element.readAttribute('id').length);
         element_recherche_input
             .writeAttribute({'data-code': 'code=' + storycode, disabled: 'disabled'})
             .insert({
                 before:
-                    new Element('span').addClassName('conteneur_label_histoire tag label label-default')
+                    new Element('span')
+                        .addClassName('conteneur_label_histoire label label-default')
                         .insert(new Element('span').addClassName('label_histoire').update(element.innerText))
                         .insert(new Element('a')
                             .update(new Element('i').addClassName('remove glyphicon glyphicon-remove-sign glyphicon-white'))
-                            .observe('click', function () {
+                            .observe('click', function (e) {
                                 element_recherche_histoire.down('.conteneur_label_histoire').remove();
+                                element_recherche_histoire.down('#conteneur_resultat_recherche').remove();
                                 element_recherche_input.writeAttribute({
                                     disabled: false,
                                     'data-code': false
                                 }).focus();
+                                e.stopPropagation();
                             }))
+                        .observe('click', function (e) {
+                            recherche_histoire();
+                            e.stopPropagation();
+                        })
             })
             .value = '';
         $$('.histoire_trouvee, .resultat_recherche').invoke('remove');
         recherche_histoire();
-        event.stopPropagation();
+        e.stopPropagation();
     });
 
     derniere_action_recherche = moment();
