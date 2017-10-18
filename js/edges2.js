@@ -638,7 +638,7 @@ function indiquer_numero(element, positions_fleches) {
                     .addClassName('fleche_position')
             )
     }
-    window.scrollTo(gauche, haut);
+    window.scrollTo(gauche - $('body').getWidth() / 2, haut - $('body').getHeight() / 2);
 }
 
 function recherche_histoire(val_recherche) {
