@@ -29,7 +29,9 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     $url = $url_gen_edgecreator.'/edges/'.$chemin;
 
     if (isset($_GET['publier'])) {
-        $requete='INSERT INTO tranches_pretes ('.implode(',',array_keys($valeurs)).') VALUES (\''.implode($valeurs, '\', \'').'\')';
+        $requete="
+          INSERT INTO tranches_pretes (".implode(',',array_keys($valeurs)).")
+          VALUES ('".implode($valeurs, "', '")."')";
         DM_Core::$d->requete($requete);
 
         foreach($photographes as $utilisateur_photographe) {
