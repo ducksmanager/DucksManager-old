@@ -32,15 +32,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 }
 else {
 	if (isset($_SESSION['user']) && isset($_SESSION['pass']) && !isset($_COOKIE['user']) ) {
-		setcookie('user',$_SESSION['user'],time()+3600);
-		setcookie('pass',$_SESSION['pass'],time()+3600);
+		setcookie('user',$_SESSION['user'],time()+3600, '', 'ducksmanager.net');
+		setcookie('pass',$_SESSION['pass'],time()+3600, 'ducksmanager.net');
 	}
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
 
-			setcookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
-			setcookie('pass',$_COOKIE['pass'],time()+3600);
+			setcookie('user', $_COOKIE['user'],time()+3600, '','ducksmanager.net'); // On met les 2 cookies à jour à chaque rafraichissement
+			setcookie('pass', $_COOKIE['pass'],time()+3600, '', 'ducksmanager.net');
 		}
 	}
 }

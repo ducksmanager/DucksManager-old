@@ -51,21 +51,13 @@ foreach($tranches_pretes_pour_publication as $tranche) {
           VALUES ('".implode($valeurs, "', '")."')";
         DM_Core::$d->requete($requete);
 
-        foreach($photographes as $utilisateur_photographe) {
-            $requete = 'SELECT ID FROM users WHERE username=\''.$utilisateur_photographe.'\'';
-            $resultat = DM_Core::$d->requete_select($requete);
-            $id_utilisateur = $resultat[0]['ID'];
-
+        foreach($photographes as $id_utilisateur) {
             $requete="INSERT INTO tranches_pretes_contributeurs(publicationcode, issuenumber, contributeur, contribution) 
                       VALUES ('$publicationcode','$numero',$id_utilisateur,'photographe')";
             DM_Core::$d->requete($requete);
         }
 
-        foreach($createurs as $utilisateur_createur) {
-            $requete = 'SELECT ID FROM users WHERE username=\''.$utilisateur_createur.'\'';
-            $resultat = DM_Core::$d->requete_select($requete);
-            $id_utilisateur = $resultat[0]['ID'];
-
+        foreach($createurs as $id_utilisateur) {
             $requete="INSERT INTO tranches_pretes_contributeurs(publicationcode, issuenumber, contributeur, contribution) 
                       VALUES ('$publicationcode','$numero',$id_utilisateur,'createur')";
             DM_Core::$d->requete($requete);
