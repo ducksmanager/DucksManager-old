@@ -13,6 +13,9 @@ if (!is_null($user)) {
 			$_SESSION['user']=$user;
 			$_SESSION['pass']=$pass;
 			$_SESSION['id_user']=DM_Core::$d->user_to_id($user);
+            $_COOKIE['user']=$user;
+            $_COOKIE['pass']=$pass;
+            $_COOKIE['id_user']=$_SESSION['id_user'];
 			$erreur='';
 		}
 		else {
