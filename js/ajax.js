@@ -376,11 +376,11 @@ jQuery.fn.changer_valeur = function(nom, valeur) {
     });
 };
 
-function afficher_numeros(pays,magazine) {
+function afficher_numeros(pays,magazine, numero) {
 
-    if (pays == null || magazine == null) {
+    if (!pays || !magazine) {
 		var el_select=$('liste_magazines');
-		if (el_select.options[0].id=='vide') {
+		if (el_select.options[0].id === 'vide') {
 			l10n_action('alert','selectionner_magazine');
 			return;
 		}
@@ -392,15 +392,20 @@ function afficher_numeros(pays,magazine) {
 				return;
 		}
 	}
-    new Ajax.Request('Database.class.php', {
-        method: 'post',
-        parameters: 'database=true&affichage=true&pays=' + pays + '&magazine=' + magazine,
-        onSuccess: function (transport) {
-            $('liste_numeros').update(transport.responseText);
-            init_liste_numeros();
-            get_achats(init_nav);
-        }
-    });
+	new Ajax.Request('Database.class.php', {
+           method: 'post',
+           parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
+           onSuccess:function(transport) {
+               $('liste_numeros').update(transport.responseText);
+               init_liste_numeros();
+               numero = numero || location.hash;
+               if (numero) {
+                   indiquer_numero($('liste_numeros').select('[name="' + numero.replace(/#/, '') + '"]')[0].parentNode, ['gauche']);
+               }
+
+               get_achats(init_nav);
+           }
+	});
 }
 
 function isLeftClick(event) {

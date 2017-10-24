@@ -27,20 +27,23 @@ else  {
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
-	setcookie('user','',time()-3600);
-	setcookie('pass','',time()-3600);
+	setcookie('user','',time()-3600, '', 'ducksmanager.net');
+	setcookie('pass','',time()-3600, '', 'ducksmanager.net');
+	setcookie('is_sha1','true',time()-3600, '', 'ducksmanager.net');
 }
 else {
 	if (isset($_SESSION['user']) && isset($_SESSION['pass']) && !isset($_COOKIE['user']) ) {
-		setcookie('user',$_SESSION['user'],time()+3600);
-		setcookie('pass',$_SESSION['pass'],time()+3600);
+		setcookie('user',$_SESSION['user'],time()+3600, '', 'ducksmanager.net');
+		setcookie('pass',$_SESSION['pass'],time()+3600, '', 'ducksmanager.net');
+		setcookie('is_sha1','true',time()+3600, '', 'ducksmanager.net');
 	}
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
 			$_SESSION['user']=$_COOKIE['user'];
 
-			setcookie('user',$_COOKIE['user'],time()+3600); // On met les 2 cookies � jour � chaque rafraichissement
-			setcookie('pass',$_COOKIE['pass'],time()+3600);
+			setcookie('user', $_COOKIE['user'],time()+3600, '','ducksmanager.net'); // On met les cookies à jour à chaque rafraichissement
+			setcookie('pass', $_COOKIE['pass'],time()+3600, '', 'ducksmanager.net');
+			setcookie('is_sha1', 'true',time()+3600, '', 'ducksmanager.net');
 		}
 	}
 }
@@ -600,10 +603,10 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                     <span class="nouveau"><?=NOUVEAU?></span>
                                                     <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
                                                 </div>
-                                                <div id="recherche_bibliotheque">
+                                                <div id="recherche_histoire">
                                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
-                                                    <input type="text" style="width:300px" name=""/>
-                                                    <button style="width: 30px;">OK</button>
+                                                    <input type="text" name=""/>
+                                                    <button class="btn btn-default">OK</button>
                                                 </div>
                                             <?php
                                             } ?>
@@ -1029,12 +1032,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 </td>
                                 <td style="vertical-align:top">
                                     <br />
-                                    <?=RECHERCHE_MAGAZINE_1?>
-                                    <?=RECHERCHE_MAGAZINE_2?>
-                                    
-                                    <div id="recherche_bibliotheque" style="display:block;margin-top: 0;">
-                                        <input type="text" style="width:300px" name="" />
-                                        <button style="width: 30px;">OK</button>
+                                    <?=RECHERCHE_MAGAZINE?>
+
+                                    <div id="recherche_histoire">
+                                        <br>
+                                        <?= RECHERCHER_GENERAL ?><br/>
+                                        <input type="text" name="" />
+                                        <button class="btn btn-default">OK</button>
                                     </div>
                                 </td>
                             </tr>
@@ -1067,16 +1071,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <br/>
                                                 <?php
                                                 Affichage::afficher_dernieres_tranches_publiees();
-                                            }
-                                            ?><?=RECHERCHE_MAGAZINE_1?>&nbsp;
-                                            <b class="toggler_aide_recherche_magazine"><?=CLIQUEZ_ICI?></b>
-                                            <b class="toggler_aide_recherche_magazine cache">^</b>
-                                            <div id="aide_recherche_magazine" class="cache">
-                                                <?=RECHERCHE_MAGAZINE_2?>
-                                                <div id="recherche_bibliotheque" style="display:block;margin-top: 0;">
-                                                    <input type="text" style="width:300px" name="" />
-                                                    <button style="width: 30px;">OK</button>
-                                                </div>
+                                            }?>
+                                            <div id="recherche_histoire">
+                                                <?= RECHERCHER_GENERAL ?><br/>
+                                                <input type="text" name="" />
+                                                <button class="btn btn-default">OK</button>
                                             </div>
                                             <?php
 

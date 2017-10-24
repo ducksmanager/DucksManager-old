@@ -15,7 +15,7 @@ class Affichage {
         $magazine_courant = isset($_GET['onglet_magazine']) ? $_GET['onglet_magazine'] : null;
         $pays_courant = is_null($magazine_courant) ? null : explode('/', $magazine_courant)[0];
         ?>
-        <nav class="magazines_possedes navbar navbar-default">
+        <nav id="magazines_possedes" class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
