@@ -311,7 +311,7 @@ function init_nav() {
 
     valeurs
         .mouseleave(function() {
-            jQuery(this).find('.option_nom>.alternatives').addClass('hidden invisible');
+            jQuery(this).find('.option_nom>.alternatives:not(.animated)').addClass('hidden invisible');
         })
         .mouseover(function() {
             jQuery(this).find('.option_nom>.alternatives:not(.submenu)').removeClass('hidden invisible animated');
@@ -322,9 +322,11 @@ function init_nav() {
 			.click(function() {
                 var alternative_element = jQuery(this);
 
-                alternative_element.closest('.option_nom>.alternatives')
-                    .addClass('invisible animated')
-                    .find('.alternative')
+                jQuery('.alternatives:not(.invisible)')
+                    .addClass('invisible animated');
+
+                alternative_element
+                    .closest('.option_nom>.alternatives .alternative')
                         .removeClass('checked');
 
                 alternative_element
@@ -334,7 +336,7 @@ function init_nav() {
                             alternative_element.attr('name'),
                             alternative_element.attr('value-short')
                         );
-			})
+            })
             .filter(':not(.day-row)')
                 .mouseover(function() {
                     jQuery(this).closest('.option_nom').find('.alternatives.submenu')
