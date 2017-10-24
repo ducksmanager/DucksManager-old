@@ -1,9 +1,14 @@
 html, body {
 	height:100%;
-	padding:0;
 	margin:0;
 	font:11px verdana,arial,sans-serif;
 	line-height:15px;
+	color: white;
+}
+
+body {
+	padding: 0 0 0 300px !important;
+	background-color: #2e353d;
 }
 
 object {
@@ -25,10 +30,6 @@ a.noborder, a.noborder:HOVER {
 
 .hidden, .template {
 	display: none !important;
-}
-
-#colonne_gauche a {
-	border-bottom: none;
 }
 
 a:HOVER {
@@ -63,6 +64,13 @@ a.important:HOVER {
     white-space: nowrap;
 }
 
+#medailles_et_login {
+	vertical-align: bottom;
+	height: 172px;
+	padding: 5px 5px 5px 3px;
+	background-color: rgb(61, 75, 95);
+}
+
 #medailles_et_login .medaille {
 	height: 120px;
 	margin-left: 5px;
@@ -80,10 +88,10 @@ a.important:HOVER {
 }
 
 #recemment {
-	margin-top: 10px;
-	border: 1px solid black;
-    color: black;
+	position: absolute;
+	top: 450px;
 	padding: 5px 5px 20px 5px;
+	border-top: 1px solid #23282e;
 }
 
 #recemment h4 {
@@ -96,12 +104,8 @@ a.important:HOVER {
 }
 
 #recemment #evenements div.evenement .date {
-	color: #444;
+	color: grey;
 	float: right;
-}
-
-#recemment #evenements div.evenement a {
-	color: black;
 }
 
 #couverture_preview {

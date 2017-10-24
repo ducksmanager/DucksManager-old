@@ -84,6 +84,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link rel="stylesheet" type="text/css" href="css/pluit-carousel-skins.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
+        <link rel="stylesheet" type="text/css" href="css/menu.css" />
         <link rel="stylesheet" href="css/protomenu.css" type="text/css" media="screen">
         <?php
         foreach($locales as $nom_langue=>$nouvelle_url) {
@@ -308,67 +309,99 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
     }
     ?>">
-    <table
-        style="text-align: left; color: white; background-color: rgb(61, 75, 95); width: 100%; height: 100%;border:0"
-        cellpadding="0" cellspacing="0">
+    <div id="colonne_gauche">
+
+        <div id="medailles_et_login" align="center">
+            <?php
+            if (isset($_SESSION['user']) &&!($action=='logout')) {
+                ?><div style="white-space: nowrap"><?php
+                $niveaux=DM_Core::$d->get_niveaux();
+                foreach($niveaux as $type=>$cpt_et_niveau) {
+                    if (!is_null($cpt_et_niveau)) {
+                        $cpt=$cpt_et_niveau['Cpt'];
+                        $niveau=$cpt_et_niveau['Niveau'];
+                        ?><img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" title="<?php
+                        echo constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
+                            .' '.$cpt.' '
+                            .constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');
+                        ?>"/><?php
+                    }
+                }
+                ?>
+                </div><br />
+                <div id="login">
+                <img id="light" src="vert.png" alt="O" />&nbsp;
+                <span id="texte_connecte"><?=$_SESSION['user']?></span>
+                </div><?php
+            } else {
+                ?><img id="light" src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><?=NON_CONNECTE?></span><br /><br /><?php
+            }?>
+        </div>
+        <i class="glyphicon glyphicon-home toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+        <div id="recemment">
+            <h4><?= NEWS_TITRE ?></h4>
+            <div id="evenements"><?= CHARGEMENT ?>...</div>
+        </div>
+
+        <div class="menu-list">
+
+            <ul id="menu-content" class="menu-content collapse">
+                <li data-toggle="collapse" data-target="#products" class="collapsed active">
+                    <a href="#"><i class="glyphicon glyphicon-home"></i> Ma collection <span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu collapse" id="products">
+                    <li><a href="#"><i class="glyphicon glyphicon-book"></i> My bookcase</a></li>
+                    <li><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Manage</a></li>
+                    <li><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Statistics</a></li>
+                    <li><a href="#"><i class="glyphicon glyphicon-print"></i> Print</a></li>
+                    <li><a href="#"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
+                </ul>
+
+                <li>
+                    <a href="#">
+                        <i class="glyphicon glyphicon-record"></i> Second-hand
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="couverture_preview">
+            <div class="fermer half_transparent cache"><?= FERMER ?></div>
+        </div>
+    </div>
+    <table id="main">
         <tbody>
             <tr>
-                <td id="medailles_et_login" align="center" style="vertical-align: bottom; height:45px;padding-left:3px;background-color:rgb(61, 75, 95)">
-                    <?php
-                    if (isset($_SESSION['user']) &&!($action=='logout')) {
-						?><div style="white-space: nowrap"><?php						
-						$niveaux=DM_Core::$d->get_niveaux();
-						foreach($niveaux as $type=>$cpt_et_niveau) {
-							if (!is_null($cpt_et_niveau)) {
-								$cpt=$cpt_et_niveau['Cpt'];
-								$niveau=$cpt_et_niveau['Niveau'];
-								?><img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" title="<?php
-									echo constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
-										.' '.$cpt.' '
-										.constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');
-								?>"/><?php
-							}
-						}
-                    	?>
-                    	</div><br />
-                    	<div id="login">
-	                    	<img id="light" src="vert.png" alt="O" />&nbsp;
-	                    	<span id="texte_connecte"><?=$_SESSION['user']?></span>
-	                    </div><?php 
-                    } else {
-                   		?><img id="light" src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><?=NON_CONNECTE?></span><br /><br /><?php 
-                    }?>
-                </td>
                 <td colspan="2" id="zone_logo1" style="">
                 </td>
             </tr>
             <tr style="height:100%">
-                <td style="height: 441px; vertical-align: top; width: 300px; background-color: rgb(200, 137, 100);">
-                    <table style="height:100%; width:100%" cellspacing="0"><tbody>
-                            <tr>
-                                <td id="colonne_gauche" valign="top" style="padding:5px;">
-                                    <div>
-                                        <b><a href="?"><?=ACCUEIL?></a></b><br />
-                                        <?php
-                                        $beta_user=DM_Core::$d->user_is_beta();
-                                        Menu::$beta_user=$beta_user;
-                                        Menu::$action=$action;
-                                        Menu::afficherMenus($menus);
-                                        ?>
-                                        <br/>
-                                    </div>
-                                    
-									<div id="recemment">
-										<h4><?=NEWS_TITRE?></h4>
-										<div id="evenements"><?=CHARGEMENT?>...</div>
-									</div>
-                                    <div id="couverture_preview">
-                                    	<div class="fermer half_transparent cache"><?=FERMER?></div>
-                                    </div>
-                                </td>
-                            </tr></tbody>
-                    </table>
-                </td>
+<!--                <td style="height: 441px; vertical-align: top; width: 300px; background-color: rgb(200, 137, 100);">-->
+<!--                    <table style="height:100%; width:100%" cellspacing="0"><tbody>-->
+<!--                        <tr>-->
+<!--                            <td id="colonne_gauche" valign="top" style="padding:5px;">-->
+<!--                                <div>-->
+<!--                                    <b><a href="?">--><?//=ACCUEIL?><!--</a></b><br />-->
+<!--                                    --><?php
+//                                    $beta_user=DM_Core::$d->user_is_beta();
+//                                    Menu::$beta_user=$beta_user;
+//                                    Menu::$action=$action;
+//                                    Menu::afficherMenus($menus);
+//                                    ?>
+<!--                                    <br/>-->
+<!--                                </div>-->
+<!--                                -->
+<!--                                <div id="recemment">-->
+<!--                                    <h4>--><?//=NEWS_TITRE?><!--</h4>-->
+<!--                                    <div id="evenements">--><?//=CHARGEMENT?><!--...</div>-->
+<!--                                </div>-->
+<!--                                <div id="couverture_preview">-->
+<!--                                    <div class="fermer half_transparent cache">--><?//=FERMER?><!--</div>-->
+<!--                                </div>-->
+<!--                            </td>-->
+<!--                        </tr></tbody>-->
+<!--                    </table>-->
+<!--                </td>-->
                 <td colspan="2" id="zone_logo2">
                     <?php if (!isset($_GET['action'])) {
                         ?>

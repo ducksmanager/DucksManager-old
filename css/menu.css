@@ -1,0 +1,118 @@
+#colonne_gauche {
+    font-family: verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 200;
+    background-color: #2e353d;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 306px;
+    height: 100%;
+    color: #e1ffff;
+    overflow-y: auto;
+}
+
+#colonne_gauche .toggle-btn {
+    display: none;
+}
+#colonne_gauche ul,
+#colonne_gauche li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    line-height: 35px;
+    cursor: pointer;
+}
+#colonne_gauche ul .active,
+#colonne_gauche li .active {
+    border-left: 3px solid rgb(200, 137, 100);
+    background-color: #4f5b69;
+}
+#colonne_gauche ul .sub-menu li.active,
+#colonne_gauche li .sub-menu li.active {
+    color: rgb(200, 137, 100);
+}
+#colonne_gauche ul .sub-menu li.active a,
+#colonne_gauche li .sub-menu li.active a {
+    color: rgb(200, 137, 100);
+}
+#colonne_gauche ul .sub-menu li,
+#colonne_gauche li .sub-menu li {
+    background-color: #181c20;
+    border: none;
+    line-height: 28px;
+    border-bottom: 1px solid #23282e;
+    margin-left: 0;
+}
+#colonne_gauche ul .sub-menu li:hover,
+#colonne_gauche li .sub-menu li:hover {
+    background-color: #020203;
+}
+#colonne_gauche li {
+    padding-left: 0;
+    border-left: 3px solid #2e353d;
+    border-bottom: 1px solid #23282e;
+}
+#colonne_gauche li a {
+    text-decoration: none;
+    color: #e1ffff;
+}
+#colonne_gauche li a i {
+    padding-left: 10px;
+    width: 20px;
+    padding-right: 20px;
+}
+#colonne_gauche li:hover {
+    border-left: 3px solid rgb(200, 137, 100);
+    background-color: #4f5b69;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#colonne_gauche a:hover {
+    border-bottom: 0 !important;
+}
+
+@media (max-width: 767px) {
+    #colonne_gauche {
+        position: relative;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    #colonne_gauche .toggle-btn {
+        display: block;
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 10 !important;
+        padding: 3px;
+        background-color: #ffffff;
+        color: #000;
+        width: 40px;
+        text-align: center;
+    }
+    .brand {
+        text-align: left !important;
+        font-size: 22px;
+        padding-left: 20px;
+        line-height: 50px !important;
+    }
+}
+@media (min-width: 767px) {
+    #colonne_gauche .menu-list .menu-content {
+        display: block;
+    }
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+#colonne_gauche a {
+    border-bottom: none;
+}
