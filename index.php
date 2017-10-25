@@ -311,7 +311,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
     ?>">
     <div id="colonne_gauche">
 
-        <div id="medailles_et_login" align="center">
+        <div id="medailles_et_login">
             <?php
             if (isset($_SESSION['user']) &&!($action=='logout')) {
                 ?><div style="white-space: nowrap"><?php
@@ -1432,6 +1432,17 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     ?>
                 </td>
                 <td align="center">
+                    <div id="flags">
+                        <?php
+                        foreach($locales as $nom_langue=>$nouvelle_url) {
+                            ?>
+                            <a class="drapeau_langue" href="<?=$nouvelle_url?>">
+                                <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
+                            </a>
+                            <?php
+                        }
+                        ?>
+                    </div>
                     <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
                     <br /><br />
                     <?=REMERCIEMENT_LOGO?>
@@ -1440,17 +1451,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
                     <br />
                     <?=LICENCE_INDUCKS3?>
-                </td>
-                <td style="vertical-align:top;" align="right">
-                	<?php
-					foreach($locales as $nom_langue=>$nouvelle_url) {
-                        ?>
-                        <a class="drapeau_langue" href="<?=$nouvelle_url?>">
-                            <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
-                        </a>
-                        <?php
-                    }
-                	?>
                 </td>
             </tr>
         </tbody>
