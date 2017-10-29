@@ -8,7 +8,7 @@ html, body {
 
 body {
 	padding: 0 0 0 300px !important;
-	background-color: #2e353d;
+	background-color: rgb(61, 75, 95) !important;
 }
 
 object {
@@ -67,6 +67,7 @@ a.important:HOVER {
 #medailles_et_login {
 	vertical-align: bottom;
 	height: 172px;
+	text-align: center;
 	background-color: #2e353d;
 	padding: 5px 5px 5px 3px;
 }
@@ -298,14 +299,6 @@ a.important:HOVER {
     width:16px;
 }
 
-#flags {
-	float: right;
-}
-
-#flags a.drapeau_langue, #flags a.drapeau_langue:HOVER, #flags a.drapeau_langue img {
-	border:0 !important;
-}
-
 #presentation_demo {
 	border:1px solid white;
 	width: 400px;
@@ -321,17 +314,46 @@ a.important:HOVER {
 	background-color: rgb(61, 75, 95);
 }
 
-td#zone_logo1 {
+#zone_logo1 {
 	background: rgb(200, 137, 100) url('../Proposition logo_1.jpg') no-repeat top center;
 	background-size: 659px 182px;
 	height: 180px;
 }
 
-td#zone_logo2 {
+#zone_logo2 {
 	background: transparent url('../Proposition logo_2.png') no-repeat top center;
 	background-size: 659px 42px;
 	padding-left:5px;
 	vertical-align: top;
+}
+
+#zone_logo2 .welcome {
+	margin-top: 0;
+	padding: 20px;
+}
+
+#footer {
+	border-top: 1px solid white;
+	padding-top: 10px;
+}
+
+#nb_users {
+	position: absolute;
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+	padding-left: 4px;
+	width: 242px;
+}
+
+#flags {
+	position: absolute;
+	right: 0;
+	margin: 20px;
+}
+
+#flags a.drapeau_langue, #flags a.drapeau_langue:HOVER, #flags a.drapeau_langue img {
+	border:0 !important;
 }
 
 ul#choix_impression {
