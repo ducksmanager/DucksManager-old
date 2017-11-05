@@ -202,7 +202,8 @@ function charger_tooltips_utilisateurs() {
             title: tooltip_content.down('h4').innerHTML,
             placement: 'top',
             html: true,
-            trigger: 'hover'
+            trigger: 'hover',
+            container: 'body'
         });
     });
 }
