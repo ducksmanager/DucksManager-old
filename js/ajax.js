@@ -5,7 +5,6 @@ var magazine_sel=null;
 var myMenuItems;
 var etats_charges=false;
 var tab_achats=[];
-var couverture_preview;
 
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
@@ -13,8 +12,6 @@ function init_observers_gerer_numeros() {
 }
 
 function get_achats(continue_id) {
-    couverture_preview = jQuery('#couverture_preview');
-
     new Ajax.Request('Database.class.php', {
         method: 'post',
         parameters: 'database=true&liste_achats=true&continue=' + continue_id,
@@ -114,6 +111,7 @@ function get_achats(continue_id) {
                 })
                 .mouseout(function () {
                     unlighten(jQuery(this).closest('.num_wrapper'));
+                    jQuery(this).find('.num').popover('hide');
                 })
                 .mouseup(function (event) {
                     if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
@@ -135,47 +133,47 @@ function get_achats(continue_id) {
                 element.attr({src: 'loading.gif'});
 
                 var numero_wrapper = element.closest('.num_wrapper');
-
-                couverture_preview.find('img').remove();
-
-                jQuery.post('Inducks.class.php', {
-                    get_cover: 'true',
-                    debug: debug,
-                    pays: jQuery('#pays').text(),
-                    magazine: jQuery('#magazine').text(),
-                    numero: numero_wrapper.attr('title')
-                })
-                    .done(function (data) {
-                        maj_image(jQuery('#couverture_preview'), (data && data.cover) || 'images/cover_not_found.png', numero_wrapper);
+                if (numero_wrapper.data('cover')) {
+                    maj_image(numero_wrapper, numero_wrapper.data('cover'));
+                    element.attr({src: 'images/icones/view.png'});
+                }
+                else {
+                    jQuery.post('Inducks.class.php', {
+                        get_cover: 'true',
+                        debug: debug,
+                        pays: jQuery('#pays').text(),
+                        magazine: jQuery('#magazine').text(),
+                        numero: numero_wrapper.attr('title')
                     })
-                    .fail(function () {
-                        maj_image(jQuery('#couverture_preview'), 'images/cover_not_found.png', numero_wrapper);
-                    })
-                    .always(function() {
-                        element.attr({src: 'images/icones/view.png'});
-                    });
+                        .done(function (data) {
+                            maj_image(numero_wrapper, data && data.cover);
+                        })
+                        .fail(function () {
+                            maj_image(numero_wrapper, null);
+                        })
+                        .always(function() {
+                            element.attr({src: 'images/icones/view.png'});
+                        });
+                }
                 event.stopPropagation();
-
             });
-
-            couverture_preview.find('.fermer')
-                .click(function () {
-                    jQuery(this).addClass('cache');
-                    couverture_preview.find('img').remove();
-                });
         }
     });
 }
 
-function maj_image(element, image, numero_wrapper) {
-    var largeur_image=jQuery('#colonne_gauche').prop('scrollWidth');
-	element.css({
-        width: largeur_image+'px',
-        top: numero_wrapper.offset().top +'px'
-	});
-
-    element.find('>.fermer').removeClass('cache');
-    element.append(jQuery('<img>').attr({'src':image}));
+function maj_image(numero_wrapper, image) {
+    numero_wrapper
+        .data('cover', image || 'images/cover_not_found.png')
+        .find('.num')
+            .popover({
+                content: function() {
+                    return '<img src="' + jQuery(this).closest('.num_wrapper').data('cover') + '" />';
+                },
+                html: true,
+                viewport: { selector: 'body' },
+                placement: 'right'
+            })
+            .popover('show');
 }
 
 function charger_evenements() {

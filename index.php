@@ -353,9 +353,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             Menu::afficherMenus($menus);
             ?>
         </div>
-        <div id="couverture_preview">
-            <div class="fermer half_transparent cache"><?= FERMER ?></div>
-        </div>
     </div>
     <div id="zone_logo1">
     </div>
