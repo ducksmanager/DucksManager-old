@@ -346,24 +346,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
         <div class="menu-list">
 
-            <ul id="menu-content" class="menu-content collapse">
-                <li data-toggle="collapse" data-target="#products" class="collapsed active">
-                    <a href="#"><i class="glyphicon glyphicon-home"></i> Ma collection <span class="arrow"></span></a>
-                </li>
-                <ul class="sub-menu collapse" id="products">
-                    <li><a href="#"><i class="glyphicon glyphicon-book"></i> My bookcase</a></li>
-                    <li><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Manage</a></li>
-                    <li><a href="#"><i class="glyphicon glyphicon-list-alt"></i> Statistics</a></li>
-                    <li><a href="#"><i class="glyphicon glyphicon-print"></i> Print</a></li>
-                    <li><a href="#"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
-                </ul>
-
-                <li>
-                    <a href="#">
-                        <i class="glyphicon glyphicon-record"></i> Second-hand
-                    </a>
-                </li>
-            </ul>
+            <?php
+            $beta_user=DM_Core::$d->user_is_beta();
+            Menu::$beta_user=$beta_user;
+            Menu::$action=$action;
+            Menu::afficherMenus($menus);
+            ?>
         </div>
         <div id="couverture_preview">
             <div class="fermer half_transparent cache"><?= FERMER ?></div>
