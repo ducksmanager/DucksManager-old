@@ -36,6 +36,9 @@ else {
 		setcookie('user',$_SESSION['user'],time()+3600, '', 'ducksmanager.net');
 		setcookie('pass',$_SESSION['pass'],time()+3600, '', 'ducksmanager.net');
 		setcookie('is_sha1','true',time()+3600, '', 'ducksmanager.net');
+        $_COOKIE['user'] = $_SESSION['user'];
+        $_COOKIE['pass'] = $_SESSION['pass'];
+        $_COOKIE['is_sha1'] = 'true';
 	}
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
