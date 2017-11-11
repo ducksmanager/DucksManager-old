@@ -36,6 +36,9 @@ else {
 		setcookie('user',$_SESSION['user'],time()+3600, '', 'ducksmanager.net');
 		setcookie('pass',$_SESSION['pass'],time()+3600, '', 'ducksmanager.net');
 		setcookie('is_sha1','true',time()+3600, '', 'ducksmanager.net');
+        $_COOKIE['user'] = $_SESSION['user'];
+        $_COOKIE['pass'] = $_SESSION['pass'];
+        $_COOKIE['is_sha1'] = 'true';
 	}
 	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
 		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
@@ -985,12 +988,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 ?><br /><br /><?php
             }
 
-                if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
-                    list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
-                }
-                else {
-                    list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
-                }
+            if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
+                list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
+            }
+            else {
+                list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
+            }
 
             if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
                 echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
