@@ -111,7 +111,7 @@ function get_achats(continue_id) {
                 })
                 .mouseout(function () {
                     unlighten(jQuery(this).closest('.num_wrapper'));
-                    jQuery(this).find('.num').popover('hide');
+                    jQuery('.num').popover('hide');
                 })
                 .mouseup(function (event) {
                     if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
@@ -162,18 +162,33 @@ function get_achats(continue_id) {
 }
 
 function maj_image(numero_wrapper, image) {
-    numero_wrapper
-        .data('cover', image || 'images/cover_not_found.png')
-        .find('.num')
-            .popover({
-                content: function() {
-                    return '<img src="' + jQuery(this).closest('.num_wrapper').data('cover') + '" />';
-                },
-                html: true,
-                viewport: { selector: 'body' },
-                placement: 'right'
-            })
-            .popover('show');
+    var cover_not_found_image = 'images/cover_not_found.png';
+    numero_wrapper.data('cover', image || cover_not_found_image);
+
+    img = new Image();
+    img.onload = function() {
+        charger_tooltip_couverture(numero_wrapper.find('.num'), numero_wrapper.data('cover'));
+    };
+    img.onerror = function() {
+        img.onload = function() {
+            charger_tooltip_couverture(numero_wrapper.find('.num'), cover_not_found_image);
+        };
+        img.src = cover_not_found_image;
+    };
+    img.src = numero_wrapper.data('cover');
+}
+
+function charger_tooltip_couverture(target, image) {
+    target
+        .popover({
+            content: function() {
+                return '<img src="' + image + '" />';
+            },
+            html: true,
+            viewport: { selector: 'body' },
+            placement: 'right'
+        })
+        .popover('show');
 }
 
 function charger_evenements() {
