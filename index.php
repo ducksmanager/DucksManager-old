@@ -1241,11 +1241,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 	                                		$requete='INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse_complete'].'\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', '.$_POST['coordX'].', '.$_POST['coordY'].', 0)';
                                             DM_Core::$d->requete($requete);
 
-                                            $entete = "MIME-Version: 1.0\r\n";
-                                            $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
-                                            $entete .= "To: admin@ducksmanager.net\r\n";
-                                            $entete .= "From: admin@ducksmanager.net\r\n";
-                                            mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="https://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
+                                            Util::get_service_results(
+                                                    ServeurCoa::$coa_servers['dedibox2'],
+                                                    'POST',
+                                                    "/ducksmanager/email/bookstore",
+                                                    'ducksmanager',
+                                                    is_null($id_user) ? [] : ['userid' => $id_user]
+                                            );
                                             ?>
                                             <div class="alert alert-info">
                                                 <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>
