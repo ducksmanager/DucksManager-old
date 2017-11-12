@@ -731,7 +731,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 mail('admin@ducksmanager.net', 'Proposition d\'aide de ' . $_SESSION['user'] . ' pour la bibliothèque',
                                                     $_POST['texte_participation'], 'From: ' . $_SESSION['user'] . '<' . $_POST['email'] . '>');
                                             } else {
-                                                ?><span style="color: red"><?= ERREUR_CAPTCHA ?></span><br/><br/><?php
+                                                ?><div class="alert alert-warning">
+                                                    <?= ERREUR_CAPTCHA ?>
+                                                </div><br/><?php
                                             }
                                             if (!isset($_POST['code']) || !$captcha_correcte) {
                                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1
@@ -1245,9 +1247,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                             $entete .= "From: admin@ducksmanager.net\r\n";
                                             mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="https://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
                                             ?>
-                                            <span style="color: red">
+                                            <div class="alert alert-info">
                                                 <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>
-                                            </span>
+                                            </div>
                                             <br />
 											<?php
 										}
