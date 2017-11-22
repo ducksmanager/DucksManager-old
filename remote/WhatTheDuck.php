@@ -125,8 +125,13 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 				$erreur = Affichage::valider_formulaire_inscription($user, $pass, $pass2);
 
 				if (is_null($erreur)) {
-					DM_Core::$d->nouveau_user($user, $email,$pass);
-					echo 'OK';
+                    $requete="
+                      INSERT INTO users(username,password,Email,DateInscription)
+                      VALUES('$user','$pass','$email','".date('Y-m-d')."')";
+                    $resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+                    if (count($resultats)==0 && $resultats === []) {
+                        echo 'OK';
+                    }
 				}
 				else {
 					echo utf8_encode(html_entity_decode($erreur));
