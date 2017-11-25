@@ -125,13 +125,13 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 				$erreur = Affichage::valider_formulaire_inscription($user, $pass, $pass2);
 
 				if (is_null($erreur)) {
-                    $requete="
-                      INSERT INTO users(username,password,Email,DateInscription)
-                      VALUES('$user','$pass','$email','".date('Y-m-d')."')";
-                    $resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
-                    if (count($resultats)==0 && $resultats === []) {
-                        echo 'OK';
-                    }
+					$requete="
+					  INSERT INTO users(username,password,Email,DateInscription)
+					  VALUES('$user','$pass','$email','".date('Y-m-d')."')";
+					$resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
+					if (count($resultats)==0 && $resultats === []) {
+						echo 'OK';
+					}
 				}
 				else {
 					echo utf8_encode(html_entity_decode($erreur));
@@ -146,26 +146,26 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 						$etat=$_GET['etat'];
 
 						if (isset($_GET['id_acquisition'])) {
-                            $id_acquisition=$_GET['id_acquisition'];
-                            $requete_date_achat="SELECT 1 FROM achats WHERE ID_Acquisition=$id_acquisition AND ID_User=$id_utilisateur";
-                            if (count($resultats) != 1) {
-                                echo 'Invalid purchase ID';
-                                break;
-                            }
-                        }
+							$id_acquisition=$_GET['id_acquisition'];
+							$requete_date_achat="SELECT 1 FROM achats WHERE ID_Acquisition=$id_acquisition AND ID_User=$id_utilisateur";
+							if (count($resultats) != 1) {
+								echo 'Invalid purchase ID';
+								break;
+							}
+						}
 						else {
-						    $id_acquisition = -2;
-                        }
+							$id_acquisition = -2;
+						}
 
 						if ($version == '1.0') {
 							$requete="
-                              INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
-                              VALUES('$pays', '$magazine', '$numero', 'indefini', $id_acquisition, $id_utilisateur)";
+							  INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
+							  VALUES('$pays', '$magazine', '$numero', 'indefini', $id_acquisition, $id_utilisateur)";
 						}
 						else {
 							$requete="
-                              INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
-                              VALUES('$pays', '$magazine', '$numero', '$etat', $id_acquisition, $id_utilisateur)";
+							  INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
+							  VALUES('$pays', '$magazine', '$numero', '$etat', $id_acquisition, $id_utilisateur)";
 						}
 						$resultats=Inducks::requete_select($requete,'db301759616','ducksmanager.net');
 
@@ -177,10 +177,10 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 							print_r($resultats);
 					}
 					else if (isset($_GET['ajouter_achat'])) {
-                        Database::$handle->query('SET NAMES UTF8');
-                        $date_achat=str_replace("'", "", $_GET['date_achat']);
-                        $description_achat=str_replace("'", "", $_GET['description_achat']);
-                        $requete_ajout_achat="
+						Database::$handle->query('SET NAMES UTF8');
+						$date_achat=str_replace("'", "", $_GET['date_achat']);
+						$description_achat=str_replace("'", "", $_GET['description_achat']);
+						$requete_ajout_achat="
 						  INSERT INTO achats(ID_User,Date,Description)
 						  VALUES ($id_utilisateur, '$date_achat', '$description_achat')";
 
@@ -207,34 +207,34 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 						$pays= [];
 						$magazines= [];
 						$requete_numeros="
-                          SELECT Pays, Magazine, Numero, Etat, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
-                          FROM numeros
-                          LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
-                          WHERE ID_Utilisateur=$id_utilisateur
-                          ORDER BY Pays, Magazine, Numero";
+						  SELECT Pays, Magazine, Numero, Etat, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
+						  FROM numeros
+						  LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
+						  WHERE ID_Utilisateur=$id_utilisateur
+						  ORDER BY Pays, Magazine, Numero";
 						$resultats_numeros=Inducks::requete_select($requete_numeros,'db301759616','ducksmanager.net');
 						foreach($resultats_numeros as $resultat_numero) {
 							$pays_magazine=$resultat_numero['Pays'].'/'.$resultat_numero['Magazine'];
-                            if (!array_key_exists($pays_magazine,$numeros)) {
+							if (!array_key_exists($pays_magazine,$numeros)) {
 								$numeros[$pays_magazine]= [];
 								$magazines[$pays_magazine]=$pays_magazine;
 							}
 							$details_numero=new stdClass();
-                            $details_numero->Numero=$resultat_numero['Numero'];
-                            $details_numero->Etat=$resultat_numero['Etat'];
+							$details_numero->Numero=$resultat_numero['Numero'];
+							$details_numero->Etat=$resultat_numero['Etat'];
 
-                            if (is_null($resultat_numero['ID_Acquisition'])) {
-                                $acquisition=null;
-                            }
-                            else {
-                                $acquisition=new stdClass();
-                                $acquisition->ID_Acquisition=$resultat_numero['ID_Acquisition'];
-                                $acquisition->Date_Acquisition=$resultat_numero['Date_Acquisition'];
-                                $acquisition->Description_Acquisition=$resultat_numero['Description_Acquisition'];
-                            }
-                            $details_numero->Acquisition=$acquisition;
+							if (is_null($resultat_numero['ID_Acquisition'])) {
+								$acquisition=null;
+							}
+							else {
+								$acquisition=new stdClass();
+								$acquisition->ID_Acquisition=$resultat_numero['ID_Acquisition'];
+								$acquisition->Date_Acquisition=$resultat_numero['Date_Acquisition'];
+								$acquisition->Description_Acquisition=$resultat_numero['Description_Acquisition'];
+							}
+							$details_numero->Acquisition=$acquisition;
 
-                            $numeros[$pays_magazine][]=$details_numero;
+							$numeros[$pays_magazine][]=$details_numero;
 						}
 
 						foreach(array_keys($magazines) as $nom_abrege) {
