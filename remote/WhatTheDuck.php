@@ -206,29 +206,35 @@ else if (isset($_GET['pseudo_user']) && isset($_GET['mdp_user'])) {
 						$numeros= [];
 						$pays= [];
 						$magazines= [];
-						$requete_numeros="SELECT * FROM numeros WHERE ID_Utilisateur=$id_utilisateur ORDER BY Pays, Magazine, Numero";
+						$requete_numeros="
+                          SELECT Pays, Magazine, Numero, Etat, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
+                          FROM numeros
+                          LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
+                          WHERE ID_Utilisateur=$id_utilisateur
+                          ORDER BY Pays, Magazine, Numero";
 						$resultats_numeros=Inducks::requete_select($requete_numeros,'db301759616','ducksmanager.net');
 						foreach($resultats_numeros as $resultat_numero) {
 							$pays_magazine=$resultat_numero['Pays'].'/'.$resultat_numero['Magazine'];
-							$numero=$resultat_numero['Numero'];
-							$etat=$resultat_numero['Etat'];
-
-							if (!array_key_exists($pays_magazine,$numeros)) {
+                            if (!array_key_exists($pays_magazine,$numeros)) {
 								$numeros[$pays_magazine]= [];
 								$magazines[$pays_magazine]=$pays_magazine;
 							}
-							switch($version) {
-								case '1.0':
-									$numeros[$pays_magazine][]=$numero;
-								break;
-								default:
-									$numero_et_etat=new stdClass();
-									$numero_et_etat->Numero=$numero;
-									$numero_et_etat->Etat=$etat;
-									$numeros[$pays_magazine][]=$numero_et_etat;
-								break;
-							}
+							$details_numero=new stdClass();
+                            $details_numero->Numero=$resultat_numero['Numero'];
+                            $details_numero->Etat=$resultat_numero['Etat'];
 
+                            if (is_null($resultat_numero['ID_Acquisition'])) {
+                                $acquisition=null;
+                            }
+                            else {
+                                $acquisition=new stdClass();
+                                $acquisition->ID_Acquisition=$resultat_numero['ID_Acquisition'];
+                                $acquisition->Date_Acquisition=$resultat_numero['Date_Acquisition'];
+                                $acquisition->Description_Acquisition=$resultat_numero['Description_Acquisition'];
+                            }
+                            $details_numero->Acquisition=$acquisition;
+
+                            $numeros[$pays_magazine][]=$details_numero;
 						}
 
 						foreach(array_keys($magazines) as $nom_abrege) {
