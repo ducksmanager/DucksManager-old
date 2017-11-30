@@ -9,7 +9,7 @@ $requete_tranches_pretes_pour_publication = '
   WHERE PretePourPublication=1';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
 
-$url_gen_edgecreator = ServeurDb::getUrlServeurVirtuel().':8002';
+$url_gen_edgecreator = 'https://edges.ducksmanager.net';
 
 $numeros= [];
 
@@ -43,7 +43,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
     $chemin = $pays .'/gen/'. $magazine .'.'. $numero .'.png';
 
-    $url = $url_gen_edgecreator.'/edges/'.$chemin;
+    $url = $url_gen_edgecreator.'/'.$chemin;
 
     if (isset($_GET['publier'])) {
         $requete="

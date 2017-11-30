@@ -718,7 +718,10 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 mail('admin@ducksmanager.net', 'Proposition d\'aide de ' . $_SESSION['user'] . ' pour la bibliothèque',
                                     $_POST['texte_participation'], 'From: ' . $_SESSION['user'] . '<' . $_POST['email'] . '>');
                             } else {
-                                ?><span style="color: red"><?= ERREUR_CAPTCHA ?></span><br/><br/><?php
+                                ?>
+                                <div class="alert alert-warning">
+                                <?= ERREUR_CAPTCHA ?>
+                                </div><br/><?php
                             }
                             if (!isset($_POST['code']) || !$captcha_correcte) {
                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1
@@ -730,9 +733,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4;
                                 ?>
                                 <br/><br/>
-                                <form
-                                        action="?session_id=<?= session_id() ?>&amp;action=bibliotheque&amp;onglet=participer"
-                                        method="post">
+                                <form action="?session_id=<?= session_id() ?>&amp;action=bibliotheque&amp;onglet=participer"
+                                      method="post">
                                     <table>
                                         <tr>
                                             <td>
@@ -747,8 +749,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                                 <?= SPECIFIER_NUMEROS_BIBLIOTHEQUE ?> :
                                             </td>
                                             <td>
-                                                                <textarea cols="40" rows="10"
-                                                                          name="texte_participation"></textarea>
+                                                <textarea cols="40" rows="10" name="texte_participation"></textarea>
                                             </td>
                                         </tr>
                                         <tr>
@@ -1214,39 +1215,38 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 echo INTRO_BOUQUINERIES;
                 ?><br /><br /><?php
             if (isset($_POST['ajouter'])) {
-                $erreur=false;
-            foreach (['nom','adresse_complete','coordX', 'coordY', 'commentaire'] as $champ) {
-                $_POST[$champ]=mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
-            if (empty($_POST[$champ])) {
-                $erreur=true;
-                ?><div style="color:red"><?=CHAMP_OBLIGATOIRE_1.ucfirst($champ).CHAMP_OBLIGATOIRE_2?></div><?php
-            }
-            }
-            if (!$erreur) {
-                $requete='INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\''.$_POST['nom'].'\',\''.$_POST['adresse_complete'].'\',\''.$_POST['commentaire'].'\','.(is_null($id_user) ? 'NULL':$id_user).', '.$_POST['coordX'].', '.$_POST['coordY'].', 0)';
-                DM_Core::$d->requete($requete);
+                $erreur = false;
+                foreach (['nom', 'adresse_complete', 'coordX', 'coordY', 'commentaire'] as $champ) {
+                    $_POST[$champ] = mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
+                    if (empty($_POST[$champ])) {
+                        $erreur = true;?>
+                        <div style="color:red"><?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?></div><?php
+                    }
+                }
+                if (!$erreur) {
+                    $requete = 'INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\'' . $_POST['nom'] . '\',\'' . $_POST['adresse_complete'] . '\',\'' . $_POST['commentaire'] . '\',' . (is_null($id_user) ? 'NULL' : $id_user) . ', ' . $_POST['coordX'] . ', ' . $_POST['coordY'] . ', 0)';
+                    DM_Core::$d->requete($requete);
 
-                $entete = "MIME-Version: 1.0\r\n";
-                $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
-                $entete .= "To: admin@ducksmanager.net\r\n";
-                $entete .= "From: admin@ducksmanager.net\r\n";
-                mail('admin@ducksmanager.net','Ajout de bouquinerie','<a href="https://www.ducksmanager.net/backend/bouquineries.php">Validation</a>', $entete);
-                ?>
-                <span style="color: red">
-                                                <?=EMAIL_ENVOYE.EMAIL_ENVOYE_BOUQUINERIE.MERCI_CONTRIBUTION?>
-                                            </span>
-            <br />
-                <?php
-            }
-            }
-                ?>
-                <iframe src="bouquineries.php" width="70%" height="700px"></iframe>
+                    Util::get_service_results(
+                        ServeurCoa::$coa_servers['dedibox2'],
+                        'POST',
+                        "/ducksmanager/email/bookstore",
+                        'ducksmanager',
+                        is_null($id_user) ? [] : ['userid' => $id_user]
+                    );
+                    ?>
+                    <div class="alert alert-info">
+                        <?= EMAIL_ENVOYE . EMAIL_ENVOYE_BOUQUINERIE . MERCI_CONTRIBUTION ?>
+                    </div>
+                    <br/><?php
+                }
+            }?>
+            <iframe src="bouquineries.php" width="70%" height="700px"></iframe>
             <br /> <br />
-
-                <h2>
-                    <?=PROPOSER_BOUQUINERIE?>
-                </h2>
-                <?=PRESENTATION_BOUQUINERIE1?>
+            <h2>
+                <?=PROPOSER_BOUQUINERIE?>
+            </h2>
+            <?=PRESENTATION_BOUQUINERIE1?>
             <br />
                 <?=INTRO_NOUVELLE_BOUQUINERIE?>
             <br />
