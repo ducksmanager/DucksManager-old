@@ -179,7 +179,7 @@ class Liste {
 		switch($onglet) {
 			case 'magazines':
 				?>
-				<div id="canvas-holder" style=" width:500px; height:500px">
+				<div id="canvas-holder">
 					<canvas id="graph_publications"></canvas>
 				</div><?php
 			break;
@@ -218,7 +218,7 @@ class Liste {
 				break;
 			case 'etats':
 				?>
-				<div id="canvas-holder" style="width:500px;">
+				<div id="canvas-holder">
 					<canvas id="graph_conditions"></canvas>
 				</div><?php
 			break;
@@ -292,7 +292,7 @@ class Liste {
 				<?=STATISTIQUES_AUTEURS_INTRO?>
 				<br /><br />
 				<form method="post" action="?action=stats&amp;onglet=auteurs">
-					<input type="text" name="auteur_cherche" id="auteur_cherche" value="" size="40"/>
+					<input class="text_input" type="text" name="auteur_cherche" id="auteur_cherche" value="" />
 					<div class="update" id="liste_auteurs"></div>
 					<input type="hidden" id="auteur_nom" name="auteur_nom" />
 					<input type="hidden" id="auteur_id" name="auteur_id" />

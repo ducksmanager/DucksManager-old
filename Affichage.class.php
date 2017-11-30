@@ -516,7 +516,7 @@ class Affichage {
     public static function afficher_statut_connexion($est_connecte)
     {
         ?><div id="login">
-            <img class="logo_petit" src="logo_petit.jpg" />
+            <a class="logo_petit" href="https://ducksmanager.net"><img src="logo_petit.jpg" /></a>
             <div id="texte_connecte"><?php
                 if ($est_connecte) {?>
                     <img id="light" src="vert.png" alt="O" />&nbsp;

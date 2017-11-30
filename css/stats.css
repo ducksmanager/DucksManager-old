@@ -15,11 +15,6 @@
     background-color: red;
 }
 
-#canvas-holder {
-    width:1000px;
-    height:500px;
-}
-
 .graph_possessions, .graph_auteurs {
     background-color: white;
 }
@@ -54,4 +49,11 @@
 #liste_notations .supprimer_auteur {
     display: inline-block;
     width: 200px;
+}
+
+@media (min-width: 767px) {
+    #canvas-holder {
+        width:1000px;
+        height:500px;
+    }
 }

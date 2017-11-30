@@ -14,10 +14,6 @@
     display:inline-block;
 }
 
-#recherche_histoire input {
-    width: 300px;
-}
-
 #recherche_histoire button {
     width: 30px;
     margin-top: -3px;
@@ -189,4 +185,16 @@
     padding-left: 10px;
     font-size:18px;
     line-height:22px;
+}
+
+@media (min-width: 767px) {
+    #recherche_histoire input {
+        width: 300px;
+    }
+}
+
+@media (max-width: 767px) {
+    #conteneur_bibliotheque #recherche_histoire {
+        left: 25px !important;
+    }
 }

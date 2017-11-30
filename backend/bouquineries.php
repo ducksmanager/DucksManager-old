@@ -44,7 +44,7 @@ if (count($resultats) > 0) {
                                     <?php
                                     array_walk(explode(',', $resultat[$champ]), function($coord, $i) {
                                         $champ = $i === 0 ? 'CoordX': 'CoordY';
-                                        ?><input type="text" size="10" name="<?=$champ?>" value="<?=$coord?>" /><?php
+                                        ?><input class="text_input short" type="text" size="10" name="<?=$champ?>" value="<?=$coord?>" /><?php
                                     });
                                     ?>
                                     <br />

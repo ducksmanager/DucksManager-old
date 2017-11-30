@@ -35,8 +35,8 @@ foreach($resultat_noms_images as $image) {
 					<input type="hidden" name="pays" value="<?=$image['Pays']?>" />
 					<input type="hidden" name="rename_file" value="false" />
 					
-					Remplacer le nom <input autocomplete="off" type="text" size="40" name="ancien_nom"  value="<?=$nom_image?>" /> 
-					par 			 <input autocomplete="off" type="text" size="40" name="nouveau_nom" value="<?=$nom_image?>" />
+					Remplacer le nom <input class="text_input" autocomplete="off" type="text" name="ancien_nom"  value="<?=$nom_image?>" />
+					par 			 <input class="text_input" autocomplete="off" type="text" name="nouveau_nom" value="<?=$nom_image?>" />
 					<input type="submit" value="OK" />
 					<br />
 				</form><?php

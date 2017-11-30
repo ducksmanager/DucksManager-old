@@ -37,7 +37,6 @@ a:HOVER {
 
 a, a:HOVER {
 	text-decoration: none;
-	white-space: nowrap;
 }
 
 a.has_tooltip, a.has_tooltip:HOVER {
@@ -266,7 +265,6 @@ a.important:HOVER {
 
 #presentation_demo {
 	border:1px solid white;
-	width: 400px;
 	margin-bottom: 20px;
 	padding: 5px 10px 10px 15px;
 }
@@ -363,13 +361,42 @@ ul#choix_impression ul.caract li{
 	vertical-align: top;
 }
 
+#whattheduck {
+    margin-top: 20px;
+    border: 1px solid white;
+}
+
+.iframe_map {
+	height: 700px;
+}
+
 @media (min-width: 767px) {
 	body {
 		padding: 0 0 0 300px !important;
 	}
 
+	.text_input {
+		width: 300px;
+	}
+
+	.text_input.short {
+		width: 80px;
+	}
+
 	.logo_petit {
 		display: none;
+	}
+
+    #whattheduck {
+        width: 300px;
+    }
+
+    #presentation_demo {
+        width: 400px;
+    }
+
+	.iframe_map {
+		width: 70%;
 	}
 }
 
@@ -388,4 +415,13 @@ ul#choix_impression ul.caract li{
 	.bloc_details {
 		padding-right: 0;
 	}
+
+	.iframe_map {
+		width: 90%;
+	}
+
+	#bouquinerie_commentaires {
+		width: 100%;
+	}
+
 }

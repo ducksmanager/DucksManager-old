@@ -312,8 +312,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
     }
     ?>">
-    <div id="colonne_gauche">
-
+    <div id="menu">
         <div id="medailles_et_login">
             <?php
             if (isset($_SESSION['user']) && $action !== 'logout') {
@@ -1236,7 +1235,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <br/><?php
                 }
             }?>
-            <iframe src="bouquineries.php" width="70%" height="700px"></iframe>
+            <iframe src="bouquineries.php" class="iframe_map"></iframe>
             <br /> <br />
             <h2>
                 <?=PROPOSER_BOUQUINERIE?>
@@ -1251,11 +1250,11 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <table border="0">
                         <tr>
                             <td><label for="bouquinerie_nom"><?=NOM_BOUQUINERIE?> :</label></td>
-                            <td><input size="40" maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
+                            <td><input class="text_input" maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
                         </tr>
                         <tr>
                             <td><label for="adresse_complete"><?=ADRESSE?> :</label></td>
-                            <td><input size="40" type="text" id="adresse_complete" name="adresse_complete"/></td>
+                            <td><input class="text_input" type="text" id="adresse_complete" name="adresse_complete"/></td>
                         </tr>
                         <tr>
                             <td><label for="bouquinerie_commentaires"><?=COMMENTAIRES_BOUQUINERIE?></label><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
@@ -1458,8 +1457,10 @@ function creer_id_session($user,$pass) {
 
 function encart_WhatTheDuck() {
 ?>
-	<div style="width:300px;margin-top:20px;border:1px solid white">
-		<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/></a>
+	<div id="whattheduck">
+		<a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck">
+            <img src="images/WhatTheDuck.png" style="float:left;margin-right:12px"/>
+        </a>
 		<div style="margin-left:10px; text-align: center">
             <div style="text-align: left">
                 <?=PUB_WHATTHEDUCK_1?>

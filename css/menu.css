@@ -1,4 +1,4 @@
-#colonne_gauche {
+#menu {
     font-family: verdana, sans-serif;
     font-size: 12px;
     font-weight: 200;
@@ -6,36 +6,37 @@
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 100;
     color: #e1ffff;
     overflow-y: auto;
 }
 
-#colonne_gauche .toggle-btn {
+#menu .toggle-btn {
     display: none;
 }
-#colonne_gauche ul,
-#colonne_gauche li {
+#menu ul,
+#menu li {
     list-style: none;
     padding: 0;
     margin: 0;
     line-height: 25px;
     cursor: pointer;
 }
-#colonne_gauche ul .active,
-#colonne_gauche li .active {
+#menu ul .active,
+#menu li .active {
     border-left: 3px solid rgb(200, 137, 100);
     background-color: #4f5b69;
 }
-#colonne_gauche ul .sub-menu li.active,
-#colonne_gauche li .sub-menu li.active {
+#menu ul .sub-menu li.active,
+#menu li .sub-menu li.active {
     color: rgb(200, 137, 100);
 }
-#colonne_gauche ul .sub-menu li.active a,
-#colonne_gauche li .sub-menu li.active a {
+#menu ul .sub-menu li.active a,
+#menu li .sub-menu li.active a {
     color: rgb(200, 137, 100);
 }
-#colonne_gauche ul .sub-menu li,
-#colonne_gauche li .sub-menu li {
+#menu ul .sub-menu li,
+#menu li .sub-menu li {
     background-color: #181c20;
     border: none;
     line-height: 28px;
@@ -43,33 +44,33 @@
     padding-left: 10px;
     margin-left: 0;
 }
-#colonne_gauche ul .sub-menu li:hover,
-#colonne_gauche li .sub-menu li:hover {
+#menu ul .sub-menu li:hover,
+#menu li .sub-menu li:hover {
     background-color: #020203;
 }
-#colonne_gauche li {
+#menu li {
     padding-left: 3px;
 }
-#colonne_gauche li.empty {
+#menu li.empty {
     height: 10px;
 }
-#colonne_gauche li a {
+#menu li a {
     display: block;
     text-decoration: none;
     color: #e1ffff;
 }
 
-#colonne_gauche li a i {
+#menu li a i {
     padding-left: 10px;
     width: 15px;
     padding-right: 5px;
 }
 
-#colonne_gauche li.no-icon a i {
+#menu li.no-icon a i {
     padding-left: 5px;
 }
 
-#colonne_gauche li.non-empty:hover {
+#menu li.non-empty:hover {
     border-left: 3px solid rgb(200, 137, 100);
     background-color: #4f5b69;
     -webkit-transition: all 0.1s ease;
@@ -79,11 +80,11 @@
     transition: all 0.1s ease;
 }
 
-#colonne_gauche li.empty {
+#menu li.empty {
     cursor: default;
 }
 
-#colonne_gauche a:hover {
+#menu a:hover {
     border-bottom: 0 !important;
 }
 
@@ -108,14 +109,14 @@
 }
 
 @media (max-width: 767px) {
-    #colonne_gauche {
+    #menu {
         overflow-y: hidden;
         position: fixed;
         width: 100%;
         margin-bottom: 10px;
         opacity: 0.9;
     }
-    #colonne_gauche .toggle-btn {
+    #menu .toggle-btn {
         display: block;
         cursor: pointer;
         position: absolute;
@@ -126,8 +127,8 @@
         width: 40px;
         text-align: center;
     }
-    #colonne_gauche #medailles,
-    #colonne_gauche #recemment {
+    #menu #medailles,
+    #menu #recemment {
         display: none;
     }
 
@@ -151,7 +152,7 @@
         margin-top: -4px;
     }
 
-    #colonne_gauche li.empty {
+    #menu li.empty {
         display: none;
     }
 
@@ -172,12 +173,12 @@
     }
 }
 @media (min-width: 767px) {
-    #colonne_gauche {
+    #menu {
         width: 306px;
         height: 100%;
     }
 
-    #colonne_gauche .menu-list .menu-content {
+    #menu .menu-list .menu-content {
         display: block;
     }
 
@@ -201,6 +202,6 @@ body {
 }
 
 
-#colonne_gauche a {
+#menu a {
     border-bottom: none;
 }
