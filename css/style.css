@@ -7,7 +7,6 @@ html, body {
 }
 
 body {
-	padding: 0 0 0 300px !important;
 	background-color: rgb(61, 75, 95) !important;
 }
 
@@ -64,19 +63,6 @@ a.important:HOVER {
     white-space: nowrap;
 }
 
-#medailles_et_login {
-	vertical-align: bottom;
-	height: 170px;
-	text-align: center;
-	background-color: #2e353d;
-	padding: 5px 5px 5px 3px;
-}
-
-#medailles_et_login .medaille {
-	height: 120px;
-	margin-left: 5px;
-}
-
 .medaille_profil {
 	float: left;
 	text-align: center;
@@ -107,11 +93,6 @@ a.important:HOVER {
 #recemment #evenements div.evenement .date {
 	color: grey;
 	float: right;
-}
-
-#login {
-	margin-top: 10px;
-	margin-bottom: 10px;
 }
 
 #contenu {
@@ -380,4 +361,31 @@ ul#choix_impression ul.caract li{
 
 #liste_numeros img.flag {
 	vertical-align: top;
+}
+
+@media (min-width: 767px) {
+	body {
+		padding: 0 0 0 300px !important;
+	}
+
+	.logo_petit {
+		display: none;
+	}
+}
+
+@media (max-width: 767px) {
+	body {
+		padding-left: 0;
+	}
+
+	.num {
+		float: left;
+		white-space: nowrap;
+		max-width: 170px;
+		overflow-x: hidden;
+	}
+
+	.bloc_details {
+		padding-right: 0;
+	}
 }

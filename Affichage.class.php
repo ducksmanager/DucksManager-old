@@ -512,6 +512,24 @@ class Affichage {
             }
         ?></div><?php
     }
+
+    public static function afficher_statut_connexion($est_connecte)
+    {
+        ?><div id="login">
+            <img class="logo_petit" src="logo_petit.jpg" />
+            <div id="texte_connecte"><?php
+                if ($est_connecte) {?>
+                    <img id="light" src="vert.png" alt="O" />&nbsp;
+                    <span><?=$_SESSION['user']?></span><?php
+                }
+                else {?>
+                    <img id="light" src="rouge.png" alt="X" />&nbsp;
+                    <span><?=NON_CONNECTE?></span><?php
+                }
+            ?>
+            </div>
+        </div><?php
+    }
 }
 
 function str_replace_last($search, $replace, $str ) {

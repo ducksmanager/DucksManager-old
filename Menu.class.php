@@ -82,7 +82,7 @@ class Menu extends Item{
      * @param Menu[] $menus
      */
     static function afficherMenus($menus) {?>
-        <ul id="menu-content" class="menu-content"><?php
+        <ul id="menu-content" class="menu-content collapse"><?php
 		foreach($menus as $menu) {
 			$menu->afficher();
 		}?>

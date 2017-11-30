@@ -246,7 +246,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
     }
 
     ?>
-    <body id="body" style="margin:0" onload="charger_evenements();<?php
+    <body id="body" style="margin:0" onload="charger_evenements();charger_menu();<?php
     switch($action) {
         case 'open':
             break;
@@ -316,8 +316,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
         <div id="medailles_et_login">
             <?php
-            if (isset($_SESSION['user']) &&!($action=='logout')) {
-                ?><div style="white-space: nowrap"><?php
+            if (isset($_SESSION['user']) && $action !== 'logout') {
+                ?><div id="medailles"><?php
                 $niveaux=DM_Core::$d->get_niveaux();
                 foreach($niveaux as $type=>$cpt_et_niveau) {
                     if (!is_null($cpt_et_niveau)) {
@@ -330,17 +330,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         ?>"/><?php
                     }
                 }
-                ?>
-                </div><br />
-                <div id="login">
-                <img id="light" src="vert.png" alt="O" />&nbsp;
-                <span id="texte_connecte"><?=$_SESSION['user']?></span>
-                </div><?php
+                ?></div><?php
+                Affichage::afficher_statut_connexion(true);
             } else {
-                ?><img id="light" src="rouge.png" alt="X" />&nbsp;<span id="texte_connecte"><?=NON_CONNECTE?></span><br /><br /><?php
+                Affichage::afficher_statut_connexion(false);
             }?>
         </div>
-        <i class="glyphicon glyphicon-home toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+        <i class="glyphicon glyphicon-menu-hamburger toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
 
         <div id="recemment">
             <h4><?= NEWS_TITRE ?></h4>
@@ -348,7 +344,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         </div>
 
         <div class="menu-list">
-
             <?php
             $beta_user=DM_Core::$d->user_is_beta();
             Menu::$beta_user=$beta_user;

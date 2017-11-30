@@ -6,6 +6,14 @@ var myMenuItems;
 var etats_charges=false;
 var tab_achats=[];
 
+var isMobile = window.matchMedia("only screen and (max-width: 767px)");
+
+function charger_menu() {
+    if (!isMobile) {
+        jQuery('#menu-content').removeClass('collapse');
+    }
+}
+
 function init_observers_gerer_numeros() {
 	l10n_action('fillArray',l10n_acquisitions,'l10n_acquisitions');
 	get_achats(-1);
