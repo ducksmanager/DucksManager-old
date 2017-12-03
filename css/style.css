@@ -363,11 +363,74 @@ ul#choix_impression ul.caract li{
 
 #whattheduck {
     margin-top: 20px;
+	padding: 20px 10px;
     border: 1px solid white;
 }
 
 .iframe_map {
 	height: 700px;
+}
+
+.carousel {
+	width: 960px;
+	margin: auto;
+	margin-bottom: 20px;
+}
+
+.carousel-indicators {
+	margin-left: -37.5% !important;
+	width: 25% !important;
+	bottom: 60px !important;
+}
+
+.carousel-control.left,
+.carousel-control.right {
+	width: 5%;
+	border-bottom: 0;
+}
+
+.carousel-control.left:hover,
+.carousel-control.right:hover {
+	border-bottom: 0 !important;
+}
+
+.carousel-control.right {
+	left: 480px !important;
+	margin-left: -5%;
+}
+
+.carousel .item>img,
+.carousel-caption.bottom {
+	width: 480px !important;
+}
+
+.carousel .item>img {
+	height: 330px !important;
+}
+
+.carousel-caption.bottom {
+	background-color: rgba(0,0,0,.7);
+	left: 0;
+	bottom: 0;
+	padding-bottom: 0;
+	height: 80px;
+}
+
+.carousel-caption.right {
+	position: absolute;
+	left: auto;
+	right: 0;
+	width: 47%;
+	height: 100%;
+	padding-bottom: 0;
+	opacity: 0.8;
+	bottom: 0;
+	overflow-y: auto;
+}
+
+.carousel-caption.right.top-offset {
+	top: 75px;
+	height: inherit;
 }
 
 @media (min-width: 767px) {

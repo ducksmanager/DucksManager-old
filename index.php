@@ -83,8 +83,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link rel="stylesheet" type="text/css" href="css/autocompleter.css">
         <link rel="stylesheet" type="text/css" href="css/csstabs.css">
         <link rel="stylesheet" type="text/css" href="css/bibliotheque.css">
-        <link rel="stylesheet" type="text/css" href="css/pluit-carousel.css">
-        <link rel="stylesheet" type="text/css" href="css/pluit-carousel-skins.css">
         <link rel="stylesheet" type="text/css" href="css/stats.css">
         <link rel="stylesheet" type="text/css" href="css/starbox.css" />
         <link rel="stylesheet" type="text/css" href="css/menu.css" />
@@ -167,7 +165,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <script type="text/javascript" src="js/scriptaculous/src/effects2.js?VERSION"></script>
 
         <script type="text/javascript" src="js/starbox.js?VERSION"></script>
-        <script type="text/javascript" src="js/pluit-carousel.js?VERSION"></script>
         <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>
@@ -1275,82 +1272,87 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
 
             default:?>
-                <div id="carousel-1"
-                     class="pluit-carousel top-stories-skin">
-                    <div class="viewport">
-                        <ul>
-                            <li><img src="images/montage DucksManager_petit.jpg" alt="logo"
-                                     height="333" width="501" />
-                            </li>
-                            <li><img src="images/demo2_2.png" alt="demo2_2" width="500"
-                                     height="333" />
-                            </li>
-                            <li><img src="images/demo3.png" alt="demo3" width="500"
-                                     height="333" />
-                            </li>
-                            <li><img src="images/demo_bibliotheque.jpg" alt="demo2_2"
-                                     width="500" height="333" />
-                            </li>
-                        </ul>
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
+                        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#myCarousel" data-slide-to="1"></li>
+                        <li data-target="#myCarousel" data-slide-to="2"></li>
+                        <li data-target="#myCarousel" data-slide-to="3"></li>
+                    </ol>
+
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="images/montage DucksManager_petit.jpg" alt="logo">
+                            <div class="carousel-caption bottom">
+                                <h3><?=BIENVENUE?></h3>
+                            </div>
+                            <div class="carousel-caption right top-offset">
+                                <?=PRESENTATION1?>
+                                <br /> <br />
+                                <?=PRESENTATION2?>
+                                <br /> <br />
+                                <?=GRATUIT_AUCUNE_LIMITE?>
+                                <a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="images/demo2_2.png" alt="demo2_2">
+                            <div class="carousel-caption bottom">
+                                <h3><?=PRESENTATION_GERER_TITRE?></h3>
+                            </div>
+                            <div class="carousel-caption right top-offset">
+                                <?=PRESENTATION_GERER_1?>
+                                <br /> <br />
+                                <?=PRESENTATION_GERER_2?>
+                                <br /> <br />
+                                <?=PRESENTATION_GERER_3?>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="images/demo3.png" alt="demo3">
+                            <div class="carousel-caption bottom">
+                                <h3><?=PRESENTATION_STATS_TITRE?></h3>
+                            </div>
+                            <div class="carousel-caption right">
+                                <?=PRESENTATION_STATS_1?>
+                                <br /> <br />
+                                <?=PRESENTATION_STATS_2?>
+                                <br /> <br />
+                                <?=PRESENTATION_STATS_3?>
+                                <br /> <br />
+                                <img alt="demo 2" src="images/demo2.png" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="images/demo_bibliotheque.jpg" alt="demo3">
+                            <div class="carousel-caption bottom">
+                                <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
+                            </div>
+                            <div class="carousel-caption right">
+                                <?=PRESENTATION_BIBLIOTHEQUE_1?>
+                                <br /> <br />
+                                <?=PRESENTATION_BIBLIOTHEQUE_2?>
+                                <br /> <br />
+                                <?=PRESENTATION_BIBLIOTHEQUE_3?>
+                                <br /> <img src="images/demo_bibliotheque2.jpg"  style="width: 400px" alt="demo2_2" />
+                            </div>
+                        </div>
                     </div>
-                    <!-- Custom Navigation -->
-                    <ul class="nav">
-                        <li class="pages">
-                            <ul>
-                                <li class="active page-1"><a href="#"><?=BIENVENUE?> </a></li>
-                                <li class="page-2"><a href="#"><?=PRESENTATION_GERER_TITRE?> </a>
-                                </li>
-                                <li class="page-3"><a href="#"><?=PRESENTATION_STATS_TITRE?> </a>
-                                </li>
-                                <li class="last page-4"><a href="#"><?=PRESENTATION_BIBLIOTHEQUE_TITRE?>
-                                    </a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div id="conteneur_infos_fonc">
 
-                        <div id="infos-page-1" class="infos-fonc"
-                             style="margin-top: 100px">
-                            <?=PRESENTATION1?>
-                            <br /> <br />
-                            <?=PRESENTATION2?>
-                            <br /> <br />
-                            <?=GRATUIT_AUCUNE_LIMITE?>
-                            <a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
-                        </div>
-
-                        <div id="infos-page-2" class="infos-fonc"
-                             style="display: none; margin-top: 100px">
-                            <?=PRESENTATION_GERER_1?>
-                            <br /> <br />
-                            <?=PRESENTATION_GERER_2?>
-                            <br /> <br />
-                            <?=PRESENTATION_GERER_3?>
-                        </div>
-
-                        <div id="infos-page-3" class="infos-fonc" style="display: none">
-                            <?=PRESENTATION_STATS_1?>
-                            <br /> <br />
-                            <?=PRESENTATION_STATS_2?>
-                            <br /> <br />
-                            <?=PRESENTATION_STATS_3?>
-                            <br /> <br /> <img alt="demo 2" src="images/demo2.png" />
-                        </div>
-
-                        <div id="infos-page-4" class="infos-fonc" style="display: none">
-                            <?=PRESENTATION_BIBLIOTHEQUE_1?>
-                            <br /> <br />
-                            <?=PRESENTATION_BIBLIOTHEQUE_2?>
-                            <br /> <br />
-                            <?=PRESENTATION_BIBLIOTHEQUE_3?>
-                            <br /> <img src="images/demo_bibliotheque2.jpg" alt="demo2_2" />
-                        </div>
-
-                    </div>
+                    <!-- Left and right controls -->
+                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
                 </div>
                 <script type="text/javascript">
-                    new Pluit.Carousel('#carousel-1', {
-                        circular: true
+                    jQuery('#myCarousel').carousel({
+                        interval: 8000
                     });
                 </script>
 
