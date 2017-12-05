@@ -1013,9 +1013,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             </form>
                         </td>
                         <td style="vertical-align:top">
-                            <br />
-                            <?=RECHERCHE_MAGAZINE?>
-
                             <div id="recherche_histoire">
                                 <br>
                                 <?= RECHERCHER_GENERAL ?><br/>
