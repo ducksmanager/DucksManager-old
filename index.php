@@ -1283,7 +1283,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                     <div class="carousel-inner">
                         <div class="item active">
-                            <img src="images/montage DucksManager_petit.jpg" alt="logo">
+                            <img src="images/montage DucksManager.jpg" alt="logo">
                             <div class="carousel-caption bottom">
                                 <h3><?=BIENVENUE?></h3>
                             </div>
@@ -1293,7 +1293,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 <?=PRESENTATION2?>
                                 <br /> <br />
                                 <?=GRATUIT_AUCUNE_LIMITE?>
-                                <a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
                             </div>
                         </div>
                         <div class="item">
@@ -1321,7 +1320,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 <br /> <br />
                                 <?=PRESENTATION_STATS_3?>
                                 <br /> <br />
-                                <img alt="demo 2" src="images/demo2.png" />
                             </div>
                         </div>
                         <div class="item">
@@ -1335,7 +1333,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 <?=PRESENTATION_BIBLIOTHEQUE_2?>
                                 <br /> <br />
                                 <?=PRESENTATION_BIBLIOTHEQUE_3?>
-                                <br /> <img src="images/demo_bibliotheque2.jpg"  style="width: 400px" alt="demo2_2" />
+                                <br /> <img src="images/demo_bibliotheque_ouverture_short_small.gif"  style="width: 90%" alt="demo_bibliotheque_ouverture_short" />
                             </div>
                         </div>
                     </div>
@@ -1352,15 +1350,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 </div>
                 <script type="text/javascript">
                     jQuery('#myCarousel').carousel({
-                        interval: 8000
+                        interval: 15000
                     });
                 </script>
 
-                <div style="margin-right: 6px; border-top: 1px solid white; border-bottom: 1px solid white; text-align: center;">
-                    <?=PRESENTATION_GENERALE?>
-                    .<br />
+                <div style="margin-right: 6px; text-align: center;">
                     <h3>
-                        <a href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
+                        <a class="noborder btn btn-success" href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
                     </h3>
                 </div>
             <?php encart_WhatTheDuck();?>

@@ -378,8 +378,6 @@ ul#choix_impression ul.caract li{
 }
 
 .carousel-indicators {
-	margin-left: -37.5% !important;
-	width: 25% !important;
 	bottom: 60px !important;
 }
 
@@ -392,16 +390,6 @@ ul#choix_impression ul.caract li{
 .carousel-control.left:hover,
 .carousel-control.right:hover {
 	border-bottom: 0 !important;
-}
-
-.carousel-control.right {
-	left: 480px !important;
-	margin-left: -5%;
-}
-
-.carousel .item>img,
-.carousel-caption.bottom {
-	width: 480px !important;
 }
 
 .carousel .item>img {
@@ -422,6 +410,7 @@ ul#choix_impression ul.caract li{
 	right: 0;
 	width: 47%;
 	height: 100%;
+	text-align: left;
 	padding-bottom: 0;
 	opacity: 0.8;
 	bottom: 0;
@@ -461,6 +450,21 @@ ul#choix_impression ul.caract li{
 	.iframe_map {
 		width: 70%;
 	}
+
+	.carousel-indicators {
+		margin-left: -37.5% !important;
+		width: 25% !important;
+	}
+
+	.carousel-control.right {
+		left: 480px !important;
+		margin-left: -5%;
+	}
+
+	.carousel .item>img,
+	.carousel-caption.bottom {
+		width: 480px !important;
+	}
 }
 
 @media (max-width: 767px) {
@@ -481,6 +485,32 @@ ul#choix_impression ul.caract li{
 
 	.iframe_map {
 		width: 90%;
+	}
+
+	.carousel {
+		width: inherit;
+	}
+
+	.carousel-caption.right {
+		display: none;
+	}
+
+	.carousel .item>img,
+	.carousel-caption.bottom {
+		width: 100%;
+	}
+
+	.carousel-caption.bottom {
+		background-color: rgba(0,0,0,.4);
+	}
+
+	.carousel-caption.bottom h3 {
+		font-size: 18px;
+	}
+
+	.carousel .item>img {
+		padding-bottom: 100px;
+		height: inherit !important;
 	}
 
 	#bouquinerie_commentaires {
