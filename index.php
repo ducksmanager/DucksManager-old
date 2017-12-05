@@ -78,15 +78,15 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <meta http-equiv="Expires" content="0" />
         <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
         <title><?=$titre.' - DucksManager'?></title>
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link rel="stylesheet" type="text/css" href="css/scriptaculous.css">
-        <link rel="stylesheet" type="text/css" href="css/autocompleter.css">
-        <link rel="stylesheet" type="text/css" href="css/csstabs.css">
-        <link rel="stylesheet" type="text/css" href="css/bibliotheque.css">
-        <link rel="stylesheet" type="text/css" href="css/stats.css">
-        <link rel="stylesheet" type="text/css" href="css/starbox.css" />
-        <link rel="stylesheet" type="text/css" href="css/menu.css" />
-        <link rel="stylesheet" href="css/protomenu.css" type="text/css" media="screen">
+        <link rel="stylesheet" type="text/css" href="css/style.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/scriptaculous.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/autocompleter.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/csstabs.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/bibliotheque.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/stats.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/starbox.css?VERSION" />
+        <link rel="stylesheet" type="text/css" href="css/menu.css?VERSION" />
+        <link rel="stylesheet" href="css/protomenu.css?VERSION" type="text/css" media="screen">
         <?php
         foreach($locales as $nom_langue=>$nouvelle_url) {
             ?><link rel="alternate" hreflang="<?=$nom_langue?>" href="<?=$nouvelle_url?>" /><?php
@@ -120,7 +120,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <!-- Bootstrap -->
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css?VERSION">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.min.js"></script>
@@ -1305,7 +1305,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <div class="carousel-caption bottom">
                                 <h3><?=PRESENTATION_STATS_TITRE?></h3>
                             </div>
-                            <div class="carousel-caption right">
+                            <div class="carousel-caption right top-offset">
                                 <?=PRESENTATION_STATS_1?>
                                 <br /> <br />
                                 <?=PRESENTATION_STATS_2?>

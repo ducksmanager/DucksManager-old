@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+commitid=`git rev-parse HEAD`
+sed -i "s/VERSION/$commitid/g" index.php
+
 rm -f changeset.xml
 rm -rf files changeset.txt
 wget --auth-no-challenge --http-user=$API_USER --http-password=$API_PASS "$JENKINS_URL/api/xml?depth=2&xpath=/hudson/job[name='$JOB_NAME']/build[id='$BUILD_ID']/changeSet" --output-document=changeset.xml
