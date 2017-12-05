@@ -332,6 +332,7 @@ ul#choix_impression>li {
 	background-color: transparent;
 	background-repeat: no-repeat;
 	background-position: left center;
+	min-width: 150px;
 }
 
 ul#choix_impression ul.caract li{
@@ -343,6 +344,7 @@ ul#choix_impression ul.caract li{
 	padding: 3px;
 	margin-right: 5px;
 	color: #C88964;
+	white-space: nowrap;
 }
 
 .toggler_aide_recherche_magazine {
