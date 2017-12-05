@@ -359,6 +359,12 @@ ul#choix_impression ul.caract li{
 	vertical-align: inherit;
 }
 
+#liste_pays,
+#liste_magazines,
+#liste_auteurs {
+    width: 300px;
+}
+
 #liste_numeros img.flag {
 	vertical-align: top;
 }
@@ -518,5 +524,11 @@ ul#choix_impression ul.caract li{
 	#bouquinerie_commentaires {
 		width: 100%;
 	}
+
+    #liste_pays,
+    #liste_magazines,
+    #liste_auteurs {
+        width: 90% !important;
+    }
 
 }

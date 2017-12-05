@@ -991,37 +991,32 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
                 ?>
             <br /><br />
-                <table style="border:0">
-                    <tr>
-                        <td style="width:400px">
-                            <form method="get" action="?">
-                                <input type="hidden" name="action" value="gerer" />
-                                <input type="hidden" name="onglet" value="ajout_suppr" />
-                                <input type="hidden" id="form_pays" value="" />
-                                <input type="hidden" id="form_magazine" value="" />
-                                <input type="hidden" id="onglet_magazine" name="onglet_magazine" value="" />
-                                <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
-                                <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                                    <option id="chargement_pays"><?=CHARGEMENT?>...
-                                </select><br /><br />
-                                <span style="text-decoration:underline"><?=PUBLICATION?> : </span><br />
-                                <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
-                                    <option id="vide"><?=SELECTIONNER_PAYS?>
-                                </select>
-                                <br /><br />
-                                <input id="validerAjoutMagazine" type="submit" class="valider" value="<?=VALIDER?>" />
-                            </form>
-                        </td>
-                        <td style="vertical-align:top">
-                            <div id="recherche_histoire">
-                                <br>
-                                <?= RECHERCHER_GENERAL ?><br/>
-                                <input type="text" name="" />
-                                <button class="btn btn-default">OK</button>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+                <form method="get" action="?">
+                    <input type="hidden" name="action" value="gerer" />
+                    <input type="hidden" name="onglet" value="ajout_suppr" />
+                    <input type="hidden" id="form_pays" value="" />
+                    <input type="hidden" id="form_magazine" value="" />
+                    <input type="hidden" id="onglet_magazine" name="onglet_magazine" value="" />
+                    <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
+                    <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
+                        <option id="chargement_pays"><?=CHARGEMENT?>...
+                    </select><br /><br />
+                    <span style="text-decoration:underline"><?=PUBLICATION?> : </span><br />
+                    <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
+                        <option id="vide"><?=SELECTIONNER_PAYS?>
+                    </select>
+                    <br /><br />
+                    <input id="validerAjoutMagazine" type="submit" class="btn btn-default" value="<?=OK?>" />
+                </form>
+                <br />
+                <br />
+                <?= RECHERCHER_INTRO ?><br />
+                <div id="recherche_histoire">
+                    <br>
+                    <?= RECHERCHER_GENERAL ?><br/>
+                    <input type="text" name="" />
+                    <button class="btn btn-default"><?=OK?></button>
+                </div>
             <br /><br />
                 <?php
             }

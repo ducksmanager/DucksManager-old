@@ -115,6 +115,7 @@
         width: 100%;
         margin-bottom: 10px;
         opacity: 0.9;
+        outline: 2px solid grey;
     }
     #menu .toggle-btn {
         display: block;

@@ -404,6 +404,7 @@ define('RECHERCHE_MAGAZINE_SELECTIONNEZ_UNE_HISTOIRE', 'Choose a story in the li
 define('RECHERCHER_BIBLIOTHEQUE','Find a story in the bookcase :');
 define('RECHERCHER_BOUQUINERIES','Find second-hand bookshops');
 define('RECHERCHER_GENERAL','Find a story');
+define('RECHERCHER_INTRO', '... or find an issue by searching for a story that\'s inside of it : ');
 define('RECOPIER_CODE', 'Please copy the text');
 define('REFERENCES','referenced');
 define('REMERCIEMENT_LOGO','The DucksManager and WhatTheDuck logos are drawn by enigm.');

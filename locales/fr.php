@@ -403,6 +403,7 @@ define('RECHERCHE_MAGAZINE_SELECTIONNEZ_UNE_HISTOIRE', 'S&eacute;lectionnez un t
 define('RECHERCHER_BIBLIOTHEQUE','Rechercher une histoire dans la biblioth&egrave;que :');
 define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');
 define('RECHERCHER_GENERAL','Rechercher une histoire');
+define('RECHERCHER_INTRO', '... ou recherchez un magazine &agrave; partir d\'une histoire qui le contient :');
 define('RECOPIER_CODE', 'Recopiez le texte');
 define('REFERENCES','référencés');
 define('REMERCIEMENT_LOGO','Les logos de DucksManager et de WhatTheDuck ont &eacute;t&eacute; r&eacute;alis&eacute;s par enigm.');
