@@ -721,6 +721,56 @@ class Database {
 	        return $resultat['ID_Utilisateur'];
 	    }, $resultats), array_values($resultats));
     }
+
+    public function get_points_courants($id_user){
+        $requete_points_courants = "
+            SELECT
+            contributions.type_contribution,
+            sum(contributions.Popularite) AS points
+            FROM (
+               SELECT
+                 tp.*,
+                 tpc.contributeur,
+                 tpc.contribution AS type_contribution,
+                 (
+                   SELECT COUNT(*) AS Popularite
+                   FROM numeros n
+                   INNER JOIN users u ON n.ID_Utilisateur = u.ID
+                   WHERE
+                     n.Pays = SUBSTRING_INDEX(tp.publicationcode, '/', 1) AND
+                     n.Magazine = SUBSTRING_INDEX(tp.publicationcode, '/', -1) AND
+                     n.Numero = tp.issuenumber AND
+                     u.username NOT LIKE 'test%' AND
+                     n.DateAjout < DATE_SUB(tp.dateajout, INTERVAL -1 MONTH)
+                   GROUP BY n.Pays, n.Magazine, n.Numero
+                 ) AS Popularite
+        
+               FROM tranches_pretes tp
+               INNER JOIN tranches_pretes_contributeurs tpc USING (publicationcode, issuenumber)
+             ) contributions
+            WHERE contributions.contributeur=$id_user
+            GROUP BY contributions.type_contribution";
+
+        return DM_Core::$d->requete_select($requete_points_courants);
+    }
+
+    public function get_points_tranche($pays,$magazine,$numero){
+        $requete_points_tranche = "
+            SELECT points
+            FROM tranches_pretes
+            WHERE publicationcode = '$pays/$magazine'
+              AND issuenumber = '$numero'
+        ";
+
+        $resultats_points_tranche = DM_Core::$d->requete_select($requete_points_tranche);
+        if (count($resultats_points_tranche) === 0) {
+            return 0;
+        }
+        else {
+            return $resultats_points_tranche[0]['points'];
+        }
+    }
+
 }
 
 function get_current_db() {

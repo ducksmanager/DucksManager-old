@@ -168,6 +168,7 @@ define('EMAIL_REINIT_MOT_DE_PASSE_TITRE','Reinitialisation de mot de passe Ducks
 define('EMAIL_SIGNATURE','L\'&eacute;quipe DucksManager');
 define('EN_MAINTENANCE','En maintenance');
 define('ENVOYER','Envoyer');
+define('ENVOYER_PHOTO_DE_TRANCHE','Envoyer une photo de tranche');
 define('ENVOI_EMAIL_ECHEC','Erreur lors de l\'envoi de l\'e-mail. Merci de contacter le webmaster.');
 define('ENVOYER_MESSAGE_A','Envoyer un message &agrave; ');
 define('ERREUR_CAPTCHA','Le code que vous avez entr&eacute; est invalide. Merci de r&eacute;essayer.');
@@ -459,7 +460,7 @@ define('TOTAL','Total');
 define('TOUS_MAGAZINES','Tous magazines');
 define('TOUS_PAYS','Tous les pays');
 define('TRANCHE_NON_DISPONIBLE1','Cette tranche n\'est pas visible car nous n\'en poss&eacute;dons pas de photographie...');
-define('TRANCHE_NON_DISPONIBLE2','Vous pouvez photographier cette tranche ?<br />Cliquez ');
+define('TRANCHE_NON_DISPONIBLE2','Vous pouvez photographier cette tranche ?');
 define('TRANCHE_NON_DISPONIBLE3',' pour nous aider !');
 define('TRAVAUX_SECTION','Cette section est en travaux !');
 define('TYPE_LISTE','Type de liste');

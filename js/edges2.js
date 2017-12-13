@@ -754,7 +754,7 @@ function ouvrirInfoBulleEffectif(tranche) {
 
     new Ajax.Request('Edge.class.php', {
         method: 'post',
-        parameters:'get_visible=true&est_partage_bibliotheque='+est_partage_bibliotheque+'&debug='+debug
+        parameters:'get_visible=true&est_partage_bibliotheque='+est_partage_bibliotheque+'&points_courants_photo=30&debug='+debug
 				 +'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
         onSuccess:function(transport) {
             if (bulle_recente === tranche.id) {

@@ -6,8 +6,8 @@ include_once ('locales/lang.php');
 class Affichage {
 
     static $niveaux_medailles=[
-        'Photographe' => [1 => 1, 2 => 10, 3 => 50],
-        'Concepteur'  => [1 => 1, 2 => 3,  3 => 10],
+        'Photographe' => [1 => 20, 2 => 100, 3 => 1000],
+        'Concepteur'  => [1 => 20, 2 => 50,  3 => 500],
         'Duckhunter'  => [1 => 1, 2 => 3,  3 =>  5]
     ];
 
@@ -474,16 +474,16 @@ class Affichage {
     }
 
     public static function get_medailles($nbPhotographiesCreationsBouquineries) {
-        $cpt_et_niveaux=[];
-        foreach($nbPhotographiesCreationsBouquineries as $type=>$cpt) {
-            $cpt_et_niveaux[$type]=null;
-            foreach (Affichage::$niveaux_medailles[$type] as $niveau=> $cpt_min) {
-                if ($cpt >= $cpt_min) {
-                    $cpt_et_niveaux[$type]=['Niveau'=>$niveau,'Cpt'=>$cpt];
+        $points_et_niveaux=[];
+        foreach($nbPhotographiesCreationsBouquineries as $type=>$points) {
+            $points_et_niveaux[$type]=null;
+            foreach (Affichage::$niveaux_medailles[$type] as $niveau=> $points_min) {
+                if ($points >= $points_min) {
+                    $points_et_niveaux[$type]=['Niveau'=>$niveau,'Cpt'=>$points];
                 }
             }
         }
-        return $cpt_et_niveaux;
+        return $points_et_niveaux;
     }
 
     public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $nbPhotographies, $nbCreations, $nbBouquineries)

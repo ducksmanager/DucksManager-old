@@ -293,7 +293,12 @@ class Edge {
 
 }
 DM_Core::$d->requete('SET NAMES UTF8');
-if (isset($_POST['get_visible'])) {
+
+if (isset($_POST['get_points'])) {
+    $nb_points_courants = DM_Core::$d->get_points_courants($_SESSION['id_user']);
+    echo json_encode(['points' => $nb_points_courants]);
+}
+elseif (isset($_POST['get_visible'])) {
     header('Content-type: application/json');
 
     $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
@@ -303,20 +308,53 @@ if (isset($_POST['get_visible'])) {
     $magazine_complet = array_values(Inducks::get_noms_complets_magazines([$_POST['pays'].'/'.$_POST['magazine']]))[0];
 	Affichage::afficher_texte_numero($_POST['pays'], $magazine_complet, $_POST['numero']);
     $titre = ob_get_clean();
+    $_POST['magazine']=strtoupper($_POST['magazine']);
 
     ob_start();
-	if (!getEstVisible($_POST['pays'], strtoupper($_POST['magazine']), $_POST['numero'])) {
-		?>
-        <?=TRANCHE_NON_DISPONIBLE1?><br /><?php
+	if (getEstVisible($_POST['pays'], $_POST['magazine'], $_POST['numero'])) {
+        echo DECOUVRIR_COUVERTURE;
+    }
+    else {
+        echo TRANCHE_NON_DISPONIBLE1;?>
+        <br /><?php
         if (!$est_partage_bibliotheque) {
-            ?><?= TRANCHE_NON_DISPONIBLE2 ?>
-            <a class="lien_participer" target="_blank"
-               href="?action=bibliotheque&onglet=participer"><?= ICI ?></a><?= TRANCHE_NON_DISPONIBLE3 ?>
-        <?php
+            $nb_points_a_gagner = DM_Core::$d->get_points_tranche($_POST['pays'], $_POST['magazine'], $_POST['numero']);
+
+            if ($nb_points_a_gagner > 0) {
+                $points_courants_photo=intval($_POST['points_courants_photo']);
+                $medailles_courantes = Affichage::get_medailles(['Photographe' => $points_courants_photo ]);
+
+                $niveau_courant=$medailles_courantes['Photographe']['Niveau'];
+                $points_niveau_courant=Affichage::$niveaux_medailles['Photographe'][$niveau_courant];
+                $niveau_objectif=$niveau_courant+1;
+                $points_niveau_objectif=Affichage::$niveaux_medailles['Photographe'][$niveau_objectif];
+
+                $pcent_courant=100*($points_courants_photo-$points_niveau_courant)/($points_niveau_objectif-$points_niveau_courant);
+                $pcent_a_gagner=100*$nb_points_a_gagner/($points_niveau_objectif-$points_niveau_courant);
+
+                ?><?= TRANCHE_NON_DISPONIBLE2 ?><br /><?php
+                if ($niveau_courant > 0) {
+                    ?><img class="medaille_objectif gauche" src="images/medailles/Photographe_<?=$niveau_courant?>_fond.png" /><?php
+                }
+                if ($niveau_objectif <= 3) {
+                    ?><img class="medaille_objectif droite" src="images/medailles/Photographe_<?=$niveau_objectif?>_fond.png" /><?php
+                } ?>
+                <div class="progress">
+                    <div role="progressbar" style="width:<?=$pcent_courant?>%;background-color: lightgreen;" class="progress-bar progress-bar-muted"></div>
+                    <div role="progressbar" style="width:<?=$pcent_a_gagner?>%" class="progress-bar progress-bar-success active progress-bar-striped">
+                        <span class="nowrap show_overflow">+ <?=$nb_points_a_gagner?></span> points
+                    </div>
+                </div>
+                <div>
+                    <?= sprintf(TRANCHE_NON_DISPONIBLE3, $nb_points_a_gagner, TITRE_MEDAILLE_PHOTOGRAPHE) ?>
+                </div>
+                <br />
+                <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
+                    <?= ENVOYER_PHOTO_DE_TRANCHE ?>
+                </a>
+            <?php }
         }
 	}
-	?>
-    <?=DECOUVRIR_COUVERTURE?><?php
     $contenu = ob_get_clean();
 
     echo json_encode(['title' => $titre, 'content' => $contenu]);
