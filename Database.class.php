@@ -756,10 +756,12 @@ class Database {
 
     public function get_points_tranche($pays,$magazine,$numero){
         $requete_points_tranche = "
-            SELECT points
-            FROM tranches_pretes
-            WHERE publicationcode = '$pays/$magazine'
-              AND issuenumber = '$numero'
+            SELECT np.Popularite
+            FROM numeros_popularite np
+            WHERE
+                np.Pays = '$pays' AND
+                np.Magazine = '$magazine' AND
+                np.Numero = '$numero'
         ";
 
         $resultats_points_tranche = DM_Core::$d->requete_select($requete_points_tranche);
@@ -767,7 +769,7 @@ class Database {
             return 0;
         }
         else {
-            return $resultats_points_tranche[0]['points'];
+            return intval($resultats_points_tranche[0]['Popularite']);
         }
     }
 
