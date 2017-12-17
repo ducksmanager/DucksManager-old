@@ -46,12 +46,7 @@ class Edge {
 			$this->image=@imagecreatefrompng($url_image);
 		}
 		else {
-		    if (is_null($visible)) {
-			    $this->est_visible=getEstVisible($this->pays,$this->magazine,$this->numero_reference);
-            }
-            else {
-                $this->est_visible = $visible;
-            }
+            $this->est_visible = $visible ?? getEstVisible($this->pays,$this->magazine,$this->numero_reference);
 
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
@@ -68,9 +63,7 @@ class Edge {
 				if (!is_null($dimensions[$this->numero_reference]) && $dimensions[$this->numero_reference]!='null')
 					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
 
-				if (!$this->image_existe) {
-					@imagepng($this->dessiner_defaut(),$url_image);
-				}
+				@imagepng($this->dessiner_defaut(),$url_image);
 
 				$this->est_visible=false;
 				$this->largeur*=Edge::$grossissement_affichage;
@@ -171,7 +164,7 @@ class Edge {
 				Etagere::$hauteur_max_etage = $this->hauteur;
 			}
 		}
-		$code.= '<img class="tranche" ';
+		$code.= '<img data-edge="'.($this->est_visible ? 1 : 0).'" class="tranche" ';
 		
 		if ($this->image_existe && !$regen) {
 			$code.='name="'.$this->pays.'/'.$this->magazine.'.'.$this->numero_reference.'" ';
@@ -228,7 +221,6 @@ class Edge {
 
 	static function getPourcentageVisible($id_user, $get_html=false) {
 		include_once('Database.class.php');
-		global $numeros_inducks;
 		@session_start();
 
         $l=DM_Core::$d->toList($id_user);
@@ -246,8 +238,11 @@ class Edge {
             $magazine=$ordre['Magazine'];
             $publication_codes[]=$pays.'/'.$magazine;
         }
+
+        global $numeros_inducks;
         $numeros_inducks = Inducks::get_numeros_liste_publications($publication_codes);
         getDimensionsParDefaut($publication_codes);
+
         foreach($resultat_ordre_magazines as $ordre) {
             $pays=$ordre['Pays'];
             $magazine=$ordre['Magazine'];
@@ -270,9 +265,9 @@ class Edge {
                     $total_numeros_visibles++;
             }
         }
-        $pourcentage_visible=$total_numeros==0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
+        $pourcentage_visible=$total_numeros===0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
         if ($get_html)
-            return [$texte_final, $pourcentage_visible];
+            return [$texte_final, $pourcentage_visible, Inducks::get_noms_complets_magazines($publication_codes)];
         else
             return $pourcentage_visible;
 	}
@@ -287,12 +282,23 @@ class Edge {
         }
     }
 
+    static function get_user_bibliotheque($user, $cle) {
+        if ($user === '-1') {
+            $id_user = $_SESSION['id_user'];
+        }
+        else {
+            $id_user = DM_Core::$d->get_id_user_partage_bibliotheque($user, $cle);
+        }
+        return $id_user;
+    }
+
 	function getChemin() {
 		return 'edges/'.$this->pays.'/elements';
 	}
 
 }
 DM_Core::$d->requete('SET NAMES UTF8');
+
 if (isset($_POST['get_visible'])) {
     header('Content-type: application/json');
 
@@ -331,17 +337,8 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
 }
 elseif (isset($_POST['get_bibliotheque'])) {
     header('Content-type: application/json');
-
     $user = $_POST['user_bibliotheque'];
-    $cle = $_POST['cle_bibliotheque'];
-    if ($user !== '-1') {
-        $id_user = DM_Core::$d->get_id_user_partage_bibliotheque($user, $cle);
-        $titre = BIBLIOTHEQUE_DE.$user;
-    }
-    else {
-        $id_user = $_SESSION['id_user'];
-        $titre = BIBLIOTHEQUE_COURT;
-    }
+    $id_user = Edge::get_user_bibliotheque($user, $_POST['cle_bibliotheque']);
 
     if (is_null($id_user)) {
         echo json_encode(['erreur' => 'Lien de partage invalide']);
@@ -362,20 +359,44 @@ elseif (isset($_POST['get_bibliotheque'])) {
 			];
         }
 
-        Edge::$grossissement = $grossissement;
-        Etagere::$largeur = $_POST['largeur'];
-        Etagere::$hauteur = $_POST['hauteur'];
-        Etagere::$epaisseur = 20;
         Etagere::$texture1 = $textures[0]['texture'];
         Etagere::$sous_texture1 = $textures[0]['sous_texture'];
         Etagere::$texture2 = $textures[1]['texture'];
         Etagere::$sous_texture2 = $textures[1]['sous_texture'];
+        Edge::$grossissement = $grossissement;
 
-        ob_start();
-        include_once('edgetest.php');
-        $contenu = ob_get_clean();
+        list($width, $height, $type, $attr)=getimagesize('edges/textures/'.Etagere::$texture1.'/'.Etagere::$sous_texture1.'.jpg');
+        if ($width<Etagere::$largeur) {
+            Etagere::$largeur=$width;
+        }
+        else {
+            Etagere::$largeur=$_POST['largeur'];
+        }
+        Etagere::$hauteur = $_POST['hauteur'];
+        Etagere::$epaisseur = 20;
 
-        echo json_encode(['titre' => $titre, 'contenu' => $contenu, 'textures' => $textures]);
+        list($html, $pourcentage_visible, $liste_magazines) = Edge::getPourcentageVisible($id_user, true);
+
+        $contenu = Edge::getEtagereHTML().$html.Edge::getEtagereHTML(false);
+
+        ob_start();?>
+
+        <div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
+        <div id="nb_numeros_visibles" style="display:none" name="<?=$pourcentage_visible?>"></div>
+        <div id="hauteur_etage" style="display:none" name="<?=Etagere::$hauteur_max_etage?>"></div>
+        <div id="grossissement" style="display:none" name="<?=Edge::$grossissement?>"></div>
+
+        <?php
+        $contenu.= ob_get_clean();
+
+        $titre = $user === '-1' ? BIBLIOTHEQUE_COURT : (BIBLIOTHEQUE_DE . $user);
+
+        echo json_encode([
+            'titre' => $titre,
+            'contenu' => $contenu,
+            'textures' => $textures,
+            'noms_magazines' => $liste_magazines
+        ]);
     }
 }
 elseif (isset($_POST['get_texture'])) {

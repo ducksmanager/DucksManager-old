@@ -593,7 +593,22 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             } ?>
                             <br/><br/>
                             <div id="bibliotheque" style="width:100%;height:100%"></div>
-                            <?php
+
+                            <div class="template tooltip_edge_title">
+                                <?php Affichage::afficher_texte_numero_template(); ?>
+                            </div>
+                            <div class="template tooltip_edge_content">
+                                <div class="has-no-edge">
+                                    <?=TRANCHE_NON_DISPONIBLE1?><br />
+                                    <div class="is-bookcase-share">
+                                        <?=TRANCHE_NON_DISPONIBLE2?>
+                                        <a class="lien_participer" target="_blank"
+                                           href="?action=bibliotheque&onglet=participer"><?=ICI?></a>
+                                       <?=TRANCHE_NON_DISPONIBLE3?>
+                                   </div>
+                               </div>
+                               <?=DECOUVRIR_COUVERTURE?>
+                            </div><?php
                         }
                         break;
                     case 'options':

@@ -18,6 +18,7 @@ var bulle=null;
 var extraits;
 var extrait_courant;
 var chargement_extrait=false;
+var noms_magazines = [];
 var l10n_recherche = [
     'recherche_magazine_aucun_resultat', 'recherche_magazine_histoire_non_possedee',
     'recherche_magazine_resultats_nombreux_1','recherche_magazine_resultats_nombreux_2',
@@ -359,7 +360,9 @@ function charger_bibliotheque() {
 				conteneur.update(transport.responseJSON.erreur);
 			}
 			else {
+                noms_magazines = transport.responseJSON.noms_magazines;
 				var textures = transport.responseJSON.textures;
+
 				var element_bibliotheque = $('bibliotheque');
 				element_bibliotheque.update(transport.responseJSON.contenu);
 				element_bibliotheque.setStyle({
@@ -713,8 +716,6 @@ function init_ordre_magazines() {
     });
 }
 
-var bulle_recente = null;
-
 function init_observers_tranches() {
     $$('.tranche').invoke(
         'observe',
@@ -731,8 +732,6 @@ function init_observers_tranches() {
             if (action_en_cours ||couverture_ouverte)
                 return;
             var tranche = Event.element(event);
-
-            bulle_recente = tranche.id;
             ouvrirInfoBulleEffectif(tranche);
         }
     );
@@ -745,58 +744,40 @@ function init_observers_tranches() {
     });
 }
 
-var timeout_before_popover_hide= 500;
-var popover_id_mouseout_timeout = null;
-
 function ouvrirInfoBulleEffectif(tranche) {
     jQuery('.popover').popover('destroy');
     var numero_bulle=getInfosNumero(tranche.id);
 
-    new Ajax.Request('Edge.class.php', {
-        method: 'post',
-        parameters:'get_visible=true&est_partage_bibliotheque='+est_partage_bibliotheque+'&debug='+debug
-				 +'&numero_bulle_courant='+numero_bulle+'&pays='+numero_bulle['pays']+'&magazine='+numero_bulle['magazine']+'&numero='+numero_bulle['numero'],
-        onSuccess:function(transport) {
-            if (bulle_recente === tranche.id) {
-                var data = transport.responseJSON;
+    var titre_bulle = jQuery('.tooltip_edge_title.template').clone(true).removeClass('template');
+    titre_bulle.find('img.flag').attr({src: 'images/flags/'+numero_bulle['pays']+'.png'});
+    titre_bulle.find('.country').text(numero_bulle['pays']);
+    titre_bulle.find('.publication_name').text(numero_bulle['nom_magazine']);
+    titre_bulle.find('.issuenumber').text(numero_bulle['numero']);
 
-                jQuery(tranche)
-                    .popover({
-                        container: 'body',
-                        content: data.content,
-                        title: data.title,
-                        trigger: 'hover',
-                        placement: 'top',
-                        position: 'in right',
-                        animation: false,
-                        html: true
-                    })
-                    .popover('show')
-                    .on('hide.bs.popover', function(e) {
-                        if (popover_id_mouseout_timeout !== tranche.id) {
-                            popover_id_mouseout_timeout = tranche.id;
+    var contenu_bulle = jQuery('.tooltip_edge_content.template').clone(true).removeClass('template');
+    contenu_bulle
+        .find('.has-no-edge')
+            .toggle(jQuery(tranche).data('edge') === 0)
+            .find('.is-bookcase-share')
+                .toggle(est_partage_bibliotheque);
 
-                            setTimeout(function() {
-                                if (popover_id_mouseout_timeout) {
-                                    popover_id_mouseout_timeout = null;
-                                    jQuery(tranche).unbind('hide.bs.popover').popover('hide');
-                                }
-                            }, timeout_before_popover_hide);
+    jQuery(tranche)
+        .popover({
+            container: 'body',
+            content: contenu_bulle.html(),
+            title: titre_bulle.html(),
+            trigger: 'hover',
+            placement: 'top',
+            position: 'in right',
+            animation: false,
+            html: true
+        })
+        .popover('show');
 
-                            e.preventDefault();
-                        }
-                    });
-                jQuery('.popover')
-                    .mouseenter(function() {
-                        popover_id_mouseout_timeout = null;
-                    })
-                    .mouseleave(function() {
-                        jQuery(tranche).unbind('hide.bs.popover').popover('hide');
-                    });
-            }
-        }
-    });
-
+    jQuery('.popover')
+        .mouseleave(function() {
+            jQuery(tranche).unbind('hide.bs.popover').popover('hide');
+        });
 }
 
 function getInfosNumero (texte) {
@@ -805,6 +786,7 @@ function getInfosNumero (texte) {
     var magazine_numero=pays__magazine_numero[1].split('.');
     infos['pays']=pays__magazine_numero[0];
     infos['magazine']=magazine_numero[0].toLowerCase();
+    infos['nom_magazine']=noms_magazines[infos['pays'] + '/' + infos['magazine'].toUpperCase()] || '';
     infos['numero']=magazine_numero[1];
     return infos;
 }
