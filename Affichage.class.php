@@ -395,6 +395,13 @@ class Affichage {
         </span> <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
 	}
 
+	static function afficher_texte_numero_template() {
+		?><span class="nowrap">
+            <img class="flag" />&nbsp;
+        </span>
+        <span class="publication_name"></span> <span class="issuenumber"></span><?php
+	}
+
 	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros) {
         ob_start();
         self::afficher_texte_numero($pays,$magazine_complet,$numero);

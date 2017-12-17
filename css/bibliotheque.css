@@ -187,6 +187,18 @@
     line-height:22px;
 }
 
+.progress-wrapper {
+    margin-top: 15px;
+}
+
+.progress-current {
+    background-color: lightgreen !important;
+}
+
+.has-no-edge {
+    margin-top: 25px;
+}
+
 @media (min-width: 767px) {
     #recherche_histoire input {
         width: 300px;

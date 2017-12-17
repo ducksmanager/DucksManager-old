@@ -593,7 +593,39 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             } ?>
                             <br/><br/>
                             <div id="bibliotheque" style="width:100%;height:100%"></div>
-                            <?php
+
+                            <div class="template tooltip_edge_title">
+                                <?php Affichage::afficher_texte_numero_template(); ?>
+                            </div>
+                            <div class="template tooltip_edge_content">
+                                <?=DECOUVRIR_COUVERTURE?>.
+                                <div class="has-no-edge">
+                                    <?=TRANCHE_NON_DISPONIBLE1?><br />
+                                    <div class="is-not-bookcase-share">
+                                        <?=TRANCHE_NON_DISPONIBLE2?><br />
+                                        <div class="progress-wrapper">
+                                            <img class="possede-medaille medaille_objectif gauche" />
+                                            <img class="possede-medaille-non-max medaille_objectif droite" />
+                                            <div class="progress">
+                                                <div class="progress-current progress-bar progress-bar-muted" role="progressbar"></div>
+                                                <div class="progress-extra progress-bar progress-bar-success active progress-bar-striped" role="progressbar">
+                                                    <span class="progress-extra-points nowrap show_overflow"></span> points
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <?= TRANCHE_NON_DISPONIBLE3 ?>
+                                            <span class="progress-extra-points"></span>
+                                            <?= TITRE_MEDAILLE_PHOTOGRAPHE ?> <?=POINTS?> !
+                                        </div>
+                                        <br />
+                                        <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
+                                            <?= ENVOYER_PHOTO_DE_TRANCHE ?>
+                                        </a>
+                                    </div>
+                               </div>
+                            </div><?php
                         }
                         break;
                     case 'options':
