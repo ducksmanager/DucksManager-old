@@ -744,8 +744,12 @@ function init_observers_tranches() {
     });
 }
 
+var isOutOfEdgesAndPopover = true;
+
 function ouvrirInfoBulleEffectif(tranche) {
     jQuery('.popover').popover('destroy');
+    isOutOfEdgesAndPopover=false;
+
     var numero_bulle=getInfosNumero(tranche.id);
 
     var titre_bulle = jQuery('.tooltip_edge_title.template').clone(true).removeClass('template');
@@ -800,13 +804,32 @@ function ouvrirInfoBulleEffectif(tranche) {
             container: 'body',
             content: contenu_bulle.html(),
             title: titre_bulle.html(),
-            trigger: 'hover',
             placement: 'top',
             position: 'in right',
             animation: false,
             html: true
         })
-        .popover('show');
+        .popover('show')
+        .mouseout(function() {
+            hidePopoverIfStillOutOfFocusAfterTimeout(500);
+        });
+
+    jQuery('.popover')
+        .mouseover(function() {
+            isOutOfEdgesAndPopover=false;
+        })
+        .mouseout(function() {
+            hidePopoverIfStillOutOfFocusAfterTimeout(500);
+        });
+}
+
+function hidePopoverIfStillOutOfFocusAfterTimeout(timeout) {
+    isOutOfEdgesAndPopover = true;
+    setTimeout(function() {
+        if (isOutOfEdgesAndPopover) {
+            jQuery('.popover').popover('destroy');
+        }
+    }, timeout);
 }
 
 function getInfosNumero (texte) {
