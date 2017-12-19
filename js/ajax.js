@@ -381,22 +381,28 @@ function afficher_numeros(pays,magazine, numero) {
 		pays=pays_sel;
 		magazine=magazine_sel;
 		if (!pays || !magazine) {
-				l10n_action('alert','remplir_pays_et_magazine');
-				return;
+            l10n_action('alert','remplir_pays_et_magazine');
+            return;
 		}
 	}
-	new Ajax.Request('Database.class.php', {
-           method: 'post',
-           parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
-           onSuccess:function(transport) {
-                $('liste_numeros').update(transport.responseText);
-                init_observers_gerer_numeros();
-                numero = numero || location.hash;
-	            if (numero) {
-                    indiquer_numero($('liste_numeros').select('[name="'+numero.replace(/#/,'')+'"]')[0].parentNode, ['gauche']);
-	            }
-           }
-	});
+
+	if ($('liste_numeros') === null) {
+	    location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
+    }
+    else {
+        new Ajax.Request('Database.class.php', {
+               method: 'post',
+               parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
+               onSuccess:function(transport) {
+                    $('liste_numeros').update(transport.responseText);
+                    init_observers_gerer_numeros();
+                    numero = numero || location.hash;
+                    if (numero) {
+                        indiquer_numero($('liste_numeros').select('[name="'+numero.replace(/#/,'')+'"]')[0].parentNode, ['gauche']);
+                    }
+               }
+        });
+    }
 }
 
 function isLeftClick(event) {

@@ -273,7 +273,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 }
                 else {
                     list($pays,$magazine)=explode('/',$onglet_magazine);
-                    ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
+                    $numero = $_GET['numero'] ?? null;
+                    if (is_null($numero)) {
+                        ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
+                    }
+                    else {
+                        ?>afficher_numeros('<?=$pays?>','<?=$magazine?>','<?=$numero?>');<?php
+                    }
                 }
             }
             ?>charger_recherche();<?php
