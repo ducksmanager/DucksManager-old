@@ -574,21 +574,25 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 }
                             }
                             ?>
-                            <span id="chargement_bibliotheque_termine"><?= CHARGEMENT ?>..</span>.
+
+                            <?php if (!$est_partage_bibliotheque) { ?>
+                                <div id="partager_bibliotheque" class="cache">
+                                    <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
+                                </div><?php
+                            }?>
+                            <span id="chargement_bibliotheque_termine"><?= CHARGEMENT ?></span>
                             <br/>
-                            <div id="barre_pct_bibliotheque"
-                                 style="border: 1px solid white; width: 200px;">
-                                <div id="pct_bibliotheque"
-                                     style="width: 0; background-color: red;">&nbsp;</div>
+                            <div id="barre_pct_bibliotheque">
+                                <div id="pct_bibliotheque">&nbsp;</div>
                             </div>
                             <span id="pcent_visible"></span>
                             <span id="pourcentage_collection_visible"></span>
-                            <br/>
-                            <br/>
+
                             <?php if (!$est_partage_bibliotheque) { ?>
-                                <div id="partager_bibliotheque" style="float: left" class="cache">
+                                <div id="proposition_photo" class="cache">
                                     <span class="nouveau"><?=NOUVEAU?></span>
-                                    <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
+                                    <?=INVITATION_ENVOI_PHOTOS_TRANCHES?>
+                                    <div id="tranches_possibles"></div>
                                 </div>
                                 <div id="recherche_histoire">
                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
@@ -597,41 +601,10 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 </div>
                                 <?php
                             } ?>
-                            <br/><br/>
-                            <div id="bibliotheque" style="width:100%;height:100%"></div>
-
-                            <div class="template tooltip_edge_title">
-                                <?php Affichage::afficher_texte_numero_template(); ?>
-                            </div>
-                            <div class="template tooltip_edge_content">
-                                <?=DECOUVRIR_COUVERTURE?>.
-                                <div class="has-no-edge">
-                                    <?=TRANCHE_NON_DISPONIBLE1?><br />
-                                    <div class="is-not-bookcase-share">
-                                        <?=TRANCHE_NON_DISPONIBLE2?><br />
-                                        <div class="progress-wrapper">
-                                            <img class="possede-medaille medaille_objectif gauche" />
-                                            <img class="possede-medaille-non-max medaille_objectif droite" />
-                                            <div class="progress">
-                                                <div class="progress-current progress-bar progress-bar-muted" role="progressbar"></div>
-                                                <div class="progress-extra progress-bar progress-bar-success active progress-bar-striped" role="progressbar">
-                                                    <span class="progress-extra-points nowrap show_overflow"></span> points
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <?= TRANCHE_NON_DISPONIBLE3 ?>
-                                            <span class="progress-extra-points"></span>
-                                            <?= TITRE_MEDAILLE_PHOTOGRAPHE ?> <?=POINTS?> !
-                                        </div>
-                                        <br />
-                                        <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
-                                            <?= ENVOYER_PHOTO_DE_TRANCHE ?>
-                                        </a>
-                                    </div>
-                               </div>
-                            </div><?php
+                            <div id="bibliotheque"></div>
+                            <?php
+                            Affichage::afficher_texte_numero_template();
+                            Affichage::afficher_infobulle_tranche_template();
                         }
                         break;
                     case 'options':

@@ -62,6 +62,10 @@ a.important:HOVER {
     white-space: nowrap;
 }
 
+.clear {
+	clear: both;
+}
+
 .show_overflow {
 	overflow-x: visible;
 	text-shadow: 1px 1px 2px black;

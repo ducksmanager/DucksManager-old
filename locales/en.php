@@ -80,8 +80,8 @@ define('CALCUL_TERMINE','Calculations done... The page is going to reload...');
 define('CALCULS_PAS_ENCORE_FAITS','The calculations have not been done yet. The stats are generated every day, come back tomorrow !');
 define('CHAMP_OBLIGATOIRE_1','The field ');
 define('CHAMP_OBLIGATOIRE_2',' is mandatory');
-define('CHARGEMENT','Loading');
-define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','Done.');
+define('CHARGEMENT','Loading...');
+define('CHARGEMENT_BIBLIOTHEQUE_TERMINE','');
 define('CLASSIQUE_ABREGE_DESCRIPTION','This displays the number of possessed issues for a magazine');
 define('CLASSIQUE_ABREGE_MOINS_1','Not really a list');
 define('CLASSIQUE_ABREGE_MOINS_2','Impossible to add issues manually');
@@ -258,6 +258,7 @@ define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1','Currently, you 
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2','% of your collection in the DucksManager bookcase. You probably have got rare or recent magazines.');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3','Why not participate ? This way, you will have a more complete view of your collection in your DucksManager bookcase, and it will also benefit some other users of DucksManager having the same magazines !');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4','Participating to the project is quite simple. Just fill the following form to propose your help to the webmaster of DucksManager.');
+define('INVITATION_ENVOI_PHOTOS_TRANCHES','Send us photos of magazine edges so that you and other users who have it can see it in the bookcase.');
 define('L10N_INTROUVABLE','Localisation not found for ');
 define('LE_WEBMASTER','The webmaster.');
 define('LEGENDE_NUMEROS','Issues legend');

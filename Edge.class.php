@@ -219,6 +219,19 @@ class Edge {
 		return $sous_image;
 	}
 
+    static function getPointsPhotographeAGagner($id_user){
+        $requete_points_tranche = "
+            SELECT np.Pays, np.Magazine, np.Numero, np.Popularite
+            FROM numeros
+            INNER JOIN numeros_popularite np USING(Pays, Magazine, Numero)
+            WHERE numeros.ID_Utilisateur=$id_user
+            ORDER BY np.Popularite DESC
+        ";
+
+        $resultats_points_tranches = DM_Core::$d->requete_select($requete_points_tranche);
+        return $resultats_points_tranches;
+    }
+
 	static function getPourcentageVisible($id_user, $get_html=false) {
 		include_once('Database.class.php');
 		@session_start();
@@ -302,67 +315,6 @@ if (isset($_POST['get_points'])) {
     $nb_points_courants = DM_Core::$d->get_points_courants($_SESSION['id_user']);
     echo json_encode(['points' => $nb_points_courants]);
 }
-elseif (isset($_POST['get_visible'])) {
-    header('Content-type: application/json');
-
-    $est_partage_bibliotheque = $_POST['est_partage_bibliotheque'];
-	include_once ('locales/lang.php');
-
-	ob_start();
-    $magazine_complet = array_values(Inducks::get_noms_complets_magazines([$_POST['pays'].'/'.$_POST['magazine']]))[0];
-	Affichage::afficher_texte_numero($_POST['pays'], $magazine_complet, $_POST['numero']);
-    $titre = ob_get_clean();
-    $_POST['magazine']=strtoupper($_POST['magazine']);
-
-    ob_start();
-	if (getEstVisible($_POST['pays'], $_POST['magazine'], $_POST['numero'])) {
-        echo DECOUVRIR_COUVERTURE;
-    }
-    else {
-        echo TRANCHE_NON_DISPONIBLE1;?>
-        <br /><?php
-        if (!$est_partage_bibliotheque) {
-            $nb_points_a_gagner = DM_Core::$d->get_points_tranche($_POST['pays'], $_POST['magazine'], $_POST['numero']);
-
-            if ($nb_points_a_gagner > 0) {
-                $points_courants_photo=intval($_POST['points_courants_photo']);
-                $medailles_courantes = Affichage::get_medailles(['Photographe' => $points_courants_photo ]);
-
-                $niveau_courant=$medailles_courantes['Photographe']['Niveau'];
-                $points_niveau_courant=Affichage::$niveaux_medailles['Photographe'][$niveau_courant];
-                $niveau_objectif=$niveau_courant+1;
-                $points_niveau_objectif=Affichage::$niveaux_medailles['Photographe'][$niveau_objectif];
-
-                $pcent_courant=100*($points_courants_photo-$points_niveau_courant)/($points_niveau_objectif-$points_niveau_courant);
-                $pcent_a_gagner=100*$nb_points_a_gagner/($points_niveau_objectif-$points_niveau_courant);
-
-                ?><?= TRANCHE_NON_DISPONIBLE2 ?><br /><?php
-                if ($niveau_courant > 0) {
-                    ?><img class="medaille_objectif gauche" src="images/medailles/Photographe_<?=$niveau_courant?>_fond.png" /><?php
-                }
-                if ($niveau_objectif <= 3) {
-                    ?><img class="medaille_objectif droite" src="images/medailles/Photographe_<?=$niveau_objectif?>_fond.png" /><?php
-                } ?>
-                <div class="progress">
-                    <div role="progressbar" style="width:<?=$pcent_courant?>%;background-color: lightgreen;" class="progress-bar progress-bar-muted"></div>
-                    <div role="progressbar" style="width:<?=$pcent_a_gagner?>%" class="progress-bar progress-bar-success active progress-bar-striped">
-                        <span class="nowrap show_overflow">+ <?=$nb_points_a_gagner?></span> points
-                    </div>
-                </div>
-                <div>
-                    <?= sprintf(TRANCHE_NON_DISPONIBLE3, $nb_points_a_gagner, TITRE_MEDAILLE_PHOTOGRAPHE) ?>
-                </div>
-                <br />
-                <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
-                    <?= ENVOYER_PHOTO_DE_TRANCHE ?>
-                </a>
-            <?php }
-        }
-	}
-    $contenu = ob_get_clean();
-
-    echo json_encode(['title' => $titre, 'content' => $contenu]);
-}
 elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
 	if (isset($_GET['grossissement']))
 		Edge::$grossissement_affichage=$_GET['grossissement'];
@@ -370,6 +322,12 @@ elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'
 		header('Content-type: image/png');
 	$e=new Edge($_GET['pays'], $_GET['magazine'], $_GET['numero'], $_GET['numero'], null, true);
 	imagepng($e->image);
+}
+elseif (isset($_POST['get_popularite_numeros'])) {
+    header('Content-type: application/json');
+    echo json_encode([
+        'popularite_numeros' => Edge::getPointsPhotographeAGagner($_SESSION['id_user'])
+    ]);
 }
 elseif (isset($_POST['get_bibliotheque'])) {
     header('Content-type: application/json');

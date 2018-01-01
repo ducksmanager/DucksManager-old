@@ -19,6 +19,8 @@ var extraits;
 var extrait_courant;
 var chargement_extrait=false;
 var noms_magazines = [];
+var popularite_numeros = [];
+
 var l10n_recherche = [
     'recherche_magazine_aucun_resultat', 'recherche_magazine_histoire_non_possedee',
     'recherche_magazine_resultats_nombreux_1','recherche_magazine_resultats_nombreux_2',
@@ -66,9 +68,9 @@ function ouvrir_tranche() {
     jQuery.post('Inducks.class.php', {
         get_cover: 'true',
         debug: debug,
-        pays: infos['pays'],
+        pays: infos.Pays,
         magazine: infos['magazine'],
-        numero: infos['numero']
+        numero: infos.Numero
     })
         .done(function (data) {
             $('infobulle') && $('infobulle').remove();
@@ -360,6 +362,14 @@ function charger_bibliotheque() {
 				conteneur.update(transport.responseJSON.erreur);
 			}
 			else {
+                new Ajax.Request('Edge.class.php', {
+                    method: 'post',
+                    parameters: 'get_popularite_numeros=true',
+                    onSuccess:function(transport) {
+                        popularite_numeros = transport.responseJSON.popularite_numeros;
+                    }
+                });
+
                 noms_magazines = transport.responseJSON.noms_magazines;
 				var textures = transport.responseJSON.textures;
 
@@ -403,12 +413,12 @@ function charger_tranche(tranche) {
 function charger_tranche_suivante(element) {
     var tranche2=Event.element(element);
     var suivant=tranche2.next();
-    if (suivant && suivant.className.indexOf('tranche') == -1) {
+    if (suivant && suivant.className.indexOf('tranche') === -1) {
         if (tranche2.up('#bibliotheque')) { // Contexte biblioth�que
             nb_etageres_terminees++;
             $('pct_bibliotheque').setStyle({'width': parseInt(100 * nb_etageres_terminees / nb_etageres) + '%'});
             var tranche_suivante = suivant.next().next();
-            if (tranche_suivante.className.indexOf('tranche') == -1) {
+            if (tranche_suivante.className.indexOf('tranche') === -1) {
                 init_observers_tranches();
                 l10n_action('remplirSpan', 'chargement_bibliotheque_termine');
                 $('barre_pct_bibliotheque').remove();
@@ -435,6 +445,8 @@ function charger_recherche() {
         if (element_recherche_histoire) {
            if (conteneur_bibliotheque) {
                afficher_lien_partage();
+               afficher_proposition_photos_tranches();
+
                element_recherche_histoire.setStyle({
                    left: ($('contenu').cumulativeOffset().left
                        +parseInt(conteneur_bibliotheque.getStyle('width').substring(0,conteneur_bibliotheque.getStyle('width').length-2))-330) +'px',
@@ -463,19 +475,19 @@ function charger_recherche() {
     });
 }
 
-var zone_partager_bibliotheque;
+var zone_proposition_photos;
 
 function afficher_lien_partage() {
-	zone_partager_bibliotheque = $('partager_bibliotheque');
-	zone_partager_bibliotheque.removeClassName('cache');
+	zone_proposition_photos = $('partager_bibliotheque');
+	zone_proposition_photos.removeClassName('cache');
 	$('partager_bibliotheque_lien').observe('click', function() {
-		zone_partager_bibliotheque.addClassName('cache');
+		zone_proposition_photos.addClassName('cache');
 		new Ajax.Request('Edge.class.php', {
 			method: 'post',
 			parameters: 'partager_bibliotheque=true',
 			onSuccess: function (transport) {
-				zone_partager_bibliotheque.update(transport.responseText);
-				zone_partager_bibliotheque.removeClassName('cache');
+				zone_proposition_photos.update(transport.responseText);
+				zone_proposition_photos.removeClassName('cache');
 
 				var a = document.createElement('script');
 				a.type = 'text/javascript';
@@ -486,6 +498,22 @@ function afficher_lien_partage() {
 			}
 		});
 	});
+}
+
+function afficher_proposition_photos_tranches() {
+    var nb_tranches_affichees = 5;
+
+    var zone_proposition_photos = jQuery('#tranches_possibles');
+
+    jQuery('.tranche[data-edge="0"]')
+        .filter(function(index) {
+            return index < nb_tranches_affichees;
+        })
+        .each(function() {
+            zone_proposition_photos.ajouter_proposition_photo(jQuery('.progress-wrapper.template'), getInfosNumero(jQuery(this).attr('id')));
+        });
+
+    jQuery('#proposition_photo').removeClass('cache');
 }
 
 var derniere_action_recherche=null;
@@ -753,10 +781,10 @@ function ouvrirInfoBulleEffectif(tranche) {
     var numero_bulle=getInfosNumero(tranche.id);
 
     var titre_bulle = jQuery('.tooltip_edge_title.template').clone(true).removeClass('template');
-    titre_bulle.find('img.flag').attr({src: 'images/flags/'+numero_bulle['pays']+'.png'});
-    titre_bulle.find('.country').text(numero_bulle['pays']);
-    titre_bulle.find('.publication_name').text(numero_bulle['nom_magazine']);
-    titre_bulle.find('.issuenumber').text(numero_bulle['numero']);
+    titre_bulle.find('img.flag').attr({src: 'images/flags/'+numero_bulle.Pays+'.png'});
+    titre_bulle.find('.country').text(numero_bulle.Pays);
+    titre_bulle.find('.publication_name').text(numero_bulle.Nom_magazine);
+    titre_bulle.find('.issuenumber').text(numero_bulle.Numero);
 
     var contenu_bulle = jQuery('.tooltip_edge_content.template').clone(true).removeClass('template');
     contenu_bulle
@@ -766,37 +794,8 @@ function ouvrirInfoBulleEffectif(tranche) {
                 .toggle(!est_partage_bibliotheque);
 
     if (!est_partage_bibliotheque) {
-        var niveau_actuel=1;
-        var niveau_objectif=niveau_actuel+1;
-        var points_actuel=50;
-        var points_niveau_actuel=40;
-        var points_niveau_objectif=100;
-        var points_extra=20;
-        contenu_bulle
-            .find('.possede-medaille')
-                .toggle(niveau_actuel > 0)
-                .attr({src: "images/medailles/Photographe_" + niveau_actuel + "_fond.png"});
-
-        contenu_bulle
-            .find('.possede-medaille-non-max')
-                .toggle(niveau_objectif < 3)
-                .attr({src: "images/medailles/Photographe_" + niveau_objectif + "_fond.png"});
-
-        contenu_bulle
-            .find('.progress-extra-points')
-                .text(points_extra);
-
-        contenu_bulle
-            .find('.progress .progress-extra-points')
-                .text('+ ' + points_extra);
-
-        contenu_bulle
-            .find('.progress-current')
-                .css({width: (100*(points_actuel-points_niveau_actuel)/(points_niveau_objectif-points_niveau_actuel)) + '%'});
-
-        contenu_bulle
-            .find('.progress-extra')
-                .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'});
+        var progressWrapperTemplate = contenu_bulle.find('.progress-wrapper.template');
+        progressWrapperTemplate.ajouter_proposition_photo(progressWrapperTemplate, numero_bulle, true);
     }
 
     jQuery(tranche)
@@ -836,10 +835,10 @@ function getInfosNumero (texte) {
     var infos=[];
     var pays__magazine_numero=texte.split('/');
     var magazine_numero=pays__magazine_numero[1].split('.');
-    infos['pays']=pays__magazine_numero[0];
-    infos['magazine']=magazine_numero[0].toLowerCase();
-    infos['nom_magazine']=noms_magazines[infos['pays'] + '/' + infos['magazine'].toUpperCase()] || '';
-    infos['numero']=magazine_numero[1];
+    infos.Pays=pays__magazine_numero[0];
+    infos.Magazine=magazine_numero[0].toLowerCase();
+    infos.Nom_magazine=noms_magazines[infos.Pays + '/' + infos.Magazine.toUpperCase()] || '';
+    infos.Numero=magazine_numero[1];
     return infos;
 }
 
@@ -850,3 +849,61 @@ function getScreenCenterY() {
 function getScreenCenterX() {
     return document.body.clientWidth/2;
 }
+
+jQuery.fn.ajouter_proposition_photo = function(progressWrapperTemplate, data, after) {
+    element = jQuery(this);
+
+    var o_popularite = popularite_numeros.filter(function(numero) {
+        return numero.Pays === data.Pays
+            && numero.Magazine.toLowerCase() === data.Magazine
+            && numero.Numero === data.Numero
+    })[0];
+
+    var points_extra = o_popularite && o_popularite.Popularite;
+
+    if (points_extra) {
+        var progressWrapper = progressWrapperTemplate
+            .clone(true)
+            .removeClass('template');
+
+        if (after) {
+            element.after(progressWrapper);
+        }
+        else {
+            element.append(progressWrapper);
+        }
+
+        var niveau_actuel=1;
+        var niveau_objectif=niveau_actuel+1;
+        var points_actuel=50;
+        var points_niveau_actuel=40;
+        var points_niveau_objectif=100;
+        progressWrapper
+            .find('.possede-medaille')
+                .toggle(niveau_actuel > 0)
+                .attr({src: "images/medailles/Photographe_" + niveau_actuel + "_fond.png"});
+
+        progressWrapper
+            .find('.possede-medaille-non-max')
+                .toggle(niveau_objectif < 3)
+                .attr({src: "images/medailles/Photographe_" + niveau_objectif + "_fond.png"});
+
+        progressWrapper
+            .find('.progress-extra-points')
+                .text(points_extra);
+
+        progressWrapper
+            .find('.progress .progress-extra-points')
+                .text('+ ' + points_extra);
+
+        progressWrapper
+            .find('.progress-current')
+                .css({width: (100*(points_actuel-points_niveau_actuel)/(points_niveau_objectif-points_niveau_actuel)) + '%'});
+
+        progressWrapper
+            .find('.progress-extra')
+                .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'});
+    }
+
+    return this;
+};

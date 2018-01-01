@@ -1,9 +1,12 @@
 #bibliotheque  {
+    width:100%;
+    height:100%;
     z-index:50;
-    background: transparent repeat left top;
-    clear: both;
+    margin-top: 35px;
     padding-left:15px;
     padding-right:5px;
+    background: transparent repeat left top;
+    clear: both;
 }
 
 #recherche_histoire {
@@ -86,6 +89,25 @@
 
 .magazine_trouve, .histoire_trouvee {
     cursor:pointer;
+}
+
+#barre_pct_bibliotheque {
+    border: 1px solid white;
+    width: 200px;
+}
+
+#pct_bibliotheque {
+    width: 0;
+    background-color: red;
+}
+
+#partager_bibliotheque {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#tranches_possibles {
+    width: 250px;
 }
 
 .fleche_position {
@@ -208,5 +230,9 @@
 @media (max-width: 767px) {
     #conteneur_bibliotheque #recherche_histoire {
         left: 25px !important;
+    }
+
+    #tranches_possibles {
+        width: 100%;
     }
 }

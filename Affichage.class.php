@@ -396,11 +396,45 @@ class Affichage {
 	}
 
 	static function afficher_texte_numero_template() {
-		?><span class="nowrap">
-            <img class="flag" />&nbsp;
-        </span>
-        <span class="publication_name"></span> <span class="issuenumber"></span><?php
+		?><div class="template tooltip_edge_title">
+            <span class="nowrap">
+                <img class="flag" />&nbsp;
+            </span>
+            <span class="publication_name"></span> <span class="issuenumber"></span>
+        </div><?php
 	}
+
+	static function afficher_infobulle_tranche_template() {
+        ?><div class="template tooltip_edge_content">
+            <?=DECOUVRIR_COUVERTURE?>.
+            <div class="has-no-edge">
+                <?=TRANCHE_NON_DISPONIBLE1?><br />
+                <div class="is-not-bookcase-share">
+                    <?=TRANCHE_NON_DISPONIBLE2?><br />
+                    <div class="template progress-wrapper">
+                        <img class="possede-medaille medaille_objectif gauche" />
+                        <img class="possede-medaille-non-max medaille_objectif droite" />
+                        <div class="progress">
+                            <div class="progress-current progress-bar progress-bar-muted" role="progressbar"></div>
+                            <div class="progress-extra progress-bar progress-bar-success active progress-bar-striped" role="progressbar">
+                                <span class="progress-extra-points nowrap show_overflow"></span> points
+                            </div>
+
+                        </div>
+                    </div>
+                    <div>
+                        <?= TRANCHE_NON_DISPONIBLE3 ?>
+                        <span class="progress-extra-points"></span>
+                        <?= TITRE_MEDAILLE_PHOTOGRAPHE ?> <?=POINTS?> !
+                    </div>
+                    <br />
+                    <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
+                        <?= ENVOYER_PHOTO_DE_TRANCHE ?>
+                    </a>
+                </div>
+            </div>
+        </div><?php
+    }
 
 	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros) {
         ob_start();
