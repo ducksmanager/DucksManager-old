@@ -151,26 +151,26 @@ function creer_div_apercus() {
     var page_suivante=new Element('div',{'id':'page_suivante'})
                     .setStyle({'left':(getScreenCenterX()+$('page_droite_avant_im').width)+'px','top':getScreenCenterY()+'px'})
                     .addClassName('lien_apercus');
-    
+
     var page_precedente=new Element('div',{'id':'page_precedente'})
                     .setStyle({'right':(getScreenCenterX()+$('page_droite_avant_im').width)+'px','top':getScreenCenterY()+'px'})
                     .addClassName('lien_apercus');
-        
+
     var page_gauche_arriere=new Element('div', {'id':'page_gauche_arriere'})
                     .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
                                'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
                     .addClassName('page_arriere');
-                    
+
     var page_gauche_avant=new Element('div', {'id':'page_gauche_avant'})
                     .setStyle({'position':'absolute','display':'block','width':'0px','height':hauteur_image+'px',
                                'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
                     .addClassName('page_avant');
-                   
+
     var page_droite_arriere=new Element('div', {'id':'page_droite_arriere'})
                     .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
                                'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
                     .addClassName('page_arriere');
-                    
+
     $('body').insert(page_suivante)
              .insert(page_gauche_arriere).insert(page_gauche_avant)
              .insert(page_droite_arriere);
@@ -186,20 +186,20 @@ function creer_div_apercus() {
                 maj_page('page_gauche_arriere','page_invisible');
                 $('page_gauche_arriere')
                     .setStyle({'width':'0px'});
-                intervertir_page('gauche');                        
+                intervertir_page('gauche');
 
                 maj_page('page_droite_arriere',extraits[extrait_courant].url);
                 $('page_droite_arriere')
                     .setStyle({'display':'block'});
-                    
+
                 $('page_droite_arriere_im').observe('load',function () {
                     new Effect.BlindLeft('page_droite_avant',{
                     duration:0.75,
                     afterFinish:function() {
                         new Effect.Morph('page_gauche_avant',{style:'width:'+getLargeur()
                         });
-                        intervertir_page('droite');      
-                        $('page_gauche_avant').observe('click',back_to_cover);                  
+                        intervertir_page('droite');
+                        $('page_gauche_avant').observe('click',back_to_cover);
                         $('page_droite_avant_im').observe('click',back_to_cover);
                         extrait_courant++;
                         maj_div_apercus();
@@ -215,7 +215,7 @@ function creer_div_apercus() {
                 maj_page('page_droite_arriere','page_invisible');
                 $('page_droite_arriere')
                     .setStyle({'display':'block'});
-                    
+
                 $('page_gauche_avant_im').observe('load',function () {
                     new Effect.Parallel([
                         new Effect.BlindLeft($('page_droite_avant'), {sync:true})
@@ -261,7 +261,7 @@ function intervertir_page(direction) {
 function maj_page(id_page,maj) {
     if (maj=='page_invisible') {
         $(id_page).update()
-                  .addClassName('page_invisible');   
+                  .addClassName('page_invisible');
     }
     else {
         $(id_page).update(new Element('img',{'id':id_page+'_im','src':maj}))
@@ -282,7 +282,7 @@ function maj_div_apercus() {
 
 function back_to_cover() {
     $('page_gauche_arriere') && $('page_gauche_arriere').remove();
-    $('page_suivante').remove();            
+    $('page_suivante').remove();
 
     maj_page('page_droite_arriere',couverture.src);
     $('page_droite_arriere_im').setStyle({'width':'0px'});
@@ -395,7 +395,7 @@ function charger_bibliotheque() {
 
 function charger_tranche(tranche) {
     tranche.observe('load',charger_tranche_suivante);
-        
+
     tranche.observe('error',charger_tranche_suivante);
     var lettre_rand=String.fromCharCode(65+Math.floor(Math.random() * 25));
     var src=tranche.name.replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
@@ -403,7 +403,7 @@ function charger_tranche(tranche) {
         var src_similaires=element_conteneur_bibliotheque.select('[src*="'+src+'"]').pluck('src');
         if (src_similaires.length >0)
             tranche.src=src_similaires[0];
-        else    
+        else
             tranche.src='edges/'+src+'.png?'+lettre_rand;
     }
     else
@@ -502,18 +502,59 @@ function afficher_lien_partage() {
 
 function afficher_proposition_photos_tranches() {
     var nb_tranches_affichees = 5;
+    var carouselId = 'myCarouselSubmitEdgePhotos';
 
-    var zone_proposition_photos = jQuery('#tranches_possibles');
+    var carousel = jQuery('.carousel.small.slide')
+        .attr({ id: carouselId });
+
+    carousel
+        .find('.carousel-control')
+            .attr({ href: '#' + carouselId});
+    carousel
+        .find('.indicator')
+            .attr({'data-target': '#' + carouselId});
+
+    var niveau_actuel = 1;
+
+    carousel
+        .afficher_medailles(niveau_actuel)
+
+    var carouselIndicatorTemplate = carousel.find('ol.carousel-indicators>.indicator.template');
+    var carouselItemTemplate = carousel.find('.carousel-inner>.item.template');
 
     jQuery('.tranche[data-edge="0"]')
         .filter(function(index) {
             return index < nb_tranches_affichees;
         })
-        .each(function() {
-            zone_proposition_photos.ajouter_proposition_photo(jQuery('.progress-wrapper.template'), getInfosNumero(jQuery(this).attr('id')));
+        .each(function(i) {
+            var infosNumero = getInfosNumero(jQuery(this).attr('id'));
+
+            if (i === 0) {
+                jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero).Popularite);
+            }
+
+            carousel.find('ol.carousel-indicators').append(carouselIndicatorTemplate.clone(true).removeClass('template')
+                .attr({'data-slide-to': i})
+                .toggleClass('active', i === 0));
+
+            var newItem = carouselItemTemplate.clone(true).removeClass('template')
+                .toggleClass('active', i === 0);
+            newItem
+                .ajouterPropositionPhoto(jQuery('.progress-wrapper.template'), infosNumero)
+                .prepend(
+                    jQuery('.issue_title.template').clone(true).removeClass('template')
+                        .remplirTitreNumero(infosNumero)
+                );
+            carousel.find('.carousel-inner').append(newItem);
         });
 
+    carousel.find('.template').remove();
+    carousel.carousel({
+        interval: 3000
+    });
+
     jQuery('#proposition_photo').removeClass('cache');
+
 }
 
 var derniere_action_recherche=null;
@@ -738,7 +779,7 @@ function init_ordre_magazines() {
             $$('#liste_magazines .magazine_deplacable').each(function(div) {
                 var nouvelle_position=div.previousSiblings().length;
                 div.down('input').setValue(nouvelle_position);
-                
+
             });
         }
     });
@@ -780,11 +821,8 @@ function ouvrirInfoBulleEffectif(tranche) {
 
     var numero_bulle=getInfosNumero(tranche.id);
 
-    var titre_bulle = jQuery('.tooltip_edge_title.template').clone(true).removeClass('template');
-    titre_bulle.find('img.flag').attr({src: 'images/flags/'+numero_bulle.Pays+'.png'});
-    titre_bulle.find('.country').text(numero_bulle.Pays);
-    titre_bulle.find('.publication_name').text(numero_bulle.Nom_magazine);
-    titre_bulle.find('.issuenumber').text(numero_bulle.Numero);
+    var titre_bulle = jQuery('.issue_title.template').clone(true).removeClass('template');
+    titre_bulle.remplirTitreNumero(numero_bulle);
 
     var contenu_bulle = jQuery('.tooltip_edge_content.template').clone(true).removeClass('template');
     contenu_bulle
@@ -795,7 +833,7 @@ function ouvrirInfoBulleEffectif(tranche) {
 
     if (!est_partage_bibliotheque) {
         var progressWrapperTemplate = contenu_bulle.find('.progress-wrapper.template');
-        progressWrapperTemplate.ajouter_proposition_photo(progressWrapperTemplate, numero_bulle, true);
+        progressWrapperTemplate.ajouterPropositionPhoto(progressWrapperTemplate, numero_bulle, true);
     }
 
     jQuery(tranche)
@@ -850,15 +888,32 @@ function getScreenCenterX() {
     return document.body.clientWidth/2;
 }
 
-jQuery.fn.ajouter_proposition_photo = function(progressWrapperTemplate, data, after) {
-    element = jQuery(this);
-
-    var o_popularite = popularite_numeros.filter(function(numero) {
+function getPopulariteNumero(data) {
+    return popularite_numeros.filter(function(numero) {
         return numero.Pays === data.Pays
             && numero.Magazine.toLowerCase() === data.Magazine
             && numero.Numero === data.Numero
     })[0];
+}
 
+jQuery.fn.afficher_medailles = function(niveau_actuel) {
+    jQuery(this)
+        .find('.medaille_objectif.gauche')
+            .toggle(niveau_actuel > 0)
+            .attr({src: "images/medailles/Photographe_" + niveau_actuel + "_fond.png"});
+
+    var niveau_objectif = niveau_actuel + 1;
+    jQuery(this)
+        .find('.medaille_objectif.droite')
+            .toggle(niveau_objectif < 3)
+            .attr({src: "images/medailles/Photographe_" + niveau_objectif + "_fond.png"});
+    return this;
+};
+
+jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, after) {
+    var element = jQuery(this);
+
+    var o_popularite = getPopulariteNumero(data);
     var points_extra = o_popularite && o_popularite.Popularite;
 
     if (points_extra) {
@@ -874,19 +929,12 @@ jQuery.fn.ajouter_proposition_photo = function(progressWrapperTemplate, data, af
         }
 
         var niveau_actuel=1;
-        var niveau_objectif=niveau_actuel+1;
         var points_actuel=50;
         var points_niveau_actuel=40;
         var points_niveau_objectif=100;
-        progressWrapper
-            .find('.possede-medaille')
-                .toggle(niveau_actuel > 0)
-                .attr({src: "images/medailles/Photographe_" + niveau_actuel + "_fond.png"});
 
         progressWrapper
-            .find('.possede-medaille-non-max')
-                .toggle(niveau_objectif < 3)
-                .attr({src: "images/medailles/Photographe_" + niveau_objectif + "_fond.png"});
+            .afficher_medailles(niveau_actuel);
 
         progressWrapper
             .find('.progress-extra-points')
@@ -904,6 +952,24 @@ jQuery.fn.ajouter_proposition_photo = function(progressWrapperTemplate, data, af
             .find('.progress-extra')
                 .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'});
     }
+
+    return progressWrapper;
+};
+
+jQuery.fn.remplirTitreNumero = function(numero_bulle) {
+    var element = jQuery(this);
+    element
+        .find('img.flag')
+            .attr({src: 'images/flags/'+numero_bulle.Pays+'.png'});
+    element
+        .find('.country')
+            .text(numero_bulle.Pays);
+    element
+        .find('.publication_name')
+            .text(numero_bulle.Nom_magazine);
+    element
+        .find('.issuenumber')
+            .text(numero_bulle.Numero);
 
     return this;
 };

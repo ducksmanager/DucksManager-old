@@ -460,6 +460,37 @@ ul#choix_impression ul.caract li{
 	height: inherit;
 }
 
+.carousel.small {
+	width: 250px;
+	margin: 15px 0 0;
+}
+
+.carousel.small .carousel-inner {
+	padding-left: 25px;
+}
+
+.carousel.small .carousel-indicators {
+	top: 0;
+}
+
+.carousel.small .item .medaille_objectif {
+	visibility: hidden;
+}
+
+.carousel.small>.medaille_objectif {
+	position: absolute;
+	z-index: 10;
+	top: 35px;
+}
+
+.carousel.small>.medaille_objectif.gauche {
+	left: 25px;
+}
+
+.carousel.small>.medaille_objectif.droite {
+	right: -25px;
+}
+
 @media (min-width: 767px) {
 	body {
 		padding: 0 0 0 300px !important;
@@ -502,6 +533,14 @@ ul#choix_impression ul.caract li{
 	.carousel .item>img,
 	.carousel-caption.bottom {
 		width: 480px !important;
+	}
+
+	.carousel.small .carousel-control.right {
+		left: 300px !important;
+	}
+
+	.carousel.small .carousel-indicators {
+		width: inherit !important;
 	}
 }
 

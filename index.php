@@ -590,9 +590,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                             <?php if (!$est_partage_bibliotheque) { ?>
                                 <div id="proposition_photo" class="cache">
-                                    <span class="nouveau"><?=NOUVEAU?></span>
-                                    <?=INVITATION_ENVOI_PHOTOS_TRANCHES?>
-                                    <div id="tranches_possibles"></div>
+                                    <div id="tranches_possibles">
+                                        <?php Affichage::afficher_proposition_photo_tranche(); ?>
+                                    </div>
                                 </div>
                                 <div id="recherche_histoire">
                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>

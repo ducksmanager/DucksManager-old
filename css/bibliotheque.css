@@ -106,10 +106,6 @@
     margin-bottom: 20px;
 }
 
-#tranches_possibles {
-    width: 250px;
-}
-
 .fleche_position {
     z-index:100;
     position: absolute;
@@ -213,6 +209,11 @@
     margin-top: 15px;
 }
 
+.progress-wrapper .issue_title {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
 .progress-current {
     background-color: lightgreen !important;
 }
@@ -230,9 +231,5 @@
 @media (max-width: 767px) {
     #conteneur_bibliotheque #recherche_histoire {
         left: 25px !important;
-    }
-
-    #tranches_possibles {
-        width: 100%;
     }
 }

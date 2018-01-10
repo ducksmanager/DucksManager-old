@@ -396,7 +396,7 @@ class Affichage {
 	}
 
 	static function afficher_texte_numero_template() {
-		?><div class="template tooltip_edge_title">
+		?><div class="template issue_title">
             <span class="nowrap">
                 <img class="flag" />&nbsp;
             </span>
@@ -433,6 +433,32 @@ class Affichage {
                     </a>
                 </div>
             </div>
+        </div><?php
+    }
+
+    static function afficher_proposition_photo_tranche() {
+        ?><?=sprintf(INVITATION_ENVOI_PHOTOS_TRANCHES, '<span class="max-points-to-earn"></span>')?>
+        <div class="carousel small slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li class="indicator template"></li>
+            </ol>
+            <img class="possede-medaille medaille_objectif gauche" />
+            <div class="carousel-inner">
+                <div class="item template">
+                </div>
+            </div>
+            <img class="possede-medaille-non-max medaille_objectif droite" />
+
+            <!-- Left and right controls -->
+            <a class="left carousel-control" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+                <span class="sr-only">Next</span>
+            </a>
         </div><?php
     }
 
