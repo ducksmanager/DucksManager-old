@@ -6,8 +6,8 @@ include_once ('locales/lang.php');
 class Affichage {
 
     static $niveaux_medailles=[
-        'Photographe' => [1 => 20, 2 => 100, 3 => 1000],
-        'Concepteur'  => [1 => 20, 2 => 50,  3 => 500],
+        'Photographe' => [1 => 50, 2 => 150, 3 => 1000],
+        'Concepteur'  => [1 => 20, 2 => 70,  3 => 150],
         'Duckhunter'  => [1 => 1, 2 => 3,  3 =>  5]
     ];
 
@@ -459,7 +459,12 @@ class Affichage {
                 <span class="glyphicon glyphicon-chevron-right"></span>
                 <span class="sr-only">Next</span>
             </a>
-        </div><?php
+            <div class="wrapper_envoyer_tranches">
+                <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
+                    <?=ENVOYER_PHOTOS_DE_TRANCHE?></a>
+            </div>
+        </div>
+        <?php
     }
 
 	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros) {

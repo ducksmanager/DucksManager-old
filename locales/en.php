@@ -171,6 +171,7 @@ define('EN_MAINTENANCE','In maintenance');
 define('ENVOI_EMAIL_ECHEC','The email has failed to be sent. Please contact the webmaster.');
 define('ENVOYER','Send');
 define('ENVOYER_PHOTO_DE_TRANCHE','Send a photo of the edge');
+define('ENVOYER_PHOTOS_DE_TRANCHE','Send edge photos');
 define('ENVOYER_MESSAGE_A','Send a message to ');
 define('ERREUR_CAPTCHA','The code you have typed is invalid. Please try again.');
 define('ERREUR_CONNEXION_INDUCKS','Error while connecting to Inducks!');

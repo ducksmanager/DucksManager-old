@@ -473,6 +473,10 @@ ul#choix_impression ul.caract li{
 	top: 0;
 }
 
+.carousel.small .carousel-control .glyphicon {
+	top: 12.5% !important;
+}
+
 .carousel.small .item .medaille_objectif {
 	visibility: hidden;
 }
@@ -489,6 +493,11 @@ ul#choix_impression ul.caract li{
 
 .carousel.small>.medaille_objectif.droite {
 	right: -25px;
+}
+
+.carousel.small .wrapper_envoyer_tranches {
+	text-align: center;
+	margin-left: 25px;
 }
 
 @media (min-width: 767px) {
@@ -534,7 +543,6 @@ ul#choix_impression ul.caract li{
 	.carousel-caption.bottom {
 		width: 480px !important;
 	}
-
 	.carousel.small .carousel-control.right {
 		left: 300px !important;
 	}

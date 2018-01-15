@@ -725,33 +725,17 @@ class Database {
     public function get_points_courants($id_user){
         $requete_points_courants = "
             SELECT
-            contributions.type_contribution,
-            sum(contributions.Popularite) AS points
-            FROM (
-               SELECT
-                 tp.*,
-                 tpc.contributeur,
-                 tpc.contribution AS type_contribution,
-                 (
-                   SELECT COUNT(*) AS Popularite
-                   FROM numeros n
-                   INNER JOIN users u ON n.ID_Utilisateur = u.ID
-                   WHERE
-                     n.Pays = SUBSTRING_INDEX(tp.publicationcode, '/', 1) AND
-                     n.Magazine = SUBSTRING_INDEX(tp.publicationcode, '/', -1) AND
-                     n.Numero = tp.issuenumber AND
-                     u.username NOT LIKE 'test%' AND
-                     n.DateAjout < DATE_SUB(tp.dateajout, INTERVAL -1 MONTH)
-                   GROUP BY n.Pays, n.Magazine, n.Numero
-                 ) AS Popularite
-        
-               FROM tranches_pretes tp
-               INNER JOIN tranches_pretes_contributeurs tpc USING (publicationcode, issuenumber)
-             ) contributions
-            WHERE contributions.contributeur=$id_user
-            GROUP BY contributions.type_contribution";
+                TypeContribution,
+                NbPoints
+            FROM users_points
+            WHERE ID_Utilisateur=$id_user";
 
-        return DM_Core::$d->requete_select($requete_points_courants);
+        $resultats = DM_Core::$d->requete_select($requete_points_courants);
+        $points = ['photographe' => 0, 'createur' => 0];
+        foreach($resultats as $resultat) {
+            $points[$resultat['TypeContribution']] = $resultat['NbPoints'];
+        }
+        return $points;
     }
 
 }
@@ -882,7 +866,7 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
 				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
 	}
-	elseif (isset($_POST['liste_bouquineries'])) {
+	else if (isset($_POST['liste_bouquineries'])) {
 		$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
 							 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 							 .'WHERE Actif=1';
@@ -898,6 +882,16 @@ if (isset($_POST['database'])) {
 		$json=json_encode($resultat_bouquineries);
 		echo $json;
 	}
+    else if (isset($_POST['get_points'])) {
+		$id_user=$_SESSION['id_user'];
+	    $niveauxMedaillesPhotographe = Affichage::$niveaux_medailles['Photographe'];
+	    $pointsActuels = DM_Core::$d->get_points_courants($id_user);
+        header('Content-type: application/json');
+        echo json_encode([
+            'niveaux_medailles' => Affichage::$niveaux_medailles['Photographe'],
+            'points' => $pointsActuels['photographe']
+        ]);
+    }
 	else { // Vérification de l'utilisateur
 		if (DM_Core::$d->user_exists($_POST['user']))
 			echo UTILISATEUR_EXISTANT;
