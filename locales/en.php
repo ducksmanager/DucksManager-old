@@ -259,7 +259,7 @@ define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1','Currently, you 
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2','% of your collection in the DucksManager bookcase. You probably have got rare or recent magazines.');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3','Why not participate ? This way, you will have a more complete view of your collection in your DucksManager bookcase, and it will also benefit some other users of DucksManager having the same magazines !');
 define('INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4','Participating to the project is quite simple. Just fill the following form to propose your help to the webmaster of DucksManager.');
-define('INVITATION_ENVOI_PHOTOS_TRANCHES','Send us photos of magazine edges and earn up to %s Edge photographer points !');
+define('INVITATION_ENVOI_PHOTOS_TRANCHES','Send us photos of magazine edges and earn up to %s Edge photographer points per edge!');
 define('L10N_INTROUVABLE','Localisation not found for ');
 define('LE_WEBMASTER','The webmaster.');
 define('LEGENDE_NUMEROS','Issues legend');

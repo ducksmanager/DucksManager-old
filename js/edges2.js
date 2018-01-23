@@ -530,54 +530,57 @@ function afficher_proposition_photos_tranches() {
     var nb_tranches_affichees = 5;
     var carouselId = 'myCarouselSubmitEdgePhotos';
 
-    var carousel = jQuery('.carousel.small.slide')
-        .attr({ id: carouselId });
+    var tranches_non_pretes = jQuery('.tranche[data-edge="0"]');
 
-    carousel
-        .find('.carousel-control')
-            .attr({ href: '#' + carouselId});
-    carousel
-        .find('.indicator')
-            .attr({'data-target': '#' + carouselId});
+    if (tranches_non_pretes.length) {
+        var carousel = jQuery('.carousel.small.slide')
+            .attr({ id: carouselId });
 
-    carousel.afficher_medailles(niveau_actuel);
+        carousel
+            .find('.carousel-control')
+                .attr({ href: '#' + carouselId});
+        carousel
+            .find('.indicator')
+                .attr({'data-target': '#' + carouselId});
 
-    var carouselIndicatorTemplate = carousel.find('ol.carousel-indicators>.indicator.template');
-    var carouselItemTemplate = carousel.find('.carousel-inner>.item.template');
+        carousel.afficher_medailles(niveau_actuel);
 
-    jQuery('.tranche[data-edge="0"]')
-        .filter(function(index) {
-            return index < nb_tranches_affichees;
-        })
-        .each(function(i) {
-            var infosNumero = getInfosNumero(jQuery(this).attr('id'));
+        var carouselIndicatorTemplate = carousel.find('ol.carousel-indicators>.indicator.template');
+        var carouselItemTemplate = carousel.find('.carousel-inner>.item.template');
 
-            if (i === 0) {
-                jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero).Popularite);
-            }
+        tranches_non_pretes
+            .filter(function(index) {
+                return index < nb_tranches_affichees;
+            })
+            .each(function(i) {
+                var infosNumero = getInfosNumero(jQuery(this).attr('id'));
 
-            carousel.find('ol.carousel-indicators').append(carouselIndicatorTemplate.clone(true).removeClass('template')
-                .attr({'data-slide-to': i})
-                .toggleClass('active', i === 0));
+                if (i === 0) {
+                    jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero).Popularite);
+                }
 
-            var newItem = carouselItemTemplate.clone(true).removeClass('template')
-                .toggleClass('active', i === 0);
-            newItem
-                .ajouterPropositionPhoto(jQuery('.progress-wrapper.template'), infosNumero)
-                .prepend(
-                    jQuery('.issue_title.template').clone(true).removeClass('template')
-                        .remplirTitreNumero(infosNumero)
-                );
-            carousel.find('.carousel-inner').append(newItem);
+                carousel.find('ol.carousel-indicators').append(carouselIndicatorTemplate.clone(true).removeClass('template')
+                    .attr({'data-slide-to': i})
+                    .toggleClass('active', i === 0));
+
+                var newItem = carouselItemTemplate.clone(true).removeClass('template')
+                    .toggleClass('active', i === 0);
+                newItem
+                    .ajouterPropositionPhoto(jQuery('.progress-wrapper.template'), infosNumero)
+                    .prepend(
+                        jQuery('.issue_title.template').clone(true).removeClass('template')
+                            .remplirTitreNumero(infosNumero)
+                    );
+                carousel.find('.carousel-inner').append(newItem);
+            });
+
+        carousel.find('.template').remove();
+        carousel.carousel({
+            interval: 3000
         });
 
-    carousel.find('.template').remove();
-    carousel.carousel({
-        interval: 3000
-    });
-
-    jQuery('#proposition_photo').removeClass('cache');
-
+        jQuery('#proposition_photo').removeClass('cache');
+    }
 }
 
 var derniere_action_recherche=null;
