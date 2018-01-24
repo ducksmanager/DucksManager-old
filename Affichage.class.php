@@ -438,7 +438,7 @@ class Affichage {
 
     static function afficher_proposition_photo_tranche() {
         ?><?=sprintf(INVITATION_ENVOI_PHOTOS_TRANCHES, '<span class="max-points-to-earn"></span>')?>
-        <div class="carousel small slide" data-ride="carousel">
+        <div class="carousel small slide">
             <!-- Indicators -->
             <ol class="carousel-indicators">
                 <li class="indicator template"></li>
