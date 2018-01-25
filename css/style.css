@@ -68,7 +68,6 @@ a.important:HOVER {
 
 .show_overflow {
 	overflow-x: visible;
-	text-shadow: 1px 1px 2px black;
 }
 
 .medaille_profil {
@@ -100,6 +99,8 @@ img.medaille_objectif.droite {
 }
 
 .progress-bar-striped {
+	text-shadow: 1px 1px 2px lightgrey;
+	color: rgb(40,40,40) !important;
 	background-image: linear-gradient(135deg, #268026 25%, transparent 25%, transparent 50%, #268026 50%, #268026 75%, transparent 75%, transparent);
 }
 
@@ -423,6 +424,7 @@ ul#choix_impression ul.caract li{
 .carousel-control.right {
 	width: 5%;
 	border-bottom: 0;
+	height: 75px;
 }
 
 .carousel-control.left:hover,
@@ -474,7 +476,7 @@ ul#choix_impression ul.caract li{
 }
 
 .carousel.small .carousel-control .glyphicon {
-	top: 12.5% !important;
+    top: 37.5% !important;
 }
 
 .carousel.small .item .medaille_objectif {
@@ -597,6 +599,18 @@ ul#choix_impression ul.caract li{
 		padding-bottom: 100px;
 		height: inherit !important;
 	}
+
+    .carousel.small .item.active {
+        margin-right: 40px;
+    }
+
+    .carousel.small .carousel-control .glyphicon {
+         top: 50% !important;
+     }
+
+    .carousel.small > .medaille_objectif.droite {
+        right: 15px;
+    }
 
 	#bouquinerie_commentaires {
 		width: 100%;

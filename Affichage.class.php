@@ -416,8 +416,7 @@ class Affichage {
                         <img class="possede-medaille-non-max medaille_objectif droite" />
                         <div class="progress">
                             <div class="progress-current progress-bar progress-bar-muted" role="progressbar"></div>
-                            <div class="progress-extra progress-bar progress-bar-success active progress-bar-striped" role="progressbar">
-                                <span class="progress-extra-points nowrap show_overflow"></span> points
+                            <div class="progress-extra progress-bar progress-bar-success active nowrap show_overflow progress-bar-striped" role="progressbar">
                             </div>
 
                         </div>

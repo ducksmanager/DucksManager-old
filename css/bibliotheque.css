@@ -212,8 +212,6 @@
 .progress-wrapper .issue_title {
     text-align: center;
     margin-bottom: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
 }
 
 .progress-current {
@@ -227,6 +225,11 @@
 @media (min-width: 767px) {
     #recherche_histoire input {
         width: 300px;
+    }
+
+    .progress-wrapper .issue_title {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
 

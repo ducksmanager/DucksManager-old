@@ -229,7 +229,10 @@ class Edge {
         ";
 
         $resultats_points_tranches = DM_Core::$d->requete_select($requete_points_tranche);
-        return $resultats_points_tranches;
+        return array_map(function($tranche) {
+            $tranche['Popularite'] = intval($tranche['Popularite']);
+            return $tranche;
+        }, $resultats_points_tranches);
     }
 
 	static function getPourcentageVisible($id_user, $get_html=false) {

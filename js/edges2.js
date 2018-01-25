@@ -534,7 +534,7 @@ function afficher_proposition_photos_tranches() {
 
     if (tranches_non_pretes.length) {
         var carousel = jQuery('.carousel.small.slide')
-            .attr({ id: carouselId });
+            .attr({ id: carouselId,  dataRide: 'carousel' });
 
         carousel
             .find('.carousel-control')
@@ -548,7 +548,15 @@ function afficher_proposition_photos_tranches() {
         var carouselIndicatorTemplate = carousel.find('ol.carousel-indicators>.indicator.template');
         var carouselItemTemplate = carousel.find('.carousel-inner>.item.template');
 
-        tranches_non_pretes
+        tranches_non_pretes = tranches_non_pretes
+            .sort(function(tranche1, tranche2) {
+                var populariteNumero1 = getPopulariteNumero(getInfosNumero(jQuery(tranche1).attr('id')));
+                var populariteNumero2 = getPopulariteNumero(getInfosNumero(jQuery(tranche2).attr('id')));
+
+                return populariteNumero1 < populariteNumero2
+                    ? 1
+                    : (populariteNumero1 === populariteNumero2 ? 0 : -1);
+            })
             .filter(function(index) {
                 return index < nb_tranches_affichees;
             })
@@ -556,7 +564,7 @@ function afficher_proposition_photos_tranches() {
                 var infosNumero = getInfosNumero(jQuery(this).attr('id'));
 
                 if (i === 0) {
-                    jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero).Popularite);
+                    jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero));
                 }
 
                 carousel.find('ol.carousel-indicators').append(carouselIndicatorTemplate.clone(true).removeClass('template')
@@ -576,7 +584,7 @@ function afficher_proposition_photos_tranches() {
 
         carousel.find('.template').remove();
         carousel.carousel({
-            interval: 3000
+            interval: 300000
         });
 
         jQuery('#proposition_photo').removeClass('cache');
@@ -895,9 +903,9 @@ function hidePopoverIfStillOutOfFocusAfterTimeout(timeout) {
     }, timeout);
 }
 
-function getInfosNumero (texte) {
+function getInfosNumero (edgeId) {
     var infos=[];
-    var pays__magazine_numero=texte.split('/');
+    var pays__magazine_numero=edgeId.split('/');
     var magazine_numero=pays__magazine_numero[1].split('.');
     infos.Pays=pays__magazine_numero[0];
     infos.Magazine=magazine_numero[0].toLowerCase();
@@ -915,11 +923,15 @@ function getScreenCenterX() {
 }
 
 function getPopulariteNumero(data) {
-    return popularite_numeros.filter(function(numero) {
-        return numero.Pays === data.Pays
-            && numero.Magazine.toLowerCase() === data.Magazine
-            && numero.Numero === data.Numero
-    })[0];
+    return (
+        popularite_numeros.filter(function(numero) {
+            return numero.Pays === data.Pays
+                && numero.Magazine.toLowerCase() === data.Magazine
+                && numero.Numero === data.Numero
+        })[0]
+        || { Popularite: 0 }
+    )
+    .Popularite;
 }
 
 jQuery.fn.afficher_medailles = function(niveau_actuel) {
@@ -939,8 +951,7 @@ jQuery.fn.afficher_medailles = function(niveau_actuel) {
 jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, after) {
     var element = jQuery(this);
 
-    var o_popularite = getPopulariteNumero(data);
-    var points_extra = o_popularite && o_popularite.Popularite;
+    var points_extra = getPopulariteNumero(data);
 
     if (points_extra) {
         var progressWrapper = progressWrapperTemplate
@@ -974,7 +985,8 @@ jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, afte
 
         progressWrapper
             .find('.progress-extra')
-                .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'});
+                .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'})
+                .text(points_extra + ' points')
     }
 
     return progressWrapper;
