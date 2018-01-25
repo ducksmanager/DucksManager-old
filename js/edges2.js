@@ -548,39 +548,48 @@ function afficher_proposition_photos_tranches() {
         var carouselIndicatorTemplate = carousel.find('ol.carousel-indicators>.indicator.template');
         var carouselItemTemplate = carousel.find('.carousel-inner>.item.template');
 
-        tranches_non_pretes = tranches_non_pretes
-            .sort(function(tranche1, tranche2) {
-                var populariteNumero1 = getPopulariteNumero(getInfosNumero(jQuery(tranche1).attr('id')));
-                var populariteNumero2 = getPopulariteNumero(getInfosNumero(jQuery(tranche2).attr('id')));
+        var tranches_non_pretes_infos = jQuery.map(
+            tranches_non_pretes
+                .map(function() {
+                    return this.id;
+                }).get()
+            , function(id_tranche) {
+                return [ getInfosNumero(id_tranche) ];
+            });
+        tranches_non_pretes_infos = jQuery.grep(tranches_non_pretes_infos, function(infosTranche) {
+                return getPopulariteNumero(infosTranche) > 0;
+            })
+            .sort(function(infosTranche1, infosTranche2) {
+                var populariteNumero1 = getPopulariteNumero(infosTranche1);
+                var populariteNumero2 = getPopulariteNumero(infosTranche2);
 
                 return populariteNumero1 < populariteNumero2
                     ? 1
                     : (populariteNumero1 === populariteNumero2 ? 0 : -1);
-            })
-            .filter(function(index) {
-                return index < nb_tranches_affichees;
-            })
-            .each(function(i) {
-                var infosNumero = getInfosNumero(jQuery(this).attr('id'));
-
-                if (i === 0) {
-                    jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero));
-                }
-
-                carousel.find('ol.carousel-indicators').append(carouselIndicatorTemplate.clone(true).removeClass('template')
-                    .attr({'data-slide-to': i})
-                    .toggleClass('active', i === 0));
-
-                var newItem = carouselItemTemplate.clone(true).removeClass('template')
-                    .toggleClass('active', i === 0);
-                newItem
-                    .ajouterPropositionPhoto(jQuery('.progress-wrapper.template'), infosNumero)
-                    .prepend(
-                        jQuery('.issue_title.template').clone(true).removeClass('template')
-                            .remplirTitreNumero(infosNumero)
-                    );
-                carousel.find('.carousel-inner').append(newItem);
             });
+        tranches_non_pretes_infos = jQuery.grep(tranches_non_pretes_infos, function(infosNumero, index) {
+                return index < nb_tranches_affichees;
+            });
+
+        jQuery.each(tranches_non_pretes_infos, function(i, infosNumero) {
+            if (i === 0) {
+                jQuery('.max-points-to-earn').text(getPopulariteNumero(infosNumero));
+            }
+
+            carousel.find('ol.carousel-indicators').append(carouselIndicatorTemplate.clone(true).removeClass('template')
+                .attr({'data-slide-to': i})
+                .toggleClass('active', i === 0));
+
+            var newItem = carouselItemTemplate.clone(true).removeClass('template')
+                .toggleClass('active', i === 0);
+            newItem
+                .ajouterPropositionPhoto(jQuery('.progress-wrapper.template'), infosNumero)
+                .prepend(
+                    jQuery('.issue_title.template').clone(true).removeClass('template')
+                        .remplirTitreNumero(infosNumero)
+                );
+            carousel.find('.carousel-inner').append(newItem);
+        });
 
         carousel.find('.template').remove();
         carousel.carousel({
@@ -904,7 +913,7 @@ function hidePopoverIfStillOutOfFocusAfterTimeout(timeout) {
 }
 
 function getInfosNumero (edgeId) {
-    var infos=[];
+    var infos={};
     var pays__magazine_numero=edgeId.split('/');
     var magazine_numero=pays__magazine_numero[1].split('.');
     infos.Pays=pays__magazine_numero[0];
@@ -935,16 +944,19 @@ function getPopulariteNumero(data) {
 }
 
 jQuery.fn.afficher_medailles = function(niveau_actuel) {
-    jQuery(this)
-        .find('.medaille_objectif.gauche')
-            .toggle(niveau_actuel > 0)
-            .attr({src: "images/medailles/Photographe_" + niveau_actuel + "_fond.png"});
+    if (niveau_actuel > 0) {
+        jQuery(this)
+            .find('.medaille_objectif.gauche')
+                .attr({src: "images/medailles/Photographe_" + niveau_actuel + "_fond.png"});
+    }
 
     var niveau_objectif = niveau_actuel + 1;
-    jQuery(this)
-        .find('.medaille_objectif.droite')
-            .toggle(niveau_objectif < 3)
-            .attr({src: "images/medailles/Photographe_" + niveau_objectif + "_fond.png"});
+
+    if (niveau_objectif < 3) {
+        jQuery(this)
+            .find('.medaille_objectif.droite')
+                .attr({src: "images/medailles/Photographe_" + niveau_objectif + "_fond.png"});
+    }
     return this;
 };
 
@@ -952,42 +964,39 @@ jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, afte
     var element = jQuery(this);
 
     var points_extra = getPopulariteNumero(data);
+    var progressWrapper = progressWrapperTemplate
+        .clone(true)
+        .removeClass('template');
 
-    if (points_extra) {
-        var progressWrapper = progressWrapperTemplate
-            .clone(true)
-            .removeClass('template');
-
-        if (after) {
-            element.after(progressWrapper);
-        }
-        else {
-            element.append(progressWrapper);
-        }
-
-        var points_niveau_actuel=niveaux_medailles[niveau_actuel] || 0;
-        var points_niveau_objectif=niveaux_medailles[niveau_actuel+1];
-
-        progressWrapper
-            .afficher_medailles(niveau_actuel);
-
-        progressWrapper
-            .find('.progress-extra-points')
-                .text(points_extra);
-
-        progressWrapper
-            .find('.progress .progress-extra-points')
-                .text('+ ' + points_extra);
-
-        progressWrapper
-            .find('.progress-current')
-                .css({width: (100*(user_points-points_niveau_actuel)/(points_niveau_objectif-points_niveau_actuel)) + '%'});
-
-        progressWrapper
-            .find('.progress-extra')
-                .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'})
-                .text(points_extra + ' points')
+    if (after) {
+        element.after(progressWrapper);
     }
+    else {
+        element.append(progressWrapper);
+    }
+
+    var points_niveau_actuel=niveaux_medailles[niveau_actuel] || 0;
+    var points_niveau_objectif=niveaux_medailles[niveau_actuel+1];
+
+    progressWrapper
+        .afficher_medailles(niveau_actuel);
+
+    progressWrapper
+        .find('.progress-extra-points')
+            .text(points_extra);
+
+    progressWrapper
+        .find('.progress .progress-extra-points')
+            .text('+ ' + points_extra);
+
+    progressWrapper
+        .find('.progress-current')
+            .css({width: (100*(user_points-points_niveau_actuel)/(points_niveau_objectif-points_niveau_actuel)) + '%'});
+
+    progressWrapper
+        .find('.progress-extra')
+            .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'})
+            .text('+ ' + points_extra + ' points');
 
     return progressWrapper;
 };
