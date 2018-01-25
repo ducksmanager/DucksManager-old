@@ -491,11 +491,13 @@ function charger_points_utilisateur(callback) {
         onSuccess:function(transport) {
             user_points = transport.responseJSON.points;
             niveaux_medailles = transport.responseJSON.niveaux_medailles;
-            for (var i=0; i<niveaux_medailles.length; i++) {
-                if (user_points > niveaux_medailles[i]) {
+
+            jQuery.each(niveaux_medailles, function(i, niveau_medaille) {
+                if (user_points > niveau_medaille) {
                     niveau_actuel = i;
                 }
-            }
+            });
+
             callback();
         }
     });
@@ -995,7 +997,7 @@ jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, afte
 
     progressWrapper
         .find('.progress-extra')
-            .css({width: (100*points_extra/(points_niveau_objectif-points_niveau_actuel)) + '%'})
+        .css({width: (points_niveau_objectif ? (100*points_extra/(points_niveau_objectif-points_niveau_actuel)):0) + '%'})
             .text('+ ' + points_extra + ' points');
 
     return progressWrapper;
