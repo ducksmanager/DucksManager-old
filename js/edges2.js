@@ -494,7 +494,7 @@ function charger_points_utilisateur(callback) {
 
             jQuery.each(niveaux_medailles, function(i, niveau_medaille) {
                 if (user_points > niveau_medaille) {
-                    niveau_actuel = i;
+                    niveau_actuel = parseInt(i);
                 }
             });
 
