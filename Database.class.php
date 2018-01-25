@@ -733,7 +733,7 @@ class Database {
         $resultats = DM_Core::$d->requete_select($requete_points_courants);
         $points = ['photographe' => 0, 'createur' => 0];
         foreach($resultats as $resultat) {
-            $points[$resultat['TypeContribution']] = $resultat['NbPoints'];
+            $points[$resultat['TypeContribution']] = intval($resultat['NbPoints']);
         }
         return $points;
     }
