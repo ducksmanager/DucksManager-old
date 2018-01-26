@@ -538,7 +538,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     $onglets = [
                         BIBLIOTHEQUE_COURT => ['affichage', BIBLIOTHEQUE],
                         BIBLIOTHEQUE_OPTIONS_COURT => ['options', BIBLIOTHEQUE_OPTIONS],
-                        BIBLIOTHEQUE_PARTICIPER_COURT => ['participer', BIBLIOTHEQUE_PARTICIPER],
                         BIBLIOTHEQUE_CONTRIBUTEURS_COURT => ['contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS]];
                     if (!isset($_GET['onglet']))
                         $onglet = 'affichage';
@@ -701,82 +700,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         </form>
                         <?php
 
-                        break;
-
-                    case 'participer':
-                        require_once('Edge.class.php');
-                        echo INTRO_PARTICIPER_BIBLIOTHEQUE_1;
-                        ?><br/><br/><?php
-                        $pourcentage_visible = Edge::getPourcentageVisible($id_user);
-                        if ($pourcentage_visible == 100) {
-                            echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_IMPOSSIBLE;
-                        } else {
-                            require_once 'captcha/securimage/securimage.php';
-
-                            $image = new Securimage();
-                            $captcha_correcte = $image->check($_POST['captcha_code']) === true;
-                            if ($captcha_correcte) {
-                                ?><?= MERCI_CONTRIBUTION ?><br/><?= EMAIL_ENVOYE; ?><?php
-                                mail('admin@ducksmanager.net', 'Proposition d\'aide de ' . $_SESSION['user'] . ' pour la bibliothèque',
-                                    $_POST['texte_participation'], 'From: ' . $_SESSION['user'] . '<' . $_POST['email'] . '>');
-                            } else {
-                                ?>
-                                <div class="alert alert-warning">
-                                <?= ERREUR_CAPTCHA ?>
-                                </div><br/><?php
-                            }
-                            if (!isset($_POST['code']) || !$captcha_correcte) {
-                                echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_1
-                                    . '<span style="font-weight: bold">' . $pourcentage_visible . '</span>'
-                                    . INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_2;
-                                ?><br/><br/><?php
-                                echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_3;
-                                ?><br/><?php
-                                echo INTRO_PARTICIPER_BIBLIOTHEQUE_PARTICIPATION_DEMANDEE_4;
-                                ?>
-                                <br/><br/>
-                                <form action="?session_id=<?= session_id() ?>&amp;action=bibliotheque&amp;onglet=participer"
-                                      method="post">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <?= VOTRE_ADRESSE_EMAIL ?> :
-                                            </td>
-                                            <td>
-                                                <input type="text" name="email"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <?= SPECIFIER_NUMEROS_BIBLIOTHEQUE ?> :
-                                            </td>
-                                            <td>
-                                                <textarea cols="40" rows="10" name="texte_participation"></textarea>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <?= RECOPIER_CODE ?> :
-                                            </td>
-                                            <td>
-                                                <?php
-                                                require_once 'captcha/securimage/securimage.php';
-                                                echo Securimage::getCaptchaHtml(['input_text' => '']);
-                                                ?>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                <input type="submit" class="valider"
-                                                       value="<?= VALIDER ?>"/>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </form>
-                                <?php
-                            }
-                        }
                         break;
 
                     case 'contributeurs':
