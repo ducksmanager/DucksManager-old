@@ -984,12 +984,9 @@ jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, afte
         .afficher_medailles(niveau_actuel);
 
     progressWrapper
-        .find('.progress-extra-points')
-            .text(points_extra);
-
-    progressWrapper
-        .find('.progress .progress-extra-points')
-            .text('+ ' + points_extra);
+        .siblings('.progress-info')
+            .find('.progress-extra-points')
+                .text(points_extra);
 
     progressWrapper
         .find('.progress-current')

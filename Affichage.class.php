@@ -421,10 +421,9 @@ class Affichage {
 
                         </div>
                     </div>
-                    <div>
+                    <div class="progress-info">
                         <?= TRANCHE_NON_DISPONIBLE3 ?>
-                        <span class="progress-extra-points"></span>
-                        <?= TITRE_MEDAILLE_PHOTOGRAPHE ?> <?=POINTS?> !
+                        <span class="progress-extra-points"></span> <?=POINTS?> !
                     </div>
                     <br />
                     <a href="https://edgecreator.ducksmanager.net" target="_blank" class="btn btn-info">
