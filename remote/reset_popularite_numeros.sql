@@ -48,6 +48,7 @@ WHERE points IS NULL;
 TRUNCATE users_points;
 INSERT INTO users_points
 SELECT
+  null,
   contributions.contributeur,
   contributions.type_contribution,
   sum(contributions.Popularite) AS points
