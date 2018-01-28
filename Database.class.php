@@ -480,21 +480,21 @@ class Database {
 		$id_user=$this->user_to_id($_SESSION['user']);
 
 		$requete_nb_photographies ="
-            SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs 
-            WHERE contribution = 'photographe' AND contributeur = $id_user";
+            SELECT NbPoints AS cpt FROM users_points up
+            WHERE up.TypeContribution = 'photographe' AND up.ID_Utilisateur = $id_user";
 		$resultat_nb_photographies=DM_Core::$d->requete_select($requete_nb_photographies);
 
 		$requete_nb_creations =	"
-            SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs 
-            WHERE contribution = 'createur' AND contributeur = $id_user";
+            SELECT NbPoints AS cpt FROM users_points up
+            WHERE up.TypeContribution = 'createur' AND up.ID_Utilisateur = $id_user";
 		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
 
 		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
 
 		return Affichage::get_medailles([
-            'Photographe'=> $resultat_nb_photographies[0]['cpt'],
-            'Concepteur' => $resultat_nb_creations[0]['cpt'],
+            'Photographe'=> ($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
+            'Concepteur' => ($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
             'Duckhunter' => $resultat_nb_bouquineries[0]['cpt']
         ]);
 	}
