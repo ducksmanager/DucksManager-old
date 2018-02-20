@@ -72,7 +72,7 @@ function ouvrir_tranche() {
         get_cover: 'true',
         debug: debug,
         pays: infos.Pays,
-        magazine: infos['magazine'],
+        magazine: infos.Magazine,
         numero: infos.Numero
     })
         .done(function (data) {

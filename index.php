@@ -749,13 +749,16 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
 
             case 'gerer':
-            $l=DM_Core::$d->toList($id_user);
-            if (isset($_GET['supprimer_magazine'])) {
-                list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
-                $l_magazine=$l->sous_liste($pays,$magazine);
-                $l_magazine->remove_from_database ($id_user);
-            }
-            ?>
+                ?><div class="alert alert-info">
+                    <?=BUG_CORRIGE_COUVERTURES_MANQUANTES?>
+                </div><?php
+                $l=DM_Core::$d->toList($id_user);
+                if (isset($_GET['supprimer_magazine'])) {
+                    list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
+                    $l_magazine=$l->sous_liste($pays,$magazine);
+                    $l_magazine->remove_from_database ($id_user);
+                }
+                ?>
                 <h2><?=GESTION_COLLECTION?></h2><br />
 
                 <?php

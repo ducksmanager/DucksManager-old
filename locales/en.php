@@ -70,6 +70,7 @@ define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Save a picture of this library');
 define('BIENVENUE','Welcome on DucksManager !');
 define('BOITE_SELECTIONNEE','Selected box');
 define('BON','Good');
+define('BUG_CORRIGE_COUVERTURES_MANQUANTES','The bug that made comic book covers not appear in the bookcase is now fixed..');
 define('CACHER_VIDEO','Hide the video');
 define('CACHER_AIDE','Hide help panel');
 define('CALCUL','Calculation');
