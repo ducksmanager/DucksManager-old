@@ -697,21 +697,24 @@ class Database {
 	    $requete_details_collections = "
             SELECT 
                 users.ID AS ID_Utilisateur, users.username AS Username, 
-                COUNT(DISTINCT numeros.Pays) AS NbPays, COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines, COUNT(numeros.Numero) AS NbNumeros,
-                (
-                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs
-                 WHERE contributeur = users.ID AND contribution='photographe'
-                ) AS NbPhotographies,
-                (
-                 SELECT COUNT(issuenumber) AS cpt FROM tranches_pretes_contributeurs
-                 WHERE contributeur = users.ID AND contribution='createur'
-                ) AS NbCreations,
+                COUNT(DISTINCT numeros.Pays) AS NbPays,
+                COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines,
+                COUNT(numeros.Numero) AS NbNumeros,
+                (SELECT IFNULL((
+                 SELECT NbPoints FROM users_points users_points_photographe
+                 WHERE users_points_photographe.ID_Utilisateur = users.ID
+                   AND users_points_photographe.TypeContribution = 'photographe'
+                ), 0)) AS NbPointsPhotographe,
+                (SELECT IFNULL((
+                 SELECT NbPoints FROM users_points users_points_createur
+                 WHERE users_points_createur.ID_Utilisateur = users.ID
+                   AND users_points_createur.TypeContribution = 'createur'
+                ), 0)) AS NbPointsCreateur,
                 (
                  SELECT COUNT(bouquineries.Nom) FROM bouquineries
                  WHERE bouquineries.ID_Utilisateur=users.ID AND bouquineries.Actif=1
                 ) AS NbBouquineries
-            FROM users
-            
+            FROM users            
             LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
             WHERE users.ID IN ($concat_utilisateurs)
             GROUP BY users.ID";
