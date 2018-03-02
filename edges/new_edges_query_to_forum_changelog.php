@@ -9,7 +9,7 @@ $requete_tranches_pretes_pour_publication = '
   WHERE PretePourPublication=1';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
 
-$url_gen_edgecreator = 'https://edges.ducksmanager.net';
+$url_gen_edgecreator = 'https://edges.ducksmanager.net/edges';
 
 $numeros= [];
 
