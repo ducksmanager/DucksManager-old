@@ -71,7 +71,6 @@ define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Sauvegarder l\'image de cette biblioth&
 define('BIENVENUE','Bienvenue sur DucksManager !');
 define('BOITE_SELECTIONNEE','Boite s&eacute;lectionn&eacute;e');
 define('BON','Bon');
-define('BUG_CORRIGE_COUVERTURES_MANQUANTES','Le probl&egrave;me emp&ecirc;chant les couvertures de magazines de s\'afficher dans la bibliothèque est maintenant corrig&eacute;.');
 define('CACHER_VIDEO','Ne pas afficher la vid&eacute;o');
 define('CACHER_AIDE','Cacher l\'aide');
 define('CALCUL','Calcul');

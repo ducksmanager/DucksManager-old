@@ -749,9 +749,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
 
             case 'gerer':
-                ?><div class="alert alert-info">
-                    <?=BUG_CORRIGE_COUVERTURES_MANQUANTES?>
-                </div><?php
                 $l=DM_Core::$d->toList($id_user);
                 if (isset($_GET['supprimer_magazine'])) {
                     list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
