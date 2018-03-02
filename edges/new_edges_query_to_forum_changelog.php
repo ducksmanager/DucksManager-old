@@ -6,7 +6,8 @@ include_once('../authentification.php');
 $requete_tranches_pretes_pour_publication = '
   SELECT ID, Pays, Magazine, Numero
   FROM tranches_en_cours_modeles modeles
-  WHERE PretePourPublication=1';
+  WHERE PretePourPublication=1
+  ORDER BY Pays, Magazine, Numero';
 $tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
 
 $url_gen_edgecreator = 'https://edges.ducksmanager.net/edges';
