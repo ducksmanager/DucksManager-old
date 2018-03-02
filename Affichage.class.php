@@ -482,7 +482,7 @@ class Affichage {
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
             <div>
-                <?php Affichage::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPhotographies'], $infos_utilisateur['NbCreations'], $infos_utilisateur['NbBouquineries']) ?>
+                <?php Affichage::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPointsPhotographe'], $infos_utilisateur['NbPointsCreateur'], $infos_utilisateur['NbBouquineries']) ?>
             </div>
         </div><?php
     }
