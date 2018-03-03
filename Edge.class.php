@@ -256,7 +256,7 @@ class Edge {
         }
 
         global $numeros_inducks;
-        $numeros_inducks = Inducks::get_numeros_liste_publications($publication_codes);
+        $numeros_inducks = Inducks::get_liste_numeros_from_publicationcodes($publication_codes);
         getDimensionsParDefaut($publication_codes);
 
         foreach($resultat_ordre_magazines as $ordre) {

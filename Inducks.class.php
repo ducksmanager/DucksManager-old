@@ -91,14 +91,14 @@ class Inducks {
 		}
 	}
 
-	static function get_numeros_liste_publications($publication_codes) {
+	static function get_liste_numeros_from_publicationcodes($publication_codes) {
 		$publication_codes = array_map(function($publication_code) {
 			return "'".$publication_code."'";
 		}, $publication_codes);
 
 		$numeros = [];
 
-		$max_publication_codes_request = 20;
+		$max_publication_codes_request = 50;
 		for ($offset = 0; $offset < count($publication_codes); $offset += $max_publication_codes_request) {
 			$current_chunk_size = min(count($publication_codes) - $offset, $max_publication_codes_request);
 			$publication_codes_chunk = array_slice($publication_codes, $offset, $current_chunk_size);

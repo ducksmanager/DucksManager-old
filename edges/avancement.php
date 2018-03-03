@@ -2,25 +2,70 @@
 <html>
     <head>
         <style type="text/css">
+            .publication {
+                margin-top: 20px;
+            }
             .num {
                 width:4px;
+                cursor: default;
+            }
+
+            .num, #num_courant {
                 background-color: red;
             }
             
+            .dispo {
+           		background-color: green !important;
+            }
+
             .num.dispo {
-           		background-color: green;
+                cursor: pointer;
             }
             
             .bordered {
                 border-right:1px solid black;
             }
+
+            #num_courant {
+                position: fixed;
+                top: 0;
+                left: 90%;
+                width: 10%;
+                border: 1px solid black;
+                text-align: center;
+            }
+
+            #num_courant.init {
+                background-color: white !important;
+            }
         </style>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript">
+            $(function() {
+                $('.num.bordered')
+                    .mouseover(function() {
+                        var publication = $(this).closest('.publication');
+                        var publicationName = publication.find('.publication_name').html();
+                        var issueNumber = $(this).attr('title');
+
+                        $('#num_courant')
+                            .removeClass('init')
+                            .toggleClass('dispo', $(this).hasClass('dispo'))
+                            .html(publicationName + ' ' + issueNumber);
+                    })
+                    .filter('.dispo').click(function() {
+                        var publication = $(this).closest('.publication');
+                        var issueNumber = $(this).attr('title');
+
+                        window.open('https://edges.ducksmanager.net/edges/' + publication.data('country') + '/gen/' + publication.data('magazine') + '.' + issueNumber + '.png', '_blank');
+                    });
+            })
+        </script>
     </head>
     <body>
-    	<div id="num_courant" style="top:0; left:90%;position:fixed;width:10%;border:1px solid black;text-align:center;background-color:white">
-    		Aucun num&eacute;ro.
+    	<div id="num_courant" class="init">
+    		Aucun num&eacute;ro
     	</div>
-       	<div style="width:90%">
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . '..');
 include_once('../IntervalleValidite.class.php');
@@ -72,11 +117,9 @@ if (isset($_GET['wanted'])) {
 				break;
 		}
     }
-	$publicationcodes= [];
-    foreach($numeros_demandes as $numero_demande) {
-		$publicationcodes[]=$numero_demande['publicationcode'];
-	}
-	$publicationcodes=array_unique($publicationcodes);
+    $publicationcodes = array_unique(array_map(function($publicationcode) {
+        return $publicationcode['publicationcode'];
+    }, $numeros_demandes));
 	$liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 
 	foreach($numeros_demandes as $numero_demande) {
@@ -89,11 +132,13 @@ if (isset($_GET['wanted'])) {
 		if (is_null($nom_magazine_complet)) {
 			$nom_magazine_complet = $publicationcode;
 		}
-		?><br /><u><?=$cpt?> utilisateurs <?=isset($_GET['user']) ? "<b><i>dont {$_GET['user']}</i></b>" : ""?> poss&egrave;dent le num&eacute;ro :</u><br />
-		&nbsp;
-        <img src="../images/flags/<?=$pays?>.png" />
-        <?=$nom_magazine_complet?> n&deg;<?=$numero?>
-		<br /><?php
+		?><div>
+            <div>
+                <u><?=$cpt?> utilisateurs <?=isset($_GET['user']) ? "<b><i>dont {$_GET['user']}</i></b>" : ""?> poss&egrave;dent le num&eacute;ro :</u>
+            </div>		&nbsp;
+            <img src="../images/flags/<?=$pays?>.png" />
+            <?=$nom_magazine_complet?> n&deg;<?=$numero?>
+        </div><?php
 	}
 }
 else {
@@ -102,41 +147,55 @@ else {
 ?><hr /><?php
 
 $requete_pays_magazines_tranches_pretes='SELECT DISTINCT publicationcode FROM tranches_pretes ORDER BY publicationcode';
-
 $resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete_select($requete_pays_magazines_tranches_pretes);
 
-$cpt_dispos=0;
-$publicationcodes= [];
-foreach($resultat_pays_magazines_tranches_pretes as $publicationcode) {
-	$publicationcodes[]=$publicationcode['publicationcode'];
-}
+$publicationcodes = array_map(function($publicationcode) {
+	return $publicationcode['publicationcode'];
+}, $resultat_pays_magazines_tranches_pretes);
+$publicationcodes_str = implode(', ', array_map(function($publicationcode) {
+    return "'".$publicationcode."'";
+}, $publicationcodes));
+
 $liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
-$numeros_inducks=Inducks::get_numeros_liste_publications($publicationcodes);
-foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
-	$publicationcode=$infos_numero['publicationcode'];
+$numeros_inducks=Inducks::get_liste_numeros_from_publicationcodes($publicationcodes);
+$requete_tranches_pretes = "
+  SELECT publicationcode, GROUP_CONCAT(issuenumber) AS issuenumbers
+  FROM tranches_pretes
+  WHERE publicationcode IN ($publicationcodes_str)
+  GROUP BY publicationcode";
+
+$resultat_tranches_pretes = DM_Core::$d->requete_select($requete_tranches_pretes);
+$tranches_pretes = [];
+array_walk($resultat_tranches_pretes, function($publication_and_issuenumbers) use (&$tranches_pretes) {
+    $tranches_pretes[$publication_and_issuenumbers['publicationcode']] = explode(',', $publication_and_issuenumbers['issuenumbers']);
+});
+
+$cpt_dispos=0;
+foreach($publicationcodes as $publicationcode) {
 	list($pays,$magazine)=explode('/',$publicationcode);
-	echo '<br /><br />(<img src="../images/flags/'.$pays.'.png" /> '.$magazine.') '.$liste_magazines[$publicationcode].'<br />';
-	$requete_tranches_pretes_magazine='SELECT issuenumber FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\'';
-	$resultat_tranches_pretes_magazine=DM_Core::$d->requete_select($requete_tranches_pretes_magazine);
-	$tranches_pretes= [];
-	foreach($resultat_tranches_pretes_magazine as $tranche_prete_magazine) {
-		$tranches_pretes[]=$tranche_prete_magazine['issuenumber'];
-	}
-	if (array_key_exists($publicationcode, $numeros_inducks)) {
-		foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
-			$tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes);
-			?><span onmouseover="document.getElementById('num_courant').innerHTML='<?=$liste_magazines[$publicationcode].' '.$numero_inducks?>';"
-			class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>">&nbsp;</span><?php
-			if ($tranche_prete_numero_inducks)
-				$cpt_dispos++;
-		}
-	} else {
-		?>Certaines tranches de cette publication sont prêtes mais la publication n'existe plus sur Inducks : <?=implode(', ', $tranches_pretes)?><?php
-	}
-}
+    ?><div class="publication" data-country="<?=$pays?>" data-magazine="<?=$magazine?>">
+        <span class="publication_name">
+            (<img src="../images/flags/<?=$pays?>.png" /> <?=$magazine?>)
+            <?=$liste_magazines[$publicationcode]?>
+        </span>
+        <div><?php
+
+            if (array_key_exists($publicationcode, $numeros_inducks)) {
+                foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
+                    $tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes[$publicationcode]);
+                    ?><span class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>" title="<?=$numero_inducks?>">&nbsp;</span><?php
+                    if ($tranche_prete_numero_inducks)
+                        $cpt_dispos++;
+                }
+            } else {
+                ?>Certaines tranches de cette publication sont prêtes mais la publication n'existe plus sur Inducks : <?=implode(', ', $tranches_pretes)?>
+            <?php }
+        ?></div>
+    </div>
+<?php } ?>
 
 
-	?><br  /><br />
+	<br  /><br />
 	<b><?=$cpt_dispos?> tranches pr&ecirc;tes.</b><br />
         <br /><br />
         <u>L&eacute;gende : </u><br />
@@ -144,6 +203,5 @@ foreach($resultat_pays_magazines_tranches_pretes as $infos_numero) {
 
         <span class="num dispo">&nbsp;</span> Cette tranche est pr&ecirc;te.<br />
 
-        </div>
     </body>
 </html>
