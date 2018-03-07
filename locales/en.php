@@ -142,12 +142,12 @@ define('DESCRIPTION_INVALIDE','Your description must be less than 30 characters 
 define('DESCRIPTION_QUESTION','Type a short description corresponding to this purchase');
 define('DETAILS_MAINTENANCE_1','The website will be available again ');
 define('DETAILS_MAINTENANCE_2',' if everything works fine !');
-define('DETAILS_MEDAILLE_CONCEPTEUR_1','You have created');
-define('DETAILS_MEDAILLE_CONCEPTEUR_2','edges for Ducksmanager\'s bookcase');
+define('DETAILS_MEDAILLE_CONCEPTEUR_1','You have');
+define('DETAILS_MEDAILLE_CONCEPTEUR_2','Edge designer points');
 define('DETAILS_MEDAILLE_DUCKHUNTER_1','You have pinned');
 define('DETAILS_MEDAILLE_DUCKHUNTER_2','second-hand bookshops');
-define('DETAILS_MEDAILLE_PHOTOGRAPHE_1','You have photographed');
-define('DETAILS_MEDAILLE_PHOTOGRAPHE_2','edges for Ducksmanager\'s bookcase');
+define('DETAILS_MEDAILLE_PHOTOGRAPHE_1','You have');
+define('DETAILS_MEDAILLE_PHOTOGRAPHE_2','Edge photographer points');
 define('DMSPIRAL_DESCRIPTION','Spiral list, particularly useful for magazines with only a few hundreds of issues.');
 define('DMSPIRAL_MOINS_1','Takes a lot of space for frequently published magazines');
 define('DMSPIRAL_MOINS_2','Sometimes arduous to find an issue or to add one');
