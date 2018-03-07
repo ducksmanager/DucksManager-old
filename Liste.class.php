@@ -186,7 +186,7 @@ class Liste {
 			case 'possessions':
 				$types = ['abs' => AFFICHER_VALEURS_REELLES, 'cpt'=> AFFICHER_POURCENTAGES]; ?>
 
-				<span id="chargement_classement_termine"><?=CHARGEMENT?>...</span><br />
+				<span id="chargement_classement_termine"><?=CHARGEMENT?></span><br />
 				<div id="barre_pct_classement">
 					<div id="pct_classement">&nbsp;</div>
 				</div>
@@ -226,7 +226,7 @@ class Liste {
 			case 'achats':
 				$types = ['nouv' => AFFICHER_NOUVELLES_ACQUISITIONS, 'tot'=> AFFICHER_POSSESSIONS_TOTALES]; ?>
 
-				<div id="message_achats"><?=CHARGEMENT?>...</div>
+				<div id="message_achats"><?=CHARGEMENT?></div>
 				
 				<div id="fin_achats" class="hidden"></div>
 				
@@ -256,7 +256,7 @@ class Liste {
 							<?=CALCULS_PAS_ENCORE_FAITS?>
 						</div>
 						<div id="chargement_stats_auteur">
-							<?=CHARGEMENT?>...
+							<?=CHARGEMENT?>
 						</div>
 
 						<div id="canvas-holder" class="hidden">

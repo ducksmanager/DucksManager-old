@@ -342,7 +342,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
         <div id="recemment">
             <h4><?= NEWS_TITRE ?></h4>
-            <div id="evenements"><?= CHARGEMENT ?>...</div>
+            <div id="evenements"><?= CHARGEMENT ?></div>
         </div>
 
         <div class="menu-list">
@@ -631,7 +631,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         <form method="post" action="?action=bibliotheque&amp;onglet=options">
                             <span style="text-decoration:underline"><?= TEXTURE ?> : </span><br/>
                             <select style="width:300px;" id="texture1" name="texture1">
-                                <option id="chargement_sous_texture"><?= CHARGEMENT ?>...</option>
+                                <option id="chargement_sous_texture"><?= CHARGEMENT ?></option>
                             </select>
                             <br/><br/>
                             <span style="text-decoration:underline"><?= SOUS_TEXTURE ?> : </span><br/>
@@ -642,7 +642,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <span style="text-decoration:underline"><?= TEXTURE_ETAGERE ?>
                                 : </span><br/>
                             <select style="width:300px;" id="texture2" name="texture2">
-                                <option id="chargement_sous_texture"><?= CHARGEMENT ?>...</option>
+                                <option id="chargement_sous_texture"><?= CHARGEMENT ?></option>
                             </select>
                             <br/><br/>
                             <span style="text-decoration:underline"><?= SOUS_TEXTURE_ETAGERE ?>
@@ -1012,7 +1012,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                 <table width="100%">
                     <tr><td>
-                            <span id="liste_numeros" class="possedes manquants"><?=CHARGEMENT.'...'?></span>
+                            <span id="liste_numeros" class="possedes manquants"><?=CHARGEMENT?></span>
                         </td><td>
                         </td></tr></table>
             <?php
@@ -1110,7 +1110,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                                     ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
                                     <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
-                                        <option id="chargement_pays"><?=CHARGEMENT?>...
+                                        <option id="chargement_pays"><?=CHARGEMENT?>
                                     </select>
                                     <div id="suggestions"><?php
                                     include_once 'Stats.class.php';
