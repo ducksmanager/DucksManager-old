@@ -493,9 +493,9 @@ class Database {
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
 
 		return Affichage::get_medailles([
-            'Photographe'=> ($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
-            'Concepteur' => ($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
-            'Duckhunter' => $resultat_nb_bouquineries[0]['cpt']
+            'Photographe'=> intval(($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt']),
+            'Concepteur' => intval(($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt']),
+            'Duckhunter' => intval($resultat_nb_bouquineries[0]['cpt'])
         ]);
 	}
 	

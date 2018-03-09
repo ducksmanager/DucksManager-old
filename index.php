@@ -320,12 +320,37 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             <?php
             if (isset($_SESSION['user']) && $action !== 'logout') {
                 ?><div id="medailles"><?php
+                $radius = 42;
+                $circonference = pi() * $radius * 2;
+
                 $niveaux=DM_Core::$d->get_niveaux();
                 foreach($niveaux as $type=>$cpt_et_niveau) {
                     if (!is_null($cpt_et_niveau)) {
                         $cpt=$cpt_et_niveau['Cpt'];
                         $niveau=$cpt_et_niveau['Niveau'];
-                        ?><img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" title="<?php
+                        if ($niveau === 3) {
+                            $progres_niveau = 0;
+                        }
+                        else {
+                            $min_cpt_niveau = $niveau === 0 ? 0 : Affichage::$niveaux_medailles[$type][$niveau-1];
+                            $min_cpt_niveau_suivant = Affichage::$niveaux_medailles[$type][$niveau];
+                            $progres_niveau = ($cpt - $min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
+                            switch($niveau) {
+                                case 1: $couleur ='bronze'; break;
+                                case 2: $couleur ='argent'; break;
+                                default: $couleur = ''; break;
+                            }
+                            $pct = ((100-$progres_niveau)/100)*$circonference;
+                            ?>
+                            <div class="overlay">
+                                <svg width="100" height="100" viewport="0 0 0 0 " version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                    <circle r="<?=$radius?>" cx="50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" stroke-dashoffset="0"></circle>
+                                    <circle transform="rotate(270,0,0)" class="bar <?=$couleur?>" r="<?=$radius?>" cx="-50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" stroke-dashoffset="<?=$pct?>px"></circle>
+                                </svg>
+                            </div><?php
+                        }?>
+
+                        <img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" title="<?php
                         echo constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
                             .' '.$cpt.' '
                             .constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');

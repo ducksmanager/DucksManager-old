@@ -104,6 +104,31 @@
     margin-left: 5px;
 }
 
+#medailles_et_login #medailles .overlay {
+    position: absolute;
+    display: inline-block;
+    margin-left: 1px;
+    margin-top: 2px;
+}
+
+#medailles_et_login #medailles .overlay svg circle {
+    stroke-dashoffset: 0;
+    stroke: #2e353d;
+    stroke-width: 5px;
+}
+
+#medailles_et_login #medailles .overlay svg circle.bar {
+    stroke: gold;
+}
+
+#medailles_et_login #medailles .overlay svg circle.bar.bronze {
+    stroke: #B87333;
+}
+
+#medailles_et_login #medailles .overlay svg circle.bar.argent {
+    stroke: silver;
+}
+
 #medailles_et_login #login {
     line-height: 26px;
 }
