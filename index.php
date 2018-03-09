@@ -336,25 +336,26 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             $min_cpt_niveau_suivant = Affichage::$niveaux_medailles[$type][$niveau];
                             $progres_niveau = ($cpt - $min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
                             switch($niveau) {
-                                case 1: $couleur ='bronze'; break;
-                                case 2: $couleur ='argent'; break;
+                                case 1: $couleur ='argent'; break;
+                                case 2: $couleur ='or'; break;
                                 default: $couleur = ''; break;
                             }
                             $pct = ((100-$progres_niveau)/100)*$circonference;
+                            $title = constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
+                                .' '.$cpt.' '
+                                .constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');
+
                             ?>
                             <div class="overlay">
+                                <div class="title" title="<?=$title?>"></div>
                                 <svg width="100" height="100" viewport="0 0 0 0 " version="1.1" xmlns="http://www.w3.org/2000/svg">
                                     <circle r="<?=$radius?>" cx="50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" stroke-dashoffset="0"></circle>
-                                    <circle transform="rotate(270,0,0)" class="bar <?=$couleur?>" r="<?=$radius?>" cx="-50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" stroke-dashoffset="<?=$pct?>px"></circle>
+                                    <circle transform="rotate(270,0,0)" class="bar <?=$couleur?>" r="<?=$radius?>" cx="-50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" style="stroke-dashoffset: <?=$pct?>px"></circle>
                                 </svg>
                             </div><?php
                         }?>
 
-                        <img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" title="<?php
-                        echo constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
-                            .' '.$cpt.' '
-                            .constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');
-                        ?>"/><?php
+                        <img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" /><?php
                     }
                 }
                 ?></div><?php

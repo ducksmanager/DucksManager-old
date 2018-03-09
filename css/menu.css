@@ -111,18 +111,20 @@
     margin-top: 2px;
 }
 
+#medailles_et_login #medailles .overlay .title {
+    position: absolute;
+    width: 100px;
+    height: 120px;
+}
+
 #medailles_et_login #medailles .overlay svg circle {
     stroke-dashoffset: 0;
     stroke: #2e353d;
     stroke-width: 5px;
 }
 
-#medailles_et_login #medailles .overlay svg circle.bar {
-    stroke: gold;
-}
-
-#medailles_et_login #medailles .overlay svg circle.bar.bronze {
-    stroke: #B87333;
+#medailles_et_login #medailles .overlay svg circle.bar.or {
+    stroke: #e6ac00;
 }
 
 #medailles_et_login #medailles .overlay svg circle.bar.argent {
