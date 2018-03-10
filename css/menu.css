@@ -123,12 +123,16 @@
     stroke-width: 5px;
 }
 
-#medailles_et_login #medailles .overlay svg circle.bar.or {
-    stroke: #e6ac00;
+#medailles_et_login #medailles .overlay svg circle.bar.bronze {
+    stroke: #B87333;
 }
 
 #medailles_et_login #medailles .overlay svg circle.bar.argent {
     stroke: silver;
+}
+
+#medailles_et_login #medailles .overlay svg circle.bar.or {
+    stroke: #e6ac00;
 }
 
 #medailles_et_login #login {

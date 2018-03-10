@@ -546,10 +546,10 @@ class Affichage {
     public static function get_medailles($nbPhotographiesCreationsBouquineries) {
         $points_et_niveaux=[];
         foreach($nbPhotographiesCreationsBouquineries as $type=>$points) {
-            $points_et_niveaux[$type]=null;
+            $points_et_niveaux[$type]= ['Cpt'=>$points, 'Niveau' => 0];
             foreach (Affichage::$niveaux_medailles[$type] as $niveau=> $points_min) {
                 if ($points >= $points_min) {
-                    $points_et_niveaux[$type]=['Niveau'=>$niveau,'Cpt'=>$points];
+                    $points_et_niveaux[$type]['Niveau']=$niveau;
                 }
             }
         }
@@ -564,9 +564,7 @@ class Affichage {
             'Duckhunter' => $nbBouquineries
         ]);
         foreach($medailles as $type=>$cpt_et_niveau) {
-            if (!is_null($cpt_et_niveau)) {
-                $niveau=$cpt_et_niveau['Niveau'];
-                ?>
+            if (($niveau = $cpt_et_niveau['Niveau']) > 0) {?>
                 <div class="medaille_profil">
                     <img src="images/medailles/<?=$type?>_<?=$niveau?>_fond.png" /><br />
                     <b><?=constant('TITRE_MEDAILLE_'.strtoupper($type))?><br /><?=NIVEAU?> <?=str_replace('avance', 'avancé', $niveau)?></b>
