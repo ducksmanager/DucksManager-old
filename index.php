@@ -351,6 +351,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             <div class="title" title="<?=$title?>"></div><?php
                         if ($niveau < 3) {
                             $progres_niveau = ($cpt-$min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
+                            if ($progres_niveau === 0) {
+                                $progres_niveau = .01;
+                            }
                             switch($niveau) {
                                 case 0: $couleur ='bronze'; break;
                                 case 1: $couleur ='argent'; break;
