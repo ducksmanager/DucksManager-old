@@ -46,9 +46,9 @@ WHERE points IS NULL;
 
 -- Update the users' points
 TRUNCATE users_points;
+USE dm;
 INSERT INTO users_points
 SELECT
-  null,
   contributions.contributeur,
   contributions.type_contribution,
   sum(contributions.Popularite) AS points

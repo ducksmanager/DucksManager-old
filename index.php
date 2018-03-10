@@ -328,19 +328,29 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     if ($cpt_et_niveau['Cpt'] > 0) {
                         $cpt=$cpt_et_niveau['Cpt'];
                         $niveau=$cpt_et_niveau['Niveau'];
-                        $title = constant('DETAILS_MEDAILLE_'.strtoupper($type).'_1')
-                            .' '.$cpt.' '
-                            .constant('DETAILS_MEDAILLE_'.strtoupper($type).'_2');
-                        ?>
-                        <div class="overlay">
-                            <div class="title" title="<?=$title?>"></div><?php
                         if ($niveau === 3) {
                             $progres_niveau = 0;
+                            $title = sprintf(
+                                constant('DETAILS_MEDAILLE_'.strtoupper($type).'_MAX'),
+                                $cpt
+                            );
                         }
                         else {
                             $min_cpt_niveau = $niveau === 0 ? 0 : Affichage::$niveaux_medailles[$type][$niveau];
                             $min_cpt_niveau_suivant = Affichage::$niveaux_medailles[$type][$niveau+1];
-                            $progres_niveau = ($cpt - $min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
+                            $diff_niveau_suivant = $min_cpt_niveau_suivant-$cpt;
+                            $title = sprintf(
+                                    constant('DETAILS_MEDAILLE_'.strtoupper($type)),
+                                    $cpt,
+                                    $diff_niveau_suivant,
+                                    constant('MEDAILLE_'.($niveau+1))
+                            );
+                        }
+                        ?>
+                        <div class="overlay">
+                            <div class="title" title="<?=$title?>"></div><?php
+                        if ($niveau < 3) {
+                            $progres_niveau = ($cpt-$min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
                             switch($niveau) {
                                 case 0: $couleur ='bronze'; break;
                                 case 1: $couleur ='argent'; break;
