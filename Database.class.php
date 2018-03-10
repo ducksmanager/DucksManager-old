@@ -790,9 +790,7 @@ if (isset($_POST['database'])) {
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
 	else if (isset($_POST['evenements_recents'])) {
-		if (Inducks::connexion_ok()) {
-			Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());
-		}
+        Affichage::afficher_evenements_recents(DM_Core::$d->get_evenements_recents());
 	}
 	else if (isset($_POST['affichage'])) {
 		$id_user=$_SESSION['id_user'];

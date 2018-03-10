@@ -208,7 +208,7 @@ class Inducks {
     static function get_noms_complets_magazines($publication_codes) {
         $liste_magazines_complets= [];
 
-        $publication_codes_chunks=array_chunk($publication_codes, 100);
+        $publication_codes_chunks=array_chunk(array_values($publication_codes), 100);
         foreach($publication_codes_chunks as $publication_codes_chunk) {
             $publication_codes_chunk = array_map(function($publication_code) {
                 return "'".$publication_code."'";
