@@ -174,7 +174,7 @@ class Affichage {
                                     <input type="checkbox" id="sel_numeros_possedes" checked="checked" onclick="changer_affichage('possedes')"/>
                                 </td>
                                 <td>
-                                    <?=AFFICHER_NUMEROS_POSSEDES?> (<?=$nb_possedes?>)
+                                    <label for="sel_numeros_possedes"><?=AFFICHER_NUMEROS_POSSEDES?> (<?=$nb_possedes?>)</label>
                                 </td>
                             </tr>
                             <tr>
@@ -182,7 +182,7 @@ class Affichage {
                                     <input type="checkbox" id="sel_numeros_manquants" checked="checked" onclick="changer_affichage('manquants')"/>
                                 </td>
                                 <td>
-                                    <?=AFFICHER_NUMEROS_MANQUANTS?> (<?=$nb_non_possedes?>)
+                                    <label for="sel_numeros_manquants"><?=AFFICHER_NUMEROS_MANQUANTS?> (<?=$nb_non_possedes?>)</label>
                                 </td>
                             </tr>
                         </table>

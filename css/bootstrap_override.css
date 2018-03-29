@@ -38,6 +38,11 @@ img {
     vertical-align: inherit;
 }
 
+label {
+    font-weight: normal;
+    margin-bottom: inherit;
+}
+
 .popover {
     max-width: inherit;
     color: black;

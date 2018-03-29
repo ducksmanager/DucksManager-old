@@ -932,147 +932,137 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     }
 
                     break;
-            case 'ajout_suppr':
-                if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
-                    ?><div class="alert alert-warning">
-                    <?=ATTENTION_VENTE_SANS_EMAIL?>
-                    <a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
-                    </div><?php
-                }
-                if ($_SESSION['user'] == 'demo') {
-                    require_once('init_demo.php');
-                    $nb_minutes_avant_reset=60 - strftime('%M',time());
-                    if ($nb_minutes_avant_reset == 0)
-                        $nb_minutes_avant_reset=60;
-                    ?><div id="presentation_demo">
-                    <h2><?=PRESENTATION_DEMO_TITRE?></h2>
-                    <?=PRESENTATION_DEMO.$nb_minutes_avant_reset.' '.MINUTES?>
-                    </div><?php
-                }
+                case 'ajout_suppr':
+                    if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
+                        ?><div class="alert alert-warning">
+                        <?=ATTENTION_VENTE_SANS_EMAIL?>
+                        <a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
+                        </div><?php
+                    }
+                    if ($_SESSION['user'] == 'demo') {
+                        require_once('init_demo.php');
+                        $nb_minutes_avant_reset=60 - strftime('%M',time());
+                        if ($nb_minutes_avant_reset == 0)
+                            $nb_minutes_avant_reset=60;
+                        ?><div id="presentation_demo">
+                        <h2><?=PRESENTATION_DEMO_TITRE?></h2>
+                        <?=PRESENTATION_DEMO.$nb_minutes_avant_reset.' '.MINUTES?>
+                        </div><?php
+                    }
 
-            if (Util::getBrowser() == 'Android') {
-                encart_WhatTheDuck();
-                ?><br /><br /><?php
-            }
+                    if (Util::getBrowser() == 'Android') {
+                        encart_WhatTheDuck();
+                        ?><br /><br /><?php
+                    }
 
-            if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
-                list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
-            }
-            else {
-                list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
-            }
+                    if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
+                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
+                    }
+                    else {
+                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
+                    }
 
-            if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
-                echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
-                ?>
-            <br /><br />
-                <form method="get" action="?">
-                    <input type="hidden" name="action" value="gerer" />
-                    <input type="hidden" name="onglet" value="ajout_suppr" />
-                    <input type="hidden" id="form_pays" value="" />
-                    <input type="hidden" id="form_magazine" value="" />
-                    <input type="hidden" id="onglet_magazine" name="onglet_magazine" value="" />
-                    <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
-                    <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                        <option id="chargement_pays"><?=CHARGEMENT?>...
-                    </select><br /><br />
-                    <span style="text-decoration:underline"><?=PUBLICATION?> : </span><br />
-                    <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
-                        <option id="vide"><?=SELECTIONNER_PAYS?>
-                    </select>
+                    if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
+                        echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
+                        ?>
                     <br /><br />
-                    <input id="validerAjoutMagazine" type="submit" class="btn btn-default" value="<?=OK?>" />
-                </form>
-                <br />
-                <br />
-                <?= RECHERCHER_INTRO ?><br />
-                <div id="recherche_histoire">
-                    <br>
-                    <?= RECHERCHER_GENERAL ?><br/>
-                    <input type="text" name="" />
-                    <button class="btn btn-default"><?=OK?></button>
-                </div>
-            <br /><br />
-                <?php
-            }
-            else {
-                $l=DM_Core::$d->toList($id_user);
-                $nb_numeros=0;
-                $nb_magazines=$nb_pays=0;
-                foreach($l->collection as $pays=>$numeros_pays) {
-                    $nb_pays++;
-                    foreach(array_keys($numeros_pays) as $magazine) {
-                        $nb_magazines++;
-                        $nb_numeros+=count($numeros_pays[$magazine]);
+                    <form method="get" action="?">
+                        <input type="hidden" name="action" value="gerer" />
+                        <input type="hidden" name="onglet" value="ajout_suppr" />
+                        <input type="hidden" id="form_pays" value="" />
+                        <input type="hidden" id="form_magazine" value="" />
+                        <input type="hidden" id="onglet_magazine" name="onglet_magazine" value="" />
+                        <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
+                        <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
+                            <option id="chargement_pays"><?=CHARGEMENT?>...
+                        </select><br /><br />
+                        <span style="text-decoration:underline"><?=PUBLICATION?> : </span><br />
+                        <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
+                            <option id="vide"><?=SELECTIONNER_PAYS?>
+                        </select>
+                        <br /><br />
+                        <input id="validerAjoutMagazine" type="submit" class="btn btn-default" value="<?=OK?>" />
+                    </form>
+                    <br />
+                    <br />
+                    <?= RECHERCHER_INTRO ?><br />
+                    <div id="recherche_histoire">
+                        <br>
+                        <?= RECHERCHER_GENERAL ?><br/>
+                        <input type="text" name="" />
+                        <button class="btn btn-default"><?=OK?></button>
+                    </div>
+                    <br /><br />
+                    <?php
+                }
+                else {
+                    $l = DM_Core::$d->toList($id_user);
+                    $nb_numeros = 0;
+                    $nb_magazines = $nb_pays = 0;
+                    foreach ($l->collection as $pays => $numeros_pays) {
+                        $nb_pays++;
+                        foreach (array_keys($numeros_pays) as $magazine) {
+                            $nb_magazines++;
+                            $nb_numeros += count($numeros_pays[$magazine]);
+                        }
+                    }
+                    if ($nb_numeros == 0) {
+                        if (!isset($_GET['onglet_magazine'])) {
+                            ?><?= COLLECTION_VIDE_1 ?><br/>
+                            <?= COLLECTION_VIDE_2 ?><br/><br/><?php
+                        }
+                    }
+                    else {
+                        ?><?= POSSESSION_MAGAZINES_INTRO ?>
+                        <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
+                        <br/><?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
+                        <br/><?php
+                        Affichage::afficher_dernieres_tranches_publiees();
+                    } ?>
+                    <div id="recherche_histoire">
+                        <?= RECHERCHER_GENERAL ?><br/>
+                        <input type="text" name=""/>
+                        <button class="btn btn-default">OK</button>
+                    </div>
+                    <?php
+
+                    Affichage::onglets_magazines($onglets_pays, $onglets_magazines);
+
+                    if (isset($onglet_magazine) && isset($pays)) {
+                        ?><?php if (isset($_GET['afficher_video']) && $_GET['afficher_video'] == 0) {
+                        $requete_cacher_video = 'UPDATE users SET AfficherVideo=0 WHERE ID=' . $id_user;
+                        DM_Core::$d->requete($requete_cacher_video);
+                        }
+                        ?><br/>
+
+                        <div class="alert alert-info">
+                            <?=INFO_AJOUT_NUMEROS_1?>
+                            <span class="desktop-only"><?=INFO_AJOUT_NUMEROS_2_DESKTOP?></span>
+                            <span class="mobile-only"><?=INFO_AJOUT_NUMEROS_2_MOBILE?></span>
+                        </div>
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <span id="liste_numeros" class="possedes manquants"><?= CHARGEMENT ?></span>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table><?php
                     }
                 }
-            if ($nb_numeros == 0) {
-            if (!isset($_GET['onglet_magazine'])) {
-                ?><?= COLLECTION_VIDE_1 ?><br/>
-                <?= COLLECTION_VIDE_2 ?><br/><br/><?php
-            }
-            }
-            else {
-                ?><?= POSSESSION_MAGAZINES_INTRO ?>
-                <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
-            <br/>
-                <?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
-            <br/>
-                <?php
-                Affichage::afficher_dernieres_tranches_publiees();
-            }?>
-                <div id="recherche_histoire">
-                    <?= RECHERCHER_GENERAL ?><br/>
-                    <input type="text" name="" />
-                    <button class="btn btn-default">OK</button>
-                </div>
-                <?php
-
-                Affichage::onglets_magazines($onglets_pays,$onglets_magazines);
-
-            if (isset($onglet_magazine) && isset($pays)) {
-                ?>
-                <?php if (isset($_GET['afficher_video']) && $_GET['afficher_video']==0) {
-                $requete_cacher_video='UPDATE users SET AfficherVideo=0 WHERE ID='.$id_user;
-                DM_Core::$d->requete($requete_cacher_video);
-            }
-            if (DM_Core::$d->user_afficher_video()) { ?>
-            <br /><br />
-                <div style="width:742px"><div style="float: right;"><a href="<?=$_SERVER['REQUEST_URI']?>&amp;afficher_video=0"><?=CACHER_VIDEO?></a></div></div>
-                <OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="742" HEIGHT="397" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=7,0,0,0">
-                    <PARAM NAME=movie VALUE="dm.swf">
-                    <PARAM NAME=play VALUE=false>
-                    <PARAM NAME=loop VALUE=false>
-                    <PARAM NAME=wmode VALUE=transparent>
-                    <PARAM NAME=quality VALUE=low>
-                    <EMBED SRC="dm.swf" WIDTH=742 HEIGHT=397 play=false quality=low loop=false wmode=transparent TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" />
-                </OBJECT>
-            <?php } ?>
-
-            <br />
-
-                <table width="100%">
-                    <tr><td>
-                            <span id="liste_numeros" class="possedes manquants"><?=CHARGEMENT?></span>
-                        </td><td>
-                        </td></tr></table>
-            <?php
-            }
-            }
-            break;
+                break;
             }
 
             break;
             case 'stats':
-            ?>
-                <h2><?=STATISTIQUES_COLLECTION?></h2><br />
-            <?php
-            $l=DM_Core::$d->toList($id_user);
-            if (!isset($_GET['onglet']))
-                $onglet='magazines';
-            else
-                $onglet=$_GET['onglet'];
-            $l->statistiques($onglet);
+                ?><h2><?=STATISTIQUES_COLLECTION?></h2><br /><?php
+                $l=DM_Core::$d->toList($id_user);
+                if (!isset($_GET['onglet']))
+                    $onglet='magazines';
+                else
+                    $onglet=$_GET['onglet'];
+                $l->statistiques($onglet);
             break;
 
             case 'print':

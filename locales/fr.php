@@ -239,6 +239,9 @@ define('IMPRIMER_AIDE_4','Vos pr&eacute;f&eacute;rences de positionnement seront
 define('IMPRIMER_AIDE_5','Lorsque tout sera pr&ecirc;t, vous pourrez cliquer sur le bouton "Imprimer", situ&eacute; en haut &agrave; gauche de cette page.');
 define('INDEFINI','Indéfini');
 define('INDEX_AIDE','Index de l\'aide');
+define('INFO_AJOUT_NUMEROS_1','Cliquez sur les num&eacute;ros que vous souhaitez ajouter &agrave; votre collection, ');
+define('INFO_AJOUT_NUMEROS_2_DESKTOP','puis faites un clic-droit pour indiquer son état et validez.');
+define('INFO_AJOUT_NUMEROS_2_MOBILE','puis faites un appui long pour indiquer son état et validez.');
 define('INITIALISATION','Initialisation');
 define('INSCRIPTION','Inscription');
 define('INSCRIVEZ_VOUS','Cliquez ici pour vous inscrire !');

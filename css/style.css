@@ -503,6 +503,10 @@ ul#choix_impression ul.caract li{
 }
 
 @media (min-width: 767px) {
+	.mobile-only {
+		display: none;
+	}
+
 	body {
 		padding: 0 0 0 310px !important;
 	}
@@ -555,6 +559,10 @@ ul#choix_impression ul.caract li{
 }
 
 @media (max-width: 767px) {
+	.desktop-only {
+		display: none;
+	}
+
 	body {
 		padding-left: 0;
 	}
@@ -621,5 +629,4 @@ ul#choix_impression ul.caract li{
     #liste_auteurs {
         width: 90% !important;
     }
-
 }
