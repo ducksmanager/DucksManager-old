@@ -72,11 +72,13 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
     <head>
+        <meta content="initial-scale=1.0, width=device-width" name="viewport">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Cache-Control" CONTENT="no-store" />
         <meta http-equiv="Expires" content="0" />
         <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
+        <link rel="manifest" href="manifest.json">
         <title><?=$titre.' - DucksManager'?></title>
         <link rel="stylesheet" type="text/css" href="css/style.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/scriptaculous.css?VERSION">

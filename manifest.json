@@ -1,0 +1,14 @@
+{
+  "short_name": "What The Duck",
+  "name": "What The Duck, your DucksManager collection on your mobile",
+  "icons": [
+	{
+	  "src": "images/WhatTheDuck.png",
+	  "sizes": "50x50",
+	  "type": "image/png"
+	}
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}
