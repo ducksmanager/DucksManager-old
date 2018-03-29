@@ -234,7 +234,12 @@
 }
 
 @media (max-width: 767px) {
+    #recherche_histoire {
+        width: 100%;
+    }
+
     #conteneur_bibliotheque #recherche_histoire {
-        left: 25px !important;
+        position: static;
+        margin-top: 10px;
     }
 }

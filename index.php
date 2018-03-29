@@ -636,8 +636,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 </div>
                                 <div id="recherche_histoire">
                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
-                                    <input type="text" name=""/>
-                                    <button class="btn btn-default">OK</button>
+                                    <input type="text" class="form-control"/>
                                 </div>
                                 <?php
                             } ?>
@@ -950,11 +949,6 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         </div><?php
                     }
 
-                    if (Util::getBrowser() == 'Android') {
-                        encart_WhatTheDuck();
-                        ?><br /><br /><?php
-                    }
-
                     if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
                         list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
                     }
@@ -989,8 +983,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     <div id="recherche_histoire">
                         <br>
                         <?= RECHERCHER_GENERAL ?><br/>
-                        <input type="text" name="" />
-                        <button class="btn btn-default"><?=OK?></button>
+                        <input type="text" class="form-control"/>
                     </div>
                     <br /><br />
                     <?php
@@ -1021,8 +1014,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                     } ?>
                     <div id="recherche_histoire">
                         <?= RECHERCHER_GENERAL ?><br/>
-                        <input type="text" name=""/>
-                        <button class="btn btn-default">OK</button>
+                        <input type="text" class="form-control"/>
                     </div>
                     <?php
 

@@ -459,11 +459,6 @@ function charger_recherche() {
                        +parseInt(conteneur_bibliotheque.getStyle('width').substring(0,conteneur_bibliotheque.getStyle('width').length-2))-330) +'px',
                    display: 'block'});
            }
-
-           element_recherche_histoire.down('button').observe('click', function(e) {
-               recherche_histoire();
-               e.stopPropagation();
-           });
            element_recherche_histoire.down('input')
                .observe('keyup', function(e) {
                    if (/[\-\!\?\. a-z0-9]/i.test(String.fromCharCode(e.which))) {
@@ -785,15 +780,12 @@ function recherche_histoire(val_recherche) {
         }
         else {
             if (!recherche_en_cours && (recherche_forcee || !derniere_action_recherche || moment().diff(derniere_action_recherche, 'milliseconds') > 200)) {
-                element_recherche_histoire.down('button').update(new Element('img',{'src':'loading.gif'}));
                 recherche_en_cours = true;
 
                 new Ajax.Request('Inducks.class.php', {
                     method: 'post',
                     parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+recherche_bibliotheque,
                     onSuccess:function(transport) {
-                        element_recherche_histoire.down('button').update('OK');
-
                         var resultat=transport.headerJSON;
                         localStorage && localStorage.setItem('get_magazines_histoire.'+val_recherche, JSON.stringify(resultat));
 

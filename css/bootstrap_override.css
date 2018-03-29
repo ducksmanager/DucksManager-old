@@ -55,3 +55,8 @@ label {
 .progress-bar-striped {
     background-image: linear-gradient(135deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
 }
+
+input.form-control {
+    width: calc(100% - 26px);
+    height: 20px;
+}
