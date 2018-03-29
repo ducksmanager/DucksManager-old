@@ -3,8 +3,10 @@ define('A','&agrave;');
 define('A_VENDRE','A vendre');
 define('ACCUEIL','Accueil');
 define('ACHAT_ASSOCIER_DATE_ACHAT','Associer avec une date d\'achat');
+define('ACHAT_ASSOCIER_DATE_ACHAT_COURT','Associer');
 define('ACHAT_CONSERVER_DATE_ACHAT','Conserver la date d\'achat');
 define('ACHAT_DESASSOCIER_DATE_ACHAT','D&eacute;sassocier de la date d\'achat');
+define('ACHAT_DESASSOCIER_DATE_ACHAT_COURT','Unlink');
 define('ACHAT_VENTE_NUMEROS','Achat/Vente de num&eacute;ros');
 define('ACHATS','Achats');
 define('ACHATS_COURT','Achats');
@@ -296,6 +298,7 @@ define('MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU','Cet e-mail ne correspond &agr
 define('MOT_DE_PASSE_OUBLIE_EXPLICATION','Un mot de passe temporaire va vous &ecirc;tre envoy&eacute; &agrave; l\'adresse e-mail que vous indiquerez ci-dessous :');
 define('MOTS_DE_PASSE_DIFFERENTS','Les deux mots de passe ne correspondent pas !');
 define('MOYEN','Moyen');
+define('NE_PAS_CHANGER','Ne pas changer');
 define('NEWS_A_AJOUTE_BOUQUINERIE','a propos&eacute; la bouquinerie');
 define('NEWS_A_AJOUTE','a ajout&eacute;');
 define('NEWS_A_SA_COLLECTION','&agrave; sa collection');
@@ -470,7 +473,9 @@ define('UTILISATEURS_INSCRITS','utilisateurs sont inscrits<br />sur DucksManager
 define('VALIDER','Valider');
 define('VENTE_CONSERVER_VOLONTE_VENTE','Conserver la volont&eacute; de vente');
 define('VENTE_MARQUER_A_VENDRE','Marquer comme "A vendre"');
+define('VENTE_MARQUER_A_VENDRE_COURT','A vendre');
 define('VENTE_MARQUER_PAS_A_VENDRE','Enlever la mention "A vendre"');
+define('VENTE_MARQUER_PAS_A_VENDRE_COURT','Pas &agrave; vendre');
 define('VIDER_LISTE','Vider ma liste de num&eacute;ros');
 define('VILLE','Ville');
 define('VOIR', 'Voir');

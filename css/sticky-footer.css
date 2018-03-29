@@ -1,0 +1,237 @@
+#update_menu {
+    display: none;
+    background: transparent;
+}
+
+#update_menu.shown {
+    display: block;
+}
+
+#update_menu #selection_numeros_wrapper {
+    text-align: center;
+}
+
+#update_menu #selection_numeros_wrapper #selection_numeros {
+    background: #f8f8f8;
+    border-radius: 5px 5px 0 0;
+    padding: 4px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+#update_menu.affix {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index:10;
+}
+
+#update_menu.affix .navbar {
+    background: transparent;
+    margin-bottom: 0;
+    border: 0;
+    border-radius: 0;
+}
+
+#update_menu.affix #update_options {
+    background-color: #f8f8f8;
+}
+
+#update_menu.affix #update_options > .row {
+    height: 100%;
+    text-align: center;
+}
+
+#update_menu.affix #update_options .option {
+    cursor: pointer;
+}
+
+#update_menu.affix #update_options .option_nom h4 {
+    font-weight: bold;
+}
+
+#update_menu.affix #update_options .option_valeur {
+    text-align: center;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 39px;
+    margin-right: 45px;
+    opacity: 0.9;
+}
+
+@media (max-width: 1200px) {
+    #update_menu.affix #update_options .option_nom .alternatives {
+        margin-bottom: 24px;
+    }
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection {
+    left: 100%;
+    margin-left: -21px;
+    margin-right: -20px;
+    width: 100%;
+    display: block !important;
+    opacity: 1 !important;
+    border-radius: 0;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates {
+    height: 71px;
+    overflow-y: auto;
+    border-radius: 0;
+    padding: 0 0 2px;
+    border-left:0;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates,
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search,
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .day {
+    padding-right: 25px;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_search {
+    padding: 5px 9px 5px 15px;
+    border-top-left-radius: 0;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row {
+    line-height: 18px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .description {
+    width: 200px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection .purchase_dates .day-row .day {
+    float: right;
+    color: grey;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.purchase_selection button {
+    border-top: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+.alternative {
+    background-position: 2px 50%;
+    background-repeat: no-repeat;
+    padding-left: 24px !important;
+    padding-right: 0 !important;
+    border-bottom-left-radius: 0;
+    opacity: 1;
+    visibility: visible;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.invisible {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#update_menu.affix #update_options .option_nom .purchase_selection.alternatives.invisible {
+    display: none !important;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives.invisible.animated {
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.5s linear;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives .alternative .alternative-choice {
+    position: absolute;
+    width: 100%;
+    margin-left: -30px;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives .alternative.checked .alternative-choice {
+    background: transparent url(../images/icones/accept.png) no-repeat right 0;
+    font-weight: bold;
+}
+
+#update_menu.affix #update_options .option_nom .alternatives .alternative.ne_pas_changer {
+    background-image: none;
+    text-align: center;
+}
+
+.alternative.non_possede {
+    background-color: darkgrey;
+    background-image: url(../images/non_possede.png);
+    color: white;
+}
+
+.alternative.possede {
+    background-image: url(../images/possede.png);
+}
+
+.alternative.mauvais {
+    background-color: #f2dede;
+    background-image: url(../images/mauvais.png);
+    color: #a94442;
+}
+
+.alternative.moyen {
+    background-color: #fcf8e3;
+    background-image: url(../images/moyen.png);
+    color: #8a6d3b;
+}
+
+.alternative.bon {
+    background-color: #dff0d8;
+    background-image: url(../images/bon.png);
+    color: #3c763d;
+}
+
+.alternative.pas_date {
+    background-image: url(../images/pas_page_date.png);
+}
+
+.alternative.date {
+    background-image: url(../images/page_date.png);
+}
+
+.alternative.a_vendre {
+    background-image: url(../images/av_petit.png);
+}
+
+.alternative.pas_a_vendre {
+    background-image: url(../images/pas_av_petit.png);
+}
+
+#update_menu.affix #update_options .option_valeur h5 {
+    display: inline-block;
+    white-space: nowrap;
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+#update_menu.affix #update_options .option_nom .edit {
+    background: transparent url(../images/icones/pencil.png) no-repeat;
+    position: absolute;
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin-top: 6px;
+}
+
+#update_menu.affix #update_options #save {
+    color: white;
+    background: green;
+    text-align: center;
+    height: 100%;
+    padding-left: 30px;
+    cursor: pointer;
+}
+
+#update_menu.affix #update_options #save h4 {
+    padding-top: 18px;
+    padding-bottom: 18px;
+}

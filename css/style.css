@@ -130,6 +130,10 @@ img.medaille_objectif.droite {
 	min-height: 500px;
 }
 
+#liste_numeros {
+	margin-bottom: 70px;
+}
+
 #liste_numeros .num_manque,
 #liste_numeros .num_possede {
 	display: none;

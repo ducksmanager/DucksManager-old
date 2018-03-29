@@ -19,153 +19,86 @@ function init_observers_gerer_numeros() {
 	get_achats(-1);
 }
 
-function get_achats(continue_id) {
+function get_achats(callback) {
     new Ajax.Request('Database.class.php', {
         method: 'post',
-        parameters: 'database=true&liste_achats=true&continue=' + continue_id,
+        parameters: 'database=true&liste_achats=true',
         onSuccess: function (transport) {
             var achats_courants = JSON.parse(transport.responseText);
-            for (var i = 0; i < achats_courants.length; i++) {
-                if (achats_courants[i]['continue']) {
-                    get_achats(achat['id']);
-                    return;
-                }
-                var achat = achats_courants[i];
-                achat['name'] = 'Achat "' + achat.description + '"<br />' + achat.date;
-                achat['className'] = 'date2';
-                achat['groupName'] = 'achat';
-                achat['selected'] = false;
-                achat['id'] = achat.id;
-                tab_achats[tab_achats.length] = achat;
-            }
-            myMenuItems = [
-                {
-                    separator: true
-                }, {
-                    className: 'non_marque',
-                    groupName: 'etat_conserver_etat_actuel',
-                    selected: true
-                }, {
-                    className: 'non_possede',
-                    groupName: 'etat_marquer_non_possede'
-                }, {
-                    className: 'possede',
-                    groupName: 'etat_marquer_possede'
-                }, {
-                    className: 'mauvais',
-                    groupName: 'etat_marquer_mauvais_etat'
-                }, {
-                    className: 'moyen',
-                    groupName: 'etat_marquer_etat_moyen'
-                }, {
-                    className: 'bon',
-                    groupName: 'etat_marquer_bon_etat'
-                }, {
-                    separator: true
-                }, {
-                    className: 'non_date',
-                    groupName: 'achat_conserver_date_achat',
-                    selected: true
-                }, {
-                    className: 'pas_date',
-                    groupName: 'achat_desassocier_date_achat'
-                }, {
-                    className: 'date',
-                    groupName: 'achat_associer_date_achat',
-                    subMenu: true
-                }
-            ];
-            var myMenuItems2 = [
-                {
-                    separator: true
-                }, {
-                    className: 'non_marque_a_vendre',
-                    groupName: 'vente_conserver_volonte_vente',
-                    selected: true
-                }, {
-                    className: 'a_vendre',
-                    groupName: 'vente_marquer_a_vendre'
-                }, {
-                    className: 'pas_a_vendre',
-                    groupName: 'vente_marquer_pas_a_vendre'
-                }, {
-                    separator: true
-                }, {
-                    className: 'save',
-                    groupName: 'save_enregistrer_changements'
-                }];
-            myMenuItems = myMenuItems.concat(myMenuItems2);
+            var purchase_dates_wrapper = jQuery('#update_options .purchase_dates');
+            var template = purchase_dates_wrapper.find('.alternative.date.template');
 
-            if (!$('menu_contextuel')) {
-                new Proto.Menu({
-                    type: 'gestion_numeros',
-                    selector: '#liste_numeros',
-                    className: 'menu desktop',
-                    menuItems: myMenuItems
-                });
+
+            for (var i = 0; i < achats.length; i++) {
+                var achat = achats[i];
+                var item = template.clone(true).removeClass('template').data(achat);
+                item.attr({ name: achat.ID_Acquisition, 'value-short': achat.Description });
+                item.find('.day').text(achat.Date);
+                purchase_dates_wrapper.append(item);
             }
 
-            var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
-                'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
-                'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
-                'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
-                'enregistrer_changements'];
-            l10n_action('remplirSpanName', arr_l10n);
-
-            jQuery('.num_wrapper')
-                .mouseover(function () {
-                    jQuery('.survole').removeClass('survole');
-                    lighten(jQuery(this).closest('.num_wrapper'));
-                })
-                .mouseout(function () {
-                    unlighten(jQuery(this).closest('.num_wrapper'));
-                    jQuery('.num').popover('hide');
-                })
-                .mouseup(function (event) {
-                    if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
-                        stop_selection(jQuery(this).closest('.num_wrapper'));
-                        event.stopPropagation();
-                    }
-                })
-                .mousedown(function (event) {
-                    if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
-                        start_selection(jQuery(this).closest('.num_wrapper'));
-                    }
-                })
-                .mousemove(function () {
-                    pre_select(jQuery(this).closest('.num_wrapper'));
-                });
-
-            jQuery('.preview').click(function(event) {
-                var element = jQuery(this);
-                element.attr({src: 'loading.gif'});
-
-                var numero_wrapper = element.closest('.num_wrapper');
-                if (numero_wrapper.data('cover')) {
-                    maj_image(numero_wrapper, numero_wrapper.data('cover'));
-                    element.attr({src: 'images/icones/view.png'});
-                }
-                else {
-                    jQuery.post('Inducks.class.php', {
-                        get_cover: 'true',
-                        debug: debug,
-                        pays: jQuery('#pays').text(),
-                        magazine: jQuery('#magazine').text(),
-                        numero: numero_wrapper.attr('title')
-                    })
-                        .done(function (data) {
-                            maj_image(numero_wrapper, data && data.cover);
-                        })
-                        .fail(function () {
-                            maj_image(numero_wrapper, null);
-                        })
-                        .always(function() {
-                            element.attr({src: 'images/icones/view.png'});
-                        });
-                }
-                event.stopPropagation();
-            });
+            callback();
         }
+    });
+}
+
+function init_liste_numeros() {
+    jQuery('.num_wrapper')
+        .mouseover(function () {
+            jQuery('.survole').removeClass('survole');
+            lighten(jQuery(this).closest('.num_wrapper'));
+        })
+        .mouseout(function () {
+            unlighten(jQuery(this).closest('.num_wrapper'));
+            jQuery('.num').popover('hide');
+        })
+        .mouseup(function (event) {
+            if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+                stop_selection(jQuery(this).closest('.num_wrapper'));
+                var nb_selectionnes = jQuery('#liste_numeros .num_checked').length;
+                jQuery('#update_menu')
+                    .toggleClass('shown', nb_selectionnes > 0)
+                    .find('.navbar .nb_selectionnes').text(nb_selectionnes);
+                event.stopPropagation();
+            }
+        })
+        .mousedown(function (event) {
+            if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+                start_selection(jQuery(this).closest('.num_wrapper'));
+            }
+        })
+        .mousemove(function () {
+            pre_select(jQuery(this).closest('.num_wrapper'));
+        });
+
+    jQuery('.preview').click(function(event) {
+        var element = jQuery(this);
+        element.attr({src: 'loading.gif'});
+
+        var numero_wrapper = element.closest('.num_wrapper');
+        if (numero_wrapper.data('cover')) {
+            maj_image(numero_wrapper, numero_wrapper.data('cover'));
+            element.attr({src: 'images/icones/view.png'});
+        }
+        else {
+            jQuery.post('Inducks.class.php', {
+                get_cover: 'true',
+                debug: debug,
+                pays: jQuery('#pays').text(),
+                magazine: jQuery('#magazine').text(),
+                numero: numero_wrapper.attr('title')
+            })
+                .done(function (data) {
+                    maj_image(numero_wrapper, data && data.cover);
+                })
+                .fail(function () {
+                    maj_image(numero_wrapper, null);
+                })
+                .always(function() {
+                    element.attr({src: 'images/icones/view.png'});
+                });
+        }
+        event.stopPropagation();
     });
 }
 
@@ -370,10 +303,97 @@ function select_etats() {
 	});
 }
 
+function position_nav() {
+    var footer = jQuery('#footer');
+    var borderBeforeFooter = 3;
+
+    var heightOfFooterSeen = jQuery(window).height() + jQuery('body').scrollTop() - footer.offset().top + borderBeforeFooter;
+
+    jQuery('#update_menu')
+        .css({bottom: Math.max(0, heightOfFooterSeen) + 'px'});
+}
+
+function init_nav() {
+    var navbar = jQuery('#update_menu')
+        .find('.navbar');
+
+    navbar.css({paddingLeft: jQuery('#menu_gauche').width() + 2});
+
+    var valeurs = navbar.find('.option');
+
+    valeurs
+        .mouseleave(function () {
+            jQuery(this).find('.option_nom>.alternatives:not(.animated)').addClass('hidden invisible');
+        })
+        .mouseover(function () {
+            jQuery(this).find('.option_nom>.alternatives:not(.submenu)').removeClass('hidden invisible animated');
+        });
+
+    valeurs
+        .find('.alternative')
+        .click(function () {
+            var alternative_element = jQuery(this);
+
+            jQuery('.alternatives:not(.invisible)')
+                .addClass('invisible animated');
+
+            alternative_element
+                .closest('.option_nom>.alternatives .alternative')
+                .removeClass('checked');
+
+            alternative_element
+                .addClass('checked')
+                .closest('.option').find('.option_valeur')
+                .changer_valeur(
+                    alternative_element.attr('name'),
+                    alternative_element.attr('value-short')
+                );
+        })
+        .filter(':not(.day-row)')
+        .mouseover(function () {
+            jQuery(this).closest('.option_nom').find('.alternatives.submenu')
+                .toggleClass('hidden invisible animated', !jQuery(this).hasClass('open_submenu'))
+        });
+
+    valeurs.find('.option_nom>.alternatives>.alternative[name="ne_pas_changer"]').trigger('click');
+
+    valeurs.find('.purchase_search').keyup(function () {
+        var searchValue = jQuery(this).val().toLowerCase();
+        jQuery('.purchase_dates .date.day-row').each(function () {
+            var el = jQuery(this);
+            el.toggleClass('hidden', el.text().trim().toLowerCase().indexOf(searchValue) === -1);
+        });
+    });
+
+    navbar.find('#save').click(function () {
+        var numeros = jQuery.map(jQuery('#liste_numeros .num_checked'), function (element) {
+            return jQuery(element).attr('title');
+        });
+        var valeurs_options = {};
+        jQuery.each(jQuery('#update_options').find('.option'), function (i, section_option) {
+            valeurs_options[jQuery(section_option).attr('name')] = jQuery(section_option).find('.valeur').attr('name');
+        });
+
+        update_numeros(numeros, valeurs_options.condition, valeurs_options.purchase_id, valeurs_options.for_sale);
+    });
+
+    position_nav();
+
+    jQuery(window)
+        .resize(position_nav)
+        .scroll(position_nav);
+}
+
+jQuery.fn.changer_valeur = function(nom, valeur) {
+    this.each(function () {
+        jQuery(this).find('.valeur').attr({name: nom, 'class': 'valeur alternative ' + nom}).text(valeur);
+    });
+};
+
 function afficher_numeros(pays,magazine, numero) {
-	if (pays == null || magazine == null) {
+    if (!pays || !magazine) {
 		var el_select=$('liste_magazines');
-		if (el_select.options[0].id=='vide') {
+		if (el_select.options[0].id === 'vide') {
 			l10n_action('alert','selectionner_magazine');
 			return;
 		}
@@ -395,11 +415,13 @@ function afficher_numeros(pays,magazine, numero) {
                parameters:'database=true&affichage=true&pays='+pays+'&magazine='+magazine,
                onSuccess:function(transport) {
                     $('liste_numeros').update(transport.responseText);
-                    init_observers_gerer_numeros();
+                    init_liste_numeros();
                     numero = numero || location.hash;
                     if (numero) {
                         indiquer_numero($('liste_numeros').select('[name="'+numero.replace(/#/,'')+'"]')[0].parentNode, ['gauche']);
                     }
+
+                    get_achats(init_nav);
                }
         });
     }

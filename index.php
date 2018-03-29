@@ -86,6 +86,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         <link rel="stylesheet" type="text/css" href="css/stats.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/starbox.css?VERSION" />
         <link rel="stylesheet" type="text/css" href="css/menu.css?VERSION" />
+        <link rel="stylesheet" type="text/css" href="css/sticky-footer.css?VERSION" />
         <link rel="stylesheet" href="css/protomenu.css?VERSION" type="text/css" media="screen">
         <?php
         foreach($locales as $nom_langue=>$nouvelle_url) {
@@ -172,7 +173,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
         if (!is_null($action)) {
             ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
-			if (!isset($_GET['action'])) $_GET['action']='';            
+			if (!isset($_GET['action'])) $_GET['action']='';
 			switch($_GET['action']) {
                 case 'gerer':
                     ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script><?php
@@ -1364,7 +1365,102 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             <?=LICENCE_INDUCKS3?>
         </div>
     </div>
-</body>
+    <div id="update_menu" class="affix">
+        <div class="navbar navbar-default navbar-static">
+            <div id="selection_numeros_wrapper">
+                <div id="selection_numeros">
+                    <span class="nb_selectionnes">0</span> élément(s) sélectionné(s)
+                </div>
+            </div>
+            <div id="update_options" class="container-fluid">
+                <div class="row">
+                    <?php $options = [
+                        [
+                            'nom' => 'Condition',
+                            'id' => 'condition',
+                            'defaut' => 'ne_pas_changer',
+                            'alternatives' => [
+                                'non_possede' => ['texte' => ETAT_MARQUER_NON_POSSEDE],
+                                'possede' => ['texte' => ETAT_MARQUER_POSSEDE],
+                                'mauvais' => ['texte' => ETAT_MAUVAIS],
+                                'moyen' => ['texte' => ETAT_MOYEN],
+                                'bon' => ['texte' => ETAT_BON],
+                                'ne_pas_changer' => ['texte' => NE_PAS_CHANGER]
+                            ]
+                        ],
+                        [
+                            'nom' => 'A vendre',
+                            'id' => 'for_sale',
+                            'defaut' => 'ne_pas_changer',
+                            'alternatives' => [
+                                'a_vendre' => ['texte' => VENTE_MARQUER_A_VENDRE, 'texte_court' => VENTE_MARQUER_A_VENDRE_COURT],
+                                'pas_a_vendre' => ['texte' => VENTE_MARQUER_PAS_A_VENDRE, 'texte_court' => VENTE_MARQUER_PAS_A_VENDRE_COURT],
+                                'ne_pas_changer' => ['texte' => NE_PAS_CHANGER]
+                            ]
+                        ],
+                        [
+                            'nom' => 'Date d\'achat',
+                            'id' => 'purchase_id',
+                            'defaut' => 'ne_pas_changer',
+                            'alternatives' => [
+                                'date' => ['texte' => ACHAT_ASSOCIER_DATE_ACHAT, 'texte_court' => ACHAT_ASSOCIER_DATE_ACHAT_COURT, 'open_submenu' => true],
+                                'pas_date' => ['texte' => ACHAT_DESASSOCIER_DATE_ACHAT, 'texte_court' => ACHAT_DESASSOCIER_DATE_ACHAT_COURT],
+                                'ne_pas_changer' => ['texte' => NE_PAS_CHANGER]
+                            ]
+                        ]
+                    ];
+                    foreach ($options as $option) {
+                        ?>
+                        <div class="col-lg-2">
+                            <div class="row option" name="<?= $option['id'] ?>">
+                                <div class="option_nom col-lg-12">
+                                    <div class="list-group row alternatives <?= $option['id'] ?> invisible"><?php
+                                        foreach ($option['alternatives'] as $id_alternative => $alternative) {
+                                            $classe_open_submenu = array_key_exists('open_submenu', $alternative) ? 'open_submenu' : '';
+                                            $alternative['texte_court'] = $alternative['texte_court'] ?? $alternative['texte'];
+                                            ?>
+                                            <button type="button" name="<?= $id_alternative ?>"
+                                                    value-short="<?= $alternative['texte_court'] ?>"
+                                                    class="list-group-item col-lg-12 alternative <?= $id_alternative ?> <?= $classe_open_submenu ?>">
+                                                <div class="alternative-choice">
+                                                    &nbsp;
+                                                </div>
+                                                <?= $alternative['texte'] ?>
+                                            </button>
+                                        <?php } ?>
+                                    </div>
+                                    <?php if ($option['id'] === 'purchase_id') { ?>
+                                        <div class="list-group row col-lg-push-12 alternatives submenu <?= $option['id'] ?> invisible purchase_selection">
+                                            <input type="text" value="" size="15"
+                                                   class="list-group-item col-lg-12 purchase_search"
+                                                   placeholder="Type to search">
+                                            <div class="list-group-item col-lg-12 purchase_dates">
+                                                <button type="button" name="date"
+                                                        class="template list-group-item col-lg-12 alternative date day-row">
+                                                    <div class="alternative-choice">&nbsp;</div>
+                                                    <span class="description"></span>
+                                                    <div class="day"></div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
+                                    <div class="edit">&nbsp;</div>
+                                    <h4><?= $option['nom'] ?></h4>
+                                </div>
+                                <div class="col-lg-12 col-md-4 option_valeur">
+                                    <h5 class="valeur"></h5>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <div class="col-md-12 col-md-push-0 col-lg-2 col-lg-push-3" id="save"><h4>Sauvegarder</h4></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
 </html>
     <?php
     exit();
@@ -1433,6 +1529,6 @@ function encart_WhatTheDuck() {
             <iframe width="200" height="315" src="https://www.youtube.com/embed/KBbq49Y_4AE?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
             <br /><br />
         </div>
-	</div><?php 
+	</div><?php
 }
 ?>
