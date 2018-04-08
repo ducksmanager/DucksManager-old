@@ -16,9 +16,9 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-install mysqli gd pdo pdo_mysql opcache
 
 RUN cd /usr/src && \
-    wget http://xdebug.org/files/xdebug-2.5.0.tgz && \
-    tar -xvzf xdebug-2.5.0.tgz && \
-    cd xdebug-2.5.0 && \
+    wget http://xdebug.org/files/xdebug-2.6.0.tgz && \
+    tar -xvzf xdebug-2.6.0.tgz && \
+    cd xdebug-2.6.0 && \
     phpize && \
     ./configure && \
     make && \
