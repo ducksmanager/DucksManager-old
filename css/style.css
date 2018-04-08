@@ -161,6 +161,7 @@ img.medaille_objectif.droite {
 	background-repeat: no-repeat;
 	background-position: right center;
 	outline:1px solid white;
+	line-height: 11px;
 }
 
 .num_mauvais {
