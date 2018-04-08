@@ -1,5 +1,5 @@
 <?php
-include_once('../Inducks.class.php');
+include_once '../Inducks.class.php';
 Inducks::$use_local_db=false;
 ServeurDb::connect('coa');
 
@@ -18,8 +18,9 @@ $doublons_coa=DM_Core::$d->requete_select($requete);
 $requete_doublons_deja_dispo="SELECT Numero FROM tranches_doublons "
 							."WHERE NumeroReference=$numero_reference "
 							."  AND CONCAT(Pays,'/',Magazine)='fr/JM'";
-if (isset($_GET['dbg']))
-	echo $requete_doublons_deja_dispo;
+if (isset($_GET['dbg'])) {
+    echo $requete_doublons_deja_dispo;
+}
 $resultats_doublons_deja_dispo=Inducks::requete_select($requete_doublons_deja_dispo,'db301759616','ducksmanager.net');
 
 if (isset($_GET['dbg'])) {
@@ -39,20 +40,23 @@ if (isset($_GET['dbg'])) {
 }
 
 foreach($doublons_coa as $doublon_coa) {
-	if (!array_key_exists($doublon_coa['issuenumber'],$doublons_deja_dispo))
-		$doublons_a_ajouter[]=$doublon_coa['issuenumber'];
+	if (!array_key_exists($doublon_coa['issuenumber'],$doublons_deja_dispo)) {
+        $doublons_a_ajouter[] = $doublon_coa['issuenumber'];
+    }
 }
 if (count($doublons_a_ajouter) > 0) {
 	$requete_ajout_doublons='INSERT INTO tranches_doublons(Pays,Magazine,Numero,NumeroReference) '
 						   .'VALUES ';
 	$mini_requetes_ajout= [];
-	foreach($doublons_a_ajouter as $doublon)
-		$mini_requetes_ajout[]="('fr','JM','$doublon','$numero_reference')";
+	foreach($doublons_a_ajouter as $doublon) {
+        $mini_requetes_ajout[] = "('fr','JM','$doublon','$numero_reference')";
+    }
 	
 	$requete_ajout_doublons.=implode(',',$mini_requetes_ajout);
 	
-	if (isset($_GET['dbg']))
-		echo $requete_ajout_doublons.'<br />';
+	if (isset($_GET['dbg'])) {
+        echo $requete_ajout_doublons . '<br />';
+    }
 	Inducks::requete_select($requete_ajout_doublons,'db301759616','ducksmanager.net');
 }
 
@@ -67,18 +71,21 @@ foreach($resultats_tranches_deja_pretes as $tranche_deja_dispo) {
 }
 
 foreach($doublons_a_ajouter as $doublon_a_ajouter) {
-	if (!array_key_exists($doublon_a_ajouter,$tranches_deja_dispo))
-		$tranches_a_ajouter[]=$doublon_a_ajouter;
+	if (!array_key_exists($doublon_a_ajouter,$tranches_deja_dispo)) {
+        $tranches_a_ajouter[] = $doublon_a_ajouter;
+    }
 }
 if (count($tranches_a_ajouter) > 0) {
 	$mini_requetes_ajout= [];
-	foreach($tranches_a_ajouter as $numero)
-		$mini_requetes_ajout[]="('fr/JM','$numero',NOW())";
+	foreach($tranches_a_ajouter as $numero) {
+        $mini_requetes_ajout[] = "('fr/JM','$numero',NOW())";
+    }
 	
 	$requete_ajout_tranches.='INSERT INTO tranches_pretes(publicationcode,issuenumber,dateajout) '
 							.'VALUES '.implode(',',$mini_requetes_ajout);
 	
-	if (isset($_GET['dbg']))
-		echo $requete_ajout_tranches.'<br />';
+	if (isset($_GET['dbg'])) {
+        echo $requete_ajout_tranches . '<br />';
+    }
 	Inducks::requete_select($requete_ajout_tranches,'db301759616','ducksmanager.net');
 }

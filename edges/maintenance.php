@@ -1,5 +1,5 @@
 <?php
-include_once('../Database.class.php');
+include_once '../Database.class.php';
 
 $requete_nb_tranches='SELECT COUNT(*) AS nb FROM tranches_pretes';
 $resultat_nb_tranches=DM_Core::$d->requete_select($requete_nb_tranches);
@@ -18,10 +18,12 @@ $numeros_inducks= [];
 foreach($resultat_noms_images as $image) {
 	$pays=$image['Pays'];
 	$magazine=$image['Magazine'];
-	if (!array_key_exists($pays,$numeros_inducks))
-		$numeros_inducks[$pays]= [];
-	if (!array_key_exists($magazine,$numeros_inducks[$pays]))
-		$numeros_inducks[$pays][$magazine]=Inducks::get_numeros($pays,$magazine,false,true);
+	if (!array_key_exists($pays,$numeros_inducks)) {
+        $numeros_inducks[$pays] = [];
+    }
+	if (!array_key_exists($magazine,$numeros_inducks[$pays])) {
+        $numeros_inducks[$pays][$magazine] = Inducks::get_numeros($pays, $magazine, false, true);
+    }
 	$nom_image=$image['Option_valeur'];
 	$chemin_image=$image['Pays'].'/elements/'.$nom_image;
 	if (!file_exists($chemin_image)) { // Dans ce cas on essaie en remplacant les templates
@@ -45,16 +47,18 @@ foreach($resultat_noms_images as $image) {
 		else {
 			$numero_debut_trouve=false;
 			foreach($numeros_inducks[$pays][$magazine] as $numero_dispo) {
-				if ($numero_dispo==$numero_debut)
-					$numero_debut_trouve=true;
+				if ($numero_dispo==$numero_debut) {
+                    $numero_debut_trouve = true;
+                }
 				if ($numero_debut_trouve) {
 					$chemin_image=$image['Pays'].'/elements/'.appliquer_templates($nom_image,$numero_dispo);
 					if (!file_exists($chemin_image)) {
 						echo $chemin_image.' n\'existe pas (Numero : '.$numero_dispo.')<br />';
 					}
 				}
-				if ($numero_dispo==$numero_fin)
-					break;
+				if ($numero_dispo==$numero_fin) {
+                    break;
+                }
 			}
 		}
 	}
@@ -64,8 +68,9 @@ $contenu_images_non_referencees = ob_get_contents();
 if (empty($contenu_images_non_referencees)) {
 	echo 'OK : pas d\'images non r&eacute;f&eacute;renc&eacute;s<br />';
 }
-else
-	echo $contenu_images_non_referencees;
+else {
+    echo $contenu_images_non_referencees;
+}
 ob_end_flush();
 	
 function appliquer_templates($str,$numero) {
@@ -74,10 +79,12 @@ function appliquer_templates($str,$numero) {
 	$spl=str_split($numero);
 	if (0!=preg_match_all($regex, $str, $matches)) {
 		foreach($matches[1] as $i=>$num_caractere) {
-			if (!array_key_exists($num_caractere, $spl))
-				$str=str_replace($matches[0][$i],'',$str);
-			else
-				$str=str_replace($matches[0][$i],preg_replace($regex, $spl[$num_caractere],$matches[0][$i]),$str);
+			if (!array_key_exists($num_caractere, $spl)) {
+                $str = str_replace($matches[0][$i], '', $str);
+            }
+			else {
+                $str = str_replace($matches[0][$i], preg_replace($regex, $spl[$num_caractere], $matches[0][$i]), $str);
+            }
 		}
 	}
 	return $str;

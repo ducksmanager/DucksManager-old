@@ -1,5 +1,5 @@
 <?php
-require_once('DucksManager_Core.class.php');
+require_once 'DucksManager_Core.class.php';
 date_default_timezone_set('Europe/Paris');
 
 
@@ -15,8 +15,9 @@ if (!$dernier_init_est_recent) {
 	$resultat_id_user_demo=DM_Core::$d->requete_select('SELECT ID FROM users WHERE username=\'demo\'');
 	$id_user_demo=$resultat_id_user_demo[0]['ID'];
 	
-	if (isset($_GET['debug']))
-		echo 'Id user demo : '.$id_user_demo;
+	if (isset($_GET['debug'])) {
+        echo 'Id user demo : ' . $id_user_demo;
+    }
 	
 	$requete_reset_user="
 	DELETE FROM numeros WHERE ID_Utilisateur=".$id_user_demo.";
@@ -80,7 +81,8 @@ if (!$dernier_init_est_recent) {
 	
 	foreach($requete_reset_user as $requete) {
 		DM_Core::$d->requete($requete);
-		if (isset($_GET['debug']))
-			echo $requete.'<br />';
+		if (isset($_GET['debug'])) {
+            echo $requete . '<br />';
+        }
 	}
 }

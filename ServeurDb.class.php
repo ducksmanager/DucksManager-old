@@ -30,7 +30,7 @@ class ServeurDb {
 
 	static function connect($db=null) {
 		if (count(self::$db_servers) === 0) {
-			ServeurDb::initDBServers();
+			self::initDBServers();
 		}
 		if (!isLocalHost()) {
 			if (self::isServeurVirtuel()) {
@@ -52,15 +52,15 @@ class ServeurDb {
 	}
 
 	static function getIpServeurVirtuel() {
-		return ServeurDb::getProfil('serveur_virtuel')->ip;
+		return self::getProfil('serveur_virtuel')->ip;
 	}
 
 	static function getDomainServeurVirtuel() {
-		return ServeurDb::getProfil('serveur_virtuel')->domain;
+		return self::getProfil('serveur_virtuel')->domain;
 	}
 
 	static function isServeurVirtuel() {
-		return in_array($_SERVER['HTTP_HOST'], [ServeurDb::getDomainServeurVirtuel(), ServeurDb::getIpServeurVirtuel()]);
+		return in_array($_SERVER['HTTP_HOST'], [self::getDomainServeurVirtuel(), self::getIpServeurVirtuel()]);
 	}
 
 	static function getUrlServeurVirtuel() {
@@ -76,8 +76,7 @@ class ServeurDb {
                sha1(self::getProfilCourant()->password_alternative) == $password;
 	}
 
-	public static function getRemoteUrl($page, $server = null)
-	{
+	public static function getRemoteUrl($page, $server = null) {
 		if (is_null($server)) {
 			$server = 'dedibox2';
 		}
@@ -102,7 +101,9 @@ class ProfilDB {
 	function __construct() { }
 
 	function connexion($db) {
-		if (!$this->server) return false;
+		if (!$this->server) {
+            return false;
+        }
 
         Database::$handle = mysqli_connect($this->server, $this->user, $this->password, is_null($db) ? ServeurDb::$nom_db_DM : $db, $this->port);
 

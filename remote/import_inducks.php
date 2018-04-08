@@ -7,29 +7,8 @@ function flattenpublicationcode($element) {
 $action = $argv[1];
 
 switch($action) {
-    case 'clean':
-        $propertiesFile = $argv[2];
-        $properties = parse_ini_file($propertiesFile);
-        
-        $isvPath=$argv[3];
-        
-        $no_database = true;
-        include_once('../Util.class.php');
-        $sql = Util::lire_depuis_fichier($isvPath . '/../createtables.sql');
-        $sql = preg_replace('#DROP TABLE IF EXISTS induckspriv[^;]+;#is', '', $sql);
-        $sql = preg_replace('#RENAME TABLE induckspriv[^;]+;#is', '', $sql);
-        $sql = preg_replace('#CREATE TABLE IF NOT EXISTS induckspriv[^;]+;#is', '', $sql);
-        $sql = preg_replace('#LOAD DATA LOCAL INFILE "\./isv/induckspriv[^;]+;#is', '', $sql);
-        $sql = preg_replace('#CREATE TABLE induckspriv_[^;]+;#is', '', $sql);
-        $sql = preg_replace('#\# SQL for re-creating and filling table induckspriv_[a-z]*#is', '', $sql);
-        $sql = preg_replace('#ALTER TABLE ([^)]+) ADD FULLTEXT#i', "ALTER TABLE $1 ENGINE = MYISAM;\n$0", $sql);
-        $sql = preg_replace('#(\# End of file)\n*$#i',
-                            "\nALTER TABLE inducks_entry ADD FULLTEXT INDEX entryTitleFullText(title);\n\n$1\n", $sql);
-        Util::ecrire_dans_fichier($isvPath . '/../createtables_clean.sql', $sql, false);
-
-    break;
     case 'check_removed_publications':
-        @include_once('../Inducks.class.php');
+        @include_once '../Inducks.class.php';
 
         $requete_liste_magazines_utilisateurs = 'SELECT DISTINCT CONCAT(Pays,"/",Magazine) as publicationcode, COUNT(*) AS cpt FROM numeros GROUP BY CONCAT(Pays,"/",Magazine)';
         $resultats=Inducks::requete_select($requete_liste_magazines_utilisateurs,'db301759616','ducksmanager.net');

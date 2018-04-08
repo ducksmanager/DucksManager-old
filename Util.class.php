@@ -1,6 +1,7 @@
 <?php
-if (!isset($no_database))
-	require_once('Database.class.php');
+if (!isset($no_database)) {
+    require_once('Database.class.php');
+}
 
 class Util {
 	static $nom_fic;
@@ -18,10 +19,9 @@ class Util {
 			fclose($handle);
 			return $buffer;
 		}
-		else {
-			return ERREUR_CONNEXION_INDUCKS;
-		}
-	}
+
+        return ERREUR_CONNEXION_INDUCKS;
+    }
 	
 	static function get_secured_page(ServeurCoa $coaServer, $url, $dbg) {
 		$baseUrl = $coaServer->getUrl().'/'.$coaServer->web_root;
@@ -29,56 +29,7 @@ class Util {
 		if ($dbg) {
 			echo $fullUrl.'<br /><br />';
 		}
-		return Util::get_page($fullUrl);
-	}
-
-	static function start_log($nom) {
-        ob_start();
-        self::$nom_fic=$nom.'.txt';
-	}
-
-	static function stop_log() {
-        $handle = fopen(self::$nom_fic, 'a');
-        $tab_debug=ob_get_contents();
-        ob_end_clean();
-        fwrite($handle, $tab_debug);
-        fclose($handle);
-	}
-
-	static function getBrowser() {
-
-		if (preg_match("#android#i", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "Android";
-		elseif ((preg_match("#Nav#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Gold#", getenv(
-		"HTTP_USER_AGENT"))) ||
-		(preg_match("#X11#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Mozilla#", getenv(
-		"HTTP_USER_AGENT"))) ||
-		(preg_match("#Netscape#", getenv("HTTP_USER_AGENT")))
-		AND (!preg_match("#MSIE#", getenv("HTTP_USER_AGENT"))) AND (!preg_match("#Konqueror#", getenv(
-		"HTTP_USER_AGENT"))))
-		  $navigateur = "Netscape";
-		elseif (preg_match("#Opera#", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "Opera";
-		elseif (preg_match("#MSIE 9#", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "MSIE 9";
-		elseif (preg_match("#MSIE#", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "MSIE<9";
-		elseif (preg_match("#Lynx#", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "Lynx";
-		elseif (preg_match("#WebTV#", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "WebTV";
-		elseif (preg_match("#Konqueror#", getenv("HTTP_USER_AGENT")))
-		  $navigateur = "Konqueror";
-		elseif ((preg_match("#bot#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Google#", getenv(
-		"HTTP_USER_AGENT"))) ||
-		(preg_match("#Slurp#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Scooter#", getenv(
-		"HTTP_USER_AGENT"))) ||
-		(preg_match("#Spider#", getenv("HTTP_USER_AGENT"))) || (preg_match("#Infoseek#", getenv(
-		"HTTP_USER_AGENT"))))
-		  $navigateur = "Bot";
-		else
-		  $navigateur = "Autre";
-		return $navigateur;
+		return self::get_page($fullUrl);
 	}
 
 	static function isLocalHost() {
@@ -94,23 +45,13 @@ class Util {
 			if ($pays!==$pays_magazine['Pays']) {
 				$magazines_inducks=Inducks::get_liste_magazines($pays_magazine['Pays']);
 			}
-			if (!array_key_exists($pays_magazine['Magazine'], $magazines_inducks))
-				echo $pays_magazine['Pays'].'/'.$pays_magazine['Magazine'].' n\'existe plus<br />';
+			if (!array_key_exists($pays_magazine['Magazine'], $magazines_inducks)) {
+                echo $pays_magazine['Pays'] . '/' . $pays_magazine['Magazine'] . ' n\'existe plus<br />';
+            }
 			$pays=$pays_magazine['Pays'];
 		}
 	}
-	
-	static function supprimerAccents($str) {
-		return( strtr( $str,"�����������������������������������������������������",
-							"AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn" ) );
-	}
-	
-	static function remplacerNiemeCaractere($n, $caractere, $remplacement, $chaine) {
-		$result = preg_split('#('.$caractere.')#',$chaine,$n,PREG_SPLIT_DELIM_CAPTURE);
-		array_push($result,preg_replace('#'.$caractere.'#',$remplacement,array_pop($result),1));
-		return implode($result);
-	}
-	
+
 	static function lire_depuis_fichier($nom_fichier) {
 		$inF = fopen($nom_fichier,"r");
 		$str='';
@@ -154,8 +95,7 @@ class Util {
 	 * @param $sourceObject stdClass
 	 * @return stdClass
      */
-	static function cast($destination, $sourceObject)
-	{
+	static function cast($destination, $sourceObject) {
 		if (is_string($destination)) {
 			$destination = new $destination();
 		}
@@ -190,13 +130,12 @@ class Util {
         if (empty($xml_obj)) {
             return null;
         }
-        else {
-            $lastVisit = $xml_obj->xpath($lastVisitXPath);
-            if ($lastVisit === false || count($lastVisit) === 0) {
-                return null;
-            }
-            return new DateTime(date('Y-m-d H:i:s', (integer) $lastVisit[0]));
+
+        $lastVisit = $xml_obj->xpath($lastVisitXPath);
+        if ($lastVisit === false || count($lastVisit) === 0) {
+            return null;
         }
+        return new DateTime(date('Y-m-d H:i:s', (integer) $lastVisit[0]));
     }
 
     static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
@@ -215,8 +154,7 @@ class Util {
      * @param array $parameters
      * @return mixed|null
      */
-    public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters = [])
-    {
+    public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters = []) {
         $ch = curl_init();
         $url = $coaServer->getUrl() . '/' . $coaServer->web_root . $path;
 

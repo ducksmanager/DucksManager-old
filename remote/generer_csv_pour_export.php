@@ -1,6 +1,6 @@
 <?php
 
-include_once('auth.php');
+include_once 'auth.php';
 
 function exporter($requete, $cheminCsv)
 {

@@ -3,16 +3,16 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 
-require_once('ServeurDb.class.php');
+require_once'ServeurDb.class.php';
 if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
     $_SERVER['SERVER_ADDR'] = ServeurDb::getIpServeurVirtuel();
 }
 else {
-	include_once ('locales/lang.php');
-	require_once('Liste.class.php');
+	include_once 'locales/lang.php';
+	require_once'Liste.class.php';
 }
-require_once('DucksManager_Core.class.php');
-require_once('Inducks.class.php');
+require_once'DucksManager_Core.class.php';
+require_once'Inducks.class.php';
 
 Database::$etats=[
    'mauvais'=>[MAUVAIS,'#FF0000'],
@@ -28,45 +28,41 @@ class Database {
 	var $password;
 
 	/** @var $handle mysqli  */
-	public static $handle = null;
+	public static $handle;
 
 	public static function escape($string) {
         return self::$handle->real_escape_string($string);
 	}
 
-
 	function __construct() {
-			return ServeurDb::connect();
+	    ServeurDb::connect();
 	}
 
 	function connect($user,$password) {
-			$this->user=$user;
-			$this->password=$password;
+        $this->user=$user;
+        $this->password=$password;
 	}
 
 	function requete_select($requete) {
 		if (ServeurDb::isServeurVirtuel() && get_current_db() !== 'coa') {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
-		else {
-			$requete_resultat=self::$handle->query($requete);
-			if ($requete_resultat === false)
-				return [];
-			$arr=[];
-			while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC))
-					array_push($arr,$arr_tmp);
-			return $arr;
-		}
+
+		$requete_resultat=self::$handle->query($requete);
+        if ($requete_resultat === false)
+            return [];
+        $arr=[];
+        while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC))
+            $arr[] = $arr_tmp;
+        return $arr;
 	}
 
 	function requete($requete) {
-		require_once('Inducks.class.php');
+		require_once'Inducks.class.php';
 		if (ServeurDb::isServeurVirtuel()) {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
-		else {
-			return self::$handle->query($requete);
-		}
+		return self::$handle->query($requete);
 	}
 
 	function user_to_id($user) {
@@ -85,10 +81,8 @@ class Database {
 		if (!$this->user_exists($user)) {
 			return false;
 		}
-		else {
-			$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
-			return (count(DM_Core::$d->requete_select($requete))>0);
-		}
+		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
+		return (count(DM_Core::$d->requete_select($requete))>0);
 	}
 
 	function user_exists($user) {
@@ -219,8 +213,9 @@ class Database {
 			}
 			$this->bloc_envoi_message_achat_vente($username_courant);
 		}
-		else
-			echo AUCUN_NUMERO_PROPOSE;
+		else {
+		    echo AUCUN_NUMERO_PROPOSE;
+		}
 	}
 	
 	function bloc_envoi_message_achat_vente($username) {
@@ -243,10 +238,12 @@ class Database {
 				}
 				else {
 					foreach($resultat_emails as $resultat) {
-						if ($resultat['username'] === $_SESSION['user'])
-							$email_acheteur=$resultat['Email'];
-						else
-							$email_vendeur=$resultat['Email'];	
+						if ($resultat['username'] === $_SESSION['user']) {
+						    $email_acheteur=$resultat['Email'];
+						}
+						else {
+						    $email_vendeur=$resultat['Email'];
+						}
 					}
 					
 					$entete = "MIME-Version: 1.0\r\n";
@@ -287,99 +284,99 @@ class Database {
 	}
 	
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-		if ($etat==='possede') $etat='indefini';
+		if ($etat==='possede') { $etat='indefini'; }
 
 		$id_user=$this->user_to_id($_SESSION['user']);
 
-		switch($etat) {
-			case 'non_possede':
-			    $liste_str = array_map(function($numero) {
-                    return DM_Core::$d->escape($numero);
-			    }, $liste);
+		if ($etat === 'non_possede') {
+            $liste_str = array_map(function($numero) {
+                return DM_Core::$d::escape($numero);
+            }, $liste);
 
-		        self::$handle->query("
-                  DELETE FROM numeros
-                  WHERE ID_Utilisateur=$id_user
-                    AND Numero IN (".implode(',', $liste_str).")"
-                );
-			break;
-			default:
-				$champs = ['Pays', 'Magazine', 'Numero', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
-                if ($etat !== 'non_marque') {
-                    $champs[] = 'Etat';
+            self::$handle->query("
+              DELETE FROM numeros
+              WHERE ID_Utilisateur=$id_user
+                AND Numero IN (".implode(',', $liste_str).")"
+            );
+        }
+        else {
+            $champs = ['Pays', 'Magazine', 'Numero', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
+            if ($etat !== 'non_marque') {
+                $champs[] = 'Etat';
+            }
+            $liste_user=$this->toList($id_user);
+
+            $valeurs = [];
+            $liste_deja_possedes=[];
+            foreach($liste as $numero) {
+                if (!is_null($liste_user->get_etat_numero_possede($pays,$magazine,$numero))) {
+                    $liste_deja_possedes[] = $numero;
                 }
-				$liste_user=$this->toList($id_user);
-
-                $valeurs = [];
-				$liste_deja_possedes=[];
-				foreach($liste as $numero) {
-					if (!is_null($liste_user->get_etat_numero_possede($pays,$magazine,$numero))) {
-						$liste_deja_possedes[] = $numero;
-					}
-					else {
-                        $data_numero = [$pays,$magazine,$numero,$id_acquisition,$av,$id_user];
-                        if ($etat !== 'non_marque') {
-                            $data_numero[] = $etat;
-                        }
-
-                        $valeurs[] = array_map(function($valeur) {
-                            return "'".DM_Core::$d->escape($valeur)."'";
-                        }, $data_numero);
+                else {
+                    $data_numero = [$pays,$magazine,$numero,$id_acquisition,$av,$id_user];
+                    if ($etat !== 'non_marque') {
+                        $data_numero[] = $etat;
                     }
-				}
 
-				$valeurs_str = array_map(function($data_numero) {
-				    return '('.implode(',', $data_numero).')';
-				}, $valeurs);
-
-				DM_Core::$d->requete("
-                  INSERT INTO numeros(".implode(',',$champs).")
-                  VALUES ".implode(',', $valeurs_str)
-                );
-
-				$changements = [];
-
-				if ($etat !== 'non_marque') {
-				    $changements[] = "Etat='$etat'";
-				}
-
-				if ($id_acquisition !== -2) {
-				    $changements[] = "ID_Acquisition='$id_acquisition'";
-				}
-
-				if ($av !== -1) {
-				    $changements[] = "AV='$av'";
-				}
-
-				$numeros_update = array_map(function($numero) {
-                    return "'".DM_Core::$d->escape($numero)."'";
-				}, $liste_deja_possedes);
-
-				if (count($numeros_update) > 0) {
-                    DM_Core::$d->requete("
-                      UPDATE numeros
-                      SET ".implode(',', $changements)."
-                      WHERE Pays='$pays'
-                        AND Magazine='$magazine'
-                        AND ID_Utilisateur=$id_user
-                        AND Numero IN (".implode(',', $numeros_update).")"
-                    );
+                    $valeurs[] = array_map(function($valeur) {
+                        return "'".DM_Core::$d::escape($valeur)."'";
+                    }, $data_numero);
                 }
+            }
+
+            $valeurs_str = array_map(function($data_numero) {
+                return '('.implode(',', $data_numero).')';
+            }, $valeurs);
+
+            DM_Core::$d->requete("
+              INSERT INTO numeros(".implode(',',$champs).")
+              VALUES ".implode(',', $valeurs_str)
+            );
+
+            $changements = [];
+
+            if ($etat !== 'non_marque') {
+                $changements[] = "Etat='$etat'";
+            }
+
+            if ($id_acquisition !== -2) {
+                $changements[] = "ID_Acquisition='$id_acquisition'";
+            }
+
+            if ($av !== -1) {
+                $changements[] = "AV='$av'";
+            }
+
+            $numeros_update = array_map(function($numero) {
+                return "'".DM_Core::$d::escape($numero)."'";
+            }, $liste_deja_possedes);
+
+            if (count($numeros_update) > 0) {
+                DM_Core::$d->requete("
+                  UPDATE numeros
+                  SET ".implode(',', $changements)."
+                  WHERE Pays='$pays'
+                    AND Magazine='$magazine'
+                    AND ID_Utilisateur=$id_user
+                    AND Numero IN (".implode(',', $numeros_update).")"
+                );
+            }
 		}
 	}
 
 	function toList($id_user=false) {
 		
 			$requete='SELECT DISTINCT Pays, Magazine,Numero,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros ';
-			if ($id_user!==false) 
-				$requete.='WHERE (ID_Utilisateur='.$id_user.') ';
+			if ($id_user!==false) {
+			    $requete.='WHERE (ID_Utilisateur='.$id_user.') ';
+			}
 			$requete.='ORDER BY Pays, Magazine, Numero';
 			$resultat=DM_Core::$d->requete_select($requete);
 			$l=new Liste();
 			foreach ($resultat as $infos) {
 				if (array_key_exists($infos['Pays'],$l->collection)) {
 					if (array_key_exists($infos['Magazine'],$l->collection[$infos['Pays']])) {
-						array_push($l->collection[$infos['Pays']][$infos['Magazine']],[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]);
+						$l->collection[$infos['Pays']][$infos['Magazine']][] = [$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']];
 					}
 					else {
 						$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
@@ -388,7 +385,6 @@ class Database {
 				else {
 					$l->collection[$infos['Pays']]=[$infos['Magazine']=>0];
 					$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
-
 				}
 			}
 			return $l;
@@ -493,9 +489,9 @@ class Database {
 		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
 
 		return Affichage::get_medailles([
-            'Photographe'=> intval(($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt']),
-            'Concepteur' => intval(($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt']),
-            'Duckhunter' => intval($resultat_nb_bouquineries[0]['cpt'])
+            'Photographe'=> (int) ($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
+            'Concepteur' => (int) ($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
+            'Duckhunter' => (int) $resultat_nb_bouquineries[0]['cpt']
         ]);
 	}
 	
@@ -543,8 +539,10 @@ class Database {
 			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
 			$numero_complet=['Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero];
 			
-			$evenement = ['numero_exemple'=>$numero_complet,
-							   'cpt'		   =>intval($ajout['cpt'])-1];
+			$evenement = [
+			        'numero_exemple'=>$numero_complet,
+			        'cpt'		    =>(int) $ajout['cpt']-1
+            ];
 			
 			ajouter_evenement(
 				$evenements->evenements, $evenement, $ajout['DiffSecondes'], 'ajouts', $ajout['ID_Utilisateur']);
@@ -647,8 +645,7 @@ class Database {
      * @param boolean $depuis_derniere_visite
      * @return array
     */
-    public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite = false)
-    {
+    public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite = false) {
         $derniere_visite = null;
         if ($depuis_derniere_visite) {
             $derniere_visite = Util::get_derniere_visite_utilisateur();
@@ -682,14 +679,12 @@ class Database {
 
     	// TODO Use DM server service
         $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
-                                          WHERE ID_Utilisateur = '.mysqli_real_escape_string(Database::$handle, $id_user).' 
-                                          AND Cle=\''.mysqli_real_escape_string(Database::$handle, $cle).'\'';
+                                          WHERE ID_Utilisateur = '.mysqli_real_escape_string(self::$handle, $id_user).' 
+                                          AND Cle=\''.mysqli_real_escape_string(self::$handle, $cle).'\'';
         if (count(DM_Core::$d->requete_select($requete_verifier_lien_partage)) > 0) {
             return $id_user;
         }
-        else {
-            return null;
-        }
+        return null;
     }
 
     public function get_details_collections($idsUtilisateurs) {
@@ -736,7 +731,7 @@ class Database {
         $resultats = DM_Core::$d->requete_select($requete_points_courants);
         $points = ['photographe' => 0, 'createur' => 0];
         foreach($resultats as $resultat) {
-            $points[$resultat['TypeContribution']] = intval($resultat['NbPoints']);
+            $points[$resultat['TypeContribution']] = (int) $resultat['NbPoints'];
         }
         return $points;
     }
@@ -748,17 +743,16 @@ function get_current_db() {
     if ($row=$result->fetch_array(MYSQLI_NUM)) {
         return $row[0][0];
     }
-    else {
-        return null;
-    }
+    return null;
 }
 
 if (isset($_POST['database'])) {
 	@session_start();
 	if (isset($_POST['pass'])) {
 		if (isset($_POST['connexion'])) {
-			if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass']))
-				echo 'Identifiants invalides!';
+			if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass'])) {
+			    echo 'Identifiants invalides!';
+			}
 			else {
 				$_SESSION['user']=$_POST['user'];
 			    $_SESSION['id_user']=DM_Core::$d->user_to_id($_SESSION['user']);
@@ -773,19 +767,23 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		$etat=$_POST['etat'];
-		if ($_POST['av']=='true'||$_POST['av']=='-1')
-			$av=($_POST['av']=='true')?1:0;
-		else
-			$av=$_POST['av'];
+		if ($_POST['av']=='true'||$_POST['av']=='-1') {
+		    $av=($_POST['av']=='true')?1:0;
+		}
+		else {
+		    $av=$_POST['av'];
+		}
 		$date_acquisition=$_POST['date_acquisition'];
 		$id_acquisition=$date_acquisition;
 		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
 			$requete_id_acquisition="SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND Date = '$date_acquisition' GROUP BY ID_Acquisition";
 			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
-			if ($resultat_acqusitions[0]['cpt'] ==0)
-				$id_acquisition=-1;
-			else
-				$id_acquisition=$resultat_acqusitions[0]['ID_Acquisition'];
+			if ($resultat_acqusitions[0]['cpt'] ==0) {
+			    $id_acquisition=-1;
+			}
+			else {
+			    $id_acquisition=$resultat_acqusitions[0]['ID_Acquisition'];
+			}
 		}
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
 	}
@@ -835,7 +833,7 @@ if (isset($_POST['database'])) {
 			 	if ($_POST['continue']==$id_achat) {
 					$_POST['continue'] = -1;
 				}
-				else continue;
+				else { continue; }
 			}
 			$o_achat=new stdClass();
 			$o_achat->id=$id_achat;
@@ -872,16 +870,7 @@ if (isset($_POST['database'])) {
 							 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 							 .'WHERE Actif=1';
 		$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
-		foreach($resultat_bouquineries as &$bouquinerie) {
-			$i=0;
-			while (array_key_exists($i, $bouquinerie)) {
-				unset ($bouquinerie[$i]);
-				$i++;
-			}
-
-		}
-		$json=json_encode($resultat_bouquineries);
-		echo $json;
+		echo json_encode($resultat_bouquineries);
 	}
     else if (isset($_POST['get_points'])) {
 		$id_user=$_SESSION['id_user'];
@@ -894,10 +883,12 @@ if (isset($_POST['database'])) {
         ]);
     }
 	else { // Vérification de l'utilisateur
-		if (DM_Core::$d->user_exists($_POST['user']))
-			echo UTILISATEUR_EXISTANT;
-		else
-			echo 'OK, '.UTILISATEUR_VALIDE;
+		if (DM_Core::$d->user_exists($_POST['user'])) {
+		    echo UTILISATEUR_EXISTANT;
+		}
+		else {
+		    echo 'OK, '.UTILISATEUR_VALIDE;
+		}
 	}
 }
 

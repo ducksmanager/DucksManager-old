@@ -1,4 +1,4 @@
-<?php include_once('../Database.class.php');
+<?php include_once '../Database.class.php';
 if (isLocalHost()) {?>
 	<form method="get">
 		Pays : <input type="text" name="pays" />
@@ -48,8 +48,9 @@ if (isLocalHost() && isset($_GET['pays']) && !empty($_GET['pays'])) {
 		$dir = opendir($rep);
 		while ($f = readdir($dir)) {
 			if (strpos($f,'.png')===false
-			 && strpos($f,'.jpg')===false )
-				continue;
+			 && strpos($f,'.jpg')===false ) {
+                continue;
+            }
 			if(is_file($rep.$f)) {
 				$nom=$f;
 				echo '<option>'.utf8_encode($nom).'</option>';

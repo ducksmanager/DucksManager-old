@@ -1,10 +1,10 @@
 <?php header('Content-Type: text/html; charset=utf-8');
-require_once('Inducks.class.php');
+require_once 'Inducks.class.php';
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
-include_once ('locales/lang.php');
-require_once('Format_liste.php');
+include_once 'locales/lang.php';
+require_once 'Format_liste.php';
 class classique extends Format_liste {
 	static $titre='Liste classique';
 	function __construct() {

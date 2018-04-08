@@ -3,9 +3,9 @@ class Resolution {
     static $numeros_doubles_JM= ['2411-12','2463-64','2479-80','2506-07','2515-16','2531-32','2558-59','2584-85','2610-11','2619-20','2636-37','2662-63','2671-72','2688-89','2715-16','2723-24','2767-68','2819-20','2828-29','2844-45','2871-72','2879-80','2896-97','2923-24','2932-33','2948-49','2975-76','2984-85'];
 }
 
-include_once('Util.class.php');
-include_once('Database.class.php');
-include_once('Inducks.class.php');
+include_once 'Util.class.php';
+include_once 'Database.class.php';
+include_once 'Inducks.class.php';
 ?>
 <html>
     <head>
@@ -19,8 +19,9 @@ foreach($l->collection as $pays => $magazines) {
     echo $pays.' : <br />';
     $liste_magazines_inducks=Inducks::get_liste_magazines($pays);
     foreach($magazines as $magazine_dm=>$numeros_dm) {
-        if (!array_key_exists($magazine_dm, $liste_magazines_inducks))
-            echo $pays.'/'.$magazine_dm.' n\'existe plus<br />';
+        if (!array_key_exists($magazine_dm, $liste_magazines_inducks)) {
+            echo $pays . '/' . $magazine_dm . ' n\'existe plus<br />';
+        }
         else {
             list($numeros_inducks,$sous_titres)=Inducks::get_numeros($pays, $magazine_dm);
             foreach($numeros_dm as $numero_dm) {
@@ -49,12 +50,14 @@ function tentative_resolution_numero($pays,$magazine,$num_dm) {
                     $num_suivant=$num_dm+1;
                     $split=str_split($num_suivant);
                     $num_double_corresp=$num_dm.'-'.$split[2].$split[3];
-                    if (in_array($num_double_corresp,  Resolution::$numeros_doubles_JM))
-                        return [$pays,$magazine,$num_double_corresp];
+                    if (in_array($num_double_corresp,  Resolution::$numeros_doubles_JM)) {
+                        return [$pays, $magazine, $num_double_corresp];
+                    }
                 break;
                 case 'JMS':
-                    if ($num_dm==2500)
-                        return [$pays,$magazine,'2500A'];
+                    if ($num_dm==2500) {
+                        return [$pays, $magazine, '2500A'];
+                    }
                 break;
                 case 'PMHS':
                     $split=str_split($num_dm);
@@ -67,8 +70,9 @@ function tentative_resolution_numero($pays,$magazine,$num_dm) {
                         if ($split[1]>='A' && $split[1]<='Z') {
                             $nombre=12+($split[1]-'A');
                         }
-                        else
-                            $nombre=$split[1].$split[2];
+                        else {
+                            $nombre = $split[1] . $split[2];
+                        }
                     }
                     switch($lettre) {
                         case 'B':

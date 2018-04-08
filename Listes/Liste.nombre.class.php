@@ -1,6 +1,6 @@
 <?php
-require_once('Format_liste.php');
-require_once('Database.class.php');
+require_once 'Format_liste.php';
+require_once 'Database.class.php';
 
 class Nombre extends Format_liste {
 	static $titre='Liste classique abr&eacute;g&eacute;e';

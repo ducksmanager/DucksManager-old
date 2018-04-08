@@ -5,9 +5,9 @@ ini_set('session.lifetime', 0);
 if (isset($_GET['lang'])) {
     $_SESSION['lang']=$_GET['lang'];
 }
-include_once ('locales/lang.php');
-include_once('Util.class.php');
-include_once('Database.class.php');
+include_once 'locales/lang.php';
+include_once 'Util.class.php';
+include_once 'Database.class.php';
 
 class DM_Core {
     /**
@@ -18,8 +18,9 @@ class DM_Core {
     function  __construct() {
     }
 }
-if (!isset(DM_Core::$d))
-DM_Core::$d=new Database();
+if (!isset(DM_Core::$d)) {
+    DM_Core::$d = new Database();
+}
 if (!DM_Core::$d) {
     echo PROBLEME_BD;
     exit(-1);

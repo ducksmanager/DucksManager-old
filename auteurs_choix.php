@@ -1,7 +1,7 @@
 <?php
 if (isset($_POST['value'])) {
-	require_once('Util.class.php');
-	require_once('Inducks.class.php');
+	require_once 'Util.class.php';
+	require_once 'Inducks.class.php';
 	$valeurs=$_POST['value'];
 	$liste_auteurs= [];
 	foreach(explode(' ',$valeurs) as $mot) {
@@ -11,8 +11,9 @@ if (isset($_POST['value'])) {
 		$liste_auteurs=array_merge($liste_auteurs,$resultats_auteur);
 	}
 	usort($liste_auteurs,function($auteur1,$auteur2) {
-		if ($auteur1['fullname'] < $auteur2['fullname'])
-			return 0;
+		if ($auteur1['fullname'] < $auteur2['fullname']) {
+            return 0;
+        }
 		return  $auteur1['fullname'] < $auteur2['fullname'] ? -1 : 1;
 	});
 	?><ul class="contacts"><?php

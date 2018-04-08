@@ -3,8 +3,8 @@
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
-include_once ('locales/lang.php');
-require_once('Format_liste.php');
+include_once 'locales/lang.php';
+require_once 'Format_liste.php';
 class debug extends Format_liste {
 	static $titre='Liste de d&eacute;bug';
 	function __construct() {

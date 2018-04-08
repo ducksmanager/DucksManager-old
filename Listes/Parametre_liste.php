@@ -27,8 +27,8 @@ class Parametre_valeurs extends Parametre_liste{
 }
 
 class Parametre_min_max extends Parametre_liste{
-	var $min=null;
-	var $max=null;
+	var $min;
+	var $max;
 	
 	function  __construct($texte,$min,$max,$valeur,$defaut) {
 		$this->min=$min;

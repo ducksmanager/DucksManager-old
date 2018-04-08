@@ -31,7 +31,7 @@ class ServeurCoa {
         $configured_coa_servers = parse_ini_file(self::$coa_servers_file, true);
         foreach($configured_coa_servers as $name=>$coaServer) {
             /** @var ServeurCoa $coaServerObject */
-            $coaServerObject = Util::cast(ServeurCoa::class, json_decode(json_encode($coaServer)));
+            $coaServerObject = Util::cast(__CLASS__, json_decode(json_encode($coaServer)));
             if (isset($coaServerObject->role_passwords)) {
                 $roles = [];
                 array_walk($coaServerObject->role_passwords, function($role) use (&$roles) {
@@ -54,9 +54,7 @@ class ServeurCoa {
      * @return ServeurCoa|null
      */
     static function getCoaServer($name) {
-        return array_key_exists($name, self::$coa_servers)
-            ? self::$coa_servers[$name]
-            : null;
+        return self::$coa_servers[$name] ?? null;
     }
 }
 

@@ -68,10 +68,10 @@
     	</div>
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . '..');
-include_once('../IntervalleValidite.class.php');
-include_once('../Inducks.class.php');
-include_once('../Edge.class.php');
-include_once('../Database.class.php');
+include_once '../IntervalleValidite.class.php';
+include_once '../Inducks.class.php';
+include_once '../Edge.class.php';
+include_once '../Database.class.php';
 
 if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
@@ -113,8 +113,9 @@ if (isset($_GET['wanted'])) {
         $est_dispo=count(DM_Core::$d->requete_select($requete_est_dispo)) > 0;
         if (!$est_dispo) {
 			$numeros_demandes[]= ['cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero];
-			if ($cptwanted++ >= $_GET['wanted'])
-				break;
+			if ($cptwanted++ >= $_GET['wanted']) {
+                break;
+            }
 		}
     }
     $publicationcodes = array_unique(array_map(function($publicationcode) {
@@ -184,8 +185,9 @@ foreach($publicationcodes as $publicationcode) {
                 foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
                     $tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes[$publicationcode]);
                     ?><span class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>" title="<?=$numero_inducks?>">&nbsp;</span><?php
-                    if ($tranche_prete_numero_inducks)
+                    if ($tranche_prete_numero_inducks) {
                         $cpt_dispos++;
+                    }
                 }
             } else {
                 ?>Certaines tranches de cette publication sont prêtes mais la publication n'existe plus sur Inducks : <?=implode(', ', $tranches_pretes)?>

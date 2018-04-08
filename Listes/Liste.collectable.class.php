@@ -7,9 +7,9 @@
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
-include_once ('locales/lang.php');
-include_once ('Database.class.php');
-require_once('Format_liste.php');
+include_once 'locales/lang.php';
+include_once 'Database.class.php';
+require_once 'Format_liste.php';
 class collectable extends Format_liste {
 	static $titre='CollecTable';
 	static $regex_numero_double='#([0-9]{2})([0-9]{2})\-([0-9]{2})#is';
@@ -115,14 +115,16 @@ class collectable extends Format_liste {
 				   $ne_parait_plus=in_array($pays.'/'.$magazine, $magazines_ne_paraissant_plus);
 				   $montrer_numeros_inexistants=false;
 				   if ($ne_parait_plus) {
-						list($numeros_inducks,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+						list($numeros_inducks,)=Inducks::get_numeros($pays,$magazine);
 						$numeros_centaines=array_map('get_nb_centaines',$numeros_inducks);
 						$numero_centaines_min=min($numeros_centaines);
 						$numero_centaines_max=max($numeros_centaines);
 						$montrer_numeros_inexistants=$numero_centaines_min==$numero_centaines_max;
-						foreach($numeros_inducks as $numero_inducks)
-							if (!(self::est_listable($numero_inducks)))
-								$montrer_numeros_inexistants=false;
+						foreach($numeros_inducks as $numero_inducks) {
+                            if (!(self::est_listable($numero_inducks))) {
+                                $montrer_numeros_inexistants = false;
+                            }
+                        }
 				   }
 				   $total_magazine = 0;
 				   global $liste_numeros;
@@ -134,15 +136,15 @@ class collectable extends Format_liste {
 						$total_magazine++;
 						$numero = $numero_et_etat[0];
 						if (est_double($numero)) {
-							preg_match(collectable::$regex_numero_double, $numero, $numero);
+							preg_match(self::$regex_numero_double, $numero, $numero);
 							$premier_numero = $numero[1] . $numero[2];
 							$deuxieme_numero = $numero[1] . $numero[3];
 							ajouter_a_liste($premier_numero, true);
 							ajouter_a_liste($deuxieme_numero, true);
 						}
 						else {
-							if (!(self::est_listable($numero))) {
-								array_push($liste_non_numeriques, urldecode($numero));
+							if (!self::est_listable($numero)) {
+								$liste_non_numeriques[] = urldecode($numero);
 							}
 							else {
 								ajouter_a_liste($numero, false);
@@ -161,11 +163,9 @@ class collectable extends Format_liste {
 					<?php
 
 					for($i=1;$i<=100;$i++) {
-						if ($i % ($this->p('nb_numeros_ligne')) == 1) {
-							if ($i!=1) {
-								?><tr><?php
-							}
-						}
+						if ($i % $this->p('nb_numeros_ligne') == 1 && $i != 1) {
+                            ?><tr><?php
+                        }
 						?><td<?php 
 						if ($montrer_numeros_inexistants && !in_array($numero_centaines_min*$this->p('nb_numeros_ligne')+$i,$numeros_inducks)) {
 							?> class="inexistant"<?php
@@ -173,14 +173,16 @@ class collectable extends Format_liste {
 						?>><?php
 						global $contenu;
 						$contenu='';
-						for ($j=0;$j<=collectable::$max_centaines;$j++) {
+						for ($j=0; $j<= self::$max_centaines; $j++) {
 							if (array_key_exists($j*100+$i,$liste_numeros)) {
 								for ($k=0;$k<$liste_numeros[$j*100+$i];$k++) {
 									if (array_key_exists($j*100+$i, $liste_numeros_doubles)) {
-										if (array_key_exists($j*100+$i+1, $liste_numeros_doubles))
-											$contenu.=number_to_letter($j).'&gt;';
-										else
-											$contenu.='&lt;'.number_to_letter($j);
+										if (array_key_exists($j*100+$i+1, $liste_numeros_doubles)) {
+                                            $contenu .= number_to_letter($j) . '&gt;';
+                                        }
+										else {
+                                            $contenu .= '&lt;' . number_to_letter($j);
+                                        }
 									}
 									else {
 										$contenu.=number_to_letter($j);
@@ -219,7 +221,7 @@ class collectable extends Format_liste {
 								<td align="center" colspan="2">
 									<u><?=ucfirst(NUMEROS)?></u>
 								</td></tr><tr><?php
-				for ($i=0;$i<=collectable::$max_centaines;$i++) {
+				for ($i=0;$i<= self::$max_centaines;$i++) {
 							?><td>
 								<?=number_to_letter($i)?>:<?=($i*100+1)?>-&gt;<?=(($i+1)*100)?>
 							 </td><?php
@@ -290,24 +292,29 @@ class collectable extends Format_liste {
 function number_to_letter($number) {
 	global $centaines_utilisees;
 	$centaines_utilisees[$number]=true;
-	if ($number<26)
-		return chr(97+$number);
-	else
-		return chr(65-26+$number);
+	if ($number<26) {
+        return chr(97 + $number);
+    }
+	else {
+        return chr(65 - 26 + $number);
+    }
 }
 
 function est_double($numero) {
-	if (preg_match(collectable::$regex_numero_double, $numero, $numero) == 0)
-		return false;
-	return intval($numero[1].$numero[2])+1 == intval($numero[1].$numero[3]);
+	if (preg_match(collectable::$regex_numero_double, $numero, $numero) == 0) {
+        return false;
+    }
+	return (int)$numero[1] . $numero[2] +1 == (int)$numero[1] . $numero[3];
 }
 
 function ajouter_a_liste($numero,$est_double=false) {
 	global $liste_numeros;global $liste_numeros_doubles;
-	if (false!=(array_key_exists($numero,$liste_numeros)))
-		$liste_numeros[$numero]++;
-	else
-		$liste_numeros[$numero]=1;
+	if (false!= array_key_exists($numero,$liste_numeros)) {
+        $liste_numeros[$numero]++;
+    }
+	else {
+        $liste_numeros[$numero] = 1;
+    }
 
 	$centaine=get_nb_centaines($numero);
 	$diz_et_unites=$numero-100*$centaine;
@@ -315,20 +322,24 @@ function ajouter_a_liste($numero,$est_double=false) {
 		$diz_et_unites = 100;
 		$centaine--;
 	}
-	if ($centaine > collectable::$max_centaines)
-		collectable::$max_centaines = $centaine;
-	if ($diz_et_unites > collectable::$max_diz_et_unites)
-		collectable::$max_diz_et_unites = $diz_et_unites;
+	if ($centaine > collectable::$max_centaines) {
+        collectable::$max_centaines = $centaine;
+    }
+	if ($diz_et_unites > collectable::$max_diz_et_unites) {
+        collectable::$max_diz_et_unites = $diz_et_unites;
+    }
 	
 	if ($est_double) {
-		if (false!=(array_key_exists($numero,$liste_numeros_doubles)))
-			$liste_numeros_doubles[$numero]++;
-		else
-			$liste_numeros_doubles[$numero]=1;
+		if (false!= array_key_exists($numero,$liste_numeros_doubles)) {
+            $liste_numeros_doubles[$numero]++;
+        }
+		else {
+            $liste_numeros_doubles[$numero] = 1;
+        }
 	}
 }
 
 function get_nb_centaines($numero) {
-	return intval($numero/100);
+	return (int)$numero / 100;
 }
 ?>

@@ -1,7 +1,7 @@
 <?header('Content-Type: text/html; charset=utf-8');
 error_reporting(E_ALL);
-include_once('../Database.class.php');
-include_once('../authentification.php');
+include_once '../Database.class.php';
+include_once '../authentification.php';
 
 $requete_tranches_pretes_pour_publication = '
   SELECT ID, Pays, Magazine, Numero

@@ -3,7 +3,7 @@
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
-require_once('Format_liste.php');
+require_once 'Format_liste.php';
 class dmspiral extends Format_liste {
 	static $titre='Liste en spirale';
 	
@@ -36,18 +36,19 @@ class dmspiral extends Format_liste {
 	}
 	
 	function generer($pays,$magazine) {
-		if (!isset($_GET['debug']))
-			header('Content-type: image/png');
+		if (!isset($_GET['debug'])) {
+            header('Content-type: image/png');
+        }
 	
 		$numeros_doubles= [];
-		list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+		list($numeros,)=Inducks::get_numeros($pays,$magazine);
 		$this->ajouter_parametres(['numero_max'=>max($numeros)]);
-		$this->ajouter_parametres(['nb_centaines'=>intval($this->p('numero_max')/100)+1]);
+		$this->ajouter_parametres(['nb_centaines'=> (int)$this->p('numero_max') / 100 +1]);
 		$this->ajouter_parametres([
 			'haut'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/2,
 			'gauche'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/4]);
 		foreach($numeros as $numero) {
-			$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero, $numero)>0;
+			$est_numero_double=preg_match(self::$regex_numero_double, $numero, $numero)>0;
 			if ($est_numero_double) {
 				$premier_numero = $numero[1] . $numero[2];
 				$numeros_doubles[]=$premier_numero;
@@ -127,7 +128,7 @@ class dmspiral extends Format_liste {
 			imageline($image, $this->p('gauche')-(($centaine+1)*0.25)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $this->p('gauche')-($centaine*0.25)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $noir);
 		}
 		foreach($numeros_doubles as $numero_double) {
-			$centaine=intval($numero_double/100);
+			$centaine= (int)$numero_double / 100;
 			$diz_unites=$numero_double-100*$centaine;
 			switch($diz_unites) {
 				case 0:
@@ -149,13 +150,13 @@ class dmspiral extends Format_liste {
 				break;
 				case 49:
 					imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4, 
-												 $this->p('gauche')+(47.95+($centaine)/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4+$this->p('hauteur_centrale')/2,
+												 $this->p('gauche')+(47.95+ $centaine /4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4+$this->p('hauteur_centrale')/2,
 												 $gris_clair);
 
 				break;
 				case 50:
 					imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'), 
-												 $this->p('gauche')+(47.95+($centaine)/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur')/2+$this->p('epaisseur')/4,
+												 $this->p('gauche')+(47.95+ $centaine /4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur')/2+$this->p('epaisseur')/4,
 												 $gris_clair);
 
 				break;
@@ -178,13 +179,13 @@ class dmspiral extends Format_liste {
 				default:
 					if ($diz_unites<49) {
 						imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
-													 $this->p('gauche')+($diz_unites)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
+													 $this->p('gauche')+ $diz_unites *$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
 													 $gris_clair);
 					}
 					else {
 						$diz_unites=99-$diz_unites;
 						imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
-													 $this->p('gauche')+($diz_unites)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
+													 $this->p('gauche')+ $diz_unites *$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
 													 $gris_clair);
 
 					}
@@ -193,20 +194,21 @@ class dmspiral extends Format_liste {
 
 		for ($i=0;$i<$this->p('nb_centaines');$i++) {
 			imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')+$this->p('hauteur_centrale')+($i+1)*$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
-			imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')-($i)*$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
+			imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')- $i *$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
 		}
 
 		$requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$_SESSION['id_user'].')';
 		$resultat_numeros_possedes=DM_Core::$d->requete_select($requete_numeros_possedes);
 		foreach($resultat_numeros_possedes as $numero) {
-			if (0!=(intval($numero['Numero']))) {
-				$est_numero_double=preg_match(dmspiral::$regex_numero_double, $numero['Numero'], $numero2)>0;
+			if (0!= (int)$numero['Numero']) {
+				$est_numero_double=preg_match(self::$regex_numero_double, $numero['Numero'], $numero2)>0;
 				if ($est_numero_double) {
 					$premier_numero = $numero2[1] . $numero2[2];
 					$this->marquer_numero ($image, $premier_numero);
 				}
-				else
-					$this->marquer_numero ($image, $numero['Numero']);
+				else {
+                    $this->marquer_numero($image, $numero['Numero']);
+                }
 			}
 		}
 		/** REMPLISSAGE **/
@@ -222,7 +224,7 @@ class dmspiral extends Format_liste {
 	}
 	
 	function marquer_numero($image,$numero) {
-		$centaine=intval($numero/100);
+		$centaine= (int)$numero / 100;
 		$diz_unites=$numero-100*$centaine;
 		$pos=new stdClass();
 		switch($diz_unites) {
@@ -258,7 +260,7 @@ class dmspiral extends Format_liste {
 				}
 				else {
 					$pos->x=$this->p('gauche')+$this->p('epaisseur')*(50-($diz_unites-50)-1);
-					$pos->y=$this->p('haut')+$this->p('hauteur_centrale')+($centaine)*$this->p('epaisseur')/2+$this->p('epaisseur')/4;
+					$pos->y=$this->p('haut')+$this->p('hauteur_centrale')+ $centaine *$this->p('epaisseur')/2+$this->p('epaisseur')/4;
 				}
 			break;
 		}
@@ -269,13 +271,14 @@ class dmspiral extends Format_liste {
 
 
 
-if (isset($_GET['pays']) && isset($_GET['magazine'])) {
-	include_once('../Inducks.class.php');
+if (isset($_GET['pays'], $_GET['magazine'])) {
+	include_once '../Inducks.class.php';
 	$dmspiral=new dmspiral();
 	if (isset($_GET['parametres'])) {
 		$parametres=json_decode(str_replace('|','"',$_GET['parametres']));
-		foreach($parametres as $nom_parametre=>$parametre)
-			$dmspiral->parametres->$nom_parametre=$parametre;
+		foreach($parametres as $nom_parametre=>$parametre) {
+            $dmspiral->parametres->$nom_parametre = $parametre;
+        }
 	}
 	$dmspiral->generer($_GET['pays'], $_GET['magazine']);
 	

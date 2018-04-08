@@ -1,8 +1,8 @@
 <?php
-include_once('IntervalleValidite.class.php');
-include_once('DucksManager_Core.class.php');
-include_once('getDimensions.php');
-include_once('Etagere.class.php');
+include_once 'IntervalleValidite.class.php';
+include_once 'DucksManager_Core.class.php';
+include_once 'getDimensions.php';
+include_once 'Etagere.class.php';
 
 class Edge {
 	var $pays;
@@ -28,8 +28,9 @@ class Edge {
 	static $sans_etageres = false;
 
     function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $image_seulement = false) {
-		if (is_null($pays))
-			return;
+		if (is_null($pays)) {
+            return;
+        }
 		$this->magazine_est_inexistant=false;
 		$this->pays=$pays;
 		$this->magazine=$magazine;
@@ -50,24 +51,25 @@ class Edge {
 
 			$this->image_existe=file_exists($url_image);
 			if ($this->image_existe) {
-				if (! (list($this->largeur,$this->hauteur,$type,$attr)=@getimagesize($url_image))) {
+				if (! (list($this->largeur,$this->hauteur,,)=@getimagesize($url_image))) {
 					mail('admin@ducksmanager.net', 'Image de bibliothèque corrompue',$url_image);
 					return;
 				}
-				$this->largeur=intval( $this->largeur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
-				$this->hauteur=intval( $this->hauteur / (Edge::$grossissement_affichage/Edge::$grossissement_defaut));
+				$this->largeur= (int)$this->largeur / (Edge::$grossissement_affichage / Edge::$grossissement_defaut);
+				$this->hauteur= (int)$this->hauteur / (Edge::$grossissement_affichage / Edge::$grossissement_defaut);
 
 			}
 			else {
 				$dimensions=getDimensionsParDefautMagazine($this->pays,$this->magazine, [$this->numero_reference]);
-				if (!is_null($dimensions[$this->numero_reference]) && $dimensions[$this->numero_reference]!='null')
-					list($this->largeur,$this->hauteur)=explode('x',$dimensions[$this->numero_reference]);
+				if ($dimensions[$this->numero_reference] !== 'null') {
+                    list($this->largeur, $this->hauteur) = explode('x', $dimensions[$this->numero_reference]);
+                }
 
 				@imagepng($this->dessiner_defaut(),$url_image);
 
 				$this->est_visible=false;
-				$this->largeur*=Edge::$grossissement_affichage;
-				$this->hauteur*=Edge::$grossissement_affichage;
+				$this->largeur*= self::$grossissement_affichage;
+				$this->hauteur*= self::$grossissement_affichage;
 
 				$this->magazine_est_inexistant=true;
 			}
@@ -83,13 +85,14 @@ class Edge {
 	static function getEtagereHTML($br=true) {
 		$code= '<div class="etagere" style="width:'.Etagere::$largeur.';'
 										  .'background-image: url(\'edges/textures/'.Etagere::$texture2.'/'.Etagere::$sous_texture2.'.jpg\')">&nbsp;</div>';
-		if ($br===true)
-			$code.= '<br />';
+		if ($br===true) {
+            $code .= '<br />';
+        }
 		return $code;
 	}
 
 	static function get_numero_clean($numero) {
-		return str_replace('+','',str_replace(' ','',$numero));
+		return str_replace([' ', '+'], '', $numero);
 	}
 	
 	
@@ -155,10 +158,10 @@ class Edge {
 	
 	function getImgHTML($regen=false) {
 		$code='';
-		if (!Edge::$sans_etageres) {
-			if (Edge::$largeur_numeros_precedents + $this->largeur > Etagere::$largeur) {
-				$code .= Edge::getEtagereHTML();
-				Edge::$largeur_numeros_precedents = 0;
+		if (!self::$sans_etageres) {
+			if (self::$largeur_numeros_precedents + $this->largeur > Etagere::$largeur) {
+				$code .= self::getEtagereHTML();
+				self::$largeur_numeros_precedents = 0;
 			}
 			if ($this->hauteur > Etagere::$hauteur_max_etage) {
 				Etagere::$hauteur_max_etage = $this->hauteur;
@@ -170,11 +173,11 @@ class Edge {
 			$code.='name="'.$this->pays.'/'.$this->magazine.'.'.$this->numero_reference.'" ';
 		}
 		else {
-			$code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero_reference.'&amp;grossissement='.Edge::$grossissement.'" ';
+			$code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero_reference.'&amp;grossissement='. self::$grossissement.'" ';
 		}
 		$code.='width="'.$this->largeur.'" height="'.$this->hauteur.'" id="'.$this->pays.'/'.$this->magazine.'.'.$this->numero.'"/>';
 		
-		Edge::$largeur_numeros_precedents+=$this->largeur;
+		self::$largeur_numeros_precedents+=$this->largeur;
 		return $code;
 	}
 
@@ -196,28 +199,10 @@ class Edge {
 
     function dessiner_contour() {
         $noir=imagecolorallocate($this->image, 0, 0, 0);
-        for ($i=0;$i<.15*Edge::$grossissement;$i++)
-            imagerectangle($this->image, $i, $i, $this->largeur-1-$i, $this->hauteur-1-$i, $noir);
+        for ($i=0; $i<.15* self::$grossissement; $i++) {
+            imagerectangle($this->image, $i, $i, $this->largeur - 1 - $i, $this->hauteur - 1 - $i, $noir);
+        }
     }
-
-	function placer_image($sous_image, $position='haut', $decalage= [0,0], $compression_largeur=1, $compression_hauteur=1) {
-		if (is_string($sous_image)) {
-			$extension_image=strtolower(substr($sous_image, strrpos($sous_image, '.')+1,strlen($sous_image)-strrpos($sous_image, '.')-1));
-			$fonction_creation_image='imagecreatefrom'.$extension_image.'_getimagesize';
-			$chemin_reel=(strpos($sous_image, 'images_myfonts')!==false) ? $sous_image : $this->getChemin().'/'.$sous_image;
-			list($sous_image,$width,$height)=call_user_func($fonction_creation_image,$chemin_reel);
-		}
-		else {
-			$width=imagesx($sous_image);
-			$height=imagesy($sous_image);
-		}
-		$hauteur_sous_image=$this->largeur*($height/$width);
-		if ($position=='bas') {
-			$decalage[1]=$this->hauteur-$hauteur_sous_image-$decalage[1];
-		}
-		imagecopyresampled ($this->image, $sous_image, $decalage[0], $decalage[1], 0, 0, $this->largeur*$compression_largeur, $hauteur_sous_image*$compression_hauteur, $width, $height);
-		return $sous_image;
-	}
 
     static function getPointsPhotographeAGagner($id_user){
         $requete_points_tranche = "
@@ -230,13 +215,13 @@ class Edge {
 
         $resultats_points_tranches = DM_Core::$d->requete_select($requete_points_tranche);
         return array_map(function($tranche) {
-            $tranche['Popularite'] = intval($tranche['Popularite']);
+            $tranche['Popularite'] = (int)$tranche['Popularite'];
             return $tranche;
         }, $resultats_points_tranches);
     }
 
 	static function getPourcentageVisible($id_user, $get_html=false) {
-		include_once('Database.class.php');
+		include_once 'Database.class.php';
 		@session_start();
 
         $l=DM_Core::$d->toList($id_user);
@@ -263,8 +248,9 @@ class Edge {
             $pays=$ordre['Pays'];
             $magazine=$ordre['Magazine'];
             $numeros=$l->collection[$pays][$magazine];
-            if ($get_html === true)
+            if ($get_html === true) {
                 sort($numeros);
+            }
             $total_numeros+=count($numeros);
 
             list($magazine, $numeros_clean_et_references) = self::get_numeros_clean($pays, $magazine, $numeros);
@@ -277,15 +263,18 @@ class Edge {
                 if ($get_html) {
                     $texte_final.=$e->html;
                 }
-                if ($e->est_visible)
+                if ($e->est_visible) {
                     $total_numeros_visibles++;
+                }
             }
         }
-        $pourcentage_visible=$total_numeros===0 ? 0 : intval(100*$total_numeros_visibles/$total_numeros);
-        if ($get_html)
+        $pourcentage_visible=$total_numeros===0 ? 0 : (int)100 * $total_numeros_visibles / $total_numeros;
+        if ($get_html) {
             return [$texte_final, $pourcentage_visible, Inducks::get_noms_complets_magazines($publication_codes)];
-        else
+        }
+        else {
             return $pourcentage_visible;
+        }
 	}
 
     static function getParametresBibliotheque($id_user) {
@@ -318,11 +307,13 @@ if (isset($_POST['get_points'])) {
     $nb_points_courants = DM_Core::$d->get_points_courants($_SESSION['id_user']);
     echo json_encode(['points' => $nb_points_courants]);
 }
-elseif (isset($_GET['pays']) && isset($_GET['magazine']) && isset($_GET['numero'])) {
-	if (isset($_GET['grossissement']))
-		Edge::$grossissement_affichage=$_GET['grossissement'];
-	if (!isset($_GET['debug']))
-		header('Content-type: image/png');
+elseif (isset($_GET['pays'], $_GET['magazine'], $_GET['numero'])) {
+	if (isset($_GET['grossissement'])) {
+        Edge::$grossissement_affichage = $_GET['grossissement'];
+    }
+	if (!isset($_GET['debug'])) {
+        header('Content-type: image/png');
+    }
 	$e=new Edge($_GET['pays'], $_GET['magazine'], $_GET['numero'], $_GET['numero'], null, true);
 	imagepng($e->image);
 }
@@ -407,8 +398,9 @@ elseif (isset($_POST['get_texture'])) {
 			?>
 			<option 
 			<?php
-			if ($f==$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']])
-				echo 'selected="selected" ';?>
+			if ($f==$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']]) {
+                echo 'selected="selected" ';
+            } ?>
 			value="<?=$f?>"
 			><?=constant('TEXTURE__'.strtoupper($f))?></option>
 			<?php
@@ -428,8 +420,9 @@ elseif (isset($_POST['get_sous_texture'])) {
 			$nom_sous_texture=substr($f,0, strrpos($f, '.'));
 			?>
 			<option <?php
-			if ($nom_sous_texture==$resultat_texture[0]['Bibliotheque_Sous_Texture'.$_POST['n']])
-				echo 'selected="selected" ';?>
+			if ($nom_sous_texture==$resultat_texture[0]['Bibliotheque_Sous_Texture'.$_POST['n']]) {
+                echo 'selected="selected" ';
+            } ?>
 			style="background:url('edges/textures/<?=$_POST['texture']?>/miniatures/<?=$f?>') no-repeat scroll center right transparent">
 				<?=$nom_sous_texture?>
 			</option><?php
@@ -457,8 +450,7 @@ function imagecreatefromgif_getimagesize($chemin) {
 
 if (!function_exists('imagepalettetotruecolor')) {
 	function imagepalettetotruecolor(&$img) {
-		if (!imageistruecolor($img))
-		{
+		if (!imageistruecolor($img)) {
 			$w = imagesx($img);
 			$h = imagesy($img);
 			$img1 = imagecreatetruecolor($w,$h);
@@ -477,18 +469,21 @@ function rgb2hex($r,$g,$b) {
 			return 0;
 		}
 		$tmp = dechex($rgb[$i]);
-		if (strlen($tmp) < 2)
-			$hex .= "0" . $tmp;
-		else
-			$hex .= $tmp;
+		if (strlen($tmp) < 2) {
+            $hex .= "0" . $tmp;
+        }
+		else {
+            $hex .= $tmp;
+        }
 	}
 	return $hex;
 }
 
 
 function remplacerCouleur(&$im,$r_old,$g_old,$b_old,$r,$g,$b) {
-	if ($r_old===$r && $g_old===$g && $b_old===$b)
-		return;
+	if ($r_old===$r && $g_old===$g && $b_old===$b) {
+        return;
+    }
 	$width = imagesx($im);
 	$height = imagesy($im);
 	$oldhex = rgb2hex($r_old,$g_old,$b_old);
@@ -496,8 +491,9 @@ function remplacerCouleur(&$im,$r_old,$g_old,$b_old,$r,$g,$b) {
 	$color = imagecolorallocate($im, hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 6)));
 	for ($cloneH = 0; $cloneH < $height; $cloneH++) {
 		for ($x = 0; $x < $width; $x++) {
-			if (colormatch($im, $x, $cloneH, $oldhex))
-			   imagesetpixel($im, $x, $cloneH, $color);
+			if (colormatch($im, $x, $cloneH, $oldhex)) {
+                imagesetpixel($im, $x, $cloneH, $color);
+            }
 	   }
    }
 }

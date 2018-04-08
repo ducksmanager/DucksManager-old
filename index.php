@@ -1,5 +1,5 @@
 <?php
-require_once('Util.class.php');
+require_once 'Util.class.php';
 
 if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off')){
     $redirect = 'https://ducksmanager.net' . $_SERVER['REQUEST_URI'];
@@ -12,13 +12,13 @@ header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
 date_default_timezone_set('Europe/Paris');
-require_once('_priv/Admin.priv.class.php');
-require_once('travaux.php');
-require_once('DucksManager_Core.class.php');
-require_once('Liste.class.php');
-require_once('Menu.class.php');
-require_once('Affichage.class.php');
-require_once('Inducks.class.php');
+require_once '_priv/Admin.priv.class.php';
+require_once 'travaux.php';
+require_once 'DucksManager_Core.class.php';
+require_once 'Liste.class.php';
+require_once 'Menu.class.php';
+require_once 'Affichage.class.php';
+require_once 'Inducks.class.php';
 if (Util::isLocalHost() || isset($_GET['dbg'])) {
 	error_reporting(E_ALL);
 }
@@ -40,15 +40,13 @@ else {
         $_COOKIE['pass'] = $_SESSION['pass'];
         $_COOKIE['is_sha1'] = 'true';
 	}
-	if (isset($_COOKIE['user']) && isset($_COOKIE['pass'])) {
-		if (!DM_Core::$d->user_connects($_COOKIE['user'],$_COOKIE['pass'])) {
-			$_SESSION['user']=$_COOKIE['user'];
+	if (isset($_COOKIE['user'], $_COOKIE['pass']) && !DM_Core::$d->user_connects($_COOKIE['user'], $_COOKIE['pass'])) {
+        $_SESSION['user']=$_COOKIE['user'];
 
-			setcookie('user', $_COOKIE['user'],time()+3600, '','ducksmanager.net'); // On met les cookies à jour à chaque rafraichissement
-			setcookie('pass', $_COOKIE['pass'],time()+3600, '', 'ducksmanager.net');
-			setcookie('is_sha1', 'true',time()+3600, '', 'ducksmanager.net');
-		}
-	}
+        setcookie('user', $_COOKIE['user'],time()+3600, '','ducksmanager.net'); // On met les cookies à jour à chaque rafraichissement
+        setcookie('pass', $_COOKIE['pass'],time()+3600, '', 'ducksmanager.net');
+        setcookie('is_sha1', 'true',time()+3600, '', 'ducksmanager.net');
+    }
 }
 
 $locales = [];
@@ -62,12 +60,14 @@ foreach(array_keys(Lang::$codes_inducks) as $nom_langue) {
     }
 }
 
-$action=isset($_GET['action'])?$_GET['action']:null;
-if (defined('TITRE_PAGE_'.strtoupper($action)))
-    $titre=constant('TITRE_PAGE_'.strtoupper($action));
-else
-    $titre=TITRE_PAGE_ACCUEIL;
-$id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
+$action= $_GET['action'] ?? null;
+if (defined('TITRE_PAGE_'.strtoupper($action))) {
+    $titre = constant('TITRE_PAGE_' . strtoupper($action));
+}
+else {
+    $titre = TITRE_PAGE_ACCUEIL;
+}
+$id_user= $_SESSION['id_user'] ?? null;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -95,7 +95,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         }
         ?>
         <link rel="icon" type="image/png" href="favicon.png">
-        <?php include_once('ServeurDb.class.php');
+        <?php include_once 'ServeurDb.class.php';
         if (!isLocalHost()) {?>
             <!-- Piwik -->
             <script type="text/javascript">
@@ -174,7 +174,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
         if (!is_null($action)) {
             ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
-			if (!isset($_GET['action'])) $_GET['action']='';            
+			if (!isset($_GET['action'])) {
+                $_GET['action'] = '';
+            }
 			switch($_GET['action']) {
                 case 'gerer':
                     ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script><?php
@@ -188,7 +190,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 case 'bibliotheque':
                     if (isset($_GET['user'])) {
                         $user_bibliotheque = $_GET['user'];
-                        $cle_bibliotheque = isset($_GET['key']) ? $_GET['key'] : -1;
+                        $cle_bibliotheque = $_GET['key'] ?? -1;
                         $est_partage_bibliotheque = true;
                     }
                     else {
@@ -237,8 +239,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
     	$_POST['pass']='demodemo';
     }
     if ($action=='open'&& isset($_POST['user'])) {
-        if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass']))
-            $texte_debut.= 'Identifiants invalides!<br /><br />';
+        if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass'])) {
+            $texte_debut .= 'Identifiants invalides!<br /><br />';
+        }
         else {
             creer_id_session($_POST['user'],$_POST['pass']);
         }
@@ -252,9 +255,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
         case 'bibliotheque':
             switch ($onglet) {
                 case 'affichage':
-                    if (Util::getBrowser() !== 'MSIE<9') {
-                        ?>charger_bibliotheque();<?php
-                    }
+                    ?>charger_bibliotheque();<?php
                 break;
                 case 'options':
                     ?>initTextures();
@@ -323,7 +324,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             if (isset($_SESSION['user']) && $action !== 'logout') {
                 ?><div id="medailles"><?php
                 $radius = 42;
-                $circonference = pi() * $radius * 2;
+                $circonference = M_PI * $radius * 2;
 
                 $niveaux=DM_Core::$d->get_niveaux();
                 foreach($niveaux as $type=>$cpt_et_niveau) {
@@ -412,8 +413,9 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                 fin_de_page($locales);
             }
             foreach($menus as $i=>$menu) {
-                if (! isset($menu->items))
+                if (! isset($menu->items)) {
                     continue;
+                }
                 foreach($menu->items as $j=>$item) {
                     if ($item->nom==$action) {
                         if ($item->est_prive=='always' && !isset($_SESSION['user'])) {
@@ -470,7 +472,7 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             }
             }
             }
-            if (!isset($_POST['rawData']) || isset($rawdata_valide) && !$rawdata_valide) {
+            if (!isset($_POST['rawData']) || (isset($rawdata_valide) && !$rawdata_valide)) {
                 echo IMPORT_INDUCKS_DESACTIVE;
                 /*
                 ?><table border="0" style="width:90%;height:70%" cellspacing="5">
@@ -505,12 +507,23 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             case 'open':
             if (!isset($_SESSION['user'])) {
             ?>
-                <?=IDENTIFIEZ_VOUS?><br /><br />
+                <?= IDENTIFIEZ_VOUS ?><br/><br/>
                 <form method="post" action="?action=open">
-                    <table border="0"><tr><td><?=NOM_UTILISATEUR?> :</td><td><input type="text" name="user" /></td></tr>
-                        <tr><td><?=MOT_DE_PASSE?> :</td><td><input type="password" name="pass" /></td></tr>
-                        <tr><td align="center" colspan="2"><input type="submit" value="<?=CONNEXION?>"/></td></tr></table></form>
-                <a href="?action=mot_de_passe_oublie"><?=MOT_DE_PASSE_OUBLIE?></a>
+                    <table border="0">
+                        <tr>
+                            <td><?= NOM_UTILISATEUR ?> :</td>
+                            <td><input type="text" name="user"/></td>
+                        </tr>
+                        <tr>
+                            <td><?= MOT_DE_PASSE ?> :</td>
+                            <td><input type="password" name="pass"/></td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="2"><input type="submit" value="<?= CONNEXION ?>"/></td>
+                        </tr>
+                    </table>
+                </form>
+                <a href="?action=mot_de_passe_oublie"><?= MOT_DE_PASSE_OUBLIE ?></a>
                 <?php
             }
                 break;
@@ -531,8 +544,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                             $mdp_temporaire = '' ;
                             for ($i = 0 ; $i <= 28 ; $i++) {
                                 $num = rand() % 33;
-                                $tmp = substr($chars, $num, 1);
-                                $mdp_temporaire = $mdp_temporaire . $tmp;
+                                $tmp = $chars[$num];
+                                $mdp_temporaire .= $tmp;
                                 $i++;
                             }
 
@@ -549,10 +562,12 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                                 .'<br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_2.$mdp_temporaire
                                 .'<br /><br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_3
                                 .'<br /><br />'.EMAIL_SIGNATURE;
-                            if (mail($_POST['email'], EMAIL_REINIT_MOT_DE_PASSE_TITRE, $contenu_mail,$entete))
+                            if (mail($_POST['email'], EMAIL_REINIT_MOT_DE_PASSE_TITRE, $contenu_mail,$entete)) {
                                 echo MOT_DE_PASSE_OUBLIE_EMAIL_ENVOYE;
-                            else
+                            }
+                            else {
                                 echo MOT_DE_PASSE_OUBLIE_ERREUR_ENVOI_EMAIL;
+                            }
                             break;
                         }
                     }
@@ -580,74 +595,72 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
                         BIBLIOTHEQUE_COURT => ['affichage', BIBLIOTHEQUE],
                         BIBLIOTHEQUE_OPTIONS_COURT => ['options', BIBLIOTHEQUE_OPTIONS],
                         BIBLIOTHEQUE_CONTRIBUTEURS_COURT => ['contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS]];
-                    if (!isset($_GET['onglet']))
+                    if (!isset($_GET['onglet'])) {
                         $onglet = 'affichage';
-                    else
+                    }
+                    else {
                         $onglet = $_GET['onglet'];
+                    }
                     Affichage::onglets($onglet, $onglets, 'onglet', '?action=bibliotheque');
                 }
                 switch ($onglet) {
                     case 'affichage':
-                        if (Util::getBrowser() === 'MSIE<9') {
-                            echo IE_INF_A_9_NON_SUPPORTE;
-                        } else {
-                            if (!$est_partage_bibliotheque) {
-                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user);
-                                if (count($resultat_tranches_collection_ajoutees) > 0) {
-                                    $publication_codes = [];
-                                    foreach ($resultat_tranches_collection_ajoutees as $tranche) {
-                                        $publication_codes[] = $tranche['publicationcode'];
-                                    }
-                                    $publication_codes = array_unique($publication_codes);
-                                    $magazines_complets = Inducks::get_noms_complets_magazines($publication_codes);
-                                    ?>
-                                    <div>
-                                        <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
-                                        <?php
-                                        foreach ($resultat_tranches_collection_ajoutees as $tranche) {
-                                            list($pays, $magazine) = explode('/', $tranche['publicationcode']);
-                                            echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
-                                                . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
-                                        }
-                                        ?>
-                                    </div><br/><br/><?php
+                        if (!$est_partage_bibliotheque) {
+                            $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user);
+                            if (count($resultat_tranches_collection_ajoutees) > 0) {
+                                $publication_codes = [];
+                                foreach ($resultat_tranches_collection_ajoutees as $tranche) {
+                                    $publication_codes[] = $tranche['publicationcode'];
                                 }
+                                $publication_codes = array_unique($publication_codes);
+                                $magazines_complets = Inducks::get_noms_complets_magazines($publication_codes);
+                                ?>
+                                <div>
+                                    <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
+                                    <?php
+                                    foreach ($resultat_tranches_collection_ajoutees as $tranche) {
+                                        list($pays, $magazine) = explode('/', $tranche['publicationcode']);
+                                        echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
+                                            . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
+                                    }
+                                    ?>
+                                </div><br/><br/><?php
                             }
-                            ?>
-
-                            <?php if (!$est_partage_bibliotheque) { ?>
-                                <div id="partager_bibliotheque" class="cache">
-                                    <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
-                                </div><?php
-                            }?>
-                            <span id="chargement_bibliotheque_termine"><?= CHARGEMENT ?></span>
-                            <br/>
-                            <div id="barre_pct_bibliotheque">
-                                <div id="pct_bibliotheque">&nbsp;</div>
-                            </div>
-                            <span id="pcent_visible"></span>
-                            <span id="pourcentage_collection_visible"></span>
-
-                            <?php if (!$est_partage_bibliotheque) { ?>
-                                <div id="proposition_photo" class="cache">
-                                    <div id="tranches_possibles">
-                                        <?php Affichage::afficher_proposition_photo_tranche(); ?>
-                                    </div>
-                                </div>
-                                <div id="recherche_histoire">
-                                    <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
-                                    <input type="text" class="form-control"/>
-                                </div>
-                                <?php
-                            } ?>
-                            <div id="bibliotheque"></div>
-                            <?php
-                            Affichage::afficher_texte_numero_template();
-                            Affichage::afficher_infobulle_tranche_template();
                         }
+                        ?>
+
+                        <?php if (!$est_partage_bibliotheque) { ?>
+                            <div id="partager_bibliotheque" class="cache">
+                                <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
+                            </div><?php
+                        }?>
+                        <span id="chargement_bibliotheque_termine"><?= CHARGEMENT ?></span>
+                        <br/>
+                        <div id="barre_pct_bibliotheque">
+                            <div id="pct_bibliotheque">&nbsp;</div>
+                        </div>
+                        <span id="pcent_visible"></span>
+                        <span id="pourcentage_collection_visible"></span>
+
+                        <?php if (!$est_partage_bibliotheque) { ?>
+                            <div id="proposition_photo" class="cache">
+                                <div id="tranches_possibles">
+                                    <?php Affichage::afficher_proposition_photo_tranche(); ?>
+                                </div>
+                            </div>
+                            <div id="recherche_histoire">
+                                <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
+                                <input type="text" class="form-control"/>
+                            </div>
+                            <?php
+                        } ?>
+                        <div id="bibliotheque"></div>
+                        <?php
+                        Affichage::afficher_texte_numero_template();
+                        Affichage::afficher_infobulle_tranche_template();
                         break;
                     case 'options':
-                        require_once('Edge.class.php');
+                        require_once 'Edge.class.php';
                         if (isset($_POST['texture1'])) {
                             for ($i = 1; $i <= 2; $i++) {
                                 $requete_update_texture = 'UPDATE users SET Bibliotheque_Texture' . $i . '=\'' . $_POST['texture' . $i] . '\' WHERE id=' . $id_user;
@@ -789,271 +802,271 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
             break;
 
             case 'gerer':
-                $l=DM_Core::$d->toList($id_user);
+                $l = DM_Core::$d->toList($id_user);
                 if (isset($_GET['supprimer_magazine'])) {
-                    list($pays,$magazine)=explode('.',$_GET['supprimer_magazine']);
-                    $l_magazine=$l->sous_liste($pays,$magazine);
-                    $l_magazine->remove_from_database ($id_user);
+                    list($pays, $magazine) = explode('.', $_GET['supprimer_magazine']);
+                    $l_magazine = $l->sous_liste($pays, $magazine);
+                    $l_magazine->remove_from_database($id_user);
                 }
                 ?>
-                <h2><?=GESTION_COLLECTION?></h2><br />
+                <h2><?= GESTION_COLLECTION ?></h2><br/>
 
                 <?php
-                $onglets= [
-                    GESTION_NUMEROS_COURT=> ['ajout_suppr',GESTION_NUMEROS],
-                    GESTION_COMPTE_COURT=> ['compte',GESTION_COMPTE]];
-                if (!isset($_GET['onglet']))
-                    $onglet='ajout_suppr';
-                else
-                    $onglet=$_GET['onglet'];
-                Affichage::onglets($onglet, $onglets, 'onglet', '?action=gerer');
-            switch($onglet) {
-                case 'compte':
-                    if (isset($_POST['submit_options'])) {
-                        if ($_SESSION['user'] == 'demo') {
-                            echo OPERATION_IMPOSSIBLE_MODE_DEMO.'<br />';
-                        }
-                        else {
-                            $erreur=null;
-                            $requete_verif_mot_de_passe='SELECT Email FROM users WHERE ID='.$id_user.' AND password=sha1(\''.$_POST['ancien_mdp'].'\')';
-                            $mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
-                            if ($mot_de_passe_ok) {
-                                $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
-                                $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
-                                if (strlen($mot_de_passe_nouveau) < 6) {
-                                    $erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
-                                }
-                                elseif ($mot_de_passe_nouveau != $mot_de_passe_nouveau_confirm) {
-                                    $erreur = MOTS_DE_PASSE_DIFFERENTS;
-                                }
-                                else {
-                                    $requete_modif_mdp='UPDATE users SET password=sha1(\''.$mot_de_passe_nouveau.'\') WHERE ID='.$id_user;
-                                    DM_Core::$d->requete($requete_modif_mdp);
-                                    echo MOT_DE_PASSE_CHANGE;
-                                }
-                            }
-                            else {
-                                $erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
-                            }
-                            ?><br /><br /><?php
-                            if (is_null($erreur)) {
-                                echo MODIFICATIONS_OK.'<br />';
-                                $est_partage=isset($_POST['partage']) && $_POST['partage']=='on'?'1':'0';
-                                $est_video=isset($_POST['video']) && $_POST['video']=='on'?'1':'0';
-                                DM_Core::$d->requete('UPDATE users SET AccepterPartage='.$est_partage.', AfficherVideo='.$est_video.', '
-                                    .'Email=\''.$_POST['email'].'\' '
-                                    .'WHERE ID='.$id_user);
-                            }
-                            else {
-                                ?><span style="color:red"><?=$erreur?></span><?php
-                            }
-                        }
-                    }
-                    $resultat_partage=DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID='.$id_user);
-                    $resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
-                    ?>
-                    <form action="?action=gerer&amp;onglet=compte" method="post">
-                        <br /><?=ADRESSE_EMAIL?> : <br />
-                        <input type="text" name="email" style="width: 200px" value="<?php
-                        if (!is_null($resultat_email[0]['Email'])) {
-                            echo $resultat_email[0]['Email'];
-                        }?>" /><br /><br /><br />
-                        <span style="text-align: center;text-decoration: underline">
-                                        	<?=MOT_DE_PASSE_CHANGEMENT?>
-                                        </span>
-                        <br /><?=MOT_DE_PASSE_ACTUEL?> : <br />
-                        <input type="password" name="ancien_mdp" style="width: 100px" value="" />
-                        <br />
-                        <br /><?=MOT_DE_PASSE_NOUVEAU?> : <br />
-                        <input type="password" name="nouveau_mdp" style="width: 100px" value="" />
-                        <br />
-                        <br /><?=MOT_DE_PASSE_NOUVEAU_CONFIRMATION?> : <br />
-                        <input type="password" name="nouveau_mdp_confirm" style="width: 100px" value="" />
-                        <br /><br /><br />
-                        <input type="checkbox" name="partage"<?php
-                        if ($resultat_partage[0]['AccepterPartage']==1) {
-                        ?>checked="checked"<?php
-                        } ?>/><?=ACTIVER_PARTAGE?>
-                        <br />
-                        <br />
-                        <input type="checkbox" name="video"
-                               <?php
-                               if (DM_Core::$d->user_afficher_video()) {
-                               ?>checked="checked"<?php
-                        } ?> /><?=AFFICHER_VIDEO?>
-                        <br />
-                        <br />
-                        <input name="submit_options" class="valider" type="submit" value="<?=VALIDER?>" /></form>
-                    <br /><br /><br />
-                    <?php
-                    if (isset($_GET['confirm']) && $_SESSION['user'] == 'demo') {
-                        echo OPERATION_IMPOSSIBLE_MODE_DEMO.'<br /><br />';
-                        unset($_GET['vider']);
-                        unset($_GET['supprimer']);
-                    }
-                    if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
-                        if (isset($_GET['confirm']) && $_GET['confirm']=='true') {
-                            if ($_SESSION['user'] != 'demo') {
-                                $action=isset($_GET['vider'])?'vider':'supprimer';
-                                switch ($action) {
-                                    case 'vider':
-                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-                                        DM_Core::$d->requete($requete);
-                                        echo NUMEROS_SUPPRIMES.'.<br />';
-                                        break;
-                                    case 'supprimer':
-                                        $requete='DELETE FROM numeros WHERE ID_Utilisateur='.$id_user;
-                                        DM_Core::$d->requete($requete);
-                                        echo NUMEROS_SUPPRIMES.'<br />';
-                                        $requete_compte='DELETE FROM users WHERE ID='.$id_user;
-                                        DM_Core::$d->requete($requete_compte);
-                                        session_destroy();
-                                        echo COMPTE_SUPPRIME_DECONNECTE.'<br />';
-                                        break;
-                                }
-                            }
-                        }
-                        else {
-                            ?>
-                            <?=OPERATION_IRREVERSIBLE?><br /><?=CONTINUER_OUI_NON?><br />
-                            <a href="?action=gerer&amp;onglet=compte&amp;<?= isset($_GET['vider'])?'vider':'supprimer'?>=true&amp;confirm=true">
-                                <button><?=OUI?></button></a>&nbsp;
-                            <a href="?action=gerer">
-                                <button><?=NON?></button></a>
-                            <?php
-                        }
-                    }
-                    else {
-                        ?>
-                        <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?=VIDER_LISTE?></a><br /><br />
-                        <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?=SUPPRIMER_COMPTE?></a><br />
-                        <?php
-                    }
-
-                    break;
-                case 'ajout_suppr':
-                    if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
-                        ?><div class="alert alert-warning">
-                        <?=ATTENTION_VENTE_SANS_EMAIL?>
-                        <a href="?action=gerer&amp;onglet=compte"><?=GESTION_COMPTE_COURT?></a>.
-                        </div><?php
-                    }
-                    if ($_SESSION['user'] == 'demo') {
-                        require_once('init_demo.php');
-                        $nb_minutes_avant_reset=60 - strftime('%M',time());
-                        if ($nb_minutes_avant_reset == 0)
-                            $nb_minutes_avant_reset=60;
-                        ?><div id="presentation_demo">
-                        <h2><?=PRESENTATION_DEMO_TITRE?></h2>
-                        <?=PRESENTATION_DEMO.$nb_minutes_avant_reset.' '.MINUTES?>
-                        </div><?php
-                    }
-
-                    if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
-                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines($_GET['onglet_magazine'],true);
-                    }
-                    else {
-                        list($onglets_pays,$onglets_magazines)=$l->liste_magazines(null,true);
-                    }
-
-                    if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
-                        echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
-                        ?>
-                    <br /><br />
-                    <form method="get" action="?">
-                        <input type="hidden" name="action" value="gerer" />
-                        <input type="hidden" name="onglet" value="ajout_suppr" />
-                        <input type="hidden" id="form_pays" value="" />
-                        <input type="hidden" id="form_magazine" value="" />
-                        <input type="hidden" id="onglet_magazine" name="onglet_magazine" value="" />
-                        <span style="text-decoration:underline"><?=PAYS_PUBLICATION?> : </span><br />
-                        <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                            <option id="chargement_pays"><?=CHARGEMENT?>...
-                        </select><br /><br />
-                        <span style="text-decoration:underline"><?=PUBLICATION?> : </span><br />
-                        <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
-                            <option id="vide"><?=SELECTIONNER_PAYS?>
-                        </select>
-                        <br /><br />
-                        <input id="validerAjoutMagazine" type="submit" class="btn btn-default" value="<?=OK?>" />
-                    </form>
-                    <br />
-                    <br />
-                    <?= RECHERCHER_INTRO ?><br />
-                    <div id="recherche_histoire">
-                        <br>
-                        <?= RECHERCHER_GENERAL ?><br/>
-                        <input type="text" class="form-control"/>
-                    </div>
-                    <br /><br />
-                    <?php
+                $onglets = [
+                    GESTION_NUMEROS_COURT => ['ajout_suppr', GESTION_NUMEROS],
+                    GESTION_COMPTE_COURT => ['compte', GESTION_COMPTE]];
+                if (!isset($_GET['onglet'])) {
+                    $onglet = 'ajout_suppr';
                 }
                 else {
-                    $l = DM_Core::$d->toList($id_user);
-                    $nb_numeros = 0;
-                    $nb_magazines = $nb_pays = 0;
-                    foreach ($l->collection as $pays => $numeros_pays) {
-                        $nb_pays++;
-                        foreach (array_keys($numeros_pays) as $magazine) {
-                            $nb_magazines++;
-                            $nb_numeros += count($numeros_pays[$magazine]);
-                        }
-                    }
-                    if ($nb_numeros == 0) {
-                        if (!isset($_GET['onglet_magazine'])) {
-                            ?><?= COLLECTION_VIDE_1 ?><br/>
-                            <?= COLLECTION_VIDE_2 ?><br/><br/><?php
-                        }
-                    }
-                    else {
-                        ?><?= POSSESSION_MAGAZINES_INTRO ?>
-                        <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
-                        <br/><?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
-                        <br/><?php
-                        Affichage::afficher_dernieres_tranches_publiees();
-                    } ?>
-                    <div id="recherche_histoire">
-                        <?= RECHERCHER_GENERAL ?><br/>
-                        <input type="text" class="form-control"/>
-                    </div>
-                    <?php
-
-                    Affichage::onglets_magazines($onglets_pays, $onglets_magazines);
-
-                    if (isset($onglet_magazine) && isset($pays)) {
-                        ?><?php if (isset($_GET['afficher_video']) && $_GET['afficher_video'] == 0) {
-                        $requete_cacher_video = 'UPDATE users SET AfficherVideo=0 WHERE ID=' . $id_user;
-                        DM_Core::$d->requete($requete_cacher_video);
-                        }
-                        ?><br/>
-
-                        <div class="alert alert-info">
-                            <?=INFO_AJOUT_NUMEROS_1?>
-                            <span class="desktop-only"><?=INFO_AJOUT_NUMEROS_2_DESKTOP?></span>
-                            <span class="mobile-only"><?=INFO_AJOUT_NUMEROS_2_MOBILE?></span>
-                        </div>
-                        <table width="100%">
-                            <tr>
-                                <td>
-                                    <span id="liste_numeros" class="possedes manquants"><?= CHARGEMENT ?></span>
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
-                        </table><?php
-                    }
+                    $onglet = $_GET['onglet'];
                 }
-                break;
-            }
+                Affichage::onglets($onglet, $onglets, 'onglet', '?action=gerer');
+                switch ($onglet) {
+                    case 'compte':
+                        if (isset($_POST['submit_options'])) {
+                            if ($_SESSION['user'] == 'demo') {
+                                echo OPERATION_IMPOSSIBLE_MODE_DEMO . '<br />';
+                            } else {
+                                $erreur = null;
+                                $requete_verif_mot_de_passe = 'SELECT Email FROM users WHERE ID=' . $id_user . ' AND password=sha1(\'' . $_POST['ancien_mdp'] . '\')';
+                                $mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
+                                if ($mot_de_passe_ok) {
+                                    $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
+                                    $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
+                                    if (strlen($mot_de_passe_nouveau) < 6) {
+                                        $erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
+                                    } elseif ($mot_de_passe_nouveau != $mot_de_passe_nouveau_confirm) {
+                                        $erreur = MOTS_DE_PASSE_DIFFERENTS;
+                                    } else {
+                                        $requete_modif_mdp = 'UPDATE users SET password=sha1(\'' . $mot_de_passe_nouveau . '\') WHERE ID=' . $id_user;
+                                        DM_Core::$d->requete($requete_modif_mdp);
+                                        echo MOT_DE_PASSE_CHANGE;
+                                    }
+                                } else {
+                                    $erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
+                                }
+                                ?><br/><br/><?php
+                                if (is_null($erreur)) {
+                                    echo MODIFICATIONS_OK . '<br />';
+                                    $est_partage = isset($_POST['partage']) && $_POST['partage'] == 'on' ? '1' : '0';
+                                    $est_video = isset($_POST['video']) && $_POST['video'] == 'on' ? '1' : '0';
+                                    DM_Core::$d->requete('UPDATE users SET AccepterPartage=' . $est_partage . ', AfficherVideo=' . $est_video . ', '
+                                        . 'Email=\'' . $_POST['email'] . '\' '
+                                        . 'WHERE ID=' . $id_user);
+                                } else {
+                                    ?><span style="color:red"><?= $erreur ?></span><?php
+                                }
+                            }
+                        }
+                        $resultat_partage = DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID=' . $id_user);
+                        $resultat_email = DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID=' . $id_user);
+                        ?>
+                        <form action="?action=gerer&amp;onglet=compte" method="post">
+                            <br/><?= ADRESSE_EMAIL ?> : <br/>
+                            <input type="text" name="email" style="width: 200px" value="<?php
+                            if (!is_null($resultat_email[0]['Email'])) {
+                                echo $resultat_email[0]['Email'];
+                            } ?>"/><br/><br/><br/>
+                            <span style="text-align: center;text-decoration: underline">
+                                        	<?= MOT_DE_PASSE_CHANGEMENT ?>
+                                        </span>
+                            <br/><?= MOT_DE_PASSE_ACTUEL ?> : <br/>
+                            <input type="password" name="ancien_mdp" style="width: 100px" value=""/>
+                            <br/>
+                            <br/><?= MOT_DE_PASSE_NOUVEAU ?> : <br/>
+                            <input type="password" name="nouveau_mdp" style="width: 100px" value=""/>
+                            <br/>
+                            <br/><?= MOT_DE_PASSE_NOUVEAU_CONFIRMATION ?> : <br/>
+                            <input type="password" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
+                            <br/><br/><br/>
+                            <input type="checkbox" name="partage" <?php
+                            if ($resultat_partage[0]['AccepterPartage'] == 1) {
+                            ?>checked="checked"<?php
+                            } ?>/><?= ACTIVER_PARTAGE ?>
+                            <br/>
+                            <br/>
+                            <input type="checkbox" name="video"
+                                   <?php
+                                   if (DM_Core::$d->user_afficher_video()) {
+                                   ?>checked="checked"<?php
+                            } ?> /><?= AFFICHER_VIDEO ?>
+                            <br/>
+                            <br/>
+                            <input name="submit_options" class="valider" type="submit" value="<?= VALIDER ?>"/></form>
+                        <br/><br/><br/>
+                        <?php
+                        if (isset($_GET['confirm']) && $_SESSION['user'] === 'demo') {
+                            echo OPERATION_IMPOSSIBLE_MODE_DEMO . '<br /><br />';
+                            unset($_GET['vider'], $_GET['supprimer']);
+                        }
+                        if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
+                            if (isset($_GET['confirm']) && $_GET['confirm'] == 'true') {
+                                if ($_SESSION['user'] !== 'demo') {
+                                    $action = isset($_GET['vider']) ? 'vider' : 'supprimer';
+                                    switch ($action) {
+                                        case 'vider':
+                                            $requete = 'DELETE FROM numeros WHERE ID_Utilisateur=' . $id_user;
+                                            DM_Core::$d->requete($requete);
+                                            echo NUMEROS_SUPPRIMES . '.<br />';
+                                            break;
+                                        case 'supprimer':
+                                            $requete = 'DELETE FROM numeros WHERE ID_Utilisateur=' . $id_user;
+                                            DM_Core::$d->requete($requete);
+                                            echo NUMEROS_SUPPRIMES . '<br />';
+                                            $requete_compte = 'DELETE FROM users WHERE ID=' . $id_user;
+                                            DM_Core::$d->requete($requete_compte);
+                                            session_destroy();
+                                            echo COMPTE_SUPPRIME_DECONNECTE . '<br />';
+                                            break;
+                                    }
+                                }
+                            } else {
+                                ?>
+                                <?= OPERATION_IRREVERSIBLE ?><br/><?= CONTINUER_OUI_NON ?><br/>
+                                <a href="?action=gerer&amp;onglet=compte&amp;<?= isset($_GET['vider']) ? 'vider' : 'supprimer' ?>=true&amp;confirm=true">
+                                    <button><?= OUI ?></button>
+                                </a>&nbsp;
+                                <a href="?action=gerer">
+                                    <button><?= NON ?></button>
+                                </a>
+                                <?php
+                            }
+                        } else {
+                            ?>
+                            <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?= VIDER_LISTE ?></a><br/><br/>
+                            <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?= SUPPRIMER_COMPTE ?></a>
+                            <br/>
+                            <?php
+                        }
 
-            break;
+                        break;
+                    case 'ajout_suppr':
+                        if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
+                            ?>
+                            <div class="alert alert-warning">
+                            <?= ATTENTION_VENTE_SANS_EMAIL ?>
+                            <a href="?action=gerer&amp;onglet=compte"><?= GESTION_COMPTE_COURT ?></a>.
+                            </div><?php
+                        }
+                        if ($_SESSION['user'] == 'demo') {
+                            require_once 'init_demo.php';
+                            $nb_minutes_avant_reset = 60 - strftime('%M', time());
+                            if ($nb_minutes_avant_reset == 0) {
+                                $nb_minutes_avant_reset = 60;
+                            }
+                            ?>
+                            <div id="presentation_demo">
+                            <h2><?= PRESENTATION_DEMO_TITRE ?></h2>
+                            <?= PRESENTATION_DEMO . $nb_minutes_avant_reset . ' ' . MINUTES ?>
+                            </div><?php
+                        }
+
+                        if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
+                            list($onglets_pays, $onglets_magazines) = $l->liste_magazines($_GET['onglet_magazine'], true);
+                        } else {
+                            list($onglets_pays, $onglets_magazines) = $l->liste_magazines(null, true);
+                        }
+
+                        if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
+                            echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
+                            ?>
+                            <br/><br/>
+                            <form method="get" action="?">
+                                <input type="hidden" name="action" value="gerer"/>
+                                <input type="hidden" name="onglet" value="ajout_suppr"/>
+                                <input type="hidden" id="form_pays" value=""/>
+                                <input type="hidden" id="form_magazine" value=""/>
+                                <input type="hidden" id="onglet_magazine" name="onglet_magazine" value=""/>
+                                <span style="text-decoration:underline"><?= PAYS_PUBLICATION ?> : </span><br/>
+                                <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
+                                    <option id="chargement_pays"><?= CHARGEMENT ?>...
+                                </select><br/><br/>
+                                <span style="text-decoration:underline"><?= PUBLICATION ?> : </span><br/>
+                                <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
+                                    <option id="vide"><?= SELECTIONNER_PAYS ?>
+                                </select>
+                                <br/><br/>
+                                <input id="validerAjoutMagazine" type="submit" class="btn btn-default"
+                                       value="<?= OK ?>"/>
+                            </form>
+                            <br/>
+                            <br/>
+                            <?= RECHERCHER_INTRO ?><br/>
+                            <div id="recherche_histoire">
+                                <br>
+                                <?= RECHERCHER_GENERAL ?><br/>
+                                <input type="text" class="form-control"/>
+                            </div>
+                            <br/><br/>
+                            <?php
+                        } else {
+                            $l = DM_Core::$d->toList($id_user);
+                            $nb_numeros = 0;
+                            $nb_magazines = $nb_pays = 0;
+                            foreach ($l->collection as $pays => $numeros_pays) {
+                                $nb_pays++;
+                                foreach (array_keys($numeros_pays) as $magazine) {
+                                    $nb_magazines++;
+                                    $nb_numeros += count($numeros_pays[$magazine]);
+                                }
+                            }
+                            if ($nb_numeros == 0) {
+                                if (!isset($_GET['onglet_magazine'])) {
+                                    ?><?= COLLECTION_VIDE_1 ?><br/>
+                                    <?= COLLECTION_VIDE_2 ?><br/><br/><?php
+                                }
+                            } else {
+                                ?><?= POSSESSION_MAGAZINES_INTRO ?>
+                                <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
+                                <br/><?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
+                                <br/><?php
+                                Affichage::afficher_dernieres_tranches_publiees();
+                            } ?>
+                            <div id="recherche_histoire">
+                                <?= RECHERCHER_GENERAL ?><br/>
+                                <input type="text" class="form-control"/>
+                            </div>
+                            <?php
+
+                            Affichage::onglets_magazines($onglets_pays, $onglets_magazines);
+
+                            if (isset($onglet_magazine, $pays)) {
+                                ?><?php if (isset($_GET['afficher_video']) && $_GET['afficher_video'] == 0) {
+                                    $requete_cacher_video = 'UPDATE users SET AfficherVideo=0 WHERE ID=' . $id_user;
+                                    DM_Core::$d->requete($requete_cacher_video);
+                                }
+                                ?><br/>
+
+                                <div class="alert alert-info">
+                                    <?= INFO_AJOUT_NUMEROS_1 ?>
+                                    <span class="desktop-only"><?= INFO_AJOUT_NUMEROS_2_DESKTOP ?></span>
+                                    <span class="mobile-only"><?= INFO_AJOUT_NUMEROS_2_MOBILE ?></span>
+                                </div>
+                                <table width="100%">
+                                <tr>
+                                    <td>
+                                        <span id="liste_numeros" class="possedes manquants"><?= CHARGEMENT ?></span>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                </table><?php
+                            }
+                        }
+                    break;
+                }
+
+                break;
             case 'stats':
                 ?><h2><?=STATISTIQUES_COLLECTION?></h2><br /><?php
                 $l=DM_Core::$d->toList($id_user);
-                if (!isset($_GET['onglet']))
-                    $onglet='magazines';
-                else
-                    $onglet=$_GET['onglet'];
+                if (!isset($_GET['onglet'])) {
+                    $onglet = 'magazines';
+                }
+                else {
+                    $onglet = $_GET['onglet'];
+                }
                 $l->statistiques($onglet);
             break;
 
@@ -1098,10 +1111,8 @@ $id_user=isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
 
                     $onglets= [ACHAT_VENTE_NUMEROS=> ['achat_vente',CONTACT_UTILISATEURS],
                         AUTEURS_FAVORIS=> ['auteurs_favoris',AUTEURS_FAVORIS_TEXTE]];
-                    if (!isset($_GET['onglet']))
-                        $onglet='achat_vente';
-                    else
-                        $onglet=$_GET['onglet'];
+
+                    $onglet=$_GET['onglet'] ?? 'achat_vente';
                     Affichage::onglets($onglet, $onglets, 'onglet', '?action=agrandir');
                     switch($onglet) {
                         case 'achat_vente':

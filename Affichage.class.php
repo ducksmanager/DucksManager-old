@@ -2,7 +2,7 @@
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
-include_once ('locales/lang.php');
+include_once 'locales/lang.php';
 class Affichage {
 
     static $niveaux_medailles=[
@@ -12,7 +12,7 @@ class Affichage {
     ];
 
     static function onglets_magazines($onglets_pays,$onglets_magazines) {
-        $magazine_courant = isset($_GET['onglet_magazine']) ? $_GET['onglet_magazine'] : null;
+        $magazine_courant = $_GET['onglet_magazine'] ?? null;
         $pays_courant = is_null($magazine_courant) ? null : explode('/', $magazine_courant)[0];
         ?>
         <nav id="magazines_possedes" class="navbar navbar-default">
@@ -70,21 +70,24 @@ class Affichage {
 	static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
 			$onmouseover='';
 			$onmouseout='';
-			?><ul <?=empty($id)?'':('id="'.$id.'"')?> class="tabnav"><?php
+			?><ul class="tabnav"><?php
 			foreach($tab_onglets as $nom_onglet=>$infos_lien) {
 				?><li class="<?php
 
                 $lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
-				if ($infos_lien[0]==$onglet_courant)
-				   echo 'active ';
+				if ($infos_lien[0]==$onglet_courant) {
+                    echo 'active ';
+                }
 				if (empty($prefixe)) {
 					$nom = substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
 				}
 				else {
-                    if (in_array($argument, ['onglet_aide','onglet_type_param','previews']))
-                        $nom=$infos_lien[0];
-                    else
-                        $nom='';
+                    if (in_array($argument, ['onglet_aide','onglet_type_param','previews'])) {
+                        $nom = $infos_lien[0];
+                    }
+                    else {
+                        $nom = '';
+                    }
 				}
 				switch($prefixe) {
 					case '':
@@ -127,8 +130,9 @@ class Affichage {
             ?><br />
             <a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
             <a href="?action=gerer"><?=NON?></a><?php
-            if (!Util::isLocalHost())
-                @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')');
+            if (!Util::isLocalHost()) {
+                @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE . $magazine . ' (' . PAYS_PUBLICATION . ' : ' . $pays . ')');
+            }
         }
         else {
             $liste->nettoyer_collection();
@@ -218,7 +222,7 @@ class Affichage {
                                     $regex_date='#([^-]+)-([^-]+)-(.+)#is';
                                     $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
                                     $id=$resultat_date[0]['ID_Acquisition'];
-                                    if (!is_null($date) && !empty($date)) {
+                                    if (!empty($date)) {
                                         ?>
                                             <div class="details_numero detail_date" class="achat_<?=$id?>">
                                                 <img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
@@ -245,7 +249,7 @@ class Affichage {
     }
 	
 	static function afficher_evenements_recents($evenements) {
-		include_once('Edge.class.php');
+		include_once 'Edge.class.php';
 		Edge::$sans_etageres = true;
 		Edge::$grossissement_defaut = 1;
 
@@ -258,12 +262,12 @@ class Affichage {
 					?><div class="evenement evenement_<?=$type?>"><?php
 					switch($type) {
 						case 'inscriptions':
-							Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+							self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
 							?><?=NEWS_A_COMMENCE_COLLECTION?>
 						<?php 
 						break;
 						case 'bouquineries':
-                            Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);?>
+                            self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);?>
                             <?=NEWS_A_AJOUTE_BOUQUINERIE.' ' ?>
                             <i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
 						<?php 
@@ -274,9 +278,9 @@ class Affichage {
 								$evenement->cpt++;
 								continue;
 							}
-                            Affichage::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+                            self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
 							?><?=NEWS_A_AJOUTE?>
-							<?php Affichage::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
+							<?php self::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
 							<?php 
 							if ($evenement->cpt > 0) {
 								?>
@@ -293,7 +297,7 @@ class Affichage {
 							}
 							$contributeurs = array_filter(array_unique($evenement->ids_utilisateurs));
 							foreach($contributeurs as $i => $idContributeur) {
-                                Affichage::afficher_texte_utilisateur($details_collections[$idContributeur]);
+                                self::afficher_texte_utilisateur($details_collections[$idContributeur]);
                                 ?><?= $i < count($contributeurs) -2 ? ', ' : ($i < count($contributeurs) - 1 ? ' ' . ET . ' ' : '');
                             }
 
@@ -316,7 +320,7 @@ class Affichage {
 								}
 								echo Edge::getEtagereHTML(true);
 								foreach($evenement->numeros as $numero) {
-									Affichage::afficher_texte_numero(
+									self::afficher_texte_numero(
 									        $numero->Pays,
                                             $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
                                             $numero->Numero
@@ -329,7 +333,7 @@ class Affichage {
 							<?php 
 						break;
 					}
-                    Affichage::afficher_temps_passe($evenement->diffsecondes);
+                    self::afficher_temps_passe($evenement->diffsecondes);
 					?></div><?php
 				}
 			}
@@ -337,7 +341,7 @@ class Affichage {
 	}
 
     static function afficher_dernieres_tranches_publiees() {
-        $id_user = isset($_SESSION['id_user']) ? $_SESSION['id_user'] : null;
+        $id_user = $_SESSION['id_user'] ?? null;
 
         $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
         $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
@@ -351,7 +355,7 @@ class Affichage {
             echo sprintf(
                 $nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE : BIBLIOTHEQUE_NOUVELLES_TRANCHES,
                 $nb_nouvelles_tranches,
-                Affichage::get_texte_numero_multiple(
+                self::get_texte_numero_multiple(
                     explode('/', $premiere_tranche['publicationcode'])[0],
                     $magazines_complets[$premiere_tranche['publicationcode']],
                     $premiere_tranche['issuenumber'],
@@ -370,18 +374,18 @@ class Affichage {
             ?><?=$diff_secondes.' '.NEWS_TEMPS_SECONDE.($diff_secondes == 1 ? '':'s')?><?php
         }
         else {
-            $diff_secondes=intval($diff_secondes/60);
+            $diff_secondes= (int)$diff_secondes / 60;
             if ($diff_secondes < 60) {
                 ?><?=$diff_secondes.' '.NEWS_TEMPS_MINUTE.($diff_secondes == 1 ? '':'s')?><?php
             }
             else {
-                $diff_secondes=intval($diff_secondes/60);
+                $diff_secondes= (int)$diff_secondes / 60;
                 if ($diff_secondes < 24) {
                     ?><?=$diff_secondes.' '.NEWS_TEMPS_HEURE.($diff_secondes == 1 ? '':'s')?><?php
                 }
                 else {
-                    $diff_secondes=intval($diff_secondes/24);
-                    ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.(intval($diff_secondes) == 1 ? '':'s')?><?php
+                    $diff_secondes= (int)$diff_secondes / 24;
+                    ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.((int)$diff_secondes == 1 ? '':'s')?><?php
                 }
             }
         }
@@ -482,13 +486,12 @@ class Affichage {
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
             <div>
-                <?php Affichage::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPointsPhotographe'], $infos_utilisateur['NbPointsCreateur'], $infos_utilisateur['NbBouquineries']) ?>
+                <?php self::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPointsPhotographe'], $infos_utilisateur['NbPointsCreateur'], $infos_utilisateur['NbBouquineries']) ?>
             </div>
         </div><?php
     }
 
-	static function afficher_texte_histoire($code, $title, $comment)
-	{
+	static function afficher_texte_histoire($code, $title, $comment) {
 		if (empty($title)) {
 			$title = SANS_TITRE.($comment ? ' ('.$comment.') ' : '');
 		}
@@ -503,18 +506,16 @@ class Affichage {
 			if (preg_match('#^[-_A-Za-z0-9]{3,15}$#', $user) === 0) {
 				return UTILISATEUR_INVALIDE;
 			}
-			if (strlen($pass) <6) {
-				return MOT_DE_PASSE_6_CHAR_ERREUR;
-			}
-			elseif ($pass !== $pass2) {
-				return MOTS_DE_PASSE_DIFFERENTS;
-			}
-			else {
-				if (DM_Core::$d->user_exists($user)) {
-					return UTILISATEUR_EXISTANT;
-				}
-			}
-		}
+            if (strlen($pass) <6) {
+                return MOT_DE_PASSE_6_CHAR_ERREUR;
+            }
+            if ($pass !== $pass2) {
+                return MOTS_DE_PASSE_DIFFERENTS;
+            }
+            if (DM_Core::$d->user_exists($user)) {
+                return UTILISATEUR_EXISTANT;
+            }
+        }
 		else {
 			return UTILISATEUR_INVALIDE;
 		}
@@ -547,7 +548,7 @@ class Affichage {
         $points_et_niveaux=[];
         foreach($nbPhotographiesCreationsBouquineries as $type=>$points) {
             $points_et_niveaux[$type]= ['Cpt'=>$points, 'Niveau' => 0];
-            foreach (Affichage::$niveaux_medailles[$type] as $niveau=> $points_min) {
+            foreach (self::$niveaux_medailles[$type] as $niveau=> $points_min) {
                 if ($points >= $points_min) {
                     $points_et_niveaux[$type]['Niveau']=$niveau;
                 }
@@ -556,9 +557,8 @@ class Affichage {
         return $points_et_niveaux;
     }
 
-    public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $nbPhotographies, $nbCreations, $nbBouquineries)
-    {
-        $medailles = Affichage::get_medailles([
+    public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $nbPhotographies, $nbCreations, $nbBouquineries) {
+        $medailles = self::get_medailles([
             'Photographe'=> $nbPhotographies,
             'Concepteur' => $nbCreations,
             'Duckhunter' => $nbBouquineries
@@ -581,8 +581,7 @@ class Affichage {
         ?></div><?php
     }
 
-    public static function afficher_statut_connexion($est_connecte)
-    {
+    public static function afficher_statut_connexion($est_connecte) {
         ?><div id="login">
             <a class="logo_petit" href="https://ducksmanager.net"><img src="logo_petit.jpg" /></a>
             <div id="texte_connecte"><?php

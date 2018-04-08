@@ -3,13 +3,13 @@
 if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
-include_once('locales/lang.php');
-require_once('Database.class.php');
-require_once('Inducks.class.php');
+include_once 'locales/lang.php';
+require_once 'Database.class.php';
+require_once 'Inducks.class.php';
 Util::exit_if_not_logged_in();
 
 class Stats {
-	public static $id_user = null;
+	public static $id_user;
 
 	static function getPublicationData() {
 		$counts= [];
@@ -25,7 +25,7 @@ class Stats {
 		$publication_codes= [];
 		foreach($resultat_cpt_numeros_groupes as $resultat) {
 			$publicationcode=$resultat['Pays'].'/'.$resultat['Magazine'];
-			$cpt=intval($resultat['cpt']);
+			$cpt= (int)$resultat['cpt'];
 			$counts[$publicationcode]=$cpt;
 			$total+=$cpt;
 			$publication_codes[]=$publicationcode;
@@ -81,7 +81,9 @@ class Stats {
 				  AND Etat = \''.$etat_court.'\''
 			);
 			$cpt=$resultat[0]['c'];
-			if ($cpt==0) continue;
+			if ($cpt==0) {
+                continue;
+            }
 			if ($cpt/$total<0.01) {
 				$autres+=$cpt;
 			}
@@ -101,9 +103,10 @@ class Stats {
 
 	static function getPossessionsData($for = null) {
 		if (is_null($for)) {
-			include_once ('locales/lang.php');
-			foreach(array_keys($_POST) as $key)
-				$_POST[$key] = str_replace('\\"','"',$_POST[$key]);
+			include_once 'locales/lang.php';
+			foreach(array_keys($_POST) as $key) {
+                $_POST[$key] = str_replace('\\"', '"', $_POST[$key]);
+            }
 			$infos=json_decode($_POST['infos']);
 			$donnees= [];
 
@@ -159,7 +162,7 @@ class Stats {
 
 			foreach ($donnees as $donnee) {
 				$possedes['data'][] = $donnee->possede;
-				$totaux['data'][] = intval($donnee->total)-$donnee->possede;
+				$totaux['data'][] = (int)$donnee->total -$donnee->possede;
 			}
 
 
@@ -198,28 +201,27 @@ class Stats {
 				'title' => $title,
 			];
 		}
-		else {
-			$id_user = static::$id_user;
-			$l=DM_Core::$d->toList($id_user);
 
-			$retour= ['total'=>null,'possede'=>null,'total_pct'=>null,'possede_pct'=>null];
-			require_once('Inducks.class.php');
-			$nb_numeros_magazines=Inducks::get_nb_numeros_magazines_pays($for);
-			foreach(array_keys($l->collection[$for]) as $magazine) {
-				if (array_key_exists($magazine,$nb_numeros_magazines)) {
-					$retour['total'][$magazine]=$nb_numeros_magazines[$magazine];
-					$retour['possede'][$magazine]=count($l->collection[$for][$magazine]);
-					$retour['possede_pct'][$magazine]=round(100*($retour['possede'][$magazine]/$retour['total'][$magazine]));
-				}
-				else {
-					$retour['total'][$magazine]=0;
-					$retour['possede'][$magazine]=0;
-					$retour['possede_pct'][$magazine]=0;
-				}
-			}
-			return $retour;
-		}
-	}
+        $id_user = static::$id_user;
+        $l=DM_Core::$d->toList($id_user);
+
+        $retour= ['total'=>null,'possede'=>null,'total_pct'=>null,'possede_pct'=>null];
+        require_once('Inducks.class.php');
+        $nb_numeros_magazines=Inducks::get_nb_numeros_magazines_pays($for);
+        foreach(array_keys($l->collection[$for]) as $magazine) {
+            if (array_key_exists($magazine,$nb_numeros_magazines)) {
+                $retour['total'][$magazine]=$nb_numeros_magazines[$magazine];
+                $retour['possede'][$magazine]=count($l->collection[$for][$magazine]);
+                $retour['possede_pct'][$magazine]=round(100*($retour['possede'][$magazine]/$retour['total'][$magazine]));
+            }
+            else {
+                $retour['total'][$magazine]=0;
+                $retour['possede'][$magazine]=0;
+                $retour['possede_pct'][$magazine]=0;
+            }
+        }
+        return $retour;
+    }
 	
 	static function getPurchaseHistory() {
 		$id_user=static::$id_user;
