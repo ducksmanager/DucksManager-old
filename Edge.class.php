@@ -55,8 +55,8 @@ class Edge {
 					mail('admin@ducksmanager.net', 'Image de bibliothèque corrompue',$url_image);
 					return;
 				}
-				$this->largeur= (int)$this->largeur / (Edge::$grossissement_affichage / Edge::$grossissement_defaut);
-				$this->hauteur= (int)$this->hauteur / (Edge::$grossissement_affichage / Edge::$grossissement_defaut);
+				$this->largeur= (int)($this->largeur / (Edge::$grossissement_affichage / Edge::$grossissement_defaut));
+				$this->hauteur= (int)($this->hauteur / (Edge::$grossissement_affichage / Edge::$grossissement_defaut));
 
 			}
 			else {
@@ -268,7 +268,7 @@ class Edge {
                 }
             }
         }
-        $pourcentage_visible=$total_numeros===0 ? 0 : (int)100 * $total_numeros_visibles / $total_numeros;
+        $pourcentage_visible=$total_numeros===0 ? 0 : (int)(100 * $total_numeros_visibles / $total_numeros);
         if ($get_html) {
             return [$texte_final, $pourcentage_visible, Inducks::get_noms_complets_magazines($publication_codes)];
         }

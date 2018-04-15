@@ -43,7 +43,7 @@ class dmspiral extends Format_liste {
 		$numeros_doubles= [];
 		list($numeros,)=Inducks::get_numeros($pays,$magazine);
 		$this->ajouter_parametres(['numero_max'=>max($numeros)]);
-		$this->ajouter_parametres(['nb_centaines'=> (int)$this->p('numero_max') / 100 +1]);
+		$this->ajouter_parametres(['nb_centaines'=> (int)($this->p('numero_max') / 100) +1]);
 		$this->ajouter_parametres([
 			'haut'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/2,
 			'gauche'=>$this->p('marge')+$this->p('nb_centaines')*$this->p('epaisseur')/4]);
@@ -128,7 +128,7 @@ class dmspiral extends Format_liste {
 			imageline($image, $this->p('gauche')-(($centaine+1)*0.25)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $this->p('gauche')-($centaine*0.25)*$this->p('epaisseur'), $this->p('haut')+1-$this->p('epaisseur')/2+$this->p('hauteur_centrale'), $noir);
 		}
 		foreach($numeros_doubles as $numero_double) {
-			$centaine= (int)$numero_double / 100;
+			$centaine= (int)($numero_double / 100);
 			$diz_unites=$numero_double-100*$centaine;
 			switch($diz_unites) {
 				case 0:
@@ -224,7 +224,7 @@ class dmspiral extends Format_liste {
 	}
 	
 	function marquer_numero($image,$numero) {
-		$centaine= (int)$numero / 100;
+		$centaine= (int)($numero / 100);
 		$diz_unites=$numero-100*$centaine;
 		$pos=new stdClass();
 		switch($diz_unites) {

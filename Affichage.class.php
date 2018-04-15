@@ -374,17 +374,17 @@ class Affichage {
             ?><?=$diff_secondes.' '.NEWS_TEMPS_SECONDE.($diff_secondes == 1 ? '':'s')?><?php
         }
         else {
-            $diff_secondes= (int)$diff_secondes / 60;
+            $diff_secondes= (int)($diff_secondes / 60);
             if ($diff_secondes < 60) {
                 ?><?=$diff_secondes.' '.NEWS_TEMPS_MINUTE.($diff_secondes == 1 ? '':'s')?><?php
             }
             else {
-                $diff_secondes= (int)$diff_secondes / 60;
+                $diff_secondes= (int)($diff_secondes / 60);
                 if ($diff_secondes < 24) {
                     ?><?=$diff_secondes.' '.NEWS_TEMPS_HEURE.($diff_secondes == 1 ? '':'s')?><?php
                 }
                 else {
-                    $diff_secondes= (int)$diff_secondes / 24;
+                    $diff_secondes= (int)($diff_secondes / 24);
                     ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.((int)$diff_secondes == 1 ? '':'s')?><?php
                 }
             }

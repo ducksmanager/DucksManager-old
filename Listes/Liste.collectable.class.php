@@ -304,7 +304,7 @@ function est_double($numero) {
 	if (preg_match(collectable::$regex_numero_double, $numero, $numero) == 0) {
         return false;
     }
-	return (int)$numero[1] . $numero[2] +1 == (int)$numero[1] . $numero[3];
+	return (int)($numero[1] . $numero[2]) +1 == (int)($numero[1] . $numero[3]);
 }
 
 function ajouter_a_liste($numero,$est_double=false) {
@@ -340,6 +340,6 @@ function ajouter_a_liste($numero,$est_double=false) {
 }
 
 function get_nb_centaines($numero) {
-	return (int)$numero / 100;
+	return (int)($numero / 100);
 }
 ?>
