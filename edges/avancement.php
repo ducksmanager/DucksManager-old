@@ -1,6 +1,7 @@
 <?php header("Content-Type: text/html; charset=UTF-8"); ?>
 <html>
     <head>
+        <meta charset="UTF-8" />
         <style type="text/css">
             .publication {
                 margin-top: 20px;
@@ -160,15 +161,13 @@ $publicationcodes_str = implode(', ', array_map(function($publicationcode) {
 $liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 $numeros_inducks=Inducks::get_liste_numeros_from_publicationcodes($publicationcodes);
 $requete_tranches_pretes = "
-  SELECT publicationcode, GROUP_CONCAT(issuenumber) AS issuenumbers
-  FROM tranches_pretes
-  WHERE publicationcode IN ($publicationcodes_str)
-  GROUP BY publicationcode";
+  SELECT publicationcode, issuenumber
+  FROM tranches_pretes";
 
 $resultat_tranches_pretes = DM_Core::$d->requete_select($requete_tranches_pretes);
 $tranches_pretes = [];
-array_walk($resultat_tranches_pretes, function($publication_and_issuenumbers) use (&$tranches_pretes) {
-    $tranches_pretes[$publication_and_issuenumbers['publicationcode']] = explode(',', $publication_and_issuenumbers['issuenumbers']);
+array_walk($resultat_tranches_pretes, function($resultat) use (&$tranches_pretes) {
+    $tranches_pretes[$resultat['publicationcode']][] = $resultat['issuenumber'];
 });
 
 $cpt_dispos=0;
