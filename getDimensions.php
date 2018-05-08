@@ -46,7 +46,7 @@ function getDimensionsParDefautMagazine($pays,$magazine,$numeros) {
                 }
 			}
 		}
-		$dimensions[$numero]=(is_null($x, $y)) ? 'null' : ($x.'x'.$y);
+        $dimensions[$numero]=(is_null($x) || is_null($y)) ? 'null' : ($x.'x'.$y);
 	}
 	return $dimensions;
 }
