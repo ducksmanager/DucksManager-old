@@ -11,7 +11,6 @@ var largeur_section;
 var hauteur_section;
 var couverture;
 var ouverture_couverture;
-var hauteur_etage;
 var nb_etageres;
 var nb_etageres_terminees;
 var bulle=null;
@@ -358,7 +357,7 @@ function charger_bibliotheque() {
 
 	new Ajax.Request('Edge.class.php', {
 		method: 'post',
-		parameters: 'get_bibliotheque=true&largeur='+largeur_section+'&hauteur='+hauteur_section
+		parameters: 'get_bibliotheque=true&largeur='+largeur_section
 				  +'&user_bibliotheque='+user_bibliotheque+'&cle_bibliotheque='+cle_bibliotheque,
 		onSuccess:function(transport) {
 			if (!!transport.responseJSON.erreur) {
@@ -390,7 +389,6 @@ function charger_bibliotheque() {
 				$('pourcentage_collection_visible').setStyle({'display': 'inline'});
 				$('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
 				var premiere_tranche = element_bibliotheque.down(2);
-				hauteur_etage = $('hauteur_etage').readAttribute('name');
 				nb_etageres = $$('.etagere').length;
 				nb_etageres_terminees = 1;
 				element_conteneur_bibliotheque = element_bibliotheque;

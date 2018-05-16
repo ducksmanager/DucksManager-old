@@ -163,9 +163,6 @@ class Edge {
 				$code .= self::getEtagereHTML();
 				self::$largeur_numeros_precedents = 0;
 			}
-			if ($this->hauteur > Etagere::$hauteur_max_etage) {
-				Etagere::$hauteur_max_etage = $this->hauteur;
-			}
 		}
 		$code.= '<img data-edge="'.($this->est_visible ? 1 : 0).'" class="tranche" ';
 		
@@ -175,7 +172,7 @@ class Edge {
 		else {
 			$code.='name="Edge.class.php?pays='.$this->pays.'&amp;magazine='.$this->magazine.'&amp;numero='.$this->numero_reference.'&amp;grossissement='. self::$grossissement.'" ';
 		}
-		$code.='width="'.$this->largeur.'" height="'.$this->hauteur.'" id="'.$this->pays.'/'.$this->magazine.'.'.$this->numero.'"/>';
+		$code.='id="'.$this->pays.'/'.$this->magazine.'.'.$this->numero.'"/>';
 		
 		self::$largeur_numeros_precedents+=$this->largeur;
 		return $code;
@@ -332,10 +329,10 @@ elseif (isset($_POST['get_bibliotheque'])) {
         echo json_encode(['erreur' => 'Lien de partage invalide']);
     }
     else {
-        $requete_grossissement = 'SELECT username, Bibliotheque_Grossissement FROM users WHERE ID = \'' . $id_user . '\'';
+        $requete_grossissement = 'SELECT username FROM users WHERE ID = \'' . $id_user . '\'';
         $resultat_grossissement = DM_Core::$d->requete_select($requete_grossissement);
         $username = $resultat_grossissement[0]['username'];
-        $grossissement = $resultat_grossissement[0]['Bibliotheque_Grossissement'];
+        $grossissement = 1.5;
 
         $textures = [];
         for ($i = 1; $i <= 2; $i++) {
@@ -360,8 +357,6 @@ elseif (isset($_POST['get_bibliotheque'])) {
         else {
             Etagere::$largeur=$_POST['largeur'];
         }
-        Etagere::$hauteur = $_POST['hauteur'];
-        Etagere::$epaisseur = 20;
 
         list($html, $pourcentage_visible, $liste_magazines) = Edge::getPourcentageVisible($id_user, true);
 
@@ -371,8 +366,6 @@ elseif (isset($_POST['get_bibliotheque'])) {
 
         <div id="largeur_etagere" style="display:none" name="<?=Etagere::$largeur?>"></div>
         <div id="nb_numeros_visibles" style="display:none" name="<?=$pourcentage_visible?>"></div>
-        <div id="hauteur_etage" style="display:none" name="<?=Etagere::$hauteur_max_etage?>"></div>
-        <div id="grossissement" style="display:none" name="<?=Edge::$grossissement?>"></div>
 
         <?php
         $contenu.= ob_get_clean();

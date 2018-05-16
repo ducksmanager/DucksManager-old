@@ -251,7 +251,6 @@ CREATE TABLE `users` (
   `Bibliotheque_Sous_Texture1` varchar(50) NOT NULL DEFAULT 'HONDURAS MAHOGANY',
   `Bibliotheque_Texture2` varchar(20) NOT NULL DEFAULT 'bois',
   `Bibliotheque_Sous_Texture2` varchar(50) NOT NULL DEFAULT 'KNOTTY PINE',
-  `Bibliotheque_Grossissement` double unsigned NOT NULL DEFAULT '1.5',
   `DernierAcces` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `username` (`username`)

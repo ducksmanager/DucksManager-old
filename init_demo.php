@@ -27,8 +27,7 @@ if (!$dernier_init_est_recent) {
 	UPDATE `users` SET `Bibliotheque_Texture1` = 'bois', 
 					   `Bibliotheque_Sous_Texture1` = 'HONDURAS MAHOGANY', 
 					   `Bibliotheque_Texture2` = 'bois', 
-					   `Bibliotheque_Sous_Texture2` = 'KNOTTY PINE', 
-					   `Bibliotheque_Grossissement` = 1.5
+					   `Bibliotheque_Sous_Texture2` = 'KNOTTY PINE'
 				  WHERE ID_Utilisateur=".$id_user_demo.";
 	
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'CB', 'P 88', 'bon', -2, 0, ".$id_user_demo.");
