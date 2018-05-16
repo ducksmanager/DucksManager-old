@@ -240,14 +240,6 @@ img.medaille_objectif.droite {
     font-weight: bold;
 }
 
-.valider {
-    background-color:green;
-}
-
-.annuler {
-    background-color:red;
-}
-
 .beta, .nouveau {
     font-size: smaller;
     vertical-align: super;

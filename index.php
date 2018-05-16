@@ -265,13 +265,13 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
         break;
         case 'gerer':
-            if (!isset($_GET['onglet_magazine'])) {
+            if ((!isset($_GET['onglet']) || $_GET['onglet'] === 'ajout_suppr') && !isset($_GET['onglet_magazine'])) {
                 $l=DM_Core::$d->toList($id_user);
                 $_GET['onglet_magazine'] = $l->get_publication_la_plus_possedee() ?: null;
             }
             if (isset($_GET['onglet_magazine'])) {
                 $onglet_magazine=$_GET['onglet_magazine'];
-                if ($onglet_magazine=='new') {
+                if ($onglet_magazine==='new') {
                     ?>initPays(false,'fr');<?php
                 }
                 else {
@@ -897,7 +897,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                             } ?> /><?= AFFICHER_VIDEO ?>
                             <br/>
                             <br/>
-                            <input name="submit_options" class="valider" type="submit" value="<?= VALIDER ?>"/></form>
+                            <input name="submit_options" class="btn btn-success" type="submit" value="<?= VALIDER ?>"/>
+                        </form>
                         <br/><br/><br/>
                         <?php
                         if (isset($_GET['confirm']) && $_SESSION['user'] === 'demo') {
