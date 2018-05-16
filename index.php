@@ -703,6 +703,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <select style="width:300px;" id="sous_texture2" name="sous_texture2">
                                 <option id="vide"><?= SELECTIONNER_TEXTURE ?></option>
                             </select>
+                            <?php /*
                             <br/><br/><br/>
                             <span style="text-decoration:underline"><?= ORDRE_MAGAZINES ?>
                                 : </span><br/>
@@ -748,8 +749,11 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 }
                                 ?>
                             </div>
-                            <br/>
-                            <input type="submit" class="valider" value="<?= VALIDER ?>"/>
+                            */?>
+                            <br/><br/>
+                            <div>
+                                <input type="submit" class="btn btn-success" value="<?= VALIDER ?>"/>
+                            </div>
                         </form>
                         <?php
 
@@ -932,12 +936,10 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 </a>
                                 <?php
                             }
-                        } else {
-                            ?>
+                        } else {?>
                             <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?= VIDER_LISTE ?></a><br/><br/>
                             <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?= SUPPRIMER_COMPTE ?></a>
-                            <br/>
-                            <?php
+                            <br/><?php
                         }
 
                         break;
