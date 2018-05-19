@@ -515,8 +515,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                         <input class="form-control" id="user" name="user" type="text" placeholder="<?= NOM_UTILISATEUR ?>">
                     </div>
                     <div class="form-group">
-                        <label for="password"><?= MOT_DE_PASSE ?></label>
-                        <input type="password" class="form-control" id="password" placeholder="<?= MOT_DE_PASSE ?>">
+                        <label for="pass"><?= MOT_DE_PASSE ?></label>
+                        <input type="password" class="form-control" id="pass" name="pass" placeholder="<?= MOT_DE_PASSE ?>">
                     </div>
                     <button type="submit" class="btn">Login</button>
                 </form>
@@ -632,11 +632,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
                             </div><?php
                         }?>
-                        <span id="chargement_bibliotheque_termine"><?= CHARGEMENT ?></span>
                         <br/>
-                        <div id="barre_pct_bibliotheque">
-                            <div id="pct_bibliotheque">&nbsp;</div>
-                        </div>
                         <span id="pcent_visible"></span>
                         <span id="pourcentage_collection_visible"></span>
 
