@@ -1,6 +1,6 @@
 <?php
 @session_start();
-$erreur=IDENTIFIEZ_VOUS_BACKEND;
+$erreur=CONNEXION;
 $user=$_POST['user'] ?? ($_SESSION['user'] ?? null);
 $pass=isset($_POST['pass']) ? sha1($_POST['pass']) : ($_SESSION['pass'] ?? null);
 if (!is_null($user)) {

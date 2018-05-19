@@ -221,8 +221,6 @@ define('HISTOIRES_POSSEDEES','Histoires possédées');
 define('ICI','ici');
 define('IDENTIFIANTS_INCORRECTS','Identifiants incorrects !');
 define('IDENTIFICATION_OBLIGATOIRE','Vous devez &ecirc;tre connect&eacute;(e) pour acc&eacute;der &agrave; cette page.');
-define('IDENTIFIEZ_VOUS','Identifiez-vous pour acc&eacute;der &agrave; votre compte DucksManager.');
-define('IDENTIFIEZ_VOUS_BACKEND','Identifiez-vous.');
 define('IE_INF_A_9_NON_SUPPORTE', 'D&eacute;sol&eacute;, Internet Explorer n\'est pas support&eacute; qu\'&agrave; partir de la version 9 pour cette fonctionnalit&eacute;');
 define('IMPORT_INDUCKS_DESACTIVE','L\'import de collection Inducks est actuellement désactivé.');
 define('IMPORTER','Importer');

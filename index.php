@@ -507,22 +507,20 @@ $id_user= $_SESSION['id_user'] ?? null;
             case 'open':
             if (!isset($_SESSION['user'])) {
             ?>
-                <?= IDENTIFIEZ_VOUS ?><br/><br/>
-                <form method="post" action="?action=open">
-                    <table border="0">
-                        <tr>
-                            <td><?= NOM_UTILISATEUR ?> :</td>
-                            <td><input type="text" name="user"/></td>
-                        </tr>
-                        <tr>
-                            <td><?= MOT_DE_PASSE ?> :</td>
-                            <td><input type="password" name="pass"/></td>
-                        </tr>
-                        <tr>
-                            <td align="center" colspan="2"><input type="submit" value="<?= CONNEXION ?>"/></td>
-                        </tr>
-                    </table>
+                <h3><?= CONNEXION ?></h3>
+                <br />
+                <form method="post" action="?action=open" style="width: 250px">
+                    <div class="form-group">
+                        <label for="user"><?= NOM_UTILISATEUR ?></label>
+                        <input class="form-control" id="user" name="user" type="text" placeholder="<?= NOM_UTILISATEUR ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="password"><?= MOT_DE_PASSE ?></label>
+                        <input type="password" class="form-control" id="password" placeholder="<?= MOT_DE_PASSE ?>">
+                    </div>
+                    <button type="submit" class="btn">Login</button>
                 </form>
+                <br />
                 <a href="?action=mot_de_passe_oublie"><?= MOT_DE_PASSE_OUBLIE ?></a>
                 <?php
             }
