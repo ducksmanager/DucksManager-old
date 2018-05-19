@@ -439,8 +439,6 @@ function charger_tranche_suivante(e) {
         if (tranche.up('#bibliotheque')) { // Contexte bibliothèque
             ajouter_etagere();
             init_observers_tranches();
-            l10n_action('remplirSpan', 'chargement_bibliotheque_termine');
-            $('barre_pct_bibliotheque').remove();
             charger_recherche();
         }
         else { // Contexte affichage dans les événements récents

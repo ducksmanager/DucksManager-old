@@ -92,16 +92,6 @@
     cursor:pointer;
 }
 
-#barre_pct_bibliotheque {
-    border: 1px solid white;
-    width: 200px;
-}
-
-#pct_bibliotheque {
-    width: 0;
-    background-color: red;
-}
-
 #partager_bibliotheque {
     margin-top: 20px;
     margin-bottom: 20px;
