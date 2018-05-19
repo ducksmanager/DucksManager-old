@@ -3,6 +3,7 @@
     height:100%;
     z-index:50;
     margin-top: 35px;
+    padding-top: 10px;
     padding-left:15px;
     padding-right:5px;
     background: transparent repeat left top;
@@ -111,18 +112,23 @@
     position: absolute;
 }
 .etagere {
-    margin-top:-3px;
+    margin: -5px -5px 10px -15px;
     background-color:transparent;
     background-repeat:repeat-x;
     background-position:10px 0;
-    margin-left:-15px;
-    margin-right:-5px;
+}
+
+.etagere:last-child {
+    margin-bottom: 0;
 }
 
 .tranche {
-    position:relative;
     z-index:100;
     background-color:white;
+}
+
+.tranche.petite {
+    zoom: 67%;
 }
 
 .bulle {

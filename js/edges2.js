@@ -18,10 +18,12 @@ var extraits;
 var extrait_courant;
 var chargement_extrait=false;
 var noms_magazines = [];
+var textures;
 var popularite_numeros = [];
 var user_points = 0;
 var niveau_actuel = 0;
 var niveaux_medailles = {};
+var est_contexte_bibliotheque = false;
 
 var l10n_recherche = [
     'recherche_magazine_aucun_resultat', 'recherche_magazine_histoire_non_possedee',
@@ -343,6 +345,7 @@ function fermer() {
 var element_conteneur_bibliotheque;
 
 function charger_bibliotheque() {
+    est_contexte_bibliotheque = true;
 
 	var conteneur=$('conteneur_bibliotheque');
 	var section=$('bibliotheque');
@@ -352,7 +355,7 @@ function charger_bibliotheque() {
 
 	largeur_section=section.clientWidth;
 	hauteur_section=section.clientHeight;
-	$('pourcentage_collection_visible').setStyle({'display':'none'});
+	$('pourcentage_collection_visible').addClassName('cache');
 	l10n_action('remplirSpan','pourcentage_collection_visible');
 
 	new Ajax.Request('Edge.class.php', {
@@ -377,17 +380,18 @@ function charger_bibliotheque() {
                 });
 
                 noms_magazines = transport.responseJSON.noms_magazines;
-				var textures = transport.responseJSON.textures;
+				textures = transport.responseJSON.textures;
 
 				var element_bibliotheque = $('bibliotheque');
-				element_bibliotheque.update(transport.responseJSON.contenu);
-				element_bibliotheque.setStyle({
-					'width': $('largeur_etagere').readAttribute('name') + 'px',
-					'backgroundImage': 'url(\'edges/textures/' + textures[0].texture + '/' + textures[0].sous_texture + '.jpg\')'
-				});
+
+				element_bibliotheque
+                    .insert(transport.responseJSON.contenu)
+                    .setStyle({
+                        backgroundImage: 'url(\'edges/textures/' + textures[0].texture + '/' + textures[0].sous_texture + '.jpg\')'
+                    });
 				$('titre_bibliotheque').update(transport.responseJSON.titre);
-				$('pourcentage_collection_visible').setStyle({'display': 'inline'});
-				$('pcent_visible').update($('nb_numeros_visibles').readAttribute('name'));
+                $('pcent_visible').update(transport.responseJSON.nb_numeros_visibles);
+				$('pourcentage_collection_visible').removeClassName('cache');
 				var premiere_tranche = element_bibliotheque.down(2);
 				nb_etageres = $$('.etagere').length;
 				nb_etageres_terminees = 1;
@@ -398,47 +402,50 @@ function charger_bibliotheque() {
 	});
 }
 
-function charger_tranche(tranche) {
-    tranche.observe('load',charger_tranche_suivante);
-
-    tranche.observe('error',charger_tranche_suivante);
-    var lettre_rand=String.fromCharCode(65+Math.floor(Math.random() * 25));
-    var src=tranche.name.replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
-    if (src.indexOf('gen')!=-1) {
-        var src_similaires=element_conteneur_bibliotheque.select('[src*="'+src+'"]').pluck('src');
-        if (src_similaires.length >0)
-            tranche.src=src_similaires[0];
-        else
-            tranche.src='edges/'+src+'.png?'+lettre_rand;
-    }
-    else
-        tranche.src=src;
-}
-
-function charger_tranche_suivante(element) {
-    var tranche2=Event.element(element);
-    var suivant=tranche2.next();
-
-    if (suivant && suivant.className.indexOf('tranche') === -1) {
-        if (tranche2.up('#bibliotheque')) { // Contexte biblioth�que
-            nb_etageres_terminees++;
-            $('pct_bibliotheque').setStyle({'width': parseInt(100 * nb_etageres_terminees / nb_etageres) + '%'});
-            var tranche_suivante = suivant.next().next();
-            if (tranche_suivante.className.indexOf('tranche') === -1) {
-                init_observers_tranches();
-                l10n_action('remplirSpan', 'chargement_bibliotheque_termine');
-                $('barre_pct_bibliotheque').remove();
-                charger_recherche();
-            }
-            else
-                charger_tranche(tranche_suivante);
-        }
-        else { // Contexte affichage dans les �v�nements r�cents
-            callback_tranches_chargees(tranche2.up('.tooltip_content'));
-        }
+function ajouter_etagere(afterElement) {
+    var etagere = new Element('div').addClassName('etagere').update('&nbsp;').setStyle({
+        backgroundImage: 'url(\'edges/textures/' + textures[1].texture + '/' + textures[1].sous_texture + '.jpg\')'
+    });
+    if (afterElement) {
+        afterElement.insert({after: etagere});
     }
     else {
-        charger_tranche(suivant);
+        $('bibliotheque').insert(etagere);
+    }
+}
+
+function charger_tranche(tranche) {
+    tranche.observe('load',charger_tranche_suivante);
+    tranche.observe('error',charger_tranche_suivante);
+
+    var src=tranche.name.replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
+    var src_similaires=element_conteneur_bibliotheque.select('[src*="'+src+'"]').pluck('src');
+    tranche.src=src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png';
+}
+
+function charger_tranche_suivante(e) {
+    var tranche=Event.element(e);
+    var precedente=tranche.previous('.tranche');
+    var suivante=tranche.next('.tranche');
+
+    if (precedente && tranche.offsetLeft < precedente.offsetLeft) {
+        ajouter_etagere(precedente);
+    }
+
+    if (suivante) {
+        charger_tranche(suivante);
+    }
+    else {
+        if (tranche.up('#bibliotheque')) { // Contexte bibliothèque
+            ajouter_etagere();
+            init_observers_tranches();
+            l10n_action('remplirSpan', 'chargement_bibliotheque_termine');
+            $('barre_pct_bibliotheque').remove();
+            charger_recherche();
+        }
+        else { // Contexte affichage dans les événements récents
+            callback_tranches_chargees(tranche.up('.tooltip_content'));
+        }
     }
 }
 
@@ -662,7 +669,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         conteneur_resultats_recherche
             .insert(new Element('div')
                 .addClassName('resultat_recherche list-group-item')
-                .insert(resultat.direct && recherche_bibliotheque
+                .insert(resultat.direct && est_contexte_bibliotheque
                     ? l10n_recherche['recherche_magazine_histoire_non_possedee']
                     : l10n_recherche['recherche_magazine_aucun_resultat']));
     }
@@ -673,7 +680,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
     $$('.magazine_trouve').invoke('observe', 'click', function (event) {
         var element = Event.element(event);
         var pays_magazine = element.readAttribute('id').substring('magazine_'.length, element.readAttribute('id').length);
-        if (recherche_bibliotheque === 'true') {
+        if (est_contexte_bibliotheque) {
             $$('.fleche_position').invoke('remove');
             var tranche_trouvee = $(pays_magazine);
             indiquer_numero(tranche_trouvee, ['haut', 'bas']);
@@ -761,7 +768,6 @@ function indiquer_numero(element, positions_fleches) {
 }
 
 function recherche_histoire(val_recherche) {
-    var recherche_bibliotheque=$('bibliotheque') === null ? 'false':'true';
     var element_recherche_histoire = $('recherche_histoire');
     var element_recherche_input = element_recherche_histoire.down('input');
     var recherche_forcee = true;
@@ -774,7 +780,7 @@ function recherche_histoire(val_recherche) {
     if (val_recherche && val_recherche.length >= 3 ) {
         var resultat = localStorage && JSON.parse(localStorage.getItem('get_magazines_histoire.'+val_recherche));
         if (resultat) {
-            traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input, recherche_bibliotheque);
+            traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input);
         }
         else {
             if (!recherche_en_cours && (recherche_forcee || !derniere_action_recherche || moment().diff(derniere_action_recherche, 'milliseconds') > 200)) {
@@ -782,12 +788,12 @@ function recherche_histoire(val_recherche) {
 
                 new Ajax.Request('Inducks.class.php', {
                     method: 'post',
-                    parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+recherche_bibliotheque,
+                    parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+(est_contexte_bibliotheque ? 'true' : 'false'),
                     onSuccess:function(transport) {
                         var resultat=transport.headerJSON;
                         localStorage && localStorage.setItem('get_magazines_histoire.'+val_recherche, JSON.stringify(resultat));
 
-                        traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input, recherche_bibliotheque);
+                        traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input);
                     }
                 });
             }

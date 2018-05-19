@@ -1,8 +1,6 @@
 <?php
 
 class Etagere {
-    static $hauteur;
-    static $epaisseur;
     static $largeur;
     static $texture1 = 'bois';
     static $sous_texture1 = 'HONDURAS MAHOGANY';
