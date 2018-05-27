@@ -2,7 +2,6 @@ var tranche_en_cours;
 var tranche_bib;
 var current_couv;
 var current_animation;
-var largeur_image;
 var hauteur_image;
 var action_en_cours=false;
 var couverture_ouverte=false;
@@ -49,7 +48,6 @@ function ouvrir_tranche() {
     bulle=null;
     action_en_cours=true;
     var infos=getInfosNumero(tranche_bib.id);
-    largeur_image=tranche_bib.width;
     hauteur_image=tranche_bib.height;
     couverture=new Image();
     tranche_en_cours=tranche_bib.cloneNode(true);
@@ -85,6 +83,11 @@ function ouvrir_tranche() {
                     extraits[i] = data[i];
                     i++;
                 }
+
+                loadBook(extraits, hauteur_image);
+                return;
+
+
                 couverture.src = data.cover;
                 current_couv = new Element('div', {'id': 'page_droite_avant'})
                     .setStyle({

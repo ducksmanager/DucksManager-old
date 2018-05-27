@@ -123,6 +123,7 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/flip.css?VERSION">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.min.js"></script>
@@ -170,7 +171,9 @@ $id_user= $_SESSION['id_user'] ?? null;
         <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>
-        <script type="text/javascript" src="js/edges.js?VERSION"></script><?php
+        <script type="text/javascript" src="js/edges.js?VERSION"></script>
+        <script defer type="text/javascript" src="js/turn.min.js?VERSION"></script>
+        <script defer type="text/javascript" src="js/flip.js?VERSION"></script><?php
 
         if (!is_null($action)) {
             ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
@@ -581,6 +584,22 @@ $id_user= $_SESSION['id_user'] ?? null;
                 break;
             case 'bibliotheque':
             ?>
+            <div id="canvas">
+                <div class="magazine-viewport">
+                    <div class="container">
+                        <div class="magazine">
+                            <div ignore="1" class="next-button"></div>
+                            <div ignore="1" class="previous-button"></div>
+                        </div>
+                    </div>
+                    <div class="bottom">
+                        <div id="slider-bar" class="turnjs-slider">
+                            <div id="slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="conteneur_bibliotheque">
                 <h2 id="titre_bibliotheque"></h2><br /><br />
                 <?php
