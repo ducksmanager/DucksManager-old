@@ -69,7 +69,6 @@
     	</div>
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . '..');
-include_once '../IntervalleValidite.class.php';
 include_once '../Inducks.class.php';
 include_once '../Edge.class.php';
 include_once '../Database.class.php';

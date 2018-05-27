@@ -37,7 +37,7 @@ if (isset($_GET['nouveau_nom']) && !empty($_GET['nouveau_nom'])) {
 		}		
 	}
 }
-if (isLocalHost() && isset($_GET['pays']) && !empty($_GET['pays'])) {
+if (isLocalHost() && !empty($_GET['pays'])) {
 	$pays=$_GET['pays'];
 	?>
 	<form method="get">

@@ -75,7 +75,7 @@ class Affichage {
 				?><li class="<?php
 
                 $lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
-				if ($infos_lien[0]==$onglet_courant) {
+				if ($infos_lien[0]===$onglet_courant) {
                     echo 'active ';
                 }
 				if (empty($prefixe)) {
@@ -219,7 +219,7 @@ class Affichage {
                                 $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
                                 $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
                                 if (count($resultat_date)>0) {
-                                    $regex_date='#([^-]+)-([^-]+)-(.+)#is';
+                                    $regex_date='#([^-]+)-([^-]+)-(.+)#s';
                                     $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
                                     $id=$resultat_date[0]['ID_Acquisition'];
                                     if (!empty($date)) {
@@ -371,21 +371,21 @@ class Affichage {
 
         <?php
         if ($diff_secondes < 60) {
-            ?><?=$diff_secondes.' '.NEWS_TEMPS_SECONDE.($diff_secondes == 1 ? '':'s')?><?php
+            ?><?=$diff_secondes.' '.NEWS_TEMPS_SECONDE.($diff_secondes === 1 ? '':'s')?><?php
         }
         else {
             $diff_secondes= (int)($diff_secondes / 60);
             if ($diff_secondes < 60) {
-                ?><?=$diff_secondes.' '.NEWS_TEMPS_MINUTE.($diff_secondes == 1 ? '':'s')?><?php
+                ?><?=$diff_secondes.' '.NEWS_TEMPS_MINUTE.($diff_secondes === 1 ? '':'s')?><?php
             }
             else {
                 $diff_secondes= (int)($diff_secondes / 60);
                 if ($diff_secondes < 24) {
-                    ?><?=$diff_secondes.' '.NEWS_TEMPS_HEURE.($diff_secondes == 1 ? '':'s')?><?php
+                    ?><?=$diff_secondes.' '.NEWS_TEMPS_HEURE.($diff_secondes === 1 ? '':'s')?><?php
                 }
                 else {
                     $diff_secondes= (int)($diff_secondes / 24);
-                    ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.((int)$diff_secondes == 1 ? '':'s')?><?php
+                    ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.((int)$diff_secondes === 1 ? '':'s')?><?php
                 }
             }
         }

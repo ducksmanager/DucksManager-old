@@ -1,6 +1,6 @@
 function l10n_action(fonction,index,param, callback) {
     var index_param;
-    if (typeof index!='string') {
+    if (typeof index!=='string') {
         index_param=index.join('~')+'~';
     }
     else
@@ -9,12 +9,12 @@ function l10n_action(fonction,index,param, callback) {
         method: 'post',
         parameters:'index='+index_param,
         onSuccess:function(transport) {
-            if (transport.responseText.indexOf('~')!=-1) {
+            if (transport.responseText.indexOf('~')!==-1) {
                 transport.responseText=transport.responseText.split('~');
             }
 
-            if (typeof transport.responseText=='string') {
-                if (fonction=='remplirSpan')
+            if (typeof transport.responseText==='string') {
+                if (fonction==='remplirSpan')
                     window[fonction](index,transport.responseText);
                 else
                     window[fonction](transport.responseText);

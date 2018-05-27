@@ -80,7 +80,7 @@ class Inducks {
 
 	static function get_vrais_magazine_et_numero($pays,$magazine,$numero) {
 		$vrai_magazine=self::get_vrai_magazine($pays,$magazine);
-		if ($vrai_magazine != $magazine) {
+		if ($vrai_magazine !== $magazine) {
 			return [$vrai_magazine,substr($magazine, strlen($vrai_magazine)).$numero];
 		}
         return [$magazine,$numero];
@@ -245,7 +245,7 @@ class Inducks {
 			$_SESSION['lang']=$_GET['lang'];
 		}
 		include_once 'locales/lang.php';
-		$regex_retrieve_numeros='#country\^entrycode\^collectiontype\^comment#is';
+		$regex_retrieve_numeros='#country\^entrycode\^collectiontype\^comment#i';
 		return preg_match($regex_retrieve_numeros,$texte)>0;
 	}
 
@@ -280,7 +280,7 @@ class Inducks {
 
 		$magazines_ne_paraissant_plus= [];
 		foreach($resultat_get_ne_parait_plus as $resultat) {
-			if ($resultat['NeParaitPlus']==1) {
+			if ($resultat['NeParaitPlus']===1) {
 				$magazines_ne_paraissant_plus[]=$resultat['publicationcode'];
 			}
 		}
@@ -317,7 +317,7 @@ elseif (isset($_POST['get_numeros'])) {
 elseif (isset($_POST['get_cover'])) {
 	$resultats= [];
 	$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
-	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) == 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
+	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) === 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
 	$retour= [];
 	$_POST['numero']=str_replace(' ','',$_POST['numero']);
 	$_POST['magazine']=strtoupper($_POST['magazine']);
@@ -339,12 +339,12 @@ elseif (isset($_POST['get_cover'])) {
 				$url='https://outducks.org/'.$extrait['sitecode'].'/'.$extrait['url'];
 		}
 
-		if (count($resultats) == 0) {
+		if (count($resultats) === 0) {
             $resultats['cover'] = $url;
         }
 		else {
 			$num_page=$extrait['position'];
-			if (preg_match('#p.+#i', $num_page) == 0) {
+			if (preg_match('#p.+#i', $num_page) === 0) {
                 $num_page = -99 + ($i++);
             }
 			else {
@@ -353,7 +353,7 @@ elseif (isset($_POST['get_cover'])) {
 			$resultats[]= ['page'=>$num_page,'url'=>$url];
 		}
 	}
-	if (count($resultat_get_extraits) == 0) {
+	if (count($resultat_get_extraits) === 0) {
         $resultats['cover'] = 'images/cover_not_found.png';
     }
 
@@ -437,17 +437,16 @@ function trier_resultats_recherche ($a,$b) {
 	if ($a['titre'] < $b['titre']) {
         return -1;
     }
-	else {
-        return $a['titre'] == $b['titre'] ? 0 : 1;
-    }
+
+    return $a['titre'] === $b['titre'] ? 0 : 1;
 }
 
 function nettoyer_numero($numero) {
-	return str_replace("\n",'',preg_replace('#[+ ]+#is',' ',$numero));
+	return str_replace("\n",'',preg_replace('#[+ ]+#',' ',$numero));
 }
 
 function nettoyer_numero_sans_espace($numero) {
-	return str_replace("\n",'',preg_replace('#[+ ]+#is','',$numero));
+	return str_replace("\n",'',preg_replace('#[+ ]+#','',$numero));
 }
 
 function nettoyer_numero_base_sans_espace($ligne_resultat) {

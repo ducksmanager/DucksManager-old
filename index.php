@@ -1,7 +1,7 @@
 <?php
 require_once 'Util.class.php';
 
-if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off')){
+if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off')){
     $redirect = 'https://ducksmanager.net' . $_SERVER['REQUEST_URI'];
     header('HTTP/1.1 301 Moved Permanently');
     header('Location: ' . $redirect);
@@ -137,7 +137,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                         'hide.bs.tooltip',
                         'hide.bs.popover',
                         'hide.bs.tab'], function(index, eventName) {
-                        all.on(eventName, function( event ) {
+                        all.on(eventName, function() {
                             isBootstrapEvent = true;
                         });
                     });
@@ -415,12 +415,10 @@ $id_user= $_SESSION['id_user'] ?? null;
                     continue;
                 }
                 foreach($menu->items as $j=>$item) {
-                    if ($item->nom==$action) {
-                        if ($item->est_prive=='always' && !isset($_SESSION['user'])) {
-                            echo IDENTIFICATION_OBLIGATOIRE.'<br />';
-                            echo COMMENT_S_IDENTIFIER;
-                            $action='aucune';
-                        }
+                    if ($item->nom === $action && $item->est_prive === 'always' && !isset($_SESSION['user'])) {
+                        echo IDENTIFICATION_OBLIGATOIRE.'<br />';
+                        echo COMMENT_S_IDENTIFIER;
+                        $action='aucune';
                     }
                 }
             }
@@ -531,7 +529,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     else {
                         $requete_verifier_email='SELECT username, Email FROM users WHERE Email = \''.$_POST['email'].'\'';
                         $resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
-                        if (count($resultat_verifier_email) ==0) {
+                        if (count($resultat_verifier_email) === 0) {
                             echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
                         }
                         else {
@@ -821,7 +819,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                 switch ($onglet) {
                     case 'compte':
                         if (isset($_POST['submit_options'])) {
-                            if ($_SESSION['user'] == 'demo') {
+                            if ($_SESSION['user'] === 'demo') {
                                 echo OPERATION_IMPOSSIBLE_MODE_DEMO . '<br />';
                             } else {
                                 $erreur = null;
@@ -832,7 +830,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
                                     if (strlen($mot_de_passe_nouveau) < 6) {
                                         $erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
-                                    } elseif ($mot_de_passe_nouveau != $mot_de_passe_nouveau_confirm) {
+                                    } elseif ($mot_de_passe_nouveau !== $mot_de_passe_nouveau_confirm) {
                                         $erreur = MOTS_DE_PASSE_DIFFERENTS;
                                     } else {
                                         $requete_modif_mdp = 'UPDATE users SET password=sha1(\'' . $mot_de_passe_nouveau . '\') WHERE ID=' . $id_user;
@@ -845,8 +843,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 ?><br/><br/><?php
                                 if (is_null($erreur)) {
                                     echo MODIFICATIONS_OK . '<br />';
-                                    $est_partage = isset($_POST['partage']) && $_POST['partage'] == 'on' ? '1' : '0';
-                                    $est_video = isset($_POST['video']) && $_POST['video'] == 'on' ? '1' : '0';
+                                    $est_partage = isset($_POST['partage']) && $_POST['partage'] === 'on' ? '1' : '0';
+                                    $est_video = isset($_POST['video']) && $_POST['video'] === 'on' ? '1' : '0';
                                     DM_Core::$d->requete('UPDATE users SET AccepterPartage=' . $est_partage . ', AfficherVideo=' . $est_video . ', '
                                         . 'Email=\'' . $_POST['email'] . '\' '
                                         . 'WHERE ID=' . $id_user);
@@ -877,7 +875,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <input type="password" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
                             <br/><br/><br/>
                             <input type="checkbox" name="partage" <?php
-                            if ($resultat_partage[0]['AccepterPartage'] == 1) {
+                            if ($resultat_partage[0]['AccepterPartage'] === 1) {
                             ?>checked="checked"<?php
                             } ?>/><?= ACTIVER_PARTAGE ?>
                             <br/>
@@ -898,7 +896,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             unset($_GET['vider'], $_GET['supprimer']);
                         }
                         if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
-                            if (isset($_GET['confirm']) && $_GET['confirm'] == 'true') {
+                            if (isset($_GET['confirm']) && $_GET['confirm'] === 'true') {
                                 if ($_SESSION['user'] !== 'demo') {
                                     $action = isset($_GET['vider']) ? 'vider' : 'supprimer';
                                     switch ($action) {
@@ -944,10 +942,10 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <a href="?action=gerer&amp;onglet=compte"><?= GESTION_COMPTE_COURT ?></a>.
                             </div><?php
                         }
-                        if ($_SESSION['user'] == 'demo') {
+                        if ($_SESSION['user'] === 'demo') {
                             require_once 'init_demo.php';
                             $nb_minutes_avant_reset = 60 - strftime('%M', time());
-                            if ($nb_minutes_avant_reset == 0) {
+                            if ($nb_minutes_avant_reset === 0) {
                                 $nb_minutes_avant_reset = 60;
                             }
                             ?>
@@ -1006,7 +1004,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     $nb_numeros += count($numeros_pays[$magazine]);
                                 }
                             }
-                            if ($nb_numeros == 0) {
+                            if ($nb_numeros === 0) {
                                 if (!isset($_GET['onglet_magazine'])) {
                                     ?><?= COLLECTION_VIDE_1 ?><br/>
                                     <?= COLLECTION_VIDE_2 ?><br/><br/><?php
@@ -1027,7 +1025,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             Affichage::onglets_magazines($onglets_pays, $onglets_magazines);
 
                             if (isset($onglet_magazine, $pays)) {
-                                ?><?php if (isset($_GET['afficher_video']) && $_GET['afficher_video'] == 0) {
+                                ?><?php if (isset($_GET['afficher_video']) && $_GET['afficher_video'] === 0) {
                                     $requete_cacher_video = 'UPDATE users SET AfficherVideo=0 WHERE ID=' . $id_user;
                                     DM_Core::$d->requete($requete_cacher_video);
                                 }
@@ -1127,7 +1125,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <?php
                             $auteur_note_existe=false;
                             foreach($resultat_auteurs_surveilles as $auteur_surveille) {
-                                if ($auteur_surveille['Notation']!=-1) {
+                                if ($auteur_surveille['Notation']!==-1) {
                                     $auteur_note_existe=true;
                                 }
                             }

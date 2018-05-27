@@ -21,7 +21,7 @@ function MAJProgressBar(id) {
     var pct=getPctCourant(id);
     $('message_'+id).update(' : '+chargements[id]['element_courant']);
     $('pct_'+id).setStyle({'width':pct+'%'});
-    return pct == 100;
+    return pct === 100;
 
 }
 
@@ -46,7 +46,7 @@ function traitement_suivant(id,page, parameters, callback) {
 
 function getIndexCourant(id_chargement) {
     for (var i in chargements[id_chargement]) {
-        if (chargements[id_chargement][i]==chargements[id_chargement]['element_courant'])
+        if (chargements[id_chargement][i]===chargements[id_chargement]['element_courant'])
             return i;
     }
     return null;
@@ -58,7 +58,7 @@ function getElementSuivant(id_chargement) {
         if (element_courant_trouve) {
             return chargements[id_chargement][i];
         }
-        if (chargements[id_chargement][i]==chargements[id_chargement]['element_courant'])
+        if (chargements[id_chargement][i]===chargements[id_chargement]['element_courant'])
             element_courant_trouve=true;
     }
     return null;
@@ -66,7 +66,7 @@ function getElementSuivant(id_chargement) {
 
 function getPctCourant(id_chargement) {
     for (var i in chargements[id_chargement]) {
-        if (chargements[id_chargement][i]==chargements[id_chargement]['element_courant'])
+        if (chargements[id_chargement][i]===chargements[id_chargement]['element_courant'])
             break;
     }
     return parseInt(100*((parseInt(i)+1)/(chargements[id_chargement].length)));

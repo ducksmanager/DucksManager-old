@@ -156,10 +156,6 @@ function creer_div_apercus() {
                     .setStyle({'left':(getScreenCenterX()+$('page_droite_avant_im').width)+'px','top':getScreenCenterY()+'px'})
                     .addClassName('lien_apercus');
 
-    var page_precedente=new Element('div',{'id':'page_precedente'})
-                    .setStyle({'right':(getScreenCenterX()+$('page_droite_avant_im').width)+'px','top':getScreenCenterY()+'px'})
-                    .addClassName('lien_apercus');
-
     var page_gauche_arriere=new Element('div', {'id':'page_gauche_arriere'})
                     .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
                                'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
@@ -263,14 +259,14 @@ function intervertir_page(direction) {
 }
 
 function maj_page(id_page,maj) {
-    if (maj=='page_invisible') {
+    if (maj==='page_invisible') {
         $(id_page).update()
                   .addClassName('page_invisible');
     }
     else {
         $(id_page).update(new Element('img',{'id':id_page+'_im','src':maj}))
                   .removeClassName('page_invisible');
-        if (id_page.indexOf('gauche')!=-1)
+        if (id_page.indexOf('gauche')!==-1)
             $(id_page+'_im').setStyle({'float':'right'});
     }
 }
@@ -464,7 +460,7 @@ function charger_recherche() {
            }
            element_recherche_histoire.down('input')
                .observe('keyup', function(e) {
-                   if (/[\-\!\?\. a-z0-9]/i.test(String.fromCharCode(e.which))) {
+                   if (/[\-!?. a-z0-9]/i.test(String.fromCharCode(e.which))) {
                        recherche_histoire();
                        e.stopPropagation();
                    }
@@ -604,7 +600,7 @@ var derniere_action_recherche=null;
 var recherches_reportees = [];
 var recherche_en_cours = false;
 
-function traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input, recherche_bibliotheque) {
+function traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input) {
     $$('.fleche_position').invoke('remove');
     var conteneur_resultats_recherche = new Element('div')
         .writeAttribute({id: 'conteneur_resultat_recherche'})

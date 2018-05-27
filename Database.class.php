@@ -49,11 +49,12 @@ class Database {
 		}
 
 		$requete_resultat=self::$handle->query($requete);
-        if ($requete_resultat === false)
-            return [];
         $arr=[];
-        while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC))
-            $arr[] = $arr_tmp;
+        if ($requete_resultat !== false) {
+            while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC)) {
+                $arr[] = $arr_tmp;
+            }
+        }
         return $arr;
 	}
 
@@ -66,8 +67,8 @@ class Database {
 	}
 
 	function user_to_id($user) {
-		if ((!isset($user) || empty($user)) && (isset($_COOKIE['user']) && isset($_COOKIE['pass']))) {
-				$user=$_COOKIE['user'];
+		if (isset($_COOKIE['user'], $_COOKIE['pass']) && empty($user)) {
+            $user=$_COOKIE['user'];
 		}
 		$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
 		$resultat=DM_Core::$d->requete_select($requete);
@@ -95,7 +96,7 @@ class Database {
 		if (isset($_SESSION['user'])) {
 			$requete_beta_user='SELECT BetaUser FROM users WHERE username = \''.$_SESSION['user'].'\'';
 			$resultat_beta=DM_Core::$d->requete_select($requete_beta_user);
-			return $resultat_beta[0]['BetaUser']==1;
+			return $resultat_beta[0]['BetaUser']===1;
 		}
 		return false;
 	}
@@ -104,7 +105,7 @@ class Database {
 		if (isset($_SESSION['user'])) {
 			$requete_afficher_video='SELECT AfficherVideo FROM users WHERE username = \''.$_SESSION['user'].'\'';
 			$resultat_afficher_video=DM_Core::$d->requete_select($requete_afficher_video);
-			return $resultat_afficher_video[0]['AfficherVideo']==1;
+			return $resultat_afficher_video[0]['AfficherVideo']===1;
 		}
 		return false;
 	}
@@ -158,7 +159,7 @@ class Database {
 	function liste_etats() {
 		$etats=[];
 		foreach(self::$etats as $etat_court=>$infos_etat) {
-			if ($etat_court!='indefini') {
+			if ($etat_court!=='indefini') {
 				$etats[]=$infos_etat[0];
 			}
 		}
@@ -197,7 +198,7 @@ class Database {
 			$username_courant = '';
 			foreach ($resultat_ventes_utilisateurs as $vente) {
 				$publicationcode=$vente['Pays'].'/'.$vente['Magazine'];
-				if ($username_courant != $vente['username']) {
+				if ($username_courant !== $vente['username']) {
 					if (!empty($username_courant)) {
 						$this->bloc_envoi_message_achat_vente($username_courant);?>
 						</ul><br /><?php
@@ -233,7 +234,7 @@ class Database {
 			else {
 				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
 				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
-				if (count($resultat_emails) != 2) {
+				if (count($resultat_emails) !== 2) {
 					?><span class="alert alert-danger"><?=ENVOI_EMAIL_ECHEC?></span><?php
 				}
 				else {
@@ -418,7 +419,7 @@ class Database {
 	}
 
 	function afficher_liste_auteurs_surveilles($auteurs_surveilles) {
-		if (count($auteurs_surveilles)==0) {
+		if (count($auteurs_surveilles)===0) {
 			echo AUCUN_AUTEUR_SURVEILLE;
 			?><br /><?php
 		}
@@ -469,7 +470,7 @@ class Database {
 		$requete='SELECT 1 FROM users '
 				.'WHERE ID='.$id_user.' AND (Email IS NULL OR Email=\'\') '
 				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
-		return count($this->requete_select($requete)) == 1;
+		return count($this->requete_select($requete)) === 1;
 	}
 	
 	function get_niveaux() {
@@ -767,18 +768,18 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		$etat=$_POST['etat'];
-		if ($_POST['av']=='true'||$_POST['av']=='-1') {
-		    $av=($_POST['av']=='true')?1:0;
+		if ($_POST['av']==='true'||$_POST['av']==='-1') {
+		    $av=($_POST['av']==='true')?1:0;
 		}
 		else {
 		    $av=$_POST['av'];
 		}
 		$date_acquisition=$_POST['date_acquisition'];
 		$id_acquisition=$date_acquisition;
-		if ($date_acquisition!=-1 && $date_acquisition!=-2) {
+		if ($date_acquisition!==-1 && $date_acquisition!==-2) {
 			$requete_id_acquisition="SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND Date = '$date_acquisition' GROUP BY ID_Acquisition";
 			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
-			if ($resultat_acqusitions[0]['cpt'] ==0) {
+			if ($resultat_acqusitions[0]['cpt'] === 0) {
 			    $id_acquisition=-1;
 			}
 			else {
@@ -801,20 +802,21 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['acquisition'])) {
 		$id_user=$_SESSION['id_user'];
 
-		/*Vérifier d'abord que les numéros à ajouter ne correspondent pas déjà à une date d'acquisition*/
-		$requete_acquisition_existe='SELECT Count(ID_Acquisition) as c '
+		//Vérifier d'abord que la date d'acquisition n'existe pas déjà
+		$requete_acquisition_existe='SELECT ID_Acquisition '
 								   .'FROM achats '
 								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
+		echo $requete_acquisition_existe;
 		$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
-		if ($compte_acquisition_date[0]['c']!=0) {
-			echo 'Date';exit(0);
+		if (count($compte_acquisition_date) > 0) {
+			echo 'Date';
 		}
-
-		DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
-				   			.' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
-		$requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
-		$liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
-
+		else {
+            DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
+                                .' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
+            $requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
+            $liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
+}
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
 		$id_user=$_SESSION['id_user'];
@@ -829,8 +831,8 @@ if (isset($_POST['database'])) {
 		$cpt_strlen=0;
 		foreach ($liste_achats as $achat) {
 			$id_achat=$achat['ID_Acquisition'];
-			if ($_POST['continue'] != -1) {
-			 	if ($_POST['continue']==$id_achat) {
+			if ($_POST['continue'] !== -1) {
+			 	if ($_POST['continue']===$id_achat) {
 					$_POST['continue'] = -1;
 				}
 				else { continue; }

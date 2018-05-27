@@ -24,7 +24,7 @@ class Liste {
 
                 include_once('Listes/Liste.'.$nom.'.class.php');
                 $a=new ReflectionProperty($nom, 'titre');
-                Liste::$types_listes[$nom]=$a->getValue();
+                self::$types_listes[$nom]=$a->getValue();
             }
 		}
 		return self::$types_listes;
@@ -116,7 +116,7 @@ class Liste {
 		
 		if ($tri_noms_complets) {
 			uasort($noms_magazines, function($a,$b) {
-				if ($a[1] == $b[1]) {
+				if ($a[1] === $b[1]) {
 					return 0;
 				}
 				return ($a[1] < $b[1]) ? -1 : 1; 
@@ -142,7 +142,7 @@ class Liste {
 							   AUTEURS=> ['auteurs',AUTEURS_COURT]];
 		Affichage::onglets($onglet,$onglets,'onglet','?action=stats');
 
-		if (count($counts)==0) {
+		if (count($counts)===0) {
             ?><div class="alert alert-info">
                 <?=AUCUN_NUMERO_POSSEDE_1?>
                 <a href="?action=gerer&onglet=ajout_suppr"><?=ICI?></a>
@@ -217,10 +217,10 @@ class Liste {
 			case 'auteurs':
 				$requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
 				$resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
-				if (count($resultat_auteurs_surveilles)!=0) {
-					$requete_calcul_effectue='SELECT Count(NomAuteurAbrege) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user;
+				if (count($resultat_auteurs_surveilles) > 0) {
+					$requete_calcul_effectue='SELECT NomAuteurAbrege AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user;
 					$resultat_calcul_effectue=DM_Core::$d->requete_select($requete_calcul_effectue);
-					if ($resultat_calcul_effectue[0]['cpt']==0) {
+					if (count($resultat_calcul_effectue) === 0) {
 						echo AUCUN_AUTEUR_SURVEILLE;
 					}
 					else {
@@ -292,17 +292,16 @@ class Liste {
 	function add_to_database($id_user) {
 		$cpt=0;
 		foreach($this->collection as $pays=>$numeros_pays) {
-			if ($pays=='country') {
-                continue;
+			if ($pays!=='country') {
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    foreach($numeros as $numero) {
+                        $requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
+                                .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
+                        DM_Core::$d->requete($requete);
+                        $cpt++;
+                    }
+                }
             }
-			foreach($numeros_pays as $magazine=>$numeros) {
-				foreach($numeros as $numero) {
-					$requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
-							.'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
-					DM_Core::$d->requete($requete);
-					$cpt++;
-				}
-			}
 		}
 		return $cpt;
 	}
@@ -310,17 +309,16 @@ class Liste {
 	function remove_from_database($id_user) {
 		$cpt=0;
 		foreach($this->collection as $pays=>$numeros_pays) {
-			if ($pays=='country') {
-                continue;
+			if ($pays!=='country') {
+                foreach($numeros_pays as $magazine=>$numeros) {
+                    foreach($numeros as $numero) {
+                        $num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
+                        $requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
+                        DM_Core::$d->requete($requete);
+                        $cpt++;
+                    }
+                }
             }
-			foreach($numeros_pays as $magazine=>$numeros) {
-				foreach($numeros as $numero) {
-					$num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
-					$requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
-					DM_Core::$d->requete($requete);
-					$cpt++;
-				}
-			}
 		}
 		return $cpt;
 	}
@@ -370,25 +368,24 @@ class Liste {
 		$liste_a_ajouter=new Liste();
 		foreach($other_list->collection as $pays=>$numeros_pays) {
 			foreach($numeros_pays as $magazine=>$numeros) {
-				if ($pays=='country') {
-                    continue;
-                }
-				foreach($numeros as $numero) {
-					$trouve=false;
-					if (array_key_exists($pays,$this->collection)
-					&& array_key_exists($magazine,$this->collection[$pays])) {
-						$numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
-						for ($i=0;$i<$numeros_possedes_magazine;$i++) {
-                            if ($numero == $this->collection[$pays][$magazine][$i][0]) {
-                                $trouve = true;
+				if ($pays!=='country') {
+                    foreach($numeros as $numero) {
+                        $trouve=false;
+                        if (array_key_exists($pays,$this->collection)
+                        && array_key_exists($magazine,$this->collection[$pays])) {
+                            $numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
+                            for ($i=0;$i<$numeros_possedes_magazine;$i++) {
+                                if ($numero === $this->collection[$pays][$magazine][$i][0]) {
+                                    $trouve = true;
+                                }
                             }
                         }
-					}
-					if (!$trouve) {
-						$liste_a_ajouter->ajouter($pays, $magazine, $numero);
-						$numeros_a_ajouter++;
-					}
-				}
+                        if (!$trouve) {
+                            $liste_a_ajouter->ajouter($pays, $magazine, $numero);
+                            $numeros_a_ajouter++;
+                        }
+                    }
+                }
 			}
 		}
 		if ($ajouter_numeros) {
@@ -475,7 +472,7 @@ class Liste {
 		$l=new Liste($liste_texte);
 		$ajouts = 0;
 		$suppressions = 0;
-		if ($l->collection == []) {
+		if ($l->collection === []) {
 			echo AUCUN_NUMERO_INDUCKS;
 			return [false,0,0];
 		}
@@ -484,7 +481,7 @@ class Liste {
             $id_user = $_SESSION['id_user'];
             $l_ducksmanager = DM_Core::$d->toList($id_user);
             list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
-            if ($ajouts==0 && $suppressions==0) {
+            if ($ajouts===0 && $suppressions===0) {
                 echo LISTES_IDENTIQUES;
                 return [true,0,0];
             }

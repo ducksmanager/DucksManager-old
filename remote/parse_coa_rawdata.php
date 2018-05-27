@@ -26,10 +26,10 @@ if (isset($_GET['rawData_file'])) {
     $lignes=explode("\n",$contenu);
 	$collection= []; 
 	foreach($lignes as $i=>$ligne) {
-		$ligne=str_replace("\r", '', $ligne);
-		if ($i==0) {
+		if ($i===0) {
             continue;
         }
+        $ligne=str_replace("\r", '', $ligne);
 		$infos_ligne=explode('^',$ligne);
 		if (count($infos_ligne)>=3) {
 			$pays=$infos_ligne[0];
@@ -40,7 +40,7 @@ if (isset($_GET['rawData_file'])) {
                 echo $requete;
             }
 			$resultats=Inducks::requete_select($requete);
-			if (count($resultats) == 0 && isset($_GET['dbg'])) {
+			if (count($resultats) === 0 && isset($_GET['dbg'])) {
 				echo 'Pas de correspondance trouvee pour '.$pays.'/'.$magazine_numero.'<br />';
 			}
 			else {

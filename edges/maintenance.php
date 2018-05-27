@@ -47,7 +47,7 @@ foreach($resultat_noms_images as $image) {
 		else {
 			$numero_debut_trouve=false;
 			foreach($numeros_inducks[$pays][$magazine] as $numero_dispo) {
-				if ($numero_dispo==$numero_debut) {
+				if ($numero_dispo===$numero_debut) {
                     $numero_debut_trouve = true;
                 }
 				if ($numero_debut_trouve) {
@@ -56,7 +56,7 @@ foreach($resultat_noms_images as $image) {
 						echo $chemin_image.' n\'existe pas (Numero : '.$numero_dispo.')<br />';
 					}
 				}
-				if ($numero_dispo==$numero_fin) {
+				if ($numero_dispo===$numero_fin) {
                     break;
                 }
 			}
@@ -74,10 +74,10 @@ else {
 ob_end_flush();
 	
 function appliquer_templates($str,$numero) {
-	$str=preg_replace('#\[Numero\]#is',$numero,$str);
-	$regex='#\[Numero\[([0-9]+)\]\]#is';
+	$str=preg_replace('#\[Numero\]#i',$numero,$str);
+	$regex='#\[Numero\[(\d+)\]\]#i';
 	$spl=str_split($numero);
-	if (0!=preg_match_all($regex, $str, $matches)) {
+	if (0!==preg_match_all($regex, $str, $matches)) {
 		foreach($matches[1] as $i=>$num_caractere) {
 			if (!array_key_exists($num_caractere, $spl)) {
                 $str = str_replace($matches[0][$i], '', $str);

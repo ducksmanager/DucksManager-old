@@ -2,7 +2,7 @@ var l10n_calculs_auteurs=['calcul_en_cours','calcul_termine'];
 var prevent_click=false;
 
 function toggle_item_menu(element_clic) {
-    element_clic=element_clic.tagName=='LI' ? element_clic : element_clic.parentNode;
+    element_clic=element_clic.tagName==='LI' ? element_clic : element_clic.parentNode;
     element_clic.up().select('li.active').invoke('removeClassName','active');
     $(element_clic).toggleClassName('active');
     element_clic.up().select('li a').pluck('name').each(function(nom) {

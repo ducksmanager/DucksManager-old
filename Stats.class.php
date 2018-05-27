@@ -81,19 +81,18 @@ class Stats {
 				  AND Etat = \''.$etat_court.'\''
 			);
 			$cpt=$resultat[0]['c'];
-			if ($cpt==0) {
-                continue;
+			if (((int)$cpt)>0) {
+                if ($cpt/$total<0.01) {
+                    $autres+=$cpt;
+                }
+                else {
+                    $data[]=$cpt;
+                    $labels[]=Database::$etats[$etat_court][0];
+                    $colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+                }
             }
-			if ($cpt/$total<0.01) {
-				$autres+=$cpt;
-			}
-			else {
-				$data[]=$cpt;
-				$labels[]=Database::$etats[$etat_court][0];
-				$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-			}
 		}
-		if ($autres!=0) {
+		if ($autres!==0) {
 			$data[]=$autres;
 			$labels[]=AUTRES;
 			$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));

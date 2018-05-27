@@ -1,5 +1,4 @@
 <?php
-include_once 'IntervalleValidite.class.php';
 include_once 'DucksManager_Core.class.php';
 include_once 'Etagere.class.php';
 
@@ -246,7 +245,7 @@ elseif (isset($_POST['get_texture'])) {
 			?>
 			<option 
 			<?php
-			if ($f==$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']]) {
+			if ($f===$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']]) {
                 echo 'selected="selected" ';
             } ?>
 			value="<?=$f?>"
@@ -268,7 +267,7 @@ elseif (isset($_POST['get_sous_texture'])) {
 			$nom_sous_texture=substr($f,0, strrpos($f, '.'));
 			?>
 			<option <?php
-			if ($nom_sous_texture==$resultat_texture[0]['Bibliotheque_Sous_Texture'.$_POST['n']]) {
+			if ($nom_sous_texture===$resultat_texture[0]['Bibliotheque_Sous_Texture'.$_POST['n']]) {
                 echo 'selected="selected" ';
             } ?>
 			style="background:url('edges/textures/<?=$_POST['texture']?>/miniatures/<?=$f?>') no-repeat scroll center right transparent">

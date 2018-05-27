@@ -327,7 +327,7 @@ function init_notations() {
 						new Ajax.Request('Database.class.php', {
 							method: 'post',
 							parameters:'database=true&changer_notation=true&auteur='+auteur+'&notation='+notation,
-							onSuccess:function(transport) {
+							onSuccess:function() {
 
 							}
 						});

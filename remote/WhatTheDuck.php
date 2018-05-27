@@ -132,7 +132,7 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 					  INSERT INTO users(username,password,Email,DateInscription)
 					  VALUES('$user','$pass','$email','" . date('Y-m-d') . "')";
                 $resultats = Inducks::requete_select($requete, 'db301759616', 'ducksmanager.net');
-                if (count($resultats) == 0 && $resultats === []) {
+                if ($resultats === []) {
                     echo 'OK';
                 }
             }
@@ -151,7 +151,7 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                     if (isset($_GET['id_acquisition'])) {
                         $id_acquisition = $_GET['id_acquisition'];
                         $requete_date_achat = "SELECT 1 FROM achats WHERE ID_Acquisition=$id_acquisition AND ID_User=$id_utilisateur";
-                        if (count($resultats) != 1) {
+                        if (count($resultats) !== 1) {
                             echo 'Invalid purchase ID';
                             break;
                         }
@@ -159,7 +159,7 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         $id_acquisition = -2;
                     }
 
-                    if ($version == '1.0') {
+                    if ($version === '1.0') {
                         $requete = "
 							  INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
 							  VALUES('$pays', '$magazine', '$numero', 'indefini', $id_acquisition, $id_utilisateur)";
@@ -173,7 +173,7 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                     if (isset($_GET['debug'])) {
                         echo $requete . '<br />';
                     }
-                    if (count($resultats) == 0 && $resultats === []) {
+                    if ($resultats === []) {
                         echo 'OK';
                     } else {
                         print_r($resultats);

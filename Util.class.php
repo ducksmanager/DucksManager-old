@@ -68,7 +68,7 @@ class Util {
 	
 	static function ecrire_dans_fichier($nom_fichier,$str,$a_la_suite=false) {
 		$inF = fopen($nom_fichier,$a_la_suite ? 'a+' : 'w');
-		fputs($inF,$str); 
+		fwrite($inF,$str);
 		fclose($inF);
 	}
 	

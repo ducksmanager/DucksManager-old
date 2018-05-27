@@ -91,7 +91,7 @@ Proto.Menu = Class.create({
                 id: 'item'+index,
                 href: 'javascript:return false;',
                 name: name,
-                style: (item.className=="date2"||item.className=="n_date"?'display:none':''),
+                style: (item.className==="date2"||item.className==="n_date"?'display:none':''),
                 className: (item.subMenu?'sous_menu ':'')
                 +(item.className || '')
                 +(item.disabled ? ' disabled' : (item.selected?' enabled selected':' enabled'))
@@ -110,7 +110,7 @@ Proto.Menu = Class.create({
                 .observe('click', this.onClick.bind(this))
                 .observe('contextmenu', Event.stop)
                 .update(contenu_lien)
-                .insert(typeof (item.nextSpanName) != 'undefined'
+                .insert(typeof (item.nextSpanName) !== 'undefined'
                     ? new Element('span',{
                         'name':item.nextSpanName
                         })
@@ -124,17 +124,17 @@ Proto.Menu = Class.create({
         }
 		
         document.observe('click', function(e) {
-            if (Event.element(e).tagName=='BUTTON' || (typeof prevent_click != 'undefined' && prevent_click)) {
+            if (Event.element(e).tagName==='BUTTON' || (typeof prevent_click !== 'undefined' && prevent_click)) {
                 prevent_click=false;
                 return;
             }
             switch (this.options.type) {
                 case 'gestion_numeros' :
-                    if (this.container.visible() && !e.isRightClick() && e.target.readAttribute('name')!='achat' && e.target.tagName!='INPUT') {
+                    if (this.container.visible() && !e.isRightClick() && e.target.readAttribute('name')!=='achat' && e.target.tagName!=='INPUT') {
                         this.cacher_tous_menus(e);
 
                     }
-                    else if (e.target.readAttribute('name')=='achat') {
+                    else if (e.target.readAttribute('name')==='achat') {
                         e.target.addClassName('selected');
                         $$('.date,.pas_date,.non_date').each(function(item) {
                             item.removeClassName('selected');
@@ -292,7 +292,7 @@ Proto.Menu = Class.create({
                         var description_entree = $F('nouvelle_description');
 
                         var description_valide = true;
-                        if (description_entree.textLength > 30 || description_entree == '')
+                        if (description_entree.textLength > 30 || description_entree === '')
                             description_valide = false;
                         if (!description_valide) {
                             nouvelleDescription.setStyle({
@@ -319,9 +319,9 @@ Proto.Menu = Class.create({
                         new Ajax.Request('Database.class.php', {
                             method: 'post',
                             parameters: 'database=true&acquisition=true&afficher_non_defini=false&date_annee=' + date[0] + '&date_mois=' + date[1] + '&date_jour=' + date[2] + '&description=' + description_entree,
-                            onSuccess: function (transport, json) {
+                            onSuccess: function (transport) {
 
-                                if (transport.responseText == 'Date') {
+                                if (transport.responseText === 'Date') {
                                     var nouvelleDescription = $('nouvelle_description');
 
                                     nouvelleDescription.setStyle({
@@ -387,7 +387,7 @@ Proto.Menu = Class.create({
             case 'gestion_numeros' :
                 var bcl=true;
                 while (bcl) {
-                    if ($('nb_selection').innerHTML=="0") {
+                    if ($('nb_selection').innerHTML==="0") {
                         $$('.enabled').each(function(item) {
                             item.removeClassName('enabled');
                             item.addClassName('disabled');
@@ -439,10 +439,8 @@ Proto.Menu = Class.create({
         switch (this.options.type) {
             case 'gestion_numeros':
                 return id;
-                break;
             default:
                 return id+'_'+this.options.type;
-                break;
         }
     },
     cacher_tous_menus: function(e) {
@@ -455,15 +453,15 @@ Proto.Menu = Class.create({
 });
 
 function action_onmouseover(proto,e) {
-    var target=e.target.tagName=='SPAN' ? $(e.target.parentNode) : $(e.target);
+    var target=e.target.tagName==='SPAN' ? $(e.target.parentNode) : $(e.target);
     e.stop();
     $$('.menu').each(function(sous_menu) {
-        if (!(target.hasClassName('item_sous_menu')) && $(sous_menu).readAttribute('id').indexOf('sous_menu') != -1)
+        if (!(target.hasClassName('item_sous_menu')) && $(sous_menu).readAttribute('id').indexOf('sous_menu') !== -1)
             $(sous_menu).hide();
     });
     if (target.hasClassName('sous_menu')) {
         if ($('sous_menu_'+target.name)) {
-            if ($('sous_menu_'+target.name).getStyle('display')=='none') { // Afficher le sous-menu
+            if ($('sous_menu_'+target.name).getStyle('display')==='none') { // Afficher le sous-menu
                 var val_left=$(proto.getId('menu_contextuel')).offsetLeft+target.offsetWidth+2;
                 var extremite_droite=val_left+target.offsetWidth;
                 if (extremite_droite>=$('body').offsetWidth) {
@@ -482,7 +480,7 @@ function action_onmouseover(proto,e) {
 }
 
 function action_onclick(proto,e) {
-    var target=e.target.tagName=='SPAN' ? $(e.target.parentNode) : $(e.target);
+    var target=e.target.tagName==='SPAN' ? $(e.target.parentNode) : $(e.target);
     switch (proto.options.type) {
         case 'gestion_numeros' :
             e.stop();
@@ -506,9 +504,9 @@ function action_onclick(proto,e) {
                             etat=classes[0];
                             break;
                         case 'achat':
-                            if (classes[0]=='non_date')
+                            if (classes[0]==='non_date')
                                 date_achat=-2;
-                            else if (classes[0]=='pas_date')
+                            else if (classes[0]==='pas_date')
                                 date_achat=-1;
                             else {
                                 $$('[name="achat"]').each (function (element) {
@@ -518,7 +516,7 @@ function action_onclick(proto,e) {
                             }
                             break;
                         case 'vente':
-                            av=(classes[0]=="non_marque_a_vendre"?-1:classes[0]=="a_vendre");
+                            av=(classes[0]==="non_marque_a_vendre"?-1:classes[0]==="a_vendre");
                     }
                 });
                 $$('.num_checked').each(function(item) {
@@ -555,7 +553,7 @@ function action_onclick(proto,e) {
                 });
                 target.addClassName('selected');
             }
-            else if (nom_groupe=="etat") {
+            else if (nom_groupe==="etat") {
                 $$('a[name^="'+nom_groupe+'"]').each(function(item) {
                     item.removeClassName('selected');
                 });

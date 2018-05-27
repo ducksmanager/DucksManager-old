@@ -15,7 +15,7 @@ function call_online_api($token, $http_method, $endpoint, $get = [], $post = [])
     curl_setopt($call, CURLOPT_HTTPHEADER, ['Authorization: Bearer ' . $token, 'X-Pretty-JSON: 1']);
     curl_setopt($call, CURLOPT_RETURNTRANSFER, true);
 
-    if ($http_method == 'POST') {
+    if ($http_method === 'POST') {
         curl_setopt($call, CURLOPT_POST, true);
         curl_setopt($call, CURLOPT_POSTFIELDS, http_build_query($post));
     }

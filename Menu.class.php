@@ -32,9 +32,9 @@ class Item {
 	}
 
 	function est_affiche() {
-		return ($this->est_prive=='no'
-		     || (in_array($this->est_prive, ['always', 'always__limited_external_access']) && isset($_SESSION['user']) &&!(self::$action=='logout'))
-			 || ($this->est_prive=='never'  &&!(isset($_SESSION['user']) &&!(self::$action=='logout'))))
+		return ($this->est_prive==='no'
+		     || (in_array($this->est_prive, ['always', 'always__limited_external_access']) && isset($_SESSION['user']) &&!(self::$action==='logout'))
+			 || ($this->est_prive==='never'  &&!(isset($_SESSION['user']) &&!(self::$action==='logout'))))
 			&& (!$this->beta || self::$beta_user);
 	}
 }

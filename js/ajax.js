@@ -281,7 +281,7 @@ function select_sous_texture (n) {
 function select_magazine(valeur_magazine) {
     var el_select=$('liste_pays');
     $('form_pays').value=el_select.options[el_select.options.selectedIndex].id;
-    if (el_select.options[0].id!='chargement_pays') {
+    if (el_select.options[0].id!=='chargement_pays') {
         var id_pays=el_select.options[el_select.options.selectedIndex].id;
         pays_sel=id_pays;
         var option_chargement=new Element('option',{'id':'chargement_magazines'})
@@ -294,12 +294,12 @@ function select_magazine(valeur_magazine) {
                 $('liste_magazines').update(transport.responseText);
                 if ($('liste_numeros'))
                     select_numero();
-                if (typeof (valeur_magazine) != 'undefined') {
+                if (typeof (valeur_magazine) !== 'undefined') {
                     var trouve=false;
                     for (var i=valeur_magazine.length;i>=1;i--) {
                         var val=valeur_magazine.substring(0, i);
                         $$('#liste_magazines option').each(function (option) {
-                            if (option.readAttribute('id') == val) {
+                            if (option.readAttribute('id') === val) {
                                 $('liste_magazines').selectedIndex=option.index;
                                 trouve=true;
                             }
@@ -327,9 +327,9 @@ function magazine_selected() {
 function select_numero() {
 	var el_select=$('liste_magazines');
 	var el_select_pays=$('liste_pays');
-	if (el_select.options[0].id!='chargement_magazines') {
+	if (el_select.options[0].id!=='chargement_magazines') {
 		var nom_magazine=el_select.options[el_select.options.selectedIndex].text;
-		if (nom_magazine==nom_magazine_old)
+		if (nom_magazine===nom_magazine_old)
 			return;
 		nom_magazine_old=nom_magazine;
   		var id_magazine=el_select.options[el_select.options.selectedIndex].id;
@@ -373,7 +373,7 @@ function select_etats() {
 function afficher_numeros(pays,magazine, numero) {
 	if (pays == null || magazine == null) {
 		var el_select=$('liste_magazines');
-		if (el_select.options[0].id=='vide') {
+		if (el_select.options[0].id==='vide') {
 			l10n_action('alert','selectionner_magazine');
 			return;
 		}

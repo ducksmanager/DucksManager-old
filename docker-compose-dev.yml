@@ -12,7 +12,3 @@ services:
     extends:
       file: docker-compose.yml
       service: db_dm
-networks:
-  default:
-    external:
-      name: dm_network
