@@ -891,10 +891,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                         </form>
                         <br/><br/><br/>
                         <?php
-                        if (isset($_GET['confirm']) && $_SESSION['user'] === 'demo') {
-                            echo OPERATION_IMPOSSIBLE_MODE_DEMO . '<br /><br />';
-                            unset($_GET['vider'], $_GET['supprimer']);
-                        }
                         if (isset($_GET['vider']) || isset($_GET['supprimer'])) {
                             if (isset($_GET['confirm']) && $_GET['confirm'] === 'true') {
                                 if ($_SESSION['user'] !== 'demo') {
@@ -927,7 +923,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 </a>
                                 <?php
                             }
-                        } else {?>
+                        } else if ($_SESSION['user'] !== 'demo') {?>
                             <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?= VIDER_LISTE ?></a><br/><br/>
                             <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?= SUPPRIMER_COMPTE ?></a>
                             <br/><?php
