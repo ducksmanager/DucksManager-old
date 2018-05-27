@@ -591,7 +591,7 @@ class Affichage {
                 }
                 else {?>
                     <img id="light" src="rouge.png" alt="X" />&nbsp;
-                    <span><?=NON_CONNECTE?></span><?php
+                    <a href="?action=open"><?=NON_CONNECTE?></a><?php
                 }
             ?>
             </div>
