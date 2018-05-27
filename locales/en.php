@@ -84,7 +84,7 @@ define('CLASSIQUE_ABREGE_DESCRIPTION','This displays the number of possessed iss
 define('CLASSIQUE_ABREGE_MOINS_1','Not really a list');
 define('CLASSIQUE_ABREGE_MOINS_2','Impossible to add issues manually');
 define('CLASSIQUE_ABREGE_PLUS_1','Very short');
-define('CLASSIQUE_DESCRIPTION','A <b>classical list</b>, listing for each publication the issues you possess.');
+define('CLASSIQUE_DESCRIPTION','A <b>standard list</b>, listing for each publication the issues you possess.');
 define('CLASSIQUE_MOINS_1','Easy to read but not practical when it comes to adding new issues in it.');
 define('CLASSIQUE_MOINS_2','Hard to add an issue manually without disturbing the list order');
 define('CLASSIQUE_MOINS_3','Don\'t tell me that you find this list stylish ! ;-)');
