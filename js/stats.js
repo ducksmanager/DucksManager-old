@@ -1,9 +1,10 @@
 function afficher_diagramme_secteurs(type) {
-	new Ajax.Request('Stats.class.php', {
-		method: 'post',
-		parameters: 'graph=true&'+type+'=true',
-		onSuccess:function(transport) {
-			var data = transport.responseJSON;
+	jQuery.post('Stats.class.php', {
+		data: {
+			graph: 'true',
+			type: 'true'
+		},
+		success:function(data) {
 			var config = {
 				type: 'pie',
 				data: {
@@ -19,23 +20,26 @@ function afficher_diagramme_secteurs(type) {
 				}
 			};
 
-			var ctx = $("graph_"+type).getContext("2d");
+			var ctx = jQuery('#graph_'+type).getContext('2d');
 			new Chart(ctx, config);
 		}
 	});
 }
 
 function afficher_histogramme_possessions(data) {
-	new Ajax.Request('Stats.class.php', {
-		method: 'post',
-		parameters : 'graph=true&possessions=true&fin=true&ids='+JSON.stringify(data.chargements)+'&infos='+JSON.stringify(data.infos),
-		onSuccess : function(transport) {
-			var data = transport.responseJSON;
-
+	jQuery.post('Stats.class.php', {
+		data : {
+			graph: 'true',
+			possessions: 'true',
+			fin: 'true',
+			ids: JSON.stringify(data.chargements),
+			infos: JSON.stringify(data.infos)
+		},
+		uccess : function(data) {
 			var labels_magazines_longs = data.labels_magazines_longs;
 			var labels_pays_longs = data.labels_pays_longs;
 
-			$('canvas-holder').setStyle({width: 100 + 30*data.labels.length + 'px'});
+			jQuery('#canvas-holder').css({width: 100 + 30*data.labels.length + 'px'});
 
 			Chart.defaults.global.maintainAspectRatio = false;
 			var config = {
@@ -71,34 +75,28 @@ function afficher_histogramme_possessions(data) {
 				}
 			};
 
-			$$('#fin_classement, #canvas-holder').invoke('removeClassName', 'hidden');
-			$('barre_pct_classement').addClassName('hidden');
-			$$('#barre_pct_classement, #chargement_classement_termine, #prefixe_message_classement, #message_classement')
-				.invoke('update');
+			jQuery('#fin_classement, #canvas-holder').removeClass('hidden');
+			jQuery('#barre_pct_classement').addClass('hidden');
+			jQuery('#barre_pct_classement, #chargement_classement_termine, #prefixe_message_classement, #message_classement')
+				.text('');
 
-			var config_abs = Object.clone(config);
-			config_abs.data = Object.clone(data);
-			config_abs.data.datasets = [data.datasets.possedes, data.datasets.totaux];
-			new Chart($$('.graph_possessions.abs')[0].getContext('2d'), config_abs);
+			var config_abs = jQuery.extend({}, config);
+			config_abs.data = jQuery.extend({}, data, { datasets: [data.datasets.possedes, data.datasets.totaux]});
+			new Chart(jQuery('.graph_possessions.abs')[0].getContext('2d'), config_abs);
 
-			var config_cpt = Object.clone(config);
-			config_cpt.data = Object.clone(data);
-			config_cpt.data.datasets = [data.datasets.possedes_cpt, data.datasets.totaux_cpt];
+			var config_cpt = jQuery.extend({}, config);
+			config_cpt.data = jQuery.extend({}, data, {datasets: [data.datasets.possedes_cpt, data.datasets.totaux_cpt]});
 			config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
 				return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
 			};
-			new Chart($$('.graph_possessions.cpt')[0].getContext('2d'), config_cpt);
+			new Chart(jQuery('.graph_possessions.cpt')[0].getContext('2d'), config_cpt);
 		}
 	});
 }
 
 function afficher_histogramme_stats_auteurs() {
-	new Ajax.Request('Stats.class.php', {
-		method: 'post',
-		parameters : 'graph=true&auteurs=true',
-		onSuccess : function(transport) {
-			var data = transport.responseJSON;
-
+	jQuery.post('Stats.class.php', {
+		success : function(data) {
 			if (data.datasets.possedees.data.length) {
 				var noms_complets_auteurs = data.labels;
 
@@ -134,39 +132,33 @@ function afficher_histogramme_stats_auteurs() {
 					}
 				};
 
-				var config_abs = Object.clone(config);
-				config_abs.data = Object.clone(data);
-				config_abs.data.datasets = [data.datasets.possedees, data.datasets.manquantes];
-				new Chart($$('.graph_auteurs.abs')[0].getContext('2d'), config_abs);
+				var config_abs = jQuery.extend({}, config);
+				config_abs.data = jQuery.extend({}, data, { datasets: [data.datasets.possedees, data.datasets.manquantes]});
+				new Chart(jQuery('.graph_auteurs.abs')[0].getContext('2d'), config_abs);
 
-				var config_cpt = Object.clone(config);
-				config_cpt.data = Object.clone(data);
-				config_cpt.data.datasets = [data.datasets.possedees_pct, data.datasets.manquantes_pct];
+				var config_cpt = jQuery.extend({}, config);
+				config_cpt.data = jQuery.extend({}, data, {datasets: [data.datasets.possedees_pct, data.datasets.manquantes_pct]});
 				config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
 					return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
 				};
-				new Chart($$('.graph_auteurs.pct')[0].getContext('2d'), config_cpt);
+				new Chart(jQuery('.graph_auteurs.pct')[0].getContext('2d'), config_cpt);
 
-				$('canvas-holder')
-					.setStyle({width: 250 + 50*data.labels.length + 'px'});
-
-				$$('#canvas-holder, #fin_stats_auteur').invoke('removeClassName', 'hidden');
+				jQuery('#canvas-holder').css({width: 250 + 50*data.labels.length + 'px'});
+				jQuery('#canvas-holder, #fin_stats_auteur').removeClass('hidden');
 			}
 			else {
-				$('aucun_resultat_stats_auteur').removeClassName('hidden');
+				jQuery('#aucun_resultat_stats_auteur').removeClass('hidden');
 			}
 
-			$('chargement_stats_auteur').addClassName('hidden');
+			jQuery('#chargement_stats_auteur').addClass('hidden');
 		}
 	});
 }
 
 function afficher_histogramme_achats() {
-	new Ajax.Request('Stats.class.php', {
-		method: 'post',
-		parameters : 'graph=true&achats=true',
-		onSuccess : function(transport) {
-			var data = transport.responseJSON;
+	jQuery.post('Stats.class.php', {
+		data : {graph: 'true', achats: 'true'},
+		uccess : function(data) {
 			var achats = data.datasets;
 			achats.tot = {};
 
@@ -179,8 +171,8 @@ function afficher_histogramme_achats() {
 
 			var achats_pour_graph = {'nouv': [], 'tot': []};
 
-			for (var publicationcode in achats.nouv) {
-				var achats_publication = {'nouv': achats.nouv[publicationcode], 'tot': {}};
+			jQuery.each(achats.nouv, function(publicationcode, achat) {
+				var achats_publication = {'nouv': achat, 'tot': {}};
 				var achats_publication_arr = {'nouv': [], 'tot': []};
 
 				var date_achat_precedente = null;
@@ -212,7 +204,7 @@ function afficher_histogramme_achats() {
 					backgroundColor: getRandomColor(),
 					data: achats_publication_arr.tot
 				});
-			}
+			});
 
 			Chart.defaults.global.maintainAspectRatio = false;
 			Chart.defaults.global.legendCallback = function() { return ''; };
@@ -253,20 +245,20 @@ function afficher_histogramme_achats() {
 				}
 			};
 
-			$('canvas-holder')
-				.setStyle({width: 30*dates.length + 'px'})
-				.removeClassName('hidden');
+			jQuery('#canvas-holder')
+				.css({width: 30*dates.length + 'px'})
+				.removeClass('hidden');
 
-			var config_nouv = Object.clone(config);
+			var config_nouv = jQuery.extend({}, config);
 			config_nouv.data = { datasets: achats_pour_graph.nouv, labels: dates };
-			new Chart($$('.graph_achats.nouv')[0].getContext('2d'), config_nouv);
+			new Chart(jQuery('.graph_achats.nouv')[0].getContext('2d'), config_nouv);
 
-			var config_tot = Object.clone(config);
+			var config_tot = jQuery.extend({}, config);
 			config_tot.data = { datasets: achats_pour_graph.tot, labels: dates };
-			new Chart($$('.graph_achats.tot')[0].getContext('2d'), config_tot);
+			new Chart(jQuery('.graph_achats.tot')[0].getContext('2d'), config_tot);
 
-			$('fin_achats').removeClassName('hidden');
-			$('message_achats').addClassName('hidden');
+			jQuery('#fin_achats').removeClass('hidden');
+			jQuery('#message_achats').addClass('hidden');
 
 		}
 	});
@@ -281,68 +273,55 @@ function getRandomColor() {
 	return color;
 }
 
-function toggleClass(selector, className) {
-	$$(selector).invoke('toggleClassName', className)
-}
-
 function toggleGraphs(type) {
-	toggleClass('.graph_'+type, 'hidden');
-	toggleClass('.graph_type', 'bold');
+	jQuery('.graph_'+type).toggleClass('hidden');
+	jQuery('.graph_type').toggleClass('bold');
 }
 
 function recharger_stats_auteurs() {
-	var el_select=$('liste_pays');
-	var pays=el_select.options[el_select.options.selectedIndex].id;
-	location.replace(location.href.replace(/&pays=[^&$]+/, '') + '&pays='+pays);
+	var el_select=jQuery('#liste_pays');
+	var pays=el_select[0].options[el_select.options.selectedIndex].id;
+	location.replace(location.href.replace(/&pays=[^&jQuery]+/, '') + '&pays='+pays);
 }
 
 function init_notations() {
-	new Ajax.Request('Database.class.php', {
-		method: 'post',
-		parameters:'database=true&liste_notations=true',
-		onSuccess:function(transport) {
-			var notations = transport.responseJSON;
+	jQuery.post('Database.class.php', {
+		data: {database: 'true', liste_notations: 'true'},
+		success:function(notations) {
+			var liste_notations = jQuery('#liste_notations');
+			var template = liste_notations.find('.template');
 
-			var liste_notations = $('liste_notations');
-			var template = liste_notations.select('.template')[0];
-			for (var i=0;i<notations.length;i++) {
-				var notation = notations[i];
-
-				var el_li = template.clone(true).removeClassName('template');
-				el_li.down('.nom_auteur').update(notation.NomAuteur);
-				el_li.down('.notation_auteur').writeAttribute('id', 'notation_auteur_' + notation.NomAuteurAbrege);
-				el_li.down('.supprimer_auteur').down('a').writeAttribute('id', 'supprimer_auteur_' + notation.NomAuteurAbrege).observe('click', function() {
-					supprimer_auteur(this.id.replace(/^.*_([^_]+)$/,'$1'));
+			jQuery.each(notations, function(i, notation) {
+				var el_li = template.clone(true).removeClass('template');
+				el_li.find('>.nom_auteur').text(notation.NomAuteur);
+				el_li.find('>.notation_auteur').attr({id: 'notation_auteur_' + notation.NomAuteurAbrege});
+				el_li.find('>.supprimer_auteur>a').attr({id: 'supprimer_auteur_' + notation.NomAuteurAbrege}).on('click', function() {
+					supprimer_auteur(jQuery(this).attr('id').replace(/^.*_([^_]+)jQuery/,'jQuery1'));
 				});
-				liste_notations.insert(el_li);
+				liste_notations.append(el_li);
 
-				new Starbox(el_li.down('.notation_auteur'), notation.Notation || 5, {
+				new Starbox(el_li.find('>.notation_auteur')[0], notation.Notation || 5, {
 					buttons: 10,
 					max: 10,
 					stars: 10,
 					rerate: true,
 					onRate: function(element, datum) {
-						var auteur = datum.identity.replace(/^.+_(.+)$/,'$1');
+						var auteur = datum.identity.replace(/^.+_(.+)jQuery/,'jQuery1');
 						var notation = datum.rated;
-						new Ajax.Request('Database.class.php', {
-							method: 'post',
-							parameters:'database=true&changer_notation=true&auteur='+auteur+'&notation='+notation,
-							onSuccess:function() {
-
-							}
+						jQuery.post('Database.class.php', {
+							url: {database: 'true', changer_notation: 'true', auteur: auteur, notation: notation}
 						});
 					}
 				});
-			}
+			});
 		}
 	});
 }
 
 function supprimer_auteur (nom_auteur) {
-    new Ajax.Request('Database.class.php', {
-        method: 'post',
-        parameters:'database=true&supprimer_auteur=true&nom_auteur='+nom_auteur,
-        onSuccess:function() {
+    jQuery.post('Database.class.php', {
+        data: {database: 'true', supprimer_auteur: 'true', nom_auteur: nom_auteur},
+	    success:function() {
             location.reload();
         }
     });

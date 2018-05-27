@@ -2,7 +2,7 @@ var autocomplete;
 
 function initializeAutocomplete() {
 	autocomplete = new google.maps.places.Autocomplete(
-		$('adresse_complete'),
+		jQuery('#adresse_complete'),
 		{ types: ['geocode'] }
 	);
 	google.maps.event.addListener(autocomplete, 'place_changed', fillInAddress);
@@ -10,10 +10,10 @@ function initializeAutocomplete() {
 
 function fillInAddress() {
 	var place = autocomplete.getPlace();
-	var form = $('form_bouquinerie');
+	var form = jQuery('#form_bouquinerie');
 
-	form.down('[name="coordX"]').value = place.geometry.location.lat();
-	form.down('[name="coordY"]').value = place.geometry.location.lng();
+	form.find('[name="coordX"]').val(place.geometry.location.lat());
+	form.find('[name="coordY"]').val(place.geometry.location.lng());
 }
 
 var map;
@@ -31,11 +31,13 @@ function analyserAdresseSuivante() {
 }
 
 function initialize() {
-	new Ajax.Request('Database.class.php', {
-		method: 'post',
-		parameters:'database=true&liste_bouquineries=true',
-		onSuccess:function(transport) {
-			adresses=JSON.parse(transport.responseText);
+	jQuery.post('Database.class.php', {
+		data: {
+			database: 'true',
+			liste_bouquineries: 'true'
+		},
+		success:function(response) {
+			adresses=response;
 			analyserAdresseSuivante();
 		}
 	});
@@ -44,7 +46,7 @@ function initialize() {
 		zoom: 4,
 		center: latlng
 	};
-	map = new google.maps.Map($("map_canvas"),  myOptions);
+	map = new google.maps.Map(jQuery('#map_canvas'), myOptions);
 }
 
 function localiser(id_adresse) {
@@ -65,26 +67,20 @@ function creer_marqueur(adresse,position) {
 
 	var fields = ['Nom', 'Commentaire', 'Adresse', 'Signature'];
 
-	var element = $$('.infoWindow.template')[0].clone(true).removeClassName('template');
-	for (var i_field in fields) {
-		if( fields.hasOwnProperty(i_field)) {
-			var field = fields[i_field];
-			element.down('.' + field).update(adresse[field]);
-		}
-	}
+	var element = jQuery('.infoWindow.template').clone(true).removeClass('template');
+	jQuery.each(fields, function(i, field) {
+		element.find('.' + field).update(adresse[field]);
+	});
 
 	infowindows[adresse.id] = new google.maps.InfoWindow({
-		content: element.innerHTML
+		content: element.html()
 	});
 
 	google.maps.event.addListener(marker, 'click', function() {
-		for (var id_adresse in adresses) {
-			if (infowindows.hasOwnProperty(id_adresse)) {
-				infowindows[id_adresse].close(map,marker);
-				if (marker.title === adresses[id_adresse].Nom)
-					infowindows[id_adresse].open(map,marker);
-			}
-		}
+		jQuery.each(fields, function(id, adresse) {
+			infowindows[id].close(map, marker);
+			if (marker.title === adresse.Nom)
+				infowindows[id].open(map, marker);
+		});
 	});
-
 }

@@ -29,7 +29,7 @@ class Liste {
 		}
 		return self::$types_listes;
 	}
-	
+
 	function __construct($texte=false) {
 		if (!$texte) {
 		    return;
@@ -93,7 +93,7 @@ class Liste {
         }
         return null;
     }
-	
+
 	function liste_magazines($pays_magazine_supplementaire=null,$tri_noms_complets=true) {
 		$publication_codes= [];
 		foreach($this->collection as $pays=>$numeros_pays) {
@@ -113,13 +113,13 @@ class Liste {
 		foreach(array_keys($noms_magazines) as $nom_abrege) {
 			$noms_magazines[$nom_abrege]= [$nom_abrege, $noms_magazines[$nom_abrege]];
 		}
-		
+
 		if ($tri_noms_complets) {
 			uasort($noms_magazines, function($a,$b) {
 				if ($a[1] === $b[1]) {
 					return 0;
 				}
-				return ($a[1] < $b[1]) ? -1 : 1; 
+				return ($a[1] < $b[1]) ? -1 : 1;
 			});
 		}
 		return [$noms_pays,$noms_magazines];
@@ -178,7 +178,7 @@ class Liste {
 				</div>
 				<br />
 				<script type="text/javascript">
-					initProgressBar('classement','Stats.class.php', 'graph=true&possessions=true', afficher_histogramme_possessions);
+					initProgressBar('classement','Stats.class.php', {graph: 'true', possessions: 'true'}, afficher_histogramme_possessions);
 				</script>
 				<div id="resultat_classement"></div>
 
@@ -201,9 +201,9 @@ class Liste {
 				$types = ['nouv' => AFFICHER_NOUVELLES_ACQUISITIONS, 'tot'=> AFFICHER_POSSESSIONS_TOTALES]; ?>
 
 				<div id="message_achats"><?=CHARGEMENT?></div>
-				
+
 				<div id="fin_achats" class="hidden"></div>
-				
+
 				<br />
 
 				<div id="canvas-holder" class="hidden" style="background: whitesmoke">
@@ -333,7 +333,7 @@ class Liste {
 		$id_fichier_tmp=rand(0,10000);
 		$nom_fichier_tmp='rawdata_'.$id_fichier_tmp.'.txt';
 		Util::ecrire_dans_fichier('_tmp/'.$nom_fichier_tmp,$this->texte);
-		
+
 		$serveur='serveur_virtuel';
 		$reponse=Util::get_page(ServeurDb::getRemoteUrl('parse_coa_rawdata.php') .'?rawData_file='.$id_fichier_tmp.'&mdp='.sha1(ServeurDb::getProfil($serveur)->password));
 		$this->collection=unserialize($reponse);
@@ -453,7 +453,7 @@ class Liste {
         }
 		return null;
 	}
-	
+
 	function nettoyer_collection() {
 		$collection2= [];
 		foreach($this->collection as $pays=>$liste_magazines) {
@@ -463,7 +463,7 @@ class Liste {
 				foreach($liste_numeros as $numero_liste) {
 					$collection2[$pays][$magazine][]= [nettoyer_numero($numero_liste[0]),$numero_liste[1],$numero_liste[2],$numero_liste[3]];
 				}
-			}	
+			}
 		}
 		$this->collection=$collection2;
 	}

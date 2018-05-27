@@ -5,39 +5,35 @@ function l10n_action(fonction,index,param, callback) {
     }
     else
         index_param=index;
-    new Ajax.Request('locales/lang.php', {
-        method: 'post',
-        parameters:'index='+index_param,
-        onSuccess:function(transport) {
-            if (transport.responseText.indexOf('~')!==-1) {
-                transport.responseText=transport.responseText.split('~');
+    jQuery.post('locales/lang.php', {
+        data: {index: index_param},
+        success:function(response) {
+            if (response.indexOf('~')!==-1) {
+	            response=response.split('~');
             }
 
-            if (typeof transport.responseText==='string') {
+            if (typeof response==='string') {
                 if (fonction==='remplirSpan')
-                    window[fonction](index,transport.responseText);
+                    window[fonction](index,response);
                 else
-                    window[fonction](transport.responseText);
+                    window[fonction](response);
             }
             else {
-                for (var i=0;i<transport.responseText.length;i++) {
+                jQuery.each(response, function(i, chunk) {
                     switch (fonction) {
-                        case 'remplirSpanIndex':
-                            window[fonction](i,transport.responseText[i]);
-                            break;
                         case 'remplirSpanName':
-                            window[fonction](index[i],transport.responseText[i]);
+                            window[fonction](index[i],chunk);
                             break;
                         case 'fillArray':
-                            window[param][index[i]]=transport.responseText[i];
+                            window[param][index[i]]=chunk;
                             break;
                         case 'remplirSpan':
-                            window[fonction](index[i],transport.responseText[i]);
+                            window[fonction](index[i],chunk);
                             break;
                         default:
-                            window[fonction](transport.responseText[i]);
+                            window[fonction](chunk);
                     }
-                }
+                });
             }
 
             callback && callback();
@@ -45,22 +41,10 @@ function l10n_action(fonction,index,param, callback) {
     });
 }
 
-function remplirSpanIndex (index,trad) {
-    var element = $('item'+index);
-	if (element) {
-		element.update(trad);
-		if (element.hasClassName('sub_menu'))
-			element.insert('&nbsp;&gt;&gt;');
-	}
-}
-
 function remplirSpan (idSpan, trad) {
-	if ($(idSpan))
-		$(idSpan).update(trad);
+	jQuery('#'+idSpan).text(trad);
 }
 
 function remplirSpanName (nameSpan, trad) {
-    $$('[name="'+nameSpan+'"]').each(function (element) {
-        $(element).update(trad);
-    })
+    jQuery('[name="'+nameSpan+'"]').text(trad);
 }
