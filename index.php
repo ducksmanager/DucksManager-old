@@ -170,7 +170,7 @@ $id_user= $_SESSION['id_user'] ?? null;
         <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>
-        <script type="text/javascript" src="js/edges2.js?VERSION"></script><?php
+        <script type="text/javascript" src="js/edges.js?VERSION"></script><?php
 
         if (!is_null($action)) {
             ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
@@ -201,14 +201,12 @@ $id_user= $_SESSION['id_user'] ?? null;
                     $onglet = isset($_GET['onglet']) && in_array($_GET['onglet'], ['affichage', 'options'])
                         ? $_GET['onglet']
                         : 'affichage';
-                    $regen = isset($_GET['regen']) ? 1 : 0;
                     ?>
                     <script type="text/javascript">
                         var user_bibliotheque = <?=is_null($user_bibliotheque) ? -1 : "'".$user_bibliotheque."'"?>;
                         var cle_bibliotheque = <?=is_null($cle_bibliotheque) ? -1 : "'".$cle_bibliotheque."'"?>;
                         var est_partage_bibliotheque = <?=$est_partage_bibliotheque ? 1 : 0?>;
                         var onglet = '<?=$onglet?>';
-                        var regen = '<?=$regen?>';
                     </script><?php
                 break;
                 case 'stats':
@@ -233,12 +231,12 @@ $id_user= $_SESSION['id_user'] ?? null;
 
     <?php
     $texte_debut='';
-    if ($action=='demo') {
+    if ($action==='demo') {
     	$action='open';
     	$_POST['user']='demo';
     	$_POST['pass']='demodemo';
     }
-    if ($action=='open'&& isset($_POST['user'])) {
+    if ($action==='open'&& isset($_POST['user'])) {
         if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass'])) {
             $texte_debut .= 'Identifiants invalides!<br /><br />';
         }
