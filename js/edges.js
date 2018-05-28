@@ -1,19 +1,14 @@
 var tranche_en_cours;
 var tranche_bib;
 var current_couv;
-var current_animation;
-var largeur_image;
 var hauteur_image;
 var action_en_cours=false;
 var couverture_ouverte=false;
 var ouvrirApres=false;
 var largeur_section;
-var hauteur_section;
 var couverture;
 var ouverture_couverture;
 var nb_etageres;
-var nb_etageres_terminees;
-var bulle=null;
 var extraits;
 var extrait_courant;
 var chargement_extrait=false;
@@ -35,7 +30,7 @@ function ouvrir_tranche() {
     if (action_en_cours || extrait_courant>0)
         return;
     jQuery('.popover').popover('destroy');
-    $$('.fleche_position').invoke('remove');
+    jQuery('.fleche_position').remove();
 
     extraits=[];
     extrait_courant=-1;
@@ -45,28 +40,38 @@ function ouvrir_tranche() {
         fermer();
         return;
     }
-    $('infobulle') && $('infobulle').remove();
-    bulle=null;
+    jQuery('#infobulle').remove();
     action_en_cours=true;
-    var infos=getInfosNumero(tranche_bib.id);
-    largeur_image=tranche_bib.width;
-    hauteur_image=tranche_bib.height;
-    couverture=new Image();
-    tranche_en_cours=tranche_bib.cloneNode(true);
-    tranche_en_cours.setStyle({'zIndex':500,'position':'absolute',
-                              'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                   .setOpacity(0);
-    $('bibliotheque').insert(tranche_en_cours);
+    var infos=getInfosNumero(tranche_bib.attr('id'));
+    hauteur_image=tranche_bib.height();
+    couverture=jQuery('<img>');
+    tranche_en_cours=tranche_bib.clone(true);
+    tranche_en_cours.css({
+        zIndex:500,
+        position:absolute,
+        left: getScreenCenterX()+'px',
+        top: (getScreenCenterY()-hauteur_image/2)+'px',
+        opacity: 0
+    });
+    jQuery('bibliotheque').append(tranche_en_cours);
     new Effect.Parallel([
-        new Effect.Opacity(tranche_bib,{'from':1, 'to':0, sync: true}),
-        new Effect.Opacity(tranche_en_cours, {'from':0, 'to':1, sync:true})
+        new Effect.Opacity(tranche_bib[0],{from: 1, to: 0, sync: true}),
+        new Effect.Opacity(tranche_en_cours[0], {from: 0, to: 1, sync:true})
     ], {
         duration: 0.5,
         afterFinish:function() {
-            current_animation=new Element('div',{'id':'animation'})
-                .setStyle({'position':'absolute', 'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':600})
-                .update(new Element('img',{'src':'loading.gif'}));
-            $('bibliotheque').insert(current_animation);
+            jQuery('#bibliotheque').append(
+	            jQuery('<div>',{id:'animation'})
+		            .css({
+			            position: absolute,
+			            left:getScreenCenterX()+'px',
+			            top:(getScreenCenterY()-hauteur_image/2)+'px',
+			            zIndex:600
+		            })
+		            .append(
+		                jQuery('<img>',{src:'loading.gif'})
+                    )
+            );
         }});
 
     jQuery.post('Inducks.class.php', {
@@ -77,7 +82,7 @@ function ouvrir_tranche() {
         numero: infos.Numero
     })
         .done(function (data) {
-            $('infobulle') && $('infobulle').remove();
+            jQuery('#infobulle').remove();
             if (data) {
                 couverture_ouverte = true;
                 var i = 0;
@@ -85,63 +90,61 @@ function ouvrir_tranche() {
                     extraits[i] = data[i];
                     i++;
                 }
-                couverture.src = data.cover;
-                current_couv = new Element('div', {'id': 'page_droite_avant'})
-                    .setStyle({
-                        'position': 'absolute',
-                        'height': hauteur_image + 'px',
-                        'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px',
-                        'display': 'none',
-                        'left': (getScreenCenterX() + tranche_en_cours.width) + 'px',
-                        'top': (getScreenCenterY() - hauteur_image / 2) + 'px'
+                couverture.attr({src: data.cover});
+                current_couv = jQuery('<div>', {id: 'page_droite_avant'})
+                    .css({
+                        position: 'absolute',
+                        height: hauteur_image + 'px',
+                        width: (couverture.width() * (hauteur_image / couverture.height())) + 'px',
+                        display: 'none',
+                        left: (getScreenCenterX() + tranche_en_cours.width()) + 'px',
+                        top: (getScreenCenterY() - hauteur_image / 2) + 'px'
                     })
-                    .addClassName('page_avant');
-                var current_couv_im = new Element('img', {
-                    'id': 'page_droite_avant_im',
-                    'src': couverture.src,
-                    'height': '100%',
-                    'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px'
-                });
-                current_couv.update(current_couv_im);
-                $('body').insert(current_couv);
-                current_couv_im.observe('click', fermer_tranche);
+                    .addClass('page_avant');
+                var current_couv_im = jQuery('<img>', {
+                    id: 'page_droite_avant_im',
+                    src: couverture.attr('src'),
+                    height: '100%',
+                    width: (couverture.width() * (hauteur_image / couverture.height())) + 'px'
+                })
+                    .on('click', fermer_tranche)
+                    .on('load', function () {
+                        current_couv.css({width: (couverture.width() * (hauteur_image / couverture.height())) + 'px'});
+                        if (ouverture_couverture) {
+	                        tranche_en_cours.css({
+		                        width: tranche_en_cours.width()+ 'px',
+		                        height: tranche_en_cours.height()+ 'px'
+	                        });
+	                        new Effect.Parallel([
+		                        new Effect.Morph(current_couv[0], {
+			                        width: (couverture.width() / (hauteur_image / couverture.height())) + 'px',
+			                        sync: true
+		                        }),
+		                        new Effect.BlindRight(current_couv[0], {sync: true}),
+		                        new Effect.Move(current_couv[0], {
+			                        mode: 'absolute',
+			                        x: getScreenCenterX(),
+			                        y: getScreenCenterY() - hauteur_image / 2,
+			                        sync: true
+		                        }),
+		                        new Effect.BlindLeft(tranche_en_cours[0], {sync: true})
+	                        ], {
+		                        duration: 1,
+		                        afterFinish: function () {
+			                        ouverture_couverture = false;
+			                        jQuery('#animation').remove();
 
-                current_couv_im.observe('load', function () {
-                    current_couv.setStyle({'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px'});
-                    if (!ouverture_couverture)
-                        return;
-
-                    tranche_en_cours.setStyle({
-                        'width': tranche_en_cours.width + 'px',
-                        'height': tranche_en_cours.height + 'px'
-                    });
-                    new Effect.Parallel([
-                        new Effect.Morph(current_couv, {
-                            'width': parseInt(couverture.width / (hauteur_image / couverture.height)) + 'px',
-                            sync: true
-                        }),
-                        new Effect.BlindRight(current_couv, {sync: true}),
-                        new Effect.Move(current_couv, {
-                            'mode': 'absolute',
-                            'x': getScreenCenterX(),
-                            'y': getScreenCenterY() - hauteur_image / 2,
-                            sync: true
-                        }),
-                        new Effect.BlindLeft(tranche_en_cours, {sync: true})
-                    ], {
-                        duration: 1,
-                        afterFinish: function () {
-                            ouverture_couverture = false;
-                            $('animation') && $('animation').remove();
-
-                            if (extraits.length > 0 && !$('lien_apercus')) {
-                                creer_div_apercus();
-                            }
+			                        if (extraits.length > 0 && !jQuery('#lien_apercus').length) {
+				                        creer_div_apercus();
+			                        }
+		                        }
+	                        });
+	                        jQuery('#animation').remove();
+	                        action_en_cours = false;
                         }
                     });
-                    $('animation') && $('animation').remove();
-                    action_en_cours = false;
-                });
+	            current_couv.html(current_couv_im.html());
+	            jQuery('#body').append(current_couv);
             }
         });
 }
@@ -152,29 +155,42 @@ function fermer_tranche() {
 }
 
 function creer_div_apercus() {
-    var page_suivante=new Element('div',{'id':'page_suivante'})
-                    .setStyle({'left':(getScreenCenterX()+$('page_droite_avant_im').width)+'px','top':getScreenCenterY()+'px'})
-                    .addClassName('lien_apercus');
+    var page_suivante=jQuery('<div>',{id: 'page_suivante'})
+        .css({
+            left: (getScreenCenterX()+jQuery('#page_droite_avant_im').width())+'px',
+            top: getScreenCenterY()+'px'})
+        .addClass('lien_apercus');
 
-    var page_gauche_arriere=new Element('div', {'id':'page_gauche_arriere'})
-                    .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
-                               'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_arriere');
+    var page_gauche_arriere=jQuery('<div>', {id: 'page_gauche_arriere'})
+        .css({
+            position: 'absolute',
+            display: 'block',
+            width: getLargeur(),
+	        height: hauteur_image+'px',
+	        right: getScreenCenterX()+'px',
+	        top: (getScreenCenterY()-hauteur_image/2)+'px'})
+	    .addClass('page_arriere');
 
-    var page_gauche_avant=new Element('div', {'id':'page_gauche_avant'})
-                    .setStyle({'position':'absolute','display':'block','width':'0px','height':hauteur_image+'px',
-                               'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_avant');
+    var page_gauche_avant=jQuery('<div>', {id: 'page_gauche_avant'})
+                    .css({position: 'absolute',display: 'block',width: '0px',height: hauteur_image+'px',
+                               right: getScreenCenterX()+'px',top: (getScreenCenterY()-hauteur_image/2)+'px'})
+                    .addClass('page_avant');
 
-    var page_droite_arriere=new Element('div', {'id':'page_droite_arriere'})
-                    .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
-                               'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_arriere');
+    var page_droite_arriere=jQuery('<div>', {id: 'page_droite_arriere'})
+	    .css({
+		    position: 'absolute',
+		    display: 'block',
+		    width: getLargeur(),
+		    height: hauteur_image+'px',
+		    left: getScreenCenterX()+'px',
+		    top: (getScreenCenterY()-hauteur_image/2)+'px'})
+	    .addClass('page_arriere');
 
-    $('body').insert(page_suivante)
-             .insert(page_gauche_arriere).insert(page_gauche_avant)
-             .insert(page_droite_arriere);
-    page_suivante.observe('click',function() {
+    jQuery('#body')
+	    .append(page_suivante)
+	    .append(page_gauche_arriere).append(page_gauche_avant)
+	    .append(page_droite_arriere);
+    page_suivante.on('click',function() {
         if (chargement_extrait)
             return;
         chargement_extrait=true;
@@ -184,48 +200,56 @@ function creer_div_apercus() {
         else {
             if (extraits[extrait_courant].page % 2 === 1) { // Page impaire
                 maj_page('page_gauche_arriere','page_invisible');
-                $('page_gauche_arriere')
-                    .setStyle({'width':'0px'});
+                jQuery('#page_gauche_arriere').css({width: '0'});
                 intervertir_page('gauche');
 
                 maj_page('page_droite_arriere',extraits[extrait_courant].url);
-                $('page_droite_arriere')
-                    .setStyle({'display':'block'});
+                jQuery('#page_droite_arriere').css({display: 'block'});
 
-                $('page_droite_arriere_im').observe('load',function () {
+                jQuery('#page_droite_arriere_im').on('load',function () {
                     new Effect.BlindLeft('page_droite_avant',{
-                    duration:0.75,
-                    afterFinish:function() {
-                        new Effect.Morph('page_gauche_avant',{style:'width:'+getLargeur()
-                        });
-                        intervertir_page('droite');
-                        $('page_gauche_avant').observe('click',back_to_cover);
-                        $('page_droite_avant_im').observe('click',back_to_cover);
-                        extrait_courant++;
-                        maj_div_apercus();
-                    }
+	                    duration:0.75,
+	                    afterFinish:function() {
+	                        new Effect.Morph('page_gauche_avant',{
+	                            style: 'width:'+getLargeur()
+	                        });
+	                        intervertir_page('droite');
+	                        jQuery('#page_gauche_avant').on('click',back_to_cover);
+	                        jQuery('#page_droite_avant_im').on('click',back_to_cover);
+	                        extrait_courant++;
+	                        maj_div_apercus();
+	                    }
                     });
                 });
            }
            else { //Page paire
                 maj_page('page_gauche_arriere',extraits[extrait_courant].url);
-                $('page_gauche_arriere_im').setStyle({'height':hauteur_image+'px','width':'0px'});
+                jQuery('#page_gauche_arriere_im').css({
+	                height: hauteur_image+'px',
+	                width: '0'
+                });
                 intervertir_page('gauche');
-                $('page_gauche_avant').setStyle({'width':getLargeur()+'px'});
-                maj_page('page_droite_arriere','page_invisible');
-                $('page_droite_arriere')
-                    .setStyle({'display':'block'});
 
-                $('page_gauche_avant_im').observe('load',function () {
+                jQuery('#page_gauche_avant').css({
+	                width: getLargeur()+'px'
+                });
+                maj_page('page_droite_arriere','page_invisible');
+
+                jQuery('#page_droite_arriere').css({display: 'block'});
+
+                jQuery('#page_gauche_avant_im').on('load',function () {
                     new Effect.Parallel([
-                        new Effect.BlindLeft($('page_droite_avant'), {sync:true})
-                        ], {
+                        new Effect.BlindLeft(jQuery('#page_droite_avant'), {sync:true})
+                    ], {
                         duration: 0.75,
                         afterFinish:function() {
-                            new Effect.Morph('page_gauche_avant_im',{'style':'width:'+getLargeur()});
+                            new Effect.Morph('page_gauche_avant_im',{
+                            	style: 'width:'+getLargeur()
+                            });
                             intervertir_page('droite');
-                            $('page_gauche_avant_im').observe('click',back_to_cover);
-                            $('page_droite_avant').observe('click',back_to_cover);
+
+                            jQuery('#page_gauche_avant_im').on('click',back_to_cover);
+                            jQuery('#page_droite_avant').on('click',back_to_cover);
                             extrait_courant++;
                             maj_div_apercus();
                         }
@@ -239,62 +263,77 @@ function creer_div_apercus() {
 }
 
 function getLargeur() {
-    return $('page_droite_avant').getStyle('width')==='0px'
-            ?$('page_droite_arriere').getStyle('width')
-            :$('page_droite_avant').getStyle('width');
+    return jQuery('#page_droite_avant').css('width')==='0'
+	    ?jQuery('#page_droite_arriere').css('width')
+	    :jQuery('#page_droite_avant').css('width');
 }
 function intervertir_page(direction) {
-    $('page_'+direction+'_avant').writeAttribute({'id':'page_'+direction}).addClassName('page_arriere').removeClassName('page_avant');
-    if ($('page_'+direction+'_avant_im')) {
-        $('page_'+direction+'_avant_im').writeAttribute({'id':'page_'+direction+'_im'});
-    }
-    $('page_'+direction+'_arriere').writeAttribute({'id':'page_'+direction+'_avant'}).removeClassName('page_arriere').addClassName('page_avant');
-    if ($('page_'+direction+'_arriere_im')) {
-        $('page_'+direction+'_arriere_im').writeAttribute({'id':'page_'+direction+'_avant_im'})
-    }
-    $('page_'+direction).writeAttribute({'id':'page_'+direction+'_arriere'});
-    if ($('page_'+direction+'_im')) {
-        $('page_'+direction+'_im').writeAttribute({'id':'page_'+direction+'_arriere_im'});
-    }
+    jQuery('#page_'+direction+'_avant')
+	    .attr({id: 'page_'+direction})
+	    .addClass('page_arriere')
+	    .removeClass('page_avant');
+
+    jQuery('#page_'+direction+'_avant_im')
+	    .attr({id: 'page_'+direction+'_im'});
+
+    jQuery('#page_'+direction+'_arriere')
+	    .attr({id: 'page_'+direction+'_avant'})
+	    .removeClass('page_arriere')
+	    .addClass('page_avant');
+
+    jQuery('#page_'+direction+'_arriere_im')
+	    .attr({id: 'page_'+direction+'_avant_im'});
+
+    jQuery('#page_'+direction)
+	    .attr({id: 'page_'+direction+'_arriere'});
+
+    jQuery('#page_'+direction+'_im')
+	    .attr({id: 'page_'+direction+'_arriere_im'});
 }
 
 function maj_page(id_page,maj) {
     if (maj==='page_invisible') {
-        $(id_page).update()
-                  .addClassName('page_invisible');
+        jQuery('#' + id_page).html('')
+	        .addClass('page_invisible');
     }
     else {
-        $(id_page).update(new Element('img',{'id':id_page+'_im','src':maj}))
-                  .removeClassName('page_invisible');
+        jQuery('#' + id_page)
+	        .html(
+        	    jQuery('<img>',{id: id_page+'_im',src: maj}).html()
+	        )
+	        .removeClass('page_invisible');
         if (id_page.indexOf('gauche')!==-1)
-            $(id_page+'_im').setStyle({'float':'right'});
+            jQuery('#' + id_page+'_im')
+	            .css({
+		            float: 'right'
+	            });
     }
 }
 
 function maj_div_apercus() {
     if (extrait_courant>=extraits.length)
-        $('page_suivante').update('Fermer');
+        jQuery('#page_suivante').text('Fermer');
     else
-        $('page_suivante')
-            .update(extraits[extrait_courant].page<0?'Suivante':'Page '+extraits[extrait_courant].page);
+        jQuery('#page_suivante')
+            .text(extraits[extrait_courant].page<0?'Suivante':'Page '+extraits[extrait_courant].page);
    chargement_extrait=false;
 }
 
 function back_to_cover() {
-    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
-    $('page_suivante').remove();
+    jQuery('#page_gauche_arriere, #page_suivante').remove();
 
-    maj_page('page_droite_arriere',couverture.src);
-    $('page_droite_arriere_im').setStyle({'width':'0px'});
-    $('page_droite_arriere').setStyle({'display':'block'});
+    maj_page('page_droite_arriere',couverture.attr('src'));
+    jQuery('#page_droite_arriere_im').css({width: '0'});
+    jQuery('#page_droite_arriere').css({display: 'block'});
     intervertir_page('droite');
     new Effect.BlindLeft('page_gauche_avant', {
         afterFinish:function() {
-            $('page_gauche_avant') && $('page_gauche_avant').remove();
-            new Effect.Morph('page_droite_avant_im',{style:'width:'+getLargeur(),
+            jQuery('#page_gauche_avant').remove();
+            new Effect.Morph('page_droite_avant_im',{
+            	style:'width:'+getLargeur(),
                 afterFinish:function() {
-                    $('page_droite_arriere') && $('page_droite_arriere').remove();
-                    $('page_droite_avant').observe('click', fermer_tranche);
+                    jQuery('#page_droite_arriere').remove();
+                    jQuery('#page_droite_avant').on('click', fermer_tranche);
                     extrait_courant=-1;
                     creer_div_apercus();
                 }
@@ -307,27 +346,30 @@ function fermer() {
     if (action_en_cours || ouverture_couverture)
         return;
     action_en_cours=true;
-    var largeur=getLargeur();
-    $('page_suivante') && $('page_suivante').remove();
-    $('page_gauche_avant') && $('page_gauche_avant').remove();
-    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
-    $('page_droite_arriere') && $('page_droite_arriere').remove();
-    $('page_droite_avant_im').setStyle({'width':largeur});
+    jQuery('#page_suivante, #page_gauche_avant, #page_gauche_arriere, #page_droite_arriere').remove();
+    jQuery('#page_droite_avant_im').css({
+	    width: getLargeur()
+    });
     new Effect.Parallel([
-        new Effect.BlindLeft($('page_droite_avant'), {sync:true}),
-        new Effect.Move($('page_droite_avant'), {'mode':'absolute', 'x':(getScreenCenterX()+tranche_bib.width), 'y':getScreenCenterY()-hauteur_image/2, sync:true}),
-        new Effect.BlindRight(tranche_en_cours, {sync:true})
+        new Effect.BlindLeft(jQuery('#page_droite_avant')[0], {sync:true}),
+        new Effect.Move(jQuery('#page_droite_avant')[0], {
+        	mode: 'absolute',
+	        x: (getScreenCenterX()+tranche_bib.width()),
+	        y: getScreenCenterY()-hauteur_image/2,
+	        sync:true
+        }),
+        new Effect.BlindRight(tranche_en_cours[0], {sync:true})
     ], {
         duration: 1,
         afterFinish:function() {
             new Effect.Parallel([
-                new Effect.Opacity(tranche_en_cours, {'from':1, 'to':0, sync:true}),
-                new Effect.Opacity(tranche_bib,{'from':0, 'to':1, sync: true})
+                new Effect.Opacity(tranche_en_cours[0], {from: 1, to: 0, sync:true}),
+                new Effect.Opacity(tranche_bib[0] ,{from: 0, to: 1, sync: true})
             ], {
                 duration: 0.5,
                 afterFinish:function() {
-                    $('page_droite_avant').remove();
-                    $$('.lien_apercus').invoke('remove');
+                    jQuery('#page_droite_avant').remove();
+                    jQuery('.lien_apercus').remove();
                     action_en_cours=false;
                     couverture_ouverte=false;
                     if (ouvrirApres)
@@ -343,31 +385,32 @@ var element_conteneur_bibliotheque;
 function charger_bibliotheque() {
     est_contexte_bibliotheque = true;
 
-	var conteneur=$('conteneur_bibliotheque');
-	var section=$('bibliotheque');
-    section.observe('mousedown', function() {
+	var conteneur=jQuery('#conteneur_bibliotheque');
+	var section=jQuery('#bibliotheque');
+    section.on('mousedown', function() {
         jQuery('.popover').popover('destroy');
     });
 
-	largeur_section=section.clientWidth;
-	hauteur_section=section.clientHeight;
-	$('pourcentage_collection_visible').addClassName('cache');
+	largeur_section=section.width();
+	jQuery('#pourcentage_collection_visible').addClass('cache');
 	l10n_action('remplirSpan','pourcentage_collection_visible');
 
-	new Ajax.Request('Edge.class.php', {
-		method: 'post',
-		parameters: 'get_bibliotheque=true&largeur='+largeur_section
-				  +'&user_bibliotheque='+user_bibliotheque+'&cle_bibliotheque='+cle_bibliotheque,
-		onSuccess:function(transport) {
-			if (!!transport.responseJSON.erreur) {
-				conteneur.update(transport.responseJSON.erreur);
+	jQuery.post('Edge.class.php', {
+		data: {
+			get_bibliotheque: 'true',
+			largeur: largeur_section,
+			user_bibliotheque: user_bibliotheque,
+			cle_bibliotheque: cle_bibliotheque
+		},
+		success:function(response) {
+			if (!!response.erreur) {
+				conteneur.html(response.erreur);
 			}
 			else {
-                new Ajax.Request('Edge.class.php', {
-                    method: 'post',
-                    parameters: 'get_popularite_numeros=true',
-                    onSuccess:function(transport) {
-                        popularite_numeros = transport.responseJSON.popularite_numeros;
+                jQuery.post('Edge.class.php', {
+                    data: {get_popularite_numeros: true},
+                    success:function(response_popularite) {
+                        popularite_numeros = response_popularite.popularite_numeros;
 
                         charger_points_utilisateur(function() {
                             afficher_proposition_photos_tranches();
@@ -375,22 +418,21 @@ function charger_bibliotheque() {
                     }
                 });
 
-                noms_magazines = transport.responseJSON.noms_magazines;
-				textures = transport.responseJSON.textures;
+                noms_magazines = response.noms_magazines;
+				textures = response.textures;
 
-				var element_bibliotheque = $('bibliotheque');
+				var element_bibliotheque = jQuery('#bibliotheque');
 
 				element_bibliotheque
-                    .insert(transport.responseJSON.contenu)
-                    .setStyle({
+                    .append(response.contenu)
+                    .css({
                         backgroundImage: 'url(\'edges/textures/' + textures[0].texture + '/' + textures[0].sous_texture + '.jpg\')'
                     });
-				$('titre_bibliotheque').update(transport.responseJSON.titre);
-                $('pcent_visible').update(transport.responseJSON.nb_numeros_visibles);
-				$('pourcentage_collection_visible').removeClassName('cache');
-				var premiere_tranche = element_bibliotheque.down(2);
-				nb_etageres = $$('.etagere').length;
-				nb_etageres_terminees = 1;
+				jQuery('#titre_bibliotheque').text(response.titre);
+                jQuery('#pcent_visible').text(response.nb_numeros_visibles);
+				jQuery('#pourcentage_collection_visible').removeClass('cache');
+				var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
+				nb_etageres = jQuery('.etagere').length;
 				element_conteneur_bibliotheque = element_bibliotheque;
 				charger_tranche(premiere_tranche);
 			}
@@ -399,46 +441,48 @@ function charger_bibliotheque() {
 }
 
 function ajouter_etagere(afterElement) {
-    var etagere = new Element('div').addClassName('etagere').update('&nbsp;').setStyle({
+    var etagere = jQuery('<div>').addClass('etagere').html('&nbsp;').css({
         backgroundImage: 'url(\'edges/textures/' + textures[1].texture + '/' + textures[1].sous_texture + '.jpg\')'
     });
     if (afterElement) {
-        afterElement.insert({after: etagere});
+        afterElement.after(etagere);
     }
     else {
-        $('bibliotheque').insert(etagere);
+        jQuery('#bibliotheque').append(etagere);
     }
 }
 
 function charger_tranche(tranche) {
-    tranche.observe('load',charger_tranche_suivante);
-    tranche.observe('error',charger_tranche_suivante);
+    tranche.on('load',charger_tranche_suivante);
+    tranche.on('error',charger_tranche_suivante);
 
-    var src=tranche.name.replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
-    var src_similaires=element_conteneur_bibliotheque.select('[src*="'+src+'"]').pluck('src');
-    tranche.src=src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png';
+    var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
+    var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
+    	return jQuery(src_similaire).attr('src');
+    });
+    tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
 }
 
-function charger_tranche_suivante(e) {
-    var tranche=Event.element(e);
-    var precedente=tranche.previous('.tranche');
+function charger_tranche_suivante() {
+    var tranche=jQuery(this);
+    var precedente=tranche.prev('.tranche');
     var suivante=tranche.next('.tranche');
 
-    if (precedente && tranche.offsetLeft < precedente.offsetLeft) {
+    if (precedente.length && tranche.offset().left < precedente.offset().left) {
         ajouter_etagere(precedente);
     }
 
-    if (suivante) {
+    if (suivante.length) {
         charger_tranche(suivante);
     }
     else {
-        if (tranche.up('#bibliotheque')) { // Contexte bibliothèque
+        if (tranche.closest('#bibliotheque')) { // Contexte bibliothèque
             ajouter_etagere();
             init_observers_tranches();
             charger_recherche();
         }
         else { // Contexte affichage dans les événements récents
-            callback_tranches_chargees(tranche.up('.tooltip_content'));
+            callback_tranches_chargees(tranche.closest('.tooltip_content'));
         }
     }
 }
@@ -446,32 +490,32 @@ function charger_tranche_suivante(e) {
 function charger_recherche() {
     localStorage && localStorage.clear();
     l10n_action('fillArray',l10n_recherche,'l10n_recherche', function() {
-        var element_recherche_histoire = $('recherche_histoire');
-        var conteneur_bibliotheque = $('bibliotheque');
+        var element_recherche_histoire = jQuery('#recherche_histoire');
+        var conteneur_bibliotheque = jQuery('#bibliotheque');
 
-        if (element_recherche_histoire) {
-           if (conteneur_bibliotheque) {
+        if (element_recherche_histoire.length) {
+           if (conteneur_bibliotheque.length) {
                afficher_lien_partage();
 
-               element_recherche_histoire.setStyle({
-                   left: ($('contenu').cumulativeOffset().left
-                       +parseInt(conteneur_bibliotheque.getStyle('width').substring(0,conteneur_bibliotheque.getStyle('width').length-2))-330) +'px',
+               element_recherche_histoire.css({
+                   left: (jQuery('#contenu').offset().left
+                       +parseInt(conteneur_bibliotheque.css('width').substring(0,conteneur_bibliotheque.css('width').length-2))-330) +'px',
                    display: 'block'});
            }
-           element_recherche_histoire.down('input')
-               .observe('keyup', function(e) {
+           element_recherche_histoire.find('>input')
+               .on('keyup', function(e) {
                    if (/[\-!?. a-z0-9]/i.test(String.fromCharCode(e.which))) {
                        recherche_histoire();
                        e.stopPropagation();
                    }
                })
-               .observe('click', function(e) {
+               .on('click', function(e) {
                    recherche_histoire();
                    e.stopPropagation();
                });
        }
-        $('contenu').observe('click', function() {
-            $$('.magazine_trouve, .histoire_trouvee, .resultat_recherche').invoke('remove');
+        jQuery('#contenu').on('click', function() {
+            jQuery('.magazine_trouve, .histoire_trouvee, .resultat_recherche').remove();
         });
     });
 }
@@ -479,12 +523,11 @@ function charger_recherche() {
 function charger_points_utilisateur(callback) {
     callback = callback || function() {};
 
-    new Ajax.Request('Database.class.php', {
-        method: 'post',
-        parameters: 'database=true&get_points=true',
-        onSuccess:function(transport) {
-            user_points = transport.responseJSON.points;
-            niveaux_medailles = transport.responseJSON.niveaux_medailles;
+    jQuery.post('Database.class.php', {
+        data: {database: 'true', get_points: 'true'},
+        success: function(response) {
+            user_points = response.points;
+            niveaux_medailles = response.niveaux_medailles;
 
             jQuery.each(niveaux_medailles, function(i, niveau_medaille) {
                 if (user_points > niveau_medaille) {
@@ -500,16 +543,16 @@ function charger_points_utilisateur(callback) {
 var zone_proposition_photos;
 
 function afficher_lien_partage() {
-	zone_proposition_photos = $('partager_bibliotheque');
-	zone_proposition_photos.removeClassName('cache');
-	$('partager_bibliotheque_lien').observe('click', function() {
-		zone_proposition_photos.addClassName('cache');
-		new Ajax.Request('Edge.class.php', {
-			method: 'post',
-			parameters: 'partager_bibliotheque=true',
-			onSuccess: function (transport) {
-				zone_proposition_photos.update(transport.responseText);
-				zone_proposition_photos.removeClassName('cache');
+	zone_proposition_photos = jQuery('#partager_bibliotheque');
+	zone_proposition_photos.removeClass('cache');
+	jQuery('#partager_bibliotheque_lien').on('click', function() {
+		zone_proposition_photos.addClass('cache');
+		jQuery.post('Edge.class.php', {
+			data: {partager_bibliotheque: 'true'},
+			success: function (response) {
+				zone_proposition_photos
+					.html(response)
+					.removeClass('cache');
 
 				var a = document.createElement('script');
 				a.type = 'text/javascript';
@@ -601,24 +644,21 @@ var recherches_reportees = [];
 var recherche_en_cours = false;
 
 function traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input) {
-    $$('.fleche_position').invoke('remove');
-    var conteneur_resultats_recherche = new Element('div')
-        .writeAttribute({id: 'conteneur_resultat_recherche'})
-        .addClassName('list-group');
+    jQuery('.fleche_position').remove();
+    var conteneur_resultats_recherche = jQuery('<div>')
+        .attr({id: 'conteneur_resultat_recherche'})
+        .addClass('list-group');
 
     if (resultat['liste_numeros'].length) {
         if (!resultat.direct) {
             conteneur_resultats_recherche
-                .insert(new Element('div')
-                    .addClassName('resultat_recherche list-group-item')
-                    .insert(l10n_recherche['recherche_magazine_selectionnez_une_histoire'])
+                .append(jQuery('<div>')
+                    .addClass('resultat_recherche list-group-item')
+                    .text(l10n_recherche['recherche_magazine_selectionnez_une_histoire'])
                 );
         }
-        var i = 0;
-        while (resultat['liste_numeros'][i]) {
+        jQuery.each(resultat['liste_numeros'], function(i, magazine) {
             if (resultat.direct) {
-                var magazine = resultat['liste_numeros'][i];
-
                 magazine.magazine_numero = magazine.pays
                     + '/' + magazine.magazine_numero
                         .replace(/[+]+/g, '.')
@@ -627,56 +667,56 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
                 var numero = magazine.magazine_numero.split(new RegExp('\\.', 'g'))[1];
 
                 conteneur_resultats_recherche
-                    .insert(new Element('div')
-                        .addClassName('magazine_trouve list-group-item')
-                        .writeAttribute({'id': 'magazine_' + magazine.magazine_numero})
-                        .insert(new Element('div')
-                            .addClassName(magazine.etat ? ' details_numero gauche num_' + magazine.etat : ''))
-                        .insert(new Element('img', {
+                    .append(jQuery('<div>')
+                        .addClass('magazine_trouve list-group-item')
+                        .attr({id: 'magazine_' + magazine.magazine_numero})
+                        .append(jQuery('<div>')
+                            .addClass(magazine.etat ? ' details_numero gauche num_' + magazine.etat : ''))
+                        .append(jQuery('<img>', {
                             src: 'images/flags/' + magazine.pays + '.png',
                             alt: magazine.pays
                         }))
-                        .insert(magazine.titre + ' ' + numero));
+                        .append(magazine.titre + ' ' + numero));
             }
             else {
                 var histoire = resultat['liste_numeros'][i];
 
                 conteneur_resultats_recherche
-                    .insert(new Element('div')
-                        .addClassName('histoire_trouvee list-group-item')
-                        .writeAttribute({id: 'histoire_' + histoire.code})
-                        .insert(histoire.titre));
+                    .append(jQuery('<div>')
+                        .addClass('histoire_trouvee list-group-item')
+                        .attr({id: 'histoire_' + histoire.code})
+                        .append(histoire.titre));
             }
             i++;
-        }
+        });
 
         if (resultat.limite) {
             conteneur_resultats_recherche
-                .insert(new Element('div').addClassName('resultat_recherche list-group-item')
-                    .insert(l10n_recherche['recherche_magazine_resultats_nombreux_1']));
+                .append(jQuery('<div>').addClass('resultat_recherche list-group-item')
+                    .append(l10n_recherche['recherche_magazine_resultats_nombreux_1']));
             conteneur_resultats_recherche
-                .insert(new Element('div').addClassName('resultat_recherche list-group-item')
-                    .insert(l10n_recherche['recherche_magazine_resultats_nombreux_2']));
+                .append(jQuery('<div>').addClass('resultat_recherche list-group-item')
+                    .append(l10n_recherche['recherche_magazine_resultats_nombreux_2']));
         }
     }
     else {
         conteneur_resultats_recherche
-            .insert(new Element('div')
-                .addClassName('resultat_recherche list-group-item')
-                .insert(resultat.direct && est_contexte_bibliotheque
+            .append(jQuery('<div>')
+                .addClass('resultat_recherche list-group-item')
+                .append(resultat.direct && est_contexte_bibliotheque
                     ? l10n_recherche['recherche_magazine_histoire_non_possedee']
                     : l10n_recherche['recherche_magazine_aucun_resultat']));
     }
 
-    $('conteneur_resultat_recherche') && $('conteneur_resultat_recherche').remove();
-    element_recherche_histoire.insert(conteneur_resultats_recherche);
+    jQuery('#conteneur_resultat_recherche').remove();
+    element_recherche_histoire.append(conteneur_resultats_recherche);
 
-    $$('.magazine_trouve').invoke('observe', 'click', function (event) {
-        var element = Event.element(event);
-        var pays_magazine = element.readAttribute('id').substring('magazine_'.length, element.readAttribute('id').length);
+    jQuery('.magazine_trouve').on('click', function () {
+        var element = jQuery(this);
+        var pays_magazine = element.attr('id').substring('magazine_'.length, element.attr('id').length);
         if (est_contexte_bibliotheque) {
-            $$('.fleche_position').invoke('remove');
-            var tranche_trouvee = $(pays_magazine);
+            jQuery('.fleche_position').remove();
+            var tranche_trouvee = jQuery('#' + pays_magazine);
             indiquer_numero(tranche_trouvee, ['haut', 'bas']);
         }
         else {
@@ -685,34 +725,33 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         }
     });
 
-    $$('.histoire_trouvee').invoke('observe', 'click', function (e) {
-        var element = Event.element(e);
-        var storycode = element.readAttribute('id').substring('histoire_'.length, element.readAttribute('id').length);
+    jQuery('.histoire_trouvee').on('click', function (e) {
+	    var element = jQuery(this);
+        var storycode = element.attr('id').substring('histoire_'.length, element.attr('id').length);
         element_recherche_input
-            .writeAttribute({'data-code': 'code=' + storycode, disabled: 'disabled'})
-            .insert({
-                before:
-                    new Element('span')
-                        .addClassName('conteneur_label_histoire label label-default')
-                        .insert(new Element('span').addClassName('label_histoire').update(element.innerText))
-                        .insert(new Element('a')
-                            .update(new Element('i').addClassName('remove glyphicon glyphicon-remove-sign glyphicon-white'))
-                            .observe('click', function (e) {
-                                element_recherche_histoire.down('.conteneur_label_histoire').remove();
-                                element_recherche_histoire.down('#conteneur_resultat_recherche').remove();
-                                element_recherche_input.writeAttribute({
-                                    disabled: false,
-                                    'data-code': false
-                                }).focus();
-                                e.stopPropagation();
-                            }))
-                        .observe('click', function (e) {
-                            recherche_histoire();
+            .attr({'data-code': 'code=' + storycode, disabled: 'disabled'})
+            .before(
+                jQuery('<span>')
+                    .addClass('conteneur_label_histoire label label-default')
+                    .append(jQuery('<span>').addClass('label_histoire').text(element.innerText))
+                    .append(jQuery('<a>')
+                        .append(jQuery('<i>').addClass('remove glyphicon glyphicon-remove-sign glyphicon-white'))
+                        .on('click', function (e) {
+                            element_recherche_histoire.find('>.conteneur_label_histoire').remove();
+                            element_recherche_histoire.find('>#conteneur_resultat_recherche').remove();
+                            element_recherche_input.attr({
+                                disabled: false,
+                                'data-code': false
+                            }).focus();
                             e.stopPropagation();
-                        })
-            })
-            .value = '';
-        $$('.histoire_trouvee, .resultat_recherche').invoke('remove');
+                        }))
+                    .on('click', function (e) {
+                        recherche_histoire();
+                        e.stopPropagation();
+                    })
+            )
+            .val('');
+        jQuery('.histoire_trouvee, .resultat_recherche').remove();
         recherche_histoire();
         e.stopPropagation();
     });
@@ -722,53 +761,57 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
 }
 
 function indiquer_numero(element, positions_fleches) {
-    $$('.fleche_position').invoke('remove');
+	var body = jQuery('#body');
+    jQuery('.fleche_position').remove();
 
-    var offset = element.cumulativeOffset();
+    var offset = element.offset();
     var haut = offset.top;
     var gauche = offset.left;
 
     var css, src;
     var cote_fleche= 16;
 
-    for (var i=0; i<positions_fleches.length; i++) {
+	for (var i=0; i<positions_fleches.length; i++) {
         var position_fleche = positions_fleches[i];
 
         switch(position_fleche) {
             case 'gauche':
-                css = {top: (haut + element.getHeight()/2 - cote_fleche/2 ) + 'px', left: (gauche - cote_fleche) + 'px'};
+                css = {top: (haut + element.height()/2 - cote_fleche/2 ) + 'px', left: (gauche - cote_fleche) + 'px'};
                 src = 'images/icones/arrow_right.png';
             break;
 
             case 'haut':
-                css = {top: (haut - cote_fleche) + 'px', left: (gauche + element.getWidth()/2 - cote_fleche/2) + 'px'};
+                css = {top: (haut - cote_fleche) + 'px', left: (gauche + element.width()/2 - cote_fleche/2) + 'px'};
                 src = 'images/icones/arrow_down.png';
             break;
 
             case 'bas':
-                css = {top: (haut + element.getHeight()) + 'px', left: (gauche + element.getWidth()/2 - cote_fleche/2) + 'px'};
+                css = {top: (haut + element.height()) + 'px', left: (gauche + element.width()/2 - cote_fleche/2) + 'px'};
                 src = 'images/icones/arrow_up.png';
             break;
         }
 
-        $('body')
-            .insert(
-                new Element('img', {'src': src})
-                    .setStyle(css)
-                    .addClassName('fleche_position')
+        body
+            .append(
+                jQuery('<img>', {src: src})
+                    .css(css)
+                    .addClass('fleche_position')
             )
     }
-    window.scrollTo(gauche - $('body').getWidth() / 2 + element.getWidth()/2, haut - $('body').getHeight() / 2 + element.getHeight()/2);
+    window.scrollTo(
+    	gauche - body.width()  / 2 + element.width() /2,
+	    haut   - body.height() / 2 + element.height()/2
+    );
 }
 
 function recherche_histoire(val_recherche) {
-    var element_recherche_histoire = $('recherche_histoire');
-    var element_recherche_input = element_recherche_histoire.down('input');
+    var element_recherche_histoire = jQuery('#recherche_histoire');
+    var element_recherche_input = element_recherche_histoire.find('>input');
     var recherche_forcee = true;
 
     if (!val_recherche) {
         recherche_forcee = false;
-        val_recherche=element_recherche_input.value || element_recherche_input.readAttribute('data-code');
+        val_recherche=element_recherche_input.val() || element_recherche_input.attr('data-code');
     }
 
     if (val_recherche && val_recherche.length >= 3 ) {
@@ -780,11 +823,13 @@ function recherche_histoire(val_recherche) {
             if (!recherche_en_cours && (recherche_forcee || !derniere_action_recherche || moment().diff(derniere_action_recherche, 'milliseconds') > 200)) {
                 recherche_en_cours = true;
 
-                new Ajax.Request('Inducks.class.php', {
-                    method: 'post',
-                    parameters:'get_magazines_histoire=true&histoire='+val_recherche+'&recherche_bibliotheque='+(est_contexte_bibliotheque ? 'true' : 'false'),
-                    onSuccess:function(transport) {
-                        var resultat=transport.headerJSON;
+                jQuery.post('Inducks.class.php', {
+                    data: {
+	                    get_magazines_histoire: true,
+	                    histoire: val_recherche,
+	                    recherche_bibliotheque: (est_contexte_bibliotheque ? 'true' : 'false')
+                    },
+                    success:function(resultat) {
                         localStorage && localStorage.setItem('get_magazines_histoire.'+val_recherche, JSON.stringify(resultat));
 
                         traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input);
@@ -806,45 +851,21 @@ function recherche_histoire(val_recherche) {
     derniere_action_recherche = moment();
 }
 
-function init_ordre_magazines() {
-    Sortable.create('liste_magazines',{
-        elements:$$('.magazine_deplacable'),
-        handles:$$('.magazine_deplacable .handle'),
-        endeffect:function() {
-            $$('#liste_magazines .magazine_deplacable').each(function(div) {
-                var nouvelle_position=div.previousSiblings().length;
-                div.down('input').setValue(nouvelle_position);
-
-            });
-        }
-    });
-}
-
 function init_observers_tranches() {
-    $$('.tranche').invoke(
-        'observe',
-        'mousedown',
-        function(event) {
-            tranche_bib=Event.element(event);
-            ouvrir_tranche();
-          }
-    );
-    $$('.tranche').invoke(
-        'observe',
-        'mouseover',
-        function(event) {
-            if (action_en_cours ||couverture_ouverte)
-                return;
-            var tranche = Event.element(event);
-            ouvrirInfoBulleEffectif(tranche);
+    jQuery('.tranche')
+	    .on('mousedown', function() {
+			tranche_bib=jQuery(this);
+			ouvrir_tranche();
+		})
+	    .on('mouseover', function() {
+            if (!action_en_cours && !couverture_ouverte) {
+	            ouvrirInfoBulleEffectif(jQuery(this));
+            }
         }
     );
 
-    jQuery('body').on('hidden.bs.tooltip', function() {
-        var tooltips = jQuery('.tooltip').not('.in');
-        if (tooltips) {
-            tooltips.remove();
-        }
+    jQuery('#body').on('hidden.bs.tooltip', function() {
+        jQuery('.tooltip:not(.in)').remove();
     });
 }
 
@@ -905,22 +926,22 @@ function hidePopoverIfStillOutOfFocusAfterTimeout(timeout) {
 }
 
 function getInfosNumero (edgeId) {
-    var infos={};
     var pays__magazine_numero=edgeId.split('/');
     var magazine_numero=pays__magazine_numero[1].split('.');
-    infos.Pays=pays__magazine_numero[0];
-    infos.Magazine=magazine_numero[0].toLowerCase();
-    infos.Nom_magazine=noms_magazines[infos.Pays + '/' + infos.Magazine.toUpperCase()] || '';
-    infos.Numero=magazine_numero[1];
-    return infos;
+	return {
+		Pays: pays__magazine_numero[0],
+		Magazine: magazine_numero[0].toLowerCase(),
+		Nom_magazine: noms_magazines[infos.Pays + '/' + infos.Magazine.toUpperCase()] || '',
+		Numero: magazine_numero[1]
+	};
 }
 
 function getScreenCenterY() {
-    return document.viewport.getScrollOffsets().top + document.viewport.getHeight()/2;
+    return jQuery('#body').offset().top + jQuery(window).height()/2;
 }
 
 function getScreenCenterX() {
-    return document.body.clientWidth/2;
+    return jQuery('#body').offset().left + jQuery(window).height()/2;
 }
 
 function getPopulariteNumero(data) {

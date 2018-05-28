@@ -3,6 +3,7 @@ define('','');
 define('A','at');
 define('A_VENDRE','For sale');
 define('ACCUEIL','Home');
+define('ACHAT','Purchase');
 define('ACHAT_ASSOCIER_DATE_ACHAT','Link with a purchase date');
 define('ACHAT_CONSERVER_DATE_ACHAT','Do not change the purchase date');
 define('ACHAT_DESASSOCIER_DATE_ACHAT','Unlink from purchase date');

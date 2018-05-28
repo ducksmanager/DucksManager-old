@@ -1,12 +1,6 @@
 var debut_selection=jQuery();
 var now_selecting=false;
 var liste;
-var l10n_acquisitions=[
-	'supprimer_acquisition','description',
-	'date_invalide','date_invalide','suppression_acquisition_confirmation',
-	'date','nouvelle_acquisition_sauvegarder','selectionner_numeros_a_marquer',
-	'les','numeros_selectionnes_enregistres','avec_etat','et','avec_acquisition','confirmer'
-];
 
 function disableselect(){
 	return false
@@ -18,10 +12,10 @@ function reEnable(){
 
 function start_selection(sel) {
 	var liste_numeros = jQuery('#liste_numeros')[0];
-	
+
 	//if IE4+
     liste_numeros.onselectstart=new Function ("return false");
-	
+
 	//if NS6
 	if (window.sidebar){
         liste_numeros.onmousedown=disableselect;
@@ -81,7 +75,7 @@ function pre_select(selection_courante) {
 	}
 }
 
-function lighten (element) { 
+function lighten (element) {
 	if (!now_selecting) {
 		element.addClass('survole');
 	}

@@ -256,8 +256,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     ?>charger_bibliotheque();<?php
                 break;
                 case 'options':
-                    ?>initTextures();
-                    init_ordre_magazines();<?php
+                    ?>initTextures();<?php
                 break;
 
             }
@@ -1417,6 +1416,6 @@ function encart_WhatTheDuck() {
             <iframe width="200" height="315" src="https://www.youtube.com/embed/KBbq49Y_4AE?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
             <br /><br />
         </div>
-	</div><?php 
+	</div><?php
 }
 ?>

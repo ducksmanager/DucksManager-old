@@ -430,7 +430,8 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 
     $retour['liste_numeros'] = array_values($liste_numeros);
 
-	header("X-JSON: " . json_encode($retour));
+    header('Content-Type: application/json');
+    echo json_encode($retour);
 }
 
 function trier_resultats_recherche ($a,$b) {
