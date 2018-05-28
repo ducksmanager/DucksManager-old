@@ -1,9 +1,7 @@
-var nom_pays_old="";
 var nom_magazine_old="";
 var pays_sel=null;
 var magazine_sel=null;
 var myMenuItems;
-var etats_charges=false;
 var tab_achats=[];
 
 var isMobile = window.matchMedia("only screen and (max-width: 767px)");
