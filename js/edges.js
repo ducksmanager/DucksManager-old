@@ -395,28 +395,29 @@ function charger_bibliotheque() {
 	jQuery('#pourcentage_collection_visible').addClass('cache');
 	l10n_action('remplirSpan','pourcentage_collection_visible');
 
-	jQuery.post('Edge.class.php', {
-		data: {
+	jQuery.post(
+	    'Edge.class.php', {
 			get_bibliotheque: 'true',
 			largeur: largeur_section,
 			user_bibliotheque: user_bibliotheque,
 			cle_bibliotheque: cle_bibliotheque
 		},
-		success:function(response) {
+        function(response) {
 			if (!!response.erreur) {
 				conteneur.html(response.erreur);
 			}
 			else {
-                jQuery.post('Edge.class.php', {
-                    data: {get_popularite_numeros: true},
-                    success:function(response_popularite) {
+                jQuery.post(
+                    'Edge.class.php',
+                    {get_popularite_numeros: true},
+                    function(response_popularite) {
                         popularite_numeros = response_popularite.popularite_numeros;
 
                         charger_points_utilisateur(function() {
                             afficher_proposition_photos_tranches();
                         });
                     }
-                });
+                );
 
                 noms_magazines = response.noms_magazines;
 				textures = response.textures;
@@ -437,7 +438,7 @@ function charger_bibliotheque() {
 				charger_tranche(premiere_tranche);
 			}
 		}
-	});
+	);
 }
 
 function ajouter_etagere(afterElement) {
@@ -523,9 +524,9 @@ function charger_recherche() {
 function charger_points_utilisateur(callback) {
     callback = callback || function() {};
 
-    jQuery.post('Database.class.php', {
-        data: {database: 'true', get_points: 'true'},
-        success: function(response) {
+    jQuery.post('Database.class.php',
+        {database: 'true', get_points: 'true'},
+        function(response) {
             user_points = response.points;
             niveaux_medailles = response.niveaux_medailles;
 
@@ -537,7 +538,7 @@ function charger_points_utilisateur(callback) {
 
             callback();
         }
-    });
+    );
 }
 
 var zone_proposition_photos;
@@ -547,9 +548,10 @@ function afficher_lien_partage() {
 	zone_proposition_photos.removeClass('cache');
 	jQuery('#partager_bibliotheque_lien').on('click', function() {
 		zone_proposition_photos.addClass('cache');
-		jQuery.post('Edge.class.php', {
-			data: {partager_bibliotheque: 'true'},
-			success: function (response) {
+		jQuery.post(
+		    'Edge.class.php',
+			{partager_bibliotheque: 'true'},
+			function (response) {
 				zone_proposition_photos
 					.html(response)
 					.removeClass('cache');
@@ -561,7 +563,7 @@ function afficher_lien_partage() {
 				var s = document.getElementsByTagName('script')[0];
 				s.parentNode.insertBefore(a, s);
 			}
-		});
+		);
 	});
 }
 
@@ -823,18 +825,18 @@ function recherche_histoire(val_recherche) {
             if (!recherche_en_cours && (recherche_forcee || !derniere_action_recherche || moment().diff(derniere_action_recherche, 'milliseconds') > 200)) {
                 recherche_en_cours = true;
 
-                jQuery.post('Inducks.class.php', {
-                    data: {
+                jQuery.post(
+                    'Inducks.class.php', {
 	                    get_magazines_histoire: true,
 	                    histoire: val_recherche,
 	                    recherche_bibliotheque: (est_contexte_bibliotheque ? 'true' : 'false')
                     },
-                    success:function(resultat) {
+                    function(resultat) {
                         localStorage && localStorage.setItem('get_magazines_histoire.'+val_recherche, JSON.stringify(resultat));
 
                         traiter_resultats_recherche_histoire(resultat, element_recherche_histoire, element_recherche_input);
                     }
-                });
+                );
             }
             else {
                 recherches_reportees.push(val_recherche);

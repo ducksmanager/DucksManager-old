@@ -31,16 +31,14 @@ function analyserAdresseSuivante() {
 }
 
 function initialize() {
-	jQuery.post('Database.class.php', {
-		data: {
-			database: 'true',
-			liste_bouquineries: 'true'
-		},
-		success:function(response) {
+	jQuery.post(
+		'Database.class.php',
+		{ database: 'true', liste_bouquineries: 'true' },
+		function(response) {
 			adresses=response;
 			analyserAdresseSuivante();
 		}
-	});
+	);
 	var latlng = new google.maps.LatLng(46.754917, 1.73584);
 	var myOptions = {
 		zoom: 4,

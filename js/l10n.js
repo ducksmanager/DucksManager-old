@@ -5,9 +5,9 @@ function l10n_action(fonction,index,param, callback) {
     }
     else
         index_param=index;
-    jQuery.post('locales/lang.php', {
-        data: {index: index_param},
-        success:function(response) {
+    jQuery.post('locales/lang.php',
+        {index: index_param},
+        function(response) {
             if (response.indexOf('~')!==-1) {
 	            response=response.split('~');
             }
@@ -38,7 +38,7 @@ function l10n_action(fonction,index,param, callback) {
 
             callback && callback();
         }
-    });
+    );
 }
 
 function remplirSpan (idSpan, trad) {

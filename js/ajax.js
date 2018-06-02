@@ -17,10 +17,10 @@ function init_observers_gerer_numeros() {
 }
 
 function get_achats(continue_id) {
-    jQuery.post('Database.class.php', {
-        data: {database: 'true', liste_achats: 'true', continue: continue_id},
-        success: function (achats_courants) {
-
+    jQuery.post(
+        'Database.class.php',
+        {database: 'true', liste_achats: 'true', continue: continue_id},
+        function (achats_courants) {
 	        var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
 		        'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
 		        'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
@@ -165,7 +165,7 @@ function get_achats(continue_id) {
                 event.stopPropagation();
             });
         }
-    });
+    );
 }
 
 function maj_image(numero_wrapper, image) {
@@ -200,17 +200,18 @@ function charger_tooltip_couverture(target, image) {
 }
 
 function charger_evenements() {
-	jQuery.post('Database.class.php', {
-		   data: { database: 'true', evenements_recents: 'true'},
-		   success:function(response) {
-			   jQuery('#evenements').html(response);
-			   jQuery('#evenements a.has_tooltip.edge_tooltip').each(function(i, element) {
-				   element_conteneur_bibliotheque = jQuery(element).next('.tooltip_content');
-				   charger_tranche(element_conteneur_bibliotheque.find('>.tranche'));
-			   });
-			   charger_tooltips_utilisateurs();
-		   }
-	});
+	jQuery.post(
+	    'Database.class.php',
+        { database: 'true', evenements_recents: 'true'},
+        function(response) {
+           jQuery('#evenements').html(response);
+           jQuery('#evenements a.has_tooltip.edge_tooltip').each(function(i, element) {
+               element_conteneur_bibliotheque = jQuery(element).next('.tooltip_content');
+               charger_tranche(element_conteneur_bibliotheque.find('>.tranche'));
+           });
+           charger_tooltips_utilisateurs();
+       }
+	);
 }
 
 function charger_tooltips_utilisateurs() {
@@ -239,41 +240,44 @@ function callback_tranches_chargees(tooltip_content) {
 
 function initPays(inclure_tous_pays, selected) {
     if (jQuery('#liste_pays').length) {
-	    jQuery.post('Inducks.class.php', {
-		    data: {get_pays: 'true', inclure_tous_pays: inclure_tous_pays, selected: selected},
-		    success:function(response) {
+	    jQuery.post(
+	        'Inducks.class.php',
+		    {get_pays: 'true', inclure_tous_pays: inclure_tous_pays, selected: selected},
+            function(response) {
 			    jQuery('#liste_pays').html(respponse);
 			    if (jQuery('#liste_magazines').length)
 				    select_magazine();
 		    }
-	    });
+	    );
     }
 }
 
 function initTextures() {
     if (jQuery('#texture1').length) {
 	    jQuery.each([1, 2], function (i, n) {
-		    jQuery.post('Edge.class.php', {
-			    data: {get_texture: 'true', n: n},
-			    success: function (response) {
+		    jQuery.post(
+		        'Edge.class.php',
+                {get_texture: 'true', n: n},
+                function (response) {
 				    jQuery('#texture' + n).html(response);
 				    setTimeout(function () {
 					    select_sous_texture(n);
 				    }, 1000);
 			    }
-		    });
-	    });
+		    );
+        });
     }
 }
 
 function select_sous_texture (n) {
 	if (jQuery('#sous_texture'+n).length) {
-		jQuery.post('Edge.class.php', {
-			data: {get_sous_texture: 'true', texture: jQuery('#texture' + n).val(), n: n},
-			success: function (response) {
+		jQuery.post(
+		    'Edge.class.php',
+            {get_sous_texture: 'true', texture: jQuery('#texture' + n).val(), n: n},
+            function (response) {
 				jQuery('#sous_texture' + n).html(response);
 			}
-		});
+		);
 	}
 }
 function select_magazine(valeur_magazine) {
@@ -286,9 +290,10 @@ function select_magazine(valeur_magazine) {
 	        .text('Chargement des magazines');
         jQuery('#liste_magazines').html(option_chargement.html());
 
-        jQuery.post('Inducks.class.php', {
-           data: {get_magazines: 'true', pays: id_pays},
-           success:function(response) {
+        jQuery.post(
+            'Inducks.class.php',
+            {get_magazines: 'true', pays: id_pays},
+            function(response) {
                 jQuery('#liste_magazines').html(response);
                 if (jQuery('#liste_numeros'))
                     select_numero();
@@ -308,7 +313,7 @@ function select_magazine(valeur_magazine) {
                 }
                 magazine_selected();
            }
-        });
+        );
     }
 }
 
@@ -337,12 +342,13 @@ function select_numero() {
 			var option_chargement = jQuery('<option>', {id: 'chargement_numeros'})
 				.text("Chargement des numéros");
 			jQuery('#liste_numeros').html(option_chargement);
-			jQuery.post('Inducks.class.php', {
-				data: {get_numeros: 'true', pays: id_pays, magazine: id_magazine},
-				success: function (response) {
+			jQuery.post(
+			    'Inducks.class.php',
+				{get_numeros: 'true', pays: id_pays, magazine: id_magazine},
+                function (response) {
 					jQuery('#liste_numeros').html(response);
 				}
-			});
+			);
 		}
 	}
 }
@@ -364,17 +370,18 @@ function afficher_numeros(pays,magazine, numero) {
 	}
 
 	if (jQuery('liste_numeros').length) {
-        jQuery.post('Database.class.php', {
-               data: {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
-               success:function(response) {
-                    jQuery('#liste_numeros').html(response);
-                    init_observers_gerer_numeros();
-                    numero = numero || location.hash;
-                    if (numero) {
-                        indiquer_numero(jQuery('#liste_numeros').find('[name="'+numero.replace(/#/,'')+'"]')[0].parent(), ['gauche']);
-                    }
-               }
-        });
+        jQuery.post(
+            'Database.class.php',
+            {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
+            function(response) {
+                jQuery('#liste_numeros').html(response);
+                init_observers_gerer_numeros();
+                numero = numero || location.hash;
+                if (numero) {
+                    indiquer_numero(jQuery('#liste_numeros').find('[name="'+numero.replace(/#/,'')+'"]')[0].parent(), ['gauche']);
+                }
+            }
+        );
     }
     else {
 		location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);

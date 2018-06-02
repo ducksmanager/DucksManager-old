@@ -1,10 +1,9 @@
 function afficher_diagramme_secteurs(type) {
 	jQuery.post('Stats.class.php', {
-		data: {
 			graph: 'true',
 			type: 'true'
 		},
-		success:function(data) {
+		function(data) {
 			var config = {
 				type: 'pie',
 				data: {
@@ -23,7 +22,7 @@ function afficher_diagramme_secteurs(type) {
 			var ctx = jQuery('#graph_'+type).getContext('2d');
 			new Chart(ctx, config);
 		}
-	});
+	);
 }
 
 function afficher_histogramme_possessions(data) {
@@ -285,9 +284,9 @@ function recharger_stats_auteurs() {
 }
 
 function init_notations() {
-	jQuery.post('Database.class.php', {
-		data: {database: 'true', liste_notations: 'true'},
-		success:function(notations) {
+	jQuery.post('Database.class.php',
+		{database: 'true', liste_notations: 'true'},
+		function(notations) {
 			var liste_notations = jQuery('#liste_notations');
 			var template = liste_notations.find('.template');
 
@@ -315,14 +314,14 @@ function init_notations() {
 				});
 			});
 		}
-	});
+	);
 }
 
 function supprimer_auteur (nom_auteur) {
-    jQuery.post('Database.class.php', {
-        data: {database: 'true', supprimer_auteur: 'true', nom_auteur: nom_auteur},
-	    success:function() {
+    jQuery.post('Database.class.php',
+        {database: 'true', supprimer_auteur: 'true', nom_auteur: nom_auteur},
+	    function() {
             location.reload();
         }
-    });
+    );
 }

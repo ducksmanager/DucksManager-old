@@ -72,8 +72,8 @@ class ServeurDb {
 	}
 
 	static function verifPassword($password) {
-		return sha1(self::getProfilCourant()->password) == $password ||
-               sha1(self::getProfilCourant()->password_alternative) == $password;
+		return sha1(self::getProfilCourant()->password) === $password ||
+               sha1(self::getProfilCourant()->password_alternative) === $password;
 	}
 
 	public static function getRemoteUrl($page, $server = null) {
