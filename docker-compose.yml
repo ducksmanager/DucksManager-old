@@ -8,8 +8,12 @@ services:
     volumes:
      - .:/var/www/html/DucksManager
   db_dm:
-    build: ../mariadb-server-setup-helper
+    image: mariadb:10.2
     ports:
       - "44002:3306"
+    volumes:
+     - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     environment:
+      MYSQL_HOST: db_dm
+      MYSQL_DATABASE: db301759616
       MYSQL_ROOT_PASSWORD: changeme

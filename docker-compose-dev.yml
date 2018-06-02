@@ -5,8 +5,7 @@ services:
       file: docker-compose.yml
       service: web
     volumes:
-     - .:/var/www/html/DucksManager
-     - ../EdgeCreator:/var/www/html/EdgeCreator
+     - .:/var/www/html
      - ./php.xdebug.ini:/usr/local/etc/php/php.ini
   db_dm:
     extends:
