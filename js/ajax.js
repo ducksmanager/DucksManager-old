@@ -387,7 +387,9 @@ function afficher_numeros(pays,magazine, numero) {
 	}
 
 	if ($('liste_numeros') === null) {
-	    location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
+	    if (numero !== undefined) {
+	        location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
+        }
     }
     else {
         new Ajax.Request('Database.class.php', {
