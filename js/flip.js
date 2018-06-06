@@ -123,6 +123,10 @@ function calculateBound(d) {
     return bound;
 }
 
+function isLeftPage(page) {
+    return page % 2 === 0;
+}
+
 function loadBook(pages, edge) {
 
     edge = jQuery(edge);
@@ -144,30 +148,43 @@ function loadBook(pages, edge) {
         return;
     }
 
+    var shownPageNumber=0;
+    var firstPage;
     jQuery.each(pages, function(i, page) {
-        var isLeftPage = parseInt(page.page) % 2 === 0;
+        var currentPageNumber = parseInt(page.page);
+        var isCurrentPageLeftPage = i !== 0 && isLeftPage(currentPageNumber);
 
         var pageImage = jQuery('<img>', {src: page.url})
-            .toggleClass('odd', isLeftPage).toggleClass('even', !isLeftPage)
+            .addClass('p' + (++shownPageNumber))
+            .toggleClass('odd', isCurrentPageLeftPage).toggleClass('even', !isCurrentPageLeftPage)
             .toggleClass('hard', i===0);
         flipbook.append(pageImage);
 
-        // Next page is not the opposite right page => create a blank page
-        if (isLeftPage && !(pages[i+1] && parseInt(pages[i+1].page) === parseInt(page.page)+1)) {
-            pageImage.after(jQuery('<img>'));
+        var previousPage = pages[i-1] && parseInt(pages[i-1].page);
+        if (previousPage && isLeftPage(previousPage) && previousPage + 1 !== currentPageNumber) {
+            // Draw the right page opposite to the previous page
+            flipbook.find('.p' + shownPageNumber).before(jQuery('<img>').addClass('p' + (++shownPageNumber)));
         }
 
         if (i === 0) {
-            pageImage.on('load', function() {
-                var width = edge.width() + 2* edge.height() / (this.height / this.width);
-                showBook(edge, width, edge.height())
-            })
+            firstPage = pageImage;
+        }
+        else {
+            if (!isCurrentPageLeftPage) {
+                // Draw the left page opposite to the current page
+                pageImage.before(jQuery('<img>').addClass('p' + (++shownPageNumber)));
+            }
         }
     });
 
+    firstPage.on('load', function() {
+        var width = edge.width() + 2* edge.height() / (this.height / this.width);
+        showBook(edge, shownPageNumber, width, edge.height())
+    })
+
 }
 
-function showBook(edge, width, height) {
+function showBook(edge, pageNumber, width, height) {
 
     flipbook.turn({
         width: width,
@@ -176,7 +193,7 @@ function showBook(edge, width, height) {
         gradients: true,
         autoCenter: true,
         elevation: 50,
-        pages: flipbook.children(':not(.ignore)').length,
+        pages: pageNumber,
 
         when: {
             turning: function(event, page) {
