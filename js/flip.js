@@ -1,6 +1,9 @@
 var flipbook;
 var flipbookViewport;
 
+var isLoadingBook = false,
+    isHidingBook = false;
+
 function addPage(page, book) {
     // Create a new element for this page
     var element = jQuery('<div />', {});
@@ -40,8 +43,8 @@ function loadPage(page, pageElement) {
 }
 
 function disableControls(page) {
-    jQuery('.previous-button').toggle(page!==1);
-    jQuery('.next-button').toggle(page!==flipbook.turn('pages'));
+    flipbook.find('.previous-button').toggle(page!==1);
+    flipbook.find('.next-button').toggle(page!==flipbook.turn('pages'));
 }
 
 function resizeViewport() {
@@ -76,8 +79,8 @@ function resizeViewport() {
             if (flipbook.turn('page')===1)
                 flipbook.turn('peel', 'br');
 
-            jQuery('.next-button').css({height: bound.height, backgroundPosition: '-38px '+(bound.height/2-32/2)+'px'});
-            jQuery('.previous-button').css({height: bound.height, backgroundPosition: '-4px '+(bound.height/2-32/2)+'px'});
+            flipbook.find('.next-button').css({height: bound.height, backgroundPosition: '-38px '+(bound.height/2-32/2)+'px'});
+            flipbook.find('.previous-button').css({height: bound.height, backgroundPosition: '-4px '+(bound.height/2-32/2)+'px'});
         }
 
         flipbook.css({top: -bound.height/2, left: -bound.width/2});
@@ -88,13 +91,13 @@ function resizeViewport() {
         marginTop = (boundH - jQuery('.thumbnails > div').height()) / 2;
 
     if (marginTop < 0) {
-        jQuery('.thumbnails').css({height:1});
+        flipbook.find('.thumbnails').css({height:1});
     } else {
-        jQuery('.thumbnails').css({height: boundH});
-        jQuery('.thumbnails > div').css({marginTop: marginTop});
+        flipbook.find('.thumbnails').css({height: boundH});
+        flipbook.find('.thumbnails > div').css({marginTop: marginTop});
     }
 
-    jQuery('.made').toggle(magazineOffset.top>=jQuery('.made').height());
+    flipbook.find('.made').toggle(magazineOffset.top>=flipbook.find('.made').height());
     flipbook.addClass('animated');
 }
 
@@ -128,19 +131,22 @@ function isLeftPage(page) {
 }
 
 function loadBook(pages, edge) {
+    if (isLoadingBook) {
+        return;
+    }
+    isLoadingBook = true;
 
     edge = jQuery(edge);
 
-    jQuery('#body').prepend(
-        jQuery('.book.template').clone(true).removeClass('template').attr({id: 'canvas'})
-    );
+    var book = jQuery('.book.template').clone(true).removeClass('template').attr({id: 'canvas'});
+    jQuery('#body').prepend(book);
 
-    flipbook = jQuery('.magazine');
+    flipbook = book.find('.magazine');
     flipbook
         .addClass('init')
         .css({visibility: 'hidden'});
 
-    flipbookViewport = jQuery('.magazine-viewport');
+    flipbookViewport = book.find('.magazine-viewport');
 
     // Check if the CSS was already loaded
     if (flipbook.width()===0 || flipbook.height()===0) {
@@ -148,7 +154,7 @@ function loadBook(pages, edge) {
         return;
     }
 
-    var shownPageNumber=0;
+    var shownPageNumber = 0;
     var firstPage;
     jQuery.each(pages, function(i, page) {
         var currentPageNumber = parseInt(page.page);
@@ -157,7 +163,7 @@ function loadBook(pages, edge) {
         var pageImage = jQuery('<img>', {src: page.url})
             .addClass('p' + (++shownPageNumber))
             .toggleClass('odd', isCurrentPageLeftPage).toggleClass('even', !isCurrentPageLeftPage)
-            .toggleClass('hard', i===0);
+            .toggleClass('hard', i === 0);
         flipbook.append(pageImage);
 
         var previousPage = pages[i-1] && parseInt(pages[i-1].page);
@@ -172,16 +178,16 @@ function loadBook(pages, edge) {
         else {
             if (!isCurrentPageLeftPage) {
                 // Draw the left page opposite to the current page
-                pageImage.before(jQuery('<img>').addClass('p' + (++shownPageNumber)));
+                flipbook.find('.p' + shownPageNumber).before(jQuery('<img>').addClass('p' + (++shownPageNumber)));
             }
         }
     });
 
-    firstPage.on('load', function() {
-        var width = edge.width() + 2* edge.height() / (this.height / this.width);
-        showBook(edge, shownPageNumber, width, edge.height())
-    })
-
+    firstPage
+        .on('load', function() {
+            var width = edge.width() + 2* edge.height() / (this.height / this.width);
+            showBook(edge, shownPageNumber, width, edge.height())
+        });
 }
 
 function showBook(edge, pageNumber, width, height) {
@@ -197,9 +203,7 @@ function showBook(edge, pageNumber, width, height) {
 
         when: {
             turning: function(event, page) {
-                window.location.href = '#page/' + page;
                 disableControls(page);
-
             },
 
             turned: function(event, page) {
@@ -208,14 +212,18 @@ function showBook(edge, pageNumber, width, height) {
                 jQuery(this).turn('center');
 
                 if (flipbook.hasClass('init') && page === 1) {
-                    var page_wrapper = jQuery(event.target).find('[page="'+1+'"]');
+                    var page_wrapper = jQuery(event.target).find('[page="1"]');
 
                     edge
-                        .css({position: 'absolute', top: edge.offset().top, left: edge.offset().left})
+                        .addClass('livre-visible')
+                        .css({top: edge.offset().top, left: edge.offset().left})
+                        .data({bookcaseOffset: edge.offset()})
                         .animate(
                             {top: page_wrapper.offset().top, left: page_wrapper.offset().left},
                             {
                                 complete: function() {
+                                    jQuery(document).click(hideBook);
+
                                     var targetWidth = page_wrapper.width();
 
                                     var elementsToFadeIn = page_wrapper.add(flipbook.find('.shadow'));
@@ -228,13 +236,13 @@ function showBook(edge, pageNumber, width, height) {
 
                                     flipbook.css({visibility: 'visible'});
 
-                                    elementsToFadeIn
-                                        .animate(
-                                            { width: targetWidth, right: 0 },
-                                            { duration: 500, complete: function() {
-                                                flipbook.removeClass('init');
-                                            }}
-                                        );
+                                    elementsToFadeIn.animate(
+                                        { width: targetWidth, right: 0 },
+                                        { duration: 500, complete: function() {
+                                            flipbook.removeClass('init');
+                                            isLoadingBook = false;
+                                        }}
+                                    );
                                 }
                             }
                         );
@@ -248,30 +256,11 @@ function showBook(edge, pageNumber, width, height) {
         }
     });
 
-    jQuery(document).keydown(function(e){
-        var previous = 37, next = 39, esc = 27;
-
-        switch (e.keyCode) {
-            case previous:
-                flipbook.turn('previous');
-                e.preventDefault();
-
-                break;
-            case next:
-                flipbook.turn('next');
-                e.preventDefault();
-
-                break;
-            case esc:
-                e.preventDefault();
-
-                break;
-        }
-    });
+    jQuery(document).keydown(onKeyDown);
 
     // Events for the next button
 
-    jQuery('.next-button').bind(jQuery.mouseEvents.over, function() {
+    flipbook.find('.next-button').bind(jQuery.mouseEvents.over, function() {
         jQuery(this).addClass('next-button-hover');
 
     }).bind(jQuery.mouseEvents.out, function() {
@@ -290,7 +279,7 @@ function showBook(edge, pageNumber, width, height) {
 
     // Events for the next button
 
-    jQuery('.previous-button').bind(jQuery.mouseEvents.over, function() {
+    flipbook.find('.previous-button').bind(jQuery.mouseEvents.over, function() {
         jQuery(this).addClass('previous-button-hover');
 
     }).bind(jQuery.mouseEvents.out, function() {
@@ -310,4 +299,83 @@ function showBook(edge, pageNumber, width, height) {
     resizeViewport();
 
     flipbook.addClass('animated');
+}
+
+function hideBook(e, callback) {
+    var book = jQuery('#canvas');
+
+    var isClickOnEdge = e === null;
+    var isClickOnFirstPage = e && jQuery(e.target).is('.page.p1');
+    var isClickElsewhere = e && !jQuery(e.target).is('.tranche, .page, .previous-button, .next-button');
+
+    if (book.length
+     && (isClickOnEdge || isClickOnFirstPage || isClickElsewhere)
+     && !isHidingBook && !flipbook.turn("animating")) {
+        isHidingBook = true;
+
+        var edge = jQuery('.tranche.livre-visible');
+        var firstPage = flipbook.find('.page.p1');
+
+        var _hideBook = function() {
+            flipbook.addClass('init');
+            firstPage
+                .add(firstPage.find('> div'))
+                .add(jQuery.find('.shadow'))
+                .animate(
+                    {width: 0, right: 282},
+                    { duration: 500 }
+                );
+
+            edge.animate(
+                { width: 'toggle', height: edge.height() },
+                { duration: 500, complete: function() {
+                        flipbook.turn('destroy');
+
+                        jQuery(document)
+                            .unbind('keydown', onKeyDown)
+                            .unbind('click', hideBook);
+                        book.remove();
+                        edge.animate(edge.data().bookcaseOffset, { complete: function() {
+                                edge
+                                    .removeClass('livre-visible')
+                                    .css({position: ''});
+                                isHidingBook = false;
+                                callback && callback();
+                            }});
+                    }}
+            );
+        };
+
+        if (firstPage.is(':visible')) {
+            _hideBook();
+        }
+        else {
+            flipbook.turn("page", 1);
+            setTimeout(_hideBook, 2000);
+        }
+    }
+    else {
+        callback && callback();
+    }
+}
+
+function onKeyDown(e){
+    var previous = 37, next = 39, esc = 27;
+
+    switch (e.keyCode) {
+        case previous:
+            flipbook.turn('previous');
+            e.preventDefault();
+
+            break;
+        case next:
+            flipbook.turn('next');
+            e.preventDefault();
+
+            break;
+        case esc:
+            e.preventDefault();
+
+            break;
+    }
 }

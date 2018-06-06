@@ -1,21 +1,7 @@
-var tranche_en_cours;
 var tranche_bib;
-var current_couv;
-var current_animation;
-var hauteur_image;
 var action_en_cours=false;
 var couverture_ouverte=false;
-var ouvrirApres=false;
 var largeur_section;
-var hauteur_section;
-var couverture;
-var ouverture_couverture;
-var nb_etageres;
-var nb_etageres_terminees;
-var bulle=null;
-var extraits;
-var extrait_courant;
-var chargement_extrait=false;
 var noms_magazines = [];
 var textures;
 var popularite_numeros = [];
@@ -31,36 +17,11 @@ var l10n_recherche = [
 ];
 
 function ouvrir_tranche() {
-    if (action_en_cours || extrait_courant>0)
-        return;
     jQuery('.popover').popover('destroy');
     $$('.fleche_position').invoke('remove');
 
-    extraits=[];
-    extrait_courant=-1;
-    ouverture_couverture=true;
-    if (couverture_ouverte && tranche_bib !== tranche_en_cours) {
-        ouvrirApres=true;
-        fermer();
-        return;
-    }
     $('infobulle') && $('infobulle').remove();
-    bulle=null;
-    action_en_cours=true;
     var infos=getInfosNumero(tranche_bib.id);
-    hauteur_image=tranche_bib.height;
-    couverture=new Image();
-    // new Effect.Parallel([
-    //     new Effect.Opacity(tranche_bib,{'from':1, 'to':0, sync: true}),
-    //     new Effect.Opacity(tranche_en_cours, {'from':0, 'to':1, sync:true})
-    // ], {
-    //     duration: 0.5,
-    //     afterFinish:function() {
-    //         current_animation=new Element('div',{'id':'animation'})
-    //             .setStyle({'position':'absolute', 'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':600})
-    //             .update(new Element('img',{'src':'loading.gif'}));
-    //         $('bibliotheque').insert(current_animation);
-    //     }});
 
     jQuery.post('Inducks.class.php', {
         get_cover: 'true',
@@ -72,271 +33,21 @@ function ouvrir_tranche() {
         .done(function (data) {
             $('infobulle') && $('infobulle').remove();
             if (data) {
-                couverture_ouverte = true;
-                var i = 0;
+                var i = 0,
+                    extraits = [];
                 while (data[i]) {
                     extraits[i] = data[i];
                     i++;
                 }
 
-                loadBook(
-                    [{page: -100, url: data.cover}].concat(extraits),
-                    tranche_bib
-                );
-                return;
-
-
-                couverture.src = data.cover;
-                current_couv = new Element('div', {'id': 'page_droite_avant'})
-                    .setStyle({
-                        'position': 'absolute',
-                        'height': hauteur_image + 'px',
-                        'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px',
-                        'display': 'none',
-                        'left': (getScreenCenterX() + tranche_en_cours.width) + 'px',
-                        'top': (getScreenCenterY() - hauteur_image / 2) + 'px'
-                    })
-                    .addClassName('page_avant');
-                var current_couv_im = new Element('img', {
-                    'id': 'page_droite_avant_im',
-                    'src': couverture.src,
-                    'height': '100%',
-                    'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px'
-                });
-                current_couv.update(current_couv_im);
-                $('body').insert(current_couv);
-                current_couv_im.observe('click', fermer_tranche);
-
-                current_couv_im.observe('load', function () {
-                    current_couv.setStyle({'width': parseInt(couverture.width * (hauteur_image / couverture.height)) + 'px'});
-                    if (!ouverture_couverture)
-                        return;
-
-                    tranche_en_cours.setStyle({
-                        'width': tranche_en_cours.width + 'px',
-                        'height': tranche_en_cours.height + 'px'
-                    });
-                    new Effect.Parallel([
-                        new Effect.Morph(current_couv, {
-                            'width': parseInt(couverture.width / (hauteur_image / couverture.height)) + 'px',
-                            sync: true
-                        }),
-                        new Effect.BlindRight(current_couv, {sync: true}),
-                        new Effect.Move(current_couv, {
-                            'mode': 'absolute',
-                            'x': getScreenCenterX(),
-                            'y': getScreenCenterY() - hauteur_image / 2,
-                            sync: true
-                        }),
-                        new Effect.BlindLeft(tranche_en_cours, {sync: true})
-                    ], {
-                        duration: 1,
-                        afterFinish: function () {
-                            ouverture_couverture = false;
-                            $('animation') && $('animation').remove();
-
-                            if (extraits.length > 0 && !$('lien_apercus')) {
-                                creer_div_apercus();
-                            }
-                        }
-                    });
-                    $('animation') && $('animation').remove();
-                    action_en_cours = false;
+                hideBook(null, function() {
+                    loadBook(
+                        [{page: -100, url: data.cover}].concat(extraits),
+                        tranche_bib
+                    );
                 });
             }
         });
-}
-
-function fermer_tranche() {
-    ouvrirApres=false;
-    fermer();
-}
-
-function creer_div_apercus() {
-    var page_suivante=new Element('div',{'id':'page_suivante'})
-                    .setStyle({'left':(getScreenCenterX()+$('page_droite_avant_im').width)+'px','top':getScreenCenterY()+'px'})
-                    .addClassName('lien_apercus');
-
-    var page_gauche_arriere=new Element('div', {'id':'page_gauche_arriere'})
-                    .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
-                               'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_arriere');
-
-    var page_gauche_avant=new Element('div', {'id':'page_gauche_avant'})
-                    .setStyle({'position':'absolute','display':'block','width':'0px','height':hauteur_image+'px',
-                               'right':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_avant');
-
-    var page_droite_arriere=new Element('div', {'id':'page_droite_arriere'})
-                    .setStyle({'position':'absolute','display':'block','width':getLargeur(),'height':hauteur_image+'px',
-                               'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClassName('page_arriere');
-
-    $('body').insert(page_suivante)
-             .insert(page_gauche_arriere).insert(page_gauche_avant)
-             .insert(page_droite_arriere);
-    page_suivante.observe('click',function() {
-        if (chargement_extrait)
-            return;
-        chargement_extrait=true;
-        if (extrait_courant>=extraits.length) {
-            back_to_cover();
-        }
-        else {
-            if (extraits[extrait_courant].page % 2 === 1) { // Page impaire
-                maj_page('page_gauche_arriere','page_invisible');
-                $('page_gauche_arriere')
-                    .setStyle({'width':'0px'});
-                intervertir_page('gauche');
-
-                maj_page('page_droite_arriere',extraits[extrait_courant].url);
-                $('page_droite_arriere')
-                    .setStyle({'display':'block'});
-
-                $('page_droite_arriere_im').observe('load',function () {
-                    new Effect.BlindLeft('page_droite_avant',{
-                    duration:0.75,
-                    afterFinish:function() {
-                        new Effect.Morph('page_gauche_avant',{style:'width:'+getLargeur()
-                        });
-                        intervertir_page('droite');
-                        $('page_gauche_avant').observe('click',back_to_cover);
-                        $('page_droite_avant_im').observe('click',back_to_cover);
-                        extrait_courant++;
-                        maj_div_apercus();
-                    }
-                    });
-                });
-           }
-           else { //Page paire
-                maj_page('page_gauche_arriere',extraits[extrait_courant].url);
-                $('page_gauche_arriere_im').setStyle({'height':hauteur_image+'px','width':'0px'});
-                intervertir_page('gauche');
-                $('page_gauche_avant').setStyle({'width':getLargeur()+'px'});
-                maj_page('page_droite_arriere','page_invisible');
-                $('page_droite_arriere')
-                    .setStyle({'display':'block'});
-
-                $('page_gauche_avant_im').observe('load',function () {
-                    new Effect.Parallel([
-                        new Effect.BlindLeft($('page_droite_avant'), {sync:true})
-                        ], {
-                        duration: 0.75,
-                        afterFinish:function() {
-                            new Effect.Morph('page_gauche_avant_im',{'style':'width:'+getLargeur()});
-                            intervertir_page('droite');
-                            $('page_gauche_avant_im').observe('click',back_to_cover);
-                            $('page_droite_avant').observe('click',back_to_cover);
-                            extrait_courant++;
-                            maj_div_apercus();
-                        }
-                    });
-                });
-            }
-        }
-    });
-    extrait_courant++;
-    maj_div_apercus();
-}
-
-function getLargeur() {
-    return $('page_droite_avant').getStyle('width')==='0px'
-            ?$('page_droite_arriere').getStyle('width')
-            :$('page_droite_avant').getStyle('width');
-}
-function intervertir_page(direction) {
-    $('page_'+direction+'_avant').writeAttribute({'id':'page_'+direction}).addClassName('page_arriere').removeClassName('page_avant');
-    if ($('page_'+direction+'_avant_im')) {
-        $('page_'+direction+'_avant_im').writeAttribute({'id':'page_'+direction+'_im'});
-    }
-    $('page_'+direction+'_arriere').writeAttribute({'id':'page_'+direction+'_avant'}).removeClassName('page_arriere').addClassName('page_avant');
-    if ($('page_'+direction+'_arriere_im')) {
-        $('page_'+direction+'_arriere_im').writeAttribute({'id':'page_'+direction+'_avant_im'})
-    }
-    $('page_'+direction).writeAttribute({'id':'page_'+direction+'_arriere'});
-    if ($('page_'+direction+'_im')) {
-        $('page_'+direction+'_im').writeAttribute({'id':'page_'+direction+'_arriere_im'});
-    }
-}
-
-function maj_page(id_page,maj) {
-    if (maj==='page_invisible') {
-        $(id_page).update()
-                  .addClassName('page_invisible');
-    }
-    else {
-        $(id_page).update(new Element('img',{'id':id_page+'_im','src':maj}))
-                  .removeClassName('page_invisible');
-        if (id_page.indexOf('gauche')!==-1)
-            $(id_page+'_im').setStyle({'float':'right'});
-    }
-}
-
-function maj_div_apercus() {
-    if (extrait_courant>=extraits.length)
-        $('page_suivante').update('Fermer');
-    else
-        $('page_suivante')
-            .update(extraits[extrait_courant].page<0?'Suivante':'Page '+extraits[extrait_courant].page);
-   chargement_extrait=false;
-}
-
-function back_to_cover() {
-    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
-    $('page_suivante').remove();
-
-    maj_page('page_droite_arriere',couverture.src);
-    $('page_droite_arriere_im').setStyle({'width':'0px'});
-    $('page_droite_arriere').setStyle({'display':'block'});
-    intervertir_page('droite');
-    new Effect.BlindLeft('page_gauche_avant', {
-        afterFinish:function() {
-            $('page_gauche_avant') && $('page_gauche_avant').remove();
-            new Effect.Morph('page_droite_avant_im',{style:'width:'+getLargeur(),
-                afterFinish:function() {
-                    $('page_droite_arriere') && $('page_droite_arriere').remove();
-                    $('page_droite_avant').observe('click', fermer_tranche);
-                    extrait_courant=-1;
-                    creer_div_apercus();
-                }
-            });
-        }
-    });
-}
-
-function fermer() {
-    if (action_en_cours || ouverture_couverture)
-        return;
-    action_en_cours=true;
-    var largeur=getLargeur();
-    $('page_suivante') && $('page_suivante').remove();
-    $('page_gauche_avant') && $('page_gauche_avant').remove();
-    $('page_gauche_arriere') && $('page_gauche_arriere').remove();
-    $('page_droite_arriere') && $('page_droite_arriere').remove();
-    $('page_droite_avant_im').setStyle({'width':largeur});
-    new Effect.Parallel([
-        new Effect.BlindLeft($('page_droite_avant'), {sync:true}),
-        new Effect.Move($('page_droite_avant'), {'mode':'absolute', 'x':(getScreenCenterX()+tranche_bib.width), 'y':getScreenCenterY()-hauteur_image/2, sync:true}),
-        new Effect.BlindRight(tranche_en_cours, {sync:true})
-    ], {
-        duration: 1,
-        afterFinish:function() {
-            new Effect.Parallel([
-                new Effect.Opacity(tranche_en_cours, {'from':1, 'to':0, sync:true}),
-                new Effect.Opacity(tranche_bib,{'from':0, 'to':1, sync: true})
-            ], {
-                duration: 0.5,
-                afterFinish:function() {
-                    $('page_droite_avant').remove();
-                    $$('.lien_apercus').invoke('remove');
-                    action_en_cours=false;
-                    couverture_ouverte=false;
-                    if (ouvrirApres)
-                        ouvrir_tranche();
-                }
-            });
-        }
-    });
 }
 
 var element_conteneur_bibliotheque;
@@ -351,7 +62,6 @@ function charger_bibliotheque() {
     });
 
 	largeur_section=section.clientWidth;
-	hauteur_section=section.clientHeight;
 	$('pourcentage_collection_visible').addClassName('cache');
 	l10n_action('remplirSpan','pourcentage_collection_visible');
 
@@ -360,7 +70,7 @@ function charger_bibliotheque() {
 		parameters: 'get_bibliotheque=true&largeur='+largeur_section
 				  +'&user_bibliotheque='+user_bibliotheque+'&cle_bibliotheque='+cle_bibliotheque,
 		onSuccess:function(transport) {
-			if (!!transport.responseJSON.erreur) {
+			if (transport.responseJSON.erreur) {
 				conteneur.update(transport.responseJSON.erreur);
 			}
 			else {

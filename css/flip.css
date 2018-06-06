@@ -22,9 +22,8 @@
     visibility: hidden;
 }
 
-.magazine-viewport .page-wrapper .tranche{
+.tranche.livre-visible{
     position: absolute;
-    z-index: 400;
 }
 
 .magazine-viewport .page{
