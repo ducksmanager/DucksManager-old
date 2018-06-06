@@ -50,22 +50,17 @@ function ouvrir_tranche() {
     var infos=getInfosNumero(tranche_bib.id);
     hauteur_image=tranche_bib.height;
     couverture=new Image();
-    tranche_en_cours=tranche_bib.cloneNode(true);
-    tranche_en_cours.setStyle({'zIndex':500,'position':'absolute',
-                              'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px'})
-                   .setOpacity(0);
-    $('bibliotheque').insert(tranche_en_cours);
-    new Effect.Parallel([
-        new Effect.Opacity(tranche_bib,{'from':1, 'to':0, sync: true}),
-        new Effect.Opacity(tranche_en_cours, {'from':0, 'to':1, sync:true})
-    ], {
-        duration: 0.5,
-        afterFinish:function() {
-            current_animation=new Element('div',{'id':'animation'})
-                .setStyle({'position':'absolute', 'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':600})
-                .update(new Element('img',{'src':'loading.gif'}));
-            $('bibliotheque').insert(current_animation);
-        }});
+    // new Effect.Parallel([
+    //     new Effect.Opacity(tranche_bib,{'from':1, 'to':0, sync: true}),
+    //     new Effect.Opacity(tranche_en_cours, {'from':0, 'to':1, sync:true})
+    // ], {
+    //     duration: 0.5,
+    //     afterFinish:function() {
+    //         current_animation=new Element('div',{'id':'animation'})
+    //             .setStyle({'position':'absolute', 'left':getScreenCenterX()+'px','top':(getScreenCenterY()-hauteur_image/2)+'px', 'zIndex':600})
+    //             .update(new Element('img',{'src':'loading.gif'}));
+    //         $('bibliotheque').insert(current_animation);
+    //     }});
 
     jQuery.post('Inducks.class.php', {
         get_cover: 'true',
@@ -84,7 +79,10 @@ function ouvrir_tranche() {
                     i++;
                 }
 
-                loadBook(extraits, hauteur_image);
+                loadBook(
+                    [{page: -100, url: data.cover}].concat(extraits),
+                    tranche_bib
+                );
                 return;
 
 
@@ -391,7 +389,7 @@ function charger_bibliotheque() {
 				$('titre_bibliotheque').update(transport.responseJSON.titre);
                 $('pcent_visible').update(transport.responseJSON.nb_numeros_visibles);
 				$('pourcentage_collection_visible').removeClassName('cache');
-				var premiere_tranche = element_bibliotheque.down(2);
+				var premiere_tranche = element_bibliotheque.down('img');
 				nb_etageres = $$('.etagere').length;
 				nb_etageres_terminees = 1;
 				element_conteneur_bibliotheque = element_bibliotheque;

@@ -1,17 +1,30 @@
+.magazine-viewport {
+	width: inherit !important;
+	height: inherit !important;
+}
+
 .magazine-viewport .container{
 	position:absolute;
 	top:50%;
 	left:50%;
-	width:922px;
-	height:600px;
-	margin:auto;
+    margin-left: -250px;
 }
 
 .magazine-viewport .magazine{
+    position: static !important;
 	width:922px;
 	height:600px;
 	left:-461px;
 	top:-300px;
+}
+
+.magazine-viewport .magazine.init .page-wrapper:not([page="1"]) {
+    visibility: hidden;
+}
+
+.magazine-viewport .page-wrapper .tranche{
+    position: absolute;
+    z-index: 400;
 }
 
 .magazine-viewport .page{

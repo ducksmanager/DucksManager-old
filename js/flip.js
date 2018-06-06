@@ -123,11 +123,19 @@ function calculateBound(d) {
     return bound;
 }
 
-function loadBook(pages, height) {
+function loadBook(pages, edge) {
 
-    jQuery('#canvas').fadeIn(1000);
+    edge = jQuery(edge);
+
+    jQuery('#body').prepend(
+        jQuery('.book.template').clone(true).removeClass('template').attr({id: 'canvas'})
+    );
 
     flipbook = jQuery('.magazine');
+    flipbook
+        .addClass('init')
+        .css({visibility: 'hidden'});
+
     flipbookViewport = jQuery('.magazine-viewport');
 
     // Check if the CSS was already loaded
@@ -139,7 +147,9 @@ function loadBook(pages, height) {
     jQuery.each(pages, function(i, page) {
         var isLeftPage = parseInt(page.page) % 2 === 0;
 
-        var pageImage = jQuery('<img>', {src: page.url});
+        var pageImage = jQuery('<img>', {src: page.url})
+            .toggleClass('odd', isLeftPage).toggleClass('even', !isLeftPage)
+            .toggleClass('hard', i===0);
         flipbook.append(pageImage);
 
         // Next page is not the opposite right page => create a blank page
@@ -149,14 +159,16 @@ function loadBook(pages, height) {
 
         if (i === 0) {
             pageImage.on('load', function() {
-                var width = 2 * height / (this.height / this.width)
-                showBook(width, height)
+                var width = edge.width() + 2* edge.height() / (this.height / this.width);
+                showBook(edge, width, edge.height())
             })
         }
     });
+
 }
 
-function showBook(width, height) {
+function showBook(edge, width, height) {
+
     flipbook.turn({
         width: width,
         height: height,
@@ -178,8 +190,37 @@ function showBook(width, height) {
 
                 jQuery(this).turn('center');
 
-                if (page === 1) {
-                    jQuery(this).turn('peel', 'br');
+                if (flipbook.hasClass('init') && page === 1) {
+                    var page_wrapper = jQuery(event.target).find('[page="'+1+'"]');
+
+                    edge
+                        .css({position: 'absolute', top: edge.offset().top, left: edge.offset().left})
+                        .animate(
+                            {top: page_wrapper.offset().top, left: page_wrapper.offset().left},
+                            {
+                                complete: function() {
+                                    var targetWidth = page_wrapper.width();
+
+                                    var elementsToFadeIn = page_wrapper.add(flipbook.find('.shadow'));
+                                    elementsToFadeIn.css({width: 0, right: targetWidth});
+
+                                    edge.animate(
+                                        { width: 'toggle', height: edge.height() },
+                                        { duration: 500 }
+                                    );
+
+                                    flipbook.css({visibility: 'visible'});
+
+                                    elementsToFadeIn
+                                        .animate(
+                                            { width: targetWidth, right: 0 },
+                                            { duration: 500, complete: function() {
+                                                flipbook.removeClass('init');
+                                            }}
+                                        );
+                                }
+                            }
+                        );
                 }
             },
 
@@ -209,12 +250,6 @@ function showBook(width, height) {
 
                 break;
         }
-    });
-
-    jQuery(window).resize(function() {
-        resizeViewport();
-    }).bind('orientationchange', function() {
-        resizeViewport();
     });
 
     // Events for the next button
@@ -259,5 +294,3 @@ function showBook(width, height) {
 
     flipbook.addClass('animated');
 }
-
-jQuery('#canvas').hide();

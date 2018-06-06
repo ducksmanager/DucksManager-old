@@ -584,7 +584,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                 break;
             case 'bibliotheque':
             ?>
-            <div id="canvas">
+            <div class="book template">
                 <div class="magazine-viewport">
                     <div class="container">
                         <div class="magazine">
