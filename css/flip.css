@@ -16,6 +16,7 @@
 	height:600px;
 	left:-461px;
 	top:-300px;
+	z-index: 800;
 }
 
 .magazine-viewport .magazine.init .page-wrapper:not([page="1"]) {

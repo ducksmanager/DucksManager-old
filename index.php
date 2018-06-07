@@ -1291,17 +1291,16 @@ $id_user= $_SESSION['id_user'] ?? null;
                             </div>
                         </div>
                         <div class="item">
-                            <img src="images/demo_bibliotheque.jpg" alt="demo3">
+                            <iframe width="480" height="330" src="https://www.youtube.com/embed/n729j-57lKQ?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0&loop=1&playlist=n729j-57lKQ" frameborder="0" allowfullscreen></iframe>
                             <div class="carousel-caption bottom">
                                 <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
                             </div>
-                            <div class="carousel-caption right">
+                            <div class="carousel-caption right top-offset">
                                 <?=PRESENTATION_BIBLIOTHEQUE_1?>
                                 <br /> <br />
                                 <?=PRESENTATION_BIBLIOTHEQUE_2?>
                                 <br /> <br />
                                 <?=PRESENTATION_BIBLIOTHEQUE_3?>
-                                <br /> <img src="images/demo_bibliotheque_ouverture_short_small.gif"  style="width: 90%" alt="demo_bibliotheque_ouverture_short" />
                             </div>
                         </div>
                     </div>
