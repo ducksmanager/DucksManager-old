@@ -147,6 +147,7 @@ function loadBook(pages, edge) {
         .css({visibility: 'hidden'});
 
     flipbookViewport = book.find('.magazine-viewport');
+    flipbookViewport.find('.container').css({top: edge.offset().top});
 
     // Check if the CSS was already loaded
     if (flipbook.width()===0 || flipbook.height()===0) {
