@@ -99,7 +99,6 @@ function charger_bibliotheque() {
                 jQuery('#pcent_visible').text(response.nb_numeros_visibles);
 				jQuery('#pourcentage_collection_visible').removeClass('cache');
 				var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
-				nb_etageres = jQuery('.etagere').length;
 				element_conteneur_bibliotheque = element_bibliotheque;
 				charger_tranche(premiere_tranche);
 			}
@@ -120,8 +119,9 @@ function ajouter_etagere(afterElement) {
 }
 
 function charger_tranche(tranche) {
-    tranche.on('load',charger_tranche_suivante);
-    tranche.on('error',charger_tranche_suivante);
+    tranche
+        .on('load',charger_tranche_suivante)
+        .on('error',charger_tranche_suivante);
 
     var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
     var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
@@ -207,10 +207,8 @@ function charger_points_utilisateur(callback) {
     });
 }
 
-var zone_proposition_photos;
-
 function afficher_lien_partage() {
-	zone_proposition_photos = jQuery('#partager_bibliotheque');
+	var zone_proposition_photos = jQuery('#partager_bibliotheque');
 	zone_proposition_photos.removeClass('cache');
 	jQuery('#partager_bibliotheque_lien').on('click', function() {
 		zone_proposition_photos.addClass('cache');
@@ -354,7 +352,6 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
                         .attr({id: 'histoire_' + histoire.code})
                         .append(histoire.titre));
             }
-            i++;
         });
 
         if (resultat.limite) {
@@ -601,14 +598,6 @@ function getInfosNumero (edgeId) {
 		Nom_magazine: noms_magazines[infos.Pays + '/' + infos.Magazine.toUpperCase()] || '',
 		Numero: magazine_numero[1]
 	};
-}
-
-function getScreenCenterY() {
-    return jQuery('#body').offset().top + jQuery(window).height()/2;
-}
-
-function getScreenCenterX() {
-    return jQuery('#body').offset().left + jQuery(window).height()/2;
 }
 
 function getPopulariteNumero(data) {
