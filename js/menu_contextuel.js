@@ -11,9 +11,7 @@ var l10n=['date_question','date_invalide','description_question','selectionner_d
 var protos=[];
 var l10n_items;
 
-if (Object.isUndefined(Proto)) {
-    var Proto = { };
-}
+var Proto = { };
 
 Proto.Menu = Class.create({
     initialize: function() {
@@ -213,7 +211,7 @@ Proto.Menu = Class.create({
                         maxlength:30
                     });
                     var nouvelle_date_input2=jQuery('<input>',{
-                        id''nouvelle_date',
+                        id: 'nouvelle_date',
                         type:'text',
                         size:30,
                         readonly:'readonly',
@@ -368,28 +366,24 @@ Proto.Menu = Class.create({
         e.stop();
         switch (this.options.type) {
             case 'gestion_numeros' :
-                var bcl=true;
-                while (bcl) {
-                    if (jQuery('#nb_selection').html==="0") {
-                        jQuery('.enabled').each(function(item) {
-                            item.removeClass('enabled');
-                            item.addClass('disabled');
-                        });
-                        break;
-                    }
-                    else {
-                        jQuery('.disabled').each(function(item) {
-                            item.removeClass('disabled');
-                            item.addClass('enabled');
-                        });
-                    }
-                    bcl=false;
+                if (jQuery('#nb_selection').html==="0") {
+                    jQuery('.enabled').each(function(item) {
+                        item.removeClass('enabled');
+                        item.addClass('disabled');
+                    });
+                    break;
+                }
+                else {
+                    jQuery('.disabled').each(function(item) {
+                        item.removeClass('disabled');
+                        item.addClass('enabled');
+                    });
                 }
             break;
         }
         this.options.beforeShow(e);
-        var x = Event.pointer(e).x,
-        y = Event.pointer(e).y,
+        var x = event.pageX,
+            y = event.pageY,
         vpDim = document.viewport.getDimensions(),
         vpOff = document.viewport.getScrollOffsets(),
         elDim = this.container.getDimensions(),
@@ -402,9 +396,7 @@ Proto.Menu = Class.create({
         this.container.css(elOff).css({
             zIndex: this.options.zIndex
         });
-        this.options.fade ? Effect.Appear(this.container, {
-            duration: 0.25
-        }) : this.container.show();
+        this.container.show();
         this.event = e;
     },
     onMouseOver: function(e) {
@@ -423,49 +415,46 @@ Proto.Menu = Class.create({
     },
     cacher_tous_menus: function(e) {
         this.options.beforeHide(e);
-        jQuery('.menu').each(function(menu) {
-            $(menu).hide();
-        });
+        jQuery('.menu').hide();
     }
 });
 
 function action_onmouseover(proto,e) {
-    var target=e.target.tagName==='SPAN' ? $(e.target.parentNode) : $(e.target);
+    var target=jQuery(this).prop('tagName')==='SPAN' ? jQuery(this).parent() : jQuery(this);
     e.stop();
     jQuery('.menu').each(function(sous_menu) {
-        if (!(target.hasClassName('item_sous_menu')) && $(sous_menu).attr('id').indexOf('sous_menu') !== -1)
-            $(sous_menu).hide();
+        if (!(target.hasClass('item_sous_menu')) && jQuery(sous_menu).attr('id').indexOf('sous_menu') !== -1)
+	        jQuery(sous_menu).hide();
     });
-    if (target.hasClassName('sous_menu')) {
-        if (jQuery('#sous_menu_'+target.name)) {
-            if (jQuery('#sous_menu_'+target.name).getStyle('display')==='none') { // Afficher le sous-menu
-                var val_left=$(proto.getId('menu_contextuel')).offsetLeft+target.offsetWidth+2;
-                var extremite_droite=val_left+target.offsetWidth;
-                if (extremite_droite>=jQuery('#body').offsetWidth) {
-                    val_left=$(proto.getId('menu_contextuel')).offsetLeft-target.offsetWidth-2;
-                }
-                jQuery('#sous_menu_'+target.name)
+    if (target.hasClass('sous_menu')) {
+        if (jQuery('#sous_menu_'+target.name).css('display')==='none') { // Afficher le sous-menu
+	        var menu = jQuery('#' + proto.getId('menu_contextuel'));
+	        var val_left=menu.offset().left+target.width()+2;
+            var extremite_droite=val_left+target.width();
+            if (extremite_droite>=jQuery('#body').width()) {
+                val_left=menu.offset().left-target.width()-2;
+            }
+            jQuery('#sous_menu_'+target.name)
                 .css({
                     left  :val_left+'px',
-                    top   :$(proto.getId('menu_contextuel')).offsetTop +target.offsetTop+'px',
+                    top   :menu.offset().top +target.offset().top+'px',
                     zIndex:100,
                     display:'block'
                 });
-            }
         }
     }
 }
 
 function action_onclick(proto,e) {
-    var target=e.target.tagName==='SPAN' ? $(e.target.parentNode) : $(e.target);
+	var target=jQuery(this).prop('tagName')==='SPAN' ? jQuery(this).parent() : jQuery(this);
     switch (proto.options.type) {
         case 'gestion_numeros' :
             e.stop();
             var nom_groupe=target.attr('name').substring(0, target.attr('name').indexOf('_'));
-            if (target.hasClassName('disabled'))
+            if (target.hasClass('disabled'))
                 return;
-            if (target.hasClassName('save')) {
-                if (jQuery('#creer_date_achat').hasClassName('selected')) {
+            if (target.hasClass('save')) {
+                if (jQuery('#creer_date_achat').hasClass('selected')) {
                     alert(l10n['selectionner_date_achat']);
                     return;
                 }
@@ -474,8 +463,8 @@ function action_onclick(proto,e) {
                 var av;
                 var liste_sel_num=[];
                 jQuery('.selected').each(function(item) {
-                    var nom_groupe_selected=item.attr('name').substring(0, item.attr('name').indexOf('_'));
-                    var classes=item.classNames().toArray();
+                    var nom_groupe_selected=jQuery(item).attr('name').substring(0, item.attr('name').indexOf('_'));
+                    var classes=jQuery(item).attr('class').split();
                     switch(nom_groupe_selected) {
                         case 'etat':
                             etat=classes[0];
@@ -487,8 +476,8 @@ function action_onclick(proto,e) {
                                 date_achat=-1;
                             else {
                                 jQuery('[name="achat"]').each (function (element) {
-                                    if (element.hasClassName('selected') && element.childNodes.length>2)
-                                        date_achat=element.childNodes[2].textContent;
+                                    if (jQuery(element).hasClass('selected') && element.children().length>2)
+                                        date_achat=jQuery(element.children()[2]).text();
                                 });
                             }
                             break;
@@ -497,52 +486,52 @@ function action_onclick(proto,e) {
                     }
                 });
                 jQuery('.num_checked').each(function(item) {
-                    var numero=item.title;
-                    liste_sel_num.push(numero);
+                    liste_sel_num.push(jQuery(item).attr('title'));
                 });
                 proto.options.beforeSelect(e);
-                if (proto.ie) proto.shim.hide();
                 proto.container.hide();
                 update_numeros(liste_sel_num,etat,date_achat,av);
             }
-            else if(target.hasClassName("date")) {
+            else if(target.hasClass("date")) {
                 if (!achats_affiches) {
                     jQuery('.date2','.n_date').each(function(item) {
-                        item.style.display="block";
+                        jQuery(item).css({display: 'block'});
                     });
                 }
                 else {
                     jQuery('.date2','.n_date').each(function(item) {
-                        item.style.display="none";
+	                    jQuery(item).css({display: 'none'});
                     });
                 }
                 achats_affiches=!achats_affiches;
             }
-            else if (target.hasClassName('non_possede')) {
+            else if (target.hasClass('non_possede')) {
                 jQuery('a[name^="'+nom_groupe+'"]').each(function(item) {
-                    item.removeClass('selected');
+                    jQuery(item).removeClass('selected');
                 });
                 jQuery('a:not([name^=etat])').each(function(item) {
-                    if (!(item.hasClassName('save'))) {
-                        item.removeClass('enabled');
-                        item.addClass('disabled');
+                    if (!(jQuery(item).hasClass('save'))) {
+	                    jQuery(item)
+                            .removeClass('enabled')
+                            .addClass('disabled');
                     }
                 });
                 target.addClass('selected');
             }
             else if (nom_groupe==="etat") {
                 jQuery('a[name^="'+nom_groupe+'"]').each(function(item) {
-                    item.removeClass('selected');
+	                jQuery(item).removeClass('selected');
                 });
                 jQuery('a:not([name^=etat])').each(function(item) {
-                    item.removeClass('disabled');
-                    item.addClass('enabled');
+	                jQuery(item)
+                        .removeClass('disabled')
+                        .addClass('enabled');
                 });
                 target.addClass('selected');
             }
             else {
                 jQuery('a[name^="'+nom_groupe+'"]').each(function(item) {
-                    item.removeClass('selected');
+	                jQuery(item).removeClass('selected');
                 });
                 target.addClass('selected');
             }
@@ -553,14 +542,21 @@ function action_onclick(proto,e) {
 
 function update_numeros(liste,etat,date_achat,av) {
     var liste_serialized=liste.join();
-    var pays=jQuery('#pays').innerHTML;
-    var magazine=jQuery('#magazine').innerHTML;
-    new Ajax.Request('Database.class.php', {
-        method: 'post',
-        parameters:'database=true&update=true&pays='+pays+'&magazine='+magazine+'&list_to_update='+liste_serialized+'&etat='+etat+'&date_acquisition='+date_achat+'&av='+av,
-        onSuccess:function() {
-            window.location.replace("?action=gerer&onglet=ajout_suppr&onglet_magazine="+pays+"/"+magazine);
-        }
+    var pays=jQuery('#pays').text();
+    var magazine=jQuery('#magazine').text();
+    jQuery.post('Database.class.php', {
+	    data: {
+		    database: true,
+		    update: true,
+		    pays: pays,
+		    magazine: magazine,
+		    list_to_update: liste_serialized,
+		    etat: etat,
+		    date_acquisition: date_achat,
+		    av: av
+	    }
+    }).done(function() {
+        window.location.replace("?action=gerer&onglet=ajout_suppr&onglet_magazine="+pays+"/"+magazine);
     });
 }
 
