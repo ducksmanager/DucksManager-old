@@ -123,6 +123,7 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css?VERSION">
+        <link rel="stylesheet" type="text/css" href="css/flip.css?VERSION">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.min.js"></script>
@@ -170,7 +171,9 @@ $id_user= $_SESSION['id_user'] ?? null;
         <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>
-        <script type="text/javascript" src="js/edges.js?VERSION"></script><?php
+        <script type="text/javascript" src="js/edges.js?VERSION"></script>
+        <script defer type="text/javascript" src="js/turn.min.js?VERSION"></script>
+        <script defer type="text/javascript" src="js/flip.js?VERSION"></script><?php
 
         if (!is_null($action)) {
             ?><script type="text/javascript" src="js/sel_num.js?VERSION"></script><?php
@@ -580,6 +583,22 @@ $id_user= $_SESSION['id_user'] ?? null;
                 break;
             case 'bibliotheque':
             ?>
+            <div class="book template">
+                <div class="magazine-viewport">
+                    <div class="container">
+                        <div class="magazine">
+                            <div ignore="1" class="next-button"></div>
+                            <div ignore="1" class="previous-button"></div>
+                        </div>
+                    </div>
+                    <div class="bottom">
+                        <div id="slider-bar" class="turnjs-slider">
+                            <div id="slider"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="conteneur_bibliotheque">
                 <h2 id="titre_bibliotheque"></h2><br /><br />
                 <?php
@@ -1271,17 +1290,16 @@ $id_user= $_SESSION['id_user'] ?? null;
                             </div>
                         </div>
                         <div class="item">
-                            <img src="images/demo_bibliotheque.jpg" alt="demo3">
+                            <iframe width="480" height="330" src="https://www.youtube.com/embed/n729j-57lKQ?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0&loop=1&playlist=n729j-57lKQ" frameborder="0" allowfullscreen></iframe>
                             <div class="carousel-caption bottom">
                                 <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
                             </div>
-                            <div class="carousel-caption right">
+                            <div class="carousel-caption right top-offset">
                                 <?=PRESENTATION_BIBLIOTHEQUE_1?>
                                 <br /> <br />
                                 <?=PRESENTATION_BIBLIOTHEQUE_2?>
                                 <br /> <br />
                                 <?=PRESENTATION_BIBLIOTHEQUE_3?>
-                                <br /> <img src="images/demo_bibliotheque_ouverture_short_small.gif"  style="width: 90%" alt="demo_bibliotheque_ouverture_short" />
                             </div>
                         </div>
                     </div>
