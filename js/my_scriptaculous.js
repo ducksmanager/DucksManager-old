@@ -11,14 +11,14 @@ function toggle_item_menu(element_clic) {
     element_clic.parent().find('li.active').removeClass('active');
     element_clic.toggleClass('active');
     element_clic.parent().find('li a').each(function(i, element) {
-        jQuery('contenu_'+element.attr('name')).css({'display':'none'});
+        jQuery('#contenu_'+element.attr('name')).css({'display':'none'});
     });
-    jQuery('contenu_'+element_clic.children().eq(0).attr('name')).css({'display':'block'});
+    jQuery('#contenu_'+element_clic.children().eq(0).attr('name')).css({'display':'block'});
 }
 
 function init_autocompleter_auteurs() {
     l10n_action('fillArray',l10n_calculs_auteurs,'l10n_calculs_auteurs');
-    if (jQuery('auteur_cherche')) {
+    if (jQuery('#auteur_cherche')) {
 	    new Ajax.Autocompleter ('auteur_cherche',
 		    'liste_auteurs',
 		    'auteurs_choix.php',

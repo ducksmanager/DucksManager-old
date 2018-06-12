@@ -355,7 +355,7 @@ function select_numero() {
 
 function afficher_numeros(pays,magazine, numero) {
 	if (pays === null || magazine === null) {
-		var el_select=jQuery('liste_magazines');
+		var el_select=jQuery('#liste_magazines');
 		if (el_select.find('option:eq(0)').attr('id') === 'vide') {
 			l10n_action('alert','selectionner_magazine');
 			return;
@@ -369,7 +369,7 @@ function afficher_numeros(pays,magazine, numero) {
 		}
 	}
 
-	if (jQuery('liste_numeros').length) {
+	if (jQuery('#liste_numeros').length) {
         jQuery.post(
             'Database.class.php',
             {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
@@ -383,7 +383,7 @@ function afficher_numeros(pays,magazine, numero) {
             }
         );
     }
-    else {
+    else if (numero) {
 		location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
 	}
 }

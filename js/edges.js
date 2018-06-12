@@ -8,7 +8,6 @@ var ouvrirApres=false;
 var largeur_section;
 var couverture;
 var ouverture_couverture;
-var nb_etageres;
 var extraits;
 var extrait_courant;
 var chargement_extrait=false;
@@ -48,12 +47,12 @@ function ouvrir_tranche() {
     tranche_en_cours=tranche_bib.clone(true);
     tranche_en_cours.css({
         zIndex:500,
-        position:absolute,
+        position: 'absolute',
         left: getScreenCenterX()+'px',
         top: (getScreenCenterY()-hauteur_image/2)+'px',
         opacity: 0
     });
-    jQuery('bibliotheque').append(tranche_en_cours);
+    jQuery('#bibliotheque').append(tranche_en_cours);
     new Effect.Parallel([
         new Effect.Opacity(tranche_bib[0],{from: 1, to: 0, sync: true}),
         new Effect.Opacity(tranche_en_cours[0], {from: 0, to: 1, sync:true})
@@ -61,26 +60,27 @@ function ouvrir_tranche() {
         duration: 0.5,
         afterFinish:function() {
             jQuery('#bibliotheque').append(
-	            jQuery('<div>',{id:'animation'})
-		            .css({
-			            position: absolute,
-			            left:getScreenCenterX()+'px',
-			            top:(getScreenCenterY()-hauteur_image/2)+'px',
-			            zIndex:600
-		            })
-		            .append(
-		                jQuery('<img>',{src:'loading.gif'})
+                jQuery('<div>',{id:'animation'})
+                    .css({
+                        position: 'absolute',
+                        left:getScreenCenterX()+'px',
+                        top:(getScreenCenterY()-hauteur_image/2)+'px',
+                        zIndex:600
+                    })
+                    .append(
+                        jQuery('<img>',{src:'loading.gif'})
                     )
             );
         }});
 
-    jQuery.post('Inducks.class.php', {
-        get_cover: 'true',
-        debug: debug,
-        pays: infos.Pays,
-        magazine: infos.Magazine,
-        numero: infos.Numero
-    })
+    jQuery
+        .post('Inducks.class.php', {
+            get_cover: 'true',
+            debug: debug,
+            pays: infos.Pays,
+            magazine: infos.Magazine,
+            numero: infos.Numero
+        })
         .done(function (data) {
             jQuery('#infobulle').remove();
             if (data) {
@@ -111,40 +111,40 @@ function ouvrir_tranche() {
                     .on('load', function () {
                         current_couv.css({width: (couverture.width() * (hauteur_image / couverture.height())) + 'px'});
                         if (ouverture_couverture) {
-	                        tranche_en_cours.css({
-		                        width: tranche_en_cours.width()+ 'px',
-		                        height: tranche_en_cours.height()+ 'px'
-	                        });
-	                        new Effect.Parallel([
-		                        new Effect.Morph(current_couv[0], {
-			                        width: (couverture.width() / (hauteur_image / couverture.height())) + 'px',
-			                        sync: true
-		                        }),
-		                        new Effect.BlindRight(current_couv[0], {sync: true}),
-		                        new Effect.Move(current_couv[0], {
-			                        mode: 'absolute',
-			                        x: getScreenCenterX(),
-			                        y: getScreenCenterY() - hauteur_image / 2,
-			                        sync: true
-		                        }),
-		                        new Effect.BlindLeft(tranche_en_cours[0], {sync: true})
-	                        ], {
-		                        duration: 1,
-		                        afterFinish: function () {
-			                        ouverture_couverture = false;
-			                        jQuery('#animation').remove();
+                            tranche_en_cours.css({
+                                width: tranche_en_cours.width()+ 'px',
+                                height: tranche_en_cours.height()+ 'px'
+                            });
+                            new Effect.Parallel([
+                                new Effect.Morph(current_couv[0], {
+                                    width: (couverture.width() / (hauteur_image / couverture.height())) + 'px',
+                                    sync: true
+                                }),
+                                new Effect.BlindRight(current_couv[0], {sync: true}),
+                                new Effect.Move(current_couv[0], {
+                                    mode: 'absolute',
+                                    x: getScreenCenterX(),
+                                    y: getScreenCenterY() - hauteur_image / 2,
+                                    sync: true
+                                }),
+                                new Effect.BlindLeft(tranche_en_cours[0], {sync: true})
+                            ], {
+                                duration: 1,
+                                afterFinish: function () {
+                                    ouverture_couverture = false;
+                                    jQuery('#animation').remove();
 
-			                        if (extraits.length > 0 && !jQuery('#lien_apercus').length) {
-				                        creer_div_apercus();
-			                        }
-		                        }
-	                        });
-	                        jQuery('#animation').remove();
-	                        action_en_cours = false;
+                                    if (extraits.length > 0 && !jQuery('#lien_apercus').length) {
+                                        creer_div_apercus();
+                                    }
+                                }
+                            });
+                            jQuery('#animation').remove();
+                            action_en_cours = false;
                         }
                     });
-	            current_couv.html(current_couv_im.html());
-	            jQuery('#body').append(current_couv);
+                current_couv.html(current_couv_im.html());
+                jQuery('#body').append(current_couv);
             }
         });
 }
@@ -166,10 +166,10 @@ function creer_div_apercus() {
             position: 'absolute',
             display: 'block',
             width: getLargeur(),
-	        height: hauteur_image+'px',
-	        right: getScreenCenterX()+'px',
-	        top: (getScreenCenterY()-hauteur_image/2)+'px'})
-	    .addClass('page_arriere');
+            height: hauteur_image+'px',
+            right: getScreenCenterX()+'px',
+            top: (getScreenCenterY()-hauteur_image/2)+'px'})
+        .addClass('page_arriere');
 
     var page_gauche_avant=jQuery('<div>', {id: 'page_gauche_avant'})
                     .css({position: 'absolute',display: 'block',width: '0px',height: hauteur_image+'px',
@@ -177,19 +177,19 @@ function creer_div_apercus() {
                     .addClass('page_avant');
 
     var page_droite_arriere=jQuery('<div>', {id: 'page_droite_arriere'})
-	    .css({
-		    position: 'absolute',
-		    display: 'block',
-		    width: getLargeur(),
-		    height: hauteur_image+'px',
-		    left: getScreenCenterX()+'px',
-		    top: (getScreenCenterY()-hauteur_image/2)+'px'})
-	    .addClass('page_arriere');
+        .css({
+            position: 'absolute',
+            display: 'block',
+            width: getLargeur(),
+            height: hauteur_image+'px',
+            left: getScreenCenterX()+'px',
+            top: (getScreenCenterY()-hauteur_image/2)+'px'})
+        .addClass('page_arriere');
 
     jQuery('#body')
-	    .append(page_suivante)
-	    .append(page_gauche_arriere).append(page_gauche_avant)
-	    .append(page_droite_arriere);
+        .append(page_suivante)
+        .append(page_gauche_arriere).append(page_gauche_avant)
+        .append(page_droite_arriere);
     page_suivante.on('click',function() {
         if (chargement_extrait)
             return;
@@ -208,30 +208,30 @@ function creer_div_apercus() {
 
                 jQuery('#page_droite_arriere_im').on('load',function () {
                     new Effect.BlindLeft('page_droite_avant',{
-	                    duration:0.75,
-	                    afterFinish:function() {
-	                        new Effect.Morph('page_gauche_avant',{
-	                            style: 'width:'+getLargeur()
-	                        });
-	                        intervertir_page('droite');
-	                        jQuery('#page_gauche_avant').on('click',back_to_cover);
-	                        jQuery('#page_droite_avant_im').on('click',back_to_cover);
-	                        extrait_courant++;
-	                        maj_div_apercus();
-	                    }
+                        duration:0.75,
+                        afterFinish:function() {
+                            new Effect.Morph('page_gauche_avant',{
+                                style: 'width:'+getLargeur()
+                            });
+                            intervertir_page('droite');
+                            jQuery('#page_gauche_avant').on('click',back_to_cover);
+                            jQuery('#page_droite_avant_im').on('click',back_to_cover);
+                            extrait_courant++;
+                            maj_div_apercus();
+                        }
                     });
                 });
            }
            else { //Page paire
                 maj_page('page_gauche_arriere',extraits[extrait_courant].url);
                 jQuery('#page_gauche_arriere_im').css({
-	                height: hauteur_image+'px',
-	                width: '0'
+                    height: hauteur_image+'px',
+                    width: '0'
                 });
                 intervertir_page('gauche');
 
                 jQuery('#page_gauche_avant').css({
-	                width: getLargeur()+'px'
+                    width: getLargeur()+'px'
                 });
                 maj_page('page_droite_arriere','page_invisible');
 
@@ -244,7 +244,7 @@ function creer_div_apercus() {
                         duration: 0.75,
                         afterFinish:function() {
                             new Effect.Morph('page_gauche_avant_im',{
-                            	style: 'width:'+getLargeur()
+                                style: 'width:'+getLargeur()
                             });
                             intervertir_page('droite');
 
@@ -264,49 +264,49 @@ function creer_div_apercus() {
 
 function getLargeur() {
     return jQuery('#page_droite_avant').css('width')==='0'
-	    ?jQuery('#page_droite_arriere').css('width')
-	    :jQuery('#page_droite_avant').css('width');
+        ?jQuery('#page_droite_arriere').css('width')
+        :jQuery('#page_droite_avant').css('width');
 }
 function intervertir_page(direction) {
     jQuery('#page_'+direction+'_avant')
-	    .attr({id: 'page_'+direction})
-	    .addClass('page_arriere')
-	    .removeClass('page_avant');
+        .attr({id: 'page_'+direction})
+        .addClass('page_arriere')
+        .removeClass('page_avant');
 
     jQuery('#page_'+direction+'_avant_im')
-	    .attr({id: 'page_'+direction+'_im'});
+        .attr({id: 'page_'+direction+'_im'});
 
     jQuery('#page_'+direction+'_arriere')
-	    .attr({id: 'page_'+direction+'_avant'})
-	    .removeClass('page_arriere')
-	    .addClass('page_avant');
+        .attr({id: 'page_'+direction+'_avant'})
+        .removeClass('page_arriere')
+        .addClass('page_avant');
 
     jQuery('#page_'+direction+'_arriere_im')
-	    .attr({id: 'page_'+direction+'_avant_im'});
+        .attr({id: 'page_'+direction+'_avant_im'});
 
     jQuery('#page_'+direction)
-	    .attr({id: 'page_'+direction+'_arriere'});
+        .attr({id: 'page_'+direction+'_arriere'});
 
     jQuery('#page_'+direction+'_im')
-	    .attr({id: 'page_'+direction+'_arriere_im'});
+        .attr({id: 'page_'+direction+'_arriere_im'});
 }
 
 function maj_page(id_page,maj) {
     if (maj==='page_invisible') {
         jQuery('#' + id_page).html('')
-	        .addClass('page_invisible');
+            .addClass('page_invisible');
     }
     else {
         jQuery('#' + id_page)
-	        .html(
-        	    jQuery('<img>',{id: id_page+'_im',src: maj}).html()
-	        )
-	        .removeClass('page_invisible');
+            .html(
+                jQuery('<img>',{id: id_page+'_im',src: maj}).html()
+            )
+            .removeClass('page_invisible');
         if (id_page.indexOf('gauche')!==-1)
             jQuery('#' + id_page+'_im')
-	            .css({
-		            float: 'right'
-	            });
+                .css({
+                    float: 'right'
+                });
     }
 }
 
@@ -330,7 +330,7 @@ function back_to_cover() {
         afterFinish:function() {
             jQuery('#page_gauche_avant').remove();
             new Effect.Morph('page_droite_avant_im',{
-            	style:'width:'+getLargeur(),
+                style:'width:'+getLargeur(),
                 afterFinish:function() {
                     jQuery('#page_droite_arriere').remove();
                     jQuery('#page_droite_avant').on('click', fermer_tranche);
@@ -348,15 +348,15 @@ function fermer() {
     action_en_cours=true;
     jQuery('#page_suivante, #page_gauche_avant, #page_gauche_arriere, #page_droite_arriere').remove();
     jQuery('#page_droite_avant_im').css({
-	    width: getLargeur()
+        width: getLargeur()
     });
     new Effect.Parallel([
         new Effect.BlindLeft(jQuery('#page_droite_avant')[0], {sync:true}),
         new Effect.Move(jQuery('#page_droite_avant')[0], {
-        	mode: 'absolute',
-	        x: (getScreenCenterX()+tranche_bib.width()),
-	        y: getScreenCenterY()-hauteur_image/2,
-	        sync:true
+            mode: 'absolute',
+            x: (getScreenCenterX()+tranche_bib.width()),
+            y: getScreenCenterY()-hauteur_image/2,
+            sync:true
         }),
         new Effect.BlindRight(tranche_en_cours[0], {sync:true})
     ], {
@@ -385,28 +385,28 @@ var element_conteneur_bibliotheque;
 function charger_bibliotheque() {
     est_contexte_bibliotheque = true;
 
-	var conteneur=jQuery('#conteneur_bibliotheque');
-	var section=jQuery('#bibliotheque');
+    var conteneur=jQuery('#conteneur_bibliotheque');
+    var section=jQuery('#bibliotheque');
     section.on('mousedown', function() {
         jQuery('.popover').popover('destroy');
     });
 
-	largeur_section=section.width();
-	jQuery('#pourcentage_collection_visible').addClass('cache');
-	l10n_action('remplirSpan','pourcentage_collection_visible');
+    largeur_section=section.width();
+    jQuery('#pourcentage_collection_visible').addClass('cache');
+    l10n_action('remplirSpan','pourcentage_collection_visible');
 
-	jQuery.post(
-	    'Edge.class.php', {
-			get_bibliotheque: 'true',
-			largeur: largeur_section,
-			user_bibliotheque: user_bibliotheque,
-			cle_bibliotheque: cle_bibliotheque
-		},
+    jQuery.post(
+        'Edge.class.php', {
+            get_bibliotheque: 'true',
+            largeur: largeur_section,
+            user_bibliotheque: user_bibliotheque,
+            cle_bibliotheque: cle_bibliotheque
+        },
         function(response) {
-			if (!!response.erreur) {
-				conteneur.html(response.erreur);
-			}
-			else {
+            if (!!response.erreur) {
+                conteneur.html(response.erreur);
+            }
+            else {
                 jQuery.post(
                     'Edge.class.php',
                     {get_popularite_numeros: true},
@@ -420,25 +420,24 @@ function charger_bibliotheque() {
                 );
 
                 noms_magazines = response.noms_magazines;
-				textures = response.textures;
+                textures = response.textures;
 
-				var element_bibliotheque = jQuery('#bibliotheque');
+                var element_bibliotheque = jQuery('#bibliotheque');
 
-				element_bibliotheque
+                element_bibliotheque
                     .append(response.contenu)
                     .css({
                         backgroundImage: 'url(\'edges/textures/' + textures[0].texture + '/' + textures[0].sous_texture + '.jpg\')'
                     });
-				jQuery('#titre_bibliotheque').text(response.titre);
+                jQuery('#titre_bibliotheque').text(response.titre);
                 jQuery('#pcent_visible').text(response.nb_numeros_visibles);
-				jQuery('#pourcentage_collection_visible').removeClass('cache');
-				var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
-				nb_etageres = jQuery('.etagere').length;
-				element_conteneur_bibliotheque = element_bibliotheque;
-				charger_tranche(premiere_tranche);
-			}
-		}
-	);
+                jQuery('#pourcentage_collection_visible').removeClass('cache');
+                var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
+                element_conteneur_bibliotheque = element_bibliotheque;
+                charger_tranche(premiere_tranche);
+            }
+        }
+    );
 }
 
 function ajouter_etagere(afterElement) {
@@ -459,7 +458,7 @@ function charger_tranche(tranche) {
 
     var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
     var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
-    	return jQuery(src_similaire).attr('src');
+        return jQuery(src_similaire).attr('src');
     });
     tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
 }
@@ -477,13 +476,10 @@ function charger_tranche_suivante() {
         charger_tranche(suivante);
     }
     else {
-        if (tranche.closest('#bibliotheque')) { // Contexte bibliothèque
+        if (tranche.closest('#bibliotheque').length) { // Contexte bibliothèque
             ajouter_etagere();
             init_observers_tranches();
             charger_recherche();
-        }
-        else { // Contexte affichage dans les événements récents
-            callback_tranches_chargees(tranche.closest('.tooltip_content'));
         }
     }
 }
@@ -544,27 +540,27 @@ function charger_points_utilisateur(callback) {
 var zone_proposition_photos;
 
 function afficher_lien_partage() {
-	zone_proposition_photos = jQuery('#partager_bibliotheque');
-	zone_proposition_photos.removeClass('cache');
-	jQuery('#partager_bibliotheque_lien').on('click', function() {
-		zone_proposition_photos.addClass('cache');
-		jQuery.post(
-		    'Edge.class.php',
-			{partager_bibliotheque: 'true'},
-			function (response) {
-				zone_proposition_photos
-					.html(response)
-					.removeClass('cache');
+    zone_proposition_photos = jQuery('#partager_bibliotheque');
+    zone_proposition_photos.removeClass('cache');
+    jQuery('#partager_bibliotheque_lien').on('click', function() {
+        zone_proposition_photos.addClass('cache');
+        jQuery.post(
+            'Edge.class.php',
+            {partager_bibliotheque: 'true'},
+            function (response) {
+                zone_proposition_photos
+                    .html(response)
+                    .removeClass('cache');
 
-				var a = document.createElement('script');
-				a.type = 'text/javascript';
-				a.async = true;
-				a.src = '//static.addtoany.com/menu/page.js';
-				var s = document.getElementsByTagName('script')[0];
-				s.parentNode.insertBefore(a, s);
-			}
-		);
-	});
+                var a = document.createElement('script');
+                a.type = 'text/javascript';
+                a.async = true;
+                a.src = '//static.addtoany.com/menu/page.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(a, s);
+            }
+        );
+    });
 }
 
 function afficher_proposition_photos_tranches() {
@@ -689,7 +685,6 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
                         .attr({id: 'histoire_' + histoire.code})
                         .append(histoire.titre));
             }
-            i++;
         });
 
         if (resultat.limite) {
@@ -728,7 +723,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
     });
 
     jQuery('.histoire_trouvee').on('click', function (e) {
-	    var element = jQuery(this);
+        var element = jQuery(this);
         var storycode = element.attr('id').substring('histoire_'.length, element.attr('id').length);
         element_recherche_input
             .attr({'data-code': 'code=' + storycode, disabled: 'disabled'})
@@ -763,7 +758,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
 }
 
 function indiquer_numero(element, positions_fleches) {
-	var body = jQuery('#body');
+    var body = jQuery('#body');
     jQuery('.fleche_position').remove();
 
     var offset = element.offset();
@@ -773,7 +768,7 @@ function indiquer_numero(element, positions_fleches) {
     var css, src;
     var cote_fleche= 16;
 
-	for (var i=0; i<positions_fleches.length; i++) {
+    for (var i=0; i<positions_fleches.length; i++) {
         var position_fleche = positions_fleches[i];
 
         switch(position_fleche) {
@@ -801,8 +796,8 @@ function indiquer_numero(element, positions_fleches) {
             )
     }
     window.scrollTo(
-    	gauche - body.width()  / 2 + element.width() /2,
-	    haut   - body.height() / 2 + element.height()/2
+        gauche - body.width()  / 2 + element.width() /2,
+        haut   - body.height() / 2 + element.height()/2
     );
 }
 
@@ -827,9 +822,9 @@ function recherche_histoire(val_recherche) {
 
                 jQuery.post(
                     'Inducks.class.php', {
-	                    get_magazines_histoire: true,
-	                    histoire: val_recherche,
-	                    recherche_bibliotheque: (est_contexte_bibliotheque ? 'true' : 'false')
+                        get_magazines_histoire: true,
+                        histoire: val_recherche,
+                        recherche_bibliotheque: (est_contexte_bibliotheque ? 'true' : 'false')
                     },
                     function(resultat) {
                         localStorage && localStorage.setItem('get_magazines_histoire.'+val_recherche, JSON.stringify(resultat));
@@ -855,13 +850,13 @@ function recherche_histoire(val_recherche) {
 
 function init_observers_tranches() {
     jQuery('.tranche')
-	    .on('mousedown', function() {
-			tranche_bib=jQuery(this);
-			ouvrir_tranche();
-		})
-	    .on('mouseover', function() {
+        .on('mousedown', function() {
+            tranche_bib=jQuery(this);
+            ouvrir_tranche();
+        })
+        .on('mouseover', function() {
             if (!action_en_cours && !couverture_ouverte) {
-	            ouvrirInfoBulleEffectif(jQuery(this));
+                ouvrirInfoBulleEffectif(jQuery(this));
             }
         }
     );
@@ -877,7 +872,7 @@ function ouvrirInfoBulleEffectif(tranche) {
     jQuery('.popover').popover('destroy');
     isOutOfEdgesAndPopover=false;
 
-    var numero_bulle=getInfosNumero(tranche.id);
+    var numero_bulle=getInfosNumero(tranche.attr('id'));
 
     var titre_bulle = jQuery('.issue_title.template').clone(true).removeClass('template');
     titre_bulle.remplirTitreNumero(numero_bulle);
@@ -930,12 +925,12 @@ function hidePopoverIfStillOutOfFocusAfterTimeout(timeout) {
 function getInfosNumero (edgeId) {
     var pays__magazine_numero=edgeId.split('/');
     var magazine_numero=pays__magazine_numero[1].split('.');
-	return {
-		Pays: pays__magazine_numero[0],
-		Magazine: magazine_numero[0].toLowerCase(),
-		Nom_magazine: noms_magazines[infos.Pays + '/' + infos.Magazine.toUpperCase()] || '',
-		Numero: magazine_numero[1]
-	};
+    return {
+        Pays: pays__magazine_numero[0],
+        Magazine: magazine_numero[0].toLowerCase(),
+        Nom_magazine: noms_magazines[pays__magazine_numero[0] + '/' + magazine_numero[0].toUpperCase()] || '',
+        Numero: magazine_numero[1]
+    };
 }
 
 function getScreenCenterY() {
