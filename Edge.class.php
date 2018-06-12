@@ -1,6 +1,5 @@
 <?php
 include_once 'DucksManager_Core.class.php';
-include_once 'Etagere.class.php';
 
 class Edge {
 	var $pays;
@@ -25,20 +24,10 @@ class Edge {
         $this->est_visible = $visible;
         $this->html=$this->getImgHTML($small);
     }
-	
-	static function getEtagereHTML($br=true) {
-		$code= '<div class="etagere" style="width:'.Etagere::$largeur.';'
-										  .'background-image: url(\'edges/textures/'.Etagere::$texture2.'/'.Etagere::$sous_texture2.'.jpg\')">&nbsp;</div>';
-		if ($br===true) {
-            $code .= '<br />';
-        }
-		return $code;
-	}
 
 	static function get_numero_clean($numero) {
 		return str_replace([' ', '+'], '', $numero);
 	}
-	
 	
 	static function get_numeros_clean($pays,$magazine,$numeros) {
         $chunk_size = 250;
@@ -209,24 +198,10 @@ elseif (isset($_POST['get_bibliotheque'])) {
 			];
         }
 
-        Etagere::$texture1 = $textures[0]['texture'];
-        Etagere::$sous_texture1 = $textures[0]['sous_texture'];
-        Etagere::$texture2 = $textures[1]['texture'];
-        Etagere::$sous_texture2 = $textures[1]['sous_texture'];
-
-        list($width, $height, $type, $attr)=getimagesize('edges/textures/'.Etagere::$texture1.'/'.Etagere::$sous_texture1.'.jpg');
-        if ($width<Etagere::$largeur) {
-            Etagere::$largeur=$width;
-        }
-        else {
-            Etagere::$largeur=$_POST['largeur'];
-        }
-
         list($html, $pourcentage_visible, $liste_magazines) = Edge::getBibliotheque($id_user);
 
         echo json_encode([
             'titre' => $user === '-1' ? BIBLIOTHEQUE_COURT : (BIBLIOTHEQUE_DE . $user),
-            'largeur_etagere' => Etagere::$largeur,
             'nb_numeros_visibles' => $pourcentage_visible,
             'contenu' => $html,
             'textures' => $textures,

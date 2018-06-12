@@ -319,13 +319,13 @@ class Affichage {
                                         $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
                                         echo $e->html;
                                     }
-                                ?></div><?php
-                                echo Edge::getEtagereHTML(true);
+                                ?></div>
+                                <div class="etagere">&nbsp;</div><?php
                                 foreach($evenement->numeros as $numero) {
                                     self::afficher_texte_numero(
-                                            $numero->Pays,
-                                            $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
-                                            $numero->Numero
+                                        $numero->Pays,
+                                        $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                        $numero->Numero
                                     );
                                     ?><br /><?php
                                 }
