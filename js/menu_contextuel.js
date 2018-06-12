@@ -176,8 +176,8 @@ Proto.Menu = Class.create({
 		                    }).addClass('item_sous_menu enabled supprimer_date')
 	                    )
 	                    .on('click', function (e) {
-		                    jQuery('a[name="' + jQuery(this).attr('name') + '"]').each(function (item) {
-			                    item.removeClass('selected');
+		                    jQuery('a[name="' + jQuery(this).attr('name') + '"]').each(function () {
+			                    jQuery(this).removeClass('selected');
 		                    });
 
 	                    })
@@ -330,8 +330,8 @@ Proto.Menu = Class.create({
                                 nouvelle_date_a.html('Achat "' + description_entree + '"<br />' + date[0] + '-' + date[1] + '-' + date[2]);
                                 nouvelle_date_li.html(nouvelle_date_a.html())
                                     .on('click', function (e) {
-                                        jQuery('#a[name="' + jQuery(this).attr('name') + '"]').each(function (item) {
-                                            item.removeClass('selected');
+                                        jQuery('#a[name="' + jQuery(this).attr('name') + '"]').each(function () {
+	                                        jQuery(this).removeClass('selected');
                                         });
                                     });
                                 var ajoute = false;
@@ -367,16 +367,18 @@ Proto.Menu = Class.create({
         switch (this.options.type) {
             case 'gestion_numeros' :
                 if (jQuery('#nb_selection').html==="0") {
-                    jQuery('.enabled').each(function(item) {
-                        item.removeClass('enabled');
-                        item.addClass('disabled');
+                    jQuery('.enabled').each(function() {
+	                    jQuery(this)
+                            .removeClass('enabled')
+                            .addClass('disabled');
                     });
                     break;
                 }
                 else {
-                    jQuery('.disabled').each(function(item) {
-                        item.removeClass('disabled');
-                        item.addClass('enabled');
+                    jQuery('.disabled').each(function() {
+	                    jQuery(this)
+                            .removeClass('disabled')
+                            .addClass('enabled');
                     });
                 }
             break;
@@ -423,8 +425,8 @@ function action_onmouseover(proto,e) {
     var target=jQuery(this).prop('tagName')==='SPAN' ? jQuery(this).parent() : jQuery(this);
     e.stop();
     jQuery('.menu').each(function(sous_menu) {
-        if (!(target.hasClass('item_sous_menu')) && jQuery(sous_menu).attr('id').indexOf('sous_menu') !== -1)
-	        jQuery(sous_menu).hide();
+        if (!(target.hasClass('item_sous_menu')) && jQuery(this).attr('id').indexOf('sous_menu') !== -1)
+	        jQuery(this).hide();
     });
     if (target.hasClass('sous_menu')) {
         if (jQuery('#sous_menu_'+target.name).css('display')==='none') { // Afficher le sous-menu
@@ -462,9 +464,9 @@ function action_onclick(proto,e) {
                 var date_achat;
                 var av;
                 var liste_sel_num=[];
-                jQuery('.selected').each(function(item) {
-                    var nom_groupe_selected=jQuery(item).attr('name').substring(0, item.attr('name').indexOf('_'));
-                    var classes=jQuery(item).attr('class').split();
+                jQuery('.selected').each(function() {
+                    var nom_groupe_selected=jQuery(this).attr('name').substring(0, jQuery(this).attr('name').indexOf('_'));
+                    var classes=jQuery(this).attr('class').split();
                     switch(nom_groupe_selected) {
                         case 'etat':
                             etat=classes[0];
@@ -475,9 +477,9 @@ function action_onclick(proto,e) {
                             else if (classes[0]==='pas_date')
                                 date_achat=-1;
                             else {
-                                jQuery('[name="achat"]').each (function (element) {
-                                    if (jQuery(element).hasClass('selected') && element.children().length>2)
-                                        date_achat=jQuery(element.children()[2]).text();
+                                jQuery('[name="achat"]').each(function () {
+                                    if (jQuery(this).hasClass('selected') && jQuery(this).children().length>2)
+                                        date_achat=jQuery(this).children().eq(2).text();
                                 });
                             }
                             break;
@@ -485,8 +487,8 @@ function action_onclick(proto,e) {
                             av=(classes[0]==="non_marque_a_vendre"?-1:classes[0]==="a_vendre");
                     }
                 });
-                jQuery('.num_checked').each(function(item) {
-                    liste_sel_num.push(jQuery(item).attr('title'));
+                jQuery('.num_checked').each(function() {
+                    liste_sel_num.push(jQuery(this).attr('title'));
                 });
                 proto.options.beforeSelect(e);
                 proto.container.hide();
@@ -494,24 +496,24 @@ function action_onclick(proto,e) {
             }
             else if(target.hasClass("date")) {
                 if (!achats_affiches) {
-                    jQuery('.date2','.n_date').each(function(item) {
-                        jQuery(item).css({display: 'block'});
+                    jQuery('.date2','.n_date').each(function() {
+	                    jQuery(this).css({display: 'block'});
                     });
                 }
                 else {
-                    jQuery('.date2','.n_date').each(function(item) {
-	                    jQuery(item).css({display: 'none'});
+                    jQuery('.date2','.n_date').each(function() {
+	                    jQuery(this).css({display: 'none'});
                     });
                 }
                 achats_affiches=!achats_affiches;
             }
             else if (target.hasClass('non_possede')) {
-                jQuery('a[name^="'+nom_groupe+'"]').each(function(item) {
-                    jQuery(item).removeClass('selected');
+                jQuery('a[name^="'+nom_groupe+'"]').each(function() {
+	                jQuery(this).removeClass('selected');
                 });
-                jQuery('a:not([name^=etat])').each(function(item) {
-                    if (!(jQuery(item).hasClass('save'))) {
-	                    jQuery(item)
+                jQuery('a:not([name^=etat])').each(function() {
+                    if (!(jQuery(this)).hasClass('save'))) {
+		                jQuery(this)
                             .removeClass('enabled')
                             .addClass('disabled');
                     }
@@ -519,19 +521,19 @@ function action_onclick(proto,e) {
                 target.addClass('selected');
             }
             else if (nom_groupe==="etat") {
-                jQuery('a[name^="'+nom_groupe+'"]').each(function(item) {
-	                jQuery(item).removeClass('selected');
+                jQuery('a[name^="'+nom_groupe+'"]').each(function() {
+	                jQuery(this).removeClass('selected');
                 });
-                jQuery('a:not([name^=etat])').each(function(item) {
-	                jQuery(item)
+                jQuery('a:not([name^=etat])').each(function() {
+	                jQuery(this)
                         .removeClass('disabled')
                         .addClass('enabled');
                 });
                 target.addClass('selected');
             }
             else {
-                jQuery('a[name^="'+nom_groupe+'"]').each(function(item) {
-	                jQuery(item).removeClass('selected');
+                jQuery('a[name^="'+nom_groupe+'"]').each(function() {
+	                jQuery(this).removeClass('selected');
                 });
                 target.addClass('selected');
             }
