@@ -313,21 +313,23 @@ class Affichage {
                                 );?>
 							</a>
 							<span class="cache tooltip_content">
-								<?php
-								foreach($evenement->numeros as $numero) {
-									$e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
-									echo $e->html;
-								}
+                                <div class="edge_container">
+                                    <?php
+                                    foreach($evenement->numeros as $numero) {
+                                        $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
+                                        echo $e->html;
+                                    }
+                                ?></div><?php
                                 echo Edge::getEtagereHTML(true);
-								foreach($evenement->numeros as $numero) {
-									self::afficher_texte_numero(
-									        $numero->Pays,
+                                foreach($evenement->numeros as $numero) {
+                                    self::afficher_texte_numero(
+                                            $numero->Pays,
                                             $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
                                             $numero->Numero
                                     );
-									?><br /><?php
-								}
-								?>
+                                    ?><br /><?php
+                                }
+                                ?>
 							</span>
 							<?=NEWS_ONT_CREE_TRANCHE_2?>
 							<?php 
