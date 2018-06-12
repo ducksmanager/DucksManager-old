@@ -315,7 +315,7 @@ class Affichage {
 							<span class="cache tooltip_content">
 								<?php
 								foreach($evenement->numeros as $numero) {
-									$e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true);
+									$e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
 									echo $e->html;
 								}
                                 echo Edge::getEtagereHTML(true);
