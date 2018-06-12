@@ -30,7 +30,7 @@ INSERT INTO numeros_popularite(Pays,Magazine,Numero,Popularite)
       WHERE u.username LIKE 'test%'
     ) AND
     n.DateAjout < DATE_SUB(NOW(), INTERVAL -1 MONTH)
-  GROUP BY n.Pays, n.Magazine, n.Numero;
+  GROUP BY n.Pays, n.Magazine, REPLACE(n.Numero, ' ', '');
 
 -- Associate issues' popularity with edges. This will not vary over time: we only modify the edges that don't have their popularity set
 UPDATE tranches_pretes tp
