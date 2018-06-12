@@ -97,7 +97,7 @@ class Edge {
              class="tranche"
              name="<?=$this->pays?>/<?=$this->magazine?>.<?=$this->numero_reference?>"
              id="<?=$this->pays?>/<?=$this->magazine?>.<?=$this->numero?>"
-             <?=$small ? 'onload="this.height*=0.67;this.onload=null"' : '' ?>
+             <?=$small ? 'onload="this.height*=0.75;this.onload=null"' : '' ?>
         /><?php
         return ob_get_clean();
 	}
