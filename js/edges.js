@@ -1,16 +1,7 @@
-var tranche_en_cours;
 var tranche_bib;
-var current_couv;
-var hauteur_image;
 var action_en_cours=false;
 var couverture_ouverte=false;
-var ouvrirApres=false;
 var largeur_section;
-var couverture;
-var ouverture_couverture;
-var extraits;
-var extrait_courant;
-var chargement_extrait=false;
 var noms_magazines = [];
 var textures;
 var popularite_numeros = [];
@@ -26,358 +17,34 @@ var l10n_recherche = [
 ];
 
 function ouvrir_tranche() {
-    if (action_en_cours || extrait_courant>0)
-        return;
     jQuery('.popover').popover('destroy');
     jQuery('.fleche_position').remove();
 
-    extraits=[];
-    extrait_courant=-1;
-    ouverture_couverture=true;
-    if (couverture_ouverte && tranche_bib !== tranche_en_cours) {
-        ouvrirApres=true;
-        fermer();
-        return;
-    }
-    jQuery('#infobulle').remove();
-    action_en_cours=true;
-    var infos=getInfosNumero(tranche_bib.attr('id'));
-    hauteur_image=tranche_bib.height();
-    couverture=jQuery('<img>');
-    tranche_en_cours=tranche_bib.clone(true);
-    tranche_en_cours.css({
-        zIndex:500,
-        position: 'absolute',
-        left: getScreenCenterX()+'px',
-        top: (getScreenCenterY()-hauteur_image/2)+'px',
-        opacity: 0
-    });
-    jQuery('#bibliotheque').append(tranche_en_cours);
-    new Effect.Parallel([
-        new Effect.Opacity(tranche_bib[0],{from: 1, to: 0, sync: true}),
-        new Effect.Opacity(tranche_en_cours[0], {from: 0, to: 1, sync:true})
-    ], {
-        duration: 0.5,
-        afterFinish:function() {
-            jQuery('#bibliotheque').append(
-                jQuery('<div>',{id:'animation'})
-                    .css({
-                        position: 'absolute',
-                        left:getScreenCenterX()+'px',
-                        top:(getScreenCenterY()-hauteur_image/2)+'px',
-                        zIndex:600
-                    })
-                    .append(
-                        jQuery('<img>',{src:'loading.gif'})
-                    )
-            );
-        }});
-
-    jQuery
-        .post('Inducks.class.php', {
-            get_cover: 'true',
-            debug: debug,
-            pays: infos.Pays,
-            magazine: infos.Magazine,
-            numero: infos.Numero
-        })
+    jQuery.post('Inducks.class.php', {
+        get_cover: 'true',
+        debug: debug,
+        pays: infos.Pays,
+        magazine: infos.Magazine,
+        numero: infos.Numero
+    })
         .done(function (data) {
             jQuery('#infobulle').remove();
             if (data) {
-                couverture_ouverte = true;
-                var i = 0;
+                var i = 0,
+                    extraits = [];
                 while (data[i]) {
                     extraits[i] = data[i];
                     i++;
                 }
-                couverture.attr({src: data.cover});
-                current_couv = jQuery('<div>', {id: 'page_droite_avant'})
-                    .css({
-                        position: 'absolute',
-                        height: hauteur_image + 'px',
-                        width: (couverture.width() * (hauteur_image / couverture.height())) + 'px',
-                        display: 'none',
-                        left: (getScreenCenterX() + tranche_en_cours.width()) + 'px',
-                        top: (getScreenCenterY() - hauteur_image / 2) + 'px'
-                    })
-                    .addClass('page_avant');
-                var current_couv_im = jQuery('<img>', {
-                    id: 'page_droite_avant_im',
-                    src: couverture.attr('src'),
-                    height: '100%',
-                    width: (couverture.width() * (hauteur_image / couverture.height())) + 'px'
-                })
-                    .on('click', fermer_tranche)
-                    .on('load', function () {
-                        current_couv.css({width: (couverture.width() * (hauteur_image / couverture.height())) + 'px'});
-                        if (ouverture_couverture) {
-                            tranche_en_cours.css({
-                                width: tranche_en_cours.width()+ 'px',
-                                height: tranche_en_cours.height()+ 'px'
-                            });
-                            new Effect.Parallel([
-                                new Effect.Morph(current_couv[0], {
-                                    width: (couverture.width() / (hauteur_image / couverture.height())) + 'px',
-                                    sync: true
-                                }),
-                                new Effect.BlindRight(current_couv[0], {sync: true}),
-                                new Effect.Move(current_couv[0], {
-                                    mode: 'absolute',
-                                    x: getScreenCenterX(),
-                                    y: getScreenCenterY() - hauteur_image / 2,
-                                    sync: true
-                                }),
-                                new Effect.BlindLeft(tranche_en_cours[0], {sync: true})
-                            ], {
-                                duration: 1,
-                                afterFinish: function () {
-                                    ouverture_couverture = false;
-                                    jQuery('#animation').remove();
 
-                                    if (extraits.length > 0 && !jQuery('#lien_apercus').length) {
-                                        creer_div_apercus();
-                                    }
-                                }
-                            });
-                            jQuery('#animation').remove();
-                            action_en_cours = false;
-                        }
-                    });
-                current_couv.html(current_couv_im.html());
-                jQuery('#body').append(current_couv);
+                hideBook(null, function() {
+                    loadBook(
+                        [{page: -100, url: data.cover}].concat(extraits),
+                        tranche_bib
+                    );
+                });
             }
         });
-}
-
-function fermer_tranche() {
-    ouvrirApres=false;
-    fermer();
-}
-
-function creer_div_apercus() {
-    var page_suivante=jQuery('<div>',{id: 'page_suivante'})
-        .css({
-            left: (getScreenCenterX()+jQuery('#page_droite_avant_im').width())+'px',
-            top: getScreenCenterY()+'px'})
-        .addClass('lien_apercus');
-
-    var page_gauche_arriere=jQuery('<div>', {id: 'page_gauche_arriere'})
-        .css({
-            position: 'absolute',
-            display: 'block',
-            width: getLargeur(),
-            height: hauteur_image+'px',
-            right: getScreenCenterX()+'px',
-            top: (getScreenCenterY()-hauteur_image/2)+'px'})
-        .addClass('page_arriere');
-
-    var page_gauche_avant=jQuery('<div>', {id: 'page_gauche_avant'})
-                    .css({position: 'absolute',display: 'block',width: '0px',height: hauteur_image+'px',
-                               right: getScreenCenterX()+'px',top: (getScreenCenterY()-hauteur_image/2)+'px'})
-                    .addClass('page_avant');
-
-    var page_droite_arriere=jQuery('<div>', {id: 'page_droite_arriere'})
-        .css({
-            position: 'absolute',
-            display: 'block',
-            width: getLargeur(),
-            height: hauteur_image+'px',
-            left: getScreenCenterX()+'px',
-            top: (getScreenCenterY()-hauteur_image/2)+'px'})
-        .addClass('page_arriere');
-
-    jQuery('#body')
-        .append(page_suivante)
-        .append(page_gauche_arriere).append(page_gauche_avant)
-        .append(page_droite_arriere);
-    page_suivante.on('click',function() {
-        if (chargement_extrait)
-            return;
-        chargement_extrait=true;
-        if (extrait_courant>=extraits.length) {
-            back_to_cover();
-        }
-        else {
-            if (extraits[extrait_courant].page % 2 === 1) { // Page impaire
-                maj_page('page_gauche_arriere','page_invisible');
-                jQuery('#page_gauche_arriere').css({width: '0'});
-                intervertir_page('gauche');
-
-                maj_page('page_droite_arriere',extraits[extrait_courant].url);
-                jQuery('#page_droite_arriere').css({display: 'block'});
-
-                jQuery('#page_droite_arriere_im').on('load',function () {
-                    new Effect.BlindLeft('page_droite_avant',{
-                        duration:0.75,
-                        afterFinish:function() {
-                            new Effect.Morph('page_gauche_avant',{
-                                style: 'width:'+getLargeur()
-                            });
-                            intervertir_page('droite');
-                            jQuery('#page_gauche_avant').on('click',back_to_cover);
-                            jQuery('#page_droite_avant_im').on('click',back_to_cover);
-                            extrait_courant++;
-                            maj_div_apercus();
-                        }
-                    });
-                });
-           }
-           else { //Page paire
-                maj_page('page_gauche_arriere',extraits[extrait_courant].url);
-                jQuery('#page_gauche_arriere_im').css({
-                    height: hauteur_image+'px',
-                    width: '0'
-                });
-                intervertir_page('gauche');
-
-                jQuery('#page_gauche_avant').css({
-                    width: getLargeur()+'px'
-                });
-                maj_page('page_droite_arriere','page_invisible');
-
-                jQuery('#page_droite_arriere').css({display: 'block'});
-
-                jQuery('#page_gauche_avant_im').on('load',function () {
-                    new Effect.Parallel([
-                        new Effect.BlindLeft(jQuery('#page_droite_avant'), {sync:true})
-                    ], {
-                        duration: 0.75,
-                        afterFinish:function() {
-                            new Effect.Morph('page_gauche_avant_im',{
-                                style: 'width:'+getLargeur()
-                            });
-                            intervertir_page('droite');
-
-                            jQuery('#page_gauche_avant_im').on('click',back_to_cover);
-                            jQuery('#page_droite_avant').on('click',back_to_cover);
-                            extrait_courant++;
-                            maj_div_apercus();
-                        }
-                    });
-                });
-            }
-        }
-    });
-    extrait_courant++;
-    maj_div_apercus();
-}
-
-function getLargeur() {
-    return jQuery('#page_droite_avant').css('width')==='0'
-        ?jQuery('#page_droite_arriere').css('width')
-        :jQuery('#page_droite_avant').css('width');
-}
-function intervertir_page(direction) {
-    jQuery('#page_'+direction+'_avant')
-        .attr({id: 'page_'+direction})
-        .addClass('page_arriere')
-        .removeClass('page_avant');
-
-    jQuery('#page_'+direction+'_avant_im')
-        .attr({id: 'page_'+direction+'_im'});
-
-    jQuery('#page_'+direction+'_arriere')
-        .attr({id: 'page_'+direction+'_avant'})
-        .removeClass('page_arriere')
-        .addClass('page_avant');
-
-    jQuery('#page_'+direction+'_arriere_im')
-        .attr({id: 'page_'+direction+'_avant_im'});
-
-    jQuery('#page_'+direction)
-        .attr({id: 'page_'+direction+'_arriere'});
-
-    jQuery('#page_'+direction+'_im')
-        .attr({id: 'page_'+direction+'_arriere_im'});
-}
-
-function maj_page(id_page,maj) {
-    if (maj==='page_invisible') {
-        jQuery('#' + id_page).html('')
-            .addClass('page_invisible');
-    }
-    else {
-        jQuery('#' + id_page)
-            .html(
-                jQuery('<img>',{id: id_page+'_im',src: maj}).html()
-            )
-            .removeClass('page_invisible');
-        if (id_page.indexOf('gauche')!==-1)
-            jQuery('#' + id_page+'_im')
-                .css({
-                    float: 'right'
-                });
-    }
-}
-
-function maj_div_apercus() {
-    if (extrait_courant>=extraits.length)
-        jQuery('#page_suivante').text('Fermer');
-    else
-        jQuery('#page_suivante')
-            .text(extraits[extrait_courant].page<0?'Suivante':'Page '+extraits[extrait_courant].page);
-   chargement_extrait=false;
-}
-
-function back_to_cover() {
-    jQuery('#page_gauche_arriere, #page_suivante').remove();
-
-    maj_page('page_droite_arriere',couverture.attr('src'));
-    jQuery('#page_droite_arriere_im').css({width: '0'});
-    jQuery('#page_droite_arriere').css({display: 'block'});
-    intervertir_page('droite');
-    new Effect.BlindLeft('page_gauche_avant', {
-        afterFinish:function() {
-            jQuery('#page_gauche_avant').remove();
-            new Effect.Morph('page_droite_avant_im',{
-                style:'width:'+getLargeur(),
-                afterFinish:function() {
-                    jQuery('#page_droite_arriere').remove();
-                    jQuery('#page_droite_avant').on('click', fermer_tranche);
-                    extrait_courant=-1;
-                    creer_div_apercus();
-                }
-            });
-        }
-    });
-}
-
-function fermer() {
-    if (action_en_cours || ouverture_couverture)
-        return;
-    action_en_cours=true;
-    jQuery('#page_suivante, #page_gauche_avant, #page_gauche_arriere, #page_droite_arriere').remove();
-    jQuery('#page_droite_avant_im').css({
-        width: getLargeur()
-    });
-    new Effect.Parallel([
-        new Effect.BlindLeft(jQuery('#page_droite_avant')[0], {sync:true}),
-        new Effect.Move(jQuery('#page_droite_avant')[0], {
-            mode: 'absolute',
-            x: (getScreenCenterX()+tranche_bib.width()),
-            y: getScreenCenterY()-hauteur_image/2,
-            sync:true
-        }),
-        new Effect.BlindRight(tranche_en_cours[0], {sync:true})
-    ], {
-        duration: 1,
-        afterFinish:function() {
-            new Effect.Parallel([
-                new Effect.Opacity(tranche_en_cours[0], {from: 1, to: 0, sync:true}),
-                new Effect.Opacity(tranche_bib[0] ,{from: 0, to: 1, sync: true})
-            ], {
-                duration: 0.5,
-                afterFinish:function() {
-                    jQuery('#page_droite_avant').remove();
-                    jQuery('.lien_apercus').remove();
-                    action_en_cours=false;
-                    couverture_ouverte=false;
-                    if (ouvrirApres)
-                        ouvrir_tranche();
-                }
-            });
-        }
-    });
 }
 
 var element_conteneur_bibliotheque;
@@ -401,8 +68,7 @@ function charger_bibliotheque() {
             largeur: largeur_section,
             user_bibliotheque: user_bibliotheque,
             cle_bibliotheque: cle_bibliotheque
-        },
-        function(response) {
+        }).done(function(response) {
             if (!!response.erreur) {
                 conteneur.html(response.erreur);
             }
@@ -431,13 +97,12 @@ function charger_bibliotheque() {
                     });
                 jQuery('#titre_bibliotheque').text(response.titre);
                 jQuery('#pcent_visible').text(response.nb_numeros_visibles);
-                jQuery('#pourcentage_collection_visible').removeClass('cache');
-                var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
-                element_conteneur_bibliotheque = element_bibliotheque;
-                charger_tranche(premiere_tranche);
-            }
-        }
-    );
+				jQuery('#pourcentage_collection_visible').removeClass('cache');
+				var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
+				element_conteneur_bibliotheque = element_bibliotheque;
+				charger_tranche(premiere_tranche);
+			}
+		});
 }
 
 function ajouter_etagere(afterElement) {
@@ -453,8 +118,9 @@ function ajouter_etagere(afterElement) {
 }
 
 function charger_tranche(tranche) {
-    tranche.on('load',charger_tranche_suivante);
-    tranche.on('error',charger_tranche_suivante);
+    tranche
+        .on('load',charger_tranche_suivante)
+        .on('error',charger_tranche_suivante);
 
     var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
     var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
@@ -537,29 +203,26 @@ function charger_points_utilisateur(callback) {
     );
 }
 
-var zone_proposition_photos;
-
 function afficher_lien_partage() {
-    zone_proposition_photos = jQuery('#partager_bibliotheque');
-    zone_proposition_photos.removeClass('cache');
-    jQuery('#partager_bibliotheque_lien').on('click', function() {
-        zone_proposition_photos.addClass('cache');
-        jQuery.post(
-            'Edge.class.php',
-            {partager_bibliotheque: 'true'},
-            function (response) {
-                zone_proposition_photos
-                    .html(response)
-                    .removeClass('cache');
+	var zone_proposition_photos = jQuery('#partager_bibliotheque');
+	zone_proposition_photos.removeClass('cache');
+	jQuery('#partager_bibliotheque_lien').on('click', function() {
+		zone_proposition_photos.addClass('cache');
+		jQuery.post('Edge.class.php', {
+			data: {partager_bibliotheque: 'true'}
+        })
+        .done(function (response) {
+            zone_proposition_photos
+                .html(response)
+                .removeClass('cache');
 
-                var a = document.createElement('script');
-                a.type = 'text/javascript';
-                a.async = true;
-                a.src = '//static.addtoany.com/menu/page.js';
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(a, s);
-            }
-        );
+            var a = document.createElement('script');
+            a.type = 'text/javascript';
+            a.async = true;
+            a.src = '//static.addtoany.com/menu/page.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(a, s);
+        });
     });
 }
 
@@ -931,14 +594,6 @@ function getInfosNumero (edgeId) {
         Nom_magazine: noms_magazines[pays__magazine_numero[0] + '/' + magazine_numero[0].toUpperCase()] || '',
         Numero: magazine_numero[1]
     };
-}
-
-function getScreenCenterY() {
-    return jQuery('#body').offset().top + jQuery(window).height()/2;
-}
-
-function getScreenCenterX() {
-    return jQuery('#body').offset().left + jQuery(window).height()/2;
 }
 
 function getPopulariteNumero(data) {

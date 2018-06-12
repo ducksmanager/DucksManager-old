@@ -1,14 +1,21 @@
 version: '2'
 services:
   web:
-    extends:
-      file: docker-compose.yml
-      service: web
+    container_name: ducksmanager
+    build: .
+    ports:
+     - "8000:80"
     volumes:
-     - .:/var/www/html/DucksManager
-     - ../EdgeCreator:/var/www/html/EdgeCreator
-     - ./php.xdebug.ini:/usr/local/etc/php/php.ini
+     - .:/var/www/html
+     - ./php.xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    networks:
+      - dmserver_default
   db_dm:
     extends:
       file: docker-compose.yml
       service: db_dm
+    volumes:
+     - ./schema-populated.sql.gz:/docker-entrypoint-initdb.d/schema-populated.sql.gz:ro
+networks:
+  dmserver_default:
+    external: true

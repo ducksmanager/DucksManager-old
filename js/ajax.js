@@ -369,19 +369,18 @@ function afficher_numeros(pays,magazine, numero) {
 		}
 	}
 
-	if (jQuery('#liste_numeros').length) {
-        jQuery.post(
-            'Database.class.php',
-            {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
-            function(response) {
+	if (jQuery('liste_numeros').length) {
+        jQuery.post('Database.class.php', {
+           data: {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
+           success:function(response) {
                 jQuery('#liste_numeros').html(response);
                 init_observers_gerer_numeros();
                 numero = numero || location.hash;
                 if (numero) {
                     indiquer_numero(jQuery('#liste_numeros').find('[name="'+numero.replace(/#/,'')+'"]')[0].parent(), ['gauche']);
                 }
-            }
-        );
+           }
+        });
     }
     else if (numero) {
 		location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
