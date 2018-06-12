@@ -512,7 +512,7 @@ function action_onclick(proto,e) {
 	                jQuery(this).removeClass('selected');
                 });
                 jQuery('a:not([name^=etat])').each(function() {
-                    if (!(jQuery(this)).hasClass('save'))) {
+                    if (!(jQuery(this)).hasClass('save')) {
 		                jQuery(this)
                             .removeClass('enabled')
                             .addClass('disabled');
