@@ -39,7 +39,7 @@ SET points = (
   FROM numeros_popularite np
   WHERE
     np.Pays = SUBSTRING(tp.publicationcode, 1, POSITION('/' IN tp.publicationcode) - 1) AND
-    np.Magazine = SUBSTRING(tp.publicationcode, -POSITION('/' IN tp.publicationcode)) AND
+    np.Magazine = SUBSTRING(tp.publicationcode, POSITION('/' IN tp.publicationcode) + 1) AND
     np.Numero = tp.issuenumber
 )
 WHERE points IS NULL;
