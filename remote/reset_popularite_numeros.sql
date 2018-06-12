@@ -20,7 +20,7 @@ INSERT INTO numeros_popularite(Pays,Magazine,Numero,Popularite)
   SELECT DISTINCT
     n.Pays,
     n.Magazine,
-    REPLACE(n.Numero, ' ', '')
+    REPLACE(n.Numero, ' ', ''),
     COUNT(*) AS Popularite
   FROM numeros n
   WHERE
