@@ -92,7 +92,14 @@ class Edge {
 	}
 	
 	function getImgHTML($small) {
-		return '<img data-edge="'.($this->est_visible ? 1 : 0).'" class="tranche'.($small ? ' petite' : '').'" name="'.$this->pays.'/'.$this->magazine.'.'.$this->numero_reference.'" id="'.$this->pays.'/'.$this->magazine.'.'.$this->numero.'"/>';
+        ob_start();
+        ?><img data-edge="<?=$this->est_visible ? 1 : 0?>"
+             class="tranche"
+             name="<?=$this->pays?>/<?=$this->magazine?>.<?=$this->numero_reference?>"
+             id="<?=$this->pays?>/<?=$this->magazine?>.<?=$this->numero?>"
+             <?=$small ? 'onload="this.height*=0.67;this.onload=null"' : '' ?>
+        /><?php
+        return ob_get_clean();
 	}
 
     static function getPointsPhotographeAGagner($id_user){
