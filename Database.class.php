@@ -817,21 +817,13 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['liste_achats'])) {
 		$id_user=$_SESSION['id_user'];
 		$liste_achats=DM_Core::$d->requete_select("SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User=$id_user ORDER BY Date DESC");
-		$tab_achats=[];
-		foreach ($liste_achats as $achat) {
-			$id_achat=$achat['ID_Acquisition'];
-			if ($_POST['continue'] !== -1) {
-			 	if ($_POST['continue']===$id_achat) {
-					$_POST['continue'] = -1;
-				}
-				else { continue; }
-			}
-			$tab_achats[]= [
-			        'id' => $id_achat,
-			        'description' => $achat['Description'],
-			        'date' => $achat['Date']
+		$tab_achats=array_map(function($achat) {
+		    return [
+                'id' => $achat['ID_Acquisition'],
+                'description' => $achat['Description'],
+                'date' => $achat['Date']
             ];
-		}
+        }, $liste_achats);
         header('Content-Type: application/json');
 		echo json_encode($tab_achats);
 	}
