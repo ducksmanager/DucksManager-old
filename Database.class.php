@@ -119,7 +119,7 @@ class Database {
 		}
 		return true;
 	}
-	
+
 	function maintenance_ordre_magazines($id_user) {
 		$requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
 		$resultat_get_max_ordre=DM_Core::$d->requete_select($requete_get_max_ordre);
@@ -168,7 +168,7 @@ class Database {
 
 	function liste_numeros_externes_dispos($id_user) {
 		$resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
-		
+
 		$requete_ventes_utilisateurs = 'SELECT users.ID, users.username, numeros.Pays, numeros.Magazine, numeros.Numero '
 									  .'FROM users '
 									  .'INNER JOIN numeros ON users.ID = numeros.ID_Utilisateur '
@@ -218,7 +218,7 @@ class Database {
 		    echo AUCUN_NUMERO_PROPOSE;
 		}
 	}
-	
+
 	function bloc_envoi_message_achat_vente($username) {
 		date_default_timezone_set('Europe/Paris');
 
@@ -246,7 +246,7 @@ class Database {
 						    $email_vendeur=$resultat['Email'];
 						}
 					}
-					
+
 					$entete = "MIME-Version: 1.0\r\n";
 					$entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
 					$entete .= "To: ".$username." <".$email_vendeur.">\r\n";
@@ -283,7 +283,7 @@ class Database {
 			}
 		}
 	}
-	
+
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
 		if ($etat==='possede') { $etat='indefini'; }
 
@@ -366,7 +366,7 @@ class Database {
 	}
 
 	function toList($id_user=false) {
-		
+
 			$requete='SELECT DISTINCT Pays, Magazine,Numero,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros ';
 			if ($id_user!==false) {
 			    $requete.='WHERE (ID_Utilisateur='.$id_user.') ';
@@ -390,7 +390,7 @@ class Database {
 			}
 			return $l;
 	}
-	
+
 	function ajouter_auteur($idAuteur,$nomAuteur) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_auteurs_surveilles="
@@ -435,14 +435,14 @@ class Database {
             </ul><?php
 		}
 	}
-	
+
 	function get_notes_auteurs($id_user) {
 		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat = \'0000-00-00\'');
 	}
-	
+
 	function modifier_note_auteur($auteur, $note) {
         $id_user=$this->user_to_id($_SESSION['user']);
-        
+
         $requete_notation="
           UPDATE auteurs_pseudos
           SET Notation=$note
@@ -464,7 +464,7 @@ class Database {
 		}
 		return $l_magazine;
 	}
-	
+
 	function est_utilisateur_vendeur_sans_email() {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete='SELECT 1 FROM users '
@@ -472,7 +472,7 @@ class Database {
 				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
 		return count($this->requete_select($requete)) === 1;
 	}
-	
+
 	function get_niveaux() {
 		$id_user=$this->user_to_id($_SESSION['user']);
 
@@ -495,7 +495,7 @@ class Database {
             'Duckhunter' => (int) $resultat_nb_bouquineries[0]['cpt']
         ]);
 	}
-	
+
 	function get_evenements_recents() {
 		$limite_evenements = 20;
 
@@ -517,7 +517,7 @@ class Database {
 			ajouter_evenement(
 				$evenements->evenements, [], $inscription['DiffSecondes'], 'inscriptions', $inscription['ID']);
 		}
-		
+
 		/* Ajouts aux collections */
 		$evenements->publicationcodes = [];
 		$requete='SELECT users.ID AS ID_Utilisateur,
@@ -536,19 +536,19 @@ class Database {
 		foreach($resultat_derniers_ajouts as $ajout) {
 			preg_match('#([^/]+/[^/]+)#', $ajout['NumeroExemple'], $publicationcode);
 			$evenements->publicationcodes[]=$publicationcode[0];
-			
+
 			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
 			$numero_complet=['Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero];
-			
+
 			$evenement = [
 			        'numero_exemple'=>$numero_complet,
 			        'cpt'		    =>(int) $ajout['cpt']-1
             ];
-			
+
 			ajouter_evenement(
 				$evenements->evenements, $evenement, $ajout['DiffSecondes'], 'ajouts', $ajout['ID_Utilisateur']);
 		}
-		
+
 		/* Propositions de bouquineries */
 		$requete_bouquineries='SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes FROM bouquineries
 							   WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
@@ -559,7 +559,7 @@ class Database {
 			ajouter_evenement(
 					$evenements->evenements, $evenement, $bouquinerie['DiffSecondes'], 'bouquineries', $bouquinerie['ID_Utilisateur']);
 		}
-		
+
 		/* Ajouts de tranches */
 		$requete_tranches= "
             SELECT publicationcode, issuenumber, GROUP_CONCAT(contributeur) AS collaborateurs, DATE(dateajout) DateAjout,
@@ -607,7 +607,7 @@ class Database {
 
 		$evenements->publicationcodes = array_unique($evenements->publicationcodes);
 		ksort($evenements->evenements);
-		
+
 		$evenements_slice=[];
 		$cpt=0;
 
@@ -633,7 +633,7 @@ class Database {
 					$cpt++;
 				}
 				$evenements_slice[$diff_secondes]->$type=$evenements_slice_type;
-			}	
+			}
 		}
 
 		$evenements->ids_utilisateurs=$tous_id_utilisateurs;
@@ -826,24 +826,15 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['liste_achats'])) {
 		$id_user=$_SESSION['id_user'];
-		$liste_achats=DM_Core::$d->requete_select('SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC');
-		$tab_achats=[];
-		$cpt_strlen=0;
-		foreach ($liste_achats as $achat) {
-			$id_achat=$achat['ID_Acquisition'];
-			if ($_POST['continue'] !== -1) {
-			 	if ($_POST['continue']===$id_achat) {
-					$_POST['continue'] = -1;
-				}
-				else { continue; }
-			}
-			$o_achat=new stdClass();
-			$o_achat->id=$id_achat;
-			$o_achat->description=$achat['Description'];
-			$o_achat->date=$achat['Date'];
-			$tab_achats[]=$o_achat;
-			$cpt_strlen+=strlen(json_encode($o_achat));
-		}
+		$liste_achats=DM_Core::$d->requete_select("SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User=$id_user ORDER BY Date DESC");
+		$tab_achats=array_map(function($achat) {
+		    return [
+                'id' => $achat['ID_Acquisition'],
+                'description' => $achat['Description'],
+                'date' => $achat['Date']
+            ];
+        }, $liste_achats);
+        header('Content-Type: application/json');
 		echo json_encode($tab_achats);
 	}
 	else if (isset($_POST['liste_etats'])) {
@@ -852,7 +843,7 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['liste_notations'])) {
 		$id_user=$_SESSION['id_user'];
 		$resultat_notations=DM_Core::$d->get_notes_auteurs($id_user);
-		
+
         header('Content-Type: application/json');
 		echo json_encode($resultat_notations);
 	}
@@ -906,7 +897,7 @@ function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evene
 	}
 	$evenements_type=$evenements[$diff_secondes]->$type_evenement;
 	$evenements_type[]=json_decode(json_encode($evenement));
-	
+
 	$evenements[$diff_secondes]->$type_evenement = $evenements_type;
 }
 ?>
