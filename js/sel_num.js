@@ -44,13 +44,12 @@ function stop_selection(sel) {
 
 	selected.toggleClass('num_checked').removeClass('half_transparent');
 
-	var nb_numeros_sel = num_elements.filter('.num_checked').length;
-    jQuery('#nb_selection').text(nb_numeros_sel);
-    jQuery('#numero_selectionne'  ).toggle(nb_numeros_sel<=1);
-    jQuery('#numeros_selectionnes').toggle(nb_numeros_sel> 1);
-    jQuery('#update_menu').toggleClass('shown', nb_numeros_sel > 0);
-
     debut_selection=null;
+}
+
+function update_nb_numeros_selectionnes() {
+    var nb_numeros_sel = jQuery('.num_wrapper').filter('.num_checked').length;
+    jQuery('.data-context-menu-title').attr('data-menutitle',nb_numeros_sel + ' ' + (nb_numeros_sel >= 1 ? l10n_gerer['numeros_selectionnes'] : l10n_gerer['numero_selectionne']));
 }
 
 function changer_affichage(type_numeros) {

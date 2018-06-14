@@ -2,7 +2,8 @@ var nom_magazine_old="";
 var pays_sel=null;
 var magazine_sel=null;
 var myMenuItems;
-var tab_achats=[];
+var liste_achats=[];
+var l10n_gerer;
 
 var isMobile = window.matchMedia("only screen and (max-width: 767px)");
 
@@ -13,36 +14,94 @@ function charger_menu() {
 }
 
 function init_observers_gerer_numeros() {
-	get_achats(-1);
+
+    l10n_gerer = [
+        'numero_selectionne', 'numeros_selectionnes',
+        'achat', 'conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
+        'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
+        'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
+        'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
+        'enregistrer_changements'];
+    l10n_action('fillArray',l10n_gerer, 'l10n_gerer', function() {
+        init_menu_contextuel();
+        init_observers_numeros();
+        init_observers_previews();
+        // maj_liste_achats();
+    });
 }
 
-function get_achats(continue_id) {
+function init_observers_numeros() {
+    jQuery('.num_wrapper')
+        .mouseover(function () {
+            jQuery('.survole').removeClass('survole');
+            lighten(jQuery(this).closest('.num_wrapper'));
+        })
+        .mouseout(function () {
+            unlighten(jQuery(this).closest('.num_wrapper'));
+            jQuery('.num').popover('hide');
+        })
+        .mouseup(function (event) {
+            if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+                stop_selection(jQuery(this).closest('.num_wrapper'));
+                event.stopPropagation();
+            }
+        })
+        .mousedown(function (event) {
+            if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
+                start_selection(jQuery(this).closest('.num_wrapper'));
+            }
+        })
+        .mousemove(function () {
+            pre_select(jQuery(this).closest('.num_wrapper'));
+        });
+}
+
+function init_observers_previews() {
+    jQuery('.preview').click(function(event) {
+        var element = jQuery(this);
+        element.attr({src: 'loading.gif'});
+
+        var numero_wrapper = element.closest('.num_wrapper');
+        if (numero_wrapper.data('cover')) {
+            maj_image(numero_wrapper, numero_wrapper.data('cover'));
+            element.attr({src: 'images/icones/view.png'});
+        }
+        else {
+            jQuery.post('Inducks.class.php', {
+                get_cover: 'true',
+                debug: debug,
+                pays: jQuery('#pays').text(),
+                magazine: jQuery('#magazine').text(),
+                numero: numero_wrapper.attr('title')
+            })
+                .done(function (data) {
+                    maj_image(numero_wrapper, data && data.cover);
+                })
+                .fail(function () {
+                    maj_image(numero_wrapper, null);
+                })
+                .always(function() {
+                    element.attr({src: 'images/icones/view.png'});
+                });
+        }
+        event.stopPropagation();
+    });
+}
+
+function get_achats() {
     jQuery.post(
         'Database.class.php',
-        {database: 'true', liste_achats: 'true', continue: continue_id},
+        {database: 'true', liste_achats: 'true'},
         function (achats_courants) {
-	        var arr_l10n = ['conserver_etat_actuel', 'marquer_non_possede', 'marquer_possede',
-		        'marquer_mauvais_etat', 'marquer_etat_moyen', 'marquer_bon_etat',
-		        'conserver_date_achat', 'desassocier_date_achat', 'associer_date_achat', 'nouvelle_date_achat',
-		        'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
-		        'enregistrer_changements'];
-	        l10n_action('remplirSpanName', arr_l10n);
-
-	        var l10n_achats = ['achat'];
-	        l10n_action('fillArray',l10n_achats, 'l10n_achats');
 
 	        for (var i = 0; i < achats_courants.length; i++) {
-                if (achats_courants[i]['continue']) {
-                    get_achats(achat['id']);
-                    return;
-                }
                 var achat = jQuery.extend({}, achats_courants[i], {
-	                name: l10n_achats.achat + ' "' + achats_courants[i].description + '"<br />' + achats_courants[i].date,
+	                name: l10n_gerer.achat + ' "' + achats_courants[i].description + '"<br />' + achats_courants[i].date,
 	                className: 'date2',
 	                groupName: 'achat',
 	                selected: false
                 });
-                tab_achats.push(achat);
+                liste_achats.push(achat);
             }
             myMenuItems = [
                 {
@@ -110,60 +169,6 @@ function get_achats(continue_id) {
                     menuItems: myMenuItems
                 });
             }
-
-            jQuery('.num_wrapper')
-                .mouseover(function () {
-                    jQuery('.survole').removeClass('survole');
-                    lighten(jQuery(this).closest('.num_wrapper'));
-                })
-                .mouseout(function () {
-                    unlighten(jQuery(this).closest('.num_wrapper'));
-                    jQuery('.num').popover('hide');
-                })
-                .mouseup(function (event) {
-                    if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
-                        stop_selection(jQuery(this).closest('.num_wrapper'));
-                        event.stopPropagation();
-                    }
-                })
-                .mousedown(function (event) {
-                    if (isLeftClick(event) && !jQuery(event.target).hasClass('preview')) {
-                        start_selection(jQuery(this).closest('.num_wrapper'));
-                    }
-                })
-                .mousemove(function () {
-                    pre_select(jQuery(this).closest('.num_wrapper'));
-                });
-
-            jQuery('.preview').click(function(event) {
-                var element = jQuery(this);
-                element.attr({src: 'loading.gif'});
-
-                var numero_wrapper = element.closest('.num_wrapper');
-                if (numero_wrapper.data('cover')) {
-                    maj_image(numero_wrapper, numero_wrapper.data('cover'));
-                    element.attr({src: 'images/icones/view.png'});
-                }
-                else {
-                    jQuery.post('Inducks.class.php', {
-                        get_cover: 'true',
-                        debug: debug,
-                        pays: jQuery('#pays').text(),
-                        magazine: jQuery('#magazine').text(),
-                        numero: numero_wrapper.attr('title')
-                    })
-                        .done(function (data) {
-                            maj_image(numero_wrapper, data && data.cover);
-                        })
-                        .fail(function () {
-                            maj_image(numero_wrapper, null);
-                        })
-                        .always(function() {
-                            element.attr({src: 'images/icones/view.png'});
-                        });
-                }
-                event.stopPropagation();
-            });
         }
     );
 }
@@ -369,18 +374,20 @@ function afficher_numeros(pays,magazine, numero) {
 		}
 	}
 
-	if (jQuery('liste_numeros').length) {
-        jQuery.post('Database.class.php', {
-           data: {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
-           success:function(response) {
-                jQuery('#liste_numeros').html(response);
+	var liste_numeros = jQuery('#liste_numeros');
+    if (liste_numeros.length) {
+        jQuery.post(
+            'Database.class.php',
+            {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
+            function(response) {
+                liste_numeros.html(response);
                 init_observers_gerer_numeros();
                 numero = numero || location.hash;
                 if (numero) {
-                    indiquer_numero(jQuery('#liste_numeros').find('[name="'+numero.replace(/#/,'')+'"]')[0].parent(), ['gauche']);
+                    indiquer_numero(liste_numeros.find('[name="'+numero.replace(/#/,'')+'"]')[0].parent(), ['gauche']);
                 }
-           }
-        });
+            }
+        );
     }
     else if (numero) {
 		location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);

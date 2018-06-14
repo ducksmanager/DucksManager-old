@@ -88,7 +88,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="stylesheet" type="text/css" href="css/stats.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/starbox.css?VERSION" />
         <link rel="stylesheet" type="text/css" href="css/menu.css?VERSION" />
-        <link rel="stylesheet" href="css/protomenu.css?VERSION" type="text/css" media="screen">
         <?php
         foreach($locales as $nom_langue=>$nouvelle_url) {
             ?><link rel="alternate" hreflang="<?=$nom_langue?>" href="<?=$nouvelle_url?>" /><?php
@@ -182,7 +181,10 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
 			switch($_GET['action']) {
                 case 'gerer':
-                    ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script><?php
+                    ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script>
+                    <link rel="stylesheet" type="text/css" href="css/menu_contextuel.css?VERSION" />
+                    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.js"></script>
+                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.css"><?php
                 break;
                 case 'bouquineries':
                     ?>
