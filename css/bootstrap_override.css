@@ -43,6 +43,10 @@ label {
     margin-bottom: inherit;
 }
 
+.datepicker {
+    color: black;
+}
+
 .popover {
     max-width: inherit;
     color: black;
