@@ -55,7 +55,7 @@ a.important:HOVER {
 }
 
 .cache {
-	display: none;
+	display: none !important;
 }
 
 .nowrap {

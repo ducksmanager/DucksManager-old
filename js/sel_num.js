@@ -48,8 +48,12 @@ function stop_selection(sel) {
     debut_selection=null;
 }
 
+function get_nb_numeros_selectionnes() {
+    return jQuery('.num_wrapper').filter('.num_checked').length;
+}
+
 function update_nb_numeros_selectionnes() {
-    var nb_numeros_sel = jQuery('.num_wrapper').filter('.num_checked').length;
+    var nb_numeros_sel = get_nb_numeros_selectionnes();
     jQuery('.data-context-menu-title').attr('data-menutitle',nb_numeros_sel + ' ' + (nb_numeros_sel >= 1 ? l10n_gerer['numeros_selectionnes'] : l10n_gerer['numero_selectionne']));
 }
 

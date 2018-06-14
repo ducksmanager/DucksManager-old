@@ -34,22 +34,25 @@ function init_menu_contextuel() {
             className: 'new_purchase',
             isHtmlName: true,
             name:
-            'New purchase<span>' +
-            jQuery('<span>').append(
-                jQuery('<form>').addClass('new_purchase cache')
-                    .append(jQuery('<input>', {type: 'text', size: 30, maxlength: 30, placeholder: 'Purchase title'}))
-                    .append(jQuery('<input>', {type: 'text', size: 30, maxlength: 10}).val(moment().format('YYYY-MM-DD')))
-                    .append(jQuery('<input>', {type: 'submit'}).val('OK'))
-                    .append(jQuery('<button>').addClass('cancel').text('Annuler'))
-            ).html()
-            +'</span>',
+                jQuery('<span>')
+                    .append(
+                        jQuery('<h5>').text('Create purchase')
+                    )
+                    .append(
+                        jQuery('<form>').addClass('new_purchase cache')
+                            .append(jQuery('<input>', {name: 'title', type: 'text', size: 30, maxlength: 30, placeholder: 'Purchase title'}).addClass('form-control'))
+                            .append(jQuery('<input>', {name: 'date', type: 'text', size: 30, maxlength: 10, placeholder: 'Purchase date', readonly: 'readonly'}).addClass('form-control'))
+                            .append(jQuery('<input>', {type: 'submit'}).addClass('btn').val('OK'))
+                            .append(jQuery('<button>').addClass('btn cancel').text('Annuler'))
+                ).html(),
             callback: onCreatePurchaseClick
         }
     };
     jQuery.each(liste_achats, function(i, purchase) {
         purchase_items['date_' + purchase.id] = {
             isHtmlName: true,
-            name: '<span>'+([purchase.title, purchase.date].join('<br />')) + '</span>'
+            icon: 'date_link_small',
+            name: '<div>'+(['<b>'+purchase.description+'</b>', purchase.date].join('<br />')) + '</div>'
         };
     });
 
@@ -74,6 +77,9 @@ function init_menu_contextuel() {
         sep3: "---------",
         save: {name: "Save changes", icon: "save", className: "save"}
     };
+    jQuery.each(items, function(i, item) {
+        item.disabled = function() { return get_nb_numeros_selectionnes() === 0 }
+    });
 
     jQuery.contextMenu({
         selector: '#liste_numeros',
@@ -82,9 +88,17 @@ function init_menu_contextuel() {
         items: items
     });
 
-    jQuery('form.new_purchase')
-        .on('submit', onSubmitNewPurchaseClick)
-        .find('.cancel').on('click', onCancelNewPurchaseClick);
+    var new_purchase_container = jQuery('form.new_purchase');
+
+    new_purchase_container.on('submit', onSubmitNewPurchaseClick);
+    new_purchase_container.find('.cancel').on('click', onCancelNewPurchaseClick);
+    new_purchase_container.find('[name="date"]').datepicker({
+        format: "yyyy-mm-dd",
+        keyboardNavigation: false,
+        maxViewMode: 2,
+        autoclose: true,
+        language: locale === 'fr' ? 'fr' : 'en-GB'
+    });
 
     update_nb_numeros_selectionnes();
 }

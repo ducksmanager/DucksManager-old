@@ -23,10 +23,11 @@ function init_observers_gerer_numeros() {
         'conserver_volonte_vente', 'marquer_a_vendre', 'marquer_pas_a_vendre',
         'enregistrer_changements'];
     l10n_action('fillArray',l10n_gerer, 'l10n_gerer', function() {
-        init_menu_contextuel();
-        init_observers_numeros();
-        init_observers_previews();
-        // maj_liste_achats();
+        get_achats(function() {
+            init_menu_contextuel();
+            init_observers_numeros();
+            init_observers_previews();
+        })
     });
 }
 
@@ -88,87 +89,13 @@ function init_observers_previews() {
     });
 }
 
-function get_achats() {
+function get_achats(callback) {
     jQuery.post(
         'Database.class.php',
         {database: 'true', liste_achats: 'true'},
         function (achats_courants) {
-
-	        for (var i = 0; i < achats_courants.length; i++) {
-                var achat = jQuery.extend({}, achats_courants[i], {
-	                name: l10n_gerer.achat + ' "' + achats_courants[i].description + '"<br />' + achats_courants[i].date,
-	                className: 'date2',
-	                groupName: 'achat',
-	                selected: false
-                });
-                liste_achats.push(achat);
-            }
-            myMenuItems = [
-                {
-                    separator: true
-                }, {
-                    className: 'non_marque',
-                    groupName: 'etat_conserver_etat_actuel',
-                    selected: true
-                }, {
-                    className: 'non_possede',
-                    groupName: 'etat_marquer_non_possede'
-                }, {
-                    className: 'possede',
-                    groupName: 'etat_marquer_possede'
-                }, {
-                    className: 'mauvais',
-                    groupName: 'etat_marquer_mauvais_etat'
-                }, {
-                    className: 'moyen',
-                    groupName: 'etat_marquer_etat_moyen'
-                }, {
-                    className: 'bon',
-                    groupName: 'etat_marquer_bon_etat'
-                }, {
-                    separator: true
-                }, {
-                    className: 'non_date',
-                    groupName: 'achat_conserver_date_achat',
-                    selected: true
-                }, {
-                    className: 'pas_date',
-                    groupName: 'achat_desassocier_date_achat'
-                }, {
-                    className: 'date',
-                    groupName: 'achat_associer_date_achat',
-                    subMenu: true
-                }
-            ];
-            var myMenuItems2 = [
-                {
-                    separator: true
-                }, {
-                    className: 'non_marque_a_vendre',
-                    groupName: 'vente_conserver_volonte_vente',
-                    selected: true
-                }, {
-                    className: 'a_vendre',
-                    groupName: 'vente_marquer_a_vendre'
-                }, {
-                    className: 'pas_a_vendre',
-                    groupName: 'vente_marquer_pas_a_vendre'
-                }, {
-                    separator: true
-                }, {
-                    className: 'save',
-                    groupName: 'save_enregistrer_changements'
-                }];
-            myMenuItems = myMenuItems.concat(myMenuItems2);
-
-            if (!jQuery('#menu_contextuel')) {
-                new Proto.Menu({
-                    type: 'gestion_numeros',
-                    selector: '#liste_numeros',
-                    className: 'menu desktop',
-                    menuItems: myMenuItems
-                });
-            }
+            liste_achats = achats_courants;
+            callback && callback();
         }
     );
 }

@@ -3,6 +3,10 @@
 	color: white;
 }
 
+.context-menu-list li.context-menu-item.context-menu-disabled {
+    color: #bbb !important;
+}
+
 .context-menu-list li.context-menu-icon {
 	line-height: 20px;
 	padding-top: 3px;
@@ -17,11 +21,15 @@
 	background-color: green !important;
 }
 
-.context-menu-list .new_purchase {
-	font-weight: bold;
+.context-menu-list .context-menu-submenu .context-menu-list {
+	top: -20px !important;
+	max-height: 300px;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase {
+	font-weight: bold;
 	display: block;
 }
 
@@ -73,16 +81,19 @@ body>.context-menu-list>:first-child {
 }
 
 .context-menu-icon-date_link {
-	background-image: url(../images/page_date.png);
+	background-image: url(../images/date.png);
 }
 .context-menu-icon-date_unlink {
-	background-image: url(../images/pas_page_date.png);
+	background-image: url(../images/pas_date.png);
 }
-.context-menu-icon-date2 {
-	background-image: url(../images/page_date_petit.png);
+.context-menu-icon-date_link_small {
+	background-image: url(../images/date_petit.png);
+    background-position: 4px;
+    background-size: 12px;
 }
-.context-menu-icon-n_date {
-	background-image: url(../images/page_date.png);
+
+.context-menu-icon-date_link_small div {
+    line-height: 15px;
 }
 
 .context-menu-icon-save {
