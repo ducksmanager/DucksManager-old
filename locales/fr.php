@@ -124,6 +124,7 @@ define('DANS','dans');
 define('DATE','Date');
 define('DATE_INVALIDE','Date invalide !');
 define('DATE_QUESTION','A quelle date avez-vous effectué l\'achat ? (JJ/MM/AAAA)');
+define('DATES_EXISTANTES','Dates existantes');
 define('DE','de');
 define('DEBUG_DESCRIPTION','Liste "debug", principalement destin&eacute;e aux d&eacute;veloppeurs.');
 define('DEBUG_MOINS_1','Difficult&eacute;s pour rep&eacute;rer une s&eacute;rie continue de num&eacute;ros');
