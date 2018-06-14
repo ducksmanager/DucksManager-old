@@ -1,34 +1,91 @@
 .context-menu-list li.context-menu-item.selected {
-	background: yellow;
+	background-color: rgb(165, 42, 42);
+	color: white;
 }
 
-.context-menu-list .context-menu-item.context-menu-hover.save {
-	background-color: green;
+.context-menu-list li.context-menu-icon {
+	line-height: 20px;
+	padding-top: 3px;
+	padding-left: 25px;
+}
+
+.context-menu-list .context-menu-hover {
+	background-color: #4f5b69 !important;
+}
+
+.context-menu-list .context-menu-hover.save {
+	background-color: green !important;
 }
 
 .context-menu-list .new_purchase {
 	font-weight: bold;
 }
 
-.context-menu-list .context-menu-list .new_purchase {
+.context-menu-list .context-menu-submenu .new_purchase {
 	display: block;
 }
 
-/* menu header via data attribute */
-.context-menu-list:before {
+body>.context-menu-list:before {
 	content: attr(data-menutitle);
 	display: block;
 	position: absolute;
 	top: 0;
 	right: 0;
 	left: 0;
-	background: #DDD;
+	background-color: rgb(61, 75, 95);
 	padding: 2px;
+	text-align: center;
 
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
 }
-.context-menu-list :first-child {
+body>.context-menu-list>:first-child {
 	margin-top: 20px;
+}
+
+.context-menu-icon {
+	background: transparent url(../images/page.png) 3px 4px no-repeat;
+	background-size: 16px 16px;
+}
+
+.context-menu-icon-sale_for_sale {
+	background-image: url(../images/av_petit.png);
+}
+.context-menu-icon-sale_not_for_sale {
+	background-image: url(../images/pas_av_petit.png);
+}
+
+.context-menu-icon-condition_missing {
+	background-image: url(../images/non_possede.png);
+}
+.context-menu-icon-condition_possessed {
+	background-image: url(../images/possede.png);
+}
+.context-menu-icon-condition_bad {
+	background-image: url(../images/mauvais.png);
+}
+.context-menu-icon-condition_notsogood {
+	background-image: url(../images/moyen.png);
+}
+.context-menu-icon-condition_good {
+	background-image: url(../images/bon.png);
+}
+
+.context-menu-icon-date_link {
+	background-image: url(../images/page_date.png);
+}
+.context-menu-icon-date_unlink {
+	background-image: url(../images/pas_page_date.png);
+}
+.context-menu-icon-date2 {
+	background-image: url(../images/page_date_petit.png);
+}
+.context-menu-icon-n_date {
+	background-image: url(../images/page_date.png);
+}
+
+.context-menu-icon-save {
+	font-weight: bold;
+	background-image: url(../images/page_save.png);
 }

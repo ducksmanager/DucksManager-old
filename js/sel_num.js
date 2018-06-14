@@ -43,6 +43,7 @@ function stop_selection(sel) {
 	var selected = num_elements.not(not_selected);
 
 	selected.toggleClass('num_checked').removeClass('half_transparent');
+    update_nb_numeros_selectionnes();
 
     debut_selection=null;
 }
