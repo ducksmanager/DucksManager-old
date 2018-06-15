@@ -1,5 +1,4 @@
 var l10n_calculs_auteurs=['calcul_en_cours','calcul_termine'];
-var prevent_click=false;
 
 function toggle_item_menu(element_clic) {
 	element_clic = jQuery(element_clic);
@@ -18,7 +17,8 @@ function toggle_item_menu(element_clic) {
 
 function init_autocompleter_auteurs() {
     l10n_action('fillArray',l10n_calculs_auteurs,'l10n_calculs_auteurs');
-    if (jQuery('#auteur_cherche')) {
+    if (jQuery('#auteur_cherche').length) {
+    	// TODO replace by https://github.com/bassjobsen/Bootstrap-3-Typeahead
 	    new Ajax.Autocompleter ('auteur_cherche',
 		    'liste_auteurs',
 		    'auteurs_choix.php',

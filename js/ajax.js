@@ -1,7 +1,6 @@
 var nom_magazine_old="";
 var pays_sel=null;
 var magazine_sel=null;
-var myMenuItems;
 var liste_achats=[];
 var l10n_gerer;
 
@@ -160,16 +159,6 @@ function charger_tooltips_utilisateurs() {
     });
 }
 
-function callback_tranches_chargees(tooltip_content) {
-	var element_texte_hover = tooltip_content.prev('a.has_tooltip.edge_tooltip');
-    element_texte_hover.popover({
-        content: tooltip_content.html(),
-        placement: 'top',
-        html: true,
-        trigger: 'hover'
-    });
-}
-
 function initPays(inclure_tous_pays, selected) {
     if (jQuery('#liste_pays').length) {
 	    jQuery.post('Inducks.class.php',
@@ -223,7 +212,7 @@ function select_magazine(valeur_magazine) {
             {get_magazines: 'true', pays: id_pays},
             function(response) {
                 jQuery('#liste_magazines').html(response);
-                if (jQuery('#liste_numeros'))
+                if (jQuery('#liste_numeros').length)
                     select_numero();
                 if (typeof (valeur_magazine) !== 'undefined') {
                     var trouve=false;

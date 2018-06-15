@@ -164,7 +164,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/effects.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/controls.js"></script>
-        <script type="text/javascript" src="js/scriptaculous/src/effects2.js?VERSION"></script>
 
         <script type="text/javascript" src="js/starbox.js?VERSION"></script>
         <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
