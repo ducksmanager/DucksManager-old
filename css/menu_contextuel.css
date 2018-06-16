@@ -29,8 +29,16 @@
 }
 
 .context-menu-list .context-menu-submenu .new_purchase {
-	font-weight: bold;
+	text-align: center;
 	display: block;
+}
+
+.context-menu-list .context-menu-submenu .new_purchase h5 {
+	font-weight: bold;
+}
+
+.context-menu-list .context-menu-submenu .new_purchase input {
+	margin: 5px;
 }
 
 body>.context-menu-list:before {
@@ -80,19 +88,19 @@ body>.context-menu-list>:first-child {
 	background-image: url(../images/bon.png);
 }
 
-.context-menu-icon-date_link {
+.context-menu-icon-purchase_link {
 	background-image: url(../images/date.png);
 }
-.context-menu-icon-date_unlink {
+.context-menu-icon-purchase_unlink {
 	background-image: url(../images/pas_date.png);
 }
-.context-menu-icon-date_link_small {
+.context-menu-icon-purchase_link_small {
 	background-image: url(../images/date_petit.png);
     background-position: 4px;
     background-size: 12px;
 }
 
-.context-menu-icon-date_link_small div {
+.context-menu-icon-purchase_link_small div {
     line-height: 15px;
 }
 

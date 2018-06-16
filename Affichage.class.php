@@ -219,14 +219,13 @@ class Affichage {
                                 $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
                                 $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
                                 if (count($resultat_date)>0) {
-                                    $regex_date='#([^-]+)-([^-]+)-(.+)#s';
-                                    $date=preg_replace($regex_date,'$3/$2/$1',$resultat_date[0]['Date']);
+                                    $date=new DateTime($resultat_date[0]['Date']);
                                     $id=$resultat_date[0]['ID_Acquisition'];
-                                    if (!empty($date)) {
-                                        ?>
-                                            <div class="details_numero detail_date" class="achat_<?=$id?>">
-                                                <img src="images/page_date.png" title="<?=ACHETE_LE.' '.$date?>"/>
-                                            </div><?php
+                                    if (!empty($date)) { ?>
+                                    <div class="details_numero detail_date" class="achat_<?= $id ?>">
+                                        <img src="images/date.png"
+                                             title="<?= ACHETE_LE . ' ' . $date->format('d/m/Y') ?>"/>
+                                        </div><?php
                                     }
                                 }
                             }

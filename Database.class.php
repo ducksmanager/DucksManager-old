@@ -66,6 +66,10 @@ class Database {
 		return self::$handle->query($requete);
 	}
 
+	function last_inserted_id() {
+		return self::$handle->insert_id;
+	}
+
 	function user_to_id($user) {
 		if (isset($_COOKIE['user'], $_COOKIE['pass']) && empty($user)) {
             $user=$_COOKIE['user'];
@@ -275,11 +279,9 @@ class Database {
 	}
 
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-		if ($etat==='possede') { $etat='indefini'; }
-
 		$id_user=$this->user_to_id($_SESSION['user']);
 
-		if ($etat === 'non_possede') {
+		if ($etat === '_non_possede') {
             $liste_str = array_map(function($numero) {
                 return DM_Core::$d::escape($numero);
             }, $liste);
@@ -291,50 +293,49 @@ class Database {
             );
         }
         else {
-            $champs = ['Pays', 'Magazine', 'Numero', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
-            if ($etat !== 'non_marque') {
-                $champs[] = 'Etat';
-            }
             $liste_user=$this->toList($id_user);
 
-            $valeurs = [];
+            $id_acquisition_insert=$id_acquisition==='do_not_change' ? '-1' : $id_acquisition;
+            $av_insert=$av==='do_not_change' ? '0' : $av;
+
+            $numeros_insert = [];
             $liste_deja_possedes=[];
             foreach($liste as $numero) {
                 if (!is_null($liste_user->get_etat_numero_possede($pays,$magazine,$numero))) {
                     $liste_deja_possedes[] = $numero;
                 }
                 else {
-                    $data_numero = [$pays,$magazine,$numero,$id_acquisition,$av,$id_user];
-                    if ($etat !== 'non_marque') {
-                        $data_numero[] = $etat;
-                    }
+                    $data_numero = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$id_user];
 
-                    $valeurs[] = array_map(function($valeur) {
+                    $numeros_insert[] = array_map(function($valeur) {
                         return "'".DM_Core::$d::escape($valeur)."'";
                     }, $data_numero);
                 }
             }
 
-            $valeurs_str = array_map(function($data_numero) {
-                return '('.implode(',', $data_numero).')';
-            }, $valeurs);
+            if (count($numeros_insert) > 0) {
+                $numeros_insert_str = array_map(function($data_numero) {
+                    return '('.implode(',', $data_numero).')';
+                }, $numeros_insert);
 
-            DM_Core::$d->requete("
-              INSERT INTO numeros(".implode(',',$champs).")
-              VALUES ".implode(',', $valeurs_str)
-            );
+                $champs = ['Pays', 'Magazine', 'Numero', 'Etat', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
+                DM_Core::$d->requete("
+                  INSERT INTO numeros(".implode(',',$champs).")
+                  VALUES ".implode(',', $numeros_insert_str)
+                );
+            }
 
             $changements = [];
 
-            if ($etat !== 'non_marque') {
+            if ($etat !== 'do_not_change') {
                 $changements[] = "Etat='$etat'";
             }
 
-            if ($id_acquisition !== -2) {
+            if ($id_acquisition !== 'do_not_change') {
                 $changements[] = "ID_Acquisition='$id_acquisition'";
             }
 
-            if ($av !== -1) {
+            if ($av !== 'do_not_change') {
                 $changements[] = "AV='$av'";
             }
 
@@ -758,22 +759,14 @@ if (isset($_POST['database'])) {
 		$pays=$_POST['pays'];
 		$magazine=$_POST['magazine'];
 		$etat=$_POST['etat'];
-		if ($_POST['av']==='true'||$_POST['av']==='-1') {
-		    $av=($_POST['av']==='true')?1:0;
-		}
-		else {
-		    $av=$_POST['av'];
-		}
-		$date_acquisition=$_POST['date_acquisition'];
-		$id_acquisition=$date_acquisition;
-		if ($date_acquisition!==-1 && $date_acquisition!==-2) {
-			$requete_id_acquisition="SELECT Count(ID_Acquisition) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND Date = '$date_acquisition' GROUP BY ID_Acquisition";
+        $av=$_POST['av'];
+		$id_acquisition=$_POST['id_acquisition'];
+
+		if ($id_acquisition!==-1 && $id_acquisition!=='do_not_change') {
+			$requete_id_acquisition="SELECT Count(*) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND ID_Acquisition = '$id_acquisition'";
 			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
 			if ($resultat_acqusitions[0]['cpt'] === 0) {
 			    $id_acquisition=-1;
-			}
-			else {
-			    $id_acquisition=$resultat_acqusitions[0]['ID_Acquisition'];
 			}
 		}
 		DM_Core::$d->update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition);
@@ -795,18 +788,15 @@ if (isset($_POST['database'])) {
 		//Vérifier d'abord que la date d'acquisition n'existe pas déjà
 		$requete_acquisition_existe='SELECT ID_Acquisition '
 								   .'FROM achats '
-								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\' AND Description = \''.$_POST['description'].'\'';
-		echo $requete_acquisition_existe;
+								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date'].'\' AND Description = \''.$_POST['description'].'\'';
 		$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
 		if (count($compte_acquisition_date) > 0) {
 			echo 'Date';
 		}
 		else {
             DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
-                                .' VALUES ('.$id_user.',\''.$_POST['date_annee'].'-'.$_POST['date_mois'].'-'.$_POST['date_jour'].'\',\''.$_POST['description'].'\')');
-            $requete_acquisition='SELECT Date, Description FROM achats WHERE ID_User='.$id_user.' ORDER BY Date DESC';
-            $liste_acquisitions=DM_Core::$d->requete_select($requete_acquisition);
-}
+                                .' VALUES ('.$id_user.',\''.$_POST['date'].'\',\''.$_POST['description'].'\')');
+		}
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
 		$id_user=$_SESSION['id_user'];
