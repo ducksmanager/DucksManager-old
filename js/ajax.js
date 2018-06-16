@@ -90,8 +90,7 @@ function init_observers_previews() {
 }
 
 function get_achats(callback) {
-    jQuery.post(
-        'Database.class.php',
+    jQuery.post('Database.class.php',
         {database: 'true', liste_achats: 'true'},
         function (achats_courants) {
             liste_achats = achats_courants;
@@ -172,11 +171,10 @@ function callback_tranches_chargees(tooltip_content) {
 
 function initPays(inclure_tous_pays, selected) {
     if (jQuery('#liste_pays').length) {
-	    jQuery.post(
-	        'Inducks.class.php',
+	    jQuery.post('Inducks.class.php',
 		    {get_pays: 'true', inclure_tous_pays: inclure_tous_pays, selected: selected},
             function(response) {
-			    jQuery('#liste_pays').html(respponse);
+			    jQuery('#liste_pays').html(response);
 			    if (jQuery('#liste_magazines').length)
 				    select_magazine();
 		    }
@@ -187,8 +185,7 @@ function initPays(inclure_tous_pays, selected) {
 function initTextures() {
     if (jQuery('#texture1').length) {
 	    jQuery.each([1, 2], function (i, n) {
-		    jQuery.post(
-		        'Edge.class.php',
+		    jQuery.post('Edge.class.php',
                 {get_texture: 'true', n: n},
                 function (response) {
 				    jQuery('#texture' + n).html(response);
@@ -203,8 +200,7 @@ function initTextures() {
 
 function select_sous_texture (n) {
 	if (jQuery('#sous_texture'+n).length) {
-		jQuery.post(
-		    'Edge.class.php',
+		jQuery.post('Edge.class.php',
             {get_sous_texture: 'true', texture: jQuery('#texture' + n).val(), n: n},
             function (response) {
 				jQuery('#sous_texture' + n).html(response);
@@ -222,8 +218,7 @@ function select_magazine(valeur_magazine) {
 	        .text('Chargement des magazines');
         jQuery('#liste_magazines').html(option_chargement.html());
 
-        jQuery.post(
-            'Inducks.class.php',
+        jQuery.post('Inducks.class.php',
             {get_magazines: 'true', pays: id_pays},
             function(response) {
                 jQuery('#liste_magazines').html(response);
@@ -303,15 +298,14 @@ function afficher_numeros(pays,magazine, numero) {
 
 	var liste_numeros = jQuery('#liste_numeros');
     if (liste_numeros.length) {
-        jQuery.post(
-            'Database.class.php',
+        jQuery.post('Database.class.php',
             {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
             function(response) {
                 liste_numeros.html(response);
                 init_observers_gerer_numeros();
                 numero = numero || location.hash;
                 if (numero) {
-                    indiquer_numero(liste_numeros.find('[name="'+numero.replace(/#/,'')+'"]')[0].parent(), ['gauche']);
+                    indiquer_numero(liste_numeros.find('[name="'+numero.replace(/#/,'')+'"]').parent(), ['gauche']);
                 }
             }
         );

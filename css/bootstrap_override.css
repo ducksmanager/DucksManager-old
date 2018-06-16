@@ -39,7 +39,6 @@ img {
 }
 
 label {
-    font-weight: normal;
     margin-bottom: inherit;
 }
 
@@ -63,4 +62,8 @@ label {
 input.form-control {
     width: calc(100% - 26px);
     height: 20px;
+}
+
+.list-group-item {
+    overflow-y: hidden;
 }

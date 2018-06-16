@@ -988,15 +988,19 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 <input type="hidden" id="form_pays" value=""/>
                                 <input type="hidden" id="form_magazine" value=""/>
                                 <input type="hidden" id="onglet_magazine" name="onglet_magazine" value=""/>
-                                <span style="text-decoration:underline"><?= PAYS_PUBLICATION ?> : </span><br/>
-                                <select style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                                    <option id="chargement_pays"><?= CHARGEMENT ?>...
-                                </select><br/><br/>
-                                <span style="text-decoration:underline"><?= PUBLICATION ?> : </span><br/>
-                                <select style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
-                                    <option id="vide"><?= SELECTIONNER_PAYS ?>
-                                </select>
-                                <br/><br/>
+                                <div class="form-group">
+                                    <label for="liste_pays"><?=PAYS_PUBLICATION?></label>
+                                    <select class="form-control" style="width:300px;" onchange="select_magazine()" id="liste_pays">
+                                        <option id="chargement_pays"><?= CHARGEMENT ?>...
+                                    </select>
+                                </div><br/>
+                                <div class="form-group">
+                                    <label for="liste_magazines"><?= PUBLICATION ?></label>
+                                    <select class="form-control" style="width:300px;" onchange="magazine_selected()" id="liste_magazines">
+                                        <option id="vide"><?= SELECTIONNER_PAYS ?>
+                                    </select>
+                                </div>
+                                <br/>
                                 <input id="validerAjoutMagazine" type="submit" class="btn btn-default"
                                        value="<?= OK ?>"/>
                             </form>

@@ -50,7 +50,7 @@
 
 .conteneur_label_histoire {
     position: absolute;
-    padding: 2px 4px 4px !important;
+    padding: 1px 4px 0 !important;
     margin: 4px 12px;
     font-size: 11px !important;
 
@@ -80,7 +80,6 @@
 }
 
 .conteneur_label_histoire .remove {
-    vertical-align: bottom;
     top: 2px;
 }
 

@@ -20,6 +20,7 @@ function ouvrir_tranche() {
     jQuery('.popover').popover('destroy');
     jQuery('.fleche_position').remove();
 
+    var infos=getInfosNumero(tranche_bib.attr('id'));
     jQuery.post('Inducks.class.php', {
         get_cover: 'true',
         debug: debug,
@@ -62,8 +63,7 @@ function charger_bibliotheque() {
     jQuery('#pourcentage_collection_visible').addClass('cache');
     l10n_action('remplirSpan','pourcentage_collection_visible');
 
-    jQuery.post(
-        'Edge.class.php', {
+    jQuery.post('Edge.class.php', {
             get_bibliotheque: 'true',
             largeur: largeur_section,
             user_bibliotheque: user_bibliotheque,
@@ -73,8 +73,7 @@ function charger_bibliotheque() {
                 conteneur.html(response.erreur);
             }
             else {
-                jQuery.post(
-                    'Edge.class.php',
+                jQuery.post('Edge.class.php',
                     {get_popularite_numeros: true},
                     function(response_popularite) {
                         popularite_numeros = response_popularite.popularite_numeros;
@@ -208,10 +207,7 @@ function afficher_lien_partage() {
 	zone_proposition_photos.removeClass('cache');
 	jQuery('#partager_bibliotheque_lien').on('click', function() {
 		zone_proposition_photos.addClass('cache');
-		jQuery.post('Edge.class.php', {
-			data: {partager_bibliotheque: 'true'}
-        })
-        .done(function (response) {
+		jQuery.post('Edge.class.php', {partager_bibliotheque: 'true'}, function (response) {
             zone_proposition_photos
                 .html(response)
                 .removeClass('cache');
@@ -376,7 +372,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         var pays_magazine = element.attr('id').substring('magazine_'.length, element.attr('id').length);
         if (est_contexte_bibliotheque) {
             jQuery('.fleche_position').remove();
-            var tranche_trouvee = jQuery('#' + pays_magazine);
+            var tranche_trouvee = jQuery('[id="' + pays_magazine + '"]');
             indiquer_numero(tranche_trouvee, ['haut', 'bas']);
         }
         else {
@@ -393,7 +389,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
             .before(
                 jQuery('<span>')
                     .addClass('conteneur_label_histoire label label-default')
-                    .append(jQuery('<span>').addClass('label_histoire').text(element.innerText))
+                    .append(jQuery('<span>').addClass('label_histoire').text(element.text()))
                     .append(jQuery('<a>')
                         .append(jQuery('<i>').addClass('remove glyphicon glyphicon-remove-sign glyphicon-white'))
                         .on('click', function (e) {
