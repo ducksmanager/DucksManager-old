@@ -1,26 +1,7 @@
+var currentPosition = {};
 var showPurchaseList = false;
 
-var items =  {
-    condition_do_not_change: {name: "Do not change condition"},
-    condition__non_possede: {name: "Missing", icon: "condition_missing"},
-    condition_indefini: {name: "Possessed", icon: "condition_possessed"},
-    condition_mauvais: {name: "Bad condition", icon: "condition_bad"},
-    condition_moyen: {name: "Not-so-good condition", icon: "condition_notsogood"},
-    condition_bon: {name: "Good condition", icon: "condition_good"},
-    sep1: "---------",
-    purchase_do_not_change: {name: "Do not change purchase date"},
-    purchase_link: {
-        name: "Link with a purchase date",
-        icon: "purchase_link"
-    },
-    'purchase_-1': {name: "Unlink", icon: "purchase_unlink"},
-    sep2: "---------",
-    sale_do_not_change: {name: "Do not change sale status"},
-    sale_1: { name: "Mark as \"For sale\"", icon: "sale_for_sale" },
-    sale_0: {name: "Remove \"For sale\"", icon: "sale_not_for_sale"},
-    sep3: "---------",
-    save: {name: "Save changes", icon: "save", className: "save", callback: updateSelectedIssues}
-};
+var menuItems;
 
 var selectedItems = {
     condition_do_not_change: true,
@@ -29,6 +10,32 @@ var selectedItems = {
 };
 
 function init_menu_contextuel() {
+    menuItems = {
+        condition_do_not_change: {name: l10n_gerer.etat_conserver_etat_actuel},
+        condition__non_possede: {name: l10n_gerer.etat_marquer_non_possede, icon: "condition_missing"},
+        condition_indefini: {name: l10n_gerer.etat_marquer_possede, icon: "condition_possessed"},
+        condition_mauvais: {name: l10n_gerer.etat_marquer_mauvais_etat, icon: "condition_bad"},
+        condition_moyen: {name: l10n_gerer.etat_marquer_etat_moyen, icon: "condition_notsogood"},
+        condition_bon: {name: l10n_gerer.etat_marquer_bon_etat, icon: "condition_good"},
+        sep1: "---------",
+        purchase_do_not_change: {name: l10n_gerer.achat_conserver_date_achat},
+        purchase_link: {
+            name: l10n_gerer.achat_associer_date_achat,
+            icon: "purchase_link"
+        },
+        'purchase_-1': {name: l10n_gerer.achat_desassocier_date_achat, icon: "purchase_unlink"},
+        sep2: "---------",
+        sale_do_not_change: {name: l10n_gerer.vente_conserver_volonte_vente},
+        sale_1: { name: l10n_gerer.vente_marquer_a_vendre, icon: "sale_for_sale" },
+        sale_0: {name: l10n_gerer.vente_marquer_pas_a_vendre, icon: "sale_not_for_sale"},
+        sep3: "---------",
+        save: {name: l10n_gerer.enregistrer_changements, icon: "save", className: "save", callback: updateSelectedIssues}
+    };
+
+    jQuery('body').mousemove(function(e) {
+        currentPosition = {x: e.pageX, y: e.pageY};
+    });
+
     jQuery.contextMenu({
         selector: '#liste_numeros',
         build: function() {
@@ -48,6 +55,11 @@ function init_menu_contextuel() {
                             showPurchaseList = false;
                         }
                     }
+                },
+                position: function(opt){
+                    var top = currentPosition.y - 10
+                            - Math.max(0, (currentPosition.y + opt.$menu.height()) - (jQuery(window).scrollTop() + jQuery(window).height()));
+                    opt.$menu.css({top: top, left: currentPosition.x});
                 },
                 className: 'data-context-menu-title',
                 callback: onItemClick,
@@ -96,12 +108,12 @@ function getMenuItems() {
             name:
                 jQuery('<span>')
                     .append(
-                        jQuery('<h5>').text('Create purchase')
+                        jQuery('<h5>').text(l10n_gerer.achat_nouvelle_date_achat)
                     )
                     .append(
                         jQuery('<form>').addClass('new_purchase cache')
-                            .append(jQuery('<input>', {name: 'title', type: 'text', size: 30, maxlength: 30, placeholder: 'Purchase title'}).prop('required', true).addClass('form-control'))
-                            .append(jQuery('<input>', {name: 'date', type: 'text', size: 30, maxlength: 10, placeholder: 'Purchase date', readonly: 'readonly'}).prop('required', true).addClass('form-control'))
+                            .append(jQuery('<input>', {name: 'title', type: 'text', size: 30, maxlength: 30, placeholder: l10n_gerer.achat_description}).prop('required', true).addClass('form-control'))
+                            .append(jQuery('<input>', {name: 'date', type: 'text', size: 30, maxlength: 10, placeholder: l10n_gerer.achat_date_achat, readonly: 'readonly'}).prop('required', true).addClass('form-control'))
                             .append(jQuery('<input>', {type: 'submit'}).addClass('btn').val('OK'))
                             .append(jQuery('<button>').addClass('btn cancel').text('Annuler'))
                     ).html(),
@@ -116,15 +128,15 @@ function getMenuItems() {
         };
     });
 
-    items.purchase_link.items = purchase_items;
-    jQuery.each(items, function(key, item) {
+    menuItems.purchase_link.items = purchase_items;
+    jQuery.each(menuItems, function(key, item) {
         item.className = (item.className || '').replace('selected', '');
         if (selectedItems[key]) {
             item.className+=' selected';
         }
         item.disabled = function() { return get_nb_numeros_selectionnes() === 0 };
     });
-    return items;
+    return menuItems;
 }
 
 function onItemClick(itemId, context, e) {
@@ -162,7 +174,7 @@ function onCreatePurchaseClick() {
 function onSubmitNewPurchaseClick(e) {
     var values = jQuery('.new_purchase').serializeArray().reduce(function(m,o){ m[o.name] = o.value; return m;}, {});
     if (values.date === '') {
-        alert('Spécifiez une date');
+        alert(l10n_gerer.achat_specifiez_date);
     }
     else {
         jQuery.post('Database.class.php', {
@@ -172,7 +184,7 @@ function onSubmitNewPurchaseClick(e) {
             description: values.title
         }, function (data) {
             if (data === 'Date') {
-                alert('Cette date d\'achat existe déjà! Changez la date d\'achat ou son titre');
+                alert(l10n_gerer.achat_date_achat_existe);
             }
             else {
                 showPurchaseList = true;

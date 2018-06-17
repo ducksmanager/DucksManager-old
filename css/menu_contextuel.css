@@ -23,6 +23,7 @@
 
 .context-menu-list .context-menu-submenu .context-menu-list {
 	top: -20px !important;
+	min-width: 200px;
 	max-height: 300px;
 	overflow-x: hidden;
 	overflow-y: auto;
