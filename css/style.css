@@ -384,8 +384,7 @@ ul#choix_impression ul.caract li{
 }
 
 #liste_pays,
-#liste_magazines,
-#liste_auteurs {
+#liste_magazines {
     width: 300px;
 }
 
@@ -618,8 +617,7 @@ ul#choix_impression ul.caract li{
 	}
 
     #liste_pays,
-    #liste_magazines,
-    #liste_auteurs {
+    #liste_magazines {
         width: 90% !important;
     }
 }

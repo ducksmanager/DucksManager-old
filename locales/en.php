@@ -48,11 +48,12 @@ define('AUCUN_NUMERO_POSSEDE_2','in order to add some comics to your collection!
 define('AUCUN_NUMERO_PROPOSE','For now, you already have in your collection the issues proposed by other DucksManager users.');
 define('AUCUNE_SUGGESTION','You already possess all the issues containing stories from your favorite authors for the selected country.');
 define('AUTEUR_DEJA_DANS_LISTE','This author is already in your list!');
+define('AUTEUR','Author');
 define('AUTEURS','Authors');
 define('AUTEURS_COURT','Statistics about authors');
 define('AUTEURS_FAVORIS','Purchase suggestor');
 define('AUTEURS_FAVORIS_TEXTE','Find which issues to buy following the authors you like');
-define('AUTEURS_FAVORIS_INTRO_1','Type in the names of your favorite authors to see how many stories you have from them. Rating the authors will allow DucksManager to');
+define('AUTEURS_FAVORIS_INTRO_1','Type in the names of your favorite authors to see how many stories you have from them. Rating the authors will also allow DucksManager to');
 define('AUTEURS_FAVORIS_INTRO_2','suggest to you a list of publications that you could like.');
 define('AUTEURS_NON_NOTES','You haven\'t rated your favorite authors yet. Go to "Authors preferences" to do so.');
 define('AUTRES','Other');

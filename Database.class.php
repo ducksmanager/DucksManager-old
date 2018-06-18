@@ -817,6 +817,20 @@ if (isset($_POST['database'])) {
         header('Content-Type: application/json');
 		echo json_encode($tab_achats);
 	}
+	else if (isset($_POST['liste_auteurs'])) {
+        $valeur=strtolower($_POST['value']);
+        foreach(explode(' ',$valeur) as $mot) {
+            $requete_auteur="
+          SELECT personcode, fullname FROM inducks_person
+          WHERE LOWER(fullname) LIKE '%$valeur%'";
+            $resultats_auteur=Inducks::requete_select($requete_auteur);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(array_map(function($auteur) {
+            return ['id' => $auteur['personcode'], 'name' => $auteur['fullname']];
+        }, $resultats_auteur));
+	}
 	else if (isset($_POST['liste_notations'])) {
 		$id_user=$_SESSION['id_user'];
 		$resultat_notations=DM_Core::$d->get_notes_auteurs($id_user);

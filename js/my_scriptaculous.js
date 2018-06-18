@@ -14,26 +14,3 @@ function toggle_item_menu(element_clic) {
     });
     jQuery('#contenu_'+element_clic.children().eq(0).attr('name')).css({'display':'block'});
 }
-
-function init_autocompleter_auteurs() {
-    l10n_action('fillArray',l10n_calculs_auteurs,'l10n_calculs_auteurs');
-    if (jQuery('#auteur_cherche').length) {
-    	// TODO replace by https://github.com/bassjobsen/Bootstrap-3-Typeahead
-	    new Ajax.Autocompleter ('auteur_cherche',
-		    'liste_auteurs',
-		    'auteurs_choix.php',
-		    {
-			    method: 'post',
-			    indicator:'loading_auteurs',
-			    paramName: 'value',
-			    afterUpdateElement: ac_return
-		    });
-    }
-}
-
-function ac_return(field, item){
-	var regex_nettoyage_nom=/(?:^[\t ]*)|(?:[\t ]*jQuery)/g;
-	jQuery('#auteur_nom').val(field.val().replace(regex_nettoyage_nom,''));
-    jQuery('#auteur_id').val(item.find('[name="nom_auteur"]').attr('title'));
-    jQuery('#auteur_cherche').val(jQuery('#auteur_cherche').val().replace(regex_nettoyage_nom,''));
-}

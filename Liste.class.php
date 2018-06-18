@@ -265,15 +265,19 @@ class Liste {
 				<br />
 				<?=STATISTIQUES_AUTEURS_INTRO?>
 				<br /><br />
-				<form method="post" action="?action=stats&amp;onglet=auteurs">
-					<input class="text_input" type="text" name="auteur_cherche" id="auteur_cherche" value="" />
-					<div class="update" id="liste_auteurs"></div>
-					<input type="hidden" id="auteur_nom" name="auteur_nom" />
-					<input type="hidden" id="auteur_id" name="auteur_id" />
-					<img alt="Loading" id="loading_auteurs" src="loading.gif" style="display:none" />
-					<input type="submit" value="<?=AJOUTER?>" />
-				</form>
-				<div id="auteurs_ajoutes">
+                <div class="form-group">
+                    <form method="post" action="?action=stats&amp;onglet=auteurs">
+                        <label for="auteur_nom" class="col-sm-1 control-label" style="white-space: nowrap"><?=AUTEUR?> :</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" autocomplete="off" type="text" name="auteur_nom" id="auteur_nom" value="" />
+                        </div>
+                        <input type="hidden" id="auteur_id" name="auteur_id" />
+                        <div class="col-sm-4">
+                            <input class="btn btn-default center" type="submit" value="<?=AJOUTER?>" />
+                        </div>
+                    </form>
+                </div>
+				<div style="clear: both">
 					<br /><br />
 					<?=LISTE_AUTEURS_INTRO?>
 					<?php

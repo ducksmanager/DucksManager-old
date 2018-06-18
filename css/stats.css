@@ -39,11 +39,6 @@
 #suggestions .numero.top3 {
     font-size: large;
 }
-
-#liste_auteurs {
-    z-index: 2;
-}
-
 #liste_notations .nom_auteur,
 #liste_notations .notation_auteur,
 #liste_notations .supprimer_auteur {

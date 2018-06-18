@@ -170,6 +170,7 @@ $id_user= $_SESSION['id_user'] ?? null;
 
         <script type="text/javascript" src="js/starbox.js?VERSION"></script>
         <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>
         <script type="text/javascript" src="js/edges.js?VERSION"></script>

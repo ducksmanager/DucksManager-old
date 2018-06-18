@@ -281,6 +281,22 @@ function recharger_stats_auteurs() {
 	location.replace(location.href.replace(/&pays=[^&jQuery]+/, '') + '&pays='+pays);
 }
 
+function init_autocompleter_auteurs() {
+    l10n_action('fillArray',l10n_calculs_auteurs,'l10n_calculs_auteurs');
+    jQuery('#auteur_nom').typeahead({
+        source: function(inputText, callback) {
+            jQuery.post('Database.clas.php', {
+                database: 'true',
+                liste_auteurs: 'true',
+                value: inputText
+            }, callback)
+        },
+        afterSelect: function(item) {
+            jQuery('#auteur_id').val(item.id);
+        }
+    });
+}
+
 function init_notations() {
 	jQuery.post('Database.class.php',
 		{database: 'true', liste_notations: 'true'},
@@ -293,7 +309,7 @@ function init_notations() {
 				el_li.find('>.nom_auteur').text(notation.NomAuteur);
 				el_li.find('>.notation_auteur').attr({id: 'notation_auteur_' + notation.NomAuteurAbrege});
 				el_li.find('>.supprimer_auteur>a').attr({id: 'supprimer_auteur_' + notation.NomAuteurAbrege}).on('click', function() {
-					supprimer_auteur(jQuery(this).attr('id').replace(/^.*_([^_]+)jQuery/,'jQuery1'));
+					supprimer_auteur(jQuery(this).attr('id').replace(/^.*_([^_]+)$/,'$1'));
 				});
 				liste_notations.append(el_li);
 
@@ -303,10 +319,13 @@ function init_notations() {
 					stars: 10,
 					rerate: true,
 					onRate: function(element, datum) {
-						var auteur = datum.identity.replace(/^.+_(.+)jQuery/,'jQuery1');
+						var auteur = datum.identity.replace(/^.+_(.+)$/,'$1');
 						var notation = datum.rated;
 						jQuery.post('Database.class.php', {
-							url: {database: 'true', changer_notation: 'true', auteur: auteur, notation: notation}
+							database: 'true',
+							changer_notation: 'true',
+							auteur: auteur,
+							notation: notation
 						});
 					}
 				});
