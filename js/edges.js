@@ -146,6 +146,9 @@ function charger_tranche_suivante() {
             init_observers_tranches();
             charger_recherche();
         }
+        else { // Contexte affichage dans les événements récents
+            callback_tranches_chargees(tranche.closest('.tooltip_content'));
+        }
     }
 }
 

@@ -81,7 +81,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="manifest" href="manifest.json">
         <title><?=$titre.' - DucksManager'?></title>
         <link rel="stylesheet" type="text/css" href="css/style.css?VERSION">
-        <link rel="stylesheet" type="text/css" href="css/scriptaculous.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/autocompleter.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/csstabs.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/bibliotheque.css?VERSION">
@@ -128,7 +127,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="stylesheet" type="text/css" href="css/flip.css?VERSION">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prototype/1.7.3/prototype.min.js"></script>
         <script>
             (function() {
                 var isBootstrapEvent = false;
@@ -164,12 +162,9 @@ $id_user= $_SESSION['id_user'] ?? null;
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/effects.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/scriptaculous/1.9.0/controls.js"></script>
 
         <script type="text/javascript" src="js/starbox.js?VERSION"></script>
-        <script type="text/javascript" src="js/my_scriptaculous.js?VERSION"></script>
+        <script type="text/javascript" src="js/menu.js?VERSION"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>

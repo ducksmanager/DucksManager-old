@@ -1,5 +1,3 @@
-var l10n_calculs_auteurs=['calcul_en_cours','calcul_termine'];
-
 function toggle_item_menu(element_clic) {
 	element_clic = jQuery(element_clic);
 

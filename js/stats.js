@@ -282,7 +282,6 @@ function recharger_stats_auteurs() {
 }
 
 function init_autocompleter_auteurs() {
-    l10n_action('fillArray',l10n_calculs_auteurs,'l10n_calculs_auteurs');
     jQuery('#auteur_nom').typeahead({
         source: function(inputText, callback) {
             jQuery.post('Database.clas.php', {

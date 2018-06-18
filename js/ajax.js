@@ -138,7 +138,7 @@ function charger_evenements() {
            jQuery('#evenements').html(response);
            jQuery('#evenements a.has_tooltip.edge_tooltip').each(function(i, element) {
                element_conteneur_bibliotheque = jQuery(element).next('.tooltip_content');
-               charger_tranche(element_conteneur_bibliotheque.find('>.tranche'));
+               charger_tranche(element_conteneur_bibliotheque.find('.tranche'));
            });
            charger_tooltips_utilisateurs();
        }
@@ -157,6 +157,16 @@ function charger_tooltips_utilisateurs() {
             container: 'body'
         });
     });
+}
+
+function callback_tranches_chargees(tooltip_content) {
+    tooltip_content.prev('a.has_tooltip.edge_tooltip')
+        .popover({
+            content: tooltip_content.html(),
+            placement: 'top',
+            html: true,
+            trigger: 'hover'
+        });
 }
 
 function initPays(inclure_tous_pays, selected) {
