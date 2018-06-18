@@ -854,6 +854,7 @@ if (isset($_POST['database'])) {
 							 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 							 .'WHERE Actif=1';
 		$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
+        header('Content-type: application/json');
 		echo json_encode($resultat_bouquineries);
 	}
     else if (isset($_POST['get_points'])) {

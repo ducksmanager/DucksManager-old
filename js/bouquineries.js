@@ -31,8 +31,7 @@ function analyserAdresseSuivante() {
 }
 
 function initialize() {
-	jQuery.post(
-		'Database.class.php',
+	jQuery.post('Database.class.php',
 		{ database: 'true', liste_bouquineries: 'true' },
 		function(response) {
 			adresses=response;
@@ -44,7 +43,7 @@ function initialize() {
 		zoom: 4,
 		center: latlng
 	};
-	map = new google.maps.Map(jQuery('#map_canvas'), myOptions);
+	map = new google.maps.Map(jQuery('#map_canvas')[0], myOptions);
 }
 
 function localiser(id_adresse) {
@@ -67,7 +66,7 @@ function creer_marqueur(adresse,position) {
 
 	var element = jQuery('.infoWindow.template').clone(true).removeClass('template');
 	jQuery.each(fields, function(i, field) {
-		element.find('.' + field).update(adresse[field]);
+		element.find('.' + field).text(adresse[field]);
 	});
 
 	infowindows[adresse.id] = new google.maps.InfoWindow({

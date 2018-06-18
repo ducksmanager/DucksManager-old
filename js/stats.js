@@ -284,7 +284,7 @@ function recharger_stats_auteurs() {
 function init_autocompleter_auteurs() {
     jQuery('#auteur_nom').typeahead({
         source: function(inputText, callback) {
-            jQuery.post('Database.clas.php', {
+            jQuery.post('Database.class.php', {
                 database: 'true',
                 liste_auteurs: 'true',
                 value: inputText
@@ -312,6 +312,7 @@ function init_notations() {
 				});
 				liste_notations.append(el_li);
 
+				// TODO use https://github.com/nashio/star-rating-svg
 				new Starbox(el_li.find('>.notation_auteur')[0], notation.Notation || 5, {
 					buttons: 10,
 					max: 10,

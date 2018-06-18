@@ -126,35 +126,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="stylesheet" type="text/css" href="css/bootstrap_override.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/flip.css?VERSION">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
-        <script>
-            (function() {
-                var isBootstrapEvent = false;
-                if (window.jQuery) {
-                    var all = jQuery('*');
-                    jQuery.each(['hide.bs.dropdown',
-                        'hide.bs.collapse',
-                        'hide.bs.modal',
-                        'hide.bs.tooltip',
-                        'hide.bs.popover',
-                        'hide.bs.tab'], function(index, eventName) {
-                        all.on(eventName, function() {
-                            isBootstrapEvent = true;
-                        });
-                    });
-                }
-                var originalHide = Element.hide;
-                Element.addMethods({
-                    hide: function(element) {
-                        if(isBootstrapEvent) {
-                            isBootstrapEvent = false;
-                            return element;
-                        }
-                        return originalHide(element);
-                    }
-                });
-            })();
-        </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.fr.min.js"></script>
@@ -185,11 +156,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.ui.position.min.js"></script>
                     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.css"><?php
                 break;
-                case 'bouquineries':
-                    ?>
-                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
-                    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&libraries=places"></script>
-                    <?php
+                case 'bouquineries': ?>
+                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ"></script>
+                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script><?php
                 break;
                 case 'bibliotheque':
                     if (isset($_GET['user'])) {
