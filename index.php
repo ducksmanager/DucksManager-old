@@ -96,7 +96,10 @@ $id_user= $_SESSION['id_user'] ?? null;
         ?>
         <link rel="icon" type="image/png" href="favicon.png">
         <?php include_once 'ServeurDb.class.php';
-        if (!isLocalHost()) {?>
+        if (isLocalHost()) {
+            ?><script src="//localhost:35729/livereload.js"></script><?php
+        }
+        else {?>
             <!-- Piwik -->
             <script type="text/javascript">
                 var _paq = [];
