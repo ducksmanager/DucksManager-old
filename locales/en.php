@@ -128,6 +128,7 @@ define('DANS','in');
 define('DATE','Date');
 define('DATE_INVALIDE','Invalid date !');
 define('DATE_QUESTION','At what date did you do your purchase ? (DD/MM/YYYY)');
+define('DATES_EXISTANTES','Existing purchase dates');
 define('DE','from');
 define('DEBUG_DESCRIPTION','"Debug" list, mainly made for developers.');
 define('DEBUG_MOINS_1','Hard to consider a series of issues');
