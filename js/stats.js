@@ -313,14 +313,13 @@ function init_notations() {
 				liste_notations.append(el_li);
 
 				// TODO use https://github.com/nashio/star-rating-svg
-				new Starbox(el_li.find('>.notation_auteur')[0], notation.Notation || 5, {
-					buttons: 10,
-					max: 10,
-					stars: 10,
-					rerate: true,
-					onRate: function(element, datum) {
-						var auteur = datum.identity.replace(/^.+_(.+)$/,'$1');
-						var notation = datum.rated;
+				el_li.find('>.notation_auteur').starRating({
+                    initialRating: notation.Notation || 5,
+                    starSize: 15,
+					totalStars: 10,
+                    useFullStars: true,
+					callback: function(notation, element) {
+						var auteur = element.attr('id').replace(/^.+_(.+)$/,'$1');
 						jQuery.post('Database.class.php', {
 							database: 'true',
 							changer_notation: 'true',

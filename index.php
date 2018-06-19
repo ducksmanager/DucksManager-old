@@ -85,7 +85,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <link rel="stylesheet" type="text/css" href="css/csstabs.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/bibliotheque.css?VERSION">
         <link rel="stylesheet" type="text/css" href="css/stats.css?VERSION">
-        <link rel="stylesheet" type="text/css" href="css/starbox.css?VERSION" />
         <link rel="stylesheet" type="text/css" href="css/menu.css?VERSION" />
         <?php
         foreach($locales as $nom_langue=>$nouvelle_url) {
@@ -134,7 +133,6 @@ $id_user= $_SESSION['id_user'] ?? null;
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
-        <script type="text/javascript" src="js/starbox.js?VERSION"></script>
         <script type="text/javascript" src="js/menu.js?VERSION"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
@@ -189,6 +187,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                     ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
 
                     switch($_GET['onglet']) {
+                        case 'auteurs': ?>
+                            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/src/css/star-rating-svg.min.css" />
+                            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"</script><?php
                         case 'possessions': ?>
                             <script type="text/javascript" src="js/chargement.js?VERSION"></script>
                         <?php
