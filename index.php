@@ -851,7 +851,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                         ?>
                         <form action="?action=gerer&amp;onglet=compte" method="post">
                             <br/><?= ADRESSE_EMAIL ?> : <br/>
-                            <input type="text" name="email" style="width: 200px" value="<?php
+                            <input class="form-control" type="text" name="email" style="width: 200px" value="<?php
                             if (!is_null($resultat_email[0]['Email'])) {
                                 echo $resultat_email[0]['Email'];
                             } ?>"/><br/><br/><br/>
@@ -859,13 +859,13 @@ $id_user= $_SESSION['id_user'] ?? null;
                                         	<?= MOT_DE_PASSE_CHANGEMENT ?>
                                         </span>
                             <br/><?= MOT_DE_PASSE_ACTUEL ?> : <br/>
-                            <input type="password" name="ancien_mdp" style="width: 100px" value=""/>
+                            <input class="form-control" type="password" name="ancien_mdp" style="width: 100px" value=""/>
                             <br/>
                             <br/><?= MOT_DE_PASSE_NOUVEAU ?> : <br/>
-                            <input type="password" name="nouveau_mdp" style="width: 100px" value=""/>
+                            <input class="form-control" type="password" name="nouveau_mdp" style="width: 100px" value=""/>
                             <br/>
                             <br/><?= MOT_DE_PASSE_NOUVEAU_CONFIRMATION ?> : <br/>
-                            <input type="password" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
+                            <input class="form-control" type="password" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
                             <br/><br/><br/>
                             <input type="checkbox" name="partage" <?php
                             if ($resultat_partage[0]['AccepterPartage'] === 1) {
@@ -1193,21 +1193,21 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <table border="0">
                         <tr>
                             <td><label for="bouquinerie_nom"><?=NOM_BOUQUINERIE?> :</label></td>
-                            <td><input class="text_input" maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
+                            <td><input class="form-control text_input" maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
                         </tr>
                         <tr>
                             <td><label for="adresse_complete"><?=ADRESSE?> :</label></td>
-                            <td><input class="text_input" type="text" id="adresse_complete" name="adresse_complete"/></td>
+                            <td><input class="form-control text_input" type="text" id="adresse_complete" name="adresse_complete"/></td>
                         </tr>
                         <tr>
                             <td><label for="bouquinerie_commentaires"><?=COMMENTAIRES_BOUQUINERIE?></label><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
-                            <td><textarea id="bouquinerie_commentaires" name="commentaire" cols="41" rows="5"></textarea>
+                            <td><textarea id="form-control bouquinerie_commentaires" name="commentaire" cols="41" rows="5"></textarea>
                             </td>
                         </tr>
                         <tr>
                             <td align="center" colspan="2">
                                 <br />
-                                <input name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" />
+                                <input class="btn btn-default" name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" />
                             </td>
                         </tr>
                     </table>
@@ -1365,16 +1365,18 @@ function formulaire_inscription() {
     }
     if (!isset($_POST['user' ]) || !is_null($erreur)) {
         ?>
-        <form method="post" action="?action=new">
-        <?php
+        <form method="post" action="?action=new"><?php
         if (isset($rawData)) {
             ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
         }?>
-        <table border="0"><tr><td><?=NOM_UTILISATEUR?> : </td><td><input name="user" type="text" value="<?=$user?>">&nbsp;</td></tr>
-            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input name="email" type="text" value="<?=$email?>" /></td></tr>
-            <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input name="pass" type="password" /></td></tr>
-            <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input name="pass2" type="password" /></td></tr>
-            <tr><td colspan="2"><input type="submit" value="<?=INSCRIPTION?>" /></td></tr></table>
+        <table border="0">
+            <tr><td><?=NOM_UTILISATEUR?> : </td><td><input class="form-control" name="user" type="text" value="<?=$user?>" /></td></tr>
+            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input class="form-control" name="email" type="text" value="<?=$email?>" /></td></tr>
+            <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input class="form-control" name="pass" type="password" /></td></tr>
+            <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input class="form-control" name="pass2" type="password" /></td></tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td colspan="2" style="text-align: center"><input class="btn btn-success" type="submit" value="<?=INSCRIPTION?>" /></td></tr>
+        </table>
         </form>
         <?php
     }

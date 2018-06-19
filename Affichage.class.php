@@ -68,8 +68,6 @@ class Affichage {
     }
 
 	static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
-			$onmouseover='';
-			$onmouseout='';
 			?><ul class="tabnav"><?php
 			foreach($tab_onglets as $nom_onglet=>$infos_lien) {
 				?><li class="<?php
@@ -89,19 +87,8 @@ class Affichage {
                         $nom = '';
                     }
 				}
-				switch($prefixe) {
-					case '':
-						$onmouseout='';
-					break;
-					case '?';
-						$onclick='toggle_item_menu(this)';
-					break;
-				}
 				?>"><a id="<?=$infos_lien[1]?>"
 					   name="<?=$nom?>"
-					   onmouseover="<?=$onmouseover?>"
-					   onmouseout="<?=$onmouseout?>"
-					   <?=(isset($onclick)?'onclick="'.$onclick.'"':'')?>
 					   href="<?=$lien?>">
 				        <?=$nom_onglet?>
 					</a>
