@@ -68,32 +68,32 @@ class Affichage {
     }
 
 	static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
-			?><ul class="tabnav"><?php
-			foreach($tab_onglets as $nom_onglet=>$infos_lien) {
-				?><li class="<?php
+        ?><ul class="tabnav"><?php
+        foreach($tab_onglets as $nom_onglet=>$infos_lien) {
+            ?><li class="<?php
 
-                $lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
-				if ($infos_lien[0]===$onglet_courant) {
-                    echo 'active ';
+            $lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
+            if ($infos_lien[0]===$onglet_courant) {
+                echo 'active ';
+            }
+            if (empty($prefixe)) {
+                $nom = substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
+            }
+            else {
+                if (in_array($argument, ['onglet_aide','onglet_type_param','previews'])) {
+                    $nom = $infos_lien[0];
                 }
-				if (empty($prefixe)) {
-					$nom = substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
-				}
-				else {
-                    if (in_array($argument, ['onglet_aide','onglet_type_param','previews'])) {
-                        $nom = $infos_lien[0];
-                    }
-                    else {
-                        $nom = '';
-                    }
-				}
-				?>"><a id="<?=$infos_lien[1]?>"
-					   name="<?=$nom?>"
-					   href="<?=$lien?>">
-				        <?=$nom_onglet?>
-					</a>
-                </li>
-				<?php
+                else {
+                    $nom = '';
+                }
+            }
+            ?>"><a id="<?=$infos_lien[1]?>"
+                   name="<?=$nom?>"
+                   href="<?=$lien?>">
+                    <?=$nom_onglet?>
+                </a>
+            </li>
+            <?php
 		}
 		?></ul>
 		<?php
@@ -105,6 +105,7 @@ class Affichage {
      * @param $magazine
      */
     static function afficher_numeros($liste, $pays, $magazine) {
+        date_default_timezone_set('Europe/Paris');
         list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
 
         if ($numeros==false) {
