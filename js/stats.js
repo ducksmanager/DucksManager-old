@@ -276,8 +276,7 @@ function toggleGraphs(type) {
 }
 
 function recharger_stats_auteurs() {
-	var el_select=jQuery('#liste_pays');
-	var pays=el_select[0].options[el_select.options.selectedIndex].id;
+	var pays=jQuery('#liste_pays').find('option:selected').attr('id');
 	location.replace(location.href.replace(/&pays=[^&jQuery]+/, '') + '&pays='+pays);
 }
 
