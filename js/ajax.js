@@ -16,7 +16,7 @@ function init_observers_gerer_numeros() {
 
     l10n_gerer = [
         'numero_selectionne', 'numeros_selectionnes',
-        'achat', 'date_achat', 'description',
+        'achat', 'achat_date_achat', 'achat_description', 'creer',
         'etat_conserver_etat_actuel', 'etat_marquer_non_possede', 'etat_marquer_possede',
         'etat_marquer_mauvais_etat', 'etat_marquer_etat_moyen', 'etat_marquer_bon_etat',
         'achat_conserver_date_achat', 'achat_desassocier_date_achat', 'achat_associer_date_achat', 'achat_nouvelle_date_achat',

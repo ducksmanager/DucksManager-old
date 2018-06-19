@@ -40,6 +40,7 @@
 
 .context-menu-list .context-menu-submenu .new_purchase input {
 	margin: 5px;
+	cursor: pointer;
 }
 
 body>.context-menu-list:before {

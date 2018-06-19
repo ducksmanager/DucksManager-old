@@ -114,8 +114,8 @@ function getMenuItems() {
                         jQuery('<form>').addClass('new_purchase cache')
                             .append(jQuery('<input>', {name: 'title', type: 'text', size: 30, maxlength: 30, placeholder: l10n_gerer.achat_description}).prop('required', true).addClass('form-control'))
                             .append(jQuery('<input>', {name: 'date', type: 'text', size: 30, maxlength: 10, placeholder: l10n_gerer.achat_date_achat, readonly: 'readonly'}).prop('required', true).addClass('form-control'))
-                            .append(jQuery('<input>', {type: 'submit'}).addClass('btn').val('OK'))
-                            .append(jQuery('<button>').addClass('btn cancel').text('Annuler'))
+                            .append(jQuery('<input>', {type: 'submit'}).addClass('btn btn-default').val(l10n_gerer.creer))
+                            .append(jQuery('<button>').addClass('btn btn-default cancel').text('Annuler'))
                     ).html(),
             callback: onCreatePurchaseClick
         }

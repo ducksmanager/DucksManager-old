@@ -487,7 +487,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                         <label for="pass"><?= MOT_DE_PASSE ?></label>
                         <input type="password" class="form-control" id="pass" name="pass" placeholder="<?= MOT_DE_PASSE ?>">
                     </div>
-                    <button type="submit" class="btn">Login</button>
+                    <button type="submit" class="btn btn-default">Login</button>
                 </form>
                 <br />
                 <a href="?action=mot_de_passe_oublie"><?= MOT_DE_PASSE_OUBLIE ?></a>
@@ -540,10 +540,14 @@ $id_user= $_SESSION['id_user'] ?? null;
                     }
                 }
                 ?><?=MOT_DE_PASSE_OUBLIE_EXPLICATION?><br /><br />
-                <form method="post" action="?action=mot_de_passe_oublie">
+                <form class="row" method="post" action="?action=mot_de_passe_oublie">
                     <input type="hidden" name="champs_remplis" />
-                    <input type="text" name="email" value="" /><br />
-                    <input type="submit" value="<?=ENVOYER?>" />
+                    <div class="col-sm-6">
+                        <input class="form-control" type="text" name="email" placeholder="<?=ADRESSE_EMAIL?>" value="" />
+                    </div>
+                    <div class="col-sm-4">
+                        <input class="btn btn-default" type="submit" value="<?=ENVOYER?>" />
+                    </div>
                 </form>
             <?php
             break;
