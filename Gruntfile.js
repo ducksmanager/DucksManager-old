@@ -4,6 +4,13 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         watch: {
+            php: {
+                files: ['*.php'],
+                options: {
+                    spawn: false,
+                    livereload: true
+                }
+            },
             scripts: {
                 files: ['js/*.js'],
                 options: {
