@@ -296,7 +296,8 @@ class Affichage {
                                         $numero->Pays,
                                         $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
                                         $numero->Numero,
-                                        $nb_autres_numeros
+                                        $nb_autres_numeros,
+                                        false
                                 );?>
 							</a>
 							<span class="cache tooltip_content">
@@ -381,11 +382,19 @@ class Affichage {
 		?><?=NEWS_IL_Y_A_SUFFIXE?></span><?php
     }
 	
-	static function afficher_texte_numero($pays, $magazine, $numero) {
-        $magazine_parts = explode(' ', $magazine);
-		?><span class="nowrap">
-            <img src="images/flags/<?=$pays?>.png" />&nbsp;<?=$magazine_parts[0]?>
-        </span> <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
+	static function afficher_texte_numero($pays, $magazine, $numero, $allow_wrap = true) {
+        ?><span class="nowrap">
+            <img src="images/flags/<?=$pays?>.png" />&nbsp;<?php
+        if ($allow_wrap) {
+            $magazine_parts = explode(' ', $magazine);
+            ?><?=$magazine_parts[0]?>
+            </span>
+            <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
+        }
+        else {
+            ?><?=$magazine?> <?=$numero?>
+            </span><?php
+        }
 	}
 
 	static function afficher_texte_numero_template() {
@@ -458,9 +467,9 @@ class Affichage {
         <?php
     }
 
-	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros) {
+	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros, $allow_wrap = true) {
         ob_start();
-        self::afficher_texte_numero($pays,$magazine_complet,$numero);
+        self::afficher_texte_numero($pays,$magazine_complet,$numero, $allow_wrap);
         if ($nb_autres_numeros > 0) {
             ?>
             <?=ET?> <?=($nb_autres_numeros)?>
