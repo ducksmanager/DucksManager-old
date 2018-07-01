@@ -135,11 +135,12 @@ function charger_evenements() {
 	    'Database.class.php',
         { database: 'true', evenements_recents: 'true'},
         function(response) {
-           jQuery('#evenements').html(response);
-           jQuery('#evenements a.has_tooltip.edge_tooltip').each(function(i, element) {
-               element_conteneur_bibliotheque = jQuery(element).next('.tooltip_content');
-               charger_tranche(element_conteneur_bibliotheque.find('.tranche:eq(0)'));
-           });
+           jQuery('#evenements')
+               .html(response)
+               .find('a.has_tooltip.edge_tooltip').each(function(i, element) {
+                   element_conteneur_bibliotheque = jQuery(element).next('.tooltip_content');
+                   charger_tranche(element_conteneur_bibliotheque.find('.tranche:eq(0)'));
+               });
            charger_tooltips_utilisateurs();
        }
 	);
