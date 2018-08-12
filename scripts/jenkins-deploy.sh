@@ -1,22 +1,20 @@
 #!/usr/bin/env bash
 
+rm -rf toUpload changeset.txt
+
+previous_commitid="`wget -qO- https://ducksmanager.net/deployment_commit_id.txt`"
 commitid=`git rev-parse HEAD`
-sed -i "s/VERSION/$commitid/g" index.php
 
-rm -f changeset.xml
-rm -rf files changeset.txt
-wget --auth-no-challenge --http-user=$API_USER --http-password=$API_PASS "$JENKINS_URL/api/xml?depth=2&xpath=/hudson/job[name='$JOB_NAME']/build[id='$BUILD_ID']/changeSet" --output-document=changeset.xml
+git diff --diff-filter=d --name-only ${previous_commitid} > changeset.txt
+echo "index.php" >> changeset.txt
+echo "Change set : " && cat changeset.txt
 
-xpath -q -e "//changeSet/item/path/file[not(../editType/text() = 'delete')]/text()" changeset.xml | uniq > changeset.txt
+mkdir toUpload
 
-mkdir files
-cd files
+cat changeset.txt | while read -r file; do
+  cp $file toUpload
+done
 
-BASE=raw.github.com/bperel/DucksManager/master/
-mkdir -p $BASE
+sed -i "s/VERSION/$commitid/g" toUpload/index.php
 
-wget -xi ../changeset.txt --base=https://$BASE
-
-sed -i "s/VERSION/`git rev-parse HEAD`/g" $BASE/index.php $BASE/bouquineries.php
-
-ls -la $BASE
+ls -la toUpload
