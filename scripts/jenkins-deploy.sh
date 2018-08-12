@@ -9,9 +9,6 @@ wget --auth-no-challenge --http-user=$API_USER --http-password=$API_PASS "$JENKI
 
 xpath -q -e "//changeSet/item/path/file[not(../editType/text() = 'delete')]/text()" changeset.xml | uniq > changeset.txt
 
-echo "index.php" >> changeset.txt
-echo "bouquineries.php" >> changeset.txt
-
 mkdir files
 cd files
 
