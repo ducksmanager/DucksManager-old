@@ -963,7 +963,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 <div class="form-group">
                                     <label for="liste_pays"><?=PAYS_PUBLICATION?></label>
                                     <select class="form-control" style="width:300px;" onchange="select_magazine()" id="liste_pays">
-                                        <option id="chargement_pays"><?= CHARGEMENT ?>...
+                                        <option id="chargement_pays"><?= CHARGEMENT ?>
                                     </select>
                                 </div><br/>
                                 <div class="form-group">
