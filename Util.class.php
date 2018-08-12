@@ -164,7 +164,7 @@ class Util {
             break;
             case 'GET':
                 if (count($parameters) > 0) {
-                    $url .= implode('/', $parameters);
+                    $url .= '/' . implode('/', $parameters);
                 }
             break;
         }
