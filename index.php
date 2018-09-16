@@ -573,6 +573,11 @@ $id_user= $_SESSION['id_user'] ?? null;
                     </div>
                 </div>
             </div>
+            <div class="edge_empty template">
+                <div class="container">
+                    <div class="text"></div>
+                </div>
+            </div>
 
             <div id="conteneur_bibliotheque">
                 <h2 id="titre_bibliotheque"></h2><br /><br />

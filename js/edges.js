@@ -121,11 +121,19 @@ function charger_tranche(tranche) {
         .on('load',charger_tranche_suivante)
         .on('error',charger_tranche_suivante);
 
-    var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
+    var src=tranche.attr('name').replace(/([^\/]+)\//g, '$1/gen/');
     var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
         return jQuery(src_similaire).attr('src');
     });
-    tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
+    if (tranche.data('edge') === 0) {
+        var emptyEdgeElement = jQuery('.edge_empty.template').clone(true).removeClass('template').attr({id: tranche.attr('id')});
+        emptyEdgeElement.find('.text').text(tranche.attr('name'));
+        tranche.replaceWith(emptyEdgeElement);
+        charger_tranche_suivante.apply(emptyEdgeElement);
+    }
+    else {
+        tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
+    }
 }
 
 function charger_tranche_suivante() {
@@ -511,7 +519,7 @@ function recherche_histoire(val_recherche) {
 }
 
 function init_observers_tranches() {
-    jQuery('.tranche')
+    jQuery('.tranche, .edge_empty')
         .on('mousedown', function() {
             tranche_bib=jQuery(this);
             ouvrir_tranche();
@@ -564,9 +572,7 @@ function ouvrirInfoBulleEffectif(tranche) {
         .popover('show')
         .mouseout(function() {
             hidePopoverIfStillOutOfFocusAfterTimeout(500);
-        });
-
-    jQuery('.popover')
+        })
         .mouseover(function() {
             isOutOfEdgesAndPopover=false;
         })

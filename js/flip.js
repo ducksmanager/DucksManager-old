@@ -307,14 +307,14 @@ function hideBook(e, callback) {
 
     var isClickOnEdge = e === null;
     var isClickOnFirstPage = e && jQuery(e.target).is('.page.p1');
-    var isClickElsewhere = e && !jQuery(e.target).is('.tranche, .page, .previous-button, .next-button');
+    var isClickElsewhere = e && !jQuery(e.target).is('.tranche, edge_empty, .page, .previous-button, .next-button');
 
     if (book.length
      && (isClickOnEdge || isClickOnFirstPage || isClickElsewhere)
      && !isHidingBook && !flipbook.turn("animating")) {
         isHidingBook = true;
 
-        var edge = jQuery('.tranche.livre-visible');
+        var edge = jQuery('.livre-visible');
         var firstPage = flipbook.find('.page.p1');
 
         var _hideBook = function() {
