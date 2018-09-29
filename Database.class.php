@@ -96,15 +96,6 @@ class Database {
 
 	}
 
-	function user_is_beta() {
-		if (isset($_SESSION['user'])) {
-			$requete_beta_user='SELECT BetaUser FROM users WHERE username = \''.$_SESSION['user'].'\'';
-			$resultat_beta=DM_Core::$d->requete_select($requete_beta_user);
-			return $resultat_beta[0]['BetaUser']===1;
-		}
-		return false;
-	}
-
 	function user_afficher_video() {
 		if (isset($_SESSION['user'])) {
 			$requete_afficher_video='SELECT AfficherVideo FROM users WHERE username = \''.$_SESSION['user'].'\'';
@@ -483,7 +474,7 @@ class Database {
 		return Affichage::get_medailles([
             'Photographe'=> (int) ($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
             'Concepteur' => (int) ($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
-            'Duckhunter' => (int) $resultat_nb_bouquineries[0]['cpt']
+            'Duckhunter' => (int) ($resultat_nb_bouquineries[0] ?? ['cpt' => 0])['cpt']
         ]);
 	}
 

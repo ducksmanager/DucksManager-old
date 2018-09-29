@@ -291,7 +291,7 @@ class Stats {
 		$title = POSSESSION_HISTOIRES_AUTEURS;
 		$legend = [HISTOIRES_POSSEDEES, HISTOIRES_NON_POSSEDEES];
 
-        $resultat_stats_auteurs = Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'GET', '/collection/stats/watchedauthorsstorycount', 'ducksmanager', []);
+        $resultat_stats_auteurs = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/watchedauthorsstorycount', 'ducksmanager', []);
 
 		$possedees = [
 			'label' => HISTOIRES_POSSEDEES,
@@ -338,7 +338,7 @@ class Stats {
 
 	static function showSuggestedPublications($pays) {
 
-        $suggestions = Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'GET', '/collection/stats/suggestedissues', 'ducksmanager', is_null($pays) ? [] : [$pays]);
+        $suggestions = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/suggestedissues', 'ducksmanager', is_null($pays) ? [] : [$pays]);
 
 		if (count($suggestions['issues']) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php

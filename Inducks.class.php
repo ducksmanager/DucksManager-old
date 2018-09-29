@@ -16,49 +16,15 @@ class Inducks {
         }
 
         if ($nomServeur === 'serveur_virtuel') {
-            $coaServers = ServeurCoa::$coa_servers;
+            reset(ServeurCoa::$coa_servers);
+            $coaServerName = key(ServeurCoa::$coa_servers);
+            $coaServer = ServeurCoa::$coa_servers[$coaServerName];
         } else {
-            $coaServers = [ServeurCoa::$ducksmanager_server];
+            $coaServer = ServeurCoa::$ducksmanager_server;
         }
 
-        foreach($coaServers as $coaServerName=>$coaServer) {
-            if (isset($coaServer->role_passwords)) { // DM server
-                $output=Util::get_query_results_from_remote($coaServer, $requete, $db);
-            }
-            else {
-                $output=Util::get_secured_page($coaServer, 'sql.php?db=' . $db . '&req=' . urlencode($requete),
-                    isset($_GET['dbg']));
-            }
-            if (isset($_GET['brut'])) {
-                echo 'Requete : '.$requete.'<br />'
-                    .'Retour brut : <pre>'.$output.'</pre>'
-                    .'Stacktrace : <pre>';
-                debug_print_backtrace();
-                echo '</pre>';
-            }
-
-            if (empty($output) || $output === ERREUR_CONNEXION_INDUCKS) {
-                unset(ServeurCoa::$coa_servers[$coaServerName]);
-                return [];
-            }
-
-            if (isset($coaServer->role_passwords)) { // DM server
-                return $output;
-            }
-
-            $unserialized = @unserialize($output);
-            if (is_array($unserialized)) {
-                list($champs,$resultats) = $unserialized;
-                foreach($champs as $i_champ=>$nom_champ) {
-                    foreach($resultats as $i=>$resultat) {
-                        $resultats[$i][$nom_champ]=$resultat[$nom_champ];
-                    }
-                }
-                return $resultats;
-            }
-        }
-        return [];
-	}
+        return $coaServer->getQueryResults($requete, $db);
+    }
 
 	static function get_auteur($nom_auteur_abrege) {
 		$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$nom_auteur_abrege.'\'';

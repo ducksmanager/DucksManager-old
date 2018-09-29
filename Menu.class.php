@@ -22,10 +22,7 @@ class Item {
 	function afficher() {
 		if ($this->est_affiche()) {
 		    ?><li class="non-empty <?=$this->icone ? '':'no-icon'?>"><a href="?action=<?=$this->nom?>"><i class="<?=$this->icone?>"></i> <?=$this->texte?></a></li><?php
-   			if ($this->beta && self::$beta_user) {
-		   		?><span class="beta"><?=BETA?></span><?php
-   	        }
-   			if (!$this->beta && $this->nouveau) {
+   			if ($this->nouveau) {
 		   		?><span class="nouveau"><?=NOUVEAU?></span><?php
    	        }
 		}
@@ -34,8 +31,7 @@ class Item {
 	function est_affiche() {
 		return ($this->est_prive==='no'
 		     || (in_array($this->est_prive, ['always', 'always__limited_external_access']) && isset($_SESSION['user']) &&!(self::$action==='logout'))
-			 || ($this->est_prive==='never'  &&!(isset($_SESSION['user']) &&!(self::$action==='logout'))))
-			&& (!$this->beta || self::$beta_user);
+			 || ($this->est_prive==='never'  &&!(isset($_SESSION['user']) &&!(self::$action==='logout'))));
 	}
 }
 

@@ -22,17 +22,8 @@ class Util {
 
         return ERREUR_CONNEXION_INDUCKS;
     }
-	
-	static function get_secured_page(ServeurCoa $coaServer, $url, $dbg) {
-		$baseUrl = $coaServer->getUrl().'/'.$coaServer->web_root;
-		$fullUrl = $baseUrl.'/'.$url.'&mdp='.sha1($coaServer->db_password);
-		if ($dbg) {
-			echo $fullUrl.'<br /><br />';
-		}
-		return self::get_page($fullUrl);
-	}
 
-	static function isLocalHost() {
+    static function isLocalHost() {
 		return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
 	}
 
@@ -136,66 +127,6 @@ class Util {
             return null;
         }
         return new DateTime(date('Y-m-d H:i:s', (integer) $lastVisit[0]));
-    }
-
-    static function get_query_results_from_remote(ServeurCoa $coaServer, $query, $db) {
-	    $parameters = [
-            'query' => $query,
-            'db' => $db
-        ];
-        return self::get_service_results($coaServer, 'POST', '/rawsql', 'rawsql', $parameters);
-    }
-
-    /**
-     * @param ServeurCoa $coaServer
-     * @param $method
-     * @param $path
-     * @param string $role
-     * @param array $parameters
-     * @return mixed|null
-     */
-    public static function get_service_results(ServeurCoa $coaServer, $method, $path, $role, $parameters = []) {
-        $ch = curl_init();
-        $url = $coaServer->getUrl() . $coaServer->web_root . $path;
-
-        switch($method) {
-            case 'POST':
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
-            break;
-            case 'GET':
-                if (count($parameters) > 0) {
-                    $url .= '/' . implode('/', $parameters);
-                }
-            break;
-        }
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, $method === 'POST');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $headers = [
-            'Authorization: Basic ' . base64_encode(implode(':', [$role, $coaServer->role_passwords[$role]])),
-            'Content-Type: application/x-www-form-urlencoded',
-            'Cache-Control: no-cache',
-            'x-dm-version: 1.0',
-        ];
-        if (isset($_COOKIE['user'])) {
-            $headers[] = 'x-dm-user: ' . $_COOKIE['user'];
-            $headers[] = 'x-dm-pass: ' . $_COOKIE['pass'];
-        }
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $buffer = curl_exec($ch);
-        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
-            $results = json_decode($buffer, true);
-            if (is_array($results)) {
-                return $results;
-            }
-        }
-        return [];
     }
 
 }

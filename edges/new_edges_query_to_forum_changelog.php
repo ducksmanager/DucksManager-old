@@ -66,7 +66,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
         copy($url, $chemin);
 
-        Util::get_service_results(ServeurCoa::$coa_servers['dedibox2'], 'POST', "/edgecreator/model/v2/$id/readytopublish/0", 'edgecreator', []);
+        ServeurCoa::$coa_servers['dedibox2']->getServiceResults('POST', "/edgecreator/model/v2/$id/readytopublish/0", 'edgecreator', []);
 
     }
     $numeros[] = [

@@ -360,8 +360,6 @@ $id_user= $_SESSION['id_user'] ?? null;
 
         <div class="menu-list">
             <?php
-            $beta_user=DM_Core::$d->user_is_beta();
-            Menu::$beta_user=$beta_user;
             Menu::$action=$action;
             Menu::afficherMenus($menus);
             ?>
@@ -1164,12 +1162,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                     $requete = 'INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\'' . $_POST['nom'] . '\',\'' . $_POST['adresse_complete'] . '\',\'' . $_POST['commentaire'] . '\',' . (is_null($id_user) ? 'NULL' : $id_user) . ', ' . $_POST['coordX'] . ', ' . $_POST['coordY'] . ', 0)';
                     DM_Core::$d->requete($requete);
 
-                    Util::get_service_results(
-                        ServeurCoa::$coa_servers['dedibox2'],
-                        'POST',
-                        "/ducksmanager/email/bookstore",
-                        'ducksmanager',
-                        is_null($id_user) ? [] : ['userid' => $id_user]
+                    ServeurCoa::$coa_servers['dedibox2']->getServiceResults(
+                        'POST', "/ducksmanager/email/bookstore", 'ducksmanager', is_null($id_user) ? [] : ['userid' => $id_user]
                     );
                     ?>
                     <div class="alert alert-info">
@@ -1370,10 +1364,10 @@ function formulaire_inscription() {
             ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
         }?>
         <table border="0">
-            <tr><td><?=NOM_UTILISATEUR?> : </td><td><input class="form-control" name="user" type="text" value="<?=$user?>" /></td></tr>
-            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input class="form-control" name="email" type="text" value="<?=$email?>" /></td></tr>
-            <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input class="form-control" name="pass" type="password" /></td></tr>
-            <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input class="form-control" name="pass2" type="password" /></td></tr>
+            <tr><td><?=NOM_UTILISATEUR?> : </td><td><input required class="form-control" name="user" type="text" value="<?=$user?>" /></td></tr>
+            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input required class="form-control" name="email" type="text" value="<?=$email?>" /></td></tr>
+            <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input required class="form-control" name="pass" type="password" /></td></tr>
+            <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input required class="form-control" name="pass2" type="password" /></td></tr>
             <tr><td>&nbsp;</td></tr>
             <tr><td colspan="2" style="text-align: center"><input class="btn btn-success" type="submit" value="<?=INSCRIPTION?>" /></td></tr>
         </table>
@@ -1381,12 +1375,13 @@ function formulaire_inscription() {
         <?php
     }
     else {
-        DM_Core::$d->nouveau_user($user, $email, sha1($pass));
-        if (isset($rawData)) {
-            $l = new Liste($rawData);
-            $l->add_to_database(DM_Core::$d->user_to_id($user));
+        if (DM_Core::$d->nouveau_user($user, $email, sha1($pass))) {
+            if (isset($rawData)) {
+                $l = new Liste($rawData);
+                $l->add_to_database(DM_Core::$d->user_to_id($user));
+            }
+            creer_id_session($user, $pass);
         }
-        creer_id_session($user, $pass);
     }
 }
 
