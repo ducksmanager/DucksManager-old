@@ -171,7 +171,7 @@ class Edge {
     }
 
 }
-DM_Core::$d->requete('SET NAMES UTF8');
+
 if (isset($_POST['get_points'])) {
     $nb_points_courants = DM_Core::$d->get_points_courants($_SESSION['id_user']);
     echo json_encode(['points' => $nb_points_courants]);

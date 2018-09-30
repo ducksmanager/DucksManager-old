@@ -16,7 +16,6 @@ if (!isset($_GET['mdp']) || !ServeurDb::verifPassword($_GET['mdp'])) {
 	exit();
 }
 
-Database::$handle->query('SET NAMES UTF8');
 if (isset($_GET['rawData_file'])) {
 	$rawdatafile=$_GET['rawData_file'];
     $contenu=Util::get_page('https://www.ducksmanager.net/_tmp/rawdata_'.$rawdatafile.'.txt');

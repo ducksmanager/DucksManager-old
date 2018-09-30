@@ -52,7 +52,6 @@ if (isset($_GET['storycode'])) {
 else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 	if (isset($_GET['coa'])) {
 		ServeurDb::connect('coa');
-		Database::$handle->query('SET NAMES UTF8');
 		$retour=new stdClass();
 		$retour->static=new stdClass();
 
@@ -179,7 +178,6 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         print_r($resultats);
                     }
                 } else if (isset($_GET['ajouter_achat'])) {
-                    Database::$handle->query('SET NAMES UTF8');
                     $date_achat = str_replace("'", "", $_GET['date_achat']);
                     $description_achat = str_replace("'", "", $_GET['description_achat']);
                     $requete_ajout_achat = "
@@ -195,7 +193,6 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         echo 'OK';
                     }
                 } else if (isset($_GET['get_achats'])) {
-                    Database::$handle->query('SET NAMES UTF8');
                     $retour = new stdClass();
                     $requete_achats = "SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User=$id_utilisateur ORDER BY Date DESC LIMIT 15";
                     $resultats_achats = Inducks::requete_select($requete_achats, 'db301759616', 'ducksmanager.net');
@@ -203,7 +200,6 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                     echo json_encode($retour);
                 } else {
                     ServeurDb::connect('coa');
-                    Database::$handle->query('SET NAMES UTF8');
                     $retour = new stdClass();
                     $numeros = [];
                     $pays = [];

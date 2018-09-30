@@ -59,15 +59,11 @@ class Database {
 	}
 
 	function requete($requete) {
-		require_once'Inducks.class.php';
+		require_once 'Inducks.class.php';
 		if (ServeurDb::isServeurVirtuel()) {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 		return self::$handle->query($requete);
-	}
-
-	function last_inserted_id() {
-		return self::$handle->insert_id;
 	}
 
 	function user_to_id($user) {
@@ -277,7 +273,7 @@ class Database {
                 return DM_Core::$d::escape($numero);
             }, $liste);
 
-            self::$handle->query("
+            DM_Core::$d->requete("
               DELETE FROM numeros
               WHERE ID_Utilisateur=$id_user
                 AND Numero IN (".implode(',', $liste_str).")"
