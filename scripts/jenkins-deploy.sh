@@ -12,7 +12,7 @@ echo "Change set : " && cat changeset.txt
 mkdir toUpload
 
 cat changeset.txt | while read -r file; do
-  cp $file toUpload
+  cp $file "toUpload/$file"
 done
 
 sed -i "s/VERSION/$commitid/g" toUpload/index.php
