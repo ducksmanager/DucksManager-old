@@ -1,24 +1,27 @@
 <?php
 
 include_once 'auth.php';
+require_once '../DucksManager_Core.class.php';
 
+/**
+ * @param string $requete
+ * @param string $cheminCsv
+ * @return bool
+ */
 function exporter($requete, $cheminCsv)
 {
-    $result = Database::$handle->query($requete);
-    if ($result) {
-        $num_fields = $result->field_count;
-        $headers = [];
-        for ($i = 0; $i < $num_fields; $i++) {
-            $headers[] = $result->fetch_field_direct($i)->name;
-        }
+    $results = DM_Core::$d->requete_select($requete);
+    if (count($results) > 0) {
         $fp = fopen($cheminCsv, 'w');
-        if ($fp && $result) {
-            fputcsv($fp, $headers);
-            while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-                fputcsv($fp, array_values($row));
+        if ($fp) {
+            fputcsv($fp, array_keys($results[0]));
+            foreach($results as $result) {
+                fputcsv($fp, array_values($result));
             }
+            return true;
         }
     }
+    return false;
 }
 
 if (isset($_GET['csv'])) {
@@ -39,15 +42,15 @@ if (isset($_GET['csv'])) {
 
     if (isset($requete)) {
         $cheminCsv = "export/$csv.csv";
-        exporter($requete, $cheminCsv);
-
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.basename("$csv.csv").'"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($cheminCsv));
-        readfile($cheminCsv);
+        if (exporter($requete, $cheminCsv)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.basename("$csv.csv").'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($cheminCsv));
+            readfile($cheminCsv);
+        }
     }
 }
