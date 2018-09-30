@@ -2,7 +2,7 @@ var autocomplete;
 
 function initializeAutocomplete() {
 	autocomplete = new google.maps.places.Autocomplete(
-		jQuery('#adresse_complete'),
+		jQuery('#adresse_complete').get(0),
 		{ types: ['geocode'] }
 	);
 	google.maps.event.addListener(autocomplete, 'place_changed', fillInAddress);

@@ -155,8 +155,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.css"><?php
                 break;
                 case 'bouquineries': ?>
-                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ"></script>
-                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script><?php
+                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
+                    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&callback=initializeAutocomplete&libraries=places"></script><?php
                 break;
                 case 'bibliotheque':
                     if (isset($_GET['user'])) {
@@ -258,9 +258,6 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
             ?>charger_recherche();<?php
         break;
-        case 'bouquineries':
-            ?>initializeAutocomplete();<?php
-            break;
         case 'stats':
             if (isset($_GET['onglet'])) {
             	switch($_GET['onglet']) {
