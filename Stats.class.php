@@ -340,7 +340,7 @@ class Stats {
 
         $suggestions = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/suggestedissues', 'ducksmanager', is_null($pays) ? [] : [$pays]);
 
-		if (count($suggestions['issues']) === 0) {
+		if (!array_key_exists('issues', $suggestions) || count($suggestions['issues']) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php
 		}
 		else {
