@@ -27,15 +27,16 @@ class Database {
 	var $user;
 	var $password;
 
+    /** @var $REMOTE_DB boolean  */
+	public static $REMOTE_DB;
+
 	/** @var $handle mysqli  */
 	public static $handle;
 
-	public static function escape($string) {
-        return self::$handle->real_escape_string($string);
-	}
-
 	function __construct() {
-	    ServeurDb::connect();
+	    if (!self::$REMOTE_DB) {
+	        ServeurDb::connect();
+        }
 	}
 
 	function connect($user,$password) {
@@ -43,27 +44,57 @@ class Database {
         $this->password=$password;
 	}
 
-	function requete_select($requete) {
+	function requete_select($requete, $typesParametres = '', $parametres = []) {
 		if (ServeurDb::isServeurVirtuel() && get_current_db() !== 'coa') {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
-
-		$requete_resultat=self::$handle->query($requete);
-        $arr=[];
-        if ($requete_resultat !== false) {
-            while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC)) {
-                $arr[] = $arr_tmp;
+        if (self::$REMOTE_DB) {
+            return Inducks::requete_select($requete, 'db_dm_copy','serveur_virtuel');
+        }
+        else {
+            if (count($parametres) > 0) {
+                $statement = self::$handle->prepare($requete);
+                $statement->bind_param($typesParametres, ...$parametres);
+                $success = $statement->execute();
+                if (!$success) {
+                    return [];
+                }
+                else {
+                    $res = $statement->get_result();
+                    return $res->fetch_all(MYSQLI_ASSOC);
+                }
+            }
+            else {
+                $requete_resultat=self::$handle->query($requete);
+                $arr=[];
+                if ($requete_resultat !== false) {
+                    while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC)) {
+                        $arr[] = $arr_tmp;
+                    }
+                }
+                return $arr;
             }
         }
-        return $arr;
 	}
 
-	function requete($requete) {
+	function requete($requete, $typesParametres = '', $parametres = []) {
 		require_once 'Inducks.class.php';
 		if (ServeurDb::isServeurVirtuel()) {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
-		return self::$handle->query($requete);
+        if (self::$REMOTE_DB) {
+            return Inducks::requete_select($requete, 'db_dm_copy','serveur_virtuel');
+        }
+		else {
+            if (count($parametres) > 0) {
+                $statement = self::$handle->prepare($requete);
+                $statement->bind_param($typesParametres, ...$parametres);
+                return $statement->execute();
+            }
+            else {
+		        return self::$handle->query($requete);
+            }
+        }
 	}
 
 	function user_to_id($user) {
@@ -269,14 +300,12 @@ class Database {
 		$id_user=$this->user_to_id($_SESSION['user']);
 
 		if ($etat === '_non_possede') {
-            $liste_str = array_map(function($numero) {
-                return DM_Core::$d::escape($numero);
-            }, $liste);
-
             DM_Core::$d->requete("
               DELETE FROM numeros
               WHERE ID_Utilisateur=$id_user
-                AND Numero IN (".implode(',', $liste_str).")"
+                AND Numero IN (".implode(',', array_fill(0, count($liste), '?')).")",
+                str_repeat('s', count($liste)),
+                $liste
             );
         }
         else {
@@ -286,59 +315,64 @@ class Database {
             $av_insert=$av==='do_not_change' ? '0' : $av;
 
             $numeros_insert = [];
-            $liste_deja_possedes=[];
+            $numeros_update=[];
             foreach($liste as $numero) {
                 if (!is_null($liste_user->get_etat_numero_possede($pays,$magazine,$numero))) {
-                    $liste_deja_possedes[] = $numero;
+                    $numeros_update[] = $numero;
                 }
                 else {
-                    $data_numero = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$id_user];
-
-                    $numeros_insert[] = array_map(function($valeur) {
-                        return "'".DM_Core::$d::escape($valeur)."'";
-                    }, $data_numero);
+                    $numeros_insert[] = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$id_user];
                 }
             }
 
             if (count($numeros_insert) > 0) {
-                $numeros_insert_str = array_map(function($data_numero) {
-                    return '('.implode(',', $data_numero).')';
-                }, $numeros_insert);
-
                 $champs = ['Pays', 'Magazine', 'Numero', 'Etat', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
-                DM_Core::$d->requete("
-                  INSERT INTO numeros(".implode(',',$champs).")
-                  VALUES ".implode(',', $numeros_insert_str)
+                DM_Core::$d->requete('
+                    INSERT INTO numeros(' .implode(',',$champs). ')
+                    VALUES ' .implode(',', array_map(function($data_numero) {
+                        return '('.implode(',', array_fill(0, count($data_numero), '?')).')';
+                    }, $numeros_insert)),
+                    str_repeat('ssssiii', count($numeros_insert)),
+                    array_merge(...$numeros_insert)
                 );
             }
 
-            $changements = [];
-
-            if ($etat !== 'do_not_change') {
-                $changements[] = "Etat='$etat'";
-            }
-
-            if ($id_acquisition !== 'do_not_change') {
-                $changements[] = "ID_Acquisition='$id_acquisition'";
-            }
-
-            if ($av !== 'do_not_change') {
-                $changements[] = "AV='$av'";
-            }
-
-            $numeros_update = array_map(function($numero) {
-                return "'".DM_Core::$d::escape($numero)."'";
-            }, $liste_deja_possedes);
-
             if (count($numeros_update) > 0) {
+                $changements = [];
+                $typesChangements = '';
+                $valeursChangements = [];
+
+                if ($etat !== 'do_not_change') {
+                    $changements[] = "Etat=?";
+                    $valeursChangements[] = $etat;
+                    $typesChangements.= 's';
+                }
+
+                if ($id_acquisition !== 'do_not_change') {
+                    $changements[] = "ID_Acquisition=?";
+                    $valeursChangements[] = $id_acquisition;
+                    $typesChangements.= 'i';
+                }
+
+                if ($av !== 'do_not_change') {
+                    $changements[] = "AV=?";
+                    $valeursChangements[] = $av;
+                    $typesChangements.= 'i';
+                }
+
+                $typesChangements.=str_repeat('s', count($numeros_update));
+                $valeursChangements = array_merge($valeursChangements, $numeros_update);
+
                 DM_Core::$d->requete("
                   UPDATE numeros
                   SET ".implode(',', $changements)."
                   WHERE Pays='$pays'
                     AND Magazine='$magazine'
                     AND ID_Utilisateur=$id_user
-                    AND Numero IN (".implode(',', $numeros_update).")"
-                );
+                    AND Numero IN (".implode(',', array_fill(0, count($numeros_update), '?')).")"
+                ,
+                    $typesChangements,
+                    $valeursChangements);
             }
 		}
 	}
@@ -421,13 +455,14 @@ class Database {
 	function modifier_note_auteur($auteur, $note) {
         $id_user=$this->user_to_id($_SESSION['user']);
 
-        $requete_notation="
-          UPDATE auteurs_pseudos
-          SET Notation=$note
-          WHERE DateStat = '0000-00-00' 
-            AND NomAuteurAbrege = '$auteur'
-            AND ID_user=$id_user";
-        DM_Core::$d->requete($requete_notation);
+        DM_Core::$d->requete('
+            UPDATE auteurs_pseudos
+            SET Notation=?
+            WHERE DateStat = ?
+              AND NomAuteurAbrege = ?
+              AND ID_user=?',
+            'issi',
+            [ $note, '0000-00-00', $auteur, $id_user]);
 	}
 
 	function sous_liste($pays,$magazine) {
@@ -657,10 +692,11 @@ class Database {
         }
 
     	// TODO Use DM server service
-        $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
-                                          WHERE ID_Utilisateur = '.mysqli_real_escape_string(self::$handle, $id_user).' 
-                                          AND Cle=\''.mysqli_real_escape_string(self::$handle, $cle).'\'';
-        if (count(DM_Core::$d->requete_select($requete_verifier_lien_partage)) > 0) {
+        if (count(DM_Core::$d->requete_select(
+                'SELECT 1 FROM bibliotheque_acces_externes WHERE ID_Utilisateur = ? AND Cle = ?',
+                'is',
+                [$id_user, $cle]
+            )) > 0) {
             return $id_user;
         }
         return null;
@@ -826,10 +862,7 @@ if (isset($_POST['database'])) {
 		echo json_encode($resultat_notations);
 	}
 	else if (isset($_POST['changer_notation'])) {
-		DM_Core::$d->modifier_note_auteur(
-		    mysqli_real_escape_string(Database::$handle, $_POST['auteur']),
-		    mysqli_real_escape_string(Database::$handle, $_POST['notation'])
-        );
+		DM_Core::$d->modifier_note_auteur($_POST['auteur'], $_POST['notation']);
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=$_SESSION['id_user'];
@@ -879,4 +912,6 @@ function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evene
 
 	$evenements[$diff_secondes]->$type_evenement = $evenements_type;
 }
+
+Database::$REMOTE_DB = $_GET['remote_db'] === 'true';
 ?>

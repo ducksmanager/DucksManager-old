@@ -1152,15 +1152,17 @@ $id_user= $_SESSION['id_user'] ?? null;
             if (isset($_POST['ajouter'])) {
                 $erreur = false;
                 foreach (['nom', 'adresse_complete', 'coordX', 'coordY', 'commentaire'] as $champ) {
-                    $_POST[$champ] = mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
                     if (empty($_POST[$champ])) {
-                        $erreur = true;?>
-                        <div style="color:red"><?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?></div><?php
+                        $erreur = true;
+                        ?><div style="color:red"><?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?></div><?php
                     }
                 }
                 if (!$erreur) {
-                    $requete = 'INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\'' . $_POST['nom'] . '\',\'' . $_POST['adresse_complete'] . '\',\'' . $_POST['commentaire'] . '\',' . (is_null($id_user) ? 'NULL' : $id_user) . ', ' . $_POST['coordX'] . ', ' . $_POST['coordY'] . ', 0)';
-                    DM_Core::$d->requete($requete);
+                    DM_Core::$d->requete(
+                        'INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                        'sssiddi',
+                        [$_POST['nom'], $_POST['adresse_complete'], $_POST['commentaire'], $id_user ?? null, $_POST['coordX'], $_POST['coordY'], 0]
+                    );
 
                     ServeurCoa::$coa_servers['dedibox2']->getServiceResults(
                         'POST', "/ducksmanager/email/bookstore", 'ducksmanager', is_null($id_user) ? [] : ['userid' => $id_user]
@@ -1174,40 +1176,38 @@ $id_user= $_SESSION['id_user'] ?? null;
             }?>
             <iframe src="bouquineries.php" class="iframe_map"></iframe>
             <br /> <br />
-            <h2>
-                <?=PROPOSER_BOUQUINERIE?>
-            </h2>
+            <h2><?=PROPOSER_BOUQUINERIE?></h2>
             <?=PRESENTATION_BOUQUINERIE1?>
             <br />
-                <?=INTRO_NOUVELLE_BOUQUINERIE?>
+            <?=INTRO_NOUVELLE_BOUQUINERIE?>
             <br />
-                <?=PRIX_HONNETES?>
-            <br /> <br />
-                <form method="post" id="form_bouquinerie" action="?action=bouquineries">
-                    <table border="0">
-                        <tr>
-                            <td><label for="bouquinerie_nom"><?=NOM_BOUQUINERIE?> :</label></td>
-                            <td><input class="form-control text_input" maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
-                        </tr>
-                        <tr>
-                            <td><label for="adresse_complete"><?=ADRESSE?> :</label></td>
-                            <td><input class="form-control text_input" type="text" id="adresse_complete" name="adresse_complete"/></td>
-                        </tr>
-                        <tr>
-                            <td><label for="bouquinerie_commentaires"><?=COMMENTAIRES_BOUQUINERIE?></label><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
-                            <td><textarea id="form-control bouquinerie_commentaires" name="commentaire" cols="41" rows="5"></textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center" colspan="2">
-                                <br />
-                                <input class="btn btn-default" name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" />
-                            </td>
-                        </tr>
-                    </table>
-                    <input type="hidden" name="coordX" />
-                    <input type="hidden" name="coordY" />
-                </form>
+            <?=PRIX_HONNETES?>
+            <br /><br />
+            <form method="post" id="form_bouquinerie" action="?action=bouquineries">
+                <table border="0">
+                    <tr>
+                        <td><label for="bouquinerie_nom"><?=NOM_BOUQUINERIE?> :</label></td>
+                        <td><input class="form-control text_input" required maxlength="25" id="bouquinerie_nom" name="nom" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="adresse_complete"><?=ADRESSE?> :</label></td>
+                        <td><input class="form-control text_input" requiredtype="text" id="adresse_complete" name="adresse_complete"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="bouquinerie_commentaires"><?=COMMENTAIRES_BOUQUINERIE?></label><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
+                        <td><textarea required id="form-control bouquinerie_commentaires" name="commentaire" cols="41" rows="5"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <br />
+                            <input class="btn btn-default" name="ajouter" type="submit" value="<?=AJOUTER_BOUQUINERIE?>" />
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="coordX" />
+                <input type="hidden" name="coordY" />
+            </form>
             <?php
             break;
 
