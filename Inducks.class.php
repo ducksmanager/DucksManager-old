@@ -387,12 +387,12 @@ elseif (isset($_POST['get_magazines_histoire'])) {
                 'titre'=>$title
             ];
 		}
-	}
 
-    if (count($liste_numeros) > 10) {
-        $liste_numeros=array_slice($liste_numeros, 0,10);
-        $retour['limite']=true;
-    }
+        if (count($liste_numeros) > 10) {
+            $liste_numeros=array_slice($liste_numeros, 0,10);
+            $retour['limite']=true;
+        }
+	}
 
     $retour['liste_numeros'] = array_values($liste_numeros);
 

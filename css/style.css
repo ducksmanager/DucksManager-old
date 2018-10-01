@@ -269,7 +269,7 @@ img.medaille_objectif.droite {
 
 .details_numero.gauche {
 	float: left;
-	margin-left: -25px;
+	margin-right: 10px;
 }
 
 .bloc_details {

@@ -31,7 +31,10 @@
 
 #conteneur_resultat_recherche {
     position: absolute;
+    width: 330px;
+    max-height: 285px;
     z-index: 300;
+    overflow-y: auto;
 }
 
 .magazine_trouve img {
@@ -40,12 +43,11 @@
 }
 
 .resultat_recherche, .magazine_trouve, .histoire_trouvee {
-    width: 276px;
-    height: 18px;
+    width: 300px;
     line-height: 22px;
     color: black;
-    padding: 5px 5px 5px 34px !important;
     overflow-x: hidden;
+    padding: 5px 8px !important;
 }
 
 .conteneur_label_histoire {
