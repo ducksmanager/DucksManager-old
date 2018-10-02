@@ -6,11 +6,15 @@ previous_commitid="`wget -qO- https://ducksmanager.net/deployment_commit_id.txt`
 commitid=`git rev-parse HEAD`
 
 git diff --diff-filter=d --name-only ${previous_commitid} > changeset.txt
+
+echo ${commitid} > deployment_commit_id.txt
+echo "deployment_commit_id.txt" >> changeset.txt
+
 echo "index.php" >> changeset.txt
+
 echo "Change set : " && cat changeset.txt
 
 mkdir toUpload
-
 cat changeset.txt | while read -r file; do
   cp --parents $file toUpload
 done
