@@ -50,8 +50,8 @@ function localiser(id_adresse) {
 	if (adresses[id_adresse].CoordX != '0') {
 		creer_marqueur(adresses[id_adresse],
 			new google.maps.LatLng(
-				adresses[id_adresse].CoordX,
-				adresses[id_adresse].CoordY));
+				parseFloat(adresses[id_adresse].CoordX),
+				parseFloat(adresses[id_adresse].CoordY)));
 	}
 }
 
@@ -74,10 +74,11 @@ function creer_marqueur(adresse,position) {
 	});
 
 	google.maps.event.addListener(marker, 'click', function() {
-		jQuery.each(fields, function(id, adresse) {
+		jQuery.each(adresses, function(id, adresse) {
 			infowindows[id].close(map, marker);
-			if (marker.title === adresse.Nom)
+			if (marker.title === adresse.Nom) {
 				infowindows[id].open(map, marker);
+			}
 		});
 	});
 }
