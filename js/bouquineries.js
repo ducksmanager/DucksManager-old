@@ -66,7 +66,7 @@ function creer_marqueur(adresse,position) {
 
 	var element = jQuery('.infoWindow.template').clone(true).removeClass('template');
 	jQuery.each(fields, function(i, field) {
-		element.find('.' + field).text(adresse[field]);
+		element.find('.' + field).html(adresse[field]);
 	});
 
 	infowindows[adresse.id] = new google.maps.InfoWindow({
