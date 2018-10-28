@@ -1,6 +1,6 @@
 -- This script should be executed daily
 
--- Cleanup: prevents issues with issues having the same issuenumber but with a different case
+-- Cleanup: prevents problems with issues having the same issuenumber but with a different case
 UPDATE numeros n
   INNER JOIN (
     SELECT DISTINCT
