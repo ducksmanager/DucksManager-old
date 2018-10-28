@@ -1,4 +1,4 @@
-<?php header("Content-Type: text/html; charset=UTF-8"); ?>
+<?php header('Content-Type: text/html; charset=UTF-8'); ?>
 <html>
     <head>
         <meta charset="UTF-8" />
@@ -72,6 +72,11 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '..');
 include_once '../Inducks.class.php';
 include_once '../Edge.class.php';
 include_once '../Database.class.php';
+
+$show = isset($_GET['show']);
+if ($show) {
+    include_once '../authentification.php';
+}
 
 if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
@@ -182,9 +187,19 @@ foreach($publicationcodes as $publicationcode) {
             if (array_key_exists($publicationcode, $numeros_inducks)) {
                 foreach($numeros_inducks[$publicationcode] as $numero_inducks) {
                     $tranche_prete_numero_inducks = in_array($numero_inducks,$tranches_pretes[$publicationcode]);
-                    ?><span class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>" title="<?=$numero_inducks?>">&nbsp;</span><?php
                     if ($tranche_prete_numero_inducks) {
                         $cpt_dispos++;
+                    }
+                    if ($show) {
+                        if ($tranche_prete_numero_inducks) {
+                            ?><img src="<?="https://edges.ducksmanager.net/edges/$pays/gen/$magazine.$numero_inducks.png"?>" /><?php
+                        }
+                        else {
+                            ?><span class="num bordered" title="<?=$numero_inducks?>">&nbsp;</span><?php
+                        }
+                    }
+                    else {
+                        ?><span class="num bordered <?=$tranche_prete_numero_inducks?'dispo':''?>" title="<?=$numero_inducks?>">&nbsp;</span><?php
                     }
                 }
             } else {
