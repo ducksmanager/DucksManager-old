@@ -49,7 +49,7 @@ class Inducks {
 		if ($vrai_magazine !== $magazine) {
 			return [$vrai_magazine,substr($magazine, strlen($vrai_magazine)).$numero];
 		}
-        return [$magazine,$numero];
+        return [$magazine,str_replace(' ', '', $numero)];
     }
 
 	static function get_liste_numeros_from_publicationcodes($publication_codes) {
