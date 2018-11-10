@@ -1,3 +1,17 @@
+.context-menu-list {
+	padding: 0 !important;
+}
+
+.context-menu-list:before {
+	height: 30px;
+	line-height: 25px;
+	font-size: 14px !important;
+}
+
+.context-menu-list>:first-child {
+	margin-top: 30px !important;
+}
+
 .context-menu-list li.context-menu-item.selected {
 	background-color: rgb(165, 42, 42);
 	color: white;
@@ -5,6 +19,15 @@
 
 .context-menu-list li.context-menu-item.context-menu-disabled {
     color: #bbb !important;
+}
+
+.named-menu-separator {
+	border: 1px solid #e6e6e6;
+	border-top-width: 3px;
+	text-align: center;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 20px;
 }
 
 .context-menu-list li.context-menu-icon {
@@ -17,21 +40,37 @@
 	background-color: #4f5b69 !important;
 }
 
-.context-menu-list .context-menu-hover.save {
-	background-color: green !important;
+.context-menu-list .save {
+	height: 30px;
+	line-height: 30px;
+	font-size: 14px !important;
+	font-weight: bold;
+	text-align: center;
+	background-color: green;
+	color: white;
+	border-top: 3px solid #e6e6e6;
 }
 
 .context-menu-list .context-menu-submenu .context-menu-list {
 	top: -20px !important;
-	min-width: 200px;
+	min-width: 210px;
 	max-height: 300px;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase {
+	margin-top: 0 !important;
 	text-align: center;
 	display: block;
+}
+
+.context-menu-list .context-menu-submenu .new_purchase:hover {
+	background-color: white !important;
+}
+
+.context-menu-list .context-menu-submenu .new_purchase:hover h5 {
+	color: #2f2f2f;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase h5 {

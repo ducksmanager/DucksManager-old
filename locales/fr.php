@@ -1,6 +1,7 @@
 <?php
 define('A','&agrave;');
 define('A_VENDRE','A vendre');
+define('A_VENDRE_TITRE','Vente');
 define('ACCUEIL','Accueil');
 define('ACHAT','Achat');
 define('ACHAT_ASSOCIER_DATE_ACHAT','Associer avec une date d\'achat');
@@ -35,6 +36,7 @@ define('AJOUTER_BOUQUINERIE','Ajouter la bouquinerie');
 define('AJOUTER_MAGAZINE','Ajouter un magazine');
 define('AJOUTER_NUMEROS_INDUCKS','Ajouter dans DucksManager les num&eacute;ros qui en sont absents');
 define('ANALYSE_LISTE','Analyse de la liste...');
+define('ANNULER','Annuler');
 define('ATTENTION_EMAIL_VIDE_ACHAT','Afin de pouvoir contacter les utilisateurs qui proposent des num&eacute;ros &agrave; la vente, veuillez renseigner votre e-mail sur la page ');
 define('ATTENTION_VENTE_SANS_EMAIL','Attention ! Votre collection contient des num&eacute;ros &agrave; vendre mais vous n\'avez pas indiqu&eacute; votre adresse e-mail dans la page ');
 define('AUCUNE_ACQUISITION','Aucune acquisition enregistr&eacute;e');

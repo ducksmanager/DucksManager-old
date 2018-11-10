@@ -11,25 +11,25 @@ var selectedItems = {
 
 function init_menu_contextuel() {
     menuItems = {
+        sep1: { type: 'html', className: 'named-menu-separator', html: "<div>" + l10n_gerer.etat + "</div>" },
         condition_do_not_change: {name: l10n_gerer.etat_conserver_etat_actuel},
         condition__non_possede: {name: l10n_gerer.etat_marquer_non_possede, icon: "condition_missing"},
         condition_indefini: {name: l10n_gerer.etat_marquer_possede, icon: "condition_possessed"},
         condition_mauvais: {name: l10n_gerer.etat_marquer_mauvais_etat, icon: "condition_bad"},
         condition_moyen: {name: l10n_gerer.etat_marquer_etat_moyen, icon: "condition_notsogood"},
         condition_bon: {name: l10n_gerer.etat_marquer_bon_etat, icon: "condition_good"},
-        sep1: "---------",
+        sep2: { type: 'html', className: 'named-menu-separator', html: "<div>" + l10n_gerer.achat_date_achat + "</div>" },
         purchase_do_not_change: {name: l10n_gerer.achat_conserver_date_achat},
         purchase_link: {
             name: l10n_gerer.achat_associer_date_achat,
             icon: "purchase_link"
         },
         'purchase_-1': {name: l10n_gerer.achat_desassocier_date_achat, icon: "purchase_unlink"},
-        sep2: "---------",
+        sep3: { type: 'html', className: 'named-menu-separator', html: "<div>" + l10n_gerer.a_vendre_titre + "</div>" },
         sale_do_not_change: {name: l10n_gerer.vente_conserver_volonte_vente},
         sale_1: { name: l10n_gerer.vente_marquer_a_vendre, icon: "sale_for_sale" },
         sale_0: {name: l10n_gerer.vente_marquer_pas_a_vendre, icon: "sale_not_for_sale"},
-        sep3: "---------",
-        save: {name: l10n_gerer.enregistrer_changements, icon: "save", className: "save", callback: updateSelectedIssues}
+        save: {name: l10n_gerer.enregistrer_changements, className: "save", callback: updateSelectedIssues}
     };
 
     jQuery('body').mousemove(function(e) {
@@ -115,7 +115,7 @@ function getMenuItems() {
                             .append(jQuery('<input>', {name: 'title', type: 'text', size: 30, maxlength: 30, placeholder: l10n_gerer.achat_description}).prop('required', true).addClass('form-control'))
                             .append(jQuery('<input>', {name: 'date', type: 'text', size: 30, maxlength: 10, placeholder: l10n_gerer.achat_date_achat, readonly: 'readonly'}).prop('required', true).addClass('form-control'))
                             .append(jQuery('<input>', {type: 'submit'}).addClass('btn btn-default').val(l10n_gerer.creer))
-                            .append(jQuery('<button>').addClass('btn btn-default cancel').text('Annuler'))
+                            .append(jQuery('<button>').addClass('btn btn-default cancel').text(l10n_gerer.annuler))
                     ).html(),
             callback: onCreatePurchaseClick
         }

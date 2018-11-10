@@ -16,11 +16,11 @@ function init_observers_gerer_numeros() {
 
     l10n_gerer = [
         'numero_selectionne', 'numeros_selectionnes',
-        'achat', 'achat_date_achat', 'achat_description', 'creer',
-        'etat_conserver_etat_actuel', 'etat_marquer_non_possede', 'etat_marquer_possede',
+        'achat', 'achat_date_achat', 'achat_description', 'creer', 'annuler',
+        'etat', 'etat_conserver_etat_actuel', 'etat_marquer_non_possede', 'etat_marquer_possede',
         'etat_marquer_mauvais_etat', 'etat_marquer_etat_moyen', 'etat_marquer_bon_etat',
         'achat_conserver_date_achat', 'achat_desassocier_date_achat', 'achat_associer_date_achat', 'achat_nouvelle_date_achat',
-        'vente_conserver_volonte_vente', 'vente_marquer_a_vendre', 'vente_marquer_pas_a_vendre',
+        'a_vendre_titre', 'vente_conserver_volonte_vente', 'vente_marquer_a_vendre', 'vente_marquer_pas_a_vendre',
         'enregistrer_changements'];
     l10n_action('fillArray',l10n_gerer, 'l10n_gerer', function() {
         get_achats(function() {

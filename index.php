@@ -150,9 +150,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                 case 'gerer':
                     ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script>
                     <link rel="stylesheet" type="text/css" href="css/menu_contextuel.css?VERSION" />
-                    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.js"></script>
-                    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.ui.position.min.js"></script>
-                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.4/jquery.contextMenu.min.css"><?php
+                    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
+                    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.min.js"></script>
+                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css"><?php
                 break;
                 case 'bouquineries': ?>
                     <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
