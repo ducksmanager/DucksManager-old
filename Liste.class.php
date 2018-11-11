@@ -169,12 +169,13 @@ class Liste {
 				</span>
 				<span id="message_classement"></span>
 				<div id="fin_classement" class="hidden">
-					<?php foreach($types as $type=>$label) {
-					?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
-						 onclick="toggleGraphs('possessions')">
-						<?=$label?>
-					  </a><?php
-					}?>
+                    <div class="btn-group" data-toggle="buttons">
+                        <?php foreach($types as $type=>$label) {?>
+                            <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'possessions')">
+                                <input type="radio" name="options" id="option1" autocomplete="off"> <?=$label?>
+                            </label><?php
+                        }?>
+                    </div>
 				</div>
 				<br />
 				<script type="text/javascript">

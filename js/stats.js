@@ -270,9 +270,10 @@ function getRandomColor() {
 	return color;
 }
 
-function toggleGraphs(type) {
-	jQuery('.graph_'+type).toggleClass('hidden');
-	jQuery('.graph_type').toggleClass('bold');
+function toggleGraphs(element, type) {
+	if (!jQuery(element).hasClass('active')) {
+		jQuery('.graph_'+type).toggleClass('hidden');
+    }
 }
 
 function recharger_stats_auteurs() {
