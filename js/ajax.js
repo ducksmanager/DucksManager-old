@@ -183,31 +183,30 @@ function initPays(inclure_tous_pays, selected) {
     }
 }
 
-function initTextures() {
-    if (jQuery('#texture1').length) {
-	    jQuery.each([1, 2], function (i, n) {
-		    jQuery.post('Edge.class.php',
-                {get_texture: 'true', n: n},
-                function (response) {
-				    jQuery('#texture' + n).html(response);
-				    setTimeout(function () {
-					    select_sous_texture(n);
-				    }, 1000);
-			    }
-		    );
-        });
-    }
+function setCurrentTexture(textureId, value) {
+    jQuery('#select_' + textureId + ' button .selected').text(value);
+    jQuery('#' + textureId).val(value);
 }
 
-function select_sous_texture (n) {
-	if (jQuery('#sous_texture'+n).length) {
-		jQuery.post('Edge.class.php',
-            {get_sous_texture: 'true', texture: jQuery('#texture' + n).val(), n: n},
+function initTextures() {
+    if (jQuery('#texture1').length) {
+        jQuery.post('Edge.class.php',
+            {get_sous_texture: 'true'},
             function (response) {
-				jQuery('#sous_texture' + n).html(response);
-			}
-		);
-	}
+                var selects = jQuery('.select_sous_texture .dropdown-menu');
+                jQuery.each(response.texturesData.textures, function(unused, sous_texture) {
+                    selects.append(jQuery('<li>').html(jQuery('<a>', { href: 'javacript:void(0)' }).text(sous_texture)));
+                });
+                selects.find('li').click(function() {
+                    var select = jQuery(this).closest('.select_sous_texture');
+                    var textureId = select.attr('id').match(/select_(.+)$/)[1];
+                    setCurrentTexture(textureId, jQuery(this).text());
+                });
+                setCurrentTexture('sous_texture1', response.texturesData.current[0]);
+                setCurrentTexture('sous_texture2', response.texturesData.current[1]);
+            }
+        );
+    }
 }
 function select_magazine(valeur_magazine) {
     var el_select=jQuery('#liste_pays');

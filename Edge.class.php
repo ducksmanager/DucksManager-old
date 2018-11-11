@@ -216,47 +216,33 @@ elseif (isset($_POST['get_bibliotheque'])) {
         ]);
     }
 }
-elseif (isset($_POST['get_texture'])) {
-	$id_user=$_SESSION['id_user'];
-	$requete_texture='SELECT Bibliotheque_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
-	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
-	$rep = "edges/textures";
-	$dir = opendir($rep);
-	while ($f = readdir($dir)) {
-		if( $f!=='.' && $f!=='..') {
-			?>
-			<option 
-			<?php
-			if ($f===$resultat_texture[0]['Bibliotheque_Texture'.$_POST['n']]) {
-                echo 'selected="selected" ';
-            } ?>
-			value="<?=$f?>"
-			><?=constant('TEXTURE__'.strtoupper($f))?></option>
-			<?php
-		}
-	}
-}
 
 elseif (isset($_POST['get_sous_texture'])) {
 	$id_user=$_SESSION['id_user'];
-	$requete_texture='SELECT Bibliotheque_Sous_Texture'.$_POST['n'].' FROM users WHERE ID = \''.$id_user.'\'';
+	$requete_texture="
+	    SELECT Bibliotheque_Sous_Texture1 as texture1, Bibliotheque_Sous_Texture2 as texture2
+	    FROM users
+	    WHERE ID = '$id_user'
+	";
 	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
 
-	$rep = 'edges/textures/'.$_POST['texture'].'/miniatures';
+    $texturesData = ['textures' => [], 'current' => [$resultat_texture[0]['texture1'], $resultat_texture[0]['texture2']]];
+
+	$rep = 'edges/textures/bois/miniatures';
 	$dir = opendir($rep);
 	while ($f = readdir($dir)) {
 		if( $f!=='.' && $f!=='..') {
 			$nom_sous_texture=substr($f,0, strrpos($f, '.'));
-			?>
-			<option <?php
-			if ($nom_sous_texture===$resultat_texture[0]['Bibliotheque_Sous_Texture'.$_POST['n']]) {
-                echo 'selected="selected" ';
-            } ?>
-			style="background:url('edges/textures/<?=$_POST['texture']?>/miniatures/<?=$f?>') no-repeat scroll center right transparent">
-				<?=$nom_sous_texture?>
-			</option><?php
+            $texturesData['textures'][]=$nom_sous_texture;
 		}
 	}
+
+	sort($texturesData['textures']);
+
+    header('Content-type: application/json');
+    echo json_encode([
+        'texturesData' => $texturesData
+    ]);
 }
 elseif (isset($_POST['partager_bibliotheque'])) {
     Affichage::partager_page();

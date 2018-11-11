@@ -658,29 +658,26 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 }
                             }
                         }
+
+                        function buildTextureSelect($id) { ?>
+                            <input type="hidden" id="<?=$id?>" name="<?=$id?>" />
+                            <div class="select_sous_texture btn-group" id="select_<?=$id?>" class="select_sous_texture">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="selected" id="selected_<?=$id?>"></span>&nbsp;<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu"></ul>
+                            </div><?php
+                        }
                         ?>
                         <form method="post" action="?action=bibliotheque&amp;onglet=options">
-                            <span style="text-decoration:underline"><?= TEXTURE ?> : </span><br/>
-                            <select style="width:300px;" id="texture1" name="texture1">
-                                <option id="chargement_sous_texture"><?= CHARGEMENT ?></option>
-                            </select>
-                            <br/><br/>
-                            <span style="text-decoration:underline"><?= SOUS_TEXTURE ?> : </span><br/>
-                            <select style="width:300px;" id="sous_texture1" name="sous_texture1">
-                                <option id="vide"><?= SELECTIONNER_TEXTURE ?></option>
-                            </select>
-                            <br/><br/><br/>
-                            <span style="text-decoration:underline"><?= TEXTURE_ETAGERE ?>
-                                : </span><br/>
-                            <select style="width:300px;" id="texture2" name="texture2">
-                                <option id="chargement_sous_texture"><?= CHARGEMENT ?></option>
-                            </select>
-                            <br/><br/>
-                            <span style="text-decoration:underline"><?= SOUS_TEXTURE_ETAGERE ?>
-                                : </span><br/>
-                            <select style="width:300px;" id="sous_texture2" name="sous_texture2">
-                                <option id="vide"><?= SELECTIONNER_TEXTURE ?></option>
-                            </select>
+                            <input type="hidden" id="texture1" name="texture1" value="bois" />
+                            <input type="hidden" id="texture2" name="texture2" value="bois" />
+
+                            <div style="text-decoration:underline"><?= SOUS_TEXTURE ?> : </div>
+                            <?php buildTextureSelect('sous_texture1')?>
+
+                            <div style="text-decoration:underline"><?= SOUS_TEXTURE_ETAGERE ?>: </div>
+                            <?php buildTextureSelect('sous_texture2')?>
                             <?php /*
                             <br/><br/><br/>
                             <span style="text-decoration:underline"><?= ORDRE_MAGAZINES ?>
