@@ -20,11 +20,16 @@ class Item {
     }
 
 	function afficher() {
-		if ($this->est_affiche()) {
-		    ?><li class="non-empty <?=$this->icone ? '':'no-icon'?>"><a href="?action=<?=$this->nom?>"><i class="<?=$this->icone?>"></i> <?=$this->texte?></a></li><?php
-   			if ($this->nouveau) {
-		   		?><span class="nouveau"><?=NOUVEAU?></span><?php
-   	        }
+		if ($this->est_affiche()) {?>
+            <li class="non-empty <?= $this->icone ? '' : 'no-icon' ?> <?= ($_GET['action'] ?? '') === $this->nom ? 'active' : '' ?>">
+                <a href="?action=<?= $this->nom ?>">
+                    <i class="<?= $this->icone ?>"></i>
+                    <?= $this->texte ?>
+                </a>
+            </li><?php
+            if ($this->nouveau) {
+                ?><span class="nouveau"><?= NOUVEAU ?></span><?php
+            }
 		}
 	}
 
@@ -63,8 +68,12 @@ class Menu extends Item{
 		$this->items = $items;
     }
 	
-	public function afficher() {?>
-	    <li data-toggle="collapse" data-target="#<?=$this->nom?>" class="collapsed active">
+	public function afficher() {
+        $isActive = in_array($_GET['action'] ?? '', array_map(function (Item $i) {
+            return $i->nom;
+        }, $this->items), true);
+        ?>
+	    <li data-toggle="collapse" data-target="#<?=$this->nom?>" class="collapsed <?=$isActive ? 'active' : ''?>">
 	        <a href="#"><i class="<?=$this->icone?>"></i> <?=$this->texte?> <span class="arrow"></span></a>
         </li>
         <ul class="sub-menu collapse in" id="<?=$this->nom?>"><?php
