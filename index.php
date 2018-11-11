@@ -641,8 +641,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                         require_once 'Edge.class.php';
                         if (isset($_POST['texture1'])) {
                             for ($i = 1; $i <= 2; $i++) {
-                                $requete_update_texture = 'UPDATE users SET Bibliotheque_Texture' . $i . '=\'' . $_POST['texture' . $i] . '\' WHERE id=' . $id_user;
-                                DM_Core::$d->requete($requete_update_texture);
                                 $requete_update_sous_texture = 'UPDATE users SET Bibliotheque_Sous_Texture' . $i . '=\'' . $_POST['sous_texture' . $i] . '\' WHERE id=' . $id_user;
                                 DM_Core::$d->requete($requete_update_sous_texture);
                             }
@@ -659,25 +657,24 @@ $id_user= $_SESSION['id_user'] ?? null;
                             }
                         }
 
-                        function buildTextureSelect($id) { ?>
-                            <input type="hidden" id="<?=$id?>" name="<?=$id?>" />
-                            <div class="select_sous_texture btn-group" id="select_<?=$id?>" class="select_sous_texture">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="selected" id="selected_<?=$id?>"></span>&nbsp;<span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu"></ul>
+                        function buildTextureSelect($id, $title) { ?>
+                            <div class="form-group">
+                                <label for="<?=$id?>"><?=$title?></label>
+                                <input type="hidden" id="<?=$id?>" name="<?=$id?>" />
+                                <div class="select_sous_texture btn-group" id="select_<?=$id?>">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="selected" id="selected_<?=$id?>"></span>&nbsp;<span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu"></ul>
+                                </div>
                             </div><?php
                         }
                         ?>
                         <form method="post" action="?action=bibliotheque&amp;onglet=options">
                             <input type="hidden" id="texture1" name="texture1" value="bois" />
                             <input type="hidden" id="texture2" name="texture2" value="bois" />
-
-                            <div style="text-decoration:underline"><?= SOUS_TEXTURE ?> : </div>
-                            <?php buildTextureSelect('sous_texture1')?>
-
-                            <div style="text-decoration:underline"><?= SOUS_TEXTURE_ETAGERE ?>: </div>
-                            <?php buildTextureSelect('sous_texture2')?>
+                            <?php buildTextureSelect('sous_texture1', SOUS_TEXTURE)?>
+                            <?php buildTextureSelect('sous_texture2', SOUS_TEXTURE_ETAGERE)?>
                             <?php /*
                             <br/><br/><br/>
                             <span style="text-decoration:underline"><?= ORDRE_MAGAZINES ?>
@@ -727,7 +724,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             */?>
                             <br/><br/>
                             <div>
-                                <input type="submit" class="btn btn-success" value="<?= VALIDER ?>"/>
+                                <input type="submit" class="btn btn-default" value="<?= VALIDER ?>"/>
                             </div>
                         </form>
                         <?php

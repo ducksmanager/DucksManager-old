@@ -39,7 +39,7 @@ img {
 }
 
 label {
-    margin-bottom: inherit;
+    margin-top: 10px;
 }
 
 .datepicker {
@@ -57,6 +57,10 @@ label {
 
 .progress-bar-striped {
     background-image: linear-gradient(135deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+}
+
+.form-group {
+    clear: both;
 }
 
 input.form-control {

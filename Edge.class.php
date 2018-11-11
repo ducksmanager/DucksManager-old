@@ -228,7 +228,7 @@ elseif (isset($_POST['get_sous_texture'])) {
 
     $texturesData = ['textures' => [], 'current' => [$resultat_texture[0]['texture1'], $resultat_texture[0]['texture2']]];
 
-	$rep = 'edges/textures/bois/miniatures';
+	$rep = 'edges/textures/bois';
 	$dir = opendir($rep);
 	while ($f = readdir($dir)) {
 		if( $f!=='.' && $f!=='..') {

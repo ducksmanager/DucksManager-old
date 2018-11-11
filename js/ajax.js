@@ -183,8 +183,15 @@ function initPays(inclure_tous_pays, selected) {
     }
 }
 
+jQuery.fn.setTextureThumbnail = function(texture) {
+    this.css({'background-image': 'url("edges/textures/bois/' + texture + '.jpg")'});
+    return this;
+};
+
 function setCurrentTexture(textureId, value) {
-    jQuery('#select_' + textureId + ' button .selected').text(value);
+    jQuery('#select_' + textureId + ' button')
+        .setTextureThumbnail(value)
+        .find('.selected').text(value);
     jQuery('#' + textureId).val(value);
 }
 
@@ -195,7 +202,9 @@ function initTextures() {
             function (response) {
                 var selects = jQuery('.select_sous_texture .dropdown-menu');
                 jQuery.each(response.texturesData.textures, function(unused, sous_texture) {
-                    selects.append(jQuery('<li>').html(jQuery('<a>', { href: 'javacript:void(0)' }).text(sous_texture)));
+                    selects.append(jQuery('<li>')
+                        .setTextureThumbnail(sous_texture)
+                        .append(jQuery('<a>', { href: 'javacript:void(0)' }).text(sous_texture)));
                 });
                 selects.find('li').click(function() {
                     var select = jQuery(this).closest('.select_sous_texture');

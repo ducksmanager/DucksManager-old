@@ -108,6 +108,25 @@
     background: transparent url('../edges/textures/bois/KNOTTY PINE.jpg') repeat-x 10px 0;
 }
 
+.select_sous_texture {
+    display: block !important;
+}
+
+.select_sous_texture ul {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.select_sous_texture ul li, .select_sous_texture button {
+    background-repeat: repeat-x;
+}
+
+.select_sous_texture ul li a:hover {
+    background-color: initial;
+    opacity: 0.5;
+}
+
 #bibliotheque .etagere {
     margin-top: -5px;
     margin-right: -5px;
