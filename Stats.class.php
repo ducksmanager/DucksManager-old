@@ -11,6 +11,10 @@ Util::exit_if_not_logged_in();
 class Stats {
 	public static $id_user;
 
+    static function stringToColor($str) {
+        return '#'.substr(dechex(crc32($str)), 0, 6);
+    }
+
 	static function getPublicationData() {
 		$counts= [];
 		$total=0;
@@ -19,7 +23,7 @@ class Stats {
 			 FROM numeros
 			 WHERE ID_Utilisateur='.static::$id_user.'
 			 GROUP BY Pays,Magazine
-			 ORDER BY cpt'
+			 ORDER BY cpt desc'
 		);
 
 		$publication_codes= [];
@@ -38,64 +42,45 @@ class Stats {
 		$labels = [];
 		$colors = [];
 		foreach($counts as $publicationcode=>$cpt) {
-			if (!array_key_exists($publicationcode, $noms_magazines)) { // Magazine ayant disparu d'Inducks
-				continue;
-			}
-			$nom_complet_magazine=$noms_magazines[$publicationcode];
-			if ($cpt/$total<0.01) {
-				$autres+=$cpt;
-				$nb_magazines_autres++;
-			}
-			else {
-				$data[]=$cpt;
-				$labels[]=$nom_complet_magazine;
-				$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-			}
+			if (array_key_exists($publicationcode, $noms_magazines)) {
+                $nom_complet_magazine=$noms_magazines[$publicationcode];
+                if ($cpt/$total<0.01) {
+                    $autres+=$cpt;
+                    $nb_magazines_autres++;
+                }
+                else {
+                    $data[]=$cpt;
+                    $labels[]=$nom_complet_magazine;
+                    $colors[]= self::stringToColor($publicationcode);
+                }
+            }
 		}
 		if ($autres > 0) {
 			$data[]=$autres;
 			$labels[]=AUTRES.' ('.$nb_magazines_autres.' '.strtolower(PUBLICATIONS).')';
-			$colors[]= '#843598';
+			$colors[]= '#000';
 		}
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
 	}
 
 	static function getConditionData() {
-		$resultat=DM_Core::$d->requete_select('
-			SELECT Count(Numero) AS c
+		$resultats=DM_Core::$d->requete_select('
+			SELECT Etat, Count(Numero) AS cpt
 			FROM numeros
-			WHERE ID_Utilisateur='.static::$id_user
-		);
+			WHERE ID_Utilisateur='.static::$id_user.'
+            GROUP BY Etat DESC
+            HAVING COUNT(Numero) > 0
+		');
 
 		$data = [];
 		$labels = [];
 		$colors = [];
 
-		$total=$resultat[0]['c'];
-		$autres=0;
-		foreach(Database::$etats as $etat_court=>$infos_etat) {
-			$resultat=DM_Core::$d->requete_select('
-				SELECT Count(Numero) AS c
-				FROM numeros
-				WHERE ID_Utilisateur='.static::$id_user.'
-				  AND Etat = \''.$etat_court.'\''
-			);
-			$cpt=$resultat[0]['c'];
-			if (((int)$cpt)>0) {
-                if ($cpt/$total<0.01) {
-                    $autres+=$cpt;
-                }
-                else {
-                    $data[]=$cpt;
-                    $labels[]=Database::$etats[$etat_court][0];
-                    $colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
-                }
+		foreach($resultats as $resultat) {
+		    if (array_key_exists($resultat['Etat'], Database::$etats)) {
+                $data[]=$resultat['cpt'];
+                list($labels[], $colors[])=Database::$etats[$resultat['Etat']];
             }
-		}
-		if ($autres!==0) {
-			$data[]=$autres;
-			$labels[]=AUTRES;
-			$colors[]= sprintf('#%06X', mt_rand(0, 0xFFFFFF));
 		}
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
 	}
