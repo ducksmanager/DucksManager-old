@@ -49,10 +49,9 @@ function afficher_histogramme_possessions(data) {
 				responsive: true,
 				scales: {
 					xAxes: [{
-						stacked: true,
-						ticks: {
-							autoSkip: false
-						}
+                        ticks: {
+                            stepSize: 1
+                        }
 					}],
 					yAxes: [{
 						stacked: true
