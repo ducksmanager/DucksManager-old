@@ -36,11 +36,11 @@ function afficher_histogramme_possessions(data) {
 		var labels_magazines_longs = data.labels_magazines_longs;
 		var labels_pays_longs = data.labels_pays_longs;
 
-		jQuery('#canvas-holder').css({width: 100 + 30*data.labels.length + 'px'});
+		jQuery('#canvas-holder').css({height: 100 + 30*data.labels.length + 'px'});
 
 		Chart.defaults.global.maintainAspectRatio = false;
 		var config = {
-			type: 'bar',
+            type: 'horizontalBar',
 			options: {
 				title:{
 					display:true,
@@ -60,10 +60,13 @@ function afficher_histogramme_possessions(data) {
 				},
 				tooltips: {
 					enabled: true,
-					mode: 'label',
+					position: 'nearest',
+                    mode: 'index',
+                    axis: 'y',
+                    intersect: false,
 					callbacks: {
 						title: function(tooltipItems) {
-							var publicationcode = tooltipItems[0].xLabel;
+							var publicationcode = tooltipItems[0].yLabel;
 							return labels_magazines_longs[publicationcode]+
 								   ' ('+labels_pays_longs[publicationcode.split('/')[0]]+')';
 						}

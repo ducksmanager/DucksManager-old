@@ -45,10 +45,3 @@
     display: inline-block;
     width: 200px;
 }
-
-@media (min-width: 767px) {
-    #canvas-holder {
-        width:1000px;
-        height:500px;
-    }
-}
