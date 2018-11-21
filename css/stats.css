@@ -45,3 +45,8 @@
     display: inline-block;
     width: 200px;
 }
+
+#graph_publications,
+#graph_conditions {
+    min-height: 500px;
+}

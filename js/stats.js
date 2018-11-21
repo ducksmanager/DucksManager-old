@@ -16,7 +16,12 @@ function afficher_diagramme_secteurs(type) {
 			},
 			options: {
 				responsive: true,
-				maintainAspectRatio: false
+				maintainAspectRatio: false,
+                legend: {
+				    labels: {
+				        fontColor: '#fff'
+                    }
+                }
 			}
 		};
 
