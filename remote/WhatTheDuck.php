@@ -2,11 +2,9 @@
 header("Access-Control-Allow-Origin: *");
 
 error_reporting(E_ALL);
-$database='coa';
 
-@include_once 'Inducks.class.php';
-@include_once '../Inducks.class.php';
 include_once 'auth.php';
+include_once 'dm_client.php';
 
 $version= $_GET['version'] ?? '1.0';
 $language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ? 'fr' : 'en') : 'en';
@@ -50,8 +48,9 @@ if (isset($_GET['storycode'])) {
 	echo json_encode($final);
 }
 else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
+
+    DmClient::init(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
 	if (isset($_GET['coa'])) {
-		ServeurDb::connect('coa');
 		$retour=new stdClass();
 		$retour->static=new stdClass();
 
@@ -61,13 +60,13 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 							   .'FROM inducks_countryname '
 							   .'WHERE languagecode=\''.$language.'\' and countryname <>\'fake\' '
 							   .'ORDER BY countryname';
+            $resultats_liste_pays = DmClient::get_query_results_from_dm_server($requete_liste_pays, 'db_coa');
 			if (isset($_GET['debug'])) {
                 echo $requete_liste_pays;
             }
-			$resultats_liste_pays=Database::$handle->query($requete_liste_pays);
-			while($pays = $resultats_liste_pays->fetch_array(MYSQLI_ASSOC)) {
-				$liste_pays[$pays['countrycode']]=$pays['countryname'];
-			}
+			foreach($resultats_liste_pays as $pays) {
+                $liste_pays[$pays->countrycode]=$pays->countryname;
+            }
 			$retour->static->pays=$liste_pays;
 		}
 		else if (isset($_GET['liste_magazines'], $_GET['pays'])) {
@@ -152,7 +151,6 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         $requete_date_achat = "SELECT 1 FROM achats WHERE ID_Acquisition=$id_acquisition AND ID_User=$id_utilisateur";
                         if (count($resultats) !== 1) {
                             echo 'Invalid purchase ID';
-                            break;
                         }
                     } else {
                         $id_acquisition = -2;
