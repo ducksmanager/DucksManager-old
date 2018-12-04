@@ -56,10 +56,11 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 
 		if (isset($_GET['liste_pays'])) {
 			$liste_pays= [];
-			$requete_liste_pays='SELECT countrycode, countryname '
-							   .'FROM inducks_countryname '
-							   .'WHERE languagecode=\''.$language.'\' and countryname <>\'fake\' '
-							   .'ORDER BY countryname';
+			$requete_liste_pays="
+			    SELECT countrycode, countryname
+			    FROM inducks_countryname
+			    WHERE languagecode='$language' and countryname <>'fake'
+			    ORDER BY countryname";
             $resultats_liste_pays = DmClient::get_query_results_from_dm_server($requete_liste_pays, 'db_coa');
 			if (isset($_GET['debug'])) {
                 echo $requete_liste_pays;
@@ -71,30 +72,32 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 		}
 		else if (isset($_GET['liste_magazines'], $_GET['pays'])) {
 			$liste_magazines= [];
-			$requete_liste_magazines='SELECT publicationcode, title '
-									.'FROM inducks_publication '
-									.'WHERE countrycode=\''.$_GET['pays'].'\' '
-									.'ORDER BY publicationcode';
+			$requete_liste_magazines="
+			    SELECT publicationcode, title
+			    FROM inducks_publication
+			    WHERE countrycode='{$_GET['pays']}'
+			    ORDER BY publicationcode";
 			if (isset($_GET['debug'])) {
                 echo $requete_liste_magazines;
             }
-			$resultats_liste_magazines=Database::$handle->query($requete_liste_magazines);
-			while($magazine = $resultats_liste_magazines->fetch_array(MYSQLI_ASSOC)) {
-				$liste_magazines[$magazine['publicationcode']]=$magazine['title'];
+            $resultats_liste_magazines = DmClient::get_query_results_from_dm_server($requete_liste_magazines, 'db_coa');
+            foreach($resultats_liste_magazines as $magazine) {
+				$liste_magazines[$magazine->publicationcode]=$magazine->title;
 			}
 			$retour->static->magazines=$liste_magazines;
 		}
 		else if (isset($_GET['liste_numeros'], $_GET['magazine'])) {
 			$liste_numeros= [];
-			$requete_liste_numeros='SELECT issuenumber '
-								  .'FROM inducks_issue '
-								  .'WHERE publicationcode=\''.$_GET['magazine'].'\'';
+			$requete_liste_numeros="
+			    SELECT issuenumber
+			    FROM inducks_issue
+			    WHERE publicationcode='{$_GET['magazine']}'";
 			if (isset($_GET['debug'])) {
                 echo $requete_liste_numeros;
             }
-			$resultats_liste_numeros=Database::$handle->query($requete_liste_numeros);
-			while($numero = $resultats_liste_numeros->fetch_array(MYSQLI_ASSOC)) {
-				$liste_numeros[]=$numero['issuenumber'];
+            $resultats_liste_numeros = DmClient::get_query_results_from_dm_server($requete_liste_numeros, 'db_coa');
+            foreach($resultats_liste_numeros as $numero) {
+				$liste_numeros[]=$numero->issuenumber;
 			}
 			$retour->static->numeros=$liste_numeros;
 		}
