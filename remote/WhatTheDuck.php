@@ -9,45 +9,7 @@ include_once 'dm_client.php';
 $version= $_GET['version'] ?? '1.0';
 $language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ? 'fr' : 'en') : 'en';
 
-
-if (isset($_GET['storycode'])) {
-	$final=new stdClass();
-
-	$code=mysqli_real_escape_string(Database::$handle, $_GET['storycode']);
-	$requete='SELECT inducks_issue.publicationcode AS publicationcode, inducks_issue.issuenumber AS issuenumber, inducks_publication.title AS title '
-			.'FROM inducks_issue '
-			.'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
-			.'INNER JOIN inducks_storyversion ON inducks_entry.storyversioncode = inducks_storyversion.storyversioncode '
-			.'INNER JOIN inducks_publication ON inducks_issue.publicationcode = inducks_publication.publicationcode '
-			.'WHERE storycode = \''.$code.'\' '
-			.'ORDER BY publicationcode, issuenumber';
-	$resultats_tab= [];
-	$resultats=Database::$handle->query($requete);
-
-	$noms_magazines= [];
-	$numeros= [];
-	while($resultat = $resultats->fetch_array(MYSQLI_ASSOC)) {
-		$numero=new stdClass();
-		$numero->magazine=$resultat['publicationcode'];
-		$numero->numero=$resultat['issuenumber'];
-		$titre_magazine=$resultat['title'];
-
-		$numeros[]=$numero;
-
-		if (!in_array($numero->magazine,$noms_magazines)) {
-			$nom_magazine=new stdClass();
-			$nom_magazine->nom_abrege=$numero->magazine;
-			$nom_magazine->nom_complet=$titre_magazine;
-			$noms_magazines[]=$nom_magazine;
-		}
-	}
-
-	$final->numeros=$numeros;
-	$final->static=$noms_magazines;
-
-	echo json_encode($final);
-}
-else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
+if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 
     DmClient::init(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
 	if (isset($_GET['coa'])) {
@@ -108,7 +70,10 @@ else if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 		$pseudo=mysqli_real_escape_string(Database::$handle, $_GET['pseudo_user']);
 		$mdp=mysqli_real_escape_string(Database::$handle, $_GET['mdp_user']);
 
-		$requete='SELECT ID FROM users WHERE username=\''.$pseudo.'\' AND password=\''.$mdp.'\'';
+		$requete="
+		    SELECT ID
+		    FROM users
+		    WHERE username='$pseudo' AND password='$mdp'";
         $resultats = DmClient::get_query_results_from_dm_site($requete);
 
 		if (isset($_GET['debug'])) {
