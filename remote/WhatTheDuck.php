@@ -9,12 +9,13 @@ include_once 'dm_client.php';
 $version= $_GET['version'] ?? '1.0';
 $language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ? 'fr' : 'en') : 'en';
 
+$retour=new stdClass();
+$retour->static=new stdClass();
+
 if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 
     DmClient::init(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
 	if (isset($_GET['coa'])) {
-		$retour=new stdClass();
-		$retour->static=new stdClass();
 
 		if (isset($_GET['liste_pays'])) {
             $retour->static->pays = DmClient::get_service_results_for_wtd('GET', "/coa/list/countries/$language");
@@ -118,13 +119,11 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         echo 'OK';
                     }
                 } else if (isset($_GET['get_achats'])) {
-                    $retour = new stdClass();
                     $requete_achats = "SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User=$id_utilisateur ORDER BY Date DESC LIMIT 15";
                     $resultats_achats = DmClient::get_query_results_from_dm_site($requete_achats);
                     $retour->achats = $resultats_achats;
                     echo json_encode($retour);
                 } else {
-                    $retour = new stdClass();
                     $numeros = [];
                     $pays = [];
                     $magazines = [];
@@ -158,25 +157,10 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         $numeros[$pays_magazine][] = $details_numero;
                     }
 
-                    foreach (array_keys($magazines) as $nom_abrege) {
-                        $requete_nom_complet_magazine = "
-                            SELECT inducks_countryname.countryname as countryname, inducks_publication.title as title
-                            FROM inducks_publication
-                            INNER JOIN inducks_countryname ON inducks_publication.countrycode = inducks_countryname.countrycode
-                            WHERE inducks_countryname.languagecode='$language'
-                            AND inducks_publication.publicationcode='$nom_abrege'";
-                        $resultats_nom_complet_magazine = DmClient::get_query_results_from_dm_server($requete_nom_complet_magazine, 'db_coa');
-                        foreach($resultats_nom_complet_magazine as $resultat_nom_magazine) {
-                            list($nom_pays, $nom_magazine) = explode('/', $nom_abrege);
-                            $pays[$nom_pays] = $resultat_nom_magazine->countryname;
-                            $magazines[$nom_abrege] = $resultat_nom_magazine->title;
-                        }
-                    }
-
+                    $retour->static->pays = DmClient::get_service_results_for_wtd('GET', "/coa/list/countries/$language");
+                    $retour->static->magazines=DmClient::get_service_results_for_wtd('GET', "/coa/list/publications", [implode(',', array_keys($magazines))]);
                     $retour->numeros = $numeros;
-                    $retour->static = new stdClass();
-                    $retour->static->magazines = $magazines;
-                    $retour->static->pays = $pays;
+
                     echo json_encode($retour);
 
                 }
