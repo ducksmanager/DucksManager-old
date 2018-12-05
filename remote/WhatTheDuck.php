@@ -17,51 +17,13 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 		$retour->static=new stdClass();
 
 		if (isset($_GET['liste_pays'])) {
-			$liste_pays= [];
-			$requete_liste_pays="
-			    SELECT countrycode, countryname
-			    FROM inducks_countryname
-			    WHERE languagecode='$language' and countryname <>'fake'
-			    ORDER BY countryname";
-            $resultats_liste_pays = DmClient::get_query_results_from_dm_server($requete_liste_pays, 'db_coa');
-			if (isset($_GET['debug'])) {
-                echo $requete_liste_pays;
-            }
-			foreach($resultats_liste_pays as $pays) {
-                $liste_pays[$pays->countrycode]=$pays->countryname;
-            }
-			$retour->static->pays=$liste_pays;
+            $retour->static->pays = DmClient::get_service_results_for_wtd('GET', "/coa/list/countries/$language");
 		}
 		else if (isset($_GET['liste_magazines'], $_GET['pays'])) {
-			$liste_magazines= [];
-			$requete_liste_magazines="
-			    SELECT publicationcode, title
-			    FROM inducks_publication
-			    WHERE countrycode='{$_GET['pays']}'
-			    ORDER BY publicationcode";
-			if (isset($_GET['debug'])) {
-                echo $requete_liste_magazines;
-            }
-            $resultats_liste_magazines = DmClient::get_query_results_from_dm_server($requete_liste_magazines, 'db_coa');
-            foreach($resultats_liste_magazines as $magazine) {
-				$liste_magazines[$magazine->publicationcode]=$magazine->title;
-			}
-			$retour->static->magazines=$liste_magazines;
+			$retour->static->magazines=DmClient::get_service_results_for_wtd('GET', "/coa/list/publications", [$_GET['pays']]);
 		}
 		else if (isset($_GET['liste_numeros'], $_GET['magazine'])) {
-			$liste_numeros= [];
-			$requete_liste_numeros="
-			    SELECT issuenumber
-			    FROM inducks_issue
-			    WHERE publicationcode='{$_GET['magazine']}'";
-			if (isset($_GET['debug'])) {
-                echo $requete_liste_numeros;
-            }
-            $resultats_liste_numeros = DmClient::get_query_results_from_dm_server($requete_liste_numeros, 'db_coa');
-            foreach($resultats_liste_numeros as $numero) {
-				$liste_numeros[]=$numero->issuenumber;
-			}
-			$retour->static->numeros=$liste_numeros;
+            $retour->static->numeros=DmClient::get_service_results_for_wtd('GET', "/coa/list/issues", [$_GET['magazine']]);
 		}
 		echo json_encode($retour);
 	}
@@ -127,15 +89,9 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         $id_acquisition = -2;
                     }
 
-                    if ($version === '1.0') {
-                        $requete = "
-							  INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
-							  VALUES('$pays', '$magazine', '$numero', 'indefini', $id_acquisition, $id_utilisateur)";
-                    } else {
-                        $requete = "
-							  INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
-							  VALUES('$pays', '$magazine', '$numero', '$etat', $id_acquisition, $id_utilisateur)";
-                    }
+                    $requete = "
+                      INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
+                      VALUES('$pays', '$magazine', '$numero', '$etat', $id_acquisition, $id_utilisateur)";
                     $resultats = DmClient::get_query_results_from_dm_site($requete);
 
                     if (isset($_GET['debug'])) {

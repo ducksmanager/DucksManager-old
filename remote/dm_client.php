@@ -1,5 +1,7 @@
 <?php
 
+include 'error_handler.php';
+
 class DmClient
 {
     static $servers_file='../servers.ini';
@@ -68,7 +70,7 @@ class DmClient
      */
     public static function get_query_results_from_dm_server($query, $db)
     {
-        return self::get_service_results(self::$dm_server, 'POST', '/rawsql', [
+        return self::get_service_results('POST', '/rawsql', [
             'query' => $query,
             'db' => $db
         ], 'rawsql');
@@ -89,25 +91,23 @@ class DmClient
         return null;
     }
 
-    private static function get_secured_page(stdClass $dmServer, $url) {
-        return self::get_page(implode('/', ['http://'.$dmServer->ip, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
-    }
-
 
     /**
-     * @param stdClass $server
      * @param string   $method
      * @param string   $path
      * @param array    $parameters
      * @return array|null|stdClass
      * @throws Exception
      */
-    public static function get_service_results_ec($server, $method, $path, $parameters = []) {
-        return self::get_service_results($server, $method, $path, $parameters, 'edgecreator');
+    public static function get_service_results_for_wtd($method, $path, $parameters = []) {
+        return self::get_service_results($method, $path, $parameters, 'whattheduck');
+    }
+
+    private static function get_secured_page(stdClass $dmServer, $url) {
+        return self::get_page(implode('/', ['http://'.$dmServer->ip, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
     }
 
     /**
-     * @param stdClass $server
      * @param string $method
      * @param string $path
      * @param array $parameters
@@ -116,15 +116,15 @@ class DmClient
      * @return array|null|stdClass
      * @throws Exception
      */
-    private static function get_service_results($server, $method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
+    private static function get_service_results($method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
         $ch = curl_init();
-        $url = 'http://'.$server->ip . $server->web_root . $path;
+        $url = 'http://'.self::$dm_server->ip . self::$dm_server->web_root . $path;
 
         if ($method === 'GET') {
             if (count($parameters) > 0) {
                 if (!$do_not_chunk && count($parameters) === 1 && isset(self::$chunkable_services[$path])) {
-                    return self::get_chunkable_service_results($server, $method, $path, $parameters, $role);
+                    return self::get_chunkable_service_results($method, $path, $parameters, $role);
                 }
                 $url .= '/' . implode('/', $parameters);
             }
@@ -137,7 +137,7 @@ class DmClient
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $headers = [
-            'Authorization: Basic ' . base64_encode(implode(':', [$role, $server->role_passwords[$role]])),
+            'Authorization: Basic ' . base64_encode(implode(':', [$role, self::$dm_server->role_passwords[$role]])),
             'Content-Type: application/x-www-form-urlencoded',
             'Cache-Control: no-cache',
             'x-dm-version: 1.0',
@@ -164,25 +164,24 @@ class DmClient
             }
         }
 
-        ErrorHandler::error_log_and_exception('Call to service '.$method.' '.$server->web_root . $path. ' failed', "Response code = $responseCode, response buffer = $buffer");
+        ErrorHandler::error_log_and_exception('Call to service '.$method.' '.self::$dm_server->web_root . $path. ' failed', "Response code = $responseCode, response buffer = $buffer");
         return null;
     }
 
     /**
-     * @param stdClass $server
-     * @param string   $method
-     * @param string   $path
-     * @param array    $parameters
-     * @param string   $role
+     * @param string $method
+     * @param string $path
+     * @param array $parameters
+     * @param string $role
      * @return array|null|stdClass
      * @throws Exception
      */
-    private static function get_chunkable_service_results($server, $method, $path, $parameters, $role)
+    private static function get_chunkable_service_results($method, $path, $parameters, $role)
     {
         $parameterListChunks = array_chunk(explode(',', $parameters[count($parameters) - 1]), self::$chunkable_services[$path]);
         $results = null;
         foreach ($parameterListChunks as $parameterListChunk) {
-            $result = self::get_service_results($server, $method, $path, [implode(',', $parameterListChunk)], $role, true);
+            $result = self::get_service_results($method, $path, [implode(',', $parameterListChunk)], $role, true);
             if (is_object($result)) {
                 if (is_null($results)) {
                     $results = $result;
