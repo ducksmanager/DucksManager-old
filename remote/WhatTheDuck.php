@@ -3,8 +3,11 @@ header("Access-Control-Allow-Origin: *");
 
 error_reporting(E_ALL);
 
-include_once 'auth.php';
 include_once 'dm_client.php';
+DmClient::init();
+
+$serverIniAuth = true;
+include_once 'auth.php';
 
 $version= $_GET['version'] ?? '1.0';
 $language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ? 'fr' : 'en') : 'en';
@@ -14,7 +17,7 @@ $retour->static=new stdClass();
 
 if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 
-    DmClient::init(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
+    DmClient::setUserdata(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
 	if (isset($_GET['coa'])) {
 
 		if (isset($_GET['liste_pays'])) {
@@ -29,9 +32,8 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 		echo json_encode($retour);
 	}
 	else {
-		// Récupération des informations sur la collection de l'utilisateur
-		$pseudo=mysqli_real_escape_string(Database::$handle, $_GET['pseudo_user']);
-		$mdp=mysqli_real_escape_string(Database::$handle, $_GET['mdp_user']);
+		$pseudo=$_GET['pseudo_user'];
+		$mdp=$_GET['mdp_user'];
 
 		$requete="
 		    SELECT ID

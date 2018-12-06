@@ -19,8 +19,7 @@ class DmClient
 
     static $userData;
 
-    static function init($userdata)
-    {
+    static function init($userdata = []) {
         self::$userData = $userdata;
         self::$dm_server = null;
         self::$dm_site = null;
@@ -41,6 +40,10 @@ class DmClient
                 self::$dm_site = $serverObject;
             }
         }
+    }
+
+    static function setUserdata($userData) {
+        self::$userData = $userData;
     }
 
     /**
