@@ -41,10 +41,6 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 		    WHERE username='$pseudo' AND password='$mdp'";
         $resultats = DmClient::get_query_results_from_dm_site($requete);
 
-		if (isset($_GET['debug'])) {
-            echo $requete . '<br />';
-        }
-
 		$action= $_GET['action'] ?? '';
         if ($action === 'signup') {
             $user = $_GET['pseudo_user'];
@@ -97,13 +93,8 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                       VALUES('$pays', '$magazine', '$numero', '$etat', $id_acquisition, $id_utilisateur)";
                     $resultats = DmClient::get_query_results_from_dm_site($requete);
 
-                    if (isset($_GET['debug'])) {
-                        echo $requete . '<br />';
-                    }
                     if ($resultats === []) {
                         echo 'OK';
-                    } else {
-                        print_r($resultats);
                     }
                 } else if (isset($_GET['ajouter_achat'])) {
                     $date_achat = str_replace("'", "", $_GET['date_achat']);
@@ -114,9 +105,6 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 
                     $resultats_achats = DmClient::get_query_results_from_dm_site($requete_ajout_achat);
 
-                    if (isset($_GET['debug'])) {
-                        echo $requete_ajout_achat . '<br />';
-                    }
                     if (count($resultats_achats) === 0) {
                         echo 'OK';
                     }
