@@ -10,7 +10,7 @@ $serverIniAuth = true;
 include_once 'auth.php';
 
 $version= $_GET['version'] ?? '1.0';
-$language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ? 'fr' : 'en') : 'en';
+$language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ?: 'en') : 'en';
 
 $retour=new stdClass();
 $retour->static=new stdClass();
@@ -35,11 +35,15 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 		$pseudo=$_GET['pseudo_user'];
 		$mdp=$_GET['mdp_user'];
 
-		$requete="
-		    SELECT ID
-		    FROM users
-		    WHERE username='$pseudo' AND password='$mdp'";
-        $resultats = DmClient::get_query_results_from_dm_site($requete);
+        $resultats = DmClient::get_query_results_from_dm_site('
+            SELECT ID
+            FROM users
+            WHERE username=? AND password=?',
+            [
+                ['type' => 's', 'value' => $pseudo],
+                ['type' => 's', 'value' => $mdp]
+            ]
+        );
 
 		$action= $_GET['action'] ?? '';
         if ($action === 'signup') {
@@ -54,10 +58,15 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
             $erreur = Affichage::valider_formulaire_inscription($user, $pass, $pass2);
 
             if (is_null($erreur)) {
-                $requete = "
-					  INSERT INTO users(username,password,Email,DateInscription)
-					  VALUES('$user','$pass','$email','" . date('Y-m-d') . "')";
-                $resultats = DmClient::get_query_results_from_dm_site($requete);
+                $resultats = DmClient::get_query_results_from_dm_site('
+                    INSERT INTO users(username,password,Email,DateInscription)
+                    VALUES(?,?,?,?)',
+                    [
+                        ['type' => 's', 'value' => $user],
+                        ['type' => 's', 'value' => $pass],
+                        ['type' => 's', 'value' => $email],
+                        ['type' => 's', 'value' => date('Y-m-d')],
+                    ]);
                 if ($resultats === []) {
                     echo 'OK';
                 }
@@ -68,30 +77,45 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
         }
         else {
             if (count($resultats) > 0) {
-                $id_utilisateur = $resultats[0]['ID'];
+                $id_utilisateur = $resultats[0]->ID;
                 if (isset($_GET['ajouter_numero'])) {
                     list($pays, $magazine) = explode('/', $_GET['pays_magazine']);
                     $numero = $_GET['numero'];
                     $etat = $_GET['etat'];
 
                     if (isset($_GET['id_acquisition'])) {
-                        $id_acquisition = $_GET['id_acquisition'];
-                        $requete_date_achat = "
+                        $resultats_date_achat = DmClient::get_query_results_from_dm_site('
                             SELECT 1
                             FROM achats
-                            WHERE ID_Acquisition=$id_acquisition AND ID_User=$id_utilisateur";
-                        $resultats_date_achat = DmClient::get_query_results_from_dm_site($requete_date_achat);
+                            WHERE ID_Acquisition=? AND ID_User=?',
+                            [
+                                ['type' => 'i', 'value' => $_GET['id_acquisition']],
+                                ['type' => 'i', 'value' => $id_utilisateur]
+                            ]);
                         if (count($resultats_date_achat) !== 1) {
                             echo 'Invalid purchase ID';
                         }
-                    } else {
+                        else {
+                            $id_acquisition = $_GET['id_acquisition'];
+                        }
+                    }
+
+                    if (!isset($id_acquisition)) {
                         $id_acquisition = -2;
                     }
 
-                    $requete = "
-                      INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur)
-                      VALUES('$pays', '$magazine', '$numero', '$etat', $id_acquisition, $id_utilisateur)";
-                    $resultats = DmClient::get_query_results_from_dm_site($requete);
+                    $resultats = DmClient::get_query_results_from_dm_site('
+                        INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur, AV)
+                        VALUES(?, ?, ?, ?, ?, ?, ?)',
+                        [
+                            ['type' => 's', 'value' => $pays],
+                            ['type' => 's', 'value' => $magazine],
+                            ['type' => 's', 'value' => $numero],
+                            ['type' => 's', 'value' => $etat],
+                            ['type' => 'i', 'value' => $id_acquisition],
+                            ['type' => 'i', 'value' => $id_utilisateur],
+                            ['type' => 'i', 'value' => 0],
+                        ]);
 
                     if ($resultats === []) {
                         echo 'OK';
@@ -99,48 +123,64 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                 } else if (isset($_GET['ajouter_achat'])) {
                     $date_achat = str_replace("'", "", $_GET['date_achat']);
                     $description_achat = str_replace("'", "", $_GET['description_achat']);
-                    $requete_ajout_achat = "
-						  INSERT INTO achats(ID_User,Date,Description)
-						  VALUES ($id_utilisateur, '$date_achat', '$description_achat')";
 
-                    $resultats_achats = DmClient::get_query_results_from_dm_site($requete_ajout_achat);
+                    $resultats_achats = DmClient::get_query_results_from_dm_site('
+                        INSERT INTO achats(ID_User,Date,Description)
+                        VALUES (?, ?, ?)',
+                        [
+                            ['type' => 'i', 'value' => $id_utilisateur],
+                            ['type' => 's', 'value' => $date_achat],
+                            ['type' => 's', 'value' => $description_achat],
+                        ]
+                    );
 
                     if (count($resultats_achats) === 0) {
                         echo 'OK';
                     }
                 } else if (isset($_GET['get_achats'])) {
-                    $requete_achats = "SELECT ID_Acquisition, Date,Description FROM achats WHERE ID_User=$id_utilisateur ORDER BY Date DESC LIMIT 15";
-                    $resultats_achats = DmClient::get_query_results_from_dm_site($requete_achats);
+                    $resultats_achats = DmClient::get_query_results_from_dm_site('
+                        SELECT ID_Acquisition, Date,Description
+                        FROM achats
+                        WHERE ID_User=?
+                        ORDER BY Date DESC
+                        LIMIT 15',
+                        [
+                            ['type' => 'i', 'value' => $id_utilisateur],
+                        ]
+                    );
                     $retour->achats = $resultats_achats;
                     echo json_encode($retour);
                 } else {
+                    $resultats_numeros = DmClient::get_query_results_from_dm_site('
+                        SELECT Pays, Magazine, Numero, Etat, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
+                        FROM numeros
+                        LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
+                        WHERE ID_Utilisateur=?
+                        ORDER BY Pays, Magazine, Numero',
+                        [
+                            ['type' => 'i', 'value' => $id_utilisateur],
+                        ]);
+
                     $numeros = [];
                     $pays = [];
                     $magazines = [];
-                    $requete_numeros = "
-						  SELECT Pays, Magazine, Numero, Etat, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
-						  FROM numeros
-						  LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
-						  WHERE ID_Utilisateur=$id_utilisateur
-						  ORDER BY Pays, Magazine, Numero";
-                    $resultats_numeros = DmClient::get_query_results_from_dm_site($requete_numeros);
                     foreach ($resultats_numeros as $resultat_numero) {
-                        $pays_magazine = $resultat_numero['Pays'] . '/' . $resultat_numero['Magazine'];
+                        $pays_magazine = $resultat_numero->Pays . '/' . $resultat_numero->Magazine;
                         if (!array_key_exists($pays_magazine, $numeros)) {
                             $numeros[$pays_magazine] = [];
                             $magazines[$pays_magazine] = $pays_magazine;
                         }
                         $details_numero = new stdClass();
-                        $details_numero->Numero = $resultat_numero['Numero'];
-                        $details_numero->Etat = $resultat_numero['Etat'];
+                        $details_numero->Numero = $resultat_numero->Numero;
+                        $details_numero->Etat = $resultat_numero->Etat;
 
-                        if (is_null($resultat_numero['ID_Acquisition'])) {
+                        if (is_null($resultat_numero->ID_Acquisition)) {
                             $acquisition = null;
                         } else {
                             $acquisition = new stdClass();
-                            $acquisition->ID_Acquisition = $resultat_numero['ID_Acquisition'];
-                            $acquisition->Date_Acquisition = $resultat_numero['Date_Acquisition'];
-                            $acquisition->Description_Acquisition = $resultat_numero['Description_Acquisition'];
+                            $acquisition->ID_Acquisition = $resultat_numero->ID_Acquisition;
+                            $acquisition->Date_Acquisition = $resultat_numero->Date_Acquisition;
+                            $acquisition->Description_Acquisition = $resultat_numero->Description_Acquisition;
                         }
                         $details_numero->Acquisition = $acquisition;
 

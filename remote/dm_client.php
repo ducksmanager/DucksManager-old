@@ -48,21 +48,16 @@ class DmClient
 
     /**
      * @param string $query
-     * @return mixed|null
+     * @param array $parameters
+     * @return array
+     * @throws Exception
      */
-    public static function get_query_results_from_dm_site($query) {
-        $output = self::get_secured_page(self::$dm_site, 'sql.php?db=' . self::$dm_site->db_name . '&req=' . urlencode($query));
-        $unserialized = @unserialize($output);
-        if (is_array($unserialized)) {
-            list($champs,$resultats) = $unserialized;
-            foreach($champs as $i_champ=>$nom_champ) {
-                foreach($resultats as $i=>$resultat) {
-                    $resultats[$i][$nom_champ]=$resultat[$nom_champ];
-                }
-            }
-            return $resultats;
-        }
-        return [];
+    public static function get_query_results_from_dm_site($query, $parameters = []) {
+        return self::get_service_results('POST', '/rawsql', [
+            'query' => $query,
+            'parameters' => $parameters,
+            'redirect-to' => 'dm'
+        ], 'rawsql');
     }
 
     /**
@@ -79,21 +74,6 @@ class DmClient
         ], 'rawsql');
     }
 
-    public static function get_page($url) {
-        $handle = @fopen($url, "r");
-
-        if ($handle) {
-            $buffer="";
-            while (!feof($handle)) {
-                $buffer.= fgets($handle, 4096);
-            }
-            fclose($handle);
-            return $buffer;
-        }
-
-        return null;
-    }
-
 
     /**
      * @param string   $method
@@ -104,10 +84,6 @@ class DmClient
      */
     public static function get_service_results_for_wtd($method, $path, $parameters = []) {
         return self::get_service_results($method, $path, $parameters, 'whattheduck');
-    }
-
-    private static function get_secured_page(stdClass $dmServer, $url) {
-        return self::get_page(implode('/', ['http://'.$dmServer->ip, $dmServer->web_root, $url.'&mdp='.sha1($dmServer->db_password)]));
     }
 
     /**

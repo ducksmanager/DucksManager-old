@@ -112,7 +112,7 @@ class ProfilDB {
 }
 
 function isLocalHost() {
-	return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
+	return !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'ducksmanager' && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
 }
 
 ServeurDb::initDBServers();
