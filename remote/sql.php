@@ -9,7 +9,23 @@ include_once 'auth.php';
 if (isset($_GET['req'])) {
 	$requete=str_replace("\'","'",$_GET['req']);
 	$resultats_tab= [];
-	$resultats=Database::$handle->query($requete);
+	if (isset($_GET['params'])) {
+	    $params = json_decode($_GET['params']);
+        $statement = Database::$handle->prepare($requete);
+        $types = implode('', array_map(function($typeAndValue) {
+            return $typeAndValue->type;
+        }, $params));
+        $values = array_map(function($typeAndValue) {
+            return $typeAndValue->value;
+        }, $params);
+        $statement->bind_param($types, ...$values);
+        if($statement->execute()) {
+            $resultats = $statement->get_result();
+        }
+    }
+	else {
+        $resultats=Database::$handle->query($requete);
+    }
 	$debut=true;
 	$champs= [];
 	while($resultat = $resultats->fetch_array(MYSQLI_ASSOC)) {
