@@ -6,7 +6,7 @@ include_once 'locales/lang.php';
 class Affichage {
 
     static $niveaux_medailles=[
-        'Photographe' => [1 => 50, 2 => 150, 3 => 1500],
+        'Photographe' => [1 => 50, 2 => 150, 3 => 600],
         'Concepteur'  => [1 => 20, 2 => 70,  3 => 150],
         'Duckhunter'  => [1 => 1, 2 => 3,  3 =>  5]
     ];
