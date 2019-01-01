@@ -48,7 +48,7 @@ if (isset($_GET['req'])) {
             $valeurs= [];
             foreach($resultat as $cle=>$valeur) {
                 if (!is_int($cle)) {
-                    $valeurs[$cle] = $valeur;
+                    $valeurs[$cle] = utf8_encode($valeur);
                 }
             }
             $resultats_tab[]=$valeurs;
@@ -58,6 +58,7 @@ if (isset($_GET['req'])) {
             ?><pre><?php echo $requete."\n";print_r($resultats_tab);?></pre><?php
         }
         else {
+            header('Content-Type: text/html; charset=utf-8');
             echo serialize($resultats_tab);
         }
     }

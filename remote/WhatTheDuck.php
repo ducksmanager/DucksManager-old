@@ -174,11 +174,11 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         $details_numero->Numero = $resultat_numero->Numero;
                         $details_numero->Etat = $resultat_numero->Etat;
 
-                        if (is_null($resultat_numero->ID_Acquisition)) {
+                        if (empty($resultat_numero->ID_Acquisition)) {
                             $acquisition = null;
                         } else {
                             $acquisition = new stdClass();
-                            $acquisition->ID_Acquisition = $resultat_numero->ID_Acquisition;
+                            $acquisition->ID_Acquisition = (int)$resultat_numero->ID_Acquisition;
                             $acquisition->Date_Acquisition = $resultat_numero->Date_Acquisition;
                             $acquisition->Description_Acquisition = $resultat_numero->Description_Acquisition;
                         }
