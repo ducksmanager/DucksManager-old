@@ -12,17 +12,19 @@ if (isset($_GET['req'])) {
 	if (isset($_GET['params'])) {
 	    $params = json_decode($_GET['params']);
         $statement = Database::$handle->prepare($requete);
-        if (count($params) > 0) {
-            $types = implode('', array_map(function($typeAndValue) {
-                return $typeAndValue->type;
-            }, $params));
-            $values = array_map(function($typeAndValue) {
-                return $typeAndValue->value;
-            }, $params);
-            $statement->bind_param($types, ...$values);
-        }
-        if($statement->execute()) {
-            $resultats = $statement->get_result();
+        if ($statement !== false) {
+            if (count($params) > 0) {
+                $types = implode('', array_map(function($typeAndValue) {
+                    return $typeAndValue->type;
+                }, $params));
+                $values = array_map(function($typeAndValue) {
+                    return $typeAndValue->value;
+                }, $params);
+                $statement->bind_param($types, ...$values);
+            }
+            if($statement->execute()) {
+                $resultats = $statement->get_result();
+            }
         }
     }
 	else {
