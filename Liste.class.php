@@ -172,7 +172,7 @@ class Liste {
                     <div class="btn-group" data-toggle="buttons">
                         <?php foreach($types as $type=>$label) {?>
                             <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'possessions')">
-                                <input type="radio" name="options" id="option1" autocomplete="off"> <?=$label?>
+                                <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
                             </label><?php
                         }?>
                     </div>
@@ -233,22 +233,21 @@ class Liste {
 						<div id="chargement_stats_auteur">
 							<?=CHARGEMENT?>
 						</div>
-
-						<div id="canvas-holder" class="hidden">
-						<?php foreach($types as $type=>$label) {
-							?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"
-									  width="100%" height="500px"></canvas><?php
-						}?>
-						</div>
-						<br />
 						<div id="fin_stats_auteur" class="hidden">
-						<?php foreach($types as $type=>$label) {
-							?><a class="graph_type noborder <?=$type==='abs' ? 'bold' : ''?>" href="javascript:void(0)"
-								 onclick="toggleGraphs('auteurs')">
-							<?=$label?>
-							</a><?php
-						}?>
+                            <div class="btn-group" data-toggle="buttons">
+                                <?php foreach($types as $type=>$label) {?>
+                                <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'auteurs')">
+                                    <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
+                                    </label><?php
+                                }?>
+                            </div>
 						</div>
+                        <br />
+                        <div id="canvas-holder" class="hidden">
+                            <?php foreach($types as $type=>$label) {
+                                ?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"></canvas><?php
+                            }?>
+                        </div>
 						<?php
 					}
 				}
