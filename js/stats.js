@@ -41,7 +41,7 @@ function afficher_histogramme_possessions(data) {
 		var labels_magazines_longs = data.labels_magazines_longs;
 		var labels_pays_longs = data.labels_pays_longs;
 
-		var vertical = data.labels.length > 20;
+		var vertical = data.labels.length > 25;
 
 		var canvasHolderStyle = {};
 		canvasHolderStyle[vertical ? 'height' : 'width'] = 100 + 30*data.labels.length + 'px';
