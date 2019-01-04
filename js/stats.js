@@ -78,14 +78,6 @@ function afficher_histogramme_possessions(data) {
 							var publicationcode = tooltipItems[0][vertical ? 'yLabel' : 'xLabel'];
 							return labels_magazines_longs[publicationcode]+
 								   ' ('+labels_pays_longs[publicationcode.split('/')[0]]+')';
-						},
-						label: function(tooltipItem, data) {
-							var label = data.datasets[tooltipItem.datasetIndex].label + ' : ';
-							label += tooltipItem[vertical ? 'xLabel' : 'yLabel'];
-							if (jQuery('.graph_possessions.cpt').is(':visible')) {
-								label += '%';
-							}
-							return label;
 						}
 					}
 				}
@@ -103,6 +95,9 @@ function afficher_histogramme_possessions(data) {
 
 		var config_cpt = jQuery.extend({}, config);
 		config_cpt.data = jQuery.extend({}, data, {datasets: [data.datasets.possedes_cpt, data.datasets.totaux_cpt]});
+		config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
+			return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems[vertical ? 'xLabel' : 'yLabel'] + '%';
+		};
 		new Chart(jQuery('.graph_possessions.cpt')[0].getContext('2d'), config_cpt);
 	});
 }
@@ -154,7 +149,7 @@ function afficher_histogramme_stats_auteurs() {
 			var config_cpt = jQuery.extend({}, config);
 			config_cpt.data = jQuery.extend({}, data, {datasets: [data.datasets.possedees_pct, data.datasets.manquantes_pct]});
 			config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
-				return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
+				return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + '%';
 			};
 			new Chart(jQuery('.graph_auteurs.pct')[0].getContext('2d'), config_cpt);
 
