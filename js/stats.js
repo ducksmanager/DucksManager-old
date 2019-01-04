@@ -41,11 +41,15 @@ function afficher_histogramme_possessions(data) {
 		var labels_magazines_longs = data.labels_magazines_longs;
 		var labels_pays_longs = data.labels_pays_longs;
 
-		jQuery('#canvas-holder').css({height: 100 + 30*data.labels.length + 'px'});
+		var vertical = data.labels.length > 20;
+
+		var canvasHolderStyle = {};
+		canvasHolderStyle[vertical ? 'height' : 'width'] = 100 + 30*data.labels.length + 'px';
+		jQuery('#canvas-holder').css(canvasHolderStyle);
 
 		Chart.defaults.global.maintainAspectRatio = false;
 		var config = {
-            type: 'horizontalBar',
+            type: vertical ? 'horizontalBar' : 'bar',
 			options: {
 				title:{
 					display:true,
@@ -54,6 +58,7 @@ function afficher_histogramme_possessions(data) {
 				responsive: true,
 				scales: {
 					xAxes: [{
+						stacked: true,
                         ticks: {
                             stepSize: 1
                         }
@@ -66,13 +71,21 @@ function afficher_histogramme_possessions(data) {
 					enabled: true,
 					position: 'nearest',
                     mode: 'index',
-                    axis: 'y',
+                    axis: vertical ? 'y' : 'x',
                     intersect: false,
 					callbacks: {
 						title: function(tooltipItems) {
-							var publicationcode = tooltipItems[0].yLabel;
+							var publicationcode = tooltipItems[0][vertical ? 'yLabel' : 'xLabel'];
 							return labels_magazines_longs[publicationcode]+
 								   ' ('+labels_pays_longs[publicationcode.split('/')[0]]+')';
+						},
+						label: function(tooltipItem, data) {
+							var label = data.datasets[tooltipItem.datasetIndex].label + ' : ';
+							label += tooltipItem[vertical ? 'xLabel' : 'yLabel'];
+							if (jQuery('.graph_possessions.cpt').is(':visible')) {
+								label += '%';
+							}
+							return label;
 						}
 					}
 				}
@@ -90,9 +103,6 @@ function afficher_histogramme_possessions(data) {
 
 		var config_cpt = jQuery.extend({}, config);
 		config_cpt.data = jQuery.extend({}, data, {datasets: [data.datasets.possedes_cpt, data.datasets.totaux_cpt]});
-		config_cpt.options.tooltips.callbacks.label = function(tooltipItems, data) {
-			return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems.yLabel + ' %';
-		};
 		new Chart(jQuery('.graph_possessions.cpt')[0].getContext('2d'), config_cpt);
 	});
 }
