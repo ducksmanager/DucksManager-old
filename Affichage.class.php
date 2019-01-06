@@ -489,7 +489,7 @@ class Affichage {
                     <div class="lien_bibliotheque">
                         <img src="images/bibliotheque.png" />&nbsp;
                         <div class="btn btn-default btn-xs">
-                            <a href="<?=Edge::get_lien_bibliotheque($infos_utilisateur['Username'])?>">Voir la bibliothèque</a>
+                            <a target="_blank" href="<?=Edge::get_lien_bibliotheque($infos_utilisateur['Username'])?>"><?=VOIR_BIBLIOTHEQUE?></a>
                         </div>
                     </div><?php
                 }?>

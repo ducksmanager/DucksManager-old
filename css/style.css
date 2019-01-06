@@ -23,6 +23,10 @@ a.noborder, a.btn, a.noborder:HOVER, a.btn:HOVER  {
     border-bottom: 0 !important;
 }
 
+.alert a {
+	font-weight: bold;
+}
+
 .underlined {
 	text-decoration: underline;
 }
