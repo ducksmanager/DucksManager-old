@@ -800,75 +800,86 @@ $id_user= $_SESSION['id_user'] ?? null;
                 Affichage::onglets($onglet, $onglets, 'onglet', '?action=gerer');
                 switch ($onglet) {
                     case 'compte':
+                        ?><br/><?php
                         if (isset($_POST['submit_options'])) {
                             if ($_SESSION['user'] === 'demo') {
                                 echo OPERATION_IMPOSSIBLE_MODE_DEMO . '<br />';
                             } else {
                                 $erreur = null;
-                                $requete_verif_mot_de_passe = 'SELECT Email FROM users WHERE ID=' . $id_user . ' AND password=sha1(\'' . $_POST['ancien_mdp'] . '\')';
-                                $mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
-                                if ($mot_de_passe_ok) {
-                                    $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
-                                    $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
-                                    if (strlen($mot_de_passe_nouveau) < 6) {
-                                        $erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
-                                    } elseif ($mot_de_passe_nouveau !== $mot_de_passe_nouveau_confirm) {
-                                        $erreur = MOTS_DE_PASSE_DIFFERENTS;
+                                if (!empty($_POST['ancien_mdp'])) {
+                                    $requete_verif_mot_de_passe = 'SELECT Email FROM users WHERE ID=' . $id_user . ' AND password=sha1(\'' . $_POST['ancien_mdp'] . '\')';
+                                    $mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
+                                    if ($mot_de_passe_ok) {
+                                        $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
+                                        $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
+                                        if (strlen($mot_de_passe_nouveau) < 6) {
+                                            $erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
+                                        } elseif ($mot_de_passe_nouveau !== $mot_de_passe_nouveau_confirm) {
+                                            $erreur = MOTS_DE_PASSE_DIFFERENTS;
+                                        } else {
+                                            $requete_modif_mdp = 'UPDATE users SET password=sha1(\'' . $mot_de_passe_nouveau . '\') WHERE ID=' . $id_user;
+                                            DM_Core::$d->requete($requete_modif_mdp);
+                                            ?><div class="alert alert-success"><?=MOT_DE_PASSE_CHANGE?></div><?php
+                                        }
                                     } else {
-                                        $requete_modif_mdp = 'UPDATE users SET password=sha1(\'' . $mot_de_passe_nouveau . '\') WHERE ID=' . $id_user;
-                                        DM_Core::$d->requete($requete_modif_mdp);
-                                        echo MOT_DE_PASSE_CHANGE;
+                                        $erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
                                     }
-                                } else {
-                                    $erreur = MOT_DE_PASSE_ACTUEL_INCORRECT;
                                 }
-                                ?><br/><br/><?php
                                 if (is_null($erreur)) {
-                                    echo MODIFICATIONS_OK . '<br />';
+                                    ?><div class="alert alert-success"><?=MODIFICATIONS_OK?></div><?php
                                     $est_partage = isset($_POST['partage']) && $_POST['partage'] === 'on' ? '1' : '0';
                                     $est_video = isset($_POST['video']) && $_POST['video'] === 'on' ? '1' : '0';
-                                    DM_Core::$d->requete('UPDATE users SET AccepterPartage=' . $est_partage . ', AfficherVideo=' . $est_video . ', '
-                                        . 'Email=\'' . $_POST['email'] . '\' '
-                                        . 'WHERE ID=' . $id_user);
+                                    DM_Core::$d->requete("
+                                      UPDATE users
+                                      SET AccepterPartage=$est_partage, AfficherVideo=$est_video, Email='{$_POST['email']}'
+                                      WHERE ID=$id_user");
                                 } else {
-                                    ?><span style="color:red"><?= $erreur ?></span><?php
+                                    ?><div class="alert alert-danger"><?=$erreur?></div><?php
                                 }
                             }
                         }
-                        $resultat_partage = DM_Core::$d->requete_select('SELECT AccepterPartage FROM users WHERE ID=' . $id_user);
-                        $resultat_email = DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID=' . $id_user);
+                        $resultat_partage = DM_Core::$d->requete_select("SELECT AccepterPartage FROM users WHERE ID=$id_user");
+                        $resultat_email = DM_Core::$d->requete_select("SELECT Email FROM users WHERE ID=$id_user");
                         ?>
                         <form action="?action=gerer&amp;onglet=compte" method="post">
-                            <br/><?= ADRESSE_EMAIL ?> : <br/>
-                            <input class="form-control" type="text" name="email" style="width: 200px" value="<?php
-                            if (!is_null($resultat_email[0]['Email'])) {
-                                echo $resultat_email[0]['Email'];
-                            } ?>"/><br/><br/><br/>
-                            <span style="text-align: center;text-decoration: underline">
-                                        	<?= MOT_DE_PASSE_CHANGEMENT ?>
-                                        </span>
-                            <br/><?= MOT_DE_PASSE_ACTUEL ?> : <br/>
-                            <input class="form-control" type="password" name="ancien_mdp" style="width: 100px" value=""/>
-                            <br/>
-                            <br/><?= MOT_DE_PASSE_NOUVEAU ?> : <br/>
-                            <input class="form-control" type="password" name="nouveau_mdp" style="width: 100px" value=""/>
-                            <br/>
-                            <br/><?= MOT_DE_PASSE_NOUVEAU_CONFIRMATION ?> : <br/>
-                            <input class="form-control" type="password" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
-                            <br/><br/><br/>
-                            <input type="checkbox" name="partage" <?php
-                            if ($resultat_partage[0]['AccepterPartage'] === 1) {
-                            ?>checked="checked"<?php
-                            } ?>/><?= ACTIVER_PARTAGE ?>
-                            <br/>
-                            <br/>
-                            <input type="checkbox" name="video"
-                                   <?php
-                                   if (DM_Core::$d->user_afficher_video()) {
-                                   ?>checked="checked"<?php
-                            } ?> /><?= AFFICHER_VIDEO ?>
-                            <br/>
-                            <br/>
+                            <div class="form-group">
+                                <label for="email"><?= ADRESSE_EMAIL ?> : </label><br/>
+                                <input class="form-control" type="text" id="email" name="email" style="width: 200px" value="<?=$resultat_email[0]['Email']?>"/><br/><br/>
+                            </div>
+                            <h6 style="text-decoration: underline">
+                                <?= MOT_DE_PASSE_CHANGEMENT ?>
+                            </h6>
+
+                            <div class="form-group">
+                                <label for="ancien_mdp"><?= MOT_DE_PASSE_ACTUEL ?> : </label><br/>
+                                <input class="form-control" type="password" id="ancien_mdp" name="ancien_mdp" style="width: 100px" value=""/>
+                            </div>
+                            <div class="form-group">
+                                <label for="nouveau_mdp"><?= MOT_DE_PASSE_NOUVEAU ?> : </label><br/>
+                                <input class="form-control" type="password" id="nouveau_mdp" name="nouveau_mdp" style="width: 100px" value=""/>
+                            </div>
+                            <div class="form-group">
+                                <label for="nouveau_mdp_confirm"><?= MOT_DE_PASSE_NOUVEAU_CONFIRMATION ?> : </label><br/>
+                                <input class="form-control" type="password" id="nouveau_mdp_confirm" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
+                            </div>
+                            <br/><br/>
+                            <div class="checkbox">
+                                <label for="partage">
+                                    <input type="checkbox" id="partage" name="partage" <?php
+                                    if ($resultat_partage[0]['AccepterPartage'] === '1') {
+                                        ?>checked="checked"<?php
+                                    } ?>/><?= ACTIVER_PARTAGE ?>
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label for="video">
+                                    <input type="checkbox" id="video" name="video" <?php
+                                    if (DM_Core::$d->user_afficher_video()) {
+                                        ?>checked="checked"<?php
+                                    } ?> /><?= AFFICHER_VIDEO ?>
+                                </label>
+
+                            </div>
                             <input name="submit_options" class="btn btn-success" type="submit" value="<?= VALIDER ?>"/>
                         </form>
                         <br/><br/><br/>
@@ -895,14 +906,15 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     }
                                 }
                             } else {
-                                ?>
-                                <?= OPERATION_IRREVERSIBLE ?><br/><?= CONTINUER_OUI_NON ?><br/>
-                                <a href="?action=gerer&amp;onglet=compte&amp;<?= isset($_GET['vider']) ? 'vider' : 'supprimer' ?>=true&amp;confirm=true">
-                                    <button><?= OUI ?></button>
-                                </a>&nbsp;
-                                <a href="?action=gerer">
-                                    <button><?= NON ?></button>
-                                </a>
+                                ?><div class="alert alert-warning">
+                                    <?= OPERATION_IRREVERSIBLE ?><br/><?= CONTINUER_OUI_NON ?>
+                                    <a href="?action=gerer&amp;onglet=compte&amp;<?= isset($_GET['vider']) ? 'vider' : 'supprimer' ?>=true&amp;confirm=true">
+                                        <button><?= OUI ?></button>
+                                    </a>&nbsp;
+                                    <a href="?action=gerer">
+                                        <button><?= NON ?></button>
+                                    </a>
+                                </div>
                                 <?php
                             }
                         } else if ($_SESSION['user'] !== 'demo') {?>
@@ -1146,7 +1158,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                     $_POST[$champ] = mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
                     if (empty($_POST[$champ])) {
                         $erreur = true;?>
-                        <div style="color:red"><?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?></div><?php
+                        <div class="alert alert-danger">
+                            <?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?>
+                        </div><?php
                     }
                 }
                 if (!$erreur) {

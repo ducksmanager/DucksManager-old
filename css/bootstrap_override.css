@@ -75,3 +75,7 @@ input.form-control {
 .list-group-item {
     overflow-y: hidden;
 }
+
+.checkbox input[type="checkbox"] {
+    margin-top: 0;
+}

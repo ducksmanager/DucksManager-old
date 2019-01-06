@@ -94,9 +94,9 @@ class Database {
 
 	function user_afficher_video() {
 		if (isset($_SESSION['user'])) {
-			$requete_afficher_video='SELECT AfficherVideo FROM users WHERE username = \''.$_SESSION['user'].'\'';
+			$requete_afficher_video="SELECT AfficherVideo FROM users WHERE username = '{$_SESSION['user']}'";
 			$resultat_afficher_video=DM_Core::$d->requete_select($requete_afficher_video);
-			return $resultat_afficher_video[0]['AfficherVideo']===1;
+			return $resultat_afficher_video[0]['AfficherVideo'] === '1';
 		}
 		return false;
 	}
