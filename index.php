@@ -671,53 +671,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <input type="hidden" id="texture2" name="texture2" value="bois" />
                             <?php buildTextureSelect('sous_texture1', SOUS_TEXTURE)?>
                             <?php buildTextureSelect('sous_texture2', SOUS_TEXTURE_ETAGERE)?>
-                            <?php /*
-                            <br/><br/><br/>
-                            <span style="text-decoration:underline"><?= ORDRE_MAGAZINES ?>
-                                : </span><br/>
-                            <?= EXPLICATION_ORDRE_MAGAZINES ?><br/><br/>
-                            <?php
-                            DM_Core::$d->maintenance_ordre_magazines($id_user);?>
-                            <div id="liste_magazines">
-                                <?php
-
-                                // TODO Use DM server service
-                                $requete_ordre_magazines = 'SELECT Pays, Magazine, Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user . ' ORDER BY Ordre';
-                                $resultat_ordre_magazines = DM_Core::$d->requete_select($requete_ordre_magazines);
-                                $publication_codes = [];
-                                foreach ($resultat_ordre_magazines as $magazine) {
-                                    $publication_codes[] = $magazine['Pays'] . '/' . $magazine['Magazine'];
-                                }
-                                $noms_pays = Inducks::get_noms_complets_pays($publication_codes);
-                                $noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
-                                foreach ($resultat_ordre_magazines as $magazine) {
-                                    $num_ordre = $magazine['Ordre'];
-                                    $nom_pays = $magazine['Pays'];
-                                    $nom_magazine = $magazine['Magazine'];
-                                    $pays_complet = $noms_pays[$nom_pays];
-                                    $magazine_complet = $noms_magazines[$nom_pays . '/' . $nom_magazine];
-                                    ?>
-                                    <div style="margin-top:10px;height:40px;"
-                                         class="magazine_deplacable"
-                                         id="<?= $nom_pays ?>_<?= $nom_magazine ?>">
-                                        <div class="handle"
-                                             style="float:left;text-align:center;border:1px solid white;width:40px">
-                                            <img alt="<?= $nom_pays ?>"
-                                                 src="images/flags/<?= $nom_pays ?>.png"/>
-                                            <br/><?= $nom_magazine ?>
-                                        </div>
-                                        <div style="float:left;margin-left: 5px;margin-top: 7px;">
-                                            <?= $magazine_complet ?> (<?= $pays_complet ?>)
-                                        </div>
-                                        <input type="hidden"
-                                               name="magazine_<?= $nom_pays ?>_<?= $nom_magazine ?>"
-                                               value="<?= $num_ordre ?>"/>
-                                    </div>
-                                    <?php
-                                }
-                                ?>
-                            </div>
-                            */?>
                             <br/><br/>
                             <div>
                                 <input type="submit" class="btn btn-default" value="<?= VALIDER ?>"/>
@@ -729,8 +682,8 @@ $id_user= $_SESSION['id_user'] ?? null;
 
                     case 'contributeurs':
                         $requete_contributeurs_internes = "
-                                            SELECT distinct ID, username AS Nom, '' AS Texte from users
-                                            inner join tranches_pretes_contributeurs c on users.ID = c.contributeur";
+                            SELECT distinct ID, username AS Nom, '' AS Texte from users
+                            inner join tranches_pretes_contributeurs c on users.ID = c.contributeur";
                         $contributeurs_internes = DM_Core::$d->requete_select($requete_contributeurs_internes);
 
                         $ids_contributeurs_internes = array_map(function($contributeur) {
