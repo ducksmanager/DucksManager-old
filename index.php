@@ -394,47 +394,47 @@ $id_user= $_SESSION['id_user'] ?? null;
             switch($action) {
             case 'inducks':
             if (isset($_POST['rawData'])) {
-            if (isset($_POST['valider_importer'])) {
-                $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
-                $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
-                $l=new Liste($_POST['rawData']);
-                $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);
-            }
-            else {
-                $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
-            if ($rawdata_valide) {
-                list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
-            if ($est_succes) {
-                ?><br /><br />
-                <form method="post" action="?action=inducks">
-                    <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
-                    <?php
-                    if (isset($_SESSION['user'])) {
-                        ?><?=QUESTION_EXECUTER_OPS_INDUCKS?><br />
-                        <?php
-                        if ($ajouts > 0) {
-                            ?><input type="checkbox" checked="checked" name="ajouter_numeros" /><?=AJOUTER_NUMEROS_INDUCKS?><br /><?php
-                        }
-                        if ($suppressions > 0) {
-                            ?><input type="checkbox" name="supprimer_numeros" /><?=SUPPRIMER_NUMEROS_NON_INDUCKS?><br /><?php
-                        }?>
-                        <input type="submit" name="valider_importer" value="<?=VALIDER?>" />&nbsp;
+                if (isset($_POST['valider_importer'])) {
+                    $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
+                    $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
+                    $l=new Liste($_POST['rawData']);
+                    $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);
+                }
+                else {
+                    $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
+                    if ($rawdata_valide) {
+                        list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
+                        if ($est_succes) {
+                            ?><br /><br />
+                            <form method="post" action="?action=inducks">
+                                <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
+                                <?php
+                                if (isset($_SESSION['user'])) {
+                                    ?><?=QUESTION_EXECUTER_OPS_INDUCKS?><br />
+                                    <?php
+                                    if ($ajouts > 0) {
+                                        ?><input type="checkbox" checked="checked" name="ajouter_numeros" /><?=AJOUTER_NUMEROS_INDUCKS?><br /><?php
+                                    }
+                                    if ($suppressions > 0) {
+                                        ?><input type="checkbox" name="supprimer_numeros" /><?=SUPPRIMER_NUMEROS_NON_INDUCKS?><br /><?php
+                                    }?>
+                                    <input type="submit" name="valider_importer" value="<?=VALIDER?>" />&nbsp;
 
+                                    <?php
+                                }
+                                else {
+                                    ?><?=QUESTION_IMPORTER_INDUCKS?><br />
+                                    <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
+                                    <input type="submit" name="valider_importer" value="<?=NON?>" />
+                                <?php }?>
+                            </form>
                         <?php
+                        }
                     }
                     else {
-                        ?><?=QUESTION_IMPORTER_INDUCKS?><br />
-                        <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
-                        <input type="submit" name="valider_importer" value="<?=NON?>" />
-                    <?php }?>
-                </form>
-            <?php
-            }
-            }
-            else {
-                echo ERREUR_RAWDATA_INVALIDE;
-            }
-            }
+                        echo ERREUR_RAWDATA_INVALIDE;
+                    }
+                }
             }
             if (!isset($_POST['rawData']) || (isset($rawdata_valide) && !$rawdata_valide)) {
                 echo IMPORT_INDUCKS_DESACTIVE;
@@ -607,11 +607,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     }
                                     ?>
                                 </div><br/><br/><?php
-                            }
-                        }
-                        ?>
-
-                        <?php if (!$est_partage_bibliotheque) { ?>
+                            } ?>
                             <div id="partager_bibliotheque" class="cache">
                                 <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
                             </div><?php
