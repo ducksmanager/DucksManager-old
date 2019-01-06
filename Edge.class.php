@@ -160,14 +160,22 @@ class Edge {
         return [$texte_final, $pourcentage_visible, Inducks::get_noms_complets_magazines($publication_codes)];
 	}
 
-    static function get_user_bibliotheque($user, $cle) {
+    static function get_user_bibliotheque($user) {
         if ($user === '-1') {
             $id_user = $_SESSION['id_user'];
         }
         else {
-            $id_user = DM_Core::$d->get_id_user_partage_bibliotheque($user, $cle);
+            $resultats_utilisateur = DM_Core::$d->requete_select("SELECT ID, AccepterPartage FROM users WHERE username='$user'");
+            if ($resultats_utilisateur[0]['AccepterPartage'] === '1') {
+                return $resultats_utilisateur[0]['ID'];
+            }
+            else return null;
         }
         return $id_user;
+    }
+
+    static function get_lien_bibliotheque($user) {
+        return "https://www.ducksmanager.net/?action=bibliotheque&user={$user}";
     }
 
 }
@@ -185,10 +193,10 @@ elseif (isset($_POST['get_popularite_numeros'])) {
 elseif (isset($_POST['get_bibliotheque'])) {
     header('Content-type: application/json');
     $user = $_POST['user_bibliotheque'];
-    $id_user = Edge::get_user_bibliotheque($user, $_POST['cle_bibliotheque']);
+    $id_user = Edge::get_user_bibliotheque($user);
 
     if (is_null($id_user)) {
-        echo json_encode(['erreur' => 'Lien de partage invalide']);
+        echo json_encode(['erreur' => 'La bibliothèque de cet utilisateur est privée.']);
     }
     else {
         $requete_grossissement = 'SELECT username FROM users WHERE ID = \'' . $id_user . '\'';

@@ -56,20 +56,6 @@ CREATE TABLE `auteurs_pseudos` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `bibliotheque_acces_externes`
---
-
-DROP TABLE IF EXISTS `bibliotheque_acces_externes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `bibliotheque_acces_externes` (
-  `ID_Utilisateur` int(11) NOT NULL,
-  `Cle` varchar(16) NOT NULL,
-  PRIMARY KEY (`ID_Utilisateur`,`Cle`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `bibliotheque_contributeurs`
 --
 

@@ -485,6 +485,14 @@ class Affichage {
             <h4><?=$nom_utilisateur?></h4>
             <div>
                 <?php self::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPointsPhotographe'], $infos_utilisateur['NbPointsCreateur'], $infos_utilisateur['NbBouquineries']) ?>
+                <?php if ($infos_utilisateur['AccepterPartage'] === '1') {?>
+                    <div class="lien_bibliotheque">
+                        <img src="images/bibliotheque.png" />&nbsp;
+                        <div class="btn btn-default btn-xs">
+                            <a href="<?=Edge::get_lien_bibliotheque($infos_utilisateur['Username'])?>">Voir la bibliothèque</a>
+                        </div>
+                    </div><?php
+                }?>
             </div>
         </div><?php
     }
@@ -521,13 +529,8 @@ class Affichage {
 	}
 
     static function partager_page() {
-    	// TODO Use DM server service
-        $id_user=$_SESSION['id_user'];
-        $cle = Util::get_random_string();
-        $requete_ajout_acces = 'INSERT INTO bibliotheque_acces_externes(ID_Utilisateur, Cle) VALUES ('.$id_user.', \''.$cle.'\')';
-        DM_Core::$d->requete($requete_ajout_acces);
         ?><div class="a2a_kit a2a_kit_size_32 a2a_default_style"
-               data-a2a-url="https://www.ducksmanager.net/?action=bibliotheque&user=<?=$_SESSION['user']?>&key=<?=$cle?>"
+               data-a2a-url="<?=Edge::get_lien_bibliotheque($_SESSION['user'])?>"
                data-a2a-title="Ma bibliothèque DucksManager">
             <a class="noborder a2a_button_email"></a>
             <a class="noborder a2a_button_facebook"></a>

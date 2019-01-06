@@ -650,27 +650,11 @@ class Database {
         return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
     }
 
-    function get_id_user_partage_bibliotheque($user, $cle) {
-        $id_user=DM_Core::$d->user_to_id($user);
-        if (is_null($id_user)) {
-            return null;
-        }
-
-    	// TODO Use DM server service
-        $requete_verifier_lien_partage = 'SELECT 1 FROM bibliotheque_acces_externes
-                                          WHERE ID_Utilisateur = '.mysqli_real_escape_string(self::$handle, $id_user).' 
-                                          AND Cle=\''.mysqli_real_escape_string(self::$handle, $cle).'\'';
-        if (count(DM_Core::$d->requete_select($requete_verifier_lien_partage)) > 0) {
-            return $id_user;
-        }
-        return null;
-    }
-
     public function get_details_collections($idsUtilisateurs) {
 	    $concat_utilisateurs = implode(',', $idsUtilisateurs);
 	    $requete_details_collections = "
             SELECT 
-                users.ID AS ID_Utilisateur, users.username AS Username, 
+                users.ID AS ID_Utilisateur, users.username AS Username, users.AccepterPartage,
                 COUNT(DISTINCT numeros.Pays) AS NbPays,
                 COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines,
                 COUNT(numeros.Numero) AS NbNumeros,

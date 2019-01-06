@@ -235,6 +235,18 @@
     margin-top: 25px;
 }
 
+.lien_bibliotheque {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 8px;
+    white-space: nowrap;
+}
+
+.lien_bibliotheque img {
+    height: 32px;
+}
+
 @media (min-width: 767px) {
     #recherche_histoire input {
         width: 300px;

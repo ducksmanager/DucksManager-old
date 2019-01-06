@@ -207,7 +207,6 @@ function charger_points_utilisateur(callback) {
 
 function afficher_lien_partage() {
 	var zone_proposition_photos = jQuery('#partager_bibliotheque');
-	zone_proposition_photos.removeClass('cache');
 	jQuery('#partager_bibliotheque_lien').on('click', function() {
 		zone_proposition_photos.addClass('cache');
 		jQuery.post('Edge.class.php', {partager_bibliotheque: 'true'}, function (response) {

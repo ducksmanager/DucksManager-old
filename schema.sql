@@ -65,18 +65,6 @@ CREATE TABLE IF NOT EXISTS `auteurs_pseudos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bibliotheque_acces_externes`
---
-
-CREATE TABLE IF NOT EXISTS `bibliotheque_acces_externes` (
-  `ID_Utilisateur` int(11) NOT NULL,
-  `Cle` varchar(16) NOT NULL,
-  PRIMARY KEY (`ID_Utilisateur`,`Cle`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `bibliotheque_contributeurs`
 --
 
@@ -375,7 +363,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `password` varchar(40) CHARACTER SET latin1 NOT NULL,
-  `AccepterPartage` tinyint(1) NOT NULL DEFAULT '0',
+  `AccepterPartage` tinyint(1) NOT NULL DEFAULT '1',
   `DateInscription` date NOT NULL DEFAULT '0000-00-00',
   `EMail` varchar(50) CHARACTER SET latin1 NOT NULL,
   `RecommandationsListeMags` tinyint(1) NOT NULL DEFAULT '1',

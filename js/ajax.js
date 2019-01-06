@@ -154,9 +154,23 @@ function charger_tooltips_utilisateurs() {
             title: tooltip_content.find('>h4').html(),
             placement: 'top',
             html: true,
-            trigger: 'hover',
+            trigger: 'manual',
             container: 'body'
-        });
+        })
+            .on('mouseenter', function () {
+                var _this = this;
+                $(this).popover('show');
+                $('.popover').on('mouseleave', function () {
+                    $(_this).popover('hide');
+                });
+            }).on('mouseleave', function (e) {
+                var _this = this;
+                setTimeout(function () {
+                    if (!$('.popover:hover').length) {
+                        $(_this).popover('hide');
+                    }
+                }, 300);
+            });
     });
 }
 

@@ -607,10 +607,18 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     }
                                     ?>
                                 </div><br/><br/><?php
-                            } ?>
-                            <div id="partager_bibliotheque" class="cache">
-                                <a id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></a>
-                            </div><?php
+                            }
+
+                            $accepter_partage = DM_Core::$d->requete_select("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
+                            if ($accepter_partage) {
+                                ?><div class="alert alert-info">Votre bibliothèque peut être visionnée par les autres visiteurs de DucksManager. Si vous ne le souhaitez pas, désactivez le partage de collection dans la page <a href="?action=gerer&amp;onglet=compte">Mon compte"</a>.</div>
+                                <div id="partager_bibliotheque">
+                                    <div class="btn btn-default btn-sm" id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></div>
+                                </div><?php
+                            }
+                            else {
+                                ?><div class="alert alert-warning">Votre bibliothèque ne peut pas être visionnée par les autres visiteurs de DucksManager. Si vous souhaitez que votre bibliothèque soit accessible, activez le partage de collection dans la page <a href="?action=gerer&amp;onglet=compte">Mon compte"</a>.</div><?php
+                            }
                         }?>
                         <br/>
                         <span id="pcent_visible"></span>
@@ -719,8 +727,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 <?php
                             }
                             ?>
-                        </div>
-                        <?php
+                        </div><?php
                         break;
                 }
                 ?></div><?php
