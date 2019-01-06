@@ -21,7 +21,7 @@ class Item {
 
 	function afficher() {
 		if ($this->est_affiche()) {?>
-            <li class="non-empty <?= $this->icone ? '' : 'no-icon' ?> <?= ($_GET['action'] ?? '') === $this->nom ? 'active' : '' ?>">
+            <li class="non-empty <?= $this->icone ? '' : 'no-icon' ?> <?= !isset($_GET['user']) && ($_GET['action'] ?? '') === $this->nom ? 'active' : '' ?>">
                 <a href="?action=<?= $this->nom ?>">
                     <i class="<?= $this->icone ?>"></i>
                     <?= $this->texte ?>
@@ -69,7 +69,7 @@ class Menu extends Item{
     }
 	
 	public function afficher() {
-        $isActive = in_array($_GET['action'] ?? '', array_map(function (Item $i) {
+        $isActive = !isset($_GET['user']) && in_array($_GET['action'] ?? '', array_map(function (Item $i) {
             return $i->nom;
         }, $this->items), true);
         ?>
