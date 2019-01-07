@@ -263,7 +263,7 @@ class Affichage {
 							$numero=$evenement->numero_exemple;
 							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
 								$evenement->cpt++;
-								continue;
+								continue 2;
 							}
                             self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
 							?><?=NEWS_A_AJOUTE?>
@@ -280,7 +280,7 @@ class Affichage {
 							$numero=$evenement->numeros[0];
 							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
 								$evenement->cpt++;
-								continue;
+								continue 2;
 							}
 							$contributeurs = array_filter(array_unique($evenement->ids_utilisateurs));
 							foreach($contributeurs as $i => $idContributeur) {

@@ -1,4 +1,4 @@
-FROM php:7.0-apache
+FROM php:7.2-apache
 MAINTAINER Bruno Perel
 
 RUN a2enmod rewrite
@@ -16,9 +16,9 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-install mysqli pdo pdo_mysql opcache
 
 RUN cd /usr/src && \
-    wget http://xdebug.org/files/xdebug-2.6.0.tgz && \
-    tar -xvzf xdebug-2.6.0.tgz && \
-    cd xdebug-2.6.0 && \
+    wget http://xdebug.org/files/xdebug-2.6.1.tgz && \
+    tar -xvzf xdebug-2.6.1.tgz && \
+    cd xdebug-2.6.1 && \
     phpize && \
     ./configure && \
     make && \
