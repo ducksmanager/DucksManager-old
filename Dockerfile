@@ -22,7 +22,7 @@ RUN cd /usr/src && \
     phpize && \
     ./configure && \
     make && \
-    cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20151012
+    cp modules/xdebug.so /usr/local/lib/php/extensions/no-debug-non-zts-20170718
 
 RUN mkdir -p /var/www/html/edges && \
     chown -R www-data:www-data /var/www/html/edges && \
