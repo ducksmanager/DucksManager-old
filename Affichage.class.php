@@ -236,98 +236,100 @@ class Affichage {
     }
 	
 	static function afficher_evenements_recents($evenements) {
-		include_once 'Edge.class.php';
-		Edge::$sans_etageres = true;
-		Edge::$grossissement_defaut = 1;
+        if (count($evenements->evenements) > 0) {
+            include_once 'Edge.class.php';
+            Edge::$sans_etageres = true;
+            Edge::$grossissement_defaut = 1;
 
-		$magazines_complets=Inducks::get_noms_complets_magazines($evenements->publicationcodes);
-		$details_collections=DM_Core::$d->get_details_collections($evenements->ids_utilisateurs);
+            $magazines_complets=Inducks::get_noms_complets_magazines($evenements->publicationcodes);
+            $details_collections=DM_Core::$d->get_details_collections($evenements->ids_utilisateurs);
 
-		foreach($evenements->evenements as $evenements_date) {
-			foreach($evenements_date as $type=>$evenements_type) {
-				foreach($evenements_type as $evenement) {
-					?><div class="evenement evenement_<?=$type?>"><?php
-					switch($type) {
-						case 'inscriptions':
-							self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
-							?><?=NEWS_A_COMMENCE_COLLECTION?>
-						<?php 
-						break;
-						case 'bouquineries':
-                            self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);?>
-                            <?=NEWS_A_AJOUTE_BOUQUINERIE.' ' ?>
-                            <i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
-						<?php 
-						break;
-						case 'ajouts':
-							$numero=$evenement->numero_exemple;
-							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
-								$evenement->cpt++;
-								continue 2;
-							}
-                            self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
-							?><?=NEWS_A_AJOUTE?>
-							<?php self::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
-							<?php 
-							if ($evenement->cpt > 0) {
-								?>
-								<?=ET?> <?=$evenement->cpt?> 
-								<?=$evenement->cpt === 1 ? NEWS_AUTRE_NUMERO : NEWS_AUTRES_NUMEROS?>
-							<?php } ?>
-							<?=NEWS_A_SA_COLLECTION?><?php
-						break;
-						case 'tranches_pretes':
-							$numero=$evenement->numeros[0];
-							if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
-								$evenement->cpt++;
-								continue 2;
-							}
-							$contributeurs = array_filter(array_unique($evenement->ids_utilisateurs));
-							foreach($contributeurs as $i => $idContributeur) {
-                                self::afficher_texte_utilisateur($details_collections[$idContributeur]);
-                                ?><?= $i < count($contributeurs) -2 ? ', ' : ($i < count($contributeurs) - 1 ? ' ' . ET . ' ' : '');
-                            }
-
-							?><?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
-							<a href="javascript:void(0)" class="has_tooltip edge_tooltip underlined">
-                                <?php
-                                $nb_autres_numeros = count($evenement->numeros) - 1;
-                                echo self::get_texte_numero_multiple(
-                                        $numero->Pays,
-                                        $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
-                                        $numero->Numero,
-                                        $nb_autres_numeros,
-                                        false
-                                );?>
-							</a>
-							<span class="cache tooltip_content">
-                                <div class="edge_container">
-                                    <?php
-                                    foreach($evenement->numeros as $numero) {
-                                        $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
-                                        echo $e->html;
-                                    }
-                                ?></div>
-                                <div class="etagere">&nbsp;</div><?php
-                                foreach($evenement->numeros as $numero) {
-                                    self::afficher_texte_numero(
-                                        $numero->Pays,
-                                        $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
-                                        $numero->Numero
-                                    );
-                                    ?><br /><?php
+            foreach($evenements->evenements as $evenements_date) {
+                foreach($evenements_date as $type=>$evenements_type) {
+                    foreach($evenements_type as $evenement) {
+                        ?><div class="evenement evenement_<?=$type?>"><?php
+                        switch($type) {
+                            case 'inscriptions':
+                                self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+                                ?><?=NEWS_A_COMMENCE_COLLECTION?>
+                            <?php
+                            break;
+                            case 'bouquineries':
+                                self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);?>
+                                <?=NEWS_A_AJOUTE_BOUQUINERIE.' ' ?>
+                                <i><a href="?action=bouquineries"><?=$evenement->nom_bouquinerie?></a></i>.
+                            <?php
+                            break;
+                            case 'ajouts':
+                                $numero=$evenement->numero_exemple;
+                                if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
+                                    $evenement->cpt++;
+                                    continue 2;
                                 }
-                                ?>
-							</span>
-							<?=NEWS_ONT_CREE_TRANCHE_2?>
-							<?php 
-						break;
-					}
-                    self::afficher_temps_passe($evenement->diffsecondes);
-					?></div><?php
-				}
-			}
-		}
+                                self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+                                ?><?=NEWS_A_AJOUTE?>
+                                <?php self::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
+                                <?php
+                                if ($evenement->cpt > 0) {
+                                    ?>
+                                    <?=ET?> <?=$evenement->cpt?>
+                                    <?=$evenement->cpt === 1 ? NEWS_AUTRE_NUMERO : NEWS_AUTRES_NUMEROS?>
+                                <?php } ?>
+                                <?=NEWS_A_SA_COLLECTION?><?php
+                            break;
+                            case 'tranches_pretes':
+                                $numero=$evenement->numeros[0];
+                                if (!array_key_exists($numero->Pays.'/'.$numero->Magazine, $magazines_complets)) {
+                                    $evenement->cpt++;
+                                    continue 2;
+                                }
+                                $contributeurs = array_filter(array_unique($evenement->ids_utilisateurs));
+                                foreach($contributeurs as $i => $idContributeur) {
+                                    self::afficher_texte_utilisateur($details_collections[$idContributeur]);
+                                    ?><?= $i < count($contributeurs) -2 ? ', ' : ($i < count($contributeurs) - 1 ? ' ' . ET . ' ' : '');
+                                }
+
+                                ?><?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
+                                <a href="javascript:void(0)" class="has_tooltip edge_tooltip underlined">
+                                    <?php
+                                    $nb_autres_numeros = count($evenement->numeros) - 1;
+                                    echo self::get_texte_numero_multiple(
+                                            $numero->Pays,
+                                            $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                            $numero->Numero,
+                                            $nb_autres_numeros,
+                                            false
+                                    );?>
+                                </a>
+                                <span class="cache tooltip_content">
+                                    <div class="edge_container">
+                                        <?php
+                                        foreach($evenement->numeros as $numero) {
+                                            $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
+                                            echo $e->html;
+                                        }
+                                    ?></div>
+                                    <div class="etagere">&nbsp;</div><?php
+                                    foreach($evenement->numeros as $numero) {
+                                        self::afficher_texte_numero(
+                                            $numero->Pays,
+                                            $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
+                                            $numero->Numero
+                                        );
+                                        ?><br /><?php
+                                    }
+                                    ?>
+                                </span>
+                                <?=NEWS_ONT_CREE_TRANCHE_2?>
+                                <?php
+                            break;
+                        }
+                        self::afficher_temps_passe($evenement->diffsecondes);
+                        ?></div><?php
+                    }
+                }
+            }
+        }
 	}
 
     static function afficher_dernieres_tranches_publiees() {
