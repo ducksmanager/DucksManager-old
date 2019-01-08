@@ -1,6 +1,5 @@
 <?php
 include_once '../Inducks.class.php';
-Inducks::$use_local_db=false;
 ServeurDb::connect('coa');
 
 $regex_numeros_JM_valides='#[0-9]+#is';

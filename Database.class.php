@@ -48,13 +48,9 @@ class Database {
         $this->password=$password;
 	}
 
-	function requete_select($requete) {
-		if (ServeurDb::isServeurVirtuel() && get_current_db() !== 'coa') {
-			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
-		}
-
+	function requete_select($requete, $parametres = []) {
         try {
-		    $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy');
+		    $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy', $parametres);
             return array_map(function($result) {
                 return (array) $result;
             }, $resultats);
@@ -63,14 +59,9 @@ class Database {
         }
 	}
 
-	function requete($requete) {
-		require_once 'Inducks.class.php';
-		if (ServeurDb::isServeurVirtuel()) {
-			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
-		}
-
+	function requete($requete, $parametres = []) {
         try {
-		    return DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy');
+		    return DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy', $parametres);
         } catch (Exception $e) {
             return [];
         }

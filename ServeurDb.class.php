@@ -33,12 +33,7 @@ class ServeurDb {
 			self::initDBServers();
 		}
 		if (!isLocalHost()) {
-			if (self::isServeurVirtuel()) {
-				$current_db_server='serveur_virtuel';
-			}
-			else {
-				$current_db_server='ducksmanager.net';
-			}
+			$current_db_server='ducksmanager.net';
 		}
 		else {
 			$current_db_server='localhost';
@@ -53,14 +48,6 @@ class ServeurDb {
 
 	static function getIpServeurVirtuel() {
 		return self::getProfil('serveur_virtuel')->ip;
-	}
-
-	static function getDomainServeurVirtuel() {
-		return self::getProfil('serveur_virtuel')->domain;
-	}
-
-	static function isServeurVirtuel() {
-		return in_array($_SERVER['HTTP_HOST'], [self::getDomainServeurVirtuel(), self::getIpServeurVirtuel()]);
 	}
 
 	static function getUrlServeurVirtuel() {
