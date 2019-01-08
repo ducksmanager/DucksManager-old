@@ -3,6 +3,10 @@ if (isset($_GET['lang'])) {
 	$_SESSION['lang']=$_GET['lang'];
 }
 
+require_once 'remote/dm_client.php';
+DmClient::$servers_file='servers.ini';
+DmClient::init();
+
 require_once'ServeurDb.class.php';
 if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
     $_SERVER['SERVER_ADDR'] = ServeurDb::getIpServeurVirtuel();
@@ -11,6 +15,7 @@ else {
 	include_once 'locales/lang.php';
 	require_once'Liste.class.php';
 }
+
 require_once'DucksManager_Core.class.php';
 require_once'Inducks.class.php';
 
@@ -48,14 +53,14 @@ class Database {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
 
-		$requete_resultat=self::$handle->query($requete);
-        $arr=[];
-        if ($requete_resultat !== false) {
-            while($arr_tmp=$requete_resultat->fetch_array(MYSQLI_ASSOC)) {
-                $arr[] = $arr_tmp;
-            }
+        try {
+		    $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy');
+            return array_map(function($result) {
+                return (array) $result;
+            }, $resultats);
+        } catch (Exception $e) {
+		    return [];
         }
-        return $arr;
 	}
 
 	function requete($requete) {
@@ -63,7 +68,12 @@ class Database {
 		if (ServeurDb::isServeurVirtuel()) {
 			return Inducks::requete_select($requete,ServeurDb::$nom_db_DM,'ducksmanager.net');
 		}
-		return self::$handle->query($requete);
+
+        try {
+		    return DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy');
+        } catch (Exception $e) {
+            return [];
+        }
 	}
 
 	function user_to_id($user) {
