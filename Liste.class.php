@@ -35,7 +35,6 @@ class Liste {
 		    return;
         }
 		$this->texte=$texte;
-		$this->lire();
 	}
 
 	function ajouter($pays,$magazine,$numero) {
@@ -331,17 +330,6 @@ class Liste {
 			$id_user=$_SESSION['id_user'];
 			$l_ducksmanager=DM_Core::$d->toList($id_user);
 			$l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
-	}
-
-	function lire() {
-		$id_fichier_tmp=rand(0,10000);
-		$nom_fichier_tmp='rawdata_'.$id_fichier_tmp.'.txt';
-		Util::ecrire_dans_fichier('_tmp/'.$nom_fichier_tmp,$this->texte);
-
-		$serveur='serveur_virtuel';
-		$reponse=Util::get_page(ServeurDb::getRemoteUrl('parse_coa_rawdata.php') .'?rawData_file='.$id_fichier_tmp.'&mdp='.sha1(ServeurDb::getProfil($serveur)->password));
-		$this->collection=unserialize($reponse);
-		@unlink('_tmp/'.$nom_fichier_tmp);
 	}
 
 	function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {

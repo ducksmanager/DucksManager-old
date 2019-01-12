@@ -1,4 +1,2 @@
-<?php 
-include_once 'ServeurDb.class.php';
-
-echo ServeurDb::getUrlServeurVirtuel().'/DucksManager/remote';
+<?php
+echo 'https://ducksmanager.net/remote';

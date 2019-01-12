@@ -5,8 +5,6 @@ error_reporting(E_ALL);
 
 include_once 'dm_client.php';
 DmClient::init();
-
-$serverIniAuth = true;
 include_once 'auth.php';
 
 $version= $_GET['version'] ?? '1.0';

@@ -11,7 +11,7 @@ switch($action) {
         @include_once '../Inducks.class.php';
 
         $requete_liste_magazines_utilisateurs = 'SELECT DISTINCT CONCAT(Pays,"/",Magazine) as publicationcode, COUNT(*) AS cpt FROM numeros GROUP BY CONCAT(Pays,"/",Magazine)';
-        $resultats=Inducks::requete_select($requete_liste_magazines_utilisateurs,'db301759616','ducksmanager.net');
+        $resultats=DM_Core::$d->requete_select($requete_liste_magazines_utilisateurs);
 
         $publication_codes = array_map('flattenpublicationcode', $resultats);
         $issues_cpt = [];
@@ -19,9 +19,8 @@ switch($action) {
             $issues_cpt[$resultat['publicationcode']] = $resultat['cpt'];
         }
 
-        ServeurDb::connect('coa');
         $requete = 'SELECT publicationcode FROM inducks_publication WHERE publicationcode IN (\''.implode('\',\'', $publication_codes).'\') ';
-        $resultats = DM_Core::$d->requete_select($requete);
+        $resultats = DM_Core::$d->requete_select($requete, [], 'db_coa');
 
         $existing_publication_codes = array_map('flattenpublicationcode', $resultats);
         $missing_publication_codes = array_diff($publication_codes, $existing_publication_codes);

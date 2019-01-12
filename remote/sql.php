@@ -2,7 +2,6 @@
 if (isset($_GET['dbg'])) {
 	error_reporting(E_ALL);
 }
-$database= $_GET['db'] ?? 'coa';
 
 include_once 'auth.php';
 

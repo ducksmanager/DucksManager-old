@@ -92,8 +92,8 @@ $id_user= $_SESSION['id_user'] ?? null;
         }
         ?>
         <link rel="icon" type="image/png" href="favicon.png">
-        <?php include_once 'ServeurDb.class.php';
-        if (isLocalHost()) {
+        <?php
+        if (Util::isLocalHost()) {
             ?><script src="//localhost:35729/livereload.js"></script><?php
         }
         else {?>
@@ -1135,8 +1135,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                         ':coordY' => $_POST['coordY']
                     ]);
 
-                    ServeurCoa::$coa_servers['dedibox2']->getServiceResults(
-                        'POST', "/ducksmanager/email/bookstore", 'ducksmanager', is_null($id_user) ? [] : ['userid' => $id_user]
+                    DmClient::get_service_results_for_dm(
+                        'POST', "/ducksmanager/email/bookstore", is_null($id_user) ? [] : ['userid' => $id_user]
                     );
                     ?>
                     <div class="alert alert-info">

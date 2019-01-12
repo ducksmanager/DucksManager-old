@@ -1,5 +1,7 @@
 <?php
 
+include_once 'dm_client.php';
+DmClient::init();
 include_once 'auth.php';
 require_once '../DucksManager_Core.class.php';
 

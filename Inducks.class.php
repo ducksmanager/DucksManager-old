@@ -9,20 +9,8 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete_select($requete, $db = 'db_coa', $nomServeur = 'serveur_virtuel') {
-        if (count(ServeurCoa::$coa_servers) === 0) {
-            ServeurCoa::initCoaServers();
-        }
-
-        if ($nomServeur === 'serveur_virtuel') {
-            reset(ServeurCoa::$coa_servers);
-            $coaServerName = key(ServeurCoa::$coa_servers);
-            $coaServer = ServeurCoa::$coa_servers[$coaServerName];
-        } else {
-            $coaServer = ServeurCoa::$ducksmanager_server;
-        }
-
-        return $coaServer->getQueryResults($requete, $db);
+	static function requete_select($requete, $db = 'db_coa') {
+        return DM_Core::$d->requete_select($requete, [], $db);
     }
 
 	static function is_auteur($nom_auteur) {
@@ -82,7 +70,6 @@ class Inducks {
 		$magazine_depart=$magazine;
 		$magazine= self::get_vrai_magazine($pays,$magazine);
 		$fonction_nettoyage=$sans_espace ? 'nettoyer_numero_sans_espace' : 'nettoyer_numero';
-		$nom_db_non_coa = ServeurDb::$nom_db_DM;
 		$numeros= [];
 		switch($mode) {
 			case "urls":
@@ -104,23 +91,6 @@ class Inducks {
 					$titres[$i]=$numero['title'];
 				}
 				return [$numeros,$titres];
-			break;
-			case "numeros_et_createurs_tranche":
-				$requete=' SELECT i.issuenumber, tp2.username contributeurs, IF(tp2.Active=0, 1, 0) en_cours'
-						.' FROM inducks_issue i'
-						.' LEFT JOIN '.$nom_db_non_coa.'.tranches_en_cours_modeles tp2 ON CONCAT(tp2.Pays,"/", tp2.Magazine) = i.publicationcode AND tp2.Numero = i.issuenumber AND tp2.Active = 0'
-						.' WHERE i.publicationcode = \''.$pays.'/'.$magazine.'\'';
-				$resultat_requete= self::requete_select($requete);
-				$resultats = [];
-				foreach($resultat_requete as $numero) {
-					$element_numero = [];
-					foreach(['issuenumber', 'contributeurs', 'en_cours'] as $champ) {
-						$element_numero[$champ] = $numero[$champ];
-					}
-					$element_numero['issuenumber'] = $fonction_nettoyage($element_numero['issuenumber']);
-					$resultats[]=$element_numero;
-				}
-				return $resultats;
 			break;
 		}
 		return [];
@@ -249,8 +219,6 @@ class Inducks {
 	   	return $magazines_ne_paraissant_plus;
 	}
 }
-
-require_once 'ServeurDb.class.php';
 
 if (isset($_POST['get_pays'])) {
 	$liste_pays_courte=Inducks::get_pays();

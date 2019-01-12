@@ -8,7 +8,7 @@ $requete_tranches_pretes_pour_publication = '
   FROM tranches_en_cours_modeles modeles
   WHERE PretePourPublication=1
   ORDER BY Pays, Magazine, Numero';
-$tranches_pretes_pour_publication = Inducks::requete_select($requete_tranches_pretes_pour_publication, 'db_edgecreator', 'serveur_virtuel');
+$tranches_pretes_pour_publication = DM_Core::$d->requete_select($requete_tranches_pretes_pour_publication, [], 'db_edgecreator');
 
 $url_gen_edgecreator = 'https://edges.ducksmanager.net/edges';
 
@@ -22,7 +22,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     $numero = $tranche['Numero'];
 
     $requete_contributeurs = "SELECT ID_Utilisateur, contribution FROM tranches_en_cours_contributeurs WHERE ID_Modele=$id";
-    $contributeurs = Inducks::requete_select($requete_contributeurs, 'db_edgecreator', 'serveur_virtuel');
+    $contributeurs = DM_Core::$d->requete_select($requete_contributeurs, [], 'db_edgecreator');
 
     $photographes = [];
     $createurs = [];
@@ -66,7 +66,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
         copy($url, $chemin);
 
-        ServeurCoa::$coa_servers['dedibox2']->getServiceResults('POST', "/edgecreator/model/v2/$id/readytopublish/0", 'edgecreator', []);
+        DmClient::get_service_results_for_ec('POST', "/edgecreator/model/v2/$id/readytopublish/0", []);
 
     }
     $numeros[] = [

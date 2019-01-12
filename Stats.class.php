@@ -276,7 +276,7 @@ class Stats {
 		$title = POSSESSION_HISTOIRES_AUTEURS;
 		$legend = [HISTOIRES_POSSEDEES, HISTOIRES_NON_POSSEDEES];
 
-        $resultat_stats_auteurs = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/watchedauthorsstorycount', 'ducksmanager', []);
+        $resultat_stats_auteurs = DmClient::get_service_results_for_dm('GET', '/collection/stats/watchedauthorsstorycount');
 
 		$possedees = [
 			'label' => HISTOIRES_POSSEDEES,
@@ -323,7 +323,7 @@ class Stats {
 
 	static function showSuggestedPublications($pays) {
 
-        $suggestions = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/suggestedissues', 'ducksmanager', is_null($pays) ? [] : [$pays]);
+        $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues', is_null($pays) ? [] : [$pays]);
 
 		if (!array_key_exists('issues', $suggestions) || count($suggestions['issues']) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php
@@ -371,9 +371,6 @@ class Stats {
 
 Stats::$id_user=$_SESSION['id_user'];
 
-if (count(ServeurCoa::$coa_servers) === 0) {
-    ServeurCoa::initCoaServers();
-}
 
 if (isset($_POST['graph'])) {
 

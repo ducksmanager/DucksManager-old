@@ -6,14 +6,9 @@ if (isset($_GET['lang'])) {
 require_once 'remote/dm_client.php';
 DmClient::init();
 
-require_once'ServeurDb.class.php';
-if (!array_key_exists('SERVER_ADDR', $_SERVER)) { // Stub CLI mode
-    $_SERVER['SERVER_ADDR'] = ServeurDb::getIpServeurVirtuel();
-}
-else {
-	include_once 'locales/lang.php';
-	require_once'Liste.class.php';
-}
+include_once 'locales/lang.php';
+require_once'Liste.class.php';
+
 
 require_once'DucksManager_Core.class.php';
 require_once'Inducks.class.php';
@@ -35,7 +30,6 @@ class Database {
 	public static $handle;
 
 	function __construct() {
-	    ServeurDb::connect();
 	}
 
 	function connect($user,$password) {
