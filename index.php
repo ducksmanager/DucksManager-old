@@ -1068,7 +1068,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             DM_Core::$d->liste_numeros_externes_dispos($id_user);
                             break;
                         case 'auteurs_favoris':
-                            $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
+                            $requete_auteurs_surveilles='SELECT NomAuteur, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user;
                             $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
                             ?>
                             <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>

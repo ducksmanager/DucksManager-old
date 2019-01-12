@@ -71,10 +71,10 @@ if (!$dernier_init_est_recent) {
 	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1002, ".$id_user_demo.", '2011-10-25', NULL, NULL, NULL, NULL, 'Bouquinerie Madrid');
 	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1003, ".$id_user_demo.", '2011-12-08', NULL, NULL, NULL, NULL, 'Virgin Bordeaux');
 	
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Carl Barks', 'CB', ".$id_user_demo.", 516, 140, 153, '2011-12-27', -1);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Don Rosa', 'DR', ".$id_user_demo.", 90, 24, 2, '2011-12-27', -1);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Barks,Carl', 'CB', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 6);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Rosa, Don', 'DR', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 8);";
+	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `ID_user`, `Notation`) VALUES ('Carl Barks', ".$id_user_demo.", -1);
+	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `ID_user`, `Notation`) VALUES ('Don Rosa', ".$id_user_demo.", -1);
+	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `ID_user`, `Notation`) VALUES ('Barks,Carl', ".$id_user_demo.", 6);
+	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `ID_user`, `Notation`) VALUES ('Rosa, Don', ".$id_user_demo.", 8);";
 	
 	$requete_reset_user=str_replace("\n",'', array_filter(explode(';', $requete_reset_user)));
 	

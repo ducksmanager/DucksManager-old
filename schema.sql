@@ -51,16 +51,11 @@ CREATE TABLE IF NOT EXISTS `auteurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `auteurs_pseudos` (
-  `NomAuteur` varchar(50) CHARACTER SET utf8 NOT NULL,
-  `NomAuteurAbrege` varchar(30) CHARACTER SET latin1 NOT NULL,
-  `ID_user` int(11) NOT NULL,
-  `NbNonPossedesFrance` int(11) NOT NULL DEFAULT '0',
-  `NbNonPossedesEtranger` int(11) NOT NULL DEFAULT '0',
-  `NbPossedes` int(11) NOT NULL,
-  `DateStat` date NOT NULL DEFAULT '0000-00-00',
-  `Notation` tinyint(4) NOT NULL DEFAULT '-1',
-  UNIQUE KEY `NomAuteur` (`NomAuteurAbrege`,`ID_user`,`DateStat`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=DYNAMIC;
+	NomAuteur varchar(50) charset utf8 not null,
+	ID_user int not null,
+	Notation tinyint(1) not null
+)
+engine=MyISAM collate=utf8_bin;
 
 -- --------------------------------------------------------
 

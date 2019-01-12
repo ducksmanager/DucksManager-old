@@ -25,13 +25,10 @@ class Inducks {
         return $coaServer->getQueryResults($requete, $db);
     }
 
-	static function get_auteur($nom_auteur_abrege) {
-		$requete='SELECT fullname FROM inducks_person WHERE personcode = \''.$nom_auteur_abrege.'\'';
+	static function is_auteur($nom_auteur) {
+		$requete='SELECT count(*) AS cpt FROM inducks_person WHERE fullname = \''.$nom_auteur.'\'';
 		$resultat_requete = self::requete_select($requete);
-		if (count($resultat_requete) === 0) {
-			return null;
-		}
-        return $resultat_requete[0]['fullname'];
+        return $resultat_requete[0]['cpt'] > 0;
     }
 
 	static function get_vrai_magazine($pays,$magazine) {

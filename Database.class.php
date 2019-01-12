@@ -357,25 +357,25 @@ class Database {
 	function ajouter_auteur($nomAuteur) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_auteurs_surveilles="
-            SELECT COUNT(NomAuteurAbrege) AS cpt
+            SELECT COUNT(NomAuteur) AS cpt
             FROM auteurs_pseudos
-            WHERE DateStat = '0000-00-00' AND ID_User=$id_user";
+            WHERE ID_User=$id_user";
 		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete_select($requete_nb_auteurs_surveilles);
 		if (count($resultat_nb_auteurs_surveilles) > 0 && $resultat_nb_auteurs_surveilles[0]['cpt'] >= 5) {
 			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
-            if (!is_null(Inducks::get_auteur($idAuteur))) {
-                $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$idAuteur'";
+            if (Inducks::is_auteur($nomAuteur)) {
+                $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteur = '$nomAuteur'";
                 $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
                 if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
                     ?><div class="alert alert-danger"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
                 else {
-                    $requete_ajout_auteur="
-                        INSERT INTO auteurs_pseudos(NomAuteur, NomAuteurAbrege, ID_User,NbPossedes, DateStat)
-                        VALUES ('$nomAuteur', '$idAuteur', $id_user, 0, '0000-00-00')";
-                    DM_Core::$d->requete($requete_ajout_auteur);
+                    $requete_ajout_auteur= '
+                        INSERT INTO auteurs_pseudos(NomAuteur, ID_User, Notation)
+                        VALUES (:nomAuteur, :idUser, :notation)';
+                    DM_Core::$d->requete($requete_ajout_auteur, ['nomAuteur' => $nomAuteur, 'idUser' => $id_user, 'notation' => -1]);
                 }
             }
         }
@@ -400,7 +400,7 @@ class Database {
 	}
 
 	function get_notes_auteurs($id_user) {
-		return $this->requete_select('SELECT NomAuteurAbrege, NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user.' AND DateStat = \'0000-00-00\'');
+		return $this->requete_select('SELECT NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user);
 	}
 
 	function modifier_note_auteur($auteur, $note) {
@@ -409,10 +409,9 @@ class Database {
         $requete_notation="
           UPDATE auteurs_pseudos
           SET Notation=$note
-          WHERE DateStat = '0000-00-00' 
-            AND NomAuteurAbrege = '$auteur'
-            AND ID_user=$id_user";
-        DM_Core::$d->requete($requete_notation);
+          WHERE NomAuteur = :auteur
+            AND ID_user=:id_user";
+        DM_Core::$d->requete($requete_notation, [':auteur' => $auteur, ':id_user' => $id_user]);
 	}
 
 	function sous_liste($pays,$magazine) {
@@ -766,13 +765,11 @@ if (isset($_POST['database'])) {
 		echo json_encode($tab_achats);
 	}
 	else if (isset($_POST['liste_auteurs'])) {
-        $valeur=strtolower($_POST['value']);
-        foreach(explode(' ',$valeur) as $mot) {
-            $requete_auteur="
+        $resultats_auteur = [];
+        $requete_auteur='
           SELECT personcode, fullname FROM inducks_person
-          WHERE LOWER(fullname) LIKE '%$valeur%'";
-            $resultats_auteur=Inducks::requete_select($requete_auteur);
-        }
+          WHERE LOWER(fullname) LIKE :fullname';
+        $resultats_auteur = DM_Core::$d->requete_select($requete_auteur, [':fullname' => '%'.strtolower($_POST['value']).'%'], 'db_coa');
 
         header('Content-Type: application/json');
         echo json_encode(array_map(function($auteur) {
@@ -792,7 +789,7 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=$_SESSION['id_user'];
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
-				   .'WHERE ID_user='.$id_user.' AND NomAuteurAbrege = \''.$_POST['nom_auteur'].'\'');
+            . 'WHERE ID_user=' . $id_user . ' AND NomAuteur = \'' . $_POST['nom_auteur'] . '\'');
 	}
 	else if (isset($_POST['liste_bouquineries'])) {
 		$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
