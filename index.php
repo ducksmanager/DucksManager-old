@@ -1115,7 +1115,6 @@ $id_user= $_SESSION['id_user'] ?? null;
             if (isset($_POST['ajouter'])) {
                 $erreur = false;
                 foreach (['nom', 'adresse_complete', 'coordX', 'coordY', 'commentaire'] as $champ) {
-                    $_POST[$champ] = mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
                     if (empty($_POST[$champ])) {
                         $erreur = true;?>
                         <div class="alert alert-danger">
@@ -1124,8 +1123,17 @@ $id_user= $_SESSION['id_user'] ?? null;
                     }
                 }
                 if (!$erreur) {
-                    $requete = 'INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\'' . $_POST['nom'] . '\',\'' . $_POST['adresse_complete'] . '\',\'' . $_POST['commentaire'] . '\',' . (is_null($id_user) ? 'NULL' : $id_user) . ', ' . $_POST['coordX'] . ', ' . $_POST['coordY'] . ', 0)';
-                    DM_Core::$d->requete($requete);
+                    $requete = '
+                        INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif)
+                        VALUES (:nom, :adresse_complete, :commentaire, :id_user, :coordX, :coordY, 0)';
+                    DM_Core::$d->requete($requete, [
+                        ':nom' => $_POST['nom'],
+                        ':adresse_complete' => $_POST['adresse_complete'],
+                        ':commentaire' => $_POST['commentaire'],
+                        ':id_user' => is_null($id_user) ? null : $id_user,
+                        ':coordX' => $_POST['coordX'],
+                        ':coordY' => $_POST['coordY']
+                    ]);
 
                     ServeurCoa::$coa_servers['dedibox2']->getServiceResults(
                         'POST', "/ducksmanager/email/bookstore", 'ducksmanager', is_null($id_user) ? [] : ['userid' => $id_user]

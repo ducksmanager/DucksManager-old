@@ -4,7 +4,6 @@ if (isset($_GET['lang'])) {
 }
 
 require_once 'remote/dm_client.php';
-DmClient::$servers_file='servers.ini';
 DmClient::init();
 
 require_once'ServeurDb.class.php';
@@ -35,10 +34,6 @@ class Database {
 	/** @var $handle mysqli  */
 	public static $handle;
 
-	public static function escape($string) {
-        return self::$handle->real_escape_string($string);
-	}
-
 	function __construct() {
 	    ServeurDb::connect();
 	}
@@ -48,9 +43,9 @@ class Database {
         $this->password=$password;
 	}
 
-	function requete_select($requete, $parametres = []) {
+	function requete_select($requete, $parametres = [], $db = 'db_dm_copy') {
         try {
-		    $resultats = DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy', $parametres);
+		    $resultats = DmClient::get_query_results_from_dm_server($requete, $db, $parametres);
             return array_map(function($result) {
                 return (array) $result;
             }, $resultats);
@@ -59,9 +54,9 @@ class Database {
         }
 	}
 
-	function requete($requete, $parametres = []) {
+	function requete($requete, $parametres = [], $db = 'db_dm_copy') {
         try {
-		    return DmClient::get_query_results_from_dm_server($requete, 'db_dm_copy', $parametres);
+		    return DmClient::get_query_results_from_dm_server($requete, $db, $parametres);
         } catch (Exception $e) {
             return [];
         }
@@ -149,7 +144,7 @@ class Database {
 	}
 
 	function liste_numeros_externes_dispos($id_user) {
-		$resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID='.$id_user);
+		$resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID=' . $id_user);
 
 		$requete_ventes_utilisateurs = 'SELECT users.ID, users.username, numeros.Pays, numeros.Magazine, numeros.Numero '
 									  .'FROM users '
@@ -270,21 +265,18 @@ class Database {
 		$id_user=$this->user_to_id($_SESSION['user']);
 
 		if ($etat === '_non_possede') {
-            $liste_str = array_map(function($numero) {
-                return DM_Core::$d::escape($numero);
-            }, $liste);
-
-            DM_Core::$d->requete("
+            DM_Core::$d->requete('
               DELETE FROM numeros
-              WHERE ID_Utilisateur=$id_user
-                AND Numero IN (".implode(',', $liste_str).")"
+              WHERE ID_Utilisateur=?
+                AND Numero IN (' . implode(',', array_fill(0, count($liste), '?')) . ')', array_merge([$id_user], $liste)
             );
         }
         else {
             $liste_user=$this->toList($id_user);
 
-            $id_acquisition_insert=$id_acquisition==='do_not_change' ? '-1' : $id_acquisition;
-            $av_insert=$av==='do_not_change' ? '0' : $av;
+            $id_acquisition = (int) $id_acquisition;
+            $id_acquisition_insert=$id_acquisition==='do_not_change' ? -1 : $id_acquisition;
+            $av_insert=$av==='do_not_change' ? 0 : $av;
 
             $numeros_insert = [];
             $liste_deja_possedes=[];
@@ -293,52 +285,44 @@ class Database {
                     $liste_deja_possedes[] = $numero;
                 }
                 else {
-                    $data_numero = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$id_user];
-
-                    $numeros_insert[] = array_map(function($valeur) {
-                        return "'".DM_Core::$d::escape($valeur)."'";
-                    }, $data_numero);
+                    $numeros_insert[] = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$id_user];
                 }
             }
 
             if (count($numeros_insert) > 0) {
-                $numeros_insert_str = array_map(function($data_numero) {
-                    return '('.implode(',', $data_numero).')';
-                }, $numeros_insert);
-
                 $champs = ['Pays', 'Magazine', 'Numero', 'Etat', 'ID_Acquisition', 'AV', 'ID_Utilisateur'];
-                DM_Core::$d->requete("
-                  INSERT INTO numeros(".implode(',',$champs).")
-                  VALUES ".implode(',', $numeros_insert_str)
+                DM_Core::$d->requete('
+                  INSERT INTO numeros(' . implode(',', $champs) . ')
+                  VALUES ' . implode(',', array_map(function ($data_numero) {
+                        return '(' . implode(',', array_fill(0, count($data_numero), '?')) . ')';
+                    }, $numeros_insert)), flatten($numeros_insert)
                 );
             }
 
             $changements = [];
 
             if ($etat !== 'do_not_change') {
-                $changements[] = "Etat='$etat'";
+                $changements['Etat'] = $etat;
             }
 
             if ($id_acquisition !== 'do_not_change') {
-                $changements[] = "ID_Acquisition='$id_acquisition'";
+                $changements['ID_Acquisition'] = $id_acquisition;
             }
 
             if ($av !== 'do_not_change') {
-                $changements[] = "AV='$av'";
+                $changements['AV'] = $av;
             }
 
-            $numeros_update = array_map(function($numero) {
-                return "'".DM_Core::$d::escape($numero)."'";
-            }, $liste_deja_possedes);
-
-            if (count($numeros_update) > 0) {
-                DM_Core::$d->requete("
+            if (count($liste_deja_possedes) > 0) {
+                DM_Core::$d->requete('
                   UPDATE numeros
-                  SET ".implode(',', $changements)."
-                  WHERE Pays='$pays'
-                    AND Magazine='$magazine'
-                    AND ID_Utilisateur=$id_user
-                    AND Numero IN (".implode(',', $numeros_update).")"
+                  SET ' . implode(',', array_map(function ($champ) {
+                        return "$champ=?";
+                    }, array_keys($changements))) . ' 
+                  WHERE Pays=?
+                    AND Magazine=?
+                    AND ID_Utilisateur=?
+                    AND Numero IN (' . implode(',', array_fill(0, count($liste_deja_possedes), '?')) . ')', array_merge(array_values($changements), [$pays, $magazine, $id_user], $liste_deja_possedes)
                 );
             }
 		}
@@ -370,7 +354,7 @@ class Database {
 			return $l;
 	}
 
-	function ajouter_auteur($idAuteur,$nomAuteur) {
+	function ajouter_auteur($nomAuteur) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_auteurs_surveilles="
             SELECT COUNT(NomAuteurAbrege) AS cpt
@@ -702,14 +686,6 @@ class Database {
 
 }
 
-function get_current_db() {
-	$result = Database::$handle->query("SELECT DATABASE()") or die(Database::$handle->error);
-    if ($row=$result->fetch_array(MYSQLI_NUM)) {
-        return $row[0][0];
-    }
-    return null;
-}
-
 if (isset($_POST['database'])) {
 	@session_start();
 	if (isset($_POST['pass'])) {
@@ -767,7 +743,7 @@ if (isset($_POST['database'])) {
 		}
 		else {
             DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
-                                .' VALUES ('.$id_user.',\''.$_POST['date'].'\',\''.$_POST['description'].'\')');
+                . ' VALUES (' . $id_user . ',\'' . $_POST['date'] . '\',\'' . $_POST['description'] . '\')');
 		}
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
@@ -811,10 +787,7 @@ if (isset($_POST['database'])) {
 		echo json_encode($resultat_notations);
 	}
 	else if (isset($_POST['changer_notation'])) {
-		DM_Core::$d->modifier_note_auteur(
-		    mysqli_real_escape_string(Database::$handle, $_POST['auteur']),
-		    mysqli_real_escape_string(Database::$handle, $_POST['notation'])
-        );
+		DM_Core::$d->modifier_note_auteur($_POST['auteur'], $_POST['notation']);
 	}
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=$_SESSION['id_user'];
@@ -863,5 +836,11 @@ function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evene
 	$evenements_type[]=json_decode(json_encode($evenement));
 
 	$evenements[$diff_secondes]->$type_evenement = $evenements_type;
+}
+
+function flatten($array) {
+    $return = [];
+    array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+    return $return;
 }
 ?>

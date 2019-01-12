@@ -4,8 +4,7 @@ include 'error_handler.php';
 
 class DmClient
 {
-    static $servers_file='../servers.ini';
-
+    static $servers_file='servers.ini';
     /** @var $dm_server stdClass */
     static $dm_server;
 
@@ -23,7 +22,7 @@ class DmClient
         self::$userData = $userdata;
         self::$dm_server = null;
         self::$dm_site = null;
-        $servers = parse_ini_file(self::$servers_file, true);
+        $servers = parse_ini_file(__DIR__.'/../'.self::$servers_file, true);
 
         foreach ($servers as $name => $server) {
             $serverObject = json_decode(json_encode($server));
@@ -48,28 +47,16 @@ class DmClient
 
     /**
      * @param string $query
+     * @param string $db
      * @param array $parameters
-     * @return array
-     * @throws Exception
-     */
-    public static function get_query_results_from_dm_site($query, $parameters = []) {
-        return self::get_service_results('POST', '/rawsql', [
-            'query' => $query,
-            'parameters' => $parameters,
-            'redirect-to' => 'dm'
-        ], 'rawsql');
-    }
-
-    /**
-     * @param string $query
-     * @param        $db
      * @return mixed|null
      * @throws Exception
      */
-    public static function get_query_results_from_dm_server($query, $db)
+    public static function get_query_results_from_dm_server($query, $db, $parameters = [])
     {
         return self::get_service_results('POST', '/rawsql', [
             'query' => $query,
+            'parameters' => $parameters,
             'db' => $db
         ], 'rawsql');
     }

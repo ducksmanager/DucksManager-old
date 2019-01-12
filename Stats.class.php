@@ -19,9 +19,9 @@ class Stats {
 		$counts= [];
 		$total=0;
 		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select(
-			'SELECT Pays,Magazine,Count(Numero) AS cpt
+            'SELECT Pays,Magazine,Count(Numero) AS cpt
 			 FROM numeros
-			 WHERE ID_Utilisateur='.static::$id_user.'
+			 WHERE ID_Utilisateur=' . static::$id_user . '
 			 GROUP BY Pays,Magazine
 			 ORDER BY cpt desc'
 		);
@@ -67,7 +67,7 @@ class Stats {
 		$resultats=DM_Core::$d->requete_select('
 			SELECT Etat, Count(Numero) AS cpt
 			FROM numeros
-			WHERE ID_Utilisateur='.static::$id_user.'
+			WHERE ID_Utilisateur=' . static::$id_user . '
             GROUP BY Etat DESC
             HAVING COUNT(Numero) > 0
 		');
