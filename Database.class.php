@@ -339,14 +339,14 @@ class Database {
             FROM auteurs_pseudos
             WHERE ID_User=$id_user";
 		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete($requete_nb_auteurs_surveilles);
-		if (count($resultat_nb_auteurs_surveilles) > 0 && $resultat_nb_auteurs_surveilles[0]['cpt'] >= 5) {
+		if (count($resultat_nb_auteurs_surveilles) >= 5) {
 			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
             if (Inducks::is_auteur($nomAuteurAbrege)) {
                 $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$nomAuteurAbrege'";
                 $resultat_auteur_existe=DM_Core::$d->requete($requete_auteur_existe);
-                if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
+                if (count($resultat_auteur_existe) > 0) {
                     ?><div class="alert alert-danger"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
                 else {
@@ -389,9 +389,9 @@ class Database {
             $codesAuteurs
         );
 		array_walk($notesAuteurs, function(&$noteAuteur) use ($nomsAuteurs) {
-		    $noteAuteur['NomAuteur'] = array_filter($nomsAuteurs, function($codeAuteur) use ($noteAuteur) {
+		    $noteAuteur['NomAuteur'] = array_values(array_filter($nomsAuteurs, function($codeAuteur) use ($noteAuteur) {
 		        return $codeAuteur['personcode'] === $noteAuteur['NomAuteurAbrege'];
-		    })[0]['fullname'];
+		    }))[0]['fullname'];
         });
 		return $notesAuteurs;
 	}

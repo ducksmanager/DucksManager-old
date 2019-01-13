@@ -295,9 +295,9 @@ class Stats {
 		$labels = [];
 
 		foreach($resultat_stats_auteurs as $stat_utilisateur_auteur) {
-			$auteur = $stat_utilisateur_auteur['fullname'];
-			$total_auteur = $stat_utilisateur_auteur['storycount'];
-			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur['missingstorycount'];
+			$auteur = $stat_utilisateur_auteur->fullname;
+			$total_auteur = $stat_utilisateur_auteur->storycount;
+			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur->missingstorycount;
 			$possedees_auteur_pct = round(100*($possedees_auteur/$total_auteur));
 
 			$possedees['data'][]  = $possedees_auteur;
