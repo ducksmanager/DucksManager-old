@@ -13,7 +13,7 @@ RUN docker-php-ext-configure gd \
   --with-png-dir=/usr/include \
   --with-jpeg-dir=/usr/include
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql opcache
+RUN docker-php-ext-install opcache
 
 RUN cd /usr/src && \
     wget http://xdebug.org/files/xdebug-2.6.1.tgz && \

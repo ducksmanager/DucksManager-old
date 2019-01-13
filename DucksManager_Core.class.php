@@ -21,7 +21,3 @@ class DM_Core {
 if (!isset(DM_Core::$d)) {
     DM_Core::$d = new Database();
 }
-if (!DM_Core::$d) {
-    echo PROBLEME_BD;
-    exit(-1);
-}

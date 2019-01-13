@@ -21,20 +21,8 @@ Database::$etats=[
 
 class Database {
 	public static $etats;
-	var $server;
-	var $database;
-	var $user;
-	var $password;
-
-	/** @var $handle mysqli  */
-	public static $handle;
 
 	function __construct() {
-	}
-
-	function connect($user,$password) {
-        $this->user=$user;
-        $this->password=$password;
 	}
 
 	function requete($requete, $parametres = [], $db = 'db_dm') {
