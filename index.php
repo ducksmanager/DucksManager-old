@@ -92,8 +92,8 @@ $id_user= $_SESSION['id_user'] ?? null;
         }
         ?>
         <link rel="icon" type="image/png" href="favicon.png">
-        <?php include_once 'ServeurDb.class.php';
-        if (isLocalHost()) {
+        <?php
+        if (Util::isLocalHost()) {
             ?><script src="//localhost:35729/livereload.js"></script><?php
         }
         else {?>
@@ -104,7 +104,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                 _paq.push(['trackPageView']);
                 _paq.push(['enableLinkTracking']);
                 (function() {
-                    var u="https://<?=ServeurDb::getPiwikServer()->domain?>/piwik/";
+                    var u="https://piwik.ducksmanager.net/";
                     _paq.push(['setTrackerUrl', u+'piwik.php']);
                     _paq.push(['setSiteId', '1']);
                     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -496,7 +496,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     }
                     else {
                         $requete_verifier_email='SELECT username, Email FROM users WHERE Email = \''.$_POST['email'].'\'';
-                        $resultat_verifier_email=DM_Core::$d->requete_select($requete_verifier_email);
+                        $resultat_verifier_email=DM_Core::$d->requete($requete_verifier_email);
                         if (count($resultat_verifier_email) === 0) {
                             echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
                         }
@@ -609,7 +609,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 </div><br/><br/><?php
                             }
 
-                            $accepter_partage = DM_Core::$d->requete_select("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
+                            $accepter_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
                             if ($accepter_partage) {
                                 ?><div class="alert alert-info">
                                     <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
@@ -696,7 +696,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                         $requete_contributeurs_internes = "
                             SELECT distinct ID, username AS Nom, '' AS Texte from users
                             inner join tranches_pretes_contributeurs c on users.ID = c.contributeur";
-                        $contributeurs_internes = DM_Core::$d->requete_select($requete_contributeurs_internes);
+                        $contributeurs_internes = DM_Core::$d->requete($requete_contributeurs_internes);
 
                         $ids_contributeurs_internes = array_map(function($contributeur) {
                             return $contributeur['ID'];
@@ -708,7 +708,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                         $details_collections=DM_Core::$d->get_details_collections($ids_contributeurs_internes);
 
                         $requete_contributeurs_externes = 'SELECT Nom, Texte FROM bibliotheque_contributeurs';
-                        $contributeurs_externes = DM_Core::$d->requete_select($requete_contributeurs_externes);
+                        $contributeurs_externes = DM_Core::$d->requete($requete_contributeurs_externes);
                         usort($contributeurs_externes, function($a, $b) {
                             return strcmp(strtolower($a['Nom']), strtolower($b['Nom']));
                         });
@@ -768,7 +768,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 $erreur = null;
                                 if (!empty($_POST['ancien_mdp'])) {
                                     $requete_verif_mot_de_passe = 'SELECT Email FROM users WHERE ID=' . $id_user . ' AND password=sha1(\'' . $_POST['ancien_mdp'] . '\')';
-                                    $mot_de_passe_ok = count(DM_Core::$d->requete_select($requete_verif_mot_de_passe)) > 0;
+                                    $mot_de_passe_ok = count(DM_Core::$d->requete($requete_verif_mot_de_passe)) > 0;
                                     if ($mot_de_passe_ok) {
                                         $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
                                         $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
@@ -798,8 +798,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 }
                             }
                         }
-                        $resultat_partage = DM_Core::$d->requete_select("SELECT AccepterPartage FROM users WHERE ID=$id_user");
-                        $resultat_email = DM_Core::$d->requete_select("SELECT Email FROM users WHERE ID=$id_user");
+                        $resultat_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user");
+                        $resultat_email = DM_Core::$d->requete("SELECT Email FROM users WHERE ID=$id_user");
                         ?>
                         <form action="?action=gerer&amp;onglet=compte" method="post">
                             <div class="form-group">
@@ -1068,8 +1068,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                             DM_Core::$d->liste_numeros_externes_dispos($id_user);
                             break;
                         case 'auteurs_favoris':
-                            $requete_auteurs_surveilles='SELECT NomAuteur, NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user.' AND DateStat = \'0000-00-00\'';
-                            $resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+                            $requete_auteurs_surveilles='SELECT Notation FROM auteurs_pseudos WHERE ID_User='.$id_user;
+                            $resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
                             ?>
                             <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
                             <?=EXPLICATION_NOTATION_AUTEURS3?>
@@ -1088,15 +1088,14 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     echo AUTEURS_NON_NOTES;
                                 }
                                 else {
-
                                     ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
                                     <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
                                         <option id="chargement_pays"><?=CHARGEMENT?>
                                     </select>
                                     <div id="suggestions"><?php
-                                    include_once 'Stats.class.php';
-                                    $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
-                                    Stats::showSuggestedPublications($pays);
+                                        include_once 'Stats.class.php';
+                                        $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
+                                        Stats::showSuggestedPublications($pays);
                                     ?></div><?php
                                 }
                             }
@@ -1115,7 +1114,6 @@ $id_user= $_SESSION['id_user'] ?? null;
             if (isset($_POST['ajouter'])) {
                 $erreur = false;
                 foreach (['nom', 'adresse_complete', 'coordX', 'coordY', 'commentaire'] as $champ) {
-                    $_POST[$champ] = mysqli_real_escape_string(Database::$handle, $_POST[$champ]);
                     if (empty($_POST[$champ])) {
                         $erreur = true;?>
                         <div class="alert alert-danger">
@@ -1124,11 +1122,20 @@ $id_user= $_SESSION['id_user'] ?? null;
                     }
                 }
                 if (!$erreur) {
-                    $requete = 'INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif) VALUES (\'' . $_POST['nom'] . '\',\'' . $_POST['adresse_complete'] . '\',\'' . $_POST['commentaire'] . '\',' . (is_null($id_user) ? 'NULL' : $id_user) . ', ' . $_POST['coordX'] . ', ' . $_POST['coordY'] . ', 0)';
-                    DM_Core::$d->requete($requete);
+                    $requete = '
+                        INSERT INTO bouquineries(Nom, AdresseComplete, Commentaire, ID_Utilisateur, CoordX, CoordY, Actif)
+                        VALUES (:nom, :adresse_complete, :commentaire, :id_user, :coordX, :coordY, 0)';
+                    DM_Core::$d->requete($requete, [
+                        ':nom' => $_POST['nom'],
+                        ':adresse_complete' => $_POST['adresse_complete'],
+                        ':commentaire' => $_POST['commentaire'],
+                        ':id_user' => is_null($id_user) ? null : $id_user,
+                        ':coordX' => $_POST['coordX'],
+                        ':coordY' => $_POST['coordY']
+                    ]);
 
-                    ServeurCoa::$coa_servers['dedibox2']->getServiceResults(
-                        'POST', "/ducksmanager/email/bookstore", 'ducksmanager', is_null($id_user) ? [] : ['userid' => $id_user]
+                    DmClient::get_service_results_for_dm(
+                        'POST', "/ducksmanager/email/bookstore", is_null($id_user) ? [] : ['userid' => $id_user]
                     );
                     ?>
                     <div class="alert alert-info">
@@ -1277,7 +1284,7 @@ $id_user= $_SESSION['id_user'] ?? null;
     <div id="footer">
         <div id="nb_users">
             <?php
-            $resultat_cpt_users=DM_Core::$d->requete_select('SELECT count(username) as cpt_users FROM users');
+            $resultat_cpt_users=DM_Core::$d->requete('SELECT count(username) as cpt_users FROM users');
             echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
             ?>
         </div>

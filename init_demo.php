@@ -3,7 +3,7 @@ require_once 'DucksManager_Core.class.php';
 date_default_timezone_set('Europe/Paris');
 
 
-$resultat_dernier_init_recent=DM_Core::$d->requete_select('SELECT DateDernierInit FROM demo');
+$resultat_dernier_init_recent=DM_Core::$d->requete('SELECT DateDernierInit FROM demo');
 $derniere_date=strtotime($resultat_dernier_init_recent[0]['DateDernierInit']);
 $dernier_init_est_recent=(time() - $derniere_date) / 3600 < 1;
 
@@ -12,7 +12,7 @@ if (!$dernier_init_est_recent) {
 	$requete_update_date_init='UPDATE demo SET DateDernierInit=\''.$str_time.'\'';
 	DM_Core::$d->requete($requete_update_date_init);
 	
-	$resultat_id_user_demo=DM_Core::$d->requete_select('SELECT ID FROM users WHERE username=\'demo\'');
+	$resultat_id_user_demo=DM_Core::$d->requete('SELECT ID FROM users WHERE username=\'demo\'');
 	$id_user_demo=$resultat_id_user_demo[0]['ID'];
 	
 	if (isset($_GET['debug'])) {
@@ -71,10 +71,8 @@ if (!$dernier_init_est_recent) {
 	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1002, ".$id_user_demo.", '2011-10-25', NULL, NULL, NULL, NULL, 'Bouquinerie Madrid');
 	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1003, ".$id_user_demo.", '2011-12-08', NULL, NULL, NULL, NULL, 'Virgin Bordeaux');
 	
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Carl Barks', 'CB', ".$id_user_demo.", 516, 140, 153, '2011-12-27', -1);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Don Rosa', 'DR', ".$id_user_demo.", 90, 24, 2, '2011-12-27', -1);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Barks,Carl', 'CB', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 6);
-	INSERT INTO `auteurs_pseudos` (`NomAuteur`, `NomAuteurAbrege`, `ID_user`, `NbNonPossedesFrance`, `NbNonPossedesEtranger`, `NbPossedes`, `DateStat`, `Notation`) VALUES ('Rosa, Don', 'DR', ".$id_user_demo.", 0, 0, 0, '0000-00-00', 8);";
+	INSERT INTO `auteurs_pseudos` (`NomAuteurAbrege`, `ID_user`, `Notation`) VALUES ('CB', ".$id_user_demo.", 6);
+	INSERT INTO `auteurs_pseudos` (`NomAuteurAbrege`, `ID_user`, `Notation`) VALUES ('DR', ".$id_user_demo.", 8);";
 	
 	$requete_reset_user=str_replace("\n",'', array_filter(explode(';', $requete_reset_user)));
 	

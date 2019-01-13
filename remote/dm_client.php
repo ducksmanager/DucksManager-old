@@ -4,13 +4,9 @@ include 'error_handler.php';
 
 class DmClient
 {
-    static $servers_file='../servers.ini';
-
+    static $servers_file='servers.ini';
     /** @var $dm_server stdClass */
     static $dm_server;
-
-    /** @var $dm_site stdClass */
-    static $dm_site;
 
     static $chunkable_services = [
         '/coa/list/countries' => 50,
@@ -22,23 +18,18 @@ class DmClient
     static function init($userdata = []) {
         self::$userData = $userdata;
         self::$dm_server = null;
-        self::$dm_site = null;
-        $servers = parse_ini_file(self::$servers_file, true);
+        $servers = parse_ini_file(__DIR__.'/../'.self::$servers_file, true);
 
         foreach ($servers as $name => $server) {
             $serverObject = json_decode(json_encode($server));
 
-            if ($serverObject->dm_server) {
-                $roles = [];
-                array_walk($serverObject->role_passwords, function ($role) use (&$roles) {
-                    list($roleName, $rolePassword) = explode(':', $role);
-                    $roles[$roleName] = $rolePassword;
-                });
-                $serverObject->role_passwords = $roles;
-                self::$dm_server = $serverObject;
-            } else {
-                self::$dm_site = $serverObject;
-            }
+            $roles = [];
+            array_walk($serverObject->role_passwords, function ($role) use (&$roles) {
+                list($roleName, $rolePassword) = explode(':', $role);
+                $roles[$roleName] = $rolePassword;
+            });
+            $serverObject->role_passwords = $roles;
+            self::$dm_server = $serverObject;
         }
     }
 
@@ -48,32 +39,30 @@ class DmClient
 
     /**
      * @param string $query
+     * @param string $db
      * @param array $parameters
-     * @return array
-     * @throws Exception
-     */
-    public static function get_query_results_from_dm_site($query, $parameters = []) {
-        return self::get_service_results('POST', '/rawsql', [
-            'query' => $query,
-            'parameters' => $parameters,
-            'redirect-to' => 'dm'
-        ], 'rawsql');
-    }
-
-    /**
-     * @param string $query
-     * @param        $db
      * @return mixed|null
      * @throws Exception
      */
-    public static function get_query_results_from_dm_server($query, $db)
+    public static function get_query_results_from_dm_server($query, $db, $parameters = [])
     {
         return self::get_service_results('POST', '/rawsql', [
             'query' => $query,
+            'parameters' => $parameters,
             'db' => $db
-        ], 'rawsql');
+        ]);
     }
 
+    /**
+     * @param string   $method
+     * @param string   $path
+     * @param array    $parameters
+     * @return array|null|stdClass
+     * @throws Exception
+     */
+    public static function get_service_results_for_dm($method, $path, $parameters = []) {
+        return self::get_service_results($method, $path, $parameters, 'ducksmanager');
+    }
 
     /**
      * @param string   $method
@@ -84,6 +73,17 @@ class DmClient
      */
     public static function get_service_results_for_wtd($method, $path, $parameters = []) {
         return self::get_service_results($method, $path, $parameters, 'whattheduck');
+    }
+
+    /**
+     * @param string   $method
+     * @param string   $path
+     * @param array    $parameters
+     * @return array|null|stdClass
+     * @throws Exception
+     */
+    public static function get_service_results_for_ec($method, $path, $parameters = []) {
+        return self::get_service_results($method, $path, $parameters, 'edgecreator');
     }
 
     /**

@@ -318,9 +318,9 @@ function init_notations() {
 			jQuery.each(notations, function(i, notation) {
 				var el_li = template.clone(true).removeClass('template');
 				el_li.find('>.nom_auteur').text(notation.NomAuteur);
-				el_li.find('>.notation_auteur').attr({id: 'notation_auteur_' + notation.NomAuteurAbrege});
-				el_li.find('>.supprimer_auteur>a').attr({id: 'supprimer_auteur_' + notation.NomAuteurAbrege}).on('click', function() {
-					supprimer_auteur(jQuery(this).attr('id').replace(/^.*_([^_]+)$/,'$1'));
+				el_li.find('>.notation_auteur').data({auteur: notation.NomAuteurAbrege});
+				el_li.find('>.supprimer_auteur>a').data({auteur: notation.NomAuteurAbrege}).on('click', function() {
+					supprimer_auteur(jQuery(this).data().auteur);
 				});
 				liste_notations.append(el_li);
 
@@ -331,11 +331,10 @@ function init_notations() {
 					totalStars: 10,
                     useFullStars: true,
 					callback: function(notation, element) {
-						var auteur = element.attr('id').replace(/^.+_(.+)$/,'$1');
 						jQuery.post('Database.class.php', {
 							database: 'true',
 							changer_notation: 'true',
-							auteur: auteur,
+							auteur: jQuery(element).data().auteur,
 							notation: notation
 						});
 					}
@@ -345,9 +344,9 @@ function init_notations() {
 	);
 }
 
-function supprimer_auteur (nom_auteur) {
+function supprimer_auteur (auteur) {
     jQuery.post('Database.class.php',
-        {database: 'true', supprimer_auteur: 'true', nom_auteur: nom_auteur},
+        {database: 'true', supprimer_auteur: 'true', auteur: auteur},
 	    function() {
             location.reload();
         }

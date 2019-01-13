@@ -205,7 +205,7 @@ class Affichage {
                             </div><?php
                             if (!in_array($id_acquisition, [-1,-2])) {
                                 $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
-                                $resultat_date=DM_Core::$d->requete_select($requete_date_achat);
+                                $resultat_date=DM_Core::$d->requete($requete_date_achat);
                                 if (count($resultat_date)>0) {
                                     $date=new DateTime($resultat_date[0]['Date']);
                                     $id=$resultat_date[0]['ID_Acquisition'];

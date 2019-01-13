@@ -18,10 +18,10 @@ class Stats {
 	static function getPublicationData() {
 		$counts= [];
 		$total=0;
-		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select(
-			'SELECT Pays,Magazine,Count(Numero) AS cpt
+		$resultat_cpt_numeros_groupes=DM_Core::$d->requete(
+            'SELECT Pays,Magazine,Count(Numero) AS cpt
 			 FROM numeros
-			 WHERE ID_Utilisateur='.static::$id_user.'
+			 WHERE ID_Utilisateur=' . static::$id_user . '
 			 GROUP BY Pays,Magazine
 			 ORDER BY cpt desc'
 		);
@@ -64,10 +64,10 @@ class Stats {
 	}
 
 	static function getConditionData() {
-		$resultats=DM_Core::$d->requete_select('
+		$resultats=DM_Core::$d->requete('
 			SELECT Etat, Count(Numero) AS cpt
 			FROM numeros
-			WHERE ID_Utilisateur='.static::$id_user.'
+			WHERE ID_Utilisateur=' . static::$id_user . '
             GROUP BY Etat DESC
             HAVING COUNT(Numero) > 0
 		');
@@ -219,7 +219,7 @@ class Stats {
 			ORDER BY YEAR(Date), MONTH(Date)
 		";
 
-		$resultat_achats = DM_Core::$d->requete_select($requete_achats);
+		$resultat_achats = DM_Core::$d->requete($requete_achats);
 
 		$premier_achat = null;
 		$achats_magazines_nouv = [];
@@ -276,7 +276,7 @@ class Stats {
 		$title = POSSESSION_HISTOIRES_AUTEURS;
 		$legend = [HISTOIRES_POSSEDEES, HISTOIRES_NON_POSSEDEES];
 
-        $resultat_stats_auteurs = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/watchedauthorsstorycount', 'ducksmanager', []);
+        $resultat_stats_auteurs = DmClient::get_service_results_for_dm('GET', '/collection/stats/watchedauthorsstorycount');
 
 		$possedees = [
 			'label' => HISTOIRES_POSSEDEES,
@@ -295,9 +295,9 @@ class Stats {
 		$labels = [];
 
 		foreach($resultat_stats_auteurs as $stat_utilisateur_auteur) {
-			$auteur = $stat_utilisateur_auteur['fullname'];
-			$total_auteur = $stat_utilisateur_auteur['storycount'];
-			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur['missingstorycount'];
+			$auteur = $stat_utilisateur_auteur->fullname;
+			$total_auteur = $stat_utilisateur_auteur->storycount;
+			$possedees_auteur = $total_auteur - (int)$stat_utilisateur_auteur->missingstorycount;
 			$possedees_auteur_pct = round(100*($possedees_auteur/$total_auteur));
 
 			$possedees['data'][]  = $possedees_auteur;
@@ -323,40 +323,40 @@ class Stats {
 
 	static function showSuggestedPublications($pays) {
 
-        $suggestions = ServeurCoa::$coa_servers['dedibox2']->getServiceResults('GET', '/collection/stats/suggestedissues', 'ducksmanager', is_null($pays) ? [] : [$pays]);
+        $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues', is_null($pays) ? [] : [$pays]);
 
-		if (!array_key_exists('issues', $suggestions) || count($suggestions['issues']) === 0) {
+		if (!isset($suggestions->issues) || count(get_object_vars($suggestions->issues)) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php
 		}
 		else {
-			$minScore = $suggestions['minScore'];
-			$maxScore = $suggestions['maxScore'];
+			$minScore = $suggestions->minScore;
+			$maxScore = $suggestions->maxScore;
 
-			foreach($suggestions['issues'] as $issuecode => $issue) {
-			    $publicationcode = $issue['publicationcode'];
+			foreach($suggestions->issues as $issuecode => $issue) {
+			    $publicationcode = $issue->publicationcode;
                 $country = explode('/', $publicationcode)[0];
-                $issuenumber = $issue['issuenumber'];
-			    $importance = $issue['score'] === $maxScore ? 1 : ($issue['score'] === $minScore ? 3 : 2);
+                $issuenumber = $issue->issuenumber;
+			    $importance = $issue->score === $maxScore ? 1 : ($issue->score === $minScore ? 3 : 2);
 				?>
 				<div>
 					<span class="numero top<?=$importance?>"><?php
 					Affichage::afficher_texte_numero(
                         $country,
-                        $suggestions['publicationTitles'][$publicationcode],
+                        $suggestions->publicationTitles->$publicationcode,
                         $issuenumber
 					);
 					?>&nbsp;</span><?=NUMERO_CONTIENT?>
 				</div>
 				<ul class="liste_histoires"><?php
-				foreach($issue['stories'] as $author => $storiesOfAuthor) {
+				foreach($issue->stories as $author => $storiesOfAuthor) {
 					?><li>
 						<div>
-							<?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions['authors'][$author]])?>
+							<?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions->authors->$author])?>
 						</div>
 						<ul class="liste_histoires">
 							<?php foreach($storiesOfAuthor as $storyCode) {
 								?><li>
-									<?php Affichage::afficher_texte_histoire($storyCode, @$suggestions['storyDetails'][$storyCode]['title'], @$suggestions['storyDetails'][$storyCode]['storycomment']);
+									<?php Affichage::afficher_texte_histoire($storyCode, @$suggestions->storyDetails->$storyCode->title, @$suggestions->storyDetails->$storyCode->storycomment);
 								?></li>
 								<?php
 							}?>
@@ -371,9 +371,6 @@ class Stats {
 
 Stats::$id_user=$_SESSION['id_user'];
 
-if (count(ServeurCoa::$coa_servers) === 0) {
-    ServeurCoa::initCoaServers();
-}
 
 if (isset($_POST['graph'])) {
 

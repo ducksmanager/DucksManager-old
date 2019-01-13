@@ -24,12 +24,12 @@ class Util {
     }
 
     static function isLocalHost() {
-		return !(isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
+        return !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'ducksmanager' && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
 	}
 
 	static function magazinesSupprimesInducks() {
 		$requete_magazines='SELECT Pays, Magazine FROM numeros GROUP BY Pays, Magazine ORDER BY Pays, Magazine';
-		$resultat_magazines=DM_Core::$d->requete_select($requete_magazines);
+		$resultat_magazines=DM_Core::$d->requete($requete_magazines);
 		$pays='';
 		$magazines_inducks= [];
 		foreach($resultat_magazines as $pays_magazine) {
@@ -116,7 +116,7 @@ class Util {
 
         $piwik = parse_ini_file('piwik.ini');
 
-        $xml_obj = @simplexml_load_file("https://".ServeurDb::getPiwikServer()->domain ."/piwik/?module=API&method=Live.getVisitorProfile&idSite=1&format=xml&segment=customVariableValue1=={$_SESSION['user']}&limitVisits=&token_auth={$piwik['token_auth']}");
+        $xml_obj = @simplexml_load_file("https://piwik.ducksmanager.net/?module=API&method=Live.getVisitorProfile&idSite=1&format=xml&segment=customVariableValue1=={$_SESSION['user']}&limitVisits=&token_auth={$piwik['token_auth']}");
 
         if (empty($xml_obj)) {
             return null;

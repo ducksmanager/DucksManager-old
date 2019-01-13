@@ -10,14 +10,6 @@ services:
      - ./php.xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     networks:
       - dmserver_front-network
-  db_dm:
-    extends:
-      file: docker-compose.yml
-      service: db_dm
-    volumes:
-     - ./schema-populated.sql.gz:/docker-entrypoint-initdb.d/schema-populated.sql.gz:ro
-    networks:
-      - dmserver_front-network
 networks:
   dmserver_front-network:
     external: true

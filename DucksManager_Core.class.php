@@ -20,9 +20,4 @@ class DM_Core {
 }
 if (!isset(DM_Core::$d)) {
     DM_Core::$d = new Database();
-    DM_Core::$d->requete('SET NAMES UTF8');
-}
-if (!DM_Core::$d) {
-    echo PROBLEME_BD;
-    exit(-1);
 }
