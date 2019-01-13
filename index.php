@@ -1068,7 +1068,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             DM_Core::$d->liste_numeros_externes_dispos($id_user);
                             break;
                         case 'auteurs_favoris':
-                            $requete_auteurs_surveilles='SELECT NomAuteur, Notation FROM auteurs_pseudos WHERE ID_User='.$id_user;
+                            $requete_auteurs_surveilles='SELECT Notation FROM auteurs_pseudos WHERE ID_User='.$id_user;
                             $resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
                             ?>
                             <?=EXPLICATION_NOTATION_AUTEURS1?> <a target="_blank" href="?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
@@ -1088,15 +1088,14 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     echo AUTEURS_NON_NOTES;
                                 }
                                 else {
-
                                     ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
                                     <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
                                         <option id="chargement_pays"><?=CHARGEMENT?>
                                     </select>
                                     <div id="suggestions"><?php
-                                    include_once 'Stats.class.php';
-                                    $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
-                                    Stats::showSuggestedPublications($pays);
+                                        include_once 'Stats.class.php';
+                                        $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
+                                        Stats::showSuggestedPublications($pays);
                                     ?></div><?php
                                 }
                             }

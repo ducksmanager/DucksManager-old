@@ -318,8 +318,8 @@ function init_notations() {
 			jQuery.each(notations, function(i, notation) {
 				var el_li = template.clone(true).removeClass('template');
 				el_li.find('>.nom_auteur').text(notation.NomAuteur);
-				el_li.find('>.notation_auteur').data({auteur: notation.NomAuteur});
-				el_li.find('>.supprimer_auteur>a').data({auteur: notation.NomAuteur}).on('click', function() {
+				el_li.find('>.notation_auteur').data({auteur: notation.NomAuteurAbrege});
+				el_li.find('>.supprimer_auteur>a').data({auteur: notation.NomAuteurAbrege}).on('click', function() {
 					supprimer_auteur(jQuery(this).data().auteur);
 				});
 				liste_notations.append(el_li);
@@ -344,9 +344,9 @@ function init_notations() {
 	);
 }
 
-function supprimer_auteur (nom_auteur) {
+function supprimer_auteur (auteur) {
     jQuery.post('Database.class.php',
-        {database: 'true', supprimer_auteur: 'true', nom_auteur: nom_auteur},
+        {database: 'true', supprimer_auteur: 'true', auteur: auteur},
 	    function() {
             location.reload();
         }

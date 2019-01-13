@@ -9,12 +9,12 @@ class Inducks {
 		return is_array($resultat) && count($resultat) > 0;
 	}
 
-	static function requete($requete, $db = 'db_coa') {
-        return DM_Core::$d->requete($requete, [], $db);
+	static function requete($requete, $parameters = []) {
+        return DM_Core::$d->requete($requete, $parameters, 'db_coa');
     }
 
-	static function is_auteur($nom_auteur) {
-		$requete='SELECT count(*) AS cpt FROM inducks_person WHERE fullname = \''.$nom_auteur.'\'';
+	static function is_auteur($nomAuteurAbrege) {
+		$requete='SELECT count(*) AS cpt FROM inducks_person WHERE personcode = \''.$nomAuteurAbrege.'\'';
 		$resultat_requete = self::requete($requete);
         return $resultat_requete[0]['cpt'] > 0;
     }

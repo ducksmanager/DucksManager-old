@@ -331,10 +331,10 @@ class Database {
 			return $l;
 	}
 
-	function ajouter_auteur($nomAuteur) {
+	function ajouter_auteur($nomAuteurAbrege) {
 		$id_user=$this->user_to_id($_SESSION['user']);
 		$requete_nb_auteurs_surveilles="
-            SELECT COUNT(NomAuteur) AS cpt
+            SELECT NomAuteurAbrege
             FROM auteurs_pseudos
             WHERE ID_User=$id_user";
 		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete($requete_nb_auteurs_surveilles);
@@ -342,17 +342,17 @@ class Database {
 			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
-            if (Inducks::is_auteur($nomAuteur)) {
-                $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteur = '$nomAuteur'";
+            if (Inducks::is_auteur($nomAuteurAbrege)) {
+                $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteurAbrege = '$nomAuteurAbrege'";
                 $resultat_auteur_existe=DM_Core::$d->requete($requete_auteur_existe);
                 if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
                     ?><div class="alert alert-danger"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
                 else {
                     $requete_ajout_auteur= '
-                        INSERT INTO auteurs_pseudos(NomAuteur, ID_User, Notation)
-                        VALUES (:nomAuteur, :idUser, :notation)';
-                    DM_Core::$d->requete($requete_ajout_auteur, ['nomAuteur' => $nomAuteur, 'idUser' => $id_user, 'notation' => -1]);
+                        INSERT INTO auteurs_pseudos(NomAuteurAbrege, ID_User, Notation)
+                        VALUES (:nomAuteurAbrege, :idUser, :notation)';
+                    DM_Core::$d->requete($requete_ajout_auteur, ['nomAuteurAbrege' => $nomAuteurAbrege, 'idUser' => $id_user, 'notation' => -1]);
                 }
             }
         }
@@ -377,18 +377,33 @@ class Database {
 	}
 
 	function get_notes_auteurs($id_user) {
-		return $this->requete('SELECT NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user);
+		$notesAuteurs = $this->requete('SELECT NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user);
+		$codesAuteurs = array_map(function($noteAuteur) {
+		    return $noteAuteur['NomAuteurAbrege'];
+        }, $notesAuteurs);
+		$nomsAuteurs = Inducks::requete('
+          SELECT personcode, fullname
+          from inducks_person
+          where personcode IN ('.implode(',', array_fill(0, count($codesAuteurs), '?')).')',
+            $codesAuteurs
+        );
+		array_walk($notesAuteurs, function(&$noteAuteur) use ($nomsAuteurs) {
+		    $noteAuteur['NomAuteur'] = array_filter($nomsAuteurs, function($codeAuteur) use ($noteAuteur) {
+		        return $codeAuteur['personcode'] === $noteAuteur['NomAuteurAbrege'];
+		    })[0]['fullname'];
+        });
+		return $notesAuteurs;
 	}
 
-	function modifier_note_auteur($auteur, $note) {
+	function modifier_note_auteur($nomAuteurAbrege, $note) {
         $id_user=$this->user_to_id($_SESSION['user']);
 
         $requete_notation="
           UPDATE auteurs_pseudos
           SET Notation=$note
-          WHERE NomAuteur = :auteur
+          WHERE NomAuteurAbrege = :auteur
             AND ID_user=:id_user";
-        DM_Core::$d->requete($requete_notation, [':auteur' => $auteur, ':id_user' => $id_user]);
+        DM_Core::$d->requete($requete_notation, [':auteur' => $nomAuteurAbrege, ':id_user' => $id_user]);
 	}
 
 	function sous_liste($pays,$magazine) {
@@ -766,7 +781,7 @@ if (isset($_POST['database'])) {
 	else if (isset($_POST['supprimer_auteur'])) {
 		$id_user=$_SESSION['id_user'];
 		DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
-            . 'WHERE ID_user=' . $id_user . ' AND NomAuteur = \'' . $_POST['nom_auteur'] . '\'');
+            . 'WHERE ID_user=' . $id_user . ' AND NomAuteurAbrege = \'' . $_POST['auteur'] . '\'');
 	}
 	else if (isset($_POST['liste_bouquineries'])) {
 		$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '

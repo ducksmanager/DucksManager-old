@@ -215,47 +215,43 @@ class Liste {
 				<?php
 			break;
 			case 'auteurs':
-				$requete_auteurs_surveilles='SELECT NomAuteur FROM auteurs_pseudos WHERE ID_User='.$id_user;
-				$resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
-				if (count($resultat_auteurs_surveilles) > 0) {
-					$requete_calcul_effectue='SELECT count(NomAuteur) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user;
-					$resultat_calcul_effectue=DM_Core::$d->requete($requete_calcul_effectue);
-					if (count($resultat_calcul_effectue) === 0) {
-						echo AUCUN_AUTEUR_SURVEILLE;
-					}
-					else {
-						$types = ['abs' => AFFICHER_VALEURS_REELLES, 'pct'=> AFFICHER_POURCENTAGES]; ?>
+				$requete_auteurs_surveilles='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user;
+                $resultats_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
+                if (count($resultats_auteurs_surveilles) === 0) {
+                    echo AUCUN_AUTEUR_SURVEILLE;
+                }
+                else {
+                    $types = ['abs' => AFFICHER_VALEURS_REELLES, 'pct'=> AFFICHER_POURCENTAGES]; ?>
 
-						<div id="aucun_resultat_stats_auteur" class="hidden">
-							<?=CALCULS_PAS_ENCORE_FAITS?>
-						</div>
-						<div id="chargement_stats_auteur">
-							<?=CHARGEMENT?>
-						</div>
-						<div id="fin_stats_auteur" class="hidden">
-                            <div class="btn-group" data-toggle="buttons">
-                                <?php foreach($types as $type=>$label) {?>
-                                <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'auteurs')">
-                                    <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
-                                    </label><?php
-                                }?>
-                            </div>
-						</div>
-                        <br />
-                        <div id="canvas-holder" class="hidden">
-                            <?php foreach($types as $type=>$label) {
-                                ?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"></canvas><?php
+                    <div id="aucun_resultat_stats_auteur" class="hidden">
+                        <?=CALCULS_PAS_ENCORE_FAITS?>
+                    </div>
+                    <div id="chargement_stats_auteur">
+                        <?=CHARGEMENT?>
+                    </div>
+                    <div id="fin_stats_auteur" class="hidden">
+                        <div class="btn-group" data-toggle="buttons">
+                            <?php foreach($types as $type=>$label) {?>
+                            <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'auteurs')">
+                                <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
+                                </label><?php
                             }?>
                         </div>
-						<?php
-					}
-				}
+                    </div>
+                    <br />
+                    <div id="canvas-holder" class="hidden">
+                        <?php foreach($types as $type=>$label) {
+                            ?><canvas class="graph_auteurs <?=$type?> <?=$type==='pct' ? 'hidden' : ''?>"></canvas><?php
+                        }?>
+                    </div>
+                    <?php
+                }
 				?><br /><br />
 				<?=STATISTIQUES_QUOTIDIENNES?>
 				<br /><br />
 				<hr /><?php
-				if (isset($_POST['auteur_nom'])) {
-					DM_Core::$d->ajouter_auteur($_POST['auteur_nom']);
+				if (isset($_POST['auteur_id'])) {
+					DM_Core::$d->ajouter_auteur($_POST['auteur_id']);
 				}
 				?>
 				<br /><br />
@@ -280,11 +276,7 @@ class Liste {
 					<br /><br />
 					<?=LISTE_AUTEURS_INTRO?>
 					<?php
-					$requete_auteurs_surveilles="
-						SELECT NomAuteur, Notation
-						FROM auteurs_pseudos
-						WHERE ID_User=$id_user";
-					DM_Core::$d->afficher_liste_auteurs_surveilles(DM_Core::$d->requete($requete_auteurs_surveilles));
+					DM_Core::$d->afficher_liste_auteurs_surveilles($resultats_auteurs_surveilles);
 					?>
 				</div><?php
 				break;
