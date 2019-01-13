@@ -104,7 +104,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                 _paq.push(['trackPageView']);
                 _paq.push(['enableLinkTracking']);
                 (function() {
-                    var u="https://<?=ServeurDb::getPiwikServer()->domain?>/piwik/";
+                    var u="https://piwik.ducksmanager.net/";
                     _paq.push(['setTrackerUrl', u+'piwik.php']);
                     _paq.push(['setSiteId', '1']);
                     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
