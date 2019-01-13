@@ -325,38 +325,38 @@ class Stats {
 
         $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues', is_null($pays) ? [] : [$pays]);
 
-		if (!array_key_exists('issues', $suggestions) || count($suggestions['issues']) === 0) {
+		if (!isset($suggestions->issues) || count(get_object_vars($suggestions->issues)) === 0) {
 			?><br /><?=AUCUNE_SUGGESTION?><?php
 		}
 		else {
-			$minScore = $suggestions['minScore'];
-			$maxScore = $suggestions['maxScore'];
+			$minScore = $suggestions->minScore;
+			$maxScore = $suggestions->maxScore;
 
-			foreach($suggestions['issues'] as $issuecode => $issue) {
-			    $publicationcode = $issue['publicationcode'];
+			foreach($suggestions->issues as $issuecode => $issue) {
+			    $publicationcode = $issue->publicationcode;
                 $country = explode('/', $publicationcode)[0];
-                $issuenumber = $issue['issuenumber'];
-			    $importance = $issue['score'] === $maxScore ? 1 : ($issue['score'] === $minScore ? 3 : 2);
+                $issuenumber = $issue->issuenumber;
+			    $importance = $issue->score === $maxScore ? 1 : ($issue->score === $minScore ? 3 : 2);
 				?>
 				<div>
 					<span class="numero top<?=$importance?>"><?php
 					Affichage::afficher_texte_numero(
                         $country,
-                        $suggestions['publicationTitles'][$publicationcode],
+                        $suggestions->publicationTitles->$publicationcode,
                         $issuenumber
 					);
 					?>&nbsp;</span><?=NUMERO_CONTIENT?>
 				</div>
 				<ul class="liste_histoires"><?php
-				foreach($issue['stories'] as $author => $storiesOfAuthor) {
+				foreach($issue->stories as $author => $storiesOfAuthor) {
 					?><li>
 						<div>
-							<?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions['authors'][$author]])?>
+							<?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions->authors->$author])?>
 						</div>
 						<ul class="liste_histoires">
 							<?php foreach($storiesOfAuthor as $storyCode) {
 								?><li>
-									<?php Affichage::afficher_texte_histoire($storyCode, @$suggestions['storyDetails'][$storyCode]['title'], @$suggestions['storyDetails'][$storyCode]['storycomment']);
+									<?php Affichage::afficher_texte_histoire($storyCode, @$suggestions->storyDetails->$storyCode->title, @$suggestions->storyDetails->$storyCode->storycomment);
 								?></li>
 								<?php
 							}?>
