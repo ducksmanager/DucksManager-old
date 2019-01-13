@@ -12,7 +12,7 @@ require_once '../DucksManager_Core.class.php';
  */
 function exporter($requete, $cheminCsv)
 {
-    $results = DM_Core::$d->requete_select($requete);
+    $results = DM_Core::$d->requete($requete);
     if (count($results) > 0) {
         $fp = fopen($cheminCsv, 'w');
         if ($fp) {

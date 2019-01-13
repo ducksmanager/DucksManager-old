@@ -19,7 +19,7 @@ if (isset($_POST['ID'])) {
 
 $requete = 'SELECT ID, Nom, AdresseComplete, Pays, Commentaire, ID_Utilisateur, DateAjout, CONCAT(CoordX, ",", CoordY) As Coord from bouquineries WHERE Actif=0';
 
-$resultats = DM_Core::$d->requete_select($requete);
+$resultats = DM_Core::$d->requete($requete);
 
 if (count($resultats) > 0) {
     $champs = array_keys($resultats[0]);

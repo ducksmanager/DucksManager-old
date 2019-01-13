@@ -51,7 +51,7 @@ class Edge {
 				'SELECT Numero,NumeroReference '
 			   .'FROM tranches_doublons '
 			   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero IN ('.implode(',', $numeros_subarray).') ';
-			$resultat_numero_reference=DM_Core::$d->requete_select($requete_recherche_numero_reference);
+			$resultat_numero_reference=DM_Core::$d->requete($requete_recherche_numero_reference);
 			foreach($resultat_numero_reference as $numero_reference) {
 				$numeros_clean_et_references[$numero_reference['Numero']]['reference']
 					=$numero_reference['NumeroReference'];
@@ -76,7 +76,7 @@ class Edge {
               FROM tranches_pretes
               WHERE publicationcode = '$pays/$magazine'
                 AND issuenumber IN ('" . implode("', '", $numeros_references) . "')";
-        $resultat_visibilite_numeros = DM_Core::$d->requete_select($requete_visibilite_numeros);
+        $resultat_visibilite_numeros = DM_Core::$d->requete($requete_visibilite_numeros);
 
         $cpt_tranches_pretes=0;
         foreach($resultat_visibilite_numeros as $numero) {
@@ -111,7 +111,7 @@ class Edge {
             ORDER BY np.Popularite DESC
         ";
 
-        $resultats_points_tranches = DM_Core::$d->requete_select($requete_points_tranche);
+        $resultats_points_tranches = DM_Core::$d->requete($requete_points_tranche);
         return array_map(function($tranche) {
             $tranche['Popularite'] = (int)$tranche['Popularite'];
             return $tranche;
@@ -130,7 +130,7 @@ class Edge {
 
         // TODO Use DM server service
         $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
-        $resultat_ordre_magazines=DM_Core::$d->requete_select($requete_ordre_magazines);
+        $resultat_ordre_magazines=DM_Core::$d->requete($requete_ordre_magazines);
 
         $publication_codes = array_map(function($ordre) {
             return $ordre['Pays'].'/'.$ordre['Magazine'];
@@ -165,7 +165,7 @@ class Edge {
             $id_user = $_SESSION['id_user'];
         }
         else {
-            $resultats_utilisateur = DM_Core::$d->requete_select("SELECT ID, AccepterPartage FROM users WHERE username='$user'");
+            $resultats_utilisateur = DM_Core::$d->requete("SELECT ID, AccepterPartage FROM users WHERE username='$user'");
             if ($resultats_utilisateur[0]['AccepterPartage'] === '1') {
                 return $resultats_utilisateur[0]['ID'];
             }
@@ -200,13 +200,13 @@ elseif (isset($_POST['get_bibliotheque'])) {
     }
     else {
         $requete_grossissement = 'SELECT username FROM users WHERE ID = \'' . $id_user . '\'';
-        $resultat_grossissement = DM_Core::$d->requete_select($requete_grossissement);
+        $resultat_grossissement = DM_Core::$d->requete($requete_grossissement);
         $username = $resultat_grossissement[0]['username'];
 
         $textures = [];
         for ($i = 1; $i <= 2; $i++) {
             $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
-            $resultat_textures = DM_Core::$d->requete_select($requete_textures);
+            $resultat_textures = DM_Core::$d->requete($requete_textures);
             $textures[$i - 1] = [
                 'texture' => $resultat_textures[0]['Bibliotheque_Texture' . $i],
                 'sous_texture' => $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i]
@@ -232,7 +232,7 @@ elseif (isset($_POST['get_sous_texture'])) {
 	    FROM users
 	    WHERE ID = '$id_user'
 	";
-	$resultat_texture=DM_Core::$d->requete_select($requete_texture);
+	$resultat_texture=DM_Core::$d->requete($requete_texture);
 
     $texturesData = ['textures' => [], 'current' => [$resultat_texture[0]['texture1'], $resultat_texture[0]['texture2']]];
 

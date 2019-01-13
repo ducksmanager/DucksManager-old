@@ -216,10 +216,10 @@ class Liste {
 			break;
 			case 'auteurs':
 				$requete_auteurs_surveilles='SELECT NomAuteur FROM auteurs_pseudos WHERE ID_User='.$id_user;
-				$resultat_auteurs_surveilles=DM_Core::$d->requete_select($requete_auteurs_surveilles);
+				$resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
 				if (count($resultat_auteurs_surveilles) > 0) {
 					$requete_calcul_effectue='SELECT count(NomAuteur) AS cpt FROM auteurs_pseudos WHERE ID_User='.$id_user;
-					$resultat_calcul_effectue=DM_Core::$d->requete_select($requete_calcul_effectue);
+					$resultat_calcul_effectue=DM_Core::$d->requete($requete_calcul_effectue);
 					if (count($resultat_calcul_effectue) === 0) {
 						echo AUCUN_AUTEUR_SURVEILLE;
 					}
@@ -284,7 +284,7 @@ class Liste {
 						SELECT NomAuteur, Notation
 						FROM auteurs_pseudos
 						WHERE ID_User=$id_user";
-					DM_Core::$d->afficher_liste_auteurs_surveilles(DM_Core::$d->requete_select($requete_auteurs_surveilles));
+					DM_Core::$d->afficher_liste_auteurs_surveilles(DM_Core::$d->requete($requete_auteurs_surveilles));
 					?>
 				</div><?php
 				break;

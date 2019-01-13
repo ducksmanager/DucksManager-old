@@ -9,12 +9,12 @@ if (isset($_GET['req'])) {
 	$requete=str_replace("\'","'",$_GET['req']);
 	if (isset($_GET['params'])) {
 	    $params = json_decode($_GET['params']);
-	    $resultats = DM_Core::$d->requete_select($requete, array_map(function ($typeAndValue) {
+	    $resultats = DM_Core::$d->requete($requete, array_map(function ($typeAndValue) {
             return $typeAndValue->value;
         }, $params));
     }
 	else {
-        $resultats = DM_Core::$d->requete_select($requete);
+        $resultats = DM_Core::$d->requete($requete);
     }
     header('Content-Type: text/html; charset=utf-8');
 	if (count($resultats) === 0) {

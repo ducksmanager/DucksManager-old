@@ -100,7 +100,7 @@ if (isset($_GET['wanted'])) {
         ";
     }
 
-    $resultat_plus_demandes=DM_Core::$d->requete_select($requete_plus_demandes);
+    $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
 
@@ -115,7 +115,7 @@ if (isset($_GET['wanted'])) {
 		list($magazine,$numero)=Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
 		$publicationcode = $pays.'/'.$magazine;
         $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
-        $est_dispo=count(DM_Core::$d->requete_select($requete_est_dispo)) > 0;
+        $est_dispo=count(DM_Core::$d->requete($requete_est_dispo)) > 0;
         if (!$est_dispo) {
 			$numeros_demandes[]= ['cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero];
 			if ($cptwanted++ >= $_GET['wanted']) {
@@ -153,7 +153,7 @@ else {
 ?><hr /><?php
 
 $requete_pays_magazines_tranches_pretes='SELECT DISTINCT publicationcode FROM tranches_pretes ORDER BY publicationcode';
-$resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete_select($requete_pays_magazines_tranches_pretes);
+$resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete($requete_pays_magazines_tranches_pretes);
 
 $publicationcodes = array_map(function($publicationcode) {
 	return $publicationcode['publicationcode'];
@@ -168,7 +168,7 @@ $requete_tranches_pretes = "
   SELECT publicationcode, issuenumber
   FROM tranches_pretes";
 
-$resultat_tranches_pretes = DM_Core::$d->requete_select($requete_tranches_pretes);
+$resultat_tranches_pretes = DM_Core::$d->requete($requete_tranches_pretes);
 $tranches_pretes = [];
 array_walk($resultat_tranches_pretes, function($resultat) use (&$tranches_pretes) {
     $tranches_pretes[$resultat['publicationcode']][] = $resultat['issuenumber'];

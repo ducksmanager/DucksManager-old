@@ -18,7 +18,7 @@ class Stats {
 	static function getPublicationData() {
 		$counts= [];
 		$total=0;
-		$resultat_cpt_numeros_groupes=DM_Core::$d->requete_select(
+		$resultat_cpt_numeros_groupes=DM_Core::$d->requete(
             'SELECT Pays,Magazine,Count(Numero) AS cpt
 			 FROM numeros
 			 WHERE ID_Utilisateur=' . static::$id_user . '
@@ -64,7 +64,7 @@ class Stats {
 	}
 
 	static function getConditionData() {
-		$resultats=DM_Core::$d->requete_select('
+		$resultats=DM_Core::$d->requete('
 			SELECT Etat, Count(Numero) AS cpt
 			FROM numeros
 			WHERE ID_Utilisateur=' . static::$id_user . '
@@ -219,7 +219,7 @@ class Stats {
 			ORDER BY YEAR(Date), MONTH(Date)
 		";
 
-		$resultat_achats = DM_Core::$d->requete_select($requete_achats);
+		$resultat_achats = DM_Core::$d->requete($requete_achats);
 
 		$premier_achat = null;
 		$achats_magazines_nouv = [];

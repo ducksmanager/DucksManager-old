@@ -37,7 +37,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
             SELECT ID
             FROM users
             WHERE username=? AND password=?',
-            'db_dm_copy',
+            'db_dm',
             [$pseudo, $mdp]
         );
 
@@ -57,7 +57,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                 $resultats = DmClient::get_query_results_from_dm_server('
                     INSERT INTO users(username,password,Email,DateInscription)
                     VALUES(?,?,?,?)',
-                    'db_dm_copy',
+                    'db_dm',
                     [$user,$pass,$email, date('Y-m-d')]);
                 if ($resultats === []) {
                     echo 'OK';
@@ -80,7 +80,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                             SELECT 1
                             FROM achats
                             WHERE ID_Acquisition=? AND ID_User=?',
-                            'db_dm_copy',
+                            'db_dm',
                             [$_GET['id_acquisition'], $id_utilisateur]
                         );
                         if (count($resultats_date_achat) !== 1) {
@@ -98,7 +98,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                     $resultats = DmClient::get_query_results_from_dm_server('
                         INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur, AV)
                         VALUES(?, ?, ?, ?, ?, ?, ?)',
-                        'db_dm_copy',
+                        'db_dm',
                         [$pays,$magazine,$numero,$etat,$id_acquisition,$id_utilisateur,0]
                     );
 
@@ -112,7 +112,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                     $resultats_achats = DmClient::get_query_results_from_dm_server('
                         INSERT INTO achats(ID_User,Date,Description)
                         VALUES (?, ?, ?)',
-                        'db_dm_copy',
+                        'db_dm',
                         [$id_utilisateur, $date_achat, $description_achat]
                     );
 
@@ -126,7 +126,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         WHERE ID_User=?
                         ORDER BY Date DESC
                         LIMIT 15',
-                        'db_dm_copy',
+                        'db_dm',
                         [$id_utilisateur]
                     );
                     $retour->achats = $resultats_achats;
@@ -138,7 +138,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
                         WHERE ID_Utilisateur=?
                         ORDER BY Pays, Magazine, Numero',
-                        'db_dm_copy',
+                        'db_dm',
                         [$id_utilisateur]);
 
                     $numeros = [];

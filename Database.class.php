@@ -37,22 +37,17 @@ class Database {
         $this->password=$password;
 	}
 
-	function requete_select($requete, $parametres = [], $db = 'db_dm_copy') {
+	function requete($requete, $parametres = [], $db = 'db_dm') {
         try {
 		    $resultats = DmClient::get_query_results_from_dm_server($requete, $db, $parametres);
-            return array_map(function($result) {
-                return (array) $result;
-            }, $resultats);
+            if (is_array($resultats)) {
+                return array_map(function($result) {
+                    return (array) $result;
+                }, $resultats);
+            }
+            return [];
         } catch (Exception $e) {
 		    return [];
-        }
-	}
-
-	function requete($requete, $parametres = [], $db = 'db_dm_copy') {
-        try {
-		    return DmClient::get_query_results_from_dm_server($requete, $db, $parametres);
-        } catch (Exception $e) {
-            return [];
         }
 	}
 
@@ -61,7 +56,7 @@ class Database {
             $user=$_COOKIE['user'];
 		}
 		$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
-		$resultat=DM_Core::$d->requete_select($requete);
+		$resultat=DM_Core::$d->requete($requete);
 		if (count($resultat) === 0) {
 			return null;
 		}
@@ -73,19 +68,19 @@ class Database {
 			return false;
 		}
 		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
-		return (count(DM_Core::$d->requete_select($requete))>0);
+		return (count(DM_Core::$d->requete($requete))>0);
 	}
 
 	function user_exists($user) {
 		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
-		return (count(DM_Core::$d->requete_select($requete))>0);
+		return (count(DM_Core::$d->requete($requete))>0);
 
 	}
 
 	function user_afficher_video() {
 		if (isset($_SESSION['user'])) {
 			$requete_afficher_video="SELECT AfficherVideo FROM users WHERE username = '{$_SESSION['user']}'";
-			$resultat_afficher_video=DM_Core::$d->requete_select($requete_afficher_video);
+			$resultat_afficher_video=DM_Core::$d->requete($requete_afficher_video);
 			return $resultat_afficher_video[0]['AfficherVideo'] === '1';
 		}
 		return false;
@@ -103,14 +98,14 @@ class Database {
 
 	function maintenance_ordre_magazines($id_user) {
 		$requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_get_max_ordre=DM_Core::$d->requete_select($requete_get_max_ordre);
+		$resultat_get_max_ordre=DM_Core::$d->requete($requete_get_max_ordre);
 		$max=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
 		$cpt=0;
 		$l=DM_Core::$d->toList($id_user);
 		foreach($l->collection as $pays=>$magazines) {
 			foreach(array_keys($magazines) as $magazine) {
 				$requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
-				$resultat_verif_ordre_existe=DM_Core::$d->requete_select($requete_verif_ordre_existe);
+				$resultat_verif_ordre_existe=DM_Core::$d->requete($requete_verif_ordre_existe);
 				$ordre_existe=count($resultat_verif_ordre_existe) > 0;
 				if (!$ordre_existe) {
 					$requete_set_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
@@ -122,7 +117,7 @@ class Database {
 			}
 		}
 		$requete_liste_ordres='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_liste_ordres=DM_Core::$d->requete_select($requete_liste_ordres);
+		$resultat_liste_ordres=DM_Core::$d->requete($requete_liste_ordres);
 		foreach($resultat_liste_ordres as $ordre) {
 			$pays=$ordre['Pays'];
 			$magazine=$ordre['Magazine'];
@@ -138,7 +133,7 @@ class Database {
 	}
 
 	function liste_numeros_externes_dispos($id_user) {
-		$resultat_email=DM_Core::$d->requete_select('SELECT Email FROM users WHERE ID=' . $id_user);
+		$resultat_email=DM_Core::$d->requete('SELECT Email FROM users WHERE ID=' . $id_user);
 
 		$requete_ventes_utilisateurs = 'SELECT users.ID, users.username, numeros.Pays, numeros.Magazine, numeros.Numero '
 									  .'FROM users '
@@ -152,7 +147,7 @@ class Database {
   										.'AND numeros.ID_Utilisateur <> '.$id_user.' '
   										.'AND users.Email <> \'\' '
 										.'ORDER BY users.username, numeros.Pays, numeros.Magazine, numeros.Numero';
-		$resultat_ventes_utilisateurs = DM_Core::$d->requete_select($requete_ventes_utilisateurs);
+		$resultat_ventes_utilisateurs = DM_Core::$d->requete($requete_ventes_utilisateurs);
 		if (count($resultat_ventes_utilisateurs) > 0) {
 			if (empty($resultat_email[0]['Email'])) {
 				?><br />
@@ -195,7 +190,7 @@ class Database {
 
 		// TODO Use DM server service
 		$requete_message_envoye_aujourdhui='SELECT 1 FROM emails_ventes WHERE username_achat=\''.$_SESSION['user'].'\' AND username_vente=\''.$username.'\' AND date=\''.date('Y-m-d',mktime(0,0)).'\'';
-		$message_deja_envoye=count(DM_Core::$d->requete_select($requete_message_envoye_aujourdhui)) > 0;
+		$message_deja_envoye=count(DM_Core::$d->requete($requete_message_envoye_aujourdhui)) > 0;
 		if (isset($_GET['contact']) && $_GET['contact'] === $username) {
 			if ($message_deja_envoye) {?>
 				<span class="alert alert-success">
@@ -204,7 +199,7 @@ class Database {
 			}
 			else {
 				$requete_emails='SELECT username, Email FROM users WHERE username IN (\''.$_SESSION['user'].'\',\''.$username.'\') AND Email <> ""';
-				$resultat_emails=DM_Core::$d->requete_select($requete_emails);
+				$resultat_emails=DM_Core::$d->requete($requete_emails);
 				if (count($resultat_emails) !== 2) {
 					?><span class="alert alert-danger"><?=ENVOI_EMAIL_ECHEC?></span><?php
 				}
@@ -329,7 +324,7 @@ class Database {
 			    $requete.='WHERE (ID_Utilisateur='.$id_user.') ';
 			}
 			$requete.='ORDER BY Pays, Magazine, Numero';
-			$resultat=DM_Core::$d->requete_select($requete);
+			$resultat=DM_Core::$d->requete($requete);
 			$l=new Liste();
 			foreach ($resultat as $infos) {
 				if (array_key_exists($infos['Pays'],$l->collection)) {
@@ -354,14 +349,14 @@ class Database {
             SELECT COUNT(NomAuteur) AS cpt
             FROM auteurs_pseudos
             WHERE ID_User=$id_user";
-		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete_select($requete_nb_auteurs_surveilles);
+		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete($requete_nb_auteurs_surveilles);
 		if (count($resultat_nb_auteurs_surveilles) > 0 && $resultat_nb_auteurs_surveilles[0]['cpt'] >= 5) {
 			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
 		else {
             if (Inducks::is_auteur($nomAuteur)) {
                 $requete_auteur_existe = $requete_nb_auteurs_surveilles." AND NomAuteur = '$nomAuteur'";
-                $resultat_auteur_existe=DM_Core::$d->requete_select($requete_auteur_existe);
+                $resultat_auteur_existe=DM_Core::$d->requete($requete_auteur_existe);
                 if (count($resultat_auteur_existe) > 0 && (int)$resultat_auteur_existe[0]['cpt'] > 0) {
                     ?><div class="alert alert-danger"><?=AUTEUR_DEJA_DANS_LISTE?></div><?php
                 }
@@ -394,7 +389,7 @@ class Database {
 	}
 
 	function get_notes_auteurs($id_user) {
-		return $this->requete_select('SELECT NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user);
+		return $this->requete('SELECT NomAuteur, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user);
 	}
 
 	function modifier_note_auteur($auteur, $note) {
@@ -426,7 +421,7 @@ class Database {
 		$requete='SELECT 1 FROM users '
 				.'WHERE ID='.$id_user.' AND (Email IS NULL OR Email=\'\') '
 				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
-		return count($this->requete_select($requete)) === 1;
+		return count($this->requete($requete)) === 1;
 	}
 
 	function get_niveaux() {
@@ -435,15 +430,15 @@ class Database {
 		$requete_nb_photographies ="
             SELECT NbPoints AS cpt FROM users_points up
             WHERE up.TypeContribution = 'photographe' AND up.ID_Utilisateur = $id_user";
-		$resultat_nb_photographies=DM_Core::$d->requete_select($requete_nb_photographies);
+		$resultat_nb_photographies=DM_Core::$d->requete($requete_nb_photographies);
 
 		$requete_nb_creations =	"
             SELECT NbPoints AS cpt FROM users_points up
             WHERE up.TypeContribution = 'createur' AND up.ID_Utilisateur = $id_user";
-		$resultat_nb_creations=DM_Core::$d->requete_select($requete_nb_creations);
+		$resultat_nb_creations=DM_Core::$d->requete($requete_nb_creations);
 
 		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
-		$resultat_nb_bouquineries=DM_Core::$d->requete_select($requete_nb_bouquineries);
+		$resultat_nb_bouquineries=DM_Core::$d->requete($requete_nb_bouquineries);
 
 		return Affichage::get_medailles([
             'Photographe'=> (int) ($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
@@ -468,7 +463,7 @@ class Database {
             AND DateInscription > date_add(now(), interval -1 month) AND users.username NOT LIKE 'test%'
         ";
 
-		$resultat_inscriptions = DM_Core::$d->requete_select($requete_inscriptions);
+		$resultat_inscriptions = DM_Core::$d->requete($requete_inscriptions);
 		foreach($resultat_inscriptions as $inscription) {
 			ajouter_evenement(
 				$evenements->evenements, [], $inscription['DiffSecondes'], 'inscriptions', $inscription['ID']);
@@ -488,7 +483,7 @@ class Database {
 				  GROUP BY users.ID, DATE(DateAjout)
 				  HAVING COUNT(Numero) > 0
 				  ORDER BY DateAjout DESC';
-		$resultat_derniers_ajouts = DM_Core::$d->requete_select($requete);
+		$resultat_derniers_ajouts = DM_Core::$d->requete($requete);
 		foreach($resultat_derniers_ajouts as $ajout) {
 			preg_match('#([^/]+/[^/]+)#', $ajout['NumeroExemple'], $publicationcode);
 			$evenements->publicationcodes[]=$publicationcode[0];
@@ -509,7 +504,7 @@ class Database {
 		$requete_bouquineries='SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes FROM bouquineries
 							   WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 
-		$resultat_bouquineries = DM_Core::$d->requete_select($requete_bouquineries);
+		$resultat_bouquineries = DM_Core::$d->requete($requete_bouquineries);
 		foreach($resultat_bouquineries as $bouquinerie) {
 			$evenement = ['nom_bouquinerie'=>$bouquinerie['Nom']];
 			ajouter_evenement(
@@ -528,7 +523,7 @@ class Database {
             GROUP BY publicationcode, issuenumber
             ORDER BY DateAjout DESC, collaborateurs";
 
-		$resultat_tranches = DM_Core::$d->requete_select($requete_tranches);
+		$resultat_tranches = DM_Core::$d->requete($requete_tranches);
         $groupe_precedent = null;
         $evenement = null;
 		foreach($resultat_tranches as $tranche_prete) {
@@ -625,7 +620,7 @@ class Database {
             ORDER BY DiffSecondes ASC
             LIMIT 5";
 
-        return DM_Core::$d->requete_select($requete_tranches_collection_ajoutees);
+        return DM_Core::$d->requete($requete_tranches_collection_ajoutees);
     }
 
     public function get_details_collections($idsUtilisateurs) {
@@ -655,7 +650,7 @@ class Database {
             WHERE users.ID IN ($concat_utilisateurs)
             GROUP BY users.ID";
 
-	    $resultats = DM_Core::$d->requete_select($requete_details_collections);
+	    $resultats = DM_Core::$d->requete($requete_details_collections);
 	    return array_combine(array_map(function($resultat) {
 	        return $resultat['ID_Utilisateur'];
 	    }, $resultats), array_values($resultats));
@@ -669,7 +664,7 @@ class Database {
             FROM users_points
             WHERE ID_Utilisateur=$id_user";
 
-        $resultats = DM_Core::$d->requete_select($requete_points_courants);
+        $resultats = DM_Core::$d->requete($requete_points_courants);
         $points = ['photographe' => 0, 'createur' => 0];
         foreach($resultats as $resultat) {
             $points[$resultat['TypeContribution']] = (int) $resultat['NbPoints'];
@@ -705,7 +700,7 @@ if (isset($_POST['database'])) {
 
 		if ($id_acquisition!==-1 && $id_acquisition!=='do_not_change') {
 			$requete_id_acquisition="SELECT Count(*) AS cpt, ID_Acquisition FROM achats WHERE ID_User='$id_user' AND ID_Acquisition = '$id_acquisition'";
-			$resultat_acqusitions=DM_Core::$d->requete_select($requete_id_acquisition);
+			$resultat_acqusitions=DM_Core::$d->requete($requete_id_acquisition);
 			if ($resultat_acqusitions[0]['cpt'] === 0) {
 			    $id_acquisition=-1;
 			}
@@ -730,7 +725,7 @@ if (isset($_POST['database'])) {
 		$requete_acquisition_existe='SELECT ID_Acquisition '
 								   .'FROM achats '
 								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date'].'\' AND Description = \''.$_POST['description'].'\'';
-		$compte_acquisition_date=DM_Core::$d->requete_select($requete_acquisition_existe);
+		$compte_acquisition_date=DM_Core::$d->requete($requete_acquisition_existe);
 		if (count($compte_acquisition_date) > 0) {
 			echo 'Date';
 		}
@@ -747,7 +742,7 @@ if (isset($_POST['database'])) {
 	}
 	else if (isset($_POST['liste_achats'])) {
 		$id_user=$_SESSION['id_user'];
-		$liste_achats=DM_Core::$d->requete_select("SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User=$id_user ORDER BY Date DESC");
+		$liste_achats=DM_Core::$d->requete("SELECT ID_Acquisition, Date, Description FROM achats WHERE ID_User=$id_user ORDER BY Date DESC");
 		$tab_achats=array_map(function($achat) {
 		    return [
                 'id' => $achat['ID_Acquisition'],
@@ -763,7 +758,7 @@ if (isset($_POST['database'])) {
         $requete_auteur='
           SELECT personcode, fullname FROM inducks_person
           WHERE LOWER(fullname) LIKE :fullname';
-        $resultats_auteur = DM_Core::$d->requete_select($requete_auteur, [':fullname' => '%'.strtolower($_POST['value']).'%'], 'db_coa');
+        $resultats_auteur = DM_Core::$d->requete($requete_auteur, [':fullname' => '%'.strtolower($_POST['value']).'%'], 'db_coa');
 
         header('Content-Type: application/json');
         echo json_encode(array_map(function($auteur) {
@@ -789,7 +784,7 @@ if (isset($_POST['database'])) {
 		$requete_bouquineries='SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\''.SIGNALE_PAR.'\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
 							 .'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
 							 .'WHERE Actif=1';
-		$resultat_bouquineries=DM_Core::$d->requete_select($requete_bouquineries);
+		$resultat_bouquineries=DM_Core::$d->requete($requete_bouquineries);
         header('Content-type: application/json');
 		echo json_encode($resultat_bouquineries);
 	}

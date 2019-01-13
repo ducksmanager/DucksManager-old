@@ -3,7 +3,7 @@ require_once 'DucksManager_Core.class.php';
 date_default_timezone_set('Europe/Paris');
 
 
-$resultat_dernier_init_recent=DM_Core::$d->requete_select('SELECT DateDernierInit FROM demo');
+$resultat_dernier_init_recent=DM_Core::$d->requete('SELECT DateDernierInit FROM demo');
 $derniere_date=strtotime($resultat_dernier_init_recent[0]['DateDernierInit']);
 $dernier_init_est_recent=(time() - $derniere_date) / 3600 < 1;
 
@@ -12,7 +12,7 @@ if (!$dernier_init_est_recent) {
 	$requete_update_date_init='UPDATE demo SET DateDernierInit=\''.$str_time.'\'';
 	DM_Core::$d->requete($requete_update_date_init);
 	
-	$resultat_id_user_demo=DM_Core::$d->requete_select('SELECT ID FROM users WHERE username=\'demo\'');
+	$resultat_id_user_demo=DM_Core::$d->requete('SELECT ID FROM users WHERE username=\'demo\'');
 	$id_user_demo=$resultat_id_user_demo[0]['ID'];
 	
 	if (isset($_GET['debug'])) {
