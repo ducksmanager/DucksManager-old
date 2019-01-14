@@ -34,7 +34,7 @@ class Edge {
 
 		$numeros_clean_et_references= [];
 		foreach($numeros as $i=>$numero) {
-			$numero=$numero[0];
+			$numero=$numero[2];
 			$numero_clean=self::get_numero_clean($numero);
 			$numeros[$i]="'".$numero_clean."'";
 			$numeros_clean_et_references[$numero]= [

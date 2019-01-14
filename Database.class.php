@@ -85,38 +85,6 @@ class Database {
 		return true;
 	}
 
-	function maintenance_ordre_magazines($id_user) {
-		$requete_get_max_ordre='SELECT MAX(Ordre) AS m FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_get_max_ordre=DM_Core::$d->requete($requete_get_max_ordre);
-		$max=is_null($resultat_get_max_ordre[0]['m'])?-1:$resultat_get_max_ordre[0]['m'];
-		$cpt=0;
-		$l=DM_Core::$d->toList($id_user);
-		foreach($l->collection as $pays=>$magazines) {
-			foreach(array_keys($magazines) as $magazine) {
-				$requete_verif_ordre_existe='SELECT Ordre FROM bibliotheque_ordre_magazines WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$id_user;
-				$resultat_verif_ordre_existe=DM_Core::$d->requete($requete_verif_ordre_existe);
-				$ordre_existe=count($resultat_verif_ordre_existe) > 0;
-				if (!$ordre_existe) {
-					$requete_set_ordre='INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
-									  .'VALUES (\''.$pays.'\',\''.$magazine.'\','.($max+1).','.$id_user.')';
-					DM_Core::$d->requete($requete_set_ordre);
-					$max++;
-				}
-				$cpt++;
-			}
-		}
-		$requete_liste_ordres='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user;
-		$resultat_liste_ordres=DM_Core::$d->requete($requete_liste_ordres);
-		foreach($resultat_liste_ordres as $ordre) {
-			$pays=$ordre['Pays'];
-			$magazine=$ordre['Magazine'];
-			if (!array_key_exists($pays, $l->collection) || !array_key_exists($magazine, $l->collection[$pays])) {
-				$requete_suppr_ordre='DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' AND Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\'';
-				DM_Core::$d->requete($requete_suppr_ordre);
-			}
-		}
-	}
-
 	function get_noms_complets_pays() {
 		return Inducks::get_pays();
 	}
@@ -307,29 +275,30 @@ class Database {
 	}
 
 	function toList($id_user=false) {
-
-			$requete='SELECT DISTINCT Pays, Magazine,Numero,Etat,ID_Acquisition,AV,ID_Utilisateur FROM numeros ';
-			if ($id_user!==false) {
-			    $requete.='WHERE (ID_Utilisateur='.$id_user.') ';
-			}
-			$requete.='ORDER BY Pays, Magazine, Numero';
-			$resultat=DM_Core::$d->requete($requete);
-			$l=new Liste();
-			foreach ($resultat as $infos) {
-				if (array_key_exists($infos['Pays'],$l->collection)) {
-					if (array_key_exists($infos['Magazine'],$l->collection[$infos['Pays']])) {
-						$l->collection[$infos['Pays']][$infos['Magazine']][] = [$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']];
-					}
-					else {
-						$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
-					}
-				}
-				else {
-					$l->collection[$infos['Pays']]=[$infos['Magazine']=>0];
-					$l->collection[$infos['Pays']][$infos['Magazine']]=[0=>[$infos['Numero'],$infos['Etat'],$infos['AV'],$infos['ID_Acquisition']]];
-				}
-			}
-			return $l;
+        $resultats_numeros = Dm_Core::$d->requete('
+            SELECT Pays, Magazine, Numero, Etat, AV, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
+            FROM numeros
+            LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
+            WHERE ID_Utilisateur=?
+            ORDER BY Pays, Magazine, Numero',
+            [$id_user]
+        );
+        $l=new Liste();
+        foreach ($resultats_numeros as $resultat) {
+            $resultat_val = array_values($resultat);
+            if (isset($l->collection[$resultat['Pays']])) {
+                if (isset($l->collection[$resultat['Pays']][$resultat['Magazine']])) {
+                    $l->collection[$resultat['Pays']][$resultat['Magazine']][] = $resultat_val;
+                }
+                else {
+                    $l->collection[$resultat['Pays']][$resultat['Magazine']]=[$resultat_val];
+                }
+            }
+            else {
+                $l->collection[$resultat['Pays']]=[$resultat['Magazine']=>[$resultat_val]];
+            }
+        }
+        return $l;
 	}
 
 	function ajouter_auteur($nomAuteurAbrege) {
@@ -628,7 +597,6 @@ class Database {
     }
 
     public function get_details_collections($idsUtilisateurs) {
-	    $concat_utilisateurs = implode(',', $idsUtilisateurs);
 	    $requete_details_collections = "
             SELECT 
                 users.ID AS ID_Utilisateur, users.username AS Username, users.AccepterPartage,

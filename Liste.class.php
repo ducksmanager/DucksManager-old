@@ -336,7 +336,7 @@ class Liste {
 				foreach($numeros as $numero) {
 					if (array_key_exists($pays, $other_list->collection)
 					 && array_key_exists($magazine, $other_list->collection[$pays])
-					 && in_array($numero[0], $other_list->collection[$pays][$magazine])) {
+					 && in_array($numero[2], $other_list->collection[$pays][$magazine])) {
                         $numeros_communs++;
                     }
 					else {
@@ -421,35 +421,27 @@ class Liste {
         }
 		return null;
 	}
-	function infos_numero($pays,$magazine,$numero) {
-		if (array_key_exists($pays, $this->collection)
-         && array_key_exists($magazine, $this->collection[$pays])) {
-            foreach($this->collection[$pays][$magazine] as $numero_liste) {
-                if ($numero_liste[0]===$numero) {
-                    return [
-                        $numero_liste[0],
-                         array_key_exists($numero_liste[1],Database::$etats) ? $numero_liste[1] : 'indefini',
-                        $numero_liste[2],
-                        $numero_liste[3]
-                    ];
-                }
+	function get_numero_collection($pays, $magazine, $numero) {
+		if (isset($this->collection[$pays][$magazine])) {
+		    $numeroCollection = array_filter($this->collection[$pays][$magazine], function($numeroCollection) use ($numero) {
+                return $numeroCollection[2] === $numero;
+            });
+		    if (count($numeroCollection) > 0) {
+                return $numeroCollection[key($numeroCollection)];
             }
         }
 		return null;
 	}
 
 	function nettoyer_collection() {
-		$collection2= [];
 		foreach($this->collection as $pays=>$liste_magazines) {
-			$collection2[$pays]= [];
 			foreach($liste_magazines as $magazine=>$liste_numeros) {
-				$collection2[$pays][$magazine]= [];
-				foreach($liste_numeros as $numero_liste) {
-					$collection2[$pays][$magazine][]= [nettoyer_numero($numero_liste[0]),$numero_liste[1],$numero_liste[2],$numero_liste[3]];
+				foreach($liste_numeros as $i=>&$numero_liste) {
+                    $numero_liste[0] = nettoyer_numero($numero_liste[0]);
 				}
+                unset($numero_liste);
 			}
 		}
-		$this->collection=$collection2;
 	}
 
 	static function import($liste_texte) {

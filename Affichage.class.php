@@ -101,8 +101,8 @@ class Affichage {
 
     /**
      * @param Liste $liste
-     * @param $pays
-     * @param $magazine
+     * @param string $pays
+     * @param string $magazine
      */
     static function afficher_numeros($liste, $pays, $magazine) {
         date_default_timezone_set('Europe/Paris');
@@ -126,16 +126,15 @@ class Affichage {
             $liste->nettoyer_collection();
             $nb_possedes=0;
             $numeros = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
-                $infos_numero=$liste->infos_numero($pays,$magazine,$numero);
+                $infos_numero = $liste->get_numero_collection($pays,$magazine,$numero);
                 $o=new stdClass();
                 $o->est_possede=false;
                 if (!is_null($infos_numero)) {
                     $nb_possedes++;
                     $o->est_possede=true;
+                    list(/*Pays*/, /*Magazine*/, /*Numero*/, $o->etat, $o->av, $o->id_acquisition, $o->date_acquisition, $o->description_acquisition) = $infos_numero;
+                    $o->etat = array_key_exists($o->etat,Database::$etats) ? $o->etat : 'indefini';
                 }
-                $o->etat=$infos_numero[1];
-                $o->av=$infos_numero[2];
-                $o->id_acquisition=$infos_numero[3];
                 $o->sous_titre=$sous_titre;
                 $o->numero=$numero;
 
@@ -149,7 +148,6 @@ class Affichage {
             <span id="pays" style="display:none"><?=$pays?></span>
             <span id="magazine" style="display:none"><?=$magazine?></span>
             <?php
-            $id_user=$_SESSION['id_user'];
             $nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
             ?>
             <br />
@@ -184,9 +182,6 @@ class Affichage {
             <?php
             foreach($numeros as $infos) {
                 $numero=$infos->numero;
-                $etat=$infos->etat;
-                $id_acquisition=$infos->id_acquisition;
-                $av=$infos->av;
                 $sous_titre=$infos->sous_titre;
                 $possede=$infos->est_possede;
                 ?>
@@ -196,39 +191,32 @@ class Affichage {
                     <img class="preview" src="images/icones/view.png" />
                     <span class="num">n&deg;<?=$numero?>&nbsp;
                         <span class="soustitre"><?=$sous_titre?></span>
-                    </span>
-                        <?php
-
-                        if ($possede) {
-                            ?><div class="bloc_details">
-                                <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
-                            </div><?php
-                            if (!in_array($id_acquisition, [-1,-2])) {
-                                $requete_date_achat='SELECT ID_Acquisition, Date FROM achats WHERE ID_Acquisition='.$id_acquisition.' AND ID_User='.$id_user;
-                                $resultat_date=DM_Core::$d->requete($requete_date_achat);
-                                if (count($resultat_date)>0) {
-                                    $date=new DateTime($resultat_date[0]['Date']);
-                                    $id=$resultat_date[0]['ID_Acquisition'];
-                                    if (!empty($date)) { ?>
-                                    <div class="details_numero detail_date" class="achat_<?= $id ?>">
-                                        <img src="images/date.png"
-                                             title="<?= ACHETE_LE . ' ' . $date->format('d/m/Y') ?>"/>
-                                        </div><?php
-                                    }
-                                }
+                    </span><?php
+                    if ($possede) {
+                        $etat=$infos->etat;
+                        $id_acquisition=$infos->id_acquisition;
+                        $av=$infos->av;
+                        ?><div class="bloc_details">
+                            <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
+                        </div><?php
+                        if (!is_null($id_acquisition)) {
+                            $date=new DateTime($infos->date_acquisition);
+                            if (!empty($date)) { ?>
+                                <div class="details_numero detail_date" class="achat_<?= $infos->id_acquisition ?>">
+                                    <img src="images/date.png" title="<?= ACHETE_LE . ' ' . $date->format('d/m/Y') ?>"/>
+                                </div><?php
                             }
-                            else { ?>
-                                <div class="details_numero detail_date"></div><?php
-                            }
-                            ?><div class="details_numero detail_a_vendre"><?php
-                            if ($av) {
-                                ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
-                            }
-                            ?></div>
-                         </div><?php
                         }
-                    ?>
-                    </div>
+                        else { ?>
+                            <div class="details_numero detail_date"></div><?php
+                        }
+                        ?><div class="details_numero detail_a_vendre"><?php
+                        if ($av) {
+                            ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
+                        }
+                        ?></div>
+                     </div><?php
+                    } ?>
                 </div>
                 <?php
             }
