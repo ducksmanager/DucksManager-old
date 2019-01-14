@@ -651,10 +651,10 @@ class Database {
                 ) AS NbBouquineries
             FROM users            
             LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
-            WHERE users.ID IN ($concat_utilisateurs)
+            WHERE users.ID IN (" . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ")
             GROUP BY users.ID";
 
-	    $resultats = DM_Core::$d->requete($requete_details_collections);
+	    $resultats = DM_Core::$d->requete($requete_details_collections, $idsUtilisateurs);
 	    return array_combine(array_map(function($resultat) {
 	        return $resultat['ID_Utilisateur'];
 	    }, $resultats), array_values($resultats));
