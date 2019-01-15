@@ -24,72 +24,6 @@ class Edge {
         $this->est_visible = $visible;
         $this->html=$this->getImgHTML($small);
     }
-
-	static function get_numero_clean($numero) {
-		return str_replace([' ', '+'], '', $numero);
-	}
-
-	static function get_numeros_clean($pays,$magazine,$numeros) {
-        $chunk_size = 250;
-
-		$numeros_clean_et_references= [];
-		foreach($numeros as $i=>$numero) {
-			$numero=$numero[2];
-			$numero_clean=self::get_numero_clean($numero);
-			$numeros[$i]="'".$numero_clean."'";
-			$numeros_clean_et_references[$numero]= [
-                'clean'=>$numero_clean,
-                'reference'=>$numero_clean,
-                'visible' => false
-            ];
-		}
-		
-		$numeros_subarrays=array_chunk($numeros, $chunk_size);
-		
-		foreach($numeros_subarrays as $numeros_subarray) {
-			$requete_recherche_numero_reference=
-				'SELECT Numero,NumeroReference '
-			   .'FROM tranches_doublons '
-			   .'WHERE Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero IN ('.implode(',', $numeros_subarray).') ';
-			$resultat_numero_reference=DM_Core::$d->requete($requete_recherche_numero_reference);
-			foreach($resultat_numero_reference as $numero_reference) {
-				$numeros_clean_et_references[$numero_reference['Numero']]['reference']
-					=$numero_reference['NumeroReference'];
-			}
-		}
-
-		$vrai_magazine=Inducks::get_vrai_magazine($pays,$magazine);
-		if ($vrai_magazine !== $magazine) {
-			foreach($numeros_clean_et_references as $numero) {
-				$numero_clean = is_array($numero) ? $numero['clean'] : $numero;
-				list($vrai_magazine,$vrai_numero) = Inducks::get_vrais_magazine_et_numero($pays,$magazine,$numero_clean);
-				$numeros_clean_et_references[$numero_clean]['reference']=$vrai_numero;
-			}
-		}
-
-        $numeros_references = array_map(function ($numero) {
-            return $numero['reference'];
-        }, $numeros_clean_et_references);
-
-        $requete_visibilite_numeros = "
-              SELECT issuenumber
-              FROM tranches_pretes
-              WHERE publicationcode = '$pays/$magazine'
-                AND issuenumber IN ('" . implode("', '", $numeros_references) . "')";
-        $resultat_visibilite_numeros = DM_Core::$d->requete($requete_visibilite_numeros);
-
-        $cpt_tranches_pretes=0;
-        foreach($resultat_visibilite_numeros as $numero) {
-            array_walk($numeros_clean_et_references, function(&$value) use(&$cpt_tranches_pretes, $numero) {
-                if ($value['reference'] === $numero['issuenumber']) {
-                    $value['visible'] = true;
-                    $cpt_tranches_pretes++;
-                }
-            });
-        }
-
-		return [$vrai_magazine, $numeros_clean_et_references, $cpt_tranches_pretes];
-	}
 	
 	function getImgHTML($small) {
         ob_start();
@@ -119,44 +53,76 @@ class Edge {
     }
 
 	static function getBibliotheque($id_user) {
-		include_once 'Database.class.php';
-		@session_start();
+		$requete_tranches = "
+            SELECT numeros.Pays,
+                   numeros.Magazine,
+                   numeros.Numero,
+                   IFNULL(reference.NumeroReference, REPLACE(numeros.Numero, ' ', '')) AS NumeroReference,
+                   EXISTS(
+                       SELECT 1
+                       FROM tranches_pretes
+                       WHERE CONCAT(numeros.Pays, '/', numeros.Magazine) = tranches_pretes.publicationcode
+                         AND IFNULL(reference.NumeroReference, REPLACE(numeros.Numero, ' ', '')) = tranches_pretes.issuenumber
+                     ) AS has_edge
+            FROM numeros
+            LEFT JOIN tranches_doublons reference ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND REPLACE(numeros.Numero, ' ', '') = reference.Numero
+            WHERE ID_Utilisateur = ?
+            ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
 
-        $l=DM_Core::$d->toList($id_user);
+		$resultats_tranches = DM_Core::$d->requete($requete_tranches, [$id_user]);
+		$resultats_tranches_avec_cle = [];
+		foreach($resultats_tranches as $resultat) {
+            $resultats_tranches_avec_cle[$resultat['Pays'].'/'.$resultat['Magazine']][$resultat['Numero']] = $resultat;
+        }
+        $total=count($resultats_tranches);
+
         $texte_final='';
-        $total_numeros=0;
         $cpt_tranches_pretes=0;
-        DM_Core::$d->maintenance_ordre_magazines($id_user);
 
-        // TODO Use DM server service
-        $requete_ordre_magazines='SELECT Pays,Magazine,Ordre FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur='.$id_user.' ORDER BY Ordre';
-        $resultat_ordre_magazines=DM_Core::$d->requete($requete_ordre_magazines);
+        $publication_codes = array_unique(array_map(function($numero) {
+            return $numero['Pays'].'/'.$numero['Magazine'];
+        }, $resultats_tranches));
+        
+        $publication_codes_pour_verif_ordre = array_values(array_filter($publication_codes, function($publicationCode) use ($resultats_tranches) {
+            return count(array_filter($resultats_tranches, function($numero) use ($publicationCode) {
+                return $numero['Pays'].'/'.$numero['Magazine'] === $publicationCode && !preg_match('#^\d$#', $numero['Numero']); // Ignorer les numéros à un seul chiffre
+            }));
+        }));
 
-        $publication_codes = array_map(function($ordre) {
-            return $ordre['Pays'].'/'.$ordre['Magazine'];
-        }, $resultat_ordre_magazines);
+        $resultats_ordres_numeros = Inducks::requete('
+          SELECT publicationcode, REGEXP_REPLACE(issuenumber, "[ ]+", " ") AS issuenumber
+          FROM inducks_issue
+          WHERE publicationcode IN ('. implode(',', array_fill(0, count($publication_codes_pour_verif_ordre), '?')) .')',
+            $publication_codes_pour_verif_ordre
+        );
 
-        foreach($resultat_ordre_magazines as $ordre) {
-            $pays=$ordre['Pays'];
-            $magazine=$ordre['Magazine'];
-            $numeros=$l->collection[$pays][$magazine];
-
-            sort($numeros);
-
-            list($magazine, $numeros_clean_et_references, $cpt_tranches_pretes_magazine) = self::get_numeros_clean($pays, $magazine, $numeros);
-
-            $total_numeros+=count($numeros);
-            $cpt_tranches_pretes+=$cpt_tranches_pretes_magazine;
-
-            foreach($numeros_clean_et_references as $numero) {
-                if (!array_key_exists('clean', $numero)) {
-                    $numero['clean'] = $numero['reference'];
+        foreach($publication_codes as $publication_code) {
+            if (in_array($publication_code, $publication_codes_pour_verif_ordre, true)) {
+                $numeros_indexes = array_values(array_filter($resultats_ordres_numeros, function($resultat) use ($publication_code) {
+                    return $resultat['publicationcode'] === $publication_code;
+                }));
+            }
+            else {
+                $numeros_indexes = [
+                    $publication_code => array_map(function($numero) {
+                        return ['issuenumber' => $numero['Numero']];
+                    }, array_values(array_filter($resultats_tranches, function($numero) use ($publication_code) {
+                        return $numero['Pays'].'/'.$numero['Magazine'] === $publication_code;
+                    })))
+                ];
+            }
+            foreach($numeros_indexes as $numero_indexe) {
+                if (!empty($resultats_tranches_avec_cle[$numero_indexe['publicationcode']])
+                 && !empty($numero = $resultats_tranches_avec_cle[$numero_indexe['publicationcode']][$numero_indexe['issuenumber']])) {
+                    $e=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], $numero['has_edge'] === '1');
+                    if ($e->est_visible) {
+                        $cpt_tranches_pretes++;
+                    }
+                    $texte_final.=$e->html;
                 }
-                $e=new Edge($pays, $magazine, $numero['clean'], $numero['reference'], $numero['visible']);
-                $texte_final.=$e->html;
             }
         }
-        $pourcentage_visible=$total_numeros===0 ? 0 : (int)(100 * $cpt_tranches_pretes / $total_numeros);
+        $pourcentage_visible=$total===0 ? 0 : (int)(100 * $cpt_tranches_pretes / $total);
         return [$texte_final, $pourcentage_visible, Inducks::get_noms_complets_magazines($publication_codes)];
 	}
 
@@ -199,19 +165,21 @@ elseif (isset($_POST['get_bibliotheque'])) {
         echo json_encode(['erreur' => 'La bibliothèque de cet utilisateur est privée.']);
     }
     else {
-        $requete_grossissement = 'SELECT username FROM users WHERE ID = \'' . $id_user . '\'';
-        $resultat_grossissement = DM_Core::$d->requete($requete_grossissement);
-        $username = $resultat_grossissement[0]['username'];
-
-        $textures = [];
-        for ($i = 1; $i <= 2; $i++) {
-            $requete_textures = 'SELECT Bibliotheque_Texture' . $i . ', Bibliotheque_Sous_Texture' . $i . ' FROM users WHERE ID = \'' . $id_user . '\'';
-            $resultat_textures = DM_Core::$d->requete($requete_textures);
-            $textures[$i - 1] = [
-                'texture' => $resultat_textures[0]['Bibliotheque_Texture' . $i],
-                'sous_texture' => $resultat_textures[0]['Bibliotheque_Sous_Texture' . $i]
-			];
-        }
+        $requete_grossissement = '
+          SELECT Bibliotheque_Texture1, Bibliotheque_Sous_Texture1, Bibliotheque_Texture2, Bibliotheque_Sous_Texture2
+          FROM users
+          WHERE ID = ?';
+        $resultats_params_bibliotheque = DM_Core::$d->requete($requete_grossissement, [$id_user]);
+        $textures = [
+            [
+                'texture' => $resultats_params_bibliotheque[0]['Bibliotheque_Texture1'],
+                'sous_texture' => $resultats_params_bibliotheque[0]['Bibliotheque_Sous_Texture1']
+            ],
+            [
+                'texture' => $resultats_params_bibliotheque[0]['Bibliotheque_Texture2'],
+                'sous_texture' => $resultats_params_bibliotheque[0]['Bibliotheque_Sous_Texture2']
+            ],
+        ];
 
         list($html, $pourcentage_visible, $liste_magazines) = Edge::getBibliotheque($id_user);
 

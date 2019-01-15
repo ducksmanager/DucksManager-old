@@ -67,7 +67,6 @@ function charger_bibliotheque() {
             get_bibliotheque: 'true',
             largeur: largeur_section,
             user_bibliotheque: user_bibliotheque,
-            cle_bibliotheque: cle_bibliotheque
         }).done(function(response) {
             if (!!response.erreur) {
                 conteneur.html(response.erreur);

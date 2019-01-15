@@ -161,12 +161,10 @@ $id_user= $_SESSION['id_user'] ?? null;
                 case 'bibliotheque':
                     if (isset($_GET['user'])) {
                         $user_bibliotheque = $_GET['user'];
-                        $cle_bibliotheque = $_GET['key'] ?? -1;
                         $est_partage_bibliotheque = true;
                     }
                     else {
                         $user_bibliotheque = -1;
-                        $cle_bibliotheque = -1;
                         $est_partage_bibliotheque = false;
                     }
                     $onglet = isset($_GET['onglet']) && in_array($_GET['onglet'], ['affichage', 'options'])
@@ -175,7 +173,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                     ?>
                     <script type="text/javascript">
                         var user_bibliotheque = <?=is_null($user_bibliotheque) ? -1 : "'".$user_bibliotheque."'"?>;
-                        var cle_bibliotheque = <?=is_null($cle_bibliotheque) ? -1 : "'".$cle_bibliotheque."'"?>;
                         var est_partage_bibliotheque = <?=$est_partage_bibliotheque ? 1 : 0?>;
                         var onglet = '<?=$onglet?>';
                     </script><?php
