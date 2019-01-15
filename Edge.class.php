@@ -103,13 +103,11 @@ class Edge {
                 }));
             }
             else {
-                $numeros_indexes = [
-                    $publication_code => array_map(function($numero) {
-                        return ['issuenumber' => $numero['Numero']];
-                    }, array_values(array_filter($resultats_tranches, function($numero) use ($publication_code) {
-                        return $numero['Pays'].'/'.$numero['Magazine'] === $publication_code;
-                    })))
-                ];
+                $numeros_indexes = array_map(function($numero) use ($publication_code) {
+                    return ['publicationcode' => $publication_code, 'issuenumber' => $numero['Numero']];
+                }, array_values(array_filter($resultats_tranches, function($numero) use ($publication_code) {
+                    return $numero['Pays'].'/'.$numero['Magazine'] === $publication_code;
+                })));
             }
             foreach($numeros_indexes as $numero_indexe) {
                 if (!empty($resultats_tranches_avec_cle[$numero_indexe['publicationcode']])
