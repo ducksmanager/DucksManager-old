@@ -389,145 +389,111 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
 
             switch($action) {
-            case 'inducks':
-            if (isset($_POST['rawData'])) {
-                if (isset($_POST['valider_importer'])) {
-                    $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
-                    $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
-                    $l=new Liste($_POST['rawData']);
-                    $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);
-                }
-                else {
-                    $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
-                    if ($rawdata_valide) {
-                        list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
-                        if ($est_succes) {
-                            ?><br /><br />
-                            <form method="post" action="?action=inducks">
-                                <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
-                                <?php
-                                if (isset($_SESSION['user'])) {
-                                    ?><?=QUESTION_EXECUTER_OPS_INDUCKS?><br />
-                                    <?php
-                                    if ($ajouts > 0) {
-                                        ?><input type="checkbox" checked="checked" name="ajouter_numeros" /><?=AJOUTER_NUMEROS_INDUCKS?><br /><?php
-                                    }
-                                    if ($suppressions > 0) {
-                                        ?><input type="checkbox" name="supprimer_numeros" /><?=SUPPRIMER_NUMEROS_NON_INDUCKS?><br /><?php
-                                    }?>
-                                    <input type="submit" name="valider_importer" value="<?=VALIDER?>" />&nbsp;
-
-                                    <?php
-                                }
-                                else {
-                                    ?><?=QUESTION_IMPORTER_INDUCKS?><br />
-                                    <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
-                                    <input type="submit" name="valider_importer" value="<?=NON?>" />
-                                <?php }?>
-                            </form>
-                        <?php
-                        }
+                case 'inducks':
+                if (isset($_POST['rawData'])) {
+                    if (isset($_POST['valider_importer'])) {
+                        $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
+                        $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
+                        $l=new Liste($_POST['rawData']);
+                        $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);
                     }
                     else {
-                        echo ERREUR_RAWDATA_INVALIDE;
+                        $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
+                        if ($rawdata_valide) {
+                            list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
+                            if ($est_succes) {
+                                ?><br /><br />
+                                <form method="post" action="?action=inducks">
+                                    <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
+                                    <?php
+                                    if (isset($_SESSION['user'])) {
+                                        ?><?=QUESTION_EXECUTER_OPS_INDUCKS?><br />
+                                        <?php
+                                        if ($ajouts > 0) {
+                                            ?><input type="checkbox" checked="checked" name="ajouter_numeros" /><?=AJOUTER_NUMEROS_INDUCKS?><br /><?php
+                                        }
+                                        if ($suppressions > 0) {
+                                            ?><input type="checkbox" name="supprimer_numeros" /><?=SUPPRIMER_NUMEROS_NON_INDUCKS?><br /><?php
+                                        }?>
+                                        <input type="submit" name="valider_importer" value="<?=VALIDER?>" />&nbsp;
+
+                                        <?php
+                                    }
+                                    else {
+                                        ?><?=QUESTION_IMPORTER_INDUCKS?><br />
+                                        <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
+                                        <input type="submit" name="valider_importer" value="<?=NON?>" />
+                                    <?php }?>
+                                </form>
+                            <?php
+                            }
+                        }
+                        else {
+                            echo ERREUR_RAWDATA_INVALIDE;
+                        }
                     }
                 }
-            }
-            if (!isset($_POST['rawData']) || (isset($rawdata_valide) && !$rawdata_valide)) {
-                echo IMPORT_INDUCKS_DESACTIVE;
-                /*
-                ?><table border="0" style="width:90%;height:70%" cellspacing="5">
-                    <tr>
-                        <td>
-                            <iframe src="http://coa.inducks.org/collection.php" style="width:100%;height:400px"></iframe>
-                        </td>
-                        <td>
-                            <h2><?=INSTRUCTIONS_IMPORT_INDUCKS_TITRE?></h2>
-                            <ul>
-                                <li><?=INSTRUCTIONS_IMPORT_INDUCKS_1?></li>
-                                <li><?=INSTRUCTIONS_IMPORT_INDUCKS_2?></li>
-                                <li><?=INSTRUCTIONS_IMPORT_INDUCKS_3?></li>
-                                <li><?=INSTRUCTIONS_IMPORT_INDUCKS_4?></li>
-                                <li><?=INSTRUCTIONS_IMPORT_INDUCKS_5?></li>
-                            </ul><br />
-                            <form method="post" action="?action=inducks">
-                                <textarea name="rawData" rows="10" cols="40"></textarea>
-                                <br />
-                                <input type="hidden" name="dbg" value="<?=isset($_GET['dbg']) ? "true":"false"?>" />
-                                <input type="submit" value="<?=IMPORTER?>" />
-                            </form>
-                        </td>
-                     </tr>
-                </table>
-            <?php */
-            }
+                if (!isset($_POST['rawData']) || (isset($rawdata_valide) && !$rawdata_valide)) {
+                    echo IMPORT_INDUCKS_DESACTIVE;
+                    /*
+                    ?><table border="0" style="width:90%;height:70%" cellspacing="5">
+                        <tr>
+                            <td>
+                                <iframe src="http://coa.inducks.org/collection.php" style="width:100%;height:400px"></iframe>
+                            </td>
+                            <td>
+                                <h2><?=INSTRUCTIONS_IMPORT_INDUCKS_TITRE?></h2>
+                                <ul>
+                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_1?></li>
+                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_2?></li>
+                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_3?></li>
+                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_4?></li>
+                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_5?></li>
+                                </ul><br />
+                                <form method="post" action="?action=inducks">
+                                    <textarea name="rawData" rows="10" cols="40"></textarea>
+                                    <br />
+                                    <input type="hidden" name="dbg" value="<?=isset($_GET['dbg']) ? "true":"false"?>" />
+                                    <input type="submit" value="<?=IMPORTER?>" />
+                                </form>
+                            </td>
+                         </tr>
+                    </table>
+                <?php */
+                }
             break;
             case 'new':
                 formulaire_inscription();
                 break;
             case 'open':
-            if (!isset($_SESSION['user'])) {
-            ?>
-                <h3><?= CONNEXION ?></h3>
-                <br />
-                <form method="post" action="?action=open" style="width: 250px">
-                    <div class="form-group">
-                        <label for="user"><?= NOM_UTILISATEUR ?></label>
-                        <input class="form-control" id="user" name="user" type="text" placeholder="<?= NOM_UTILISATEUR ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="pass"><?= MOT_DE_PASSE ?></label>
-                        <input type="password" class="form-control" id="pass" name="pass" placeholder="<?= MOT_DE_PASSE ?>">
-                    </div>
-                    <button type="submit" class="btn btn-default">Login</button>
-                </form>
-                <br />
-                <a href="?action=mot_de_passe_oublie"><?= MOT_DE_PASSE_OUBLIE ?></a>
-                <?php
-            }
-                break;
+                if (!isset($_SESSION['user'])) { ?>
+                    <h3><?= CONNEXION ?></h3>
+                    <br />
+                    <form method="post" action="?action=open" style="width: 250px">
+                        <div class="form-group">
+                            <label for="user"><?= NOM_UTILISATEUR ?></label>
+                            <input class="form-control" id="user" name="user" type="text" placeholder="<?= NOM_UTILISATEUR ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass"><?= MOT_DE_PASSE ?></label>
+                            <input type="password" class="form-control" id="pass" name="pass" placeholder="<?= MOT_DE_PASSE ?>">
+                        </div>
+                        <button type="submit" class="btn btn-default">Login</button>
+                    </form>
+                    <br />
+                    <a href="?action=mot_de_passe_oublie"><?= MOT_DE_PASSE_OUBLIE ?></a>
+                    <?php
+                }
+            break;
             case 'mot_de_passe_oublie' :
                 if (isset($_POST['champs_remplis'])) {
                     if (empty($_POST['email'])) {
-                        echo MOT_DE_PASSE_OUBLIE_ERREUR_VIDE.'<br />';
+                        ?><div class="alert alert-danger"><?=MOT_DE_PASSE_OUBLIE_ERREUR_VIDE?></div><?php
                     }
                     else {
-                        $requete_verifier_email='SELECT username, Email FROM users WHERE Email = \''.$_POST['email'].'\'';
-                        $resultat_verifier_email=DM_Core::$d->requete($requete_verifier_email);
-                        if (count($resultat_verifier_email) === 0) {
-                            echo $_POST['email'].' : '.MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU.'<br />';
-                        }
-                        else {
-                            $chars = "abcdefghijkmnopqrstuvwxyz023456789";
-                            srand((double)microtime()*1000000);
-                            $mdp_temporaire = '' ;
-                            for ($i = 0 ; $i <= 28 ; $i++) {
-                                $num = rand() % 33;
-                                $tmp = $chars[$num];
-                                $mdp_temporaire .= $tmp;
-                                $i++;
-                            }
-
-                            $requete_maj_mdp='UPDATE users SET password=sha1(\''.$mdp_temporaire.'\') WHERE Email = \''.$_POST['email'].'\'';
-                            DM_Core::$d->requete($requete_maj_mdp);
-
-                            $entete = "MIME-Version: 1.0\r\n";
-                            $entete .= "Content-type: text/html; charset=iso-8859-1\r\n";
-                            $entete .= "To: ".$resultat_verifier_email[0]['username']." <".$_POST['email'].">\r\n";
-                            $entete .= "From: DucksManager <admin@ducksmanager.net>\r\n";
-                            $contenu_mail=
-                                sprintf(SALUTATION,$resultat_verifier_email[0]['username'])
-                                .'<br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_1
-                                .'<br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_2.$mdp_temporaire
-                                .'<br /><br /><br />'.EMAIL_REINIT_MOT_DE_PASSE_3
-                                .'<br /><br />'.EMAIL_SIGNATURE;
-                            if (mail($_POST['email'], EMAIL_REINIT_MOT_DE_PASSE_TITRE, $contenu_mail,$entete)) {
-                                echo MOT_DE_PASSE_OUBLIE_EMAIL_ENVOYE;
-                            }
-                            else {
-                                echo MOT_DE_PASSE_OUBLIE_ERREUR_ENVOI_EMAIL;
-                            }
-                            break;
+                        $resultat_reset_password = DmClient::get_service_results_for_dm('POST', '/ducksmanager/resetpassword/init', ['email' => $_POST['email']]);
+                        if (!is_null($resultat_reset_password)) {
+                            ?><div class="alert alert-info"><?=MOT_DE_PASSE_OUBLIE_OK?></div><?php
                         }
                     }
                 }
@@ -543,105 +509,158 @@ $id_user= $_SESSION['id_user'] ?? null;
                 </form>
             <?php
             break;
+            case 'reset_password':
+                if (isset($_GET['token'])) {
+                    $resultat_check_token= DmClient::get_service_results_for_dm('POST', '/ducksmanager/resetpassword/checktoken/' .$_GET['token']);
+                    if (!is_null($resultat_check_token)) {
+                        if (isset($_POST['nouveau_mdp'])) {
+                            $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
+                            $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
+                            if (strlen($mot_de_passe_nouveau) < 6) {
+                                $erreur = MOT_DE_PASSE_6_CHAR_ERREUR;
+                            } elseif ($mot_de_passe_nouveau !== $mot_de_passe_nouveau_confirm) {
+                                $erreur = MOTS_DE_PASSE_DIFFERENTS;
+                            }
+                        }
+                        if (isset($erreur)) {
+                            ?><div class="alert alert-danger"><?=$erreur?></div><?php
+                        }
+                        if (!isset($erreur) && isset($_POST['nouveau_mdp'])) {
+                            $resultat_reset_password = DmClient::get_service_results_for_dm('POST', '/ducksmanager/resetpassword', ['token' => $_GET['token'], 'password' => $_POST['nouveau_mdp']]);
+                            ?><div class="alert alert-success"><?=MOT_DE_PASSE_CHANGE?></div><?php
+                        }
+                        else {?>
+                            <form method="post" action="">
+                                <h6 style="text-decoration: underline">
+                                    <?= MOT_DE_PASSE_CHANGEMENT ?>
+                                </h6>
+                                <div class="form-group">
+                                    <label for="nouveau_mdp"><?= MOT_DE_PASSE_NOUVEAU ?> : </label><br/>
+                                    <input class="form-control" type="password" id="nouveau_mdp" name="nouveau_mdp" style="width: 100px" value=""/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nouveau_mdp_confirm"><?= MOT_DE_PASSE_NOUVEAU_CONFIRMATION ?> : </label><br/>
+                                    <input class="form-control" type="password" id="nouveau_mdp_confirm" name="nouveau_mdp_confirm" style="width: 100px" value=""/>
+                                </div>
+                                <button type="submit" class="btn btn-default">OK</button>
+                            </form><?php
+                        }
+                    }
+                    else { ?>
+                        <div class="alert alert-danger">
+                            <?=sprintf(MOT_DE_PASSE_OUBLIE_ERREUR_TOKEN,
+                                sprintf('<a href="?action=mot_de_passe_oublie">%s</a>', MOT_DE_PASSE_OUBLIE)
+                            )?>
+                        </div><?php
+                    }
+                }
+                else {
+                    ?><div class="alert alert-danger">
+                        <?=sprintf(MOT_DE_PASSE_OUBLIE_ERREUR_TOKEN,
+                            sprintf('<a href="?action=mot_de_passe_oublie">%s</a>', MOT_DE_PASSE_OUBLIE)
+                        )?>
+                    </div><?php
+                }
+            break;
             case 'logout':
                 session_destroy();
                 session_unset();
                 echo DECONNEXION_OK;
                 break;
-            case 'bibliotheque':
-            ?>
-            <div class="book template">
-                <div class="magazine-viewport">
-                    <div class="container">
-                        <div class="magazine">
-                            <div ignore="1" class="next-button"></div>
-                            <div ignore="1" class="previous-button"></div>
+            break;
+            case 'bibliotheque': ?>
+                <div class="book template">
+                    <div class="magazine-viewport">
+                        <div class="container">
+                            <div class="magazine">
+                                <div ignore="1" class="next-button"></div>
+                                <div ignore="1" class="previous-button"></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="bottom">
-                        <div id="slider-bar" class="turnjs-slider">
-                            <div id="slider"></div>
+                        <div class="bottom">
+                            <div id="slider-bar" class="turnjs-slider">
+                                <div id="slider"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="conteneur_bibliotheque">
-                <h2 id="titre_bibliotheque"></h2><br /><br />
-                <?php
-                if (!$est_partage_bibliotheque) {
-                    $onglets = [
-                        BIBLIOTHEQUE_COURT => ['affichage', BIBLIOTHEQUE],
-                        BIBLIOTHEQUE_OPTIONS_COURT => ['options', BIBLIOTHEQUE_OPTIONS],
-                        BIBLIOTHEQUE_CONTRIBUTEURS_COURT => ['contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS]];
-                    if (!isset($_GET['onglet'])) {
-                        $onglet = 'affichage';
+                <div id="conteneur_bibliotheque">
+                    <h2 id="titre_bibliotheque"></h2><br /><br />
+                    <?php
+                    if (!$est_partage_bibliotheque) {
+                        $onglets = [
+                            BIBLIOTHEQUE_COURT => ['affichage', BIBLIOTHEQUE],
+                            BIBLIOTHEQUE_OPTIONS_COURT => ['options', BIBLIOTHEQUE_OPTIONS],
+                            BIBLIOTHEQUE_CONTRIBUTEURS_COURT => ['contributeurs', BIBLIOTHEQUE_CONTRIBUTEURS]];
+                        if (!isset($_GET['onglet'])) {
+                            $onglet = 'affichage';
+                        }
+                        else {
+                            $onglet = $_GET['onglet'];
+                        }
+                        Affichage::onglets($onglet, $onglets, 'onglet', '?action=bibliotheque');
                     }
-                    else {
-                        $onglet = $_GET['onglet'];
-                    }
-                    Affichage::onglets($onglet, $onglets, 'onglet', '?action=bibliotheque');
-                }
-                switch ($onglet) {
-                    case 'affichage':
-                        if (!$est_partage_bibliotheque) {
-                            $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user);
-                            if (count($resultat_tranches_collection_ajoutees) > 0) {
-                                $publication_codes = [];
-                                foreach ($resultat_tranches_collection_ajoutees as $tranche) {
-                                    $publication_codes[] = $tranche['publicationcode'];
-                                }
-                                $publication_codes = array_unique($publication_codes);
-                                $magazines_complets = Inducks::get_noms_complets_magazines($publication_codes);
-                                ?>
-                                <div>
-                                    <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
-                                    <?php
+                    switch ($onglet) {
+                        case 'affichage':
+                            if (!$est_partage_bibliotheque) {
+                                $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user);
+                                if (count($resultat_tranches_collection_ajoutees) > 0) {
+                                    $publication_codes = [];
                                     foreach ($resultat_tranches_collection_ajoutees as $tranche) {
-                                        list($pays, $magazine) = explode('/', $tranche['publicationcode']);
-                                        echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
-                                            . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
+                                        $publication_codes[] = $tranche['publicationcode'];
                                     }
+                                    $publication_codes = array_unique($publication_codes);
+                                    $magazines_complets = Inducks::get_noms_complets_magazines($publication_codes);
                                     ?>
-                                </div><br/><br/><?php
-                            }
+                                    <div>
+                                        <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
+                                        <?php
+                                        foreach ($resultat_tranches_collection_ajoutees as $tranche) {
+                                            list($pays, $magazine) = explode('/', $tranche['publicationcode']);
+                                            echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
+                                                . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
+                                        }
+                                        ?>
+                                    </div><br/><br/><?php
+                                }
 
-                            $accepter_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
-                            if ($accepter_partage) {
-                                ?><div class="alert alert-info">
-                                    <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
-                                </div>
-                                <div id="partager_bibliotheque">
-                                    <div class="btn btn-default btn-sm" id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></div>
-                                </div><?php
-                            }
-                            else {
-                                ?><div class="alert alert-warning">
-                                    <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_DESACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
-                                </div><?php
-                            }
-                        }?>
-                        <br/>
-                        <span id="pcent_visible"></span>
-                        <span id="pourcentage_collection_visible"></span>
+                                $accepter_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
+                                if ($accepter_partage) {
+                                    ?><div class="alert alert-info">
+                                        <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
+                                    </div>
+                                    <div id="partager_bibliotheque">
+                                        <div class="btn btn-default btn-sm" id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></div>
+                                    </div><?php
+                                }
+                                else {
+                                    ?><div class="alert alert-warning">
+                                        <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_DESACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
+                                    </div><?php
+                                }
+                            }?>
+                            <br/>
+                            <span id="pcent_visible"></span>
+                            <span id="pourcentage_collection_visible"></span>
 
-                        <?php if (!$est_partage_bibliotheque) { ?>
-                            <div id="proposition_photo" class="cache">
-                                <div id="tranches_possibles">
-                                    <?php Affichage::afficher_proposition_photo_tranche(); ?>
+                            <?php if (!$est_partage_bibliotheque) { ?>
+                                <div id="proposition_photo" class="cache">
+                                    <div id="tranches_possibles">
+                                        <?php Affichage::afficher_proposition_photo_tranche(); ?>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id="recherche_histoire">
-                                <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
-                                <input type="text" class="form-control"/>
-                            </div>
+                                <div id="recherche_histoire">
+                                    <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
+                                    <input type="text" class="form-control"/>
+                                </div>
+                                <?php
+                            } ?>
+                            <div id="bibliotheque"></div>
                             <?php
-                        } ?>
-                        <div id="bibliotheque"></div>
-                        <?php
-                        Affichage::afficher_texte_numero_template();
-                        Affichage::afficher_infobulle_tranche_template();
-                        break;
+                            Affichage::afficher_texte_numero_template();
+                            Affichage::afficher_infobulle_tranche_template();
+                    break;
                     case 'options':
                         require_once 'Edge.class.php';
                         if (isset($_POST['texture1'])) {
@@ -729,7 +748,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             }
                             ?>
                         </div><?php
-                        break;
+                    break;
                 }
                 ?></div><?php
             break;

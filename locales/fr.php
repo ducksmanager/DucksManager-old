@@ -185,6 +185,7 @@ define('ERREUR_EXECUTION_REQUETE','Erreur lors de l\'&eacute;x&eacute;cution de 
 define('ERREUR_FUSION_LISTES_TYPES_DIFFERENTS','La fusion de deux listes ne peut se faire que si elles sont du meme type!');
 define('ERREUR_LECTURE_NUMEROS','Erreur lors de la lecture de la liste de num&eacute;ros');
 define('ERREUR_RAWDATA_INVALIDE','Erreur lors de l\'analyse de la collection. S&eacute;lectionnez tout le texte de la page Inducks !');
+define('ERREUR_TECHNIQUE','Une erreur technique est survenue. Merci de prévenir le webmaster pour qu\'elle soit résolue le plus tôt possible !');
 define('ERREUR_TYPE_LISTE_INVALIDE','Erreur : type de liste invalide');
 define('EST_EN_MAINTENANCE','DucksManager est en maintenance ...');
 define('ET','et');
@@ -301,9 +302,11 @@ define('MOT_DE_PASSE_NOUVEAU_CONFIRMATION','Nouveau mot de passe (confirmation)'
 define('MOT_DE_PASSE_OUBLIE','Mot de passe oubli&eacute; ?');
 define('MOT_DE_PASSE_OUBLIE_EMAIL_ENVOYE','Un e-mail vous a &eacute;t&eacute; envoy&eacute; &agrave; l\'adresse que vous avez indiqu&eacute;e');
 define('MOT_DE_PASSE_OUBLIE_ERREUR_ENVOI_EMAIL','Echec lors de l\'envoi de l\'e-mail');
+define('MOT_DE_PASSE_OUBLIE_ERREUR_TOKEN','Le lien de mise à jour de mot de passe est invalide ou expiré, merci d\'indiquer votre e-mail à nouveau dans la page %s.');
 define('MOT_DE_PASSE_OUBLIE_ERREUR_VIDE','Vous n\'avez pas rempli le champ "E-mail".');
 define('MOT_DE_PASSE_OUBLIE_ERREUR_EMAIL_INCONNU','Cet e-mail ne correspond &agrave; aucun compte DucksManager.');
 define('MOT_DE_PASSE_OUBLIE_EXPLICATION','Un mot de passe temporaire va vous &ecirc;tre envoy&eacute; &agrave; l\'adresse e-mail que vous indiquerez ci-dessous :');
+define('MOT_DE_PASSE_OUBLIE_OK', 'Si l\'e-mail indiqué correspond à un compte DucksManager, un lien permettant de modifier votre mot de passe vient d\'y être envoyé. Si l\'e-mail ne vous parvient pas d\'ici quelques minutes, pensez à vérifier le dossier "Spam".');
 define('MOTS_DE_PASSE_DIFFERENTS','Les deux mots de passe ne correspondent pas !');
 define('MOYEN','Moyen');
 define('NEWS_A_AJOUTE_BOUQUINERIE','a propos&eacute; la bouquinerie');
