@@ -132,11 +132,10 @@ class DmClient
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($buffer === 'null' || $buffer === 'OK' || (empty($buffer) && $responseCode === 204)) {
-            return true;
-        }
-
-        if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
+        if ($responseCode >= 200 && $responseCode < 300) {
+            if (empty($buffer) || $buffer === 'OK') {
+                return true;
+            }
             $results = json_decode($buffer);
             if (is_array($results) || is_object($results)) {
                 return $results;

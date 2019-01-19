@@ -23,7 +23,9 @@ class Database {
 	public static $etats;
 
 	function __construct() {
-        DmClient::setUserdata(['user' => $_SESSION['user'], 'pass' => $_SESSION['pass']]);
+	    if (isset($_SESSION['user'])) {
+            DmClient::setUserdata(['user' => $_SESSION['user'], 'pass' => $_SESSION['pass']]);
+        }
 	}
 
 	function requete($requete, $parametres = [], $db = 'db_dm') {
