@@ -92,7 +92,7 @@ class DmClient
      * @param array $parameters
      * @param string $role
      * @param bool $do_not_chunk
-     * @return array|null|stdClass
+     * @return array|null|true|stdClass
      * @throws Exception
      */
     private static function get_service_results($method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
@@ -132,8 +132,8 @@ class DmClient
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($buffer === 'null' || (empty($buffer) && $responseCode === 204)) {
-            return null;
+        if ($buffer === 'null' || $buffer === 'OK' || (empty($buffer) && $responseCode === 204)) {
+            return true;
         }
 
         if (!empty($buffer) && $responseCode >= 200 && $responseCode < 300) {
