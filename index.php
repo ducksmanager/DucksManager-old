@@ -599,17 +599,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 $requete_update_sous_texture = 'UPDATE users SET Bibliotheque_Sous_Texture' . $i . '=\'' . $_POST['sous_texture' . $i] . '\' WHERE id=' . $id_user;
                                 DM_Core::$d->requete($requete_update_sous_texture);
                             }
-                            $requete_suppr_ordres = 'DELETE FROM bibliotheque_ordre_magazines WHERE ID_Utilisateur=' . $id_user;
-                            DM_Core::$d->requete($requete_suppr_ordres);
-                            foreach ($_POST as $index => $valeur) {
-                                if (strpos($index, 'magazine_') !== false) {
-                                    [$pays, $magazine] = explode('_', substr($index, strlen('magazine_')));
-                                    $requete_ajout_ordre = 'INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
-                                        . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',' . $valeur . ',' . $id_user . ')';
-                                    DM_Core::$d->requete($requete_ajout_ordre);
-
-                                }
-                            }
                         }
 
                         function buildTextureSelect($id, $title) { ?>
