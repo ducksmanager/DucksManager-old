@@ -179,7 +179,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
             ],
         ];
 
-        list($html, $pourcentage_visible, $liste_magazines) = Edge::getBibliotheque($id_user);
+        [$html, $pourcentage_visible, $liste_magazines] = Edge::getBibliotheque($id_user);
 
         echo json_encode([
             'titre' => $user === '-1' ? BIBLIOTHEQUE_COURT : (BIBLIOTHEQUE_DE . $user),

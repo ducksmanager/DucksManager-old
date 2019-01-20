@@ -456,7 +456,7 @@ class Liste {
         if (isset($_SESSION['user'])) {
             $id_user = $_SESSION['id_user'];
             $l_ducksmanager = DM_Core::$d->toList($id_user);
-            list($ajouts,$suppressions) = $l_ducksmanager->compareWith($l);
+            [$ajouts,$suppressions] = $l_ducksmanager->compareWith($l);
             if ($ajouts===0 && $suppressions===0) {
                 echo LISTES_IDENTIQUES;
                 return [true,0,0];

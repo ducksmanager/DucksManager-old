@@ -41,7 +41,7 @@ class dmspiral extends Format_liste {
         }
 	
 		$numeros_doubles= [];
-		list($numeros,)=Inducks::get_numeros($pays,$magazine);
+		[$numeros,] =Inducks::get_numeros($pays,$magazine);
 		$this->ajouter_parametres(['numero_max'=>max($numeros)]);
 		$this->ajouter_parametres(['nb_centaines'=> (int)($this->p('numero_max') / 100) +1]);
 		$this->ajouter_parametres([

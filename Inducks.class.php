@@ -158,7 +158,7 @@ class Inducks {
 		$resultat_requete= self::requete($requete);
 		$liste_magazines_courte= [];
 		foreach($resultat_requete as $magazine) {
-			list(,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
+			[,$nom_magazine_abrege] =explode('/',$magazine['publicationcode']);
 			$liste_magazines_courte[$nom_magazine_abrege]=$magazine['title'];
 		}
 		asort($liste_magazines_courte);
@@ -186,7 +186,7 @@ class Inducks {
 		$resultat_requete= self::requete($requete);
 		$nb_numeros= [];
 		foreach($resultat_requete as $magazine) {
-			list(,$nom_magazine_abrege)=explode('/',$magazine['publicationcode']);
+			[,$nom_magazine_abrege] =explode('/',$magazine['publicationcode']);
 			$nb_numeros[$nom_magazine_abrege]=$magazine['cpt'];
 		}
 		return $nb_numeros;
@@ -303,7 +303,7 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 
 		foreach($resultat_requete as $resultat) {
 		    $publicationcode = $resultat['publicationcode'];
-            list($pays,$magazine)=explode('/',$publicationcode);
+            [$pays,$magazine] =explode('/',$publicationcode);
             $issuenumber=$resultat['issuenumber'];
             $etat_numero_possede=$l->get_etat_numero_possede($pays,$magazine, $issuenumber);
             if (!($_POST['recherche_bibliotheque'] === 'true' && is_null($etat_numero_possede))) {

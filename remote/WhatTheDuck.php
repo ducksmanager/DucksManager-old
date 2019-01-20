@@ -71,7 +71,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
             if (count($resultats) > 0) {
                 $id_utilisateur = $resultats[0]->ID;
                 if (isset($_GET['ajouter_numero'])) {
-                    list($pays, $magazine) = explode('/', $_GET['pays_magazine']);
+                    [$pays, $magazine] = explode('/', $_GET['pays_magazine']);
                     $numero = $_GET['numero'];
                     $etat = $_GET['etat'];
 

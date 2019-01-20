@@ -5,7 +5,6 @@ class ErrorHandler
     /**
      * @param string $message
      * @param string $message_details
-     * @throws Exception
      */
     static function error_log_and_exception($message, $message_details = '') {
         self::error_log($message, $message_details);

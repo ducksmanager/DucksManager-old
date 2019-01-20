@@ -112,7 +112,7 @@ if (isset($_GET['wanted'])) {
 		$numero=$num['Numero'];
 		$cpt=$num['cpt'];
 		
-		list($magazine,$numero)=Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
+		[$magazine,$numero] =Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
 		$publicationcode = $pays.'/'.$magazine;
         $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
         $est_dispo=count(DM_Core::$d->requete($requete_est_dispo)) > 0;
@@ -130,7 +130,7 @@ if (isset($_GET['wanted'])) {
 
 	foreach($numeros_demandes as $numero_demande) {
 		$publicationcode=$numero_demande['publicationcode'];
-		list($pays,$magazine)=explode('/',$publicationcode);
+		[$pays,$magazine] =explode('/',$publicationcode);
 		$numero=$numero_demande['numero'];
 		$cpt=$numero_demande['cpt'];
 		
@@ -176,7 +176,7 @@ array_walk($resultat_tranches_pretes, function($resultat) use (&$tranches_pretes
 
 $cpt_dispos=0;
 foreach($publicationcodes as $publicationcode) {
-	list($pays,$magazine)=explode('/',$publicationcode);
+	[$pays,$magazine] =explode('/',$publicationcode);
     ?><div class="publication" data-country="<?=$pays?>" data-magazine="<?=$magazine?>">
         <span class="publication_name">
             (<img src="../images/flags/<?=$pays?>.png" /> <?=$magazine?>)

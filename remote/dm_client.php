@@ -25,7 +25,7 @@ class DmClient
 
             $roles = [];
             array_walk($serverObject->role_passwords, function ($role) use (&$roles) {
-                list($roleName, $rolePassword) = explode(':', $role);
+                [$roleName, $rolePassword] = explode(':', $role);
                 $roles[$roleName] = $rolePassword;
             });
             $serverObject->role_passwords = $roles;
@@ -42,7 +42,6 @@ class DmClient
      * @param string $db
      * @param array $parameters
      * @return mixed|null
-     * @throws Exception
      */
     public static function get_query_results_from_dm_server($query, $db, $parameters = [])
     {
@@ -58,7 +57,6 @@ class DmClient
      * @param string   $path
      * @param array    $parameters
      * @return array|null|stdClass
-     * @throws Exception
      */
     public static function get_service_results_for_dm($method, $path, $parameters = []) {
         return self::get_service_results($method, $path, $parameters, 'ducksmanager');
@@ -69,7 +67,6 @@ class DmClient
      * @param string   $path
      * @param array    $parameters
      * @return array|null|stdClass
-     * @throws Exception
      */
     public static function get_service_results_for_wtd($method, $path, $parameters = []) {
         return self::get_service_results($method, $path, $parameters, 'whattheduck');
@@ -80,7 +77,6 @@ class DmClient
      * @param string   $path
      * @param array    $parameters
      * @return array|null|stdClass
-     * @throws Exception
      */
     public static function get_service_results_for_ec($method, $path, $parameters = []) {
         return self::get_service_results($method, $path, $parameters, 'edgecreator');
@@ -93,7 +89,6 @@ class DmClient
      * @param string $role
      * @param bool $do_not_chunk
      * @return array|null|true|stdClass
-     * @throws Exception
      */
     private static function get_service_results($method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
@@ -152,7 +147,6 @@ class DmClient
      * @param array $parameters
      * @param string $role
      * @return array|null|stdClass
-     * @throws Exception
      */
     private static function get_chunkable_service_results($method, $path, $parameters, $role)
     {

@@ -24,7 +24,7 @@ else  {
 	error_reporting(E_STRICT | E_WARNING);
 }
 
-if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 	setcookie('user','',time()-3600, '', 'ducksmanager.net');
 	setcookie('pass','',time()-3600, '', 'ducksmanager.net');
 	setcookie('is_sha1','true',time()-3600, '', 'ducksmanager.net');
@@ -186,8 +186,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/src/css/star-rating-svg.min.css" />
                             <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"</script><?php
                         case 'possessions': ?>
-                            <script type="text/javascript" src="js/chargement.js?VERSION"></script>
-                        <?php
+                            <script type="text/javascript" src="js/chargement.js?VERSION"></script><?php
                         break;
                     }
                 break;
@@ -231,50 +230,54 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
         break;
         case 'gerer':
-            if ((!isset($_GET['onglet']) || $_GET['onglet'] === 'ajout_suppr') && !isset($_GET['onglet_magazine'])) {
-                $l=DM_Core::$d->toList($id_user);
-                $_GET['onglet_magazine'] = $l->get_publication_la_plus_possedee() ?: null;
-            }
-            if (isset($_GET['onglet_magazine'])) {
-                $onglet_magazine=$_GET['onglet_magazine'];
-                if ($onglet_magazine==='new') {
-                    ?>initPays(false,'fr');<?php
+            if (isset($_SESSION['user'])) {
+                if ((!isset($_GET['onglet']) || $_GET['onglet'] === 'ajout_suppr') && !isset($_GET['onglet_magazine'])) {
+                    $l=DM_Core::$d->toList($id_user);
+                    $_GET['onglet_magazine'] = $l->get_publication_la_plus_possedee() ?: null;
                 }
-                else {
-                    list($pays,$magazine)=explode('/',$onglet_magazine);
-                    $numero = $_GET['numero'] ?? null;
-                    if (is_null($numero)) {
-                        ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
+                if (isset($_GET['onglet_magazine'])) {
+                    $onglet_magazine=$_GET['onglet_magazine'];
+                    if ($onglet_magazine==='new') {
+                        ?>initPays(false,'fr');<?php
                     }
                     else {
-                        ?>afficher_numeros('<?=$pays?>','<?=$magazine?>','<?=$numero?>');<?php
+                        [$pays,$magazine] =explode('/',$onglet_magazine);
+                        $numero = $_GET['numero'] ?? null;
+                        if (is_null($numero)) {
+                            ?>afficher_numeros('<?=$pays?>','<?=$magazine?>');<?php
+                        }
+                        else {
+                            ?>afficher_numeros('<?=$pays?>','<?=$magazine?>','<?=$numero?>');<?php
+                        }
                     }
                 }
+                ?>charger_recherche();<?php
             }
-            ?>charger_recherche();<?php
         break;
         case 'stats':
-            if (isset($_GET['onglet'])) {
-            	switch($_GET['onglet']) {
-					case 'auteurs':
-						?>
-                        init_autocompleter_auteurs();
-                        init_notations();
-                        afficher_histogramme_stats_auteurs();
-                        <?php
-					break;
-					case 'achats':
-						?>afficher_histogramme_achats();<?php
-					break;
-					case 'magazines':
-						?>afficher_diagramme_secteurs('publications');<?php
-					break;
-					case 'etats':
-						?>afficher_diagramme_secteurs('conditions');<?php
-					break;
-				}
+            if (isset($_SESSION['user'])) {
+                if (isset($_GET['onglet'])) {
+                        switch($_GET['onglet']) {
+                            case 'auteurs':
+                                ?>
+                                init_autocompleter_auteurs();
+                                init_notations();
+                                afficher_histogramme_stats_auteurs();
+                                <?php
+                            break;
+                            case 'achats':
+                                ?>afficher_histogramme_achats();<?php
+                            break;
+                            case 'magazines':
+                                ?>afficher_diagramme_secteurs('publications');<?php
+                            break;
+                            case 'etats':
+                                ?>afficher_diagramme_secteurs('conditions');<?php
+                            break;
+                        }
+                    }
             }
-            break;
+        break;
         case 'agrandir':
             ?>
             initPays(true, '<?=empty($_GET['pays']) ? 'ALL' : $_GET['pays']?>');<?php
@@ -379,9 +382,11 @@ $id_user= $_SESSION['id_user'] ?? null;
                 }
                 foreach($menu->items as $j=>$item) {
                     if ($item->nom === $action && $item->est_prive === 'always' && !isset($_SESSION['user'])) {
-                        echo IDENTIFICATION_OBLIGATOIRE.'<br />';
-                        echo COMMENT_S_IDENTIFIER;
-                        $action='aucune';
+                        ?><div class="alert alert-warning">
+                            <?=IDENTIFICATION_OBLIGATOIRE?><br />
+                            <?=COMMENT_S_IDENTIFIER?>
+                        </div><?php
+                        $action=null;
                     }
                 }
             }
@@ -398,7 +403,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     else {
                         $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
                         if ($rawdata_valide) {
-                            list($est_succes,$ajouts,$suppressions)=Liste::import($_POST['rawData']);
+                            [$est_succes,$ajouts,$suppressions] =Liste::import($_POST['rawData']);
                             if ($est_succes) {
                                 ?><br /><br />
                                 <form method="post" action="?action=inducks">
@@ -615,7 +620,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                         <?= BIBLIOTHEQUE_NOUVELLES_TRANCHES_LISTE ?><br/>
                                         <?php
                                         foreach ($resultat_tranches_collection_ajoutees as $tranche) {
-                                            list($pays, $magazine) = explode('/', $tranche['publicationcode']);
+                                            [$pays, $magazine] = explode('/', $tranche['publicationcode']);
                                             echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
                                                 . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
                                         }
@@ -629,7 +634,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                                         <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
                                     </div>
                                     <div id="partager_bibliotheque">
-                                        <div class="btn btn-default btn-sm" id="partager_bibliotheque_lien" href="javascript:void(0)"><?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?></div>
+                                        <div class="btn btn-default btn-sm" id="partager_bibliotheque_lien">
+                                            <?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?>
+                                        </div>
                                     </div><?php
                                 }
                                 else {
@@ -670,7 +677,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             DM_Core::$d->requete($requete_suppr_ordres);
                             foreach ($_POST as $index => $valeur) {
                                 if (strpos($index, 'magazine_') !== false) {
-                                    list($pays, $magazine) = explode('_', substr($index, strlen('magazine_')));
+                                    [$pays, $magazine] = explode('_', substr($index, strlen('magazine_')));
                                     $requete_ajout_ordre = 'INSERT INTO bibliotheque_ordre_magazines(Pays,Magazine,Ordre,ID_Utilisateur) '
                                         . 'VALUES (\'' . $pays . '\',\'' . $magazine . '\',' . $valeur . ',' . $id_user . ')';
                                     DM_Core::$d->requete($requete_ajout_ordre);
@@ -754,7 +761,7 @@ $id_user= $_SESSION['id_user'] ?? null;
             case 'gerer':
                 $l = DM_Core::$d->toList($id_user);
                 if (isset($_GET['supprimer_magazine'])) {
-                    list($pays, $magazine) = explode('.', $_GET['supprimer_magazine']);
+                    [$pays, $magazine] = explode('.', $_GET['supprimer_magazine']);
                     $l_magazine = $l->sous_liste($pays, $magazine);
                     $l_magazine->remove_from_database($id_user);
                 }
@@ -803,10 +810,10 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     ?><div class="alert alert-success"><?=MODIFICATIONS_OK?></div><?php
                                     $est_partage = isset($_POST['partage']) && $_POST['partage'] === 'on' ? '1' : '0';
                                     $est_video = isset($_POST['video']) && $_POST['video'] === 'on' ? '1' : '0';
-                                    DM_Core::$d->requete("
+                                    DM_Core::$d->requete('
                                       UPDATE users
-                                      SET AccepterPartage=$est_partage, AfficherVideo=$est_video, Email='{$_POST['email']}'
-                                      WHERE ID=$id_user");
+                                      SET AccepterPartage=?, AfficherVideo=?, Email=?
+                                      WHERE ID=?', [$est_partage, $est_video, $_POST['email'], $id_user]);
                                 } else {
                                     ?><div class="alert alert-danger"><?=$erreur?></div><?php
                                 }
@@ -920,9 +927,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                         }
 
                         if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
-                            list($onglets_pays, $onglets_magazines) = $l->liste_magazines($_GET['onglet_magazine'], true);
+                            [$onglets_pays, $onglets_magazines] = $l->liste_magazines($_GET['onglet_magazine'], true);
                         } else {
-                            list($onglets_pays, $onglets_magazines) = $l->liste_magazines(null, true);
+                            [$onglets_pays, $onglets_magazines] = $l->liste_magazines(null, true);
                         }
 
                         if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {

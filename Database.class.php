@@ -463,7 +463,7 @@ class Database {
 			preg_match('#([^/]+/[^/]+)#', $ajout['NumeroExemple'], $publicationcode);
 			$evenements->publicationcodes[]=$publicationcode[0];
 
-			list($pays,$magazine,$numero)=explode('/',$ajout['NumeroExemple']);
+			[$pays,$magazine,$numero] =explode('/',$ajout['NumeroExemple']);
 			$numero_complet=['Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero];
 
 			$evenement = [
@@ -505,7 +505,7 @@ class Database {
 			$publicationcode = $tranche_prete['publicationcode'];
 			$evenements->publicationcodes[]=$publicationcode;
 
-            list($pays,$magazine,$numero)=explode('/',$tranche_prete['Numero']);
+            [$pays,$magazine,$numero] =explode('/',$tranche_prete['Numero']);
             $numero_complet=['Pays'=>$pays, 'Magazine'=>$magazine, 'Numero'=>$numero];
 
             $collaborateurs = explode(',', preg_replace('#(,{2,})#',',', trim($tranche_prete['collaborateurs'],',')));

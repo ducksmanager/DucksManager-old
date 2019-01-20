@@ -106,7 +106,7 @@ class Affichage {
      */
     static function afficher_numeros($liste, $pays, $magazine) {
         date_default_timezone_set('Europe/Paris');
-        list($numeros,$sous_titres)=Inducks::get_numeros($pays,$magazine);
+        [$numeros,$sous_titres] =Inducks::get_numeros($pays,$magazine);
 
         if ($numeros==false) {
             echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
@@ -132,7 +132,7 @@ class Affichage {
                 if (!is_null($infos_numero)) {
                     $nb_possedes++;
                     $o->est_possede=true;
-                    list(/*Pays*/, /*Magazine*/, /*Numero*/, $o->etat, $o->av, $o->id_acquisition, $o->date_acquisition, $o->description_acquisition) = $infos_numero;
+                    [/*Pays*/, /*Magazine*/, /*Numero*/, $o->etat, $o->av, $o->id_acquisition, $o->date_acquisition, $o->description_acquisition] = $infos_numero;
                     $o->etat = array_key_exists($o->etat,Database::$etats) ? $o->etat : 'indefini';
                 }
                 $o->sous_titre=$sous_titre;
