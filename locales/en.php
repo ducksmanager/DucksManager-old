@@ -331,7 +331,6 @@ define('NOM_BOUQUINERIE','Name of the second-hand bookshop');
 define('NOM_UTILISATEUR','User name');
 define('NON','No');
 define('NON_CONNECTE','Not connected');
-define('NON_NUMERIQUES','Not in numeral form');
 define('NOUVEAU','New!');
 define('NOUVEAU_MAGAZINE','New magazine');
 define('NOUVEL_ACHAT','New purchase date');

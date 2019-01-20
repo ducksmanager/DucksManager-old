@@ -332,7 +332,6 @@ define('NOM_BOUQUINERIE','Nom de la bouquinerie');
 define('NOM_UTILISATEUR','Nom d\'utilisateur');
 define('NON','Non');
 define('NON_CONNECTE','Non connect&eacute;(e)');
-define('NON_NUMERIQUES','Non-num&eacute;riques');
 define('NOUVEAU','Nouveau!');
 define('NOUVEAU_MAGAZINE','Nouveau magazine');
 define('NOUVEL_ACHAT','Nouvel achat');

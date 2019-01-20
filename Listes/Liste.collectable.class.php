@@ -1,7 +1,7 @@
 <?php
 /*
  * Developpement : Bruno Perel (admin[at]ducksmanager[dot]net)
- * (c)2003-2013 Cette classe est soumise à copyright
+ * (c)2003-2019 Cette classe est soumise à copyright
  */
 @session_start();
 if (isset($_GET['lang'])) {
@@ -23,62 +23,51 @@ class collectable extends Format_liste {
 	}
 
 	static function est_listable($numero) {
-		return (is_numeric($numero) && $numero !==0) || est_double($numero);
+		return (preg_match('#^[\d]+$#', $numero) && $numero !=='0') || est_double($numero);
 	}
 	
 	function afficher($liste) {
 		?>
 			<style type="text/css">
-				<!--
-				table
-				{
-					color: black;
-					font: 11px/15px verdana,arial,sans-serif;
-				}
-				
-				table.collectable, table.legendes {
-				    width: 90%;
-				}
-				
-				td.legende_numeros, td.legende_magazines, td.achats {
-					vertical-align: top;
-					border-left: 1px solid gray;
-					padding: 8px;
-				}
-				
-				table.collectable {
-				    border: solid 1px black;
-					border-collapse: collapse;
-				}
-				
-				table.collectable tr
-				{
-					height: 15px;
-				}
-				
-				table.collectable tr td
-				{
-				    text-align: left;
-				    border: solid 1px black;
-					vertical-align: top;
-					max-width: 25px;
-					word-wrap: break-word;
-				}
-				
-				table.collectable tr td.libelle_ligne, 
-				table.collectable tr td.total_ligne
-				{
-				    text-align: center;
-					vertical-align: middle;
-					max-width: none;
-					white-space: nowrap;
-				}
-				
-				table.collectable tr td.inexistant {
-					background-color: gray;
-				}
-				
-				-->
+                table {
+                    color: black;
+                    font: 11px/15px verdana, arial, sans-serif;
+                }
+
+                table.collectable, table.legendes {
+                    width: 90%;
+                }
+
+                td.legende_numeros, td.legende_magazines, td.achats {
+                    vertical-align: top;
+                    border-left: 1px solid gray;
+                    padding: 8px;
+                }
+
+                table.collectable {
+                    border: solid 1px black;
+                    border-collapse: collapse;
+                }
+
+                table.collectable tr {
+                    height: 15px;
+                }
+
+                table.collectable tr td {
+                    text-align: left;
+                    border: solid 1px black;
+                    vertical-align: top;
+                    max-width: 25px;
+                    word-wrap: break-word;
+                }
+
+                table.collectable tr td.libelle_ligne,
+                table.collectable tr td.total_ligne {
+                    text-align: center;
+                    vertical-align: middle;
+                    max-width: none;
+                    white-space: nowrap;
+                }
 			</style>		
 		<?php
 		$nb_lignes=100/$this->p('nb_numeros_ligne');
@@ -107,33 +96,17 @@ class collectable extends Format_liste {
 					$publication_codes[]=$pays.'/'.$magazine;
 				}
 			}
-			$magazines_ne_paraissant_plus=Inducks::get_magazines_ne_paraissant_plus($publication_codes);
 			foreach($liste as $pays=>$numeros_pays) {
 				ksort($numeros_pays);
 				foreach($numeros_pays as $magazine=>$numeros) {
-				   $ne_parait_plus=in_array($pays.'/'.$magazine, $magazines_ne_paraissant_plus);
-				   $montrer_numeros_inexistants=false;
-				   if ($ne_parait_plus) {
-						list($numeros_inducks,)=Inducks::get_numeros($pays,$magazine);
-						$numeros_centaines=array_map('get_nb_centaines',$numeros_inducks);
-						$numero_centaines_min=min($numeros_centaines);
-						$numero_centaines_max=max($numeros_centaines);
-						$montrer_numeros_inexistants=$numero_centaines_min===$numero_centaines_max;
-						foreach($numeros_inducks as $numero_inducks) {
-                            if (!(self::est_listable($numero_inducks))) {
-                                $montrer_numeros_inexistants = false;
-                            }
-                        }
-				   }
 				   $total_magazine = 0;
 				   global $liste_numeros;
 				   global $liste_numeros_doubles;
 				   $liste_numeros = [];
 				   $liste_numeros_doubles = [];
 				   $liste_non_numeriques = [];
-				   foreach($numeros as $numero_et_etat) {
+				   foreach($numeros as [,,$numero]) {
 						$total_magazine++;
-						$numero = $numero_et_etat[0];
 						if (est_double($numero)) {
 							preg_match(self::$regex_numero_double, $numero, $numero);
 							$premier_numero = $numero[1] . $numero[2];
@@ -141,14 +114,12 @@ class collectable extends Format_liste {
 							ajouter_a_liste($premier_numero, true);
 							ajouter_a_liste($deuxieme_numero, true);
 						}
-						else {
-							if (!self::est_listable($numero)) {
-								$liste_non_numeriques[] = urldecode($numero);
-							}
-							else {
-								ajouter_a_liste($numero, false);
-							}
-						}
+						else if (!self::est_listable($numero)) {
+                            $liste_non_numeriques[] = urldecode($numero);
+                        }
+                        else {
+                            ajouter_a_liste($numero);
+                        }
 					}
 					$non_numeriques=count($liste_non_numeriques) > 0;
 					?>
@@ -165,11 +136,7 @@ class collectable extends Format_liste {
 						if ($i % $this->p('nb_numeros_ligne') === 1 && $i !== 1) {
                             ?><tr><?php
                         }
-						?><td<?php 
-						if ($montrer_numeros_inexistants && !in_array($numero_centaines_min*$this->p('nb_numeros_ligne')+$i,$numeros_inducks)) {
-							?> class="inexistant"<?php
-						}
-						?>><?php
+						?><td><?php
 						global $contenu;
 						$contenu='';
 						for ($j=0; $j<= self::$max_centaines; $j++) {
@@ -203,7 +170,7 @@ class collectable extends Format_liste {
 					if (count($liste_non_numeriques)>0) {
 						?><tr>
 							<td colspan="<?=$this->p('nb_numeros_ligne')?>">
-								<?=NON_NUMERIQUES?> : <?=implode(', ',$liste_non_numeriques)?>
+								<?=AUTRES?> : <?=implode(', ',$liste_non_numeriques)?>
 							</td>
 						</tr><?php
 					}
@@ -328,7 +295,7 @@ function ajouter_a_liste($numero,$est_double=false) {
     }
 	
 	if ($est_double) {
-		if (false!== array_key_exists($numero,$liste_numeros_doubles)) {
+		if (array_key_exists($numero,$liste_numeros_doubles)) {
             $liste_numeros_doubles[$numero]++;
         }
 		else {

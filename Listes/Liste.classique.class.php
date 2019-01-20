@@ -28,11 +28,10 @@ class classique extends Format_liste {
 			foreach($numeros_pays as $magazine=>$numeros) {
 				?><u><?=array_key_exists($pays.'/'.$magazine,$noms_magazines) ? $noms_magazines[$pays.'/'.$magazine] : $magazine?></u> <?php
 				sort($numeros);
-				$texte= [];
-				foreach($numeros as $numero) {
-					$texte[]=urldecode(is_array($numero) ? $numero[0] : $numero);
-				}
-				echo implode(', ',$texte);
+				echo implode(', ', array_map(function($numero_data) {
+				    [,,$numero] = $numero_data;
+				    return $numero;
+                }, $numeros));
 				?><br /><?php
 			}
 		}

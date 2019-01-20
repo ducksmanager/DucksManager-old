@@ -307,7 +307,7 @@ class Liste {
 			if ($pays!=='country') {
                 foreach($numeros_pays as $magazine=>$numeros) {
                     foreach($numeros as $numero) {
-                        $num_final=is_array($numero) && array_key_exists(0,$numero) ? $numero[0] : $numero;
+                        $num_final=is_array($numero) && array_key_exists(4,$numero) ? $numero[4] : $numero;
                         $requete='DELETE FROM numeros WHERE (ID_Utilisateur ='.$id_user.' AND PAYS = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND Numero = \''.$num_final.'\')';
                         DM_Core::$d->requete($requete);
                         $cpt++;
@@ -340,7 +340,7 @@ class Liste {
                         $numeros_communs++;
                     }
 					else {
-						$liste_a_supprimer->ajouter($pays, $magazine, $numero[0]);
+						$liste_a_supprimer->ajouter($pays, $magazine, $numero[4]);
 						$numeros_a_supprimer++;
 					 }
 				}
