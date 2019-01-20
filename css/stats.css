@@ -5,16 +5,6 @@
     margin-right: 5px;
 }
 
-#barre_pct_classement {
-    width: 200px;
-    border: 1px solid white;
-}
-
-#pct_classement {
-    width: 0;
-    background-color: red;
-}
-
 .graph_possessions, .graph_auteurs {
     background-color: white;
 }

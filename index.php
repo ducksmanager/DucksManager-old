@@ -185,8 +185,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                         case 'auteurs': ?>
                             <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/src/css/star-rating-svg.min.css" />
                             <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"</script><?php
-                        case 'possessions': ?>
-                            <script type="text/javascript" src="js/chargement.js?VERSION"></script><?php
                         break;
                     }
                 break;
@@ -257,25 +255,28 @@ $id_user= $_SESSION['id_user'] ?? null;
         case 'stats':
             if (isset($_SESSION['user'])) {
                 if (isset($_GET['onglet'])) {
-                        switch($_GET['onglet']) {
-                            case 'auteurs':
-                                ?>
-                                init_autocompleter_auteurs();
-                                init_notations();
-                                afficher_histogramme_stats_auteurs();
-                                <?php
-                            break;
-                            case 'achats':
-                                ?>afficher_histogramme_achats();<?php
-                            break;
-                            case 'magazines':
-                                ?>afficher_diagramme_secteurs('publications');<?php
-                            break;
-                            case 'etats':
-                                ?>afficher_diagramme_secteurs('conditions');<?php
-                            break;
-                        }
+                    switch($_GET['onglet']) {
+                        case 'auteurs':
+                            ?>
+                            init_autocompleter_auteurs();
+                            init_notations();
+                            afficher_histogramme_stats_auteurs();
+                            <?php
+                        break;
+                        case 'achats':
+                            ?>afficher_histogramme_achats();<?php
+                        break;
+                        case 'magazines':
+                            ?>afficher_diagramme_secteurs('publications');<?php
+                        break;
+                        case 'etats':
+                            ?>afficher_diagramme_secteurs('conditions');<?php
+                        break;
+                        case 'possessions':
+                            ?>afficher_histogramme_possessions();<?php
+                        break;
                     }
+                }
             }
         break;
         case 'agrandir':

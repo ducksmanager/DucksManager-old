@@ -181,13 +181,16 @@ class Inducks {
 		return preg_match($regex_retrieve_numeros,$texte)>0;
 	}
 
-	static function get_nb_numeros_magazines_pays($pays) {
-		$requete='SELECT publicationcode, Count(issuenumber) AS cpt FROM inducks_issue WHERE publicationcode LIKE \''.$pays.'/%\' GROUP BY publicationcode';
-		$resultat_requete= self::requete($requete);
+	static function get_nb_numeros_magazines($publicationCodes) {
+		$requete='
+          SELECT publicationcode, Count(issuenumber) AS cpt
+          FROM inducks_issue
+          WHERE publicationcode IN ('. implode(',', array_fill(0, count($publicationCodes), '?')) .')
+          GROUP BY publicationcode';
+		$resultat_requete= self::requete($requete, $publicationCodes);
 		$nb_numeros= [];
 		foreach($resultat_requete as $magazine) {
-			[,$nom_magazine_abrege] =explode('/',$magazine['publicationcode']);
-			$nb_numeros[$nom_magazine_abrege]=$magazine['cpt'];
+			$nb_numeros[$magazine['publicationcode']]=$magazine['cpt'];
 		}
 		return $nb_numeros;
 	}

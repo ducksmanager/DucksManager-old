@@ -30,13 +30,10 @@ function afficher_diagramme_secteurs(type) {
 	});
 }
 
-function afficher_histogramme_possessions(data) {
+function afficher_histogramme_possessions() {
 	jQuery.post('Stats.class.php', {
 		graph: 'true',
-		possessions: 'true',
-		fin: 'true',
-		ids: JSON.stringify(data.chargements),
-		infos: JSON.stringify(data.infos)
+		possessions: 'true'
 	}, function(data) {
 		var labels_magazines_longs = data.labels_magazines_longs;
 		var labels_pays_longs = data.labels_pays_longs;
@@ -45,7 +42,6 @@ function afficher_histogramme_possessions(data) {
 
 		var canvasHolderStyle = {};
 		canvasHolderStyle[vertical ? 'height' : 'width'] = 100 + 30*data.labels.length + 'px';
-		jQuery('#canvas-holder').css(canvasHolderStyle);
 
 		Chart.defaults.global.maintainAspectRatio = false;
 		var config = {
@@ -76,6 +72,9 @@ function afficher_histogramme_possessions(data) {
 					callbacks: {
 						title: function(tooltipItems) {
 							var publicationcode = tooltipItems[0][vertical ? 'yLabel' : 'xLabel'];
+							if (!labels_magazines_longs[publicationcode]) {
+								labels_magazines_longs[publicationcode] = '?';
+							}
 							return labels_magazines_longs[publicationcode]+
 								   ' ('+labels_pays_longs[publicationcode.split('/')[0]]+')';
 						}
@@ -83,11 +82,6 @@ function afficher_histogramme_possessions(data) {
 				}
 			}
 		};
-
-		jQuery('#fin_classement, #canvas-holder').removeClass('hidden');
-		jQuery('#barre_pct_classement').addClass('hidden');
-		jQuery('#barre_pct_classement, #chargement_classement_termine, #prefixe_message_classement, #message_classement')
-			.text('');
 
 		var config_abs = jQuery.extend({}, config);
 		config_abs.data = jQuery.extend({}, data, { datasets: [data.datasets.possedes, data.datasets.totaux]});
@@ -99,6 +93,10 @@ function afficher_histogramme_possessions(data) {
 			return data.legend[tooltipItems.datasetIndex] + ' : '+tooltipItems[vertical ? 'xLabel' : 'yLabel'] + '%';
 		};
 		new Chart(jQuery('.graph_possessions.cpt')[0].getContext('2d'), config_cpt);
+
+		jQuery('#message_possessions').addClass('hidden');
+		jQuery('#canvas-holder, #canvas-controls').removeClass('hidden');
+		jQuery('#canvas-holder').css(canvasHolderStyle);
 	});
 }
 

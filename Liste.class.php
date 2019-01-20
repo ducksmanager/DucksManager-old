@@ -159,39 +159,23 @@ class Liste {
 			case 'possessions':
 				$types = ['abs' => AFFICHER_VALEURS_REELLES, 'cpt'=> AFFICHER_POURCENTAGES]; ?>
 
-				<span id="chargement_classement_termine"><?=CHARGEMENT?></span><br />
-				<div id="barre_pct_classement">
-					<div id="pct_classement">&nbsp;</div>
-				</div>
-				<span id="prefixe_message_classement">
-					<?=CALCUL?>
-				</span>
-				<span id="message_classement"></span>
-				<div id="fin_classement" class="hidden">
-                    <div class="btn-group" data-toggle="buttons">
-                        <?php foreach($types as $type=>$label) {?>
-                            <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'possessions')">
-                                <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
-                            </label><?php
-                        }?>
-                    </div>
-				</div>
+                <div id="canvas-controls" class="btn-group hidden" data-toggle="buttons">
+                    <?php foreach($types as $type=>$label) {?>
+                        <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'possessions')">
+                            <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
+                        </label><?php
+                    }?>
+                </div>
 				<br />
-				<script type="text/javascript">
-					initProgressBar('classement','Stats.class.php', {graph: 'true', possessions: 'true'}, afficher_histogramme_possessions);
-				</script>
-				<div id="resultat_classement"></div>
-
+                <div id="message_possessions"><?=CHARGEMENT?></div>
 				<div id="canvas-holder" class="hidden">
 					<?php foreach($types as $type=>$label) {
 						?><canvas class="graph_possessions <?=$type?> <?=$type==='cpt' ? 'hidden' : ''?>"
 								  width="100%" height="500px"></canvas><?php
 					}?>
-				</div>
-				<?php
+				</div><?php
 				break;
-			case 'etats':
-				?>
+			case 'etats': ?>
 				<div id="canvas-holder">
 					<canvas id="graph_conditions"></canvas>
 				</div><?php
@@ -201,7 +185,6 @@ class Liste {
 				$types = ['nouv' => AFFICHER_NOUVELLES_ACQUISITIONS, 'tot'=> AFFICHER_POSSESSIONS_TOTALES]; ?>
 
 				<div id="message_achats"><?=CHARGEMENT?></div>
-
 				<div id="fin_achats" class="hidden"></div>
 
 				<br />

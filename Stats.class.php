@@ -85,126 +85,72 @@ class Stats {
 		return ['values' => $data, 'colors' => $colors, 'labels' => $labels];
 	}
 
-	static function getPossessionsData($for = null) {
-		if (is_null($for)) {
-			include_once 'locales/lang.php';
-			foreach(array_keys($_POST) as $key) {
-                $_POST[$key] = str_replace('\\"', '"', $_POST[$key]);
-            }
-			$infos=json_decode($_POST['infos']);
-			$donnees= [];
+	static function getPossessionsData() {
+        $resultats_numeros_utilisateur = DM_Core::$d->requete('
+            SELECT CONCAT(Pays, \'/\', Magazine) AS publicationcode, COUNT(Numero) AS cpt
+            FROM numeros
+            WHERE ID_Utilisateur=?
+            GROUP BY publicationcode',
+            [static::$id_user]
+        );
+        $publicationCodes = array_map(function($publicationData) {
+            return $publicationData['publicationcode'];
+        }, $resultats_numeros_utilisateur);
 
-			$publication_codes= [];
-			foreach(json_decode($_POST['ids']) as $i=>$pays) {
-				foreach(array_keys(get_object_vars($infos[$i]->total)) as $magazine) {
-					$publication_codes[]=$pays.'/'.$magazine;
-				}
-			}
-			$noms_complets_pays = Inducks::get_noms_complets_pays($publication_codes);
-			$noms_complets_magazines = Inducks::get_noms_complets_magazines($publication_codes);
+        $nb_numeros_references=Inducks::get_nb_numeros_magazines($publicationCodes);
 
-			foreach(json_decode($_POST['ids']) as $i=>$pays) {
-				foreach($infos[$i]->total as $magazine=>$total) {
-					$pays_complet = $noms_complets_pays[$pays];
-					$publication_code = $pays.'/'.$magazine;
-					if (array_key_exists($publication_code, $noms_complets_magazines)) {
-						$magazine_complet = $noms_complets_magazines[$pays.'/'.$magazine];
-					}
-					else { // Magazine ayant disparu d'Inducks
-						$magazine_complet = $magazine;
-					}
-					$donnee=new stdClass ();
-					$donnee->publication_code=$publication_code;
+        $noms_complets_pays = Inducks::get_noms_complets_pays($publicationCodes);
+        $noms_complets_magazines = Inducks::get_noms_complets_magazines($publicationCodes);
 
-					$donnee->pays_court=$pays;
-					$donnee->pays=$pays_complet;
-					
-					$donnee->nom_magazine_court=$magazine;
-					$donnee->nom_magazine=$magazine_complet;
-					
-					$donnee->total=$total;
-					$donnee->possede=$infos[$i]->possede->$magazine;
-					$donnee->possede_pct=$infos[$i]->possede_pct->$magazine;
-					$donnees[]=$donnee;
-				}
-			}
-			$title = POSSESSION_NUMEROS;
-
-			$possedes = [
-				'label' => NUMEROS_POSSEDES,
-				'backgroundColor' => '#FF8000',
-				'data' => []
-			];
-			$possedes_cpt = $possedes;
-
-			$totaux = [
-				'label' => NUMEROS_REFERENCES,
-				'backgroundColor' => '#04B404',
-				'data' => []
-			];
-			$totaux_cpt = $totaux;
-
-			foreach ($donnees as $donnee) {
-				$possedes['data'][] = $donnee->possede;
-				$totaux['data'][] = (int)$donnee->total -$donnee->possede;
-			}
-
-
-			foreach ($donnees as $donnee) {
-				$possedes_cpt['data'][] = $donnee->possede_pct;
-				$totaux_cpt['data'][] = 100-$donnee->possede_pct;
-			}
-
-			$supertotal=0;
-			foreach($donnees as $donnee) {
-				if ($donnee->total+$donnee->possede>$supertotal) {
-					$supertotal=$donnee->total;
-				}
-			}
-
-			$legend = [NUMEROS_POSSEDES, NUMEROS_REFERENCES];
-
-			$labels= [];
-			$labels_pays_longs= [];
-			$labels_magazines_longs= [];
-			foreach($donnees as $donnee) {
-				$labels[]=$donnee->publication_code;
-				$labels_pays_longs[$donnee->pays_court]=$donnee->pays;
-				$labels_magazines_longs[$donnee->publication_code]=$donnee->nom_magazine;
-			}
-
-			return [
-				'datasets' => [
-					'possedes' => $possedes, 'totaux' => $totaux,
-					'possedes_cpt' => $possedes_cpt, 'totaux_cpt' => $totaux_cpt
-				],
-				'legend' => $legend,
-				'labels' => $labels,
-				'labels_magazines_longs' => $labels_magazines_longs,
-				'labels_pays_longs' => $labels_pays_longs,
-				'title' => $title,
-			];
-		}
-
-        $id_user = static::$id_user;
-        $l=DM_Core::$d->toList($id_user);
-
-        $retour= ['total'=>null,'possede'=>null,'total_pct'=>null,'possede_pct'=>null];
-        require_once('Inducks.class.php');
-        $nb_numeros_magazines=Inducks::get_nb_numeros_magazines_pays($for);
-        foreach(array_keys($l->collection[$for]) as $magazine) {
-            if (array_key_exists($magazine,$nb_numeros_magazines)) {
-                $retour['total'][$magazine]=$nb_numeros_magazines[$magazine];
-                $retour['possede'][$magazine]=count($l->collection[$for][$magazine]);
-                $retour['possede_pct'][$magazine]=round(100*($retour['possede'][$magazine]/$retour['total'][$magazine]));
+        $publicationsData = array_map(function($magazine_et_cpt) use ($nb_numeros_references) {
+            $publicationCode = $magazine_et_cpt['publicationcode'];
+            $possedesPublication = $magazine_et_cpt['cpt'];
+            if (array_key_exists($publicationCode, $nb_numeros_references)) {
+                $totalPublication = $nb_numeros_references[$publicationCode];
+                $possedesPublicationPct = round(100*($possedesPublication/$totalPublication));
             }
             else {
-                $retour['total'][$magazine]=0;
-                $retour['possede'][$magazine]=0;
-                $retour['possede_pct'][$magazine]=0;
+                $totalPublication = 0;
+                $possedesPublicationPct = 0;
             }
-        }
-        return $retour;
+
+            return ((object) [
+                'publication_code' => $publicationCode,
+                'total' => $totalPublication,
+                'possede' => $possedesPublication,
+                'possede_pct' => $possedesPublicationPct
+            ]);
+        }, $resultats_numeros_utilisateur);
+
+        $possedes = [
+            'label' => NUMEROS_POSSEDES,
+            'backgroundColor' => '#FF8000',
+            'data' => array_map(function($publicationData) { return $publicationData->possede; }, $publicationsData)
+        ];
+        $possedes_cpt = array_merge($possedes, [
+            'data' => array_map(function($publicationData) { return $publicationData->possede_pct; }, $publicationsData)
+        ]);
+
+        $totaux = [
+            'label' => NUMEROS_REFERENCES,
+            'backgroundColor' => '#04B404',
+            'data' => array_map(function($publicationData) { return $publicationData->total === 0 ? 0 : $publicationData->total - $publicationData->possede; }, $publicationsData)
+        ];
+        $totaux_cpt = array_merge($totaux, [
+            'data' => array_map(function($publicationData) { return 100 - $publicationData->possede_pct; }, $publicationsData)
+        ]);
+
+        return [
+            'title' => POSSESSION_NUMEROS,
+            'legend' => [NUMEROS_POSSEDES, NUMEROS_REFERENCES],
+            'datasets' => [
+                'possedes' => $possedes, 'totaux' => $totaux,
+                'possedes_cpt' => $possedes_cpt, 'totaux_cpt' => $totaux_cpt
+            ],
+            'labels' => array_map(function($publicationData) { return $publicationData->publication_code; }, $publicationsData),
+            'labels_magazines_longs' => $noms_complets_magazines,
+            'labels_pays_longs' => $noms_complets_pays,
+        ];
     }
 	
 	static function getPurchaseHistory() {
@@ -223,7 +169,6 @@ class Stats {
 
 		$premier_achat = null;
 		$achats_magazines_nouv = [];
-		$achats_magazines_tot = [];
 		$achats_magazines_current = [];
 
 		foreach($resultat_achats as $i=>$achat) {
@@ -239,13 +184,8 @@ class Stats {
 			if (!is_null($achat['Mois'])) {
 				if (!array_key_exists($achat['Publicationcode'], $achats_magazines_nouv)) {
 					$achats_magazines_nouv[$achat['Publicationcode']] = [];
-					$achats_magazines_tot [$achat['Publicationcode']] = [];
 				}
-				$achats_magazines_nouv[$achat['Publicationcode']][$achat['Mois']]
-					= $cpt;
-
-				$achats_magazines_tot[$achat['Publicationcode']][$achat['Mois']]
-					= $achats_magazines_current[$achat['Publicationcode']];
+				$achats_magazines_nouv[$achat['Publicationcode']][$achat['Mois']] = $cpt;
 
 				if (is_null($premier_achat)) {
 					$premier_achat = $achat;
@@ -389,15 +329,6 @@ if (isset($_POST['graph'])) {
 		echo json_encode(Stats::getAuthorStoriesData());
 	}
 	else if (isset($_POST['possessions'])) {
-		if (isset($_POST['init_chargement'])) {
-			$l=DM_Core::$d->toList(Stats::$id_user);
-			echo json_encode(array_keys($l->collection));
-		}
-		else if (isset($_POST['element'])) {
-			echo json_encode(Stats::getPossessionsData($_POST['element']));
-		}
-		else if (isset($_POST['fin'])) {
-			echo json_encode(Stats::getPossessionsData());
-		}
+		echo json_encode(Stats::getPossessionsData());
 	}
 }
