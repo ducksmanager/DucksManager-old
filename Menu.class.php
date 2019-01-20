@@ -104,7 +104,6 @@ $menus= [
             new Item('stats', 'always', STATISTIQUES_COLLECTION, 'glyphicon glyphicon-tasks'),
             new Item('agrandir', 'always', AGRANDIR_COLLECTION, 'glyphicon glyphicon-fire'),
             new Item('print', 'always', IMPRIMER_COLLECTION, 'glyphicon glyphicon-print'),
-//            new Item('inducks', 'always', VOUS_POSSEDEZ_UN_COMPTE_INDUCKS, $icone),
             new Item('logout', 'always', DECONNEXION, 'glyphicon glyphicon-log-out')
         ]
     ),

@@ -364,10 +364,8 @@ $id_user= $_SESSION['id_user'] ?? null;
     <div id="zone_logo1">
     </div>
     <div id="zone_logo2">
-        <?php if (!isset($_GET['action'])) {
-            ?>
-            <h3 class="welcome"><?=BIENVENUE?></h3>
-            <?php
+        <?php if (!isset($_GET['action'])) {?>
+            <h3 class="welcome"><?=BIENVENUE?></h3><?php
         }
         ?>
         <div id="contenu">
@@ -393,79 +391,6 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
 
             switch($action) {
-                case 'inducks':
-                if (isset($_POST['rawData'])) {
-                    if (isset($_POST['valider_importer'])) {
-                        $ajouter_numeros_inducks=isset($_POST['ajouter_numeros']);
-                        $supprimer_numeros_inducks=isset($_POST['supprimer_numeros']);
-                        $l=new Liste($_POST['rawData']);
-                        $l->synchro_to_database($ajouter_numeros_inducks,$supprimer_numeros_inducks);
-                    }
-                    else {
-                        $rawdata_valide= Inducks::liste_numeros_valide($_POST['rawData']);
-                        if ($rawdata_valide) {
-                            [$est_succes,$ajouts,$suppressions] =Liste::import($_POST['rawData']);
-                            if ($est_succes) {
-                                ?><br /><br />
-                                <form method="post" action="?action=inducks">
-                                    <input type="hidden" name="rawData" value="<?=$_POST['rawData']?>" />
-                                    <?php
-                                    if (isset($_SESSION['user'])) {
-                                        ?><?=QUESTION_EXECUTER_OPS_INDUCKS?><br />
-                                        <?php
-                                        if ($ajouts > 0) {
-                                            ?><input type="checkbox" checked="checked" name="ajouter_numeros" /><?=AJOUTER_NUMEROS_INDUCKS?><br /><?php
-                                        }
-                                        if ($suppressions > 0) {
-                                            ?><input type="checkbox" name="supprimer_numeros" /><?=SUPPRIMER_NUMEROS_NON_INDUCKS?><br /><?php
-                                        }?>
-                                        <input type="submit" name="valider_importer" value="<?=VALIDER?>" />&nbsp;
-
-                                        <?php
-                                    }
-                                    else {
-                                        ?><?=QUESTION_IMPORTER_INDUCKS?><br />
-                                        <input type="submit" name="valider_importer" value="<?=OUI?>" />&nbsp;
-                                        <input type="submit" name="valider_importer" value="<?=NON?>" />
-                                    <?php }?>
-                                </form>
-                            <?php
-                            }
-                        }
-                        else {
-                            echo ERREUR_RAWDATA_INVALIDE;
-                        }
-                    }
-                }
-                if (!isset($_POST['rawData']) || (isset($rawdata_valide) && !$rawdata_valide)) {
-                    echo IMPORT_INDUCKS_DESACTIVE;
-                    /*
-                    ?><table border="0" style="width:90%;height:70%" cellspacing="5">
-                        <tr>
-                            <td>
-                                <iframe src="http://coa.inducks.org/collection.php" style="width:100%;height:400px"></iframe>
-                            </td>
-                            <td>
-                                <h2><?=INSTRUCTIONS_IMPORT_INDUCKS_TITRE?></h2>
-                                <ul>
-                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_1?></li>
-                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_2?></li>
-                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_3?></li>
-                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_4?></li>
-                                    <li><?=INSTRUCTIONS_IMPORT_INDUCKS_5?></li>
-                                </ul><br />
-                                <form method="post" action="?action=inducks">
-                                    <textarea name="rawData" rows="10" cols="40"></textarea>
-                                    <br />
-                                    <input type="hidden" name="dbg" value="<?=isset($_GET['dbg']) ? "true":"false"?>" />
-                                    <input type="submit" value="<?=IMPORTER?>" />
-                                </form>
-                            </td>
-                         </tr>
-                    </table>
-                <?php */
-                }
-            break;
             case 'new':
                 formulaire_inscription();
                 break;
@@ -1343,7 +1268,6 @@ function formulaire_inscription() {
 	$pass= $_POST['pass' ] ?? null;
 	$pass2=$_POST['pass2'] ?? null;
 	$email=$_POST['email'] ?? '';
-	$rawData=$_POST['rawData'] ?? null;
 	$erreur=null;
     if (isset($_POST['user' ])) {
 		$erreur=Affichage::valider_formulaire_inscription($user, $pass, $pass2);
@@ -1353,27 +1277,20 @@ function formulaire_inscription() {
     }
     if (!isset($_POST['user' ]) || !is_null($erreur)) {
         ?>
-        <form method="post" action="?action=new"><?php
-        if (isset($rawData)) {
-            ?><input type="hidden" name="rawData" value="<?=$rawData?>" /><?php
-        }?>
-        <table border="0">
-            <tr><td><?=NOM_UTILISATEUR?> : </td><td><input required class="form-control" name="user" type="text" value="<?=$user?>" /></td></tr>
-            <tr><td><?=ADRESSE_EMAIL?> : </td><td><input required class="form-control" name="email" type="text" value="<?=$email?>" /></td></tr>
-            <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input required class="form-control" name="pass" type="password" /></td></tr>
-            <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input required class="form-control" name="pass2" type="password" /></td></tr>
-            <tr><td>&nbsp;</td></tr>
-            <tr><td colspan="2" style="text-align: center"><input class="btn btn-success" type="submit" value="<?=INSCRIPTION?>" /></td></tr>
-        </table>
+        <form method="post" action="?action=new">
+            <table border="0">
+                <tr><td><?=NOM_UTILISATEUR?> : </td><td><input required class="form-control" name="user" type="text" value="<?=$user?>" /></td></tr>
+                <tr><td><?=ADRESSE_EMAIL?> : </td><td><input required class="form-control" name="email" type="text" value="<?=$email?>" /></td></tr>
+                <tr><td><?=MOT_DE_PASSE_6_CHAR?> :</td><td><input required class="form-control" name="pass" type="password" /></td></tr>
+                <tr><td><?=MOT_DE_PASSE_CONF?> :</td><td><input required class="form-control" name="pass2" type="password" /></td></tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr><td colspan="2" style="text-align: center"><input class="btn btn-success" type="submit" value="<?=INSCRIPTION?>" /></td></tr>
+            </table>
         </form>
         <?php
     }
     else {
         if (DM_Core::$d->nouveau_user($user, $email, sha1($pass))) {
-            if (isset($rawData)) {
-                $l = new Liste($rawData);
-                $l->add_to_database(DM_Core::$d->user_to_id($user));
-            }
             creer_id_session($user, $pass);
         }
     }
