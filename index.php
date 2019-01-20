@@ -12,8 +12,6 @@ header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
 date_default_timezone_set('Europe/Paris');
-require_once '_priv/Admin.priv.class.php';
-require_once 'travaux.php';
 require_once 'DucksManager_Core.class.php';
 require_once 'Liste.class.php';
 require_once 'Menu.class.php';
