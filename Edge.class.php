@@ -79,9 +79,7 @@ class Edge {
         $texte_final='';
         $cpt_tranches_pretes=0;
 
-        $publication_codes = array_unique(array_map(function($numero) {
-            return $numero['Pays'].'/'.$numero['Magazine'];
-        }, $resultats_tranches));
+        $publication_codes = DmClient::get_service_results_for_dm('GET', '/collection/bookcase/sort');
         
         $publication_codes_pour_verif_ordre = array_values(array_filter($publication_codes, function($publicationCode) use ($resultats_tranches) {
             return count(array_filter($resultats_tranches, function($numero) use ($publicationCode) {
