@@ -209,24 +209,48 @@ function setCurrentTexture(textureId, value) {
     jQuery('#' + textureId).val(value);
 }
 
+function initPublicationSorting(sorts, publicationNames) {
+    jQuery('.sortable-wrapper ol li:not(.template)').remove();
+
+    jQuery.each(sorts, function(unused, sort) {
+        var row = jQuery('.form-group ol li.template').clone(true).removeClass('template');
+        row.find('.flag').attr({src: 'images/flags/'+(sort.split('/')[0])+'.png'});
+        row.find('input').val(sort);
+        row.find('span').text(publicationNames[sort]);
+        jQuery('.sortable-wrapper ol').append(row);
+    });
+
+    jQuery('.sortable-wrapper ol').sortable();
+    jQuery('.sortable-wrapper .reset-sortable').click(function() {
+        initPublicationSorting(sorts.sort(), publicationNames)
+    });
+
+    jQuery('#message_options')
+        .addClass('hidden')
+        .next().removeClass('hidden');
+}
+
 function initTextures() {
     if (jQuery('#texture1').length) {
         jQuery.post('Edge.class.php',
-            {get_sous_texture: 'true'},
+            {get_sous_textures: 'true'},
             function (response) {
                 var selects = jQuery('.select_sous_texture .dropdown-menu');
-                jQuery.each(response.texturesData.textures, function(unused, sous_texture) {
+                jQuery.each(response.textures, function(unused, sous_texture) {
                     selects.append(jQuery('<li>')
                         .setTextureThumbnail(sous_texture)
-                        .append(jQuery('<a>', { href: 'javacript:void(0)' }).text(sous_texture)));
+                        .append(jQuery('<a>', { href: 'javascript:void(0)' }).text(sous_texture)));
                 });
                 selects.find('li').click(function() {
                     var select = jQuery(this).closest('.select_sous_texture');
                     var textureId = select.attr('id').match(/select_(.+)$/)[1];
                     setCurrentTexture(textureId, jQuery(this).text());
                 });
-                setCurrentTexture('sous_texture1', response.texturesData.current[0]);
-                setCurrentTexture('sous_texture2', response.texturesData.current[1]);
+                setCurrentTexture('sous_texture1', response.current[0]);
+                setCurrentTexture('sous_texture2', response.current[1]);
+
+                initPublicationSorting(response.sorts, response.publicationNames);
+
             }
         );
     }

@@ -150,7 +150,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <link rel="stylesheet" type="text/css" href="css/menu_contextuel.css?VERSION" />
                     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
                     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.min.js"></script>
-                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css"><?php
+                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css" /><?php
                 break;
                 case 'bouquineries': ?>
                     <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
@@ -169,6 +169,8 @@ $id_user= $_SESSION['id_user'] ?? null;
                         ? $_GET['onglet']
                         : 'affichage';
                     ?>
+                    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
+                    <link rel="stylesheet" type="text/css" href="css/sortable.css" />
                     <script type="text/javascript">
                         var user_bibliotheque = <?=is_null($user_bibliotheque) ? -1 : "'".$user_bibliotheque."'"?>;
                         var est_partage_bibliotheque = <?=$est_partage_bibliotheque ? 1 : 0?>;
@@ -596,9 +598,11 @@ $id_user= $_SESSION['id_user'] ?? null;
                         require_once 'Edge.class.php';
                         if (isset($_POST['texture1'])) {
                             for ($i = 1; $i <= 2; $i++) {
-                                $requete_update_sous_texture = 'UPDATE users SET Bibliotheque_Sous_Texture' . $i . '=\'' . $_POST['sous_texture' . $i] . '\' WHERE id=' . $id_user;
-                                DM_Core::$d->requete($requete_update_sous_texture);
+                                $requete_update_sous_texture = "UPDATE users SET Bibliotheque_Sous_Texture$i = ? WHERE id = ?";
+                                DM_Core::$d->requete($requete_update_sous_texture, [$_POST['sous_texture' . $i], $id_user]);
                             }
+                            $publicationSorts = array_values(array_filter($_POST['publicationcodes']));
+                            DmClient::get_service_results_for_dm('POST', '/collection/bookcase/sort', ['sorts' => $publicationSorts]);
                         }
 
                         function buildTextureSelect($id, $title) { ?>
@@ -613,15 +617,33 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 </div>
                             </div><?php
                         }
-                        ?>
+
+                        function buildPublicationSorts() { ?>
+                            <div class="sortable-wrapper form-group">
+                                <a class="reset-sortable btn btn-default btn-sm">Réinitialiser l'ordre des magazines</a>
+                                <label for="ordre_magazines"><?=ORDRE_MAGAZINES?></label>
+                                <ol id="ordre_magazines" class="sortable">
+                                    <li class="template">
+                                        <input type="hidden" name="publicationcodes[]" value=""/>
+                                        <img class="flag" />&nbsp;
+                                        <span>Publication name</span>
+                                    </li>
+                                </ol>
+                            </div><?php
+                        }?>
                         <form method="post" action="?action=bibliotheque&amp;onglet=options">
                             <input type="hidden" id="texture1" name="texture1" value="bois" />
                             <input type="hidden" id="texture2" name="texture2" value="bois" />
-                            <?php buildTextureSelect('sous_texture1', SOUS_TEXTURE)?>
-                            <?php buildTextureSelect('sous_texture2', SOUS_TEXTURE_ETAGERE)?>
-                            <br/><br/>
-                            <div>
-                                <input type="submit" class="btn btn-default" value="<?= VALIDER ?>"/>
+
+                            <div id="message_options"><?=CHARGEMENT?></div>
+                            <div class="hidden">
+                                <?php buildTextureSelect('sous_texture1', SOUS_TEXTURE)?>
+                                <?php buildTextureSelect('sous_texture2', SOUS_TEXTURE_ETAGERE)?>
+                                <?php buildPublicationSorts()?>
+                                <br/><br/>
+                                <div>
+                                    <input type="submit" class="btn btn-default" value="<?= VALIDER ?>"/>
+                                </div>
                             </div>
                         </form>
                         <?php

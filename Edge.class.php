@@ -191,7 +191,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
     }
 }
 
-elseif (isset($_POST['get_sous_texture'])) {
+elseif (isset($_POST['get_sous_textures'])) {
 	$id_user=$_SESSION['id_user'];
 	$requete_texture="
 	    SELECT Bibliotheque_Sous_Texture1 as texture1, Bibliotheque_Sous_Texture2 as texture2
@@ -199,24 +199,23 @@ elseif (isset($_POST['get_sous_texture'])) {
 	    WHERE ID = '$id_user'
 	";
 	$resultat_texture=DM_Core::$d->requete($requete_texture);
-
-    $texturesData = ['textures' => [], 'current' => [$resultat_texture[0]['texture1'], $resultat_texture[0]['texture2']]];
+    $bookcaseData = ['textures' => [], 'current' => [$resultat_texture[0]['texture1'], $resultat_texture[0]['texture2']]];
 
 	$rep = 'edges/textures/bois';
 	$dir = opendir($rep);
 	while ($f = readdir($dir)) {
 		if( $f!=='.' && $f!=='..') {
 			$nom_sous_texture=substr($f,0, strrpos($f, '.'));
-            $texturesData['textures'][]=$nom_sous_texture;
+            $bookcaseData['textures'][]=$nom_sous_texture;
 		}
 	}
+	sort($bookcaseData['textures']);
 
-	sort($texturesData['textures']);
+    $bookcaseData['sorts'] = DmClient::get_service_results_for_dm('GET', '/collection/bookcase/sort');
+    $bookcaseData['publicationNames'] = Inducks::get_noms_complets_magazines($bookcaseData['sorts']);
 
     header('Content-type: application/json');
-    echo json_encode([
-        'texturesData' => $texturesData
-    ]);
+    echo json_encode($bookcaseData);
 }
 elseif (isset($_POST['partager_bibliotheque'])) {
     Affichage::partager_page();
