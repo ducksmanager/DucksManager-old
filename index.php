@@ -623,7 +623,7 @@ $id_user= $_SESSION['id_user'] ?? null;
 
                         function buildPublicationSorts() { ?>
                             <div class="sortable-wrapper form-group">
-                                <a class="reset-sortable btn btn-default btn-sm">Réinitialiser l'ordre des magazines</a>
+                                <a class="reset-sortable btn btn-default btn-sm"><?=ORDRE_MAGAZINES_REINITIALISER?></a>
                                 <label for="ordre_magazines"><?=ORDRE_MAGAZINES?></label>
                                 <ol id="ordre_magazines" class="sortable">
                                     <li class="template">

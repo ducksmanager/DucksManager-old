@@ -354,7 +354,8 @@ define('OPERATION_IMPOSSIBLE_MODE_DEMO','Sorry, this operation cannot be process
 define('OPERATION_IRREVERSIBLE','Warning ! This operation is irreversible.');
 define('OPERATIONS_EXECUTEES','The operations have been successfully executed.');
 define('OPTIONS','Settings');
-define('ORDRE_MAGAZINES','Magazines order');
+define('ORDRE_MAGAZINES','Order of the publications in the bookcase');
+define('ORDRE_MAGAZINES_REINITIALISER','Reset to the default publication order');
 define('OUI','Yes');
 define('OUVRIR_COLLECTION','Open my collection (Log in)');
 define('PARAMETRES','Parameters');
