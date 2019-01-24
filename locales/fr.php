@@ -356,6 +356,7 @@ define('OPERATION_IRREVERSIBLE','Attention ! Cette op&eacute;ration est irr&eacu
 define('OPERATIONS_EXECUTEES','Les op&eacute;rations ont &eacute;t&eacute; ex&eacute;cut&eacute;es avec succ&egrave;s.');
 define('OPTIONS','Options');
 define('ORDRE_MAGAZINES','Ordre des magazines');
+define('ORDRE_MAGAZINES_REINITIALISER','Réinitialiser l\'ordre des magazines');
 define('OUI','Oui');
 define('OUVRIR_COLLECTION','Ouvrir ma collection (Connexion)');
 define('PARAMETRES','Param&egrave;tres');
