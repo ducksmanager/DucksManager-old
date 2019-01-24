@@ -555,6 +555,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                                         ?>
                                     </div><br/><br/><?php
                                 }
+                                ?><div class="alert alert-info">
+                                <?=sprintf(EXPLICATION_ORDRE_MAGAZINES, '<a href="?action=bibliotheque&onglet=options">'.BIBLIOTHEQUE_OPTIONS_COURT.'</a>')?>
+                                </div><?php
 
                                 $accepter_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
                                 if ($accepter_partage) {

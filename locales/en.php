@@ -208,7 +208,7 @@ define('EXCLUSIF_DUCKSMANAGER','Exclusive in DucksManager');
 define('EXPLICATION_NOTATION_AUTEURS1','DucksManager uses the');
 define('EXPLICATION_NOTATION_AUTEURS2','ratings that you assign to your favorite authors');
 define('EXPLICATION_NOTATION_AUTEURS3','to suggest you publications that may interest you.');
-define('EXPLICATION_ORDRE_MAGAZINES','By default, the magazines are ordered by country and by magazine. You can change this order by moving the magazines names hereunder :');
+define('EXPLICATION_ORDRE_MAGAZINES','By default, the magazines are ordered by country and by magazine. You can change this order by moving the magazines names on the %s page.');
 define('EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE', 'Your bookcase can be viewed by other visitors of DucksManager. If you don\'t want that, please disable collection sharing on the %s page.');
 define('EXPLICATION_PARTAGE_BIBLIOTHEQUE_DESACTIVEE', 'Your bookcase can NOT be viewed by other visitors of DucksManager. If you want your bookcase to be accessible by other people, please enable collection sharing on the %s page.');
 define('EXTRAIRE','Extract');

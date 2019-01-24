@@ -209,7 +209,7 @@ define('EXCLUSIF_DUCKSMANAGER','Exclusif DucksManager');
 define('EXPLICATION_NOTATION_AUTEURS1','DucksManager se base sur les');
 define('EXPLICATION_NOTATION_AUTEURS2','notes que vous attribuez &agrave; vos auteurs pr&eacute;f&eacute;r&eacute;s');
 define('EXPLICATION_NOTATION_AUTEURS3','pour vous proposer des magazines susceptibles de vous intéresser.');
-define('EXPLICATION_ORDRE_MAGAZINES','Par d&eacute;faut, les magazines sont tri&eacute;s par pays et par magazine. Vous pouvez changer cet ordre en d&eacute;pla&ccedil;ant les noms de magazines ci-dessous :');
+define('EXPLICATION_ORDRE_MAGAZINES','Par d&eacute;faut, les magazines sont tri&eacute;s par pays et par magazine. Vous pouvez changer cet ordre en d&eacute;pla&ccedil;ant les noms de magazines dans la page %s.');
 define('EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE', 'Votre bibliothèque peut être visionnée par les autres visiteurs de DucksManager. Si vous ne le souhaitez pas, désactivez le partage de collection dans la page %s.');
 define('EXPLICATION_PARTAGE_BIBLIOTHEQUE_DESACTIVEE', 'Votre bibliothèque ne peut pas être visionnée par les autres visiteurs de DucksManager. Si vous souhaitez que votre bibliothèque soit accessible, activez le partage de collection dans la page %s.');
 define('EXTRAIRE','Extraire');
