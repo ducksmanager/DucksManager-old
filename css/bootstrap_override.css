@@ -79,3 +79,26 @@ input.form-control {
 .checkbox input[type="checkbox"] {
     margin-top: 0;
 }
+
+.panel-body {
+    color: black;
+}
+
+.glyphicon.custom-inducks {
+    background: url('/images/inducks.png') no-repeat;
+    height: 15px;
+    background-size: 15px;
+    margin-left: 10px;
+    margin-right: -10px;
+}
+
+.jumbotron {
+    margin-top: 50px;
+    color: black;
+    padding-left: 50px;
+}
+
+.jumbotron p {
+    line-height: 25px;
+    font-size: 14px;
+}

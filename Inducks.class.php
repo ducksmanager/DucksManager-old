@@ -221,6 +221,141 @@ class Inducks {
 		}
 	   	return $magazines_ne_paraissant_plus;
 	}
+
+    public static function import() {
+        $step = 1;
+        if (isset($_POST['inducks_collection'])) {
+            if (isset($_POST['etat_defaut'])) {
+                if (empty($_POST['etat_defaut'])) {
+                    $erreur = IMPORTER_INDUCKS_ETAT_INVALIDE;
+                }
+                else {
+                    $step = 3;
+                }
+            }
+
+            $results = DmClient::get_service_results_for_dm('POST', '/collection/inducks/import/init', ['rawData' => $_POST['inducks_collection']]);
+            if (!is_object($results)) {
+                $erreur = IMPORTER_INDUCKS_TEXTE_INVALIDE;
+            }
+            else if (count($results->issues) === 0) {
+                if ($results->existingIssuesCount > 0) {
+                    $erreur = $results->existingIssuesCount . ' ' . IMPORTER_INDUCKS_NUMEROS_EXISTANTS;
+                }
+                else {
+                    $erreur = IMPORTER_INDUCKS_AUCUN_NUMERO;
+                }
+            }
+            else if ($step < 3) {
+                $step = 2;
+            }
+        }
+        if (isset($erreur)) {
+            ?><div class="alert alert-warning"><?=$erreur?></div><?php
+        }
+        switch($step) {
+            case 1: ?>
+                <form id="import_inducks" method="post" action="">
+                <div class="alert alert-info">
+                    <div><?=IMPORTER_INDUCKS_INSTRUCTIONS_1?></div>
+                    <?=IMPORTER_INDUCKS_INSTRUCTIONS_2?><ol>
+                        <li><?=IMPORTER_INDUCKS_INSTRUCTIONS_3?></li>
+                        <li><?=IMPORTER_INDUCKS_INSTRUCTIONS_4?></li>
+                        <li><?=IMPORTER_INDUCKS_INSTRUCTIONS_5?></li>
+                        <li><?=IMPORTER_INDUCKS_INSTRUCTIONS_6?></li>
+                        <li><?=IMPORTER_INDUCKS_INSTRUCTIONS_7?></li>
+                    </ol>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <iframe src="https://inducks.org/collection.php?rawOutput=1"></iframe>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <textarea id="inducks_collection" name="inducks_collection"><?=$_POST['inducks_collection'] ?? ''?></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-default"><?=IMPORTER?></button>
+                    </div>
+                </div>
+                </form><?php
+                break;
+            case 2: ?>
+                <div class="alert alert-info">
+                <div><?=count($results->issues)?> <?=IMPORTER_INDUCKS_NUMEROS_A_IMPORTER?></div><?php
+                if ($results->existingIssuesCount > 0) { ?>
+                    <div><?=$results->existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_EXISTANTS?></div><?php
+                }?>
+                </div><?php
+                $nomsMagazines = Inducks::get_noms_complets_magazines(
+                    array_unique(array_map(function($issue) {
+                        return $issue->publicationcode;
+                    }, $results->issues))
+                );
+                ksort($nomsMagazines);
+                ?><div class="panel-group" id="accordion"><?php
+                foreach($nomsMagazines as $publicationCode => $nomMagazine) {
+                    $publicationCodeHyphen = str_replace('/', '-', $publicationCode);
+                    $publicationIssues = array_filter($results->issues, function($issue) use($publicationCode) {
+                        return $issue->publicationcode === $publicationCode;
+                    });?>
+                    <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?=$publicationCodeHyphen?>">
+                                <img src="images/flags/<?=explode('/', $publicationCode)[0]?>.png" />&nbsp;<?=$nomMagazine?> x <?=count($publicationIssues)?>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse<?=$publicationCodeHyphen?>" class="panel-collapse collapse">
+                        <div class="panel-body"><?php
+                            foreach($publicationIssues as $issue) { ?>
+                                <div><?=ucfirst(NUMERO)?>&nbsp;<?=$issue->issuenumber?></div><?php
+                            }?>
+                        </div>
+                    </div>
+                    </div><?php
+                }
+                ?></div>
+                <form id="import_inducks" method="post" action="">
+                <input type="hidden" name="inducks_collection" value="<?=$_POST['inducks_collection']?>" />
+                <div class="form-group">
+                    <label for="etat"><?= ETAT ?> : </label><br/>
+                    <div class="btn-group">
+                        <input type="hidden" id="etat_defaut" name="etat_defaut" />
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="selected"><?=IMPORTER_INDUCKS_ETAT?></span>&nbsp;<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" data-dropdown-name="etat_defaut">
+                            <?php foreach(Database::$etats as $nomEtat => [$label,]) { ?>
+                                <li>
+                                <a href="javascript:void(0)" data-dropdown-option="<?=$nomEtat?>">
+                                    <span class="details_numero gauche num_<?=$nomEtat?>">&nbsp;</span>
+                                    <?=$label?>
+                                </a>
+                                </li><?php
+                            } ?>
+                        </ul>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-default"><?=IMPORTER?></button>
+                </form><?php
+                break;
+            case 3:
+                $resultsImport = DmClient::get_service_results_for_dm('POST', '/collection/inducks/import', ['issues' => $results->issues, 'defaultCondition' => $_POST['etat_defaut']]);
+                if (is_object($resultsImport)) { ?>
+                    <div class="alert alert-info">
+                    <div><?=$resultsImport->importedIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_IMPORTES?></div><?php
+                    if ($resultsImport->existingIssuesCount > 0) { ?>
+                        <div><?=$results->existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_NON_IMPORTES?></div><?php
+                    }?>
+                    <div>
+                        <a href="?action=gerer&onglet=ajout_suppr"><?=GERER_COLLECTION?></a>
+                    </div>
+                    </div><?php
+                }
+                break;
+        }
+    }
 }
 
 if (isset($_POST['get_pays'])) {

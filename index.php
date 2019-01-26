@@ -136,6 +136,7 @@ $id_user= $_SESSION['id_user'] ?? null;
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
         <script type="text/javascript" src="js/ajax.js?VERSION"></script>
         <script type="text/javascript" src="js/edges.js?VERSION"></script>
+        <script defer type="text/javascript" src="js/dropdowns.js?VERSION"></script>
         <script defer type="text/javascript" src="js/turn.min.js?VERSION"></script>
         <script defer type="text/javascript" src="js/flip.js?VERSION"></script><?php
 
@@ -214,7 +215,7 @@ $id_user= $_SESSION['id_user'] ?? null;
     }
 
     ?>
-    <body id="body" style="margin:0" onload="charger_evenements();charger_menu();<?php
+    <body id="body" style="margin:0" onload="charger_dropdowns();charger_evenements();charger_menu();<?php
     switch($action) {
         case 'open':
             break;
@@ -498,6 +499,30 @@ $id_user= $_SESSION['id_user'] ?? null;
                 session_unset();
                 echo DECONNEXION_OK;
                 break;
+            break;
+            case 'inducks': ?>
+                <h3 id="dm-loves-inducks">
+                    <div id="dm-logo-small">&nbsp;</div>
+                    <div id="loves">&nbsp;</div>
+                    <div id="inducks-logo">&nbsp;</div>
+                </h3>
+                <div class="jumbotron">
+                    <p>
+                        <?=IMPORTER_INDUCKS_DESCRIPTION_1?>
+                    </p>
+                    <p>
+                        <?=IMPORTER_INDUCKS_DESCRIPTION_2?><br />
+                        <?=sprintf(IMPORTER_INDUCKS_DESCRIPTION_3, COLLECTION_INDUCKS)?>
+                    </p>
+                    <p><a class="btn btn-primary" href="/?action=new" role="button"><?=INSCRIPTION?></a></p>
+                    <p><a class="btn btn-primary" href="/?action=open" role="button"><?=CONNEXION?></a></p>
+                </div>
+            <?php
+
+            break;
+            case 'importer_inducks': ?>
+                <h3><?= IMPORTER_INDUCKS ?></h3><?php
+                Inducks::import();
             break;
             case 'bibliotheque': ?>
                 <div class="book template">

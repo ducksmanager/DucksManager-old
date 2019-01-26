@@ -24,12 +24,12 @@ class Item {
             <li class="non-empty <?= $this->icone ? '' : 'no-icon' ?> <?= !isset($_GET['user']) && ($_GET['action'] ?? '') === $this->nom ? 'active' : '' ?>">
                 <a href="?action=<?= $this->nom ?>">
                     <i class="<?= $this->icone ?>"></i>
-                    <?= $this->texte ?>
+                    <?= $this->texte ?><?php
+                    if ($this->nouveau) {
+                        ?><span class="nouveau"><?= NOUVEAU ?></span><?php
+                    }?>
                 </a>
             </li><?php
-            if ($this->nouveau) {
-                ?><span class="nouveau"><?= NOUVEAU ?></span><?php
-            }
 		}
 	}
 
@@ -103,12 +103,14 @@ $menus= [
             new Item('gerer', 'always', GERER_COLLECTION, 'glyphicon glyphicon-list-alt'),
             new Item('stats', 'always', STATISTIQUES_COLLECTION, 'glyphicon glyphicon-tasks'),
             new Item('agrandir', 'always', AGRANDIR_COLLECTION, 'glyphicon glyphicon-fire'),
+            new Item('importer_inducks', 'always', COLLECTION_INDUCKS, 'glyphicon custom-inducks', false, true),
             new Item('print', 'always', IMPRIMER_COLLECTION, 'glyphicon glyphicon-print'),
             new Item('logout', 'always', DECONNEXION, 'glyphicon glyphicon-log-out')
         ]
     ),
     new LigneVide(),
     new Item('bouquineries', 'no', RECHERCHER_BOUQUINERIES),
-    new Item('demo', 'never', DEMO_MENU)
+    new Item('inducks', 'never', COLLECTION_INDUCKS_POSSEDEE),
+    new Item('demo', 'never', DEMO_MENU),
 ];
 ?>

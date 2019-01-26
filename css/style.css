@@ -245,9 +245,10 @@ img.medaille_objectif.droite {
 }
 
 .beta, .nouveau {
-    font-size: smaller;
+	font-size: xx-small;
     vertical-align: super;
     font-weight: bold;
+	margin-left: 3px;
 }
 
 .preview {
@@ -497,6 +498,48 @@ ul#choix_impression ul.caract li{
 .carousel.small .wrapper_envoyer_tranches {
 	text-align: center;
 	margin-left: 25px;
+}
+
+#import_inducks iframe, #import_inducks textarea {
+	height: 400px;
+	width: 100%;
+}
+
+#import_inducks pre {
+	padding: 2px;
+	display: inline;
+}
+
+#dm-loves-inducks {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	width: 350px;
+}
+
+#dm-logo-small {
+	width: 200px;
+	height: 30px;
+	background: url('/logo_petit.jpg') no-repeat;
+	background-size: contain;
+	background-position-y: center;
+}
+
+#loves {
+	width: 32px;
+	height: 32px;
+	background: url('/images/heart.png') no-repeat;
+	background-size: contain;
+	background-position-y: center;
+}
+
+#inducks-logo {
+	width: 100px;
+	height: 30px;
+	background: url('/images/inducks_logo.png') no-repeat;
+	background-size: contain;
+	background-position-y: center;
 }
 
 @media (min-width: 767px) {

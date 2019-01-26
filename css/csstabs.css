@@ -11,9 +11,6 @@ ul.tabnav li {
     height:21px;
     margin:2px 2px 0;
 }
-ul.tabnav li.nouveau {
-    background-color: orange;
-}
 
 ul.tabnav li.active {
     border-bottom:1px solid #FFFFFF;
