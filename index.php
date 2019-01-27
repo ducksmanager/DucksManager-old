@@ -584,7 +584,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 <?=sprintf(EXPLICATION_ORDRE_MAGAZINES, '<a href="?action=bibliotheque&onglet=options">'.BIBLIOTHEQUE_OPTIONS_COURT.'</a>')?>
                                 </div><?php
 
-                                $accepter_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user")[0]['AccepterPartage'] === '1';
+                                $accepter_partage = DM_Core::$d->requete('SELECT AccepterPartage FROM users WHERE ID=?', [$id_user])[0]['AccepterPartage'] === '1';
                                 if ($accepter_partage) {
                                     ?><div class="alert alert-info">
                                         <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
@@ -784,13 +784,11 @@ $id_user= $_SESSION['id_user'] ?? null;
                                 }
                             }
                         }
-                        $resultat_partage = DM_Core::$d->requete("SELECT AccepterPartage FROM users WHERE ID=$id_user");
-                        $resultat_email = DM_Core::$d->requete("SELECT Email FROM users WHERE ID=$id_user");
-                        ?>
+                        $resultat_options = DM_Core::$d->requete('SELECT Email, AccepterPartage FROM users WHERE ID=?', [$id_user]); ?>
                         <form action="?action=gerer&amp;onglet=compte" method="post">
                             <div class="form-group">
                                 <label for="email"><?= ADRESSE_EMAIL ?> : </label><br/>
-                                <input class="form-control" type="text" id="email" name="email" style="width: 200px" value="<?=$resultat_email[0]['Email']?>"/><br/><br/>
+                                <input class="form-control" type="text" id="email" name="email" style="width: 200px" value="<?=$resultat_options[0]['Email']?>"/><br/><br/>
                             </div>
                             <h6 style="text-decoration: underline">
                                 <?= MOT_DE_PASSE_CHANGEMENT ?>
@@ -812,7 +810,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <div class="checkbox">
                                 <label for="partage">
                                     <input type="checkbox" id="partage" name="partage" <?php
-                                    if ($resultat_partage[0]['AccepterPartage'] === '1') {
+                                    if ($resultat_options[0]['AccepterPartage'] === '1') {
                                         ?>checked="checked"<?php
                                     } ?>/><?= ACTIVER_PARTAGE ?>
                                 </label>
