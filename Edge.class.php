@@ -70,6 +70,15 @@ class Edge {
             ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
 
 		$resultats_tranches = DM_Core::$d->requete($requete_tranches, [$id_user]);
+
+		if (count($resultats_tranches) === 0) {
+            return [
+                '<div class="alert alert-warning">'.COLLECTION_VIDE_1.' '.sprintf(COLLECTION_CLIQUER_GERER_COLLECTION, '<a href="?action=gerer">'.GERER_COLLECTION.'</a>').'</div>',
+                0,
+                []
+            ];
+        }
+
 		$resultats_tranches_avec_cle = [];
 		foreach($resultats_tranches as $resultat) {
             $resultats_tranches_avec_cle[$resultat['Pays'].'/'.$resultat['Magazine']][$resultat['Numero']] = $resultat;
@@ -87,29 +96,37 @@ class Edge {
             }));
         }));
 
-        $resultats_ordres_numeros = Inducks::requete('
+        $resultats_ordres_magazines = Inducks::requete('
           SELECT publicationcode, REGEXP_REPLACE(issuenumber, "[ ]+", " ") AS issuenumber
           FROM inducks_issue
           WHERE publicationcode IN ('. implode(',', array_fill(0, count($publication_codes_pour_verif_ordre), '?')) .')',
             $publication_codes_pour_verif_ordre
         );
+        $resultats_ordres_magazines = array_reduce($resultats_ordres_magazines, function (array $accumulator, array $resultat) {
+            $accumulator[$resultat['publicationcode']][] = $resultat['issuenumber'];
+            return $accumulator;
+        }, []);
 
         foreach($publication_codes as $publication_code) {
             if (in_array($publication_code, $publication_codes_pour_verif_ordre, true)) {
-                $numeros_indexes = array_values(array_filter($resultats_ordres_numeros, function($resultat) use ($publication_code) {
-                    return $resultat['publicationcode'] === $publication_code;
-                }));
+                if (array_key_exists($publication_code, $resultats_ordres_magazines)) { // Le magazine n'existe plus sur Inducks
+                    $numeros_indexes = $resultats_ordres_magazines[$publication_code];
+                }
+                else {
+                    $numeros_indexes = [];
+                }
             }
             else {
-                $numeros_indexes = array_map(function($numero) use ($publication_code) {
-                    return ['publicationcode' => $publication_code, 'issuenumber' => $numero['Numero']];
+                $numeros_indexes = array_map(function($numero) {
+                    return $numero['Numero'];
                 }, array_values(array_filter($resultats_tranches, function($numero) use ($publication_code) {
                     return $numero['Pays'].'/'.$numero['Magazine'] === $publication_code;
                 })));
             }
             foreach($numeros_indexes as $numero_indexe) {
-                if (!empty($resultats_tranches_avec_cle[$numero_indexe['publicationcode']])
-                 && !empty($numero = $resultats_tranches_avec_cle[$numero_indexe['publicationcode']][$numero_indexe['issuenumber']])) {
+                if (array_key_exists($publication_code, $resultats_tranches_avec_cle)
+                 && array_key_exists($numero_indexe, $resultats_tranches_avec_cle[$publication_code])) {
+                    $numero = $resultats_tranches_avec_cle[$publication_code][$numero_indexe];
                     $e=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], $numero['has_edge'] === '1');
                     if ($e->est_visible) {
                         $cpt_tranches_pretes++;

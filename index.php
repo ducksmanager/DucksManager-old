@@ -589,7 +589,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                     ?><div class="alert alert-info">
                                         <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
                                     </div>
-                                    <div id="partager_bibliotheque">
+                                    <div id="partager_bibliotheque" class="cache">
                                         <div class="btn btn-default btn-sm" id="partager_bibliotheque_lien">
                                             <?=BIBLIOTHEQUE_PROPOSITION_PARTAGE?>
                                         </div>
@@ -604,6 +604,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             <br/>
                             <span id="pcent_visible"></span>
                             <span id="pourcentage_collection_visible"></span>
+                            <span id="chargement_bibliotheque"><?=CHARGEMENT?></span>
 
                             <?php if (!$est_partage_bibliotheque) { ?>
                                 <div id="proposition_photo" class="cache">
@@ -945,7 +946,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             if ($nb_numeros === 0) {
                                 if (!isset($_GET['onglet_magazine'])) {
                                     ?><?= COLLECTION_VIDE_1 ?><br/>
-                                    <?= COLLECTION_VIDE_2 ?><br/><br/><?php
+                                    <?= COLLECTION_CLIQUER_NOUVEAU_MAGAZINE ?><br/><br/><?php
                                 }
                             } else {
                                 ?><?= POSSESSION_MAGAZINES_INTRO ?>

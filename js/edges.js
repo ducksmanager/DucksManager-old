@@ -66,7 +66,7 @@ function charger_bibliotheque() {
     jQuery.post('Edge.class.php', {
             get_bibliotheque: 'true',
             largeur: largeur_section,
-            user_bibliotheque: user_bibliotheque,
+            user_bibliotheque: user_bibliotheque
         }).done(function(response) {
             if (!!response.erreur) {
                 conteneur.html(response.erreur);
@@ -86,19 +86,22 @@ function charger_bibliotheque() {
                 noms_magazines = response.noms_magazines;
                 textures = response.textures;
 
-                var element_bibliotheque = jQuery('#bibliotheque');
+                jQuery('#titre_bibliotheque').text(response.titre);
+                jQuery('#chargement_bibliotheque').addClass('cache');
 
-                element_bibliotheque
-                    .append(response.contenu)
-                    .css({
+                var element_bibliotheque = jQuery('#bibliotheque');
+                element_bibliotheque.append(response.contenu);
+
+                if (Object.keys(noms_magazines).length) {
+                    jQuery('#pcent_visible').text(response.nb_numeros_visibles);
+                    jQuery('#pourcentage_collection_visible, #partager_bibliotheque').removeClass('cache');
+                    element_bibliotheque.css({
                         backgroundImage: 'url(\'edges/textures/' + textures[0].texture + '/' + textures[0].sous_texture + '.jpg\')'
                     });
-                jQuery('#titre_bibliotheque').text(response.titre);
-                jQuery('#pcent_visible').text(response.nb_numeros_visibles);
-				jQuery('#pourcentage_collection_visible').removeClass('cache');
-				var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
-				element_conteneur_bibliotheque = element_bibliotheque;
-				charger_tranche(premiere_tranche);
+                    var premiere_tranche = element_bibliotheque.find('.tranche:eq(0)');
+                    element_conteneur_bibliotheque = element_bibliotheque;
+                    charger_tranche(premiere_tranche);
+                }
 			}
 		});
 }
