@@ -588,6 +588,21 @@ class Affichage {
             </div>
         </div><?php
     }
+
+    public static function accordion($id, $title, $data, $collapsed = true, $icon = null) {
+        ?><div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?=$id?>">
+                        <?=is_null($icon) ? '' : '<img src="'.$icon.'" />&nbsp;'?><?=$title?>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse<?=$id?>" class="panel-collapse collapse <?=$collapsed ? '' : 'in'?>">
+                <div class="panel-body"><?=implode("\n", $data)?></div>
+            </div>
+        </div><?php
+    }
 }
 
 function str_replace_last($search, $replace, $str ) {

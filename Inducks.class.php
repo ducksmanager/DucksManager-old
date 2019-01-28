@@ -281,44 +281,45 @@ class Inducks {
                 break;
             case 2: ?>
                 <div class="alert alert-info">
-                <div><?=count($results->issues)?> <?=IMPORTER_INDUCKS_NUMEROS_A_IMPORTER?></div><?php
-                if ($results->existingIssuesCount > 0) { ?>
-                    <div><?=$results->existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_EXISTANTS?></div><?php
-                }
-                if ($results->nonFoundIssuesCount > 0) { ?>
-                    <div><?=$results->nonFoundIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_NON_REFERENCES?></div><?php
-                }?>
+                    <div><?=count($results->issues)?> <?=IMPORTER_INDUCKS_NUMEROS_A_IMPORTER?></div><?php
+                    if ($results->existingIssuesCount > 0) { ?>
+                        <div><?=$results->existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_EXISTANTS?></div><?php
+                    }
+                    $nomsMagazines = Inducks::get_noms_complets_magazines(
+                        array_unique(array_map(function($issue) {
+                            return $issue->publicationcode;
+                        }, $results->issues))
+                    );
+                    ksort($nomsMagazines);
+                    ?><div class="panel-group" id="accordion"><?php
+                        foreach($nomsMagazines as $publicationCode => $nomMagazine) {
+                            $publicationCodeHyphen = str_replace('/', '-', $publicationCode);
+                            $publicationIssues = array_filter($results->issues, function($issue) use($publicationCode) {
+                                return $issue->publicationcode === $publicationCode;
+                            });
+                            Affichage::accordion(
+                                $publicationCodeHyphen, $nomMagazine . ' x ' . count($publicationIssues), array_map(function ($issue) {
+                                return '<div>' . ucfirst(NUMERO) . ' ' . $issue->issuenumber . '</div>';
+                            }, $publicationIssues),
+                                true,
+                                'images/flags/' . explode('/', $publicationCode)[0] . '.png'
+                            );
+                        }
+                    ?></div>
                 </div><?php
-                $nomsMagazines = Inducks::get_noms_complets_magazines(
-                    array_unique(array_map(function($issue) {
-                        return $issue->publicationcode;
-                    }, $results->issues))
-                );
-                ksort($nomsMagazines);
-                ?><div class="panel-group" id="accordion"><?php
-                foreach($nomsMagazines as $publicationCode => $nomMagazine) {
-                    $publicationCodeHyphen = str_replace('/', '-', $publicationCode);
-                    $publicationIssues = array_filter($results->issues, function($issue) use($publicationCode) {
-                        return $issue->publicationcode === $publicationCode;
-                    });?>
-                    <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?=$publicationCodeHyphen?>">
-                                <img src="images/flags/<?=explode('/', $publicationCode)[0]?>.png" />&nbsp;<?=$nomMagazine?> x <?=count($publicationIssues)?>
-                            </a>
-                        </h4>
-                    </div>
-                    <div id="collapse<?=$publicationCodeHyphen?>" class="panel-collapse collapse">
-                        <div class="panel-body"><?php
-                            foreach($publicationIssues as $issue) { ?>
-                                <div><?=ucfirst(NUMERO)?>&nbsp;<?=$issue->issuenumber?></div><?php
-                            }?>
-                        </div>
-                    </div>
+
+                if (count($results->nonFoundIssues) > 0) { ?>
+                    <div class="alert alert-warning">
+                        <div><?=count($results->nonFoundIssues)?> <?=IMPORTER_INDUCKS_NUMEROS_NON_REFERENCES?></div><?php
+                            Affichage::accordion(
+                                'non-references', 'Numéros non référencés', array_map(function ($issue) {
+                                return '<div>' . ucfirst(NUMERO) . ' ' . $issue . '</div>';
+                            }, $results->nonFoundIssues),
+                            false
+                        );
+                    ?>
                     </div><?php
-                }
-                ?></div>
+                }?>
                 <form id="import_inducks" method="post" action="">
                 <input type="hidden" name="inducks_collection" value="<?=$_POST['inducks_collection']?>" />
                 <div class="form-group">
