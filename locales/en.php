@@ -253,6 +253,7 @@ define('IMPORTER_INDUCKS_NUMEROS_A_IMPORTER','issues to be imported.');
 define('IMPORTER_INDUCKS_NUMEROS_EXISTANTS','issues cannot be imported because they are already in your collection.');
 define('IMPORTER_INDUCKS_NUMEROS_IMPORTES','issues have been imported.');
 define('IMPORTER_INDUCKS_NUMEROS_NON_IMPORTES','issues haven\'t been imported because they are already in your collection.');
+define('IMPORTER_INDUCKS_NUMEROS_NON_REFERENCES','issues cannot be imported because they don\'t exist anymore on Inducks.');
 define('IMPORTER_INDUCKS_TEXTE_INVALIDE','The pasted text is invalid, did you include the text <pre>country^entrycode^collectiontype^comment</pre> in the right section of the page?');
 define('IMPRIMER_COLLECTION','Print my collection');
 define('IMPRESSION_COLLECTION','Collection printing');

@@ -254,6 +254,7 @@ define('IMPORTER_INDUCKS_NUMEROS_A_IMPORTER','numéros peuvent être importés.'
 define('IMPORTER_INDUCKS_NUMEROS_EXISTANTS','numéros ne peuvent pas être importés car vous les possédez déjà dans votre collection.');
 define('IMPORTER_INDUCKS_NUMEROS_IMPORTES','numéros ont été importés.');
 define('IMPORTER_INDUCKS_NUMEROS_NON_IMPORTES','numéros n\'ont pas été importés car vous les possédez déjà dans votre collection.');
+define('IMPORTER_INDUCKS_NUMEROS_NON_REFERENCES','numéros ne peuvent pas être importés car ils n\'existent plus sur Inducks.');
 define('IMPORTER_INDUCKS_TEXTE_INVALIDE','Le texte entré est invalide, avez-vous inclus la ligne <pre>country^entrycode^collectiontype^comment</pre> dans la partie droite de la page ?');
 define('IMPRIMER_COLLECTION','Imprimer ma collection');
 define('IMPRESSION_COLLECTION','Impression de la collection');

@@ -284,6 +284,9 @@ class Inducks {
                 <div><?=count($results->issues)?> <?=IMPORTER_INDUCKS_NUMEROS_A_IMPORTER?></div><?php
                 if ($results->existingIssuesCount > 0) { ?>
                     <div><?=$results->existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_EXISTANTS?></div><?php
+                }
+                if ($results->nonFoundIssuesCount > 0) { ?>
+                    <div><?=$results->nonFoundIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_NON_REFERENCES?></div><?php
                 }?>
                 </div><?php
                 $nomsMagazines = Inducks::get_noms_complets_magazines(
@@ -341,16 +344,34 @@ class Inducks {
                 </form><?php
                 break;
             case 3:
-                $resultsImport = DmClient::get_service_results_for_dm('POST', '/collection/inducks/import', ['issues' => $results->issues, 'defaultCondition' => $_POST['etat_defaut']]);
-                if (is_object($resultsImport)) { ?>
+                $issuesCount = count($results->issues);
+                $isSuccess = true;
+                $chunkSize = 250;
+                $importedIssuesCount = 0;
+                $existingIssuesCount = 0;
+
+                // Envoyer par paquets de 250
+                for ($i=0; $i<$issuesCount; $i+=$chunkSize) {
+                    $issuesChunk = array_slice($results->issues, $i, $chunkSize);
+                    $resultsImport = DmClient::get_service_results_for_dm('POST', '/collection/inducks/import', ['issues' => $issuesChunk, 'defaultCondition' => $_POST['etat_defaut']]);
+                    $isSuccess = is_object($resultsImport);
+                    if ($isSuccess) {
+                        $importedIssuesCount+=$resultsImport->importedIssuesCount;
+                        $existingIssuesCount+=$resultsImport->existingIssuesCount;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if ($isSuccess) { ?>
                     <div class="alert alert-info">
-                    <div><?=$resultsImport->importedIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_IMPORTES?></div><?php
-                    if ($resultsImport->existingIssuesCount > 0) { ?>
-                        <div><?=$results->existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_NON_IMPORTES?></div><?php
-                    }?>
-                    <div>
-                        <a href="?action=gerer&onglet=ajout_suppr"><?=GERER_COLLECTION?></a>
-                    </div>
+                        <div><?=$importedIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_IMPORTES?></div><?php
+                        if ($existingIssuesCount > 0) { ?>
+                            <div><?=$existingIssuesCount?> <?=IMPORTER_INDUCKS_NUMEROS_NON_IMPORTES?></div><?php
+                        }?>
+                        <div>
+                            <a href="?action=gerer&onglet=ajout_suppr"><?=GERER_COLLECTION?></a>
+                        </div>
                     </div><?php
                 }
                 break;
