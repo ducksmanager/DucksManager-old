@@ -289,12 +289,10 @@ class Database {
         foreach ($resultats_numeros as $resultat) {
             $resultat_val = array_values($resultat);
             if (isset($l->collection[$resultat['Pays']])) {
-                if (isset($l->collection[$resultat['Pays']][$resultat['Magazine']])) {
-                    $l->collection[$resultat['Pays']][$resultat['Magazine']][] = $resultat_val;
+                if (!isset($l->collection[$resultat['Pays']][$resultat['Magazine']])) {
+                    $l->collection[$resultat['Pays']][$resultat['Magazine']]=[];
                 }
-                else {
-                    $l->collection[$resultat['Pays']][$resultat['Magazine']]=[$resultat_val];
-                }
+                $l->collection[$resultat['Pays']][$resultat['Magazine']][$resultat['Numero']] = $resultat_val;
             }
             else {
                 $l->collection[$resultat['Pays']]=[$resultat['Magazine']=>[$resultat_val]];

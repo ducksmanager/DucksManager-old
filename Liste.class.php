@@ -405,13 +405,9 @@ class Liste {
 		return null;
 	}
 	function get_numero_collection($pays, $magazine, $numero) {
-		if (isset($this->collection[$pays][$magazine])) {
-		    $numeroCollection = array_filter($this->collection[$pays][$magazine], function($numeroCollection) use ($numero) {
-                return $numeroCollection[2] === $numero;
-            });
-		    if (count($numeroCollection) > 0) {
-                return $numeroCollection[key($numeroCollection)];
-            }
+		if (isset($this->collection[$pays][$magazine])
+         && array_key_exists($numero, $this->collection[$pays][$magazine])) {
+            return $this->collection[$pays][$magazine][$numero];
         }
 		return null;
 	}
