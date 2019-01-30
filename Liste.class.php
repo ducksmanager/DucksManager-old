@@ -397,8 +397,8 @@ class Liste {
 		if (array_key_exists($pays, $this->collection)
          && array_key_exists($magazine, $this->collection[$pays])) {
             foreach($this->collection[$pays][$magazine] as $numero_liste) {
-                if (nettoyer_numero($numero_liste[0])===$numero) {
-                    return $numero_liste[1];
+                if (nettoyer_numero($numero_liste[2])===$numero) {
+                    return $numero_liste[3];
                 }
             }
         }
