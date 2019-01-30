@@ -88,17 +88,11 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                             'db_dm',
                             [$_GET['id_acquisition'], $id_utilisateur]
                         );
-                        if (count($resultats_date_achat) !== 1) {
-                            echo 'Invalid purchase ID';
-                        }
-                        else {
+                        if (count($resultats_date_achat) === 1) {
                             $id_acquisition = $_GET['id_acquisition'];
                         }
                     }
-
-                    if (!isset($id_acquisition)) {
-                        $id_acquisition = -2;
-                    }
+                    $id_acquisition = $id_acquisition ?? -2;
 
                     $resultats = DmClient::get_query_results_from_dm_server('
                         INSERT INTO numeros(Pays,Magazine,Numero, Etat, ID_Acquisition, ID_Utilisateur, AV)
