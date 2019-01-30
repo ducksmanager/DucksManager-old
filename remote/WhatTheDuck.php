@@ -7,8 +7,13 @@ include_once 'dm_client.php';
 DmClient::init();
 include_once 'auth.php';
 
+$SUPPORTED_LANGUAGES = ['fr', 'en'];
+
 $version= $_GET['version'] ?? '1.0';
-$language = isset($_GET['language']) ? ($_GET['language'] === 'fr' ?: 'en') : 'en';
+$language = $_GET['language'] ?? 'en';
+if (!in_array($language, $SUPPORTED_LANGUAGES, true)) {
+    $language = 'en';
+}
 
 $retour=new stdClass();
 $retour->static=new stdClass();

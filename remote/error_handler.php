@@ -8,7 +8,7 @@ class ErrorHandler
      */
     static function error_log_and_exception($message, $message_details = '') {
         self::error_log($message, $message_details);
-        ?><div class="alert alert-danger"><?=ERREUR_TECHNIQUE?></div><?php
+        ?><div class="alert alert-danger">Technical error</div><?php
     }
 
     /**
