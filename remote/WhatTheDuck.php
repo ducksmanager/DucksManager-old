@@ -107,7 +107,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         [$pays,$magazine,$numero,$etat,$id_acquisition,$id_utilisateur,0]
                     );
 
-                    if ($resultats === []) {
+                    if (!is_null($resultats)) {
                         echo 'OK';
                     }
                 } else if (isset($_GET['ajouter_achat'])) {

@@ -46,7 +46,7 @@ class DmClient
     public static function get_query_results_from_dm_server($query, $db, $parameters = [])
     {
         return self::get_service_results('POST', '/rawsql', [
-            'query' => $query,
+            'query' => trim($query),
             'parameters' => $parameters,
             'db' => $db
         ]);
