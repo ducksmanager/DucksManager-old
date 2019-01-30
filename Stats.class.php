@@ -17,7 +17,6 @@ class Stats {
 
 	static function getPublicationData() {
 		$counts= [];
-		$total=0;
 		$resultat_cpt_numeros_groupes=DM_Core::$d->requete(
             'SELECT Pays,Magazine,Count(Numero) AS cpt
 			 FROM numeros
@@ -31,7 +30,6 @@ class Stats {
 			$publicationcode=$resultat['Pays'].'/'.$resultat['Magazine'];
 			$cpt= (int)$resultat['cpt'];
 			$counts[$publicationcode]=$cpt;
-			$total+=$cpt;
 			$publication_codes[]=$publicationcode;
 		}
 		$noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
@@ -41,6 +39,7 @@ class Stats {
 		$data = [];
 		$labels = [];
 		$colors = [];
+		$total = array_sum($counts);
 		foreach($counts as $publicationcode=>$cpt) {
 			if (array_key_exists($publicationcode, $noms_magazines)) {
                 $nom_complet_magazine=$noms_magazines[$publicationcode];
