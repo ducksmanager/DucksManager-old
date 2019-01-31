@@ -160,7 +160,7 @@ class Database {
 
 	function toList($id_user=false) {
         $resultats_numeros = Dm_Core::$d->requete('
-            SELECT Pays, Magazine, Numero, Etat, AV, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
+            SELECT Pays, Magazine, REGEXP_REPLACE(Numero, \'[ ]+\', \' \') AS Numero, Etat, AV, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
             FROM numeros
             LEFT JOIN achats ON numeros.ID_Acquisition=achats.ID_Acquisition
             WHERE ID_Utilisateur=?
