@@ -1350,7 +1350,7 @@ function encart_WhatTheDuck() {
                 <a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PUB_WHATTHEDUCK_2?>
             </div>
             <?=PUB_WHATTHEDUCK_3?><br /><br />
-            <iframe width="200" height="315" src="https://www.youtube.com/embed/KBbq49Y_4AE?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
+            <iframe width="200" height="315" src="https://www.youtube.com/embed/_dYzwr6C5_M?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
             <br /><br />
         </div>
 	</div><?php
