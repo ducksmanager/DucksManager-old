@@ -88,7 +88,7 @@ class Edge {
         $texte_final='';
         $cpt_tranches_pretes=0;
 
-        $publication_codes = DmClient::get_service_results_for_dm('GET', '/collection/bookcase/sort');
+        $publication_codes = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
         
         $publication_codes_pour_verif_ordre = array_values(array_filter($publication_codes, function($publicationCode) use ($resultats_tranches) {
             return count(array_filter($resultats_tranches, function($numero) use ($publicationCode) {
@@ -226,7 +226,7 @@ elseif (isset($_POST['get_sous_textures'])) {
 	}
 	sort($bookcaseData['textures']);
 
-    $bookcaseData['sorts'] = DmClient::get_service_results_for_dm('GET', '/collection/bookcase/sort');
+    $bookcaseData['sorts'] = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
     $bookcaseData['publicationNames'] = Inducks::get_noms_complets_magazines($bookcaseData['sorts']);
 
     header('Content-type: application/json');
