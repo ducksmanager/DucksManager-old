@@ -1041,17 +1041,13 @@ $id_user= $_SESSION['id_user'] ?? null;
                 case 'agrandir':
                     $l=DM_Core::$d->toList($id_user);
 
-                    $onglets= [ACHAT_VENTE_NUMEROS=> ['achat_vente',CONTACT_UTILISATEURS],
-                        AUTEURS_FAVORIS=> ['auteurs_favoris',AUTEURS_FAVORIS_TEXTE]];
+                    $onglets= [
+                        AUTEURS_FAVORIS=> ['auteurs_favoris',AUTEURS_FAVORIS_TEXTE]
+                    ];
 
-                    $onglet=$_GET['onglet'] ?? 'achat_vente';
+                    $onglet=$_GET['onglet'] ?? 'auteurs_favoris';
                     Affichage::onglets($onglet, $onglets, 'onglet', '?action=agrandir');
                     switch($onglet) {
-                        case 'achat_vente':
-                            echo INTRO_ACHAT_VENTE;
-                            ?><br /><?php
-                            DM_Core::$d->liste_numeros_externes_dispos($id_user);
-                            break;
                         case 'auteurs_favoris':
                             $requete_auteurs_surveilles='SELECT Notation FROM auteurs_pseudos WHERE ID_User='.$id_user;
                             $resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
