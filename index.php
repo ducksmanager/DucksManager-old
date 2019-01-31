@@ -187,7 +187,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     switch($_GET['onglet']) {
                         case 'auteurs': ?>
                             <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/src/css/star-rating-svg.min.css" />
-                            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"</script><?php
+                            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"></script><?php
                         break;
                     }
                 break;
@@ -1296,9 +1296,7 @@ $id_user= $_SESSION['id_user'] ?? null;
         </div>
     </div>
 </body>
-</html>
-    <?php
-    exit();
+</html><?php
 }
 
 function formulaire_inscription() {
