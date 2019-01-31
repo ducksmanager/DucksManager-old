@@ -178,111 +178,136 @@ function afficher_histogramme_stats_auteurs() {
 }
 
 function afficher_histogramme_achats() {
-	jQuery.post('Stats.class.php', {
-		graph: 'true',
-		achats: 'true'
-	}, function(data) {
-		var achats = data.datasets;
-		achats.tot = {};
+    function get_total_until_now(dateCourante, totauxDates) {
+        var total_date_until_now = 0;
+        $.each(totauxDates, function(date, total_date) {
+            if ((dateCourante !== '?' && date <= dateCourante) || date === '?') {
+                total_date_until_now += total_date;
+            }
+        });
+        return total_date_until_now;
+    }
 
-		var dates = [];
-		var date_achat = moment(data.premier_achat['Mois']+'-01');
-		while (date_achat < new Date()) {
-			dates.push(date_achat.format('YYYY-MM'));
-			date_achat.add(1, 'month');
+    jQuery.post('Stats.class.php', {
+        graph: 'true',
+        achats: 'true'
+    }, function(data) {
+        var achats = data.datasets;
+        if (Object.keys(achats.nouv).length) {
+            var achats_pour_graph = {'nouv': [], 'tot': []};
+            var totauxMagazines = {};
+            var totauxDates = {};
+
+            jQuery.each(achats.nouv, function(publicationcode, achats_publication) {
+				totauxMagazines[publicationcode] = 0;
+                var achats_publication_nouv = [];
+                var achats_publication_tot = [];
+
+                for (var i=0; i<data.dates.length; i++) {
+                    var date_achat = data.dates[i];
+					totauxMagazines[publicationcode] += (achats_publication[date_achat] || 0);
+
+                    totauxDates[date_achat] = totauxDates[date_achat] || 0;
+                    totauxDates[date_achat] += (achats_publication[date_achat] || 0);
+
+                    achats_publication_nouv.push(achats_publication[date_achat]);
+                    achats_publication_tot.push(totauxMagazines[publicationcode]);
+                }
+
+                achats_pour_graph.nouv.push({
+                    label: data.labels_magazines_longs[publicationcode],
+                    backgroundColor: getRandomColor(),
+                    data: achats_publication_nouv
+                });
+
+                achats_pour_graph.tot.push({
+                    label: data.labels_magazines_longs[publicationcode],
+                    backgroundColor: getRandomColor(),
+                    data: achats_publication_tot
+                });
+            });
+
+            Chart.defaults.global.maintainAspectRatio = false;
+            Chart.defaults.global.legendCallback = function() { return ''; };
+            var config = {
+                type: 'bar',
+                options: {
+                    title:{
+                        display:true,
+                        text: data.title
+                    },
+                    responsive: true,
+                    scales: {
+                        xAxes: [{
+                            stacked: true,
+                            ticks: {
+                                autoSkip: false
+                            }
+                        }],
+                        yAxes: [{
+                            stacked: true
+                        }]
+                    },
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        enabled: true,
+                        mode: 'single',
+                        callbacks: {
+                            beforeTitle: function(tooltipItem) {
+                                var est_graph_tot = !$('.graph_achats.tot').is('.hidden');
+                                return (tooltipItem[0].xLabel === '?'
+                                    ? data.nouv_hors_date_l10n
+                                    : (est_graph_tot ? data.total_date_l10n : data.nouv_date_l10n) + ' ' + tooltipItem[0].xLabel)
+                                    + "\n";
+                            },
+                            title: function(tooltipItem, data) {
+                                return data.datasets[tooltipItem[0].datasetIndex].label;
+                            },
+                            label: function(tooltipItem) {
+                                return tooltipItem.yLabel;
+                            },
+                            footer: function(tooltipItem) {
+                                var est_graph_tot = !$('.graph_achats.tot').is('.hidden');
+                                return [
+                                    data.tous_magazines_l10n,
+                                    est_graph_tot
+                                        ? get_total_until_now(tooltipItem[0].xLabel, totauxDates)
+                                        : totauxDates[tooltipItem[0].xLabel]
+                                ].join('\n');
+                            }
+                        }
+                    }
+                }
+            };
+
+            var height = Math.min(
+            	$(window).height(),
+				Math.max(
+					300,
+					Object.values(totauxMagazines).reduce(function(total, num) { return total + num;}) / 4
+				)
+			);
+
+            jQuery('#canvas-holder')
+                .css({width: 250 + 30*data.dates.length + 'px', height: height})
+                .removeClass('hidden');
+
+            var config_nouv = jQuery.extend({}, config);
+            config_nouv.data = { datasets: achats_pour_graph.nouv, labels: data.dates };
+            new Chart(jQuery('.graph_achats.nouv')[0].getContext('2d'), config_nouv);
+
+            var config_tot = jQuery.extend({}, config);
+            config_tot.data = { datasets: achats_pour_graph.tot, labels: data.dates };
+            new Chart(jQuery('.graph_achats.tot')[0].getContext('2d'), config_tot);
+        }
+		else {
+			jQuery('#message_achats_vide').removeClass('hidden');
 		}
-
-		var achats_pour_graph = {'nouv': [], 'tot': []};
-
-		jQuery.each(achats.nouv, function(publicationcode, achat) {
-			var achats_publication = {'nouv': achat, 'tot': {}};
-			var achats_publication_arr = {'nouv': [], 'tot': []};
-
-			var date_achat_precedente = null;
-			for (var i=0; i<dates.length; i++) {
-				date_achat = dates[i];
-				if (!achats_publication.nouv[date_achat]) {
-					achats_publication.nouv[date_achat] = 0;
-				}
-				achats_publication.tot[date_achat] =
-					(achats_publication.tot[date_achat_precedente] || achats_publication.nouv[''])
-				  + achats_publication.nouv[date_achat];
-
-				achats_publication_arr.nouv.push(achats_publication.nouv[date_achat]);
-				achats_publication_arr.tot.push(achats_publication.tot[date_achat]);
-
-				date_achat_precedente = date_achat;
-			}
-
-			delete achats_publication[''];
-
-			achats_pour_graph.nouv.push({
-				label: data.labels_magazines_longs[publicationcode],
-				backgroundColor: getRandomColor(),
-				data: achats_publication_arr.nouv
-			});
-
-			achats_pour_graph.tot.push({
-				label: data.labels_magazines_longs[publicationcode],
-				backgroundColor: getRandomColor(),
-				data: achats_publication_arr.tot
-			});
-		});
-
-		Chart.defaults.global.maintainAspectRatio = false;
-		Chart.defaults.global.legendCallback = function() { return ''; };
-		var config = {
-			type: 'bar',
-			options: {
-				title:{
-					display:true,
-					text: data.title
-				},
-				responsive: true,
-				scales: {
-					xAxes: [{
-						stacked: true,
-						ticks: {
-							autoSkip: false
-						}
-					}],
-					yAxes: [{
-						stacked: true
-					}]
-				},
-				legend: {
-					display: false
-				},
-				tooltips: {
-					enabled: true,
-					mode: 'single',
-					callbacks: {
-						title: function(tooltipItem, data) {
-							return data.datasets[tooltipItem[0].datasetIndex].label;
-						},
-						label: function(tooltipItem) {
-							return tooltipItem.yLabel;
-						}
-					}
-				}
-			}
-		};
-
-		jQuery('#canvas-holder')
-			.css({width: 30*dates.length + 'px'})
-			.removeClass('hidden');
-
-		var config_nouv = jQuery.extend({}, config);
-		config_nouv.data = { datasets: achats_pour_graph.nouv, labels: dates };
-		new Chart(jQuery('.graph_achats.nouv')[0].getContext('2d'), config_nouv);
-
-		var config_tot = jQuery.extend({}, config);
-		config_tot.data = { datasets: achats_pour_graph.tot, labels: dates };
-		new Chart(jQuery('.graph_achats.tot')[0].getContext('2d'), config_tot);
 
 		jQuery('#fin_achats').removeClass('hidden');
 		jQuery('#message_achats').addClass('hidden');
-
 	});
 }
 

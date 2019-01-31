@@ -185,16 +185,34 @@ class Liste {
 				$types = ['nouv' => AFFICHER_NOUVELLES_ACQUISITIONS, 'tot'=> AFFICHER_POSSESSIONS_TOTALES]; ?>
 
 				<div id="message_achats"><?=CHARGEMENT?></div>
-				<div id="fin_achats" class="hidden"></div>
-
+                <div class="alert alert-info">
+                    <div><?=EXPLICATION_GRAPH_ACHATS_1?></div><br />
+                    <div><?=EXPLICATION_GRAPH_ACHATS_2?></div>
+                    <div><?=EXPLICATION_GRAPH_ACHATS_3?></div>
+                    <div><?=sprintf(EXPLICATION_GRAPH_ACHATS_4, '<a href="/?action=gerer">'.GERER_COLLECTION.'</a>')?></div>
+                    <div id="message_achats_vide" class="hidden">
+                        <a href="/?action=gerer">
+                            <img height="300px" src="images/demo_selection_achat_<?=$_SESSION['lang']?>.png" />
+                        </a>
+                    </div>
+                </div>
 				<br />
 
-				<div id="canvas-holder" class="hidden" style="background: whitesmoke">
-					<?php foreach($types as $type=>$label) {
-						?><canvas class="graph_achats <?=$type?> <?=$type==='tot' ? 'hidden' : ''?>"
-								  width="100%" height="500px"></canvas><?php
-					}?>
-				</div>
+                <div id="fin_achats" class="hidden">
+                    <div class="btn-group" data-toggle="buttons">
+                        <?php foreach($types as $type=>$label) {?>
+                        <label class="btn btn-default graph_type <?=$type==='abs' ? 'active': ''?>" onclick="toggleGraphs(this, 'achats')">
+                            <input type="radio" name="options_graph" autocomplete="off" /> <?=$label?>
+                            </label><?php
+                        }?>
+                    </div>
+                    <div id="canvas-holder" class="hidden" style="background: whitesmoke">
+                        <?php foreach($types as $type=>$label) {
+                            ?><canvas class="graph_achats <?=$type?> <?=$type==='tot' ? 'hidden' : ''?>"
+                                      width="100%" height="500px"></canvas><?php
+                        }?>
+                    </div>
+                </div>
 				<?php
 			break;
 			case 'auteurs':

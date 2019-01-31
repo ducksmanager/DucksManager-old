@@ -156,7 +156,7 @@ class Stats {
 		$id_user=static::$id_user;
 
 		$requete_achats = "
-			SELECT DATE_FORMAT(Date,'%Y-%m') AS Mois, CONCAT(Pays, '/', Magazine) AS Publicationcode, Count(Numero) AS cpt
+			SELECT IFNULL(DATE_FORMAT(Date,'%Y-%m'), '?') AS Mois, CONCAT(Pays, '/', Magazine) AS Publicationcode, Count(Numero) AS cpt
 			FROM numeros n
 			  LEFT JOIN achats USING (ID_Acquisition)
 			WHERE ID_Utilisateur=$id_user
@@ -165,31 +165,15 @@ class Stats {
 		";
 
 		$resultat_achats = DM_Core::$d->requete($requete_achats);
-
-		$premier_achat = null;
 		$achats_magazines_nouv = [];
-		$achats_magazines_current = [];
+		$dates = [];
 
 		foreach($resultat_achats as $i=>$achat) {
-			$cpt = (int) $achat['cpt'];
-
-			if (!array_key_exists($achat['Publicationcode'], $achats_magazines_current)) {
-				$achats_magazines_current[$achat['Publicationcode']] = $cpt;
-			}
-			else {
-				$achats_magazines_current[$achat['Publicationcode']] += $cpt;
-			}
-
-			if (!is_null($achat['Mois'])) {
-				if (!array_key_exists($achat['Publicationcode'], $achats_magazines_nouv)) {
-					$achats_magazines_nouv[$achat['Publicationcode']] = [];
-				}
-				$achats_magazines_nouv[$achat['Publicationcode']][$achat['Mois']] = $cpt;
-
-				if (is_null($premier_achat)) {
-					$premier_achat = $achat;
-				}
-			}
+		    $dates[] = $achat['Mois'];
+            if (!array_key_exists($achat['Publicationcode'], $achats_magazines_nouv)) {
+                $achats_magazines_nouv[$achat['Publicationcode']] = [];
+            }
+            $achats_magazines_nouv[$achat['Publicationcode']][$achat['Mois']] = (int) $achat['cpt'];
 		}
 
 		$publication_codes = array_map(function($achat) {
@@ -200,14 +184,17 @@ class Stats {
 		$noms_complets_magazines = Inducks::get_noms_complets_magazines($publication_codes);
 
 		return [
+			'dates' => array_values(array_unique($dates)),
 			'labels_pays_longs' => $noms_complets_pays,
 			'labels_magazines_longs' => $noms_complets_magazines,
 			'datasets' => [
 				'nouv' => $achats_magazines_nouv,
-				'tot' => $achats_magazines_nouv
             ],
-			'premier_achat' => $premier_achat,
-			'title' => ACHATS
+			'title' => ACHATS,
+            'nouv_hors_date_l10n' => ACHATS_NUMEROS_SANS_DATE,
+            'nouv_date_l10n' => ACHATS_NUMEROS_NOUVELLES_ACQUISITIONS,
+            'total_date_l10n' => ACHATS_NUMEROS_TAILLE,
+            'tous_magazines_l10n' => TOUS_MAGAZINES
         ];
 	}
 
