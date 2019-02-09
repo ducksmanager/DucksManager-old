@@ -17,7 +17,7 @@ else {
 		$html = ''; ?>
 		<table style="width: 90%;font-size: 15px">
 			<tr>
-				<td style="text-align: left;width:1%"><img src="proposition logo_fullsize.png" style="height: 100px;" /></td>
+				<td style="text-align: left;width:1%"><img src="logo_petit.png" style="height: 100px;" /></td>
 				<td style="text-align: center"><?=COLLECTION_DE.$_SESSION['user']?></td>
 			</tr>
 		</table>

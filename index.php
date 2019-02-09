@@ -369,6 +369,9 @@ $id_user= $_SESSION['id_user'] ?? null;
         </div>
     </div>
     <div id="zone_logo1">
+        <a href="<?= isset($_SESSION['user']) ? '/?action=gerer' : '/' ?>">
+            <img src="/logo_petit.png" />
+        </a>
     </div>
     <div id="zone_logo2">
         <?php if (!isset($_GET['action'])) {?>
