@@ -75,7 +75,7 @@ $id_user= $_SESSION['id_user'] ?? null;
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Cache-Control" CONTENT="no-store" />
         <meta http-equiv="Expires" content="0" />
-        <meta name="keywords" content="collection,bandes dessin&eacute;es,disney,biblioth&egrave;que,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
+        <meta name="keywords" content="collection,bandes dessinées,disney,bibliothèque,statistiques,revues,magazines,inducks,gestion,bouquineries,don rosa,barks,picsou,donald,mickey,comics,bookcase,issues" />
         <link rel="manifest" href="manifest.json">
         <title><?=$titre.' - DucksManager'?></title>
         <link rel="stylesheet" type="text/css" href="css/style.css?VERSION">

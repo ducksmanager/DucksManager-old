@@ -1,7 +1,7 @@
 <?php
 
 @session_start();
-$lang = ['fr' => 'Fran&ccedil;ais', 'en' => 'English'];
+$lang = ['fr' => 'Français', 'en' => 'English'];
 
 class Lang {
     static $codes_inducks = ['en' => 'en_US', 'fr' => 'fr_FR'];

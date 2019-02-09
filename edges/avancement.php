@@ -65,7 +65,7 @@
     </head>
     <body>
     	<div id="num_courant" class="init">
-    		Aucun num&eacute;ro
+    		Aucun numéro
     	</div>
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . '..');
@@ -140,15 +140,15 @@ if (isset($_GET['wanted'])) {
 		}
 		?><div>
             <div>
-                <u><?=$cpt?> utilisateurs <?=isset($_GET['user']) ? "<b><i>dont {$_GET['user']}</i></b>" : ""?> poss&egrave;dent le num&eacute;ro :</u>
+                <u><?=$cpt?> utilisateurs <?=isset($_GET['user']) ? "<b><i>dont {$_GET['user']}</i></b>" : ""?> possèdent le numéro :</u>
             </div>		&nbsp;
             <img src="../images/flags/<?=$pays?>.png" />
-            <?=$nom_magazine_complet?> n&deg;<?=$numero?>
+            <?=$nom_magazine_complet?> n°<?=$numero?>
         </div><?php
 	}
 }
 else {
-	?><a href="avancement.php?wanted=20">Voir les 20 tranches les plus demand&eacute;es</a><?php
+	?><a href="avancement.php?wanted=20">Voir les 20 tranches les plus demandées</a><?php
 }
 ?><hr /><?php
 
@@ -211,12 +211,12 @@ foreach($publicationcodes as $publicationcode) {
 
 
 	<br  /><br />
-	<b><?=$cpt_dispos?> tranches pr&ecirc;tes.</b><br />
+	<b><?=$cpt_dispos?> tranches prêtes.</b><br />
         <br /><br />
-        <u>L&eacute;gende : </u><br />
+        <u>Légende : </u><br />
         <span class="num">&nbsp;</span> Nous avons besoin d'une photo de cette tranche !<br />
 
-        <span class="num dispo">&nbsp;</span> Cette tranche est pr&ecirc;te.<br />
+        <span class="num dispo">&nbsp;</span> Cette tranche est prête.<br />
 
     </body>
 </html>

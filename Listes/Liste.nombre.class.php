@@ -3,7 +3,7 @@ require_once 'Format_liste.php';
 require_once 'Database.class.php';
 
 class Nombre extends Format_liste {
-	static $titre='Liste classique abr&eacute;g&eacute;e';
+	static $titre='Liste classique abrégée';
 
 	function __construct() {
 		$this->les_plus = [CLASSIQUE_ABREGE_PLUS_1];

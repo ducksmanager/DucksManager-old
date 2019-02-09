@@ -189,7 +189,7 @@ class Affichage {
                      id="n<?=($cpt++)?>" title="<?=$numero?>">
                     <a name="<?=$numero?>"></a>
                     <img class="preview" src="images/icones/view.png" />
-                    <span class="num">n&deg;<?=$numero?>&nbsp;
+                    <span class="num">n°<?=$numero?>&nbsp;
                         <span class="soustitre"><?=$sous_titre?></span>
                     </span><?php
                     if ($possede) {

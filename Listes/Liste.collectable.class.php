@@ -19,7 +19,7 @@ class collectable extends Format_liste {
 		$this->les_moins= [COLLECTABLE_MOINS_1,COLLECTABLE_MOINS_2];
 		$this->description=COLLECTABLE_DESCRIPTION;
 		$this->ajouter_parametres([
-			'nb_numeros_ligne'=>new Parametre_valeurs('Nombre de num&eacute;ros par ligne', [25,50,100],50,50)]);
+			'nb_numeros_ligne'=>new Parametre_valeurs('Nombre de numéros par ligne', [25,50,100],50,50)]);
 	}
 
 	static function est_listable($numero) {

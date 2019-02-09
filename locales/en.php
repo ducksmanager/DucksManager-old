@@ -285,7 +285,7 @@ define('INSCRIPTION','Sign up');
 define('INSCRIVEZ_VOUS','Click here to sign up !');
 define('INSTRUCTIONS_IMPORT_INDUCKS_TITRE','Importing your Inducks collection');
 define('INSTRUCTIONS_IMPORT_INDUCKS_1','Login to your Inducks account on the opposite figure.');
-define('INSTRUCTIONS_IMPORT_INDUCKS_2','In the menu which appears, click on "Donn&eacute;es brutes" (or "Raw data", depending on the display language).');
+define('INSTRUCTIONS_IMPORT_INDUCKS_2','In the menu which appears, click on "Données brutes" (or "Raw data", depending on the display language).');
 define('INSTRUCTIONS_IMPORT_INDUCKS_3','Select all the content of the page which appears then..');
 define('INSTRUCTIONS_IMPORT_INDUCKS_4','Use Ctrl+C or Apple+C to copy this text.');
 define('INSTRUCTIONS_IMPORT_INDUCKS_5','click inside the text area hereunder, then use Ctrl+V or Apple+V to paste the text inside of it.');
