@@ -1,8 +1,4 @@
 <?php
-@session_start();
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
 require_once 'Format_liste.php';
 class dmspiral extends Format_liste {
 	static $titre='Liste en spirale';

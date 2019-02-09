@@ -3,10 +3,6 @@
  * Developpement : Bruno Perel (admin[at]ducksmanager[dot]net)
  * (c)2003-2019 Cette classe est soumise à copyright
  */
-@session_start();
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
 include_once 'locales/lang.php';
 include_once 'Database.class.php';
 require_once 'Format_liste.php';

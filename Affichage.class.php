@@ -1,7 +1,4 @@
 <?php
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
 include_once 'locales/lang.php';
 include_once 'Edge.class.php';
 class Affichage {

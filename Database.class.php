@@ -1,14 +1,10 @@
 <?php
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
+include_once 'locales/lang.php';
 
 require_once 'remote/dm_client.php';
 DmClient::init();
 
-include_once 'locales/lang.php';
 require_once'Liste.class.php';
-
 
 require_once'DucksManager_Core.class.php';
 require_once'Inducks.class.php';
@@ -534,7 +530,6 @@ class Database {
 }
 
 if (isset($_POST['database'])) {
-	@session_start();
 	if (isset($_POST['pass'])) {
 		if (isset($_POST['connexion'])) {
 			if (!DM_Core::$d->user_connects($_POST['user'],$_POST['pass'])) {

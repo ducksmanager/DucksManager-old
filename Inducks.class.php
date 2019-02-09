@@ -172,15 +172,6 @@ class Inducks {
 		}
 	}
 
-	static function liste_numeros_valide($texte) {
-		if (isset($_GET['lang'])) {
-			$_SESSION['lang']=$_GET['lang'];
-		}
-		include_once 'locales/lang.php';
-		$regex_retrieve_numeros='#country\^entrycode\^collectiontype\^comment#i';
-		return preg_match($regex_retrieve_numeros,$texte)>0;
-	}
-
 	static function get_nb_numeros_magazines($publicationCodes) {
 		$requete='
           SELECT publicationcode, Count(issuenumber) AS cpt

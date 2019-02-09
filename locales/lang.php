@@ -1,30 +1,32 @@
 <?php
-
 @session_start();
+ini_set('session.lifetime', 0);
+
 $lang = ['fr' => 'Français', 'en' => 'English'];
 
 class Lang {
     static $codes_inducks = ['en' => 'en_US', 'fr' => 'fr_FR'];
 }
 
-if (!isset($_SESSION['lang'])) {
+if (isset($_GET['lang'])) {
+    $_SESSION['lang']=$_GET['lang'];
+}
 
+if (!isset($_SESSION['lang'])) {
     if (array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER)) {
         $str_lang = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
     }
     else {
         $str_lang = ['fr-FR'];
     }
-    $str_lang = explode('-', $str_lang[0]);
-    if (array_key_exists($str_lang[0], $lang)) {
-        $_SESSION['lang'] = $str_lang[0];
-    }
-    else {
-        $_SESSION['lang'] = 'en';
-    }
+    $_SESSION['lang'] = explode('-', $str_lang[0])[0];
 }
-@include_once 'locales/' . $_SESSION['lang'] . '.php';
-@include_once $_SESSION['lang'] . '.php';
+
+if (!is_string($_SESSION['lang']) || !array_key_exists($_SESSION['lang'], $lang)) {
+    $_SESSION['lang'] = 'en';
+}
+
+@include __DIR__."/../locales/{$_SESSION['lang']}.php";
 
 if (isset($_POST['keys'])) {
     header('Content-Type: application/json');

@@ -1,5 +1,5 @@
 <?php
-@session_start();
+include_once 'locales/lang.php';
 $erreur=CONNEXION;
 $user=$_POST['user'] ?? ($_SESSION['user'] ?? null);
 $pass=isset($_POST['pass']) ? sha1($_POST['pass']) : ($_SESSION['pass'] ?? null);

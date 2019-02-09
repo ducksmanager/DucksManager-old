@@ -1,10 +1,5 @@
 <?php
 @error_reporting(  E_ALL & ~E_NOTICE & ~E_DEPRECATED );
-@session_start();
-ini_set('session.lifetime', 0);
-if (isset($_GET['lang'])) {
-    $_SESSION['lang']=$_GET['lang'];
-}
 include_once 'locales/lang.php';
 include_once 'Util.class.php';
 include_once 'Database.class.php';

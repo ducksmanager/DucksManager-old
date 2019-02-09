@@ -1,8 +1,4 @@
 <?php
-@session_start();
-if (isset($_GET['lang'])) {
-	$_SESSION['lang']=$_GET['lang'];
-}
 include_once 'locales/lang.php';
 require_once 'Database.class.php';
 require_once 'Inducks.class.php';
