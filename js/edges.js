@@ -61,7 +61,6 @@ function charger_bibliotheque() {
 
     largeur_section=section.width();
     jQuery('#pourcentage_collection_visible').addClass('cache');
-    l10n_action('remplirSpan','pourcentage_collection_visible');
 
     jQuery.post('Edge.class.php', {
             get_bibliotheque: 'true',
@@ -156,7 +155,7 @@ function charger_tranche_suivante() {
 
 function charger_recherche() {
     localStorage && localStorage.clear();
-    l10n_action('fillArray',l10n_recherche,'l10n_recherche', function() {
+    l10n_get(l10n_recherche,'l10n_recherche', function() {
         var element_recherche_histoire = jQuery('#recherche_histoire');
         var conteneur_bibliotheque = jQuery('#bibliotheque');
 

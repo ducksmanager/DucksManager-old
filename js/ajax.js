@@ -6,15 +6,8 @@ var l10n_gerer;
 
 var isMobile = window.matchMedia("only screen and (max-width: 767px)");
 
-function charger_menu() {
-    if (!isMobile) {
-        jQuery('#menu-content').removeClass('collapse');
-    }
-}
-
-function init_observers_gerer_numeros() {
-
-    l10n_gerer = [
+var l10n_gerer = [
+        'selectionner_magazine', 'remplir_pays_et_magazine',
         'numero_selectionne', 'numeros_selectionnes',
         'achat', 'achat_date_achat', 'achat_description', 'creer', 'annuler',
         'etat', 'etat_conserver_etat_actuel', 'etat_marquer_non_possede', 'etat_marquer_possede',
@@ -22,13 +15,19 @@ function init_observers_gerer_numeros() {
         'achat_conserver_date_achat', 'achat_desassocier_date_achat', 'achat_associer_date_achat', 'achat_nouvelle_date_achat',
         'a_vendre_titre', 'vente_conserver_volonte_vente', 'vente_marquer_a_vendre', 'vente_marquer_pas_a_vendre',
         'enregistrer_changements'];
-    l10n_action('fillArray',l10n_gerer, 'l10n_gerer', function() {
-        get_achats(function() {
-            init_menu_contextuel();
-            init_observers_numeros();
-            init_observers_previews();
-        })
-    });
+
+function charger_menu() {
+    if (!isMobile) {
+        jQuery('#menu-content').removeClass('collapse');
+    }
+}
+
+function init_observers_gerer_numeros() {
+    get_achats(function() {
+        init_menu_contextuel();
+        init_observers_numeros();
+        init_observers_previews();
+    })
 }
 
 function init_observers_numeros() {
@@ -328,38 +327,40 @@ function select_numero() {
 }
 
 function afficher_numeros(pays,magazine, numero) {
-	if (pays === null || magazine === null) {
-		var el_select=jQuery('#liste_magazines');
-		if (el_select.find('option:eq(0)').attr('id') === 'vide') {
-			l10n_action('alert','selectionner_magazine');
-			return;
-		}
-		magazine_sel=el_select.find('option:selected').attr('id');
-		pays=pays_sel;
-		magazine=magazine_sel;
-		if (!pays || !magazine) {
-            l10n_action('alert','remplir_pays_et_magazine');
-            return;
-		}
-	}
-
-	var liste_numeros = jQuery('#liste_numeros');
-    if (liste_numeros.length) {
-        jQuery.post('Database.class.php',
-            {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
-            function(response) {
-                liste_numeros.html(response);
-                init_observers_gerer_numeros();
-                numero = numero || location.hash;
-                if (numero) {
-                    indiquer_numero(liste_numeros.find('[name="'+numero.replace(/#/,'')+'"]').parent(), ['gauche']);
-                }
+    l10n_get(l10n_gerer, 'l10n_gerer', function() {
+        if (pays === null || magazine === null) {
+            var el_select=jQuery('#liste_magazines');
+            if (el_select.find('option:eq(0)').attr('id') === 'vide') {
+                alert(l10n_gerer.selectionner_magazine);
+                return;
             }
-        );
-    }
-    else if (numero) {
-		location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
-	}
+            magazine_sel=el_select.find('option:selected').attr('id');
+            pays=pays_sel;
+            magazine=magazine_sel;
+            if (!pays || !magazine) {
+                alert(l10n_gerer.remplir_pays_et_magazine);
+                return;
+            }
+        }
+
+        var liste_numeros = jQuery('#liste_numeros');
+        if (liste_numeros.length) {
+            jQuery.post('Database.class.php',
+                {database: 'true', affichage: 'true', pays: pays, magazine: magazine},
+                function(response) {
+                    liste_numeros.html(response);
+                    init_observers_gerer_numeros();
+                    numero = numero || location.hash;
+                    if (numero) {
+                        indiquer_numero(liste_numeros.find('[name="'+numero.replace(/#/,'')+'"]').parent(), ['gauche']);
+                    }
+                }
+            );
+        }
+        else if (numero) {
+            location.replace('?action=gerer&onglet=ajout_suppr&onglet_magazine=' + pays + '/' + magazine+'&numero=' + numero);
+        }
+    });
 }
 
 function isLeftClick(event) {

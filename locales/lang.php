@@ -26,16 +26,13 @@ if (!isset($_SESSION['lang'])) {
 @include_once 'locales/' . $_SESSION['lang'] . '.php';
 @include_once $_SESSION['lang'] . '.php';
 
-if (isset($_POST['index'])) {
-    if (strpos($_POST['index'], '~') === false) {
-        echo utf8_encode(get_constant($_POST['index']));
-    }
-    else {
-        $arr_l10n = explode('~', $_POST['index']);
-        foreach ($arr_l10n as $str) {
-            echo utf8_encode(get_constant($str)) . '~';
-        }
-    }
+if (isset($_POST['keys'])) {
+    header('Content-Type: application/json');
+    $results = [];
+    array_walk($_POST['keys'], function($l10nKey) use(&$results) {
+        $results[$l10nKey] = get_constant($l10nKey);
+    });
+    echo json_encode($results);
 }
 
 function get_constant($nom_constante) {

@@ -610,7 +610,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                             }?>
                             <br/>
                             <span id="pcent_visible"></span>
-                            <span id="pourcentage_collection_visible"></span>
+                            <span id="pourcentage_collection_visible"><?=POURCENTAGE_COLLECTION_VISIBLE?></span>
                             <span id="chargement_bibliotheque"><?=CHARGEMENT?></span>
 
                             <?php if (!$est_partage_bibliotheque) { ?>

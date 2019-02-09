@@ -1,4 +1,5 @@
 .context-menu-list {
+	min-width: 300px !important;
 	padding: 0 !important;
 }
 
