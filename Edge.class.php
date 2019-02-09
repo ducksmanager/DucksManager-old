@@ -159,11 +159,7 @@ class Edge {
 
 }
 
-if (isset($_POST['get_points'])) {
-    $nb_points_courants = DM_Core::$d->get_points_courants($_SESSION['id_user']);
-    echo json_encode(['points' => $nb_points_courants]);
-}
-elseif (isset($_POST['get_popularite_numeros'])) {
+if (isset($_POST['get_popularite_numeros'])) {
     header('Content-type: application/json');
     echo json_encode([
         'popularite_numeros' => Edge::getPointsPhotographeAGagner($_SESSION['id_user'])
