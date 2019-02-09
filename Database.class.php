@@ -211,12 +211,17 @@ class Database {
 	}
 
 	function afficher_liste_auteurs_surveilles($auteurs_surveilles) {
-		if (count($auteurs_surveilles)===0) {
-			echo AUCUN_AUTEUR_SURVEILLE;
-			?><br /><?php
+		if (count($auteurs_surveilles)===0) {?>
+			<div class="alert alert-warning">
+                <?=AUCUN_AUTEUR_NOTE_1?>
+                <?=AUCUN_AUTEUR_NOTE_2_MEME_PAGE?>
+                <?=AUCUN_AUTEUR_NOTE_3?>
+            </div>
+            <br /><?php
 		}
-		else {
-            ?><ul id="liste_notations">
+		else {?>
+            <?=LISTE_AUTEURS_INTRO?>
+            <ul id="liste_notations">
                 <li class="notation template">
                     <div class="nom_auteur"></div>
                     <div class="notation_auteur"></div>

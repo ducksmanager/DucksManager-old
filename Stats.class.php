@@ -248,50 +248,60 @@ class Stats {
 	}
 
 	static function showSuggestedPublications($pays) {
+        $statsHasInit = count(DM_Core::$d->requete(
+            'SELECT 1 FROM auteurs_pseudos WHERE ID_user=?',
+            [$_SESSION['id_user']],
+        'db_dm_stats'
+        )) > 0;
 
-        $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues', is_null($pays) ? [] : [$pays]);
+        if ($statsHasInit) {
+            $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues', is_null($pays) ? [] : [$pays]);
 
-		if (!isset($suggestions->issues) || count(get_object_vars($suggestions->issues)) === 0) {
-			?><br /><?=AUCUNE_SUGGESTION?><?php
-		}
-		else {
-			$minScore = $suggestions->minScore;
-			$maxScore = $suggestions->maxScore;
+            if (!isset($suggestions->issues) || count(get_object_vars($suggestions->issues)) === 0) {
+                ?><br /><?=AUCUNE_SUGGESTION?><?php
+            }
+            else {
+                $minScore = $suggestions->minScore;
+                $maxScore = $suggestions->maxScore;
 
-			foreach($suggestions->issues as $issuecode => $issue) {
-			    $publicationcode = $issue->publicationcode;
-                $country = explode('/', $publicationcode)[0];
-                $issuenumber = $issue->issuenumber;
-			    $importance = $issue->score === $maxScore ? 1 : ($issue->score === $minScore ? 3 : 2);
-				?>
-				<div>
-					<span class="numero top<?=$importance?>"><?php
-					Affichage::afficher_texte_numero(
-                        $country,
-                        $suggestions->publicationTitles->$publicationcode,
-                        $issuenumber
-					);
-					?>&nbsp;</span><?=NUMERO_CONTIENT?>
-				</div>
-				<ul class="liste_histoires"><?php
-				foreach($issue->stories as $author => $storiesOfAuthor) {
-					?><li>
-						<div>
-							<?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions->authors->$author])?>
-						</div>
-						<ul class="liste_histoires">
-							<?php foreach($storiesOfAuthor as $storyCode) {
-								?><li>
-									<?php Affichage::afficher_texte_histoire($storyCode, @$suggestions->storyDetails->$storyCode->title, @$suggestions->storyDetails->$storyCode->storycomment);
-								?></li>
-								<?php
-							}?>
-						</ul>
-					</li><?php
-				}
-				?></ul><?php
-			}
-		}
+                foreach($suggestions->issues as $issuecode => $issue) {
+                    $publicationcode = $issue->publicationcode;
+                    $country = explode('/', $publicationcode)[0];
+                    $issuenumber = $issue->issuenumber;
+                    $importance = $issue->score === $maxScore ? 1 : ($issue->score === $minScore ? 3 : 2);
+                    ?>
+                    <div>
+                        <span class="numero top<?=$importance?>"><?php
+                        Affichage::afficher_texte_numero(
+                            $country,
+                            $suggestions->publicationTitles->$publicationcode,
+                            $issuenumber
+                        );
+                        ?>&nbsp;</span><?=NUMERO_CONTIENT?>
+                    </div>
+                    <ul class="liste_histoires"><?php
+                    foreach($issue->stories as $author => $storiesOfAuthor) {
+                        ?><li>
+                            <div>
+                                <?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions->authors->$author])?>
+                            </div>
+                            <ul class="liste_histoires">
+                                <?php foreach($storiesOfAuthor as $storyCode) {
+                                    ?><li>
+                                        <?php Affichage::afficher_texte_histoire($storyCode, @$suggestions->storyDetails->$storyCode->title, @$suggestions->storyDetails->$storyCode->storycomment);
+                                    ?></li>
+                                    <?php
+                                }?>
+                            </ul>
+                        </li><?php
+                    }
+                    ?></ul><?php
+                }
+            }
+        }
+        else {
+            ?><br /><div class="alert alert-info"><?=CALCULS_PAS_ENCORE_FAITS?></div><?php
+        }
 	}
 }
 

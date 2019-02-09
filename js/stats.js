@@ -328,7 +328,7 @@ function toggleGraphs(element, type) {
 
 function recharger_stats_auteurs() {
 	var pays=jQuery('#liste_pays').find('option:selected').attr('id');
-	location.replace(location.href.replace(/&pays=[^&jQuery]+/, '') + '&pays='+pays);
+	location.replace(location.href.replace(/&pays=[^&$]+/, '') + '&pays='+pays);
 }
 
 function init_autocompleter_auteurs() {

@@ -218,13 +218,13 @@ class Liste {
 			case 'auteurs':
 				$requete_auteurs_surveilles='SELECT NomAuteurAbrege FROM auteurs_pseudos WHERE ID_User='.$id_user;
                 $resultats_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
-                if (count($resultats_auteurs_surveilles) === 0) {
-                    echo AUCUN_AUTEUR_SURVEILLE;
+                if (count($resultats_auteurs_surveilles) === 0) { ?>
+                    <div class="alert alert-warning"><?=AUCUN_AUTEUR_SURVEILLE?></div><?php
                 }
                 else {
                     $types = ['abs' => AFFICHER_VALEURS_REELLES, 'pct'=> AFFICHER_POURCENTAGES]; ?>
 
-                    <div id="aucun_resultat_stats_auteur" class="hidden">
+                    <div id="aucun_resultat_stats_auteur" class="alert alert-info hidden">
                         <?=CALCULS_PAS_ENCORE_FAITS?>
                     </div>
                     <div id="chargement_stats_auteur">
@@ -257,12 +257,14 @@ class Liste {
 				?>
 				<br /><br />
 				<?=AUTEURS_FAVORIS_INTRO_1?>
-				<a target="_blank" href="?action=agrandir&onglet=auteurs_favoris"><?=AUTEURS_FAVORIS_INTRO_2?></a>
-				<br />
-				<?=STATISTIQUES_AUTEURS_INTRO?>
+				<a href="?action=agrandir&onglet=suggestions_achat"><?=AUTEURS_FAVORIS_INTRO_2?></a>
 				<br /><br />
+				<div style="clear: both">
+					<br /><br /><?php
+					DM_Core::$d->afficher_liste_auteurs_surveilles($resultats_auteurs_surveilles); ?>
+				</div>
                 <div class="form-group">
-                    <form method="post" action="?action=stats&amp;onglet=auteurs">
+                    <form method="post" class="row" action="?action=stats&amp;onglet=auteurs">
                         <label for="auteur_nom" class="col-sm-1 control-label" style="white-space: nowrap"><?=AUTEUR?> :</label>
                         <div class="col-sm-4">
                             <input class="form-control" autocomplete="off" type="text" name="auteur_nom" id="auteur_nom" value="" />
@@ -272,14 +274,7 @@ class Liste {
                             <input class="btn btn-default center" type="submit" value="<?=AJOUTER?>" />
                         </div>
                     </form>
-                </div>
-				<div style="clear: both">
-					<br /><br />
-					<?=LISTE_AUTEURS_INTRO?>
-					<?php
-					DM_Core::$d->afficher_liste_auteurs_surveilles($resultats_auteurs_surveilles);
-					?>
-				</div><?php
+                </div><?php
 				break;
 			break;
 		}
