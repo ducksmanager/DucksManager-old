@@ -57,6 +57,7 @@ function afficher_histogramme_possessions() {
 
 		var canvasHolderStyle = {};
 		canvasHolderStyle[vertical ? 'height' : 'width'] = 100 + 30*data.labels.length + 'px';
+		canvasHolderStyle[vertical ? 'width' : 'height'] = '500px';
 
 		Chart.defaults.global.maintainAspectRatio = false;
 		var config = {
