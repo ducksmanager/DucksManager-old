@@ -619,7 +619,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                                         <?php Affichage::afficher_proposition_photo_tranche(); ?>
                                     </div>
                                 </div>
-                                <div id="recherche_histoire">
+                                <div id="recherche_histoire" class="invisible">
                                     <?= RECHERCHER_BIBLIOTHEQUE ?><br/>
                                     <input type="text" class="form-control"/>
                                 </div>

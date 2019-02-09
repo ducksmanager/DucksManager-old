@@ -1,5 +1,4 @@
 #bibliotheque  {
-    width:100%;
     height:100%;
     z-index:50;
     margin-top: 35px;
@@ -24,8 +23,7 @@
 }
 
 #conteneur_bibliotheque #recherche_histoire {
-    position: absolute;
-    display: none;
+    float: right;
     margin-top: -4px;
 }
 
@@ -259,12 +257,7 @@
 }
 
 @media (max-width: 767px) {
-    #recherche_histoire {
-        width: 100%;
-    }
-
     #conteneur_bibliotheque #recherche_histoire {
-        position: static;
         margin-top: 10px;
     }
 }

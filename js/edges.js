@@ -165,8 +165,7 @@ function charger_recherche() {
 
                element_recherche_histoire.css({
                    left: (jQuery('#contenu').offset().left
-                       +parseInt(conteneur_bibliotheque.css('width').substring(0,conteneur_bibliotheque.css('width').length-2))-330) +'px',
-                   display: 'block'});
+                       +parseInt(conteneur_bibliotheque.css('width').substring(0,conteneur_bibliotheque.css('width').length-2))-330) +'px'}).removeClass('invisible');
            }
            element_recherche_histoire.find('>input')
                .on('keyup', function(e) {
