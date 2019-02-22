@@ -231,21 +231,23 @@ class Database {
 
 	function get_notes_auteurs($id_user) {
 		$notesAuteurs = $this->requete('SELECT NomAuteurAbrege, Notation FROM auteurs_pseudos WHERE ID_user='.$id_user);
-		$codesAuteurs = array_map(function($noteAuteur) {
-		    return $noteAuteur['NomAuteurAbrege'];
-        }, $notesAuteurs);
-		$nomsAuteurs = Inducks::requete('
-          SELECT personcode, fullname
-          from inducks_person
-          where personcode IN ('.implode(',', array_fill(0, count($codesAuteurs), '?')).')',
-            $codesAuteurs
-        );
-		array_walk($notesAuteurs, function(&$noteAuteur) use ($nomsAuteurs) {
-		    $noteAuteur['NomAuteur'] = array_values(array_filter($nomsAuteurs, function($codeAuteur) use ($noteAuteur) {
-		        return $codeAuteur['personcode'] === $noteAuteur['NomAuteurAbrege'];
-		    }))[0]['fullname'];
-        });
-		return $notesAuteurs;
+		if (count($notesAuteurs) > 0) {
+            $codesAuteurs = array_map(function($noteAuteur) {
+                return $noteAuteur['NomAuteurAbrege'];
+            }, $notesAuteurs);
+            $nomsAuteurs = Inducks::requete('
+              SELECT personcode, fullname
+              from inducks_person
+              where personcode IN ('.implode(',', array_fill(0, count($codesAuteurs), '?')).')',
+                $codesAuteurs
+            );
+            array_walk($notesAuteurs, function(&$noteAuteur) use ($nomsAuteurs) {
+                $noteAuteur['NomAuteur'] = array_values(array_filter($nomsAuteurs, function($codeAuteur) use ($noteAuteur) {
+                    return $codeAuteur['personcode'] === $noteAuteur['NomAuteurAbrege'];
+                }))[0]['fullname'];
+            });
+            return $notesAuteurs;
+        }
 	}
 
 	function modifier_note_auteur($nomAuteurAbrege, $note) {
