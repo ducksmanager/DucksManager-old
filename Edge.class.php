@@ -57,15 +57,15 @@ class Edge {
             SELECT numeros.Pays,
                    numeros.Magazine,
                    numeros.Numero,
-                   IFNULL(reference.NumeroReference, REPLACE(numeros.Numero, ' ', '')) AS NumeroReference,
+                   IFNULL(reference.NumeroReference, numeros.Numero_nospace) AS NumeroReference,
                    EXISTS(
                        SELECT 1
                        FROM tranches_pretes
                        WHERE CONCAT(numeros.Pays, '/', numeros.Magazine) = tranches_pretes.publicationcode
-                         AND IFNULL(reference.NumeroReference, REPLACE(numeros.Numero, ' ', '')) = tranches_pretes.issuenumber
+                         AND IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tranches_pretes.issuenumber
                      ) AS has_edge
             FROM numeros
-            LEFT JOIN tranches_doublons reference ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND REPLACE(numeros.Numero, ' ', '') = reference.Numero
+            LEFT JOIN tranches_doublons reference ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND numeros.Numero_nospace = reference.Numero
             WHERE ID_Utilisateur = ?
             ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
 
@@ -160,10 +160,12 @@ class Edge {
 }
 
 if (isset($_POST['get_popularite_numeros'])) {
-    header('Content-type: application/json');
-    echo json_encode([
-        'popularite_numeros' => Edge::getPointsPhotographeAGagner($_SESSION['id_user'])
-    ]);
+    if (isset($_SESSION['id_user'])) {
+        header('Content-type: application/json');
+        echo json_encode([
+            'popularite_numeros' => Edge::getPointsPhotographeAGagner($_SESSION['id_user'])
+        ]);
+    }
 }
 elseif (isset($_POST['get_bibliotheque'])) {
     header('Content-type: application/json');
