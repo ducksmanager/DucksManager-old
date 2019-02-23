@@ -71,16 +71,18 @@ function charger_bibliotheque() {
                 conteneur.html(response.erreur);
             }
             else {
-                jQuery.post('Edge.class.php',
-                    {get_popularite_numeros: true},
-                    function(response_popularite) {
-                        popularite_numeros = response_popularite.popularite_numeros;
+                if (!est_partage_bibliotheque) {
+                    jQuery.post('Edge.class.php',
+                        {get_popularite_numeros: true},
+                        function(response_popularite) {
+                            popularite_numeros = response_popularite.popularite_numeros;
 
-                        charger_points_utilisateur(function() {
-                            afficher_proposition_photos_tranches();
-                        });
-                    }
-                );
+                            charger_points_utilisateur(function() {
+                                afficher_proposition_photos_tranches();
+                            });
+                        }
+                    );
+                }
 
                 noms_magazines = response.noms_magazines;
                 textures = response.textures;
