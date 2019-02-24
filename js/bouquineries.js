@@ -16,52 +16,30 @@ function fillInAddress() {
 	form.find('[name="coordY"]').val(place.geometry.location.lng());
 }
 
-var map;
-var adresses=[];
-var id_adresse_courante=0;
-var infowindows=[];
-
-function analyserAdresseSuivante() {
-	if (id_adresse_courante < adresses.length) {
-		adresses[id_adresse_courante].id=id_adresse_courante;
-		localiser(id_adresse_courante);
-		id_adresse_courante++;
-		analyserAdresseSuivante();
-	}
-}
-
-function initialize() {
+function initBouquineries() {
 	jQuery.post('Database.class.php',
 		{ database: 'true', liste_bouquineries: 'true' },
 		function(response) {
-			adresses=response;
-			analyserAdresseSuivante();
+			mapboxgl.accessToken = 'pk.eyJ1IjoiYnBlcmVsIiwiYSI6ImNqbmhubHVrdDBlZ20zcG8zYnQydmZwMnkifQ.suaRi8ln1w_DDDlTlQH0vQ';
+
+			var carte = new mapboxgl.Map({
+				container: 'map',
+				style: 'mapbox://styles/mapbox/light-v10',
+				center: [1.73584, 46.754917],
+				zoom: 4
+			});
+
+			jQuery.each(response, function(i, adresse) {
+				creer_marqueur(carte, adresse, [
+					parseFloat(adresse.CoordY),
+					parseFloat(adresse.CoordX)
+				]);
+			});
 		}
 	);
-	var latlng = new google.maps.LatLng(46.754917, 1.73584);
-	var myOptions = {
-		zoom: 4,
-		center: latlng
-	};
-	map = new google.maps.Map(jQuery('#map_canvas')[0], myOptions);
 }
 
-function localiser(id_adresse) {
-	if (adresses[id_adresse].CoordX != '0') {
-		creer_marqueur(adresses[id_adresse],
-			new google.maps.LatLng(
-				parseFloat(adresses[id_adresse].CoordX),
-				parseFloat(adresses[id_adresse].CoordY)));
-	}
-}
-
-function creer_marqueur(adresse,position) {
-	var marker = new google.maps.Marker({
-		map: map,
-		position: position,
-		title: adresse.Nom
-	});
-
+function creer_marqueur(carte, adresse,position) {
 	var fields = ['Nom', 'Commentaire', 'Adresse', 'Signature'];
 
 	var element = jQuery('.infoWindow.template').clone(true).removeClass('template');
@@ -69,16 +47,9 @@ function creer_marqueur(adresse,position) {
 		element.find('.' + field).html(adresse[field]);
 	});
 
-	infowindows[adresse.id] = new google.maps.InfoWindow({
-		content: element.html()
-	});
-
-	google.maps.event.addListener(marker, 'click', function() {
-		jQuery.each(adresses, function(id, adresse) {
-			infowindows[id].close(map, marker);
-			if (marker.title === adresse.Nom) {
-				infowindows[id].open(map, marker);
-			}
-		});
-	});
+	new mapboxgl.Marker($('<div>').addClass('marker')[0])
+		.setLngLat(position)
+		.setPopup(new mapboxgl.Popup() // add popups
+			.setHTML(element.html()))
+		.addTo(carte);
 }

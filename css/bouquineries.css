@@ -1,0 +1,36 @@
+#map {
+    height: 500px;
+}
+
+.marker {
+    background-image: url('../images/poi.png');
+    margin-top: -21.5px;
+    width: 27px;
+    height: 43px;
+    cursor: pointer;
+}
+
+.mapboxgl-popup {
+    max-width: 40%;
+}
+
+.mapboxgl-popup-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 7px 1px rgba(0,0,0,0.3);
+    color: black;
+    letter-spacing: 0.25px;
+    overflow-x: auto;
+}
+
+.mapboxgl-popup-close-button {
+    font-size: 18px;
+    padding-top: 5px;
+}
+
+@media (max-width: 767px) {
+    .mapboxgl-popup {
+        max-width: 70%;
+    }
+}

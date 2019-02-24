@@ -158,8 +158,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css" /><?php
                 break;
                 case 'bouquineries': ?>
-                    <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
-                    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1NTnb7sx7wl1fuqiLbKfWkQo3hNxv2HQ&callback=initializeAutocomplete&libraries=places"></script><?php
+                    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+                    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+                    <link href='css/bouquineries.css' rel='stylesheet' /><?php
                 break;
                 case 'bibliotheque':
                     if (isset($_GET['user'])) {
@@ -200,9 +201,7 @@ $id_user= $_SESSION['id_user'] ?? null;
             }
         }
         ?>
-    </head>
-
-    <?php
+    </head><?php
     $texte_debut='';
     if ($action==='demo') {
     	$action='open';
@@ -231,7 +230,6 @@ $id_user= $_SESSION['id_user'] ?? null;
                 case 'options':
                     ?>initTextures();<?php
                 break;
-
             }
         break;
         case 'gerer':
@@ -286,9 +284,11 @@ $id_user= $_SESSION['id_user'] ?? null;
                 }
             }
         break;
-        case 'agrandir':
-            ?>
+        case 'agrandir':?>
             initPays(true, '<?=empty($_GET['pays']) ? 'ALL' : $_GET['pays']?>');<?php
+            break;
+        case 'bouquineries':?>
+            initBouquineries();<?php
             break;
     }
     ?>">
@@ -1139,7 +1139,18 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <br/><?php
                 }
             }?>
-            <iframe src="bouquineries.php" class="iframe_map"></iframe>
+            <div id="map"></div>
+            <div class="template infoWindow">
+                <div id="siteNotice">
+                </div>
+                <h1 id="firstHeading" class="firstHeading Nom"></h1>
+                <div id="bodyContent">
+                    <p class="Commentaire"></p>
+                    <p>Adresse : </p>
+                    <p class="Adresse"></p><br />
+                    <p class="Signature"></p>
+                </div>
+            </div>
             <br /> <br />
             <h2>
                 <?=PROPOSER_BOUQUINERIE?>
@@ -1175,6 +1186,7 @@ $id_user= $_SESSION['id_user'] ?? null;
                     <input type="hidden" name="coordX" />
                     <input type="hidden" name="coordY" />
                 </form>
+                <script type="text/javascript" src="js/bouquineries.js?VERSION"></script>
             <?php
             break;
 

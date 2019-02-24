@@ -11,7 +11,6 @@ echo ${commitid} > deployment_commit_id.txt
 echo "deployment_commit_id.txt" >> changeset.txt
 
 echo "index.php" >> changeset.txt
-echo "bouquineries.php" >> changeset.txt
 
 echo "Change set : " && cat changeset.txt
 
@@ -21,6 +20,5 @@ cat changeset.txt | while read -r file; do
 done
 
 sed -i "s/VERSION/$commitid/g" toUpload/index.php
-sed -i "s/VERSION/$commitid/g" toUpload/bouquineries.php
 
 ls -la toUpload
