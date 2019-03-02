@@ -2,6 +2,7 @@
 include_once 'Database.class.php';
 class Inducks {
 	static $noms_complets;
+	static $OUTDUCKS_ROOT = 'https://inducks.org/hr.php?normalsize=1&image=https://outducks.org/';
 
 	static function connexion_ok() {
 		$requete='SELECT COUNT(*) As cpt FROM inducks_country';
@@ -395,28 +396,32 @@ elseif (isset($_POST['get_numeros'])) {
 	Inducks::get_numeros($_POST['pays'],$_POST['magazine']);
 }
 elseif (isset($_POST['get_cover'])) {
-	$resultats= [];
 	$regex_num_alternatif='#([A-Z]+)([0-9]+)#';
 	$numero_alternatif=preg_match($regex_num_alternatif, $_POST['numero']) === 0 ? null : preg_replace($regex_num_alternatif, '$1[ ]*$2', $_POST['numero']);
-	$retour= [];
 	$_POST['numero']=str_replace(' ','',$_POST['numero']);
 	$_POST['magazine']=strtoupper($_POST['magazine']);
-	$requete_get_extraits='SELECT sitecode, position, url FROM inducks_issue '
-						 .'INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode '
-						 .'INNER JOIN inducks_entryurl ON inducks_entry.entrycode = inducks_entryurl.entrycode '
-						 .'WHERE inducks_issue.publicationcode = \''.$_POST['pays'].'/'.$_POST['magazine'].'\' '
-						 .'AND (REPLACE(issuenumber,\' \',\'\') = \''.$_POST['numero'].'\' '.(is_null($numero_alternatif) ? '':'OR REPLACE(issuenumber,\' \',\'\') REGEXP \''.$numero_alternatif.'\'').') '
-						 .'GROUP BY inducks_entry.entrycode '
-						 .'ORDER BY position';
-	$resultat_get_extraits=Inducks::requete($requete_get_extraits);
+	$requete_get_extraits='
+      SELECT sitecode, position, url FROM inducks_issue
+      INNER JOIN inducks_entry ON inducks_issue.issuecode = inducks_entry.issuecode
+      INNER JOIN inducks_entryurl ON inducks_entry.entrycode = inducks_entryurl.entrycode
+      WHERE inducks_issue.publicationcode = ?
+        AND (REPLACE(issuenumber,\' \',\'\') = ? '.(is_null($numero_alternatif) ? '':'OR REPLACE(issuenumber,\' \',\'\') REGEXP ?').')
+      GROUP BY inducks_entry.entrycode
+      ORDER BY position';
+	$resultat_get_extraits=Inducks::requete($requete_get_extraits, [
+        $_POST['pays'].'/'.$_POST['magazine'],
+        $_POST['numero']
+    ] + (is_null($numero_alternatif) ? [] : [$numero_alternatif]));
+
+    $resultats= [];
 	$i=0;
 	foreach($resultat_get_extraits as $extrait) {
 		switch($extrait['sitecode']) {
 			case 'webusers': case 'thumbnails':
-				$url='https://outducks.org/webusers/'.$extrait['url'];
+				$url=Inducks::$OUTDUCKS_ROOT.'webusers/'.$extrait['url'];
 			break;
 			default:
-				$url='https://outducks.org/'.$extrait['sitecode'].'/'.$extrait['url'];
+				$url=Inducks::$OUTDUCKS_ROOT.$extrait['sitecode'].'/'.$extrait['url'];
 		}
 
 		if (count($resultats) === 0) {
