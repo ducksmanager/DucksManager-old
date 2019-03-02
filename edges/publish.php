@@ -66,7 +66,7 @@ foreach($tranches_pretes_pour_publication as $tranche) {
 
         copy($url, $chemin);
 
-        DmClient::get_service_results_for_ec('POST', "/edgecreator/model/v2/$id/readytopublish/0", []);
+        DmClient::get_service_results_for_ec('POST', "/edgecreator/model/v2/$id/readytopublish/0");
 
     }
     $numeros[] = [

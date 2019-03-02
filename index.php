@@ -65,7 +65,7 @@ if (defined('TITRE_PAGE_'.strtoupper($action))) {
 else {
     $titre = TITRE_PAGE_ACCUEIL;
 }
-$id_user= $_SESSION['id_user'] ?? null;
+$id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>
@@ -898,9 +898,9 @@ $id_user= $_SESSION['id_user'] ?? null;
                         }
 
                         if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] !== 'new') {
-                            [$onglets_pays, $onglets_magazines] = $l->liste_magazines($_GET['onglet_magazine'], true);
+                            [$onglets_pays, $onglets_magazines] = $l->liste_magazines($_GET['onglet_magazine']);
                         } else {
-                            [$onglets_pays, $onglets_magazines] = $l->liste_magazines(null, true);
+                            [$onglets_pays, $onglets_magazines] = $l->liste_magazines();
                         }
 
                         if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {

@@ -64,7 +64,7 @@ class Menu extends Item{
      * @param Item[] $items
      */
     function __construct($nom, $est_prive, $texte, $icone, $items) {
-		parent::__construct($nom, $est_prive, $texte, $icone, false);
+		parent::__construct($nom, $est_prive, $texte, $icone);
 		$this->items = $items;
     }
 	

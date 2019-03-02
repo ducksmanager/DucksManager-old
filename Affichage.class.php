@@ -319,7 +319,7 @@ class Affichage {
 	}
 
     static function afficher_dernieres_tranches_publiees() {
-        $id_user = $_SESSION['id_user'] ?? null;
+        $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
 
         $resultat_tranches_collection_ajoutees = DM_Core::$d->get_tranches_collection_ajoutees($id_user, true);
         $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
