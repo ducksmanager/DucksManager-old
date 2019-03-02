@@ -310,52 +310,55 @@ function hideBook(e, callback) {
     var isClickElsewhere = e && !jQuery(e.target).is('.tranche, .page, .previous-button, .next-button');
 
     if (book.length
-     && (isClickOnEdge || isClickOnFirstPage || isClickElsewhere)
-     && !isHidingBook && !flipbook.turn("animating")) {
+        && (isClickOnEdge || isClickOnFirstPage || isClickElsewhere)
+        && !isHidingBook && !flipbook.turn("animating")) {
         isHidingBook = true;
 
         var edge = jQuery('.tranche.livre-visible');
-        var firstPage = flipbook.find('.page.p1');
 
-        var _hideBook = function() {
+        var _hideBook = function () {
             flipbook.addClass('init');
-            firstPage
+            flipbook.find('.page.p1')
                 .add(firstPage.find('> div'))
                 .add(jQuery.find('.shadow'))
                 .animate(
                     {width: 0, right: 282},
-                    { duration: 500 }
+                    {duration: 500}
                 );
 
             edge.animate(
-                { width: 'toggle', height: edge.height() },
-                { duration: 500, complete: function() {
+                {width: 'toggle', height: edge.height()},
+                {
+                    duration: 500,
+                    complete: function () {
                         flipbook.turn('destroy');
 
                         jQuery(document)
                             .unbind('keydown', onKeyDown)
                             .unbind('click', hideBook);
                         book.remove();
-                        edge.animate(edge.data().bookcaseOffset, { complete: function() {
+                        edge.animate(edge.data().bookcaseOffset, {
+                            complete: function () {
                                 edge
                                     .removeClass('livre-visible')
                                     .css({position: ''});
                                 isHidingBook = false;
                                 callback && callback();
-                            }});
-                    }}
+                            }
+                        });
+                    }
+                }
             );
         };
 
+        var firstPage = flipbook.find('.page.p1');
         if (firstPage.is(':visible')) {
             _hideBook();
-        }
-        else {
+        } else {
             flipbook.turn("page", 1);
             setTimeout(_hideBook, 2000);
         }
-    }
-    else {
+    } else {
         callback && callback();
     }
 }
