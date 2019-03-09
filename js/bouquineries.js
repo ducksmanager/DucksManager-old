@@ -1,19 +1,21 @@
-var autocomplete;
+var carte,
+	geocoder;
 
 function initializeAutocomplete() {
-	autocomplete = new google.maps.places.Autocomplete(
-		jQuery('#adresse_complete').get(0),
-		{ types: ['geocode'] }
-	);
-	google.maps.event.addListener(autocomplete, 'place_changed', fillInAddress);
+	geocoder = new MapboxGeocoder({
+		accessToken: mapboxgl.accessToken
+	}).on('result', fillInAddress);
+
+	jQuery('.adresse_complete_wrapper')
+		.append(jQuery(geocoder.onAdd(carte)))
+		.find('input').attr({id: 'adresse_complete', name: 'adresse_complete'});
 }
 
-function fillInAddress() {
-	var place = autocomplete.getPlace();
+function fillInAddress(data) {
 	var form = jQuery('#form_bouquinerie');
 
-	form.find('[name="coordX"]').val(place.geometry.location.lat());
-	form.find('[name="coordY"]').val(place.geometry.location.lng());
+	form.find('[name="coordY"]').val(data.result.center[0]);
+	form.find('[name="coordX"]').val(data.result.center[1]);
 }
 
 function initBouquineries() {
@@ -21,8 +23,7 @@ function initBouquineries() {
 		{ database: 'true', liste_bouquineries: 'true' },
 		function(response) {
 			mapboxgl.accessToken = 'pk.eyJ1IjoiYnBlcmVsIiwiYSI6ImNqbmhubHVrdDBlZ20zcG8zYnQydmZwMnkifQ.suaRi8ln1w_DDDlTlQH0vQ';
-
-			var carte = new mapboxgl.Map({
+			carte = new mapboxgl.Map({
 				container: 'map',
 				style: 'mapbox://styles/mapbox/light-v10',
 				center: [1.73584, 46.754917],
@@ -35,6 +36,8 @@ function initBouquineries() {
 					parseFloat(adresse.CoordX)
 				]);
 			});
+
+			initializeAutocomplete();
 		}
 	);
 }

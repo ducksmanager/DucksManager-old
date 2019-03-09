@@ -67,8 +67,11 @@ label:focus {
     clear: both;
 }
 
-input.form-control {
+input.form-control, textarea.form-control {
     width: calc(100% - 26px);
+}
+
+input.form-control {
     height: 20px;
 }
 

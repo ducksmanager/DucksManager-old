@@ -160,6 +160,8 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                 case 'bouquineries': ?>
                     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
                     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+                    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.4/mapbox-gl-geocoder.min.js'></script>
+                    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.4/mapbox-gl-geocoder.css' type='text/css' />
                     <link href='css/bouquineries.css' rel='stylesheet' /><?php
                 break;
                 case 'bibliotheque':
@@ -1169,11 +1171,11 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                         </tr>
                         <tr>
                             <td><label for="adresse_complete"><?=ADRESSE?> :</label></td>
-                            <td><input class="form-control text_input" type="text" id="adresse_complete" name="adresse_complete"/></td>
+                            <td class="adresse_complete_wrapper"></td>
                         </tr>
                         <tr>
                             <td><label for="bouquinerie_commentaires"><?=COMMENTAIRES_BOUQUINERIE?></label><br />(<?=COMMENTAIRES_BOUQUINERIE_EXEMPLE?>)</td>
-                            <td><textarea id="form-control bouquinerie_commentaires" name="commentaire" cols="41" rows="5"></textarea>
+                            <td><textarea id="form-control bouquinerie_commentaires" class="form-control" name="commentaire" cols="41" rows="5"></textarea>
                             </td>
                         </tr>
                         <tr>

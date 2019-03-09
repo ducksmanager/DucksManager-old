@@ -29,6 +29,11 @@
     padding-top: 5px;
 }
 
+.mapboxgl-ctrl-geocoder {
+    max-width: initial;
+    width: initial;
+}
+
 @media (max-width: 767px) {
     .mapboxgl-popup {
         max-width: 70%;
