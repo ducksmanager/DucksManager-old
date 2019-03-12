@@ -7,12 +7,8 @@ class Edge {
 	var $numero;
 	var $numero_reference;
 	var $est_visible=true;
-	var $html='';
 
-	static $grossissement_defaut=1.5;
-	static $sans_etageres = false;
-
-    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $small = false) {
+    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null) {
 		if (is_null($pays)) {
             return;
         }
@@ -22,10 +18,9 @@ class Edge {
 		$this->numero_reference= $numero_reference;
 
         $this->est_visible = $visible;
-        $this->html=$this->getImgHTML($small);
     }
 	
-	function getImgHTML($small) {
+	function getImgHTML($small = false) {
         ob_start();
         ?><img data-edge="<?=$this->est_visible ? 1 : 0?>"
              class="tranche"
@@ -52,7 +47,7 @@ class Edge {
         }, $resultats_points_tranches);
     }
 
-	static function getBibliotheque($id_user) {
+	static function getBibliotheque($id_user, $publication_codes) {
 		$requete_tranches = "
             SELECT numeros.Pays,
                    numeros.Magazine,
@@ -72,24 +67,16 @@ class Edge {
 		$resultats_tranches = DM_Core::$d->requete($requete_tranches, [$id_user]);
 
 		if (count($resultats_tranches) === 0) {
-            return [
-                '<div class="alert alert-warning">'.COLLECTION_VIDE_1.' '.sprintf(COLLECTION_CLIQUER_GERER_COLLECTION, '<a href="?action=gerer">'.GERER_COLLECTION.'</a>').'</div>',
-                0,
-                []
-            ];
+            return [];
         }
 
 		$resultats_tranches_avec_cle = [];
 		foreach($resultats_tranches as $resultat) {
             $resultats_tranches_avec_cle[$resultat['Pays'].'/'.$resultat['Magazine']][$resultat['Numero']] = $resultat;
         }
-        $total=count($resultats_tranches);
 
-        $texte_final='';
-        $cpt_tranches_pretes=0;
+        $edgesData=[];
 
-        $publication_codes = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
-        
         $publication_codes_pour_verif_ordre = array_values(array_filter($publication_codes, function($publicationCode) use ($resultats_tranches) {
             return count(array_filter($resultats_tranches, function($numero) use ($publicationCode) {
                 return $numero['Pays'].'/'.$numero['Magazine'] === $publicationCode && !preg_match('#^\d$#', $numero['Numero']); // Ignorer les numéros à un seul chiffre
@@ -128,15 +115,11 @@ class Edge {
                  && array_key_exists($numero_indexe, $resultats_tranches_avec_cle[$publication_code])) {
                     $numero = $resultats_tranches_avec_cle[$publication_code][$numero_indexe];
                     $e=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], $numero['has_edge'] === '1');
-                    if ($e->est_visible) {
-                        $cpt_tranches_pretes++;
-                    }
-                    $texte_final.=$e->html;
+                    $edgesData[]=$e;
                 }
             }
         }
-        $pourcentage_visible=$total===0 ? 0 : (int)(100 * $cpt_tranches_pretes / $total);
-        return [$texte_final, $pourcentage_visible, Inducks::get_noms_complets_magazines($publication_codes)];
+        return $edgesData;
 	}
 
     static function get_user_bibliotheque($user) {
@@ -176,11 +159,11 @@ elseif (isset($_POST['get_bibliotheque'])) {
         echo json_encode(['erreur' => 'La bibliothèque de cet utilisateur est privée.']);
     }
     else {
-        $requete_grossissement = '
+        $requete_textures = '
           SELECT Bibliotheque_Texture1, Bibliotheque_Sous_Texture1, Bibliotheque_Texture2, Bibliotheque_Sous_Texture2
           FROM users
           WHERE ID = ?';
-        $resultats_params_bibliotheque = DM_Core::$d->requete($requete_grossissement, [$id_user]);
+        $resultats_params_bibliotheque = DM_Core::$d->requete($requete_textures, [$id_user]);
         $textures = [
             [
                 'texture' => $resultats_params_bibliotheque[0]['Bibliotheque_Texture1'],
@@ -192,14 +175,14 @@ elseif (isset($_POST['get_bibliotheque'])) {
             ],
         ];
 
-        [$html, $pourcentage_visible, $liste_magazines] = Edge::getBibliotheque($id_user);
+        $publication_codes = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
+        $edgesData = Edge::getBibliotheque($id_user, $publication_codes);
 
         echo json_encode([
             'titre' => $user === '-1' ? BIBLIOTHEQUE_COURT : (BIBLIOTHEQUE_DE . $user),
-            'nb_numeros_visibles' => $pourcentage_visible,
-            'contenu' => $html,
+            'edgesData' => $edgesData,
             'textures' => $textures,
-            'noms_magazines' => $liste_magazines
+            'noms_magazines' => Inducks::get_noms_complets_magazines($publication_codes)
         ]);
     }
 }

@@ -224,8 +224,6 @@ class Affichage {
 	static function afficher_evenements_recents($evenements) {
         if (count($evenements->evenements) > 0) {
             include_once 'Edge.class.php';
-            Edge::$sans_etageres = true;
-            Edge::$grossissement_defaut = 1;
 
             $magazines_complets=Inducks::get_noms_complets_magazines($evenements->publicationcodes);
             $details_collections=DM_Core::$d->get_details_collections($evenements->ids_utilisateurs);
@@ -291,8 +289,8 @@ class Affichage {
                                     <div class="edge_container">
                                         <?php
                                         foreach($evenement->numeros as $numero) {
-                                            $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true, true);
-                                            echo $e->html;
+                                            $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true);
+                                            echo $e->getImgHTML(true);
                                         }
                                     ?></div>
                                     <div class="etagere">&nbsp;</div><?php
