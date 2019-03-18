@@ -19,8 +19,11 @@ switch($action) {
             $issues_cpt[$resultat['publicationcode']] = $resultat['cpt'];
         }
 
-        $requete = 'SELECT publicationcode FROM inducks_publication WHERE publicationcode IN (\''.implode('\',\'', $publication_codes).'\') ';
-        $resultats = DM_Core::$d->requete($requete, [], 'db_coa');
+        $resultats = DM_Core::$d->requete('
+			SELECT publicationcode
+			FROM inducks_publication
+			WHERE publicationcode IN (' . implode(',', array_fill(0, count($publication_codes), '?')) . ') '
+		, [$publication_codes], 'db_coa');
 
         $existing_publication_codes = array_map('flattenpublicationcode', $resultats);
         $missing_publication_codes = array_diff($publication_codes, $existing_publication_codes);

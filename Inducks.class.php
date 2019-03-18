@@ -15,17 +15,23 @@ class Inducks {
     }
 
 	static function is_auteur($nomAuteurAbrege) {
-		$requete='SELECT count(*) AS cpt FROM inducks_person WHERE personcode = \''.$nomAuteurAbrege.'\'';
-		$resultat_requete = self::requete($requete);
-        return $resultat_requete[0]['cpt'] > 0;
-    }
+		$resultat_requete = self::requete('
+      SELECT count(*) AS cpt
+      FROM inducks_person
+      WHERE personcode = ?'
+    , [$nomAuteurAbrege]);
+		return $resultat_requete[0]['cpt'] > 0;
+	}
 
 	static function get_vrai_magazine($pays,$magazine) {
-		$requete_get_redirection='SELECT NomAbrege FROM magazines WHERE PaysAbrege = \''.$pays.'\' AND RedirigeDepuis = \''.$magazine.'\'';
-		$resultat_get_redirection=DM_Core::$d->requete($requete_get_redirection);
-		if (count($resultat_get_redirection) > 0) {
-            return $resultat_get_redirection[0]['NomAbrege'];
-        }
+		$resultat_get_redirection=DM_Core::$d->requete('
+      SELECT NomAbrege
+      FROM magazines
+      WHERE PaysAbrege = ? AND RedirigeDepuis = ?'
+    , [$pays, $magazine]);
+	  if (count($resultat_get_redirection) > 0) {
+		  return $resultat_get_redirection[0]['NomAbrege'];
+	  }
 		return $magazine;
 	}
 
@@ -75,8 +81,11 @@ class Inducks {
 		switch($mode) {
 			case "urls":
 				$urls= [];
-				$requete='SELECT issuenumber FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
-				$resultat_requete= self::requete($requete);
+				$resultat_requete= self::requete('
+          SELECT issuenumber
+          FROM inducks_issue
+          WHERE publicationcode = ?'
+        , [$pays.'/'.$magazine]);
 				foreach($resultat_requete as $i=>$numero) {
 					$numeros[$i] = $fonction_nettoyage($numero['issuenumber']);
 					$urls[$i]='issue.php?c='.$pays.'%2F'.$magazine_depart.str_replace(' ','+',$numero['issuenumber']);
@@ -85,8 +94,11 @@ class Inducks {
 			break;
 			case "titres":
 				$titres= [];
-				$requete='SELECT issuenumber, title FROM inducks_issue WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
-				$resultat_requete= self::requete($requete);
+				$resultat_requete= self::requete('
+          SELECT issuenumber, title
+          FROM inducks_issue
+          WHERE publicationcode = ?'
+        , [$pays.'/'.$magazine]);
 				foreach($resultat_requete as $i=>$numero) {
 					$numeros[$i] = $fonction_nettoyage($numero['issuenumber']);
 					$titres[$i]=$numero['title'];
@@ -98,8 +110,12 @@ class Inducks {
 	}
 
 	static function get_pays() {
-		$requete='SELECT countrycode, countryname FROM inducks_countryname WHERE languagecode = \''.$_SESSION['lang'].'\' ORDER BY countryname';
-		$resultat_requete= self::requete($requete);
+		$resultat_requete= self::requete('
+      SELECT countrycode, countryname
+      FROM inducks_countryname
+      WHERE languagecode = ?
+      ORDER BY countryname'
+    , [$_SESSION['lang']]);
 		$liste_pays_courte= [];
 		foreach($resultat_requete as $pays) {
 			$liste_pays_courte[$pays['countrycode']]=$pays['countryname'];
@@ -108,8 +124,11 @@ class Inducks {
 	}
 
 	static function get_nom_complet_magazine($pays,$magazine) {
-		$requete_magazine='SELECT title FROM inducks_publication WHERE publicationcode = \''.$pays.'/'.$magazine.'\'';
-		$resultat_requete= self::requete($requete_magazine);
+		$resultat_requete= self::requete('
+      SELECT title
+      FROM inducks_publication
+      WHERE publicationcode = ?'
+    , [$pays.'/'.$magazine]);
 
 		return $resultat_requete[0]['title'];
 	}
@@ -144,9 +163,11 @@ class Inducks {
                 return "'".$publication_code."'";
             }, $publication_codes_chunk);
 
-            $requete_noms_magazines='SELECT publicationcode, title FROM inducks_publication '
-                .'WHERE publicationcode IN ('.implode(',',$publication_codes_chunk).')';
-            $resultats_noms_magazines= self::requete($requete_noms_magazines);
+            $resultats_noms_magazines= self::requete('
+              SELECT publicationcode, title
+              FROM inducks_publication
+              WHERE publicationcode IN (?)'
+            , $publication_codes_chunk);
             foreach($resultats_noms_magazines as $resultat) {
                 $liste_magazines_complets[$resultat['publicationcode']]=$resultat['title'];
             }
@@ -155,8 +176,11 @@ class Inducks {
     }
 
 	static function get_liste_magazines($pays) {
-		$requete='SELECT publicationcode, title FROM inducks_publication WHERE countrycode = \''.$pays.'\'';
-		$resultat_requete= self::requete($requete);
+		$resultat_requete= self::requete('
+      SELECT publicationcode, title
+      FROM inducks_publication
+      WHERE countrycode = ?'
+    , [$pays]);
 		$liste_magazines_courte= [];
 		foreach($resultat_requete as $magazine) {
 			[,$nom_magazine_abrege] =explode('/',$magazine['publicationcode']);

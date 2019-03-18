@@ -14,7 +14,7 @@
             .num, #num_courant {
                 background-color: red;
             }
-            
+
             .dispo {
            		background-color: green !important;
             }
@@ -22,7 +22,7 @@
             .num.dispo {
                 cursor: pointer;
             }
-            
+
             .bordered {
                 border-right:1px solid black;
             }
@@ -111,21 +111,24 @@ if (isset($_GET['wanted'])) {
 		$magazine=$num['Magazine'];
 		$numero=$num['Numero'];
 		$cpt=$num['cpt'];
-		
+
 		[$magazine,$numero] =Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
-		$publicationcode = $pays.'/'.$magazine;
-        $requete_est_dispo = $requete_tranches_pretes_magazine='SELECT 1 FROM tranches_pretes WHERE publicationcode=\''.$publicationcode.'\' AND issuenumber=\''.$numero.'\'';
-        $est_dispo=count(DM_Core::$d->requete($requete_est_dispo)) > 0;
-        if (!$est_dispo) {
-			$numeros_demandes[]= ['cpt'=>$cpt, 'publicationcode'=>$publicationcode,'numero'=>$numero];
-			if ($cptwanted++ >= $_GET['wanted']) {
-                break;
-            }
-		}
+    $publicationcode = $pays . '/' . $magazine;
+    $est_dispo = count(DM_Core::$d->requete('
+          SELECT 1
+          FROM tranches_pretes
+          WHERE publicationcode=? AND issuenumber=?'
+        , [$publicationcode, $numero])) > 0;
+    if (!$est_dispo) {
+      $numeros_demandes[] = ['cpt' => $cpt, 'publicationcode' => $publicationcode, 'numero' => $numero];
+      if ($cptwanted++ >= $_GET['wanted']) {
+        break;
+      }
     }
-    $publicationcodes = array_unique(array_map(function($publicationcode) {
-        return $publicationcode['publicationcode'];
-    }, $numeros_demandes));
+  }
+  $publicationcodes = array_unique(array_map(function($publicationcode) {
+      return $publicationcode['publicationcode'];
+  }, $numeros_demandes));
 	$liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 
 	foreach($numeros_demandes as $numero_demande) {
@@ -133,7 +136,7 @@ if (isset($_GET['wanted'])) {
 		[$pays,$magazine] =explode('/',$publicationcode);
 		$numero=$numero_demande['numero'];
 		$cpt=$numero_demande['cpt'];
-		
+
 		$nom_magazine_complet = $liste_magazines[$publicationcode];
 		if (is_null($nom_magazine_complet)) {
 			$nom_magazine_complet = $publicationcode;
