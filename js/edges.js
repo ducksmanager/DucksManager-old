@@ -97,7 +97,8 @@ function charger_bibliotheque() {
                         .attr({
                             name: edgeData.pays+'/'+edgeData.magazine+'.'+edgeData.numero_reference,
                             id: edgeData.pays+'/'+edgeData.magazine+'.'+edgeData.numero,
-                            'data-edge': edgeData.est_visible ? 1 : 0
+                            'data-edge': edgeData.est_visible ? 1 : 0,
+                            'data-sprite': edgeData.sprite_version ? ('https://res.cloudinary.com/dl7hskxab/image/sprite/v'+edgeData.sprite_version+'/'+edgeData.sprite_name): ''
                         });
                 }));
 
@@ -129,16 +130,32 @@ function ajouter_etagere(afterElement) {
     }
 }
 
-function charger_tranche(tranche) {
-    tranche
-        .on('load',charger_tranche_suivante)
-        .on('error',charger_tranche_suivante);
+var loaded_sprites = [];
 
-    var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
-    var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
-        return jQuery(src_similaire).attr('src');
-    });
-    tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
+function charger_tranche(tranche) {
+    var sprite = tranche.data().sprite;
+    if (sprite) {
+        console.log('Sprite : ' + tranche.data().sprite);
+        if (!loaded_sprites[sprite]) {
+            jQuery('<link>')
+                .appendTo('head')
+                .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
+        }
+        var precedente = tranche.prev();
+        tranche.replaceWith(jQuery('<div>').addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-')));
+        charger_tranche_suivante.call(precedente.next());
+    }
+    else {
+        tranche
+            .on('load',charger_tranche_suivante)
+            .on('error',charger_tranche_suivante);
+
+        var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
+        var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
+            return jQuery(src_similaire).attr('src');
+        });
+        tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
+    }
 }
 
 function charger_tranche_suivante() {

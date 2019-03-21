@@ -144,6 +144,7 @@
 }
 
 .tranche {
+    display: inline-block;
     z-index: 800;
     background-color:white;
 }

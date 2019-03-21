@@ -7,8 +7,10 @@ class Edge {
 	var $numero;
 	var $numero_reference;
 	var $est_visible=true;
+	var $sprite_name;
+	var $sprite_version;
 
-    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null) {
+    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $sprite_name = null, $sprite_version = null) {
 		if (is_null($pays)) {
             return;
         }
@@ -16,8 +18,9 @@ class Edge {
 		$this->magazine=$magazine;
 		$this->numero= $numero;
 		$this->numero_reference= $numero_reference;
-
         $this->est_visible = $visible;
+        $this->sprite_name = $sprite_name;
+        $this->sprite_version = $sprite_version;
     }
 	
 	function getImgHTML($small = false) {
@@ -53,15 +56,19 @@ class Edge {
                    numeros.Magazine,
                    numeros.Numero,
                    IFNULL(reference.NumeroReference, numeros.Numero_nospace) AS NumeroReference,
-                   EXISTS(
-                       SELECT 1
-                       FROM tranches_pretes
-                       WHERE CONCAT(numeros.Pays, '/', numeros.Magazine) = tranches_pretes.publicationcode
-                         AND IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tranches_pretes.issuenumber
-                     ) AS has_edge
+                   tp.ID                                                     AS EdgeID,
+                   GROUP_CONCAT(sprites.Sprite_name ORDER BY sprites.Sprite_size ASC) AS Sprite_names,
+                   GROUP_CONCAT(sprites.Sprite_size ORDER BY sprites.Sprite_size ASC) AS Sprite_sizes
             FROM numeros
-            LEFT JOIN tranches_doublons reference ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND numeros.Numero_nospace = reference.Numero
+                   LEFT JOIN tranches_doublons reference
+                             ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND
+                                numeros.Numero_nospace = reference.Numero
+                   LEFT JOIN tranches_pretes tp
+                             ON CONCAT(numeros.Pays, '/', numeros.Magazine) = tp.publicationcode AND
+                                IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tp.issuenumber
+                   LEFT JOIN tranches_pretes_sprites sprites ON sprites.ID_Tranche = tp.ID
             WHERE ID_Utilisateur = ?
+            GROUP BY numeros.Pays, numeros.Magazine, numeros.Numero
             ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
 
 		$resultats_tranches = DM_Core::$d->requete($requete_tranches, [$id_user]);
@@ -70,9 +77,36 @@ class Edge {
             return [];
         }
 
-		$resultats_tranches_avec_cle = [];
+        $USE_SPRITE_FROM_EDGE_PCT=80;
+        $spritesToUse = [];
+
+        foreach($resultats_tranches as $resultat) {
+            if (!is_null($resultat['Sprite_names'])) {
+                foreach(explode(',', $resultat['Sprite_names']) as $i=>$spriteName) {
+                    $spriteSize = (int) explode(',', $resultat['Sprite_sizes'])[$i];
+                    if (!array_key_exists($spriteName, $spritesToUse)) {
+                        $spritesToUse[$spriteName] = ['size' => $spriteSize, 'edges' => []];
+                    }
+                    $spritesToUse[$spriteName]['edges'][] = $resultat['EdgeID'];
+                }
+            }
+        }
+
+        // On ne garde que les sprites dont au moins 80% des tranches sont possédées par l'utilisateur
+        $spritesToUse = array_filter($spritesToUse, function($sprite) use ($USE_SPRITE_FROM_EDGE_PCT) {
+            return count($sprite['edges']) >= $sprite['size'] * $USE_SPRITE_FROM_EDGE_PCT/100;
+        });
+
+        $edgesUsingSprites = [];
+        foreach($spritesToUse as $spriteName => $sprite) {
+            foreach($sprite['edges'] as $edgeId) {
+                $edgesUsingSprites[(int)$edgeId] = $spriteName;
+            }
+        }
+
+		$resultats_tranches_par_publication = [];
 		foreach($resultats_tranches as $resultat) {
-            $resultats_tranches_avec_cle[$resultat['Pays'].'/'.$resultat['Magazine']][$resultat['Numero']] = $resultat;
+            $resultats_tranches_par_publication[$resultat['Pays'].'/'.$resultat['Magazine']][$resultat['Numero']] = $resultat;
         }
 
         $edgesData=[];
@@ -83,25 +117,22 @@ class Edge {
             }));
         }));
 
-        $resultats_ordres_magazines = Inducks::requete('
+        $resultats_ordres_numeros = Inducks::requete('
           SELECT publicationcode, REGEXP_REPLACE(issuenumber, "[ ]+", " ") AS issuenumber
           FROM inducks_issue
           WHERE publicationcode IN ('. implode(',', array_fill(0, count($publication_codes_pour_verif_ordre), '?')) .')',
             $publication_codes_pour_verif_ordre
         );
-        $resultats_ordres_magazines = array_reduce($resultats_ordres_magazines, function (array $accumulator, array $resultat) {
+        $resultats_ordres_numeros = array_reduce($resultats_ordres_numeros, function (array $accumulator, array $resultat) {
             $accumulator[$resultat['publicationcode']][] = $resultat['issuenumber'];
             return $accumulator;
         }, []);
 
         foreach($publication_codes as $publication_code) {
             if (in_array($publication_code, $publication_codes_pour_verif_ordre, true)) {
-                if (array_key_exists($publication_code, $resultats_ordres_magazines)) { // Le magazine n'existe plus sur Inducks
-                    $numeros_indexes = $resultats_ordres_magazines[$publication_code];
-                }
-                else {
-                    $numeros_indexes = [];
-                }
+                $numeros_indexes = array_key_exists($publication_code, $resultats_ordres_numeros)
+                    ? $resultats_ordres_numeros[$publication_code]
+                    : [];
             }
             else {
                 $numeros_indexes = array_map(function($numero) {
@@ -111,11 +142,19 @@ class Edge {
                 })));
             }
             foreach($numeros_indexes as $numero_indexe) {
-                if (array_key_exists($publication_code, $resultats_tranches_avec_cle)
-                 && array_key_exists($numero_indexe, $resultats_tranches_avec_cle[$publication_code])) {
-                    $numero = $resultats_tranches_avec_cle[$publication_code][$numero_indexe];
-                    $e=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], $numero['has_edge'] === '1');
-                    $edgesData[]=$e;
+                if (array_key_exists($publication_code, $resultats_tranches_par_publication)
+                 && array_key_exists($numero_indexe, $resultats_tranches_par_publication[$publication_code])) {
+                    $numero = $resultats_tranches_par_publication[$publication_code][$numero_indexe];
+                    $spriteName = $edgesUsingSprites[$numero['EdgeID']] ?? null;
+                    if ($publication_code === 'fr/TP') {
+                        $spriteVersion = 1553095460;
+                        $spriteName = 'edges-fr-TP-1-10';
+                    }
+                    if ($publication_code === 'fr/PM') {
+                        $spriteVersion = 1553095423;
+                        $spriteName = 'edges-fr-PM-451-500';
+                    }
+                    $edgesData[]=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], !is_null($numero['EdgeID']), $spriteName, $spriteVersion);
                 }
             }
         }
