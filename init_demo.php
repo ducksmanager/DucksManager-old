@@ -7,7 +7,7 @@ $resultat_dernier_init_recent=DM_Core::$d->requete('SELECT DateDernierInit FROM 
 $derniere_date=strtotime($resultat_dernier_init_recent[0]['DateDernierInit']);
 $dernier_init_est_recent=(time() - $derniere_date) / 3600 < 1;
 
-if (!$dernier_init_est_recent) {
+if (false) {
 	$str_time=strftime('%Y-%m-%d %H:00:00',time());
 	$requete_update_date_init='UPDATE demo SET DateDernierInit=\''.$str_time.'\'';
 	DM_Core::$d->requete($requete_update_date_init);
@@ -65,11 +65,11 @@ if (!$dernier_init_est_recent) {
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('fr', 'PM', '387', 'bon', 1001, 0, ".$id_user_demo.");
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('us', 'WDC', '375', 'bon', 1001, 0, ".$id_user_demo.");
 	INSERT INTO `numeros` (`Pays`, `Magazine`, `Numero`, `Etat`, `ID_Acquisition`, `AV`, `ID_Utilisateur`) VALUES ('es', 'BCB', '1', 'bon', 1002, 0, ".$id_user_demo.");
-	
-	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1000, ".$id_user_demo.", '2011-10-15', NULL, NULL, NULL, NULL, 'Bouquinerie Bordeaux');
-	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1001, ".$id_user_demo.", '2011-11-01', NULL, NULL, NULL, NULL, 'Bouquinerie La Rochelle');
-	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1002, ".$id_user_demo.", '2011-10-25', NULL, NULL, NULL, NULL, 'Bouquinerie Madrid');
-	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Style_couleur`, `Style_soulignement`, `Style_entourage`, `Style_marquage`, `Description`) VALUES (1003, ".$id_user_demo.", '2011-12-08', NULL, NULL, NULL, NULL, 'Virgin Bordeaux');
+
+	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Description`) VALUES (1000, ".$id_user_demo.", '2011-10-15', 'Bouquinerie Bordeaux');
+	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Description`) VALUES (1001, ".$id_user_demo.", '2011-11-01', 'Bouquinerie La Rochelle');
+	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Description`) VALUES (1002, ".$id_user_demo.", '2011-10-25', 'Bouquinerie Madrid');
+	REPLACE INTO `achats` (`ID_Acquisition`, `ID_User`, `Date`, `Description`) VALUES (1003, ".$id_user_demo.", '2011-12-08', 'Virgin Bordeaux');
 	
 	INSERT INTO `auteurs_pseudos` (`NomAuteurAbrege`, `ID_user`, `Notation`) VALUES ('CB', ".$id_user_demo.", 6);
 	INSERT INTO `auteurs_pseudos` (`NomAuteurAbrege`, `ID_user`, `Notation`) VALUES ('DR', ".$id_user_demo.", 8);";
