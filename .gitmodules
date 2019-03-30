@@ -1,6 +1,0 @@
-[submodule "EdgeCreator"]
-	path = EdgeCreator
-	url = https://github.com/ducksmanager/EdgeCreator.git
-[submodule "captcha/securimage"]
-	path = captcha/securimage
-	url = https://github.com/dapphp/securimage
