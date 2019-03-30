@@ -40,10 +40,13 @@ class Database {
 
 	function user_to_id($user) {
 		if (isset($_COOKIE['user'], $_COOKIE['pass']) && empty($user)) {
-            $user=$_COOKIE['user'];
+        $user=$_COOKIE['user'];
 		}
-		$requete='SELECT ID FROM users WHERE username = \''.$user.'\'';
-		$resultat=DM_Core::$d->requete($requete);
+		$resultat=DM_Core::$d->requete('
+      SELECT ID
+      FROM users
+      WHERE username = ?'
+    , [$user]);
 		if (count($resultat) === 0) {
 			return null;
 		}
@@ -54,20 +57,28 @@ class Database {
 		if (!$this->user_exists($user)) {
 			return false;
 		}
-		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\') AND password LIKE(sha1(\''.$pass.'\'))';
-		return (count(DM_Core::$d->requete($requete))>0);
+		return count(DM_Core::$d->requete('
+      SELECT username
+      FROM users
+      WHERE username =? AND password = sha1(?)'
+    , [$user, $pass])) > 0;
 	}
 
 	function user_exists($user) {
-		$requete='SELECT username FROM users WHERE username LIKE(\''.$user.'\')';
-		return (count(DM_Core::$d->requete($requete))>0);
-
+		return count(DM_Core::$d->requete('
+      SELECT username
+      FROM users
+      WHERE username = ?'
+    , [$user])) > 0;
 	}
 
 	function user_afficher_video() {
 		if (isset($_SESSION['user'])) {
-			$requete_afficher_video="SELECT AfficherVideo FROM users WHERE username = '{$_SESSION['user']}'";
-			$resultat_afficher_video=DM_Core::$d->requete($requete_afficher_video);
+			$resultat_afficher_video=DM_Core::$d->requete('
+        SELECT AfficherVideo
+        FROM users
+        WHERE username = ?'
+      , [$_SESSION['user']]);
 			return $resultat_afficher_video[0]['AfficherVideo'] === '1';
 		}
 		return false;
@@ -75,8 +86,10 @@ class Database {
 
 	function nouveau_user($user,$email,$pass) {
 		date_default_timezone_set('Europe/Paris');
-		$requete='INSERT INTO users(username,password,Email,DateInscription) VALUES(\''.$user.'\',\''.$pass.'\',\''.$email.'\',\''.date('Y-m-d').'\')';
-		if (false===DM_Core::$d->requete($requete)) {
+		if (false===DM_Core::$d->requete('
+      INSERT INTO users(username,password,Email,DateInscription)
+      VALUES(?, ?, ?, ?)'
+      , [$user, $pass, $email, date('Y-m-d')])) {
 			echo ERREUR_EXECUTION_REQUETE;
 			return false;
 		}
@@ -451,34 +464,32 @@ class Database {
 	}
 
     /**
-     * @param $id_user
+     * @param int $id_user
      * @param boolean $depuis_derniere_visite
      * @return array
     */
     public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite = false) {
-        $derniere_visite = null;
         if ($depuis_derniere_visite) {
             $derniere_visite = Util::get_derniere_visite_utilisateur();
             if (is_null($derniere_visite)) {
                 return [];
             }
+			      $derniere_visite_str = $derniere_visite->format('Y-m-d H:i:s');
         }
-        $requete_tranches_collection_ajoutees =
-            "SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
-             FROM tranches_pretes tp, numeros n
-             WHERE n.ID_Utilisateur = '$id_user'
-             AND CONCAT(publicationcode,'/',issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
-             AND DATEDIFF(NOW(), tp.dateajout) < 90";
-
-        if (!is_null($derniere_visite)) {
-            $requete_tranches_collection_ajoutees.="
-                AND tp.dateajout>'{$derniere_visite->format('Y-m-d H:i:s')}'";
+        else {
+			      $derniere_visite_str = '0000-00-00';
         }
-        $requete_tranches_collection_ajoutees.="
-            ORDER BY DiffSecondes ASC
-            LIMIT 5";
 
-        return DM_Core::$d->requete($requete_tranches_collection_ajoutees);
+        return DM_Core::$d->requete("
+          SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
+          FROM tranches_pretes tp, numeros n
+          WHERE n.ID_Utilisateur = ?
+            AND CONCAT(publicationcode,'/',issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
+            AND DATEDIFF(NOW(), tp.dateajout) < 90
+            AND tp.dateajout>?
+          ORDER BY DiffSecondes ASC
+          LIMIT 5"
+        , [$id_user, $derniere_visite_str]);
     }
 
     public function get_details_collections($idsUtilisateurs) {
@@ -575,20 +586,23 @@ if (isset($_POST['database'])) {
 		Affichage::afficher_numeros($l, $pays, $magazine);
 	}
 	else if (isset($_POST['acquisition'])) {
-		$id_user=$_SESSION['id_user'];
+	  $id_user = $_SESSION['id_user'];
 
-		//Vérifier d'abord que la date d'acquisition n'existe pas déjà
-		$requete_acquisition_existe='SELECT ID_Acquisition '
-								   .'FROM achats '
-								   .'WHERE ID_User='.$id_user.' AND Date = \''.$_POST['date'].'\' AND Description = \''.$_POST['description'].'\'';
-		$compte_acquisition_date=DM_Core::$d->requete($requete_acquisition_existe);
-		if (count($compte_acquisition_date) > 0) {
-			echo 'Date';
-		}
-		else {
-            DM_Core::$d->requete('INSERT INTO achats(ID_User,Date,Description)'
-                . ' VALUES (' . $id_user . ',\'' . $_POST['date'] . '\',\'' . $_POST['description'] . '\')');
-		}
+	  //Vérifier d'abord que la date d'acquisition n'existe pas déjà
+	  $compte_acquisition_date = DM_Core::$d->requete('
+	    SELECT ID_Acquisition
+	    FROM achats
+	    WHERE ID_User=? AND Date = ? AND Description = ?'
+    , [$id_user, $_POST['date'], $_POST['description']]);
+
+	  if (count($compte_acquisition_date) > 0) {
+		  echo 'Date';
+	  } else {
+		  DM_Core::$d->requete('
+        INSERT INTO achats(ID_User,Date,Description)
+        VALUES (?, ?, ?)'
+      , [$id_user, $_POST['date'], $_POST['description']]);
+	  }
 	}
 	else if(isset($_POST['supprimer_acquisition'])) {
 		$id_user=$_SESSION['id_user'];

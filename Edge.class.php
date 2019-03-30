@@ -22,7 +22,7 @@ class Edge {
         $this->sprite_name = $sprite_name;
         $this->sprite_version = $sprite_version;
     }
-	
+
 	function getImgHTML($small = false) {
         ob_start();
         ?><img data-edge="<?=$this->est_visible ? 1 : 0?>"
@@ -166,7 +166,11 @@ class Edge {
             $id_user = $_SESSION['id_user'];
         }
         else {
-            $resultats_utilisateur = DM_Core::$d->requete("SELECT ID, AccepterPartage FROM users WHERE username='$user'");
+            $resultats_utilisateur = DM_Core::$d->requete('
+              SELECT ID, AccepterPartage
+              FROM users
+              WHERE username=?'
+            , [$user]);
             if ($resultats_utilisateur[0]['AccepterPartage'] === '1') {
                 return $resultats_utilisateur[0]['ID'];
             }

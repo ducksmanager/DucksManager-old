@@ -4,11 +4,19 @@ $erreur=CONNEXION;
 $user=$_POST['user'] ?? ($_SESSION['user'] ?? null);
 $pass=isset($_POST['pass']) ? sha1($_POST['pass']) : ($_SESSION['pass'] ?? null);
 if (!is_null($user)) {
-	$requete_identifiants_valides='SELECT 1 FROM users WHERE username=\''.$user.'\' AND password=\''.$pass.'\'';
-	$identifiants_valides=count(DM_Core::$d->requete($requete_identifiants_valides)) === 1;
+	$identifiants_valides=count(DM_Core::$d->requete('
+    SELECT 1
+    FROM users
+    WHERE username=? AND password=?'
+  , [$user, $pass])) === 1;
+
 	if ($identifiants_valides) {
-		$requete_permission='SELECT 1 FROM users_permissions WHERE username=\''.$user.'\' AND role=\'EdgeCreator\' AND privilege=\'Admin\'';
-		$permission_valide=count(DM_Core::$d->requete($requete_permission)) === 1;
+	  $permission_valide=count(DM_Core::$d->requete('
+      SELECT 1
+      FROM users_permissions
+      WHERE username=? AND role=? AND privilege = ?'
+    , [$user, 'EdgeCreator', 'Admin'])) === 1;
+
 		if ($permission_valide) {
 			$_SESSION['user']=$user;
 			$_SESSION['pass']=$pass;

@@ -2,7 +2,7 @@
 require_once 'Format_liste.php';
 class dmspiral extends Format_liste {
 	static $titre='Liste en spirale';
-	
+
 	function __construct() {
 		$this->description='';//DMSPIRAL_DESCRIPTION;
 		$this->ajouter_parametres([
@@ -13,15 +13,15 @@ class dmspiral extends Format_liste {
 			'couleur_r'=>new Parametre_min_max('Remplissage - rouge',0,255,0,0),
 			'couleur_g'=>new Parametre_min_max('Remplissage - vert',0,255,0,0),
 			'couleur_b'=>new Parametre_min_max('Remplissage - bleu',0,255,255,255)]);
-		
+
 		$this->ajouter_parametres([
 			'taille_police'=>new Parametre_fixe($this->p('epaisseur')/4)]);
 	}
-	
+
 	static function est_listable($numero) {
 		return is_numeric($numero) || preg_match(Format_liste::$regex_numero_double, $numero, $numero)>0;
 	}
-	
+
 	function afficher($liste) {
 
 		foreach($liste as $pays=>$numeros_pays) {
@@ -30,12 +30,12 @@ class dmspiral extends Format_liste {
 			}
 		}
 	}
-	
+
 	function generer($pays,$magazine) {
 		if (!isset($_GET['debug'])) {
             header('Content-type: image/png');
         }
-	
+
 		$numeros_doubles= [];
 		[$numeros,] =Inducks::get_numeros($pays,$magazine);
 		$this->ajouter_parametres(['numero_max'=>max($numeros)]);
@@ -54,7 +54,7 @@ class dmspiral extends Format_liste {
 		$nom_magazine_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
 
 		$titre=mb_strtoupper($nom_magazine_complet,'UTF-8');
-		
+
 		$image=imagecreatetruecolor(100+(48+$this->p('nb_centaines')/2)*$this->p('epaisseur')-10+$this->p('marge')+10, $this->p('epaisseur')*$this->p('nb_centaines')+$this->p('hauteur_centrale')+2+$this->p('marge')*2);
         if (function_exists('imageantialias')) {
 		    imageantialias($image, true);
@@ -98,7 +98,7 @@ class dmspiral extends Format_liste {
 
 		for ($centaine=0;$centaine<$this->p('nb_centaines');$centaine++) {
 
-			imagearc($image, $this->p('gauche')+$this->p('epaisseur')/2, $this->p('haut')-.5, $this->p('epaisseur')+$centaine*$this->p('epaisseur')/2, $this->p('epaisseur')*($centaine+1), 180, 270, $noir);	
+			imagearc($image, $this->p('gauche')+$this->p('epaisseur')/2, $this->p('haut')-.5, $this->p('epaisseur')+$centaine*$this->p('epaisseur')/2, $this->p('epaisseur')*($centaine+1), 180, 270, $noir);
 			imageline($image, $this->p('gauche')-$centaine*$this->p('epaisseur')/4, $this->p('haut')-1, $this->p('gauche')-$centaine*$this->p('epaisseur')/4, $this->p('haut')+$this->p('epaisseur')/2, $noir);
 
 			imageline($image,$this->p('gauche')+$this->p('epaisseur')/2,$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2,$this->p('gauche')+47.5*$this->p('epaisseur'),$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2,$noir);
@@ -128,59 +128,59 @@ class dmspiral extends Format_liste {
 			$diz_unites=$numero_double-100*$centaine;
 			switch($diz_unites) {
 				case 0:
-					imagefilledrectangle($image, $this->p('gauche')+0.3*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4, $this->p('haut')-1+$this->p('epaisseur')/4, 
+					imagefilledrectangle($image, $this->p('gauche')+0.3*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4, $this->p('haut')-1+$this->p('epaisseur')/4,
 												 $this->p('gauche')+0.7*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4, $this->p('haut')-1+$this->p('epaisseur')/4+$this->p('hauteur_centrale')/2,
 												 $gris_clair);
 
 				break;
 				case 1:
-					imagefilledrectangle($image, $this->p('gauche')+.5*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
+					imagefilledrectangle($image, $this->p('gauche')+.5*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2,
 												 $this->p('gauche')+$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
 												 $gris_clair);
 
 				break;
 				case 48:
-					imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
+					imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2,
 												 $this->p('gauche')+($diz_unites-.5)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
 												 $gris_clair);
 				break;
 				case 49:
-					imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4, 
+					imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4,
 												 $this->p('gauche')+(47.95+ $centaine /4)*$this->p('epaisseur'), $this->p('haut')-1+$this->p('epaisseur')/4+$this->p('hauteur_centrale')/2,
 												 $gris_clair);
 
 				break;
 				case 50:
-					imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'), 
+					imagefilledrectangle($image, $this->p('gauche')+(47.8+$centaine/4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'),
 												 $this->p('gauche')+(47.95+ $centaine /4)*$this->p('epaisseur'), $this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur')/2+$this->p('epaisseur')/4,
 												 $gris_clair);
 
 				break;
 				case 51:
-					imagefilledrectangle($image, $this->p('gauche')+(99-$diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
+					imagefilledrectangle($image, $this->p('gauche')+(99-$diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2,
 												 $this->p('gauche')+(99-$diz_unites-.5)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
 												 $gris_clair);
 				break;
 				case 98:
-					imagefilledrectangle($image, $this->p('gauche')+(99-$diz_unites-0.5)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
+					imagefilledrectangle($image, $this->p('gauche')+(99-$diz_unites-0.5)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2,
 												 $this->p('gauche')+(99-$diz_unites)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
 												 $gris_clair);
 				break;
 				case 99:
-					imagefilledrectangle($image, $this->p('gauche')+0.3*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4,$this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'), 
+					imagefilledrectangle($image, $this->p('gauche')+0.3*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4,$this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur'),
 												 $this->p('gauche')+0.7*$this->p('epaisseur')/4-($centaine+1)*$this->p('epaisseur')/4,$this->p('haut')+1+$this->p('hauteur_centrale')-$this->p('epaisseur')/2+$this->p('epaisseur')/4,
 												 $gris_clair);
 
 				break;
 				default:
 					if ($diz_unites<49) {
-						imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2, 
+						imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')-($centaine+0.75)*$this->p('epaisseur')/2,
 													 $this->p('gauche')+ $diz_unites *$this->p('epaisseur'),$this->p('haut')-($centaine+0.25)*$this->p('epaisseur')/2,
 													 $gris_clair);
 					}
 					else {
 						$diz_unites=99-$diz_unites;
-						imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2, 
+						imagefilledrectangle($image, $this->p('gauche')+($diz_unites-1)*$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.75)*$this->p('epaisseur')/2,
 													 $this->p('gauche')+ $diz_unites *$this->p('epaisseur'),$this->p('haut')+$this->p('hauteur_centrale')+($centaine+0.25)*$this->p('epaisseur')/2,
 													 $gris_clair);
 
@@ -193,8 +193,11 @@ class dmspiral extends Format_liste {
 			imagettftext($image, $this->p('taille_police')*0.55, 0, $this->p('gauche')+$this->p('nb_centaines')*$this->p('epaisseur')/4+48*$this->p('epaisseur'), $this->p('haut')- $i *$this->p('epaisseur')/2, $noir, 'arial.ttf', (100*$i+1).'..'.(100*($i+1)));
 		}
 
-		$requete_numeros_possedes='SELECT Numero FROM numeros WHERE (Pays = \''.$pays.'\' AND Magazine = \''.$magazine.'\' AND ID_Utilisateur='.$_SESSION['id_user'].')';
-		$resultat_numeros_possedes=DM_Core::$d->requete($requete_numeros_possedes);
+		$resultat_numeros_possedes=DM_Core::$d->requete('
+      SELECT Numero
+      FROM numeros
+      WHERE Pays = ? AND Magazine = ? AND ID_Utilisateur=?'
+    , [$pays, $magazine, $_SESSION['id_user']]);
 		foreach($resultat_numeros_possedes as $numero) {
 			if (0!== (int)$numero['Numero']) {
 				$est_numero_double=preg_match(self::$regex_numero_double, $numero['Numero'], $numero2)>0;
@@ -203,8 +206,8 @@ class dmspiral extends Format_liste {
 					$this->marquer_numero ($image, $premier_numero);
 				}
 				else {
-                    $this->marquer_numero($image, $numero['Numero']);
-                }
+          $this->marquer_numero($image, $numero['Numero']);
+        }
 			}
 		}
 		/** REMPLISSAGE **/
@@ -218,13 +221,13 @@ class dmspiral extends Format_liste {
 			$pos->x=$this->p('gauche')+(47.87+$this->p('nb_centaines')/4)*$this->p('epaisseur');
 		}
 	}
-	
+
 	function marquer_numero($image,$numero) {
 		$centaine= (int)($numero / 100);
 		$diz_unites=$numero-100*$centaine;
 		$pos=new stdClass();
 		switch($diz_unites) {
-			case 0:			
+			case 0:
 				$pos->x=$this->p('gauche')+(0.12-$centaine/4)*$this->p('epaisseur');
 				$pos->y=$this->p('haut')-1+$this->p('hauteur_centrale')-$this->p('epaisseur');
 			break;
@@ -232,7 +235,7 @@ class dmspiral extends Format_liste {
 				$pos->x=$this->p('gauche')+$this->p('epaisseur')*($diz_unites-1)+$this->p('epaisseur')/4;
 				$pos->y=$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2+$this->p('epaisseur')/3;
 			break;
-			case 49:				
+			case 49:
 				$pos->x=$this->p('gauche')+$this->p('epaisseur')*($diz_unites-1)-$this->p('epaisseur')/4;
 				$pos->y=$this->p('haut')-($centaine+1)*$this->p('epaisseur')/2+$this->p('epaisseur')/3;
 			break;
@@ -277,6 +280,6 @@ if (isset($_GET['pays'], $_GET['magazine'])) {
         }
 	}
 	$dmspiral->generer($_GET['pays'], $_GET['magazine']);
-	
+
 }
 ?>

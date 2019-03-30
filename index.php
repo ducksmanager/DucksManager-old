@@ -593,7 +593,10 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                                 <?=sprintf(EXPLICATION_ORDRE_MAGAZINES, '<a href="?action=bibliotheque&onglet=options">'.BIBLIOTHEQUE_OPTIONS_COURT.'</a>')?>
                                 </div><?php
 
-                                $accepter_partage = DM_Core::$d->requete('SELECT AccepterPartage FROM users WHERE ID=?', [$id_user])[0]['AccepterPartage'] === '1';
+                                $accepter_partage = DM_Core::$d->requete('
+                                  SELECT AccepterPartage
+                                  FROM users WHERE ID=?'
+                                , [$id_user])[0]['AccepterPartage'] === '1';
                                 if ($accepter_partage) {
                                     ?><div class="alert alert-info">
                                         <?=sprintf(EXPLICATION_PARTAGE_BIBLIOTHEQUE_ACTIVEE, '<a href="?action=gerer&amp;onglet=compte">'.GESTION_COMPTE_COURT.'</a>')?>
@@ -763,8 +766,11 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                             } else {
                                 $erreur = null;
                                 if (!empty($_POST['ancien_mdp'])) {
-                                    $requete_verif_mot_de_passe = 'SELECT Email FROM users WHERE ID=' . $id_user . ' AND password=sha1(\'' . $_POST['ancien_mdp'] . '\')';
-                                    $mot_de_passe_ok = count(DM_Core::$d->requete($requete_verif_mot_de_passe)) > 0;
+                                    $mot_de_passe_ok = count(DM_Core::$d->requete('
+                                      SELECT Email
+                                      FROM users
+                                      WHERE ID=? AND password=sha1(?)'
+                                    , [$id_user, $_POST['ancien_mdp']])) > 0;
                                     if ($mot_de_passe_ok) {
                                         $mot_de_passe_nouveau = $_POST['nouveau_mdp'];
                                         $mot_de_passe_nouveau_confirm = $_POST['nouveau_mdp_confirm'];
@@ -773,8 +779,10 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                                         } elseif ($mot_de_passe_nouveau !== $mot_de_passe_nouveau_confirm) {
                                             $erreur = MOTS_DE_PASSE_DIFFERENTS;
                                         } else {
-                                            $requete_modif_mdp = 'UPDATE users SET password=sha1(\'' . $mot_de_passe_nouveau . '\') WHERE ID=' . $id_user;
-                                            DM_Core::$d->requete($requete_modif_mdp);
+                                            DM_Core::$d->requete('
+                                              UPDATE users
+                                              SET password=sha1(?) WHERE ID=?'
+                                            , [$mot_de_passe_nouveau, $id_user]);
                                             ?><div class="alert alert-success"><?=MOT_DE_PASSE_CHANGE?></div><?php
                                         }
                                     } else {

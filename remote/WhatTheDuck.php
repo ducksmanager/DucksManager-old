@@ -20,23 +20,23 @@ $retour->static=new stdClass();
 
 if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
 
-    DmClient::setUserdata(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
-	if (isset($_GET['coa'])) {
+  DmClient::setUserdata(['user' => $_GET['pseudo_user'], 'pass' => $_GET['mdp_user']]);
+  if (isset($_GET['coa'])) {
 
-		if (isset($_GET['liste_pays'])) {
+    if (isset($_GET['liste_pays'])) {
             $retour->static->pays = DmClient::get_service_results_for_wtd('GET', "/coa/list/countries/$language");
-		}
-		else if (isset($_GET['liste_magazines'], $_GET['pays'])) {
-			$retour->static->magazines=DmClient::get_service_results_for_wtd('GET', "/coa/list/publications", [$_GET['pays']]);
-		}
-		else if (isset($_GET['liste_numeros'], $_GET['magazine'])) {
+    }
+    else if (isset($_GET['liste_magazines'], $_GET['pays'])) {
+      $retour->static->magazines=DmClient::get_service_results_for_wtd('GET', "/coa/list/publications", [$_GET['pays']]);
+    }
+    else if (isset($_GET['liste_numeros'], $_GET['magazine'])) {
             $retour->static->numeros=DmClient::get_service_results_for_wtd('GET', "/coa/list/issues", [$_GET['magazine']]);
-		}
-		echo json_encode($retour);
-	}
-	else {
-		$pseudo=$_GET['pseudo_user'];
-		$mdp=$_GET['mdp_user'];
+    }
+    echo json_encode($retour);
+  }
+  else {
+    $pseudo=$_GET['pseudo_user'];
+    $mdp=$_GET['mdp_user'];
 
         $resultats = DmClient::get_query_results_from_dm_server('
             SELECT ID
@@ -46,7 +46,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
             [$pseudo, $mdp]
         );
 
-		$action= $_GET['action'] ?? '';
+    $action= $_GET['action'] ?? '';
         if ($action === 'signup') {
             $user = $_GET['pseudo_user'];
             $pass = $_GET['mdp_user'];
@@ -182,5 +182,5 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                 echo '0';
             }
         }
-	}
+  }
 }

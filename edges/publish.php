@@ -21,8 +21,11 @@ foreach($tranches_pretes_pour_publication as $tranche) {
     $publicationcode = $pays.'/'.$magazine;
     $numero = $tranche['Numero'];
 
-    $requete_contributeurs = "SELECT ID_Utilisateur, contribution FROM tranches_en_cours_contributeurs WHERE ID_Modele=$id";
-    $contributeurs = DM_Core::$d->requete($requete_contributeurs, [], 'db_edgecreator');
+    $contributeurs = DM_Core::$d->requete('
+      SELECT ID_Utilisateur, contribution
+      FROM tranches_en_cours_contributeurs
+      WHERE ID_Modele=?'
+    , [$id], 'db_edgecreator');
 
     $photographes = [];
     $createurs = [];

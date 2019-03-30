@@ -3,24 +3,20 @@ include_once '../Inducks.class.php';
 
 $regex_numeros_JM_valides='#[0-9]+#is';
 $numero_reference=2963;
-$requete='SELECT issuenumber FROM inducks_issue '
-		.'WHERE publicationcode=\'fr/JM\' '
-		.'  AND issuenumber REGEXP \'^[0-9]+$\' '
-		.'  AND CAST(issuenumber AS UNSIGNED) > CAST('.$numero_reference.' AS UNSIGNED)';
 
-$doublons_coa=DM_Core::$d->requete($requete, [], 'db_coa');
+$doublons_coa=DM_Core::$d->requete('
+	SELECT issuenumber
+	FROM inducks_issue
+	WHERE publicationcode=?
+	AND issuenumber REGEXP ?
+	AND CAST(issuenumber AS UNSIGNED) > CAST(? AS UNSIGNED)'
+, ['fr/JM', '^[0-9]+$', $numero_reference], 'db_coa');
 
-$requete_doublons_deja_dispo="SELECT Numero FROM tranches_doublons "
-							."WHERE NumeroReference=$numero_reference "
-							."  AND CONCAT(Pays,'/',Magazine)='fr/JM'";
-if (isset($_GET['dbg'])) {
-    echo $requete_doublons_deja_dispo;
-}
-$resultats_doublons_deja_dispo=DM_Core::$d->requete($requete_doublons_deja_dispo);
-
-if (isset($_GET['dbg'])) {
-	print_r( $resultats_doublons_deja_dispo);
-}
+$resultats_doublons_deja_dispo=DM_Core::$d->requete('
+	SELECT Numero FROM tranches_doublons
+	WHERE NumeroReference=?
+	  AND CONCAT(Pays,\'/\',Magazine)=?'
+, [$numero_reference, 'fr/JM']);
 
 $doublons_deja_dispo= [];
 $doublons_a_ajouter= [];
@@ -46,9 +42,9 @@ if (count($doublons_a_ajouter) > 0) {
 	foreach($doublons_a_ajouter as $doublon) {
         $mini_requetes_ajout[] = "('fr','JM','$doublon','$numero_reference')";
     }
-	
+
 	$requete_ajout_doublons.=implode(',',$mini_requetes_ajout);
-	
+
 	if (isset($_GET['dbg'])) {
         echo $requete_ajout_doublons . '<br />';
     }
@@ -75,10 +71,10 @@ if (count($tranches_a_ajouter) > 0) {
 	foreach($tranches_a_ajouter as $numero) {
         $mini_requetes_ajout[] = "('fr/JM','$numero',NOW())";
     }
-	
+
 	$requete_ajout_tranches.='INSERT INTO tranches_pretes(publicationcode,issuenumber,dateajout) '
 							.'VALUES '.implode(',',$mini_requetes_ajout);
-	
+
 	if (isset($_GET['dbg'])) {
         echo $requete_ajout_tranches . '<br />';
     }
