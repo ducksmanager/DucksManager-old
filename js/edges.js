@@ -98,7 +98,7 @@ function charger_bibliotheque() {
                             name: edgeData.pays+'/'+edgeData.magazine+'.'+edgeData.numero_reference,
                             id: edgeData.pays+'/'+edgeData.magazine+'.'+edgeData.numero,
                             'data-edge': edgeData.est_visible ? 1 : 0,
-                            'data-sprite': edgeData.sprite_version ? ('https://res.cloudinary.com/dl7hskxab/image/sprite/v'+edgeData.sprite_version+'/'+edgeData.sprite_name): ''
+                            'data-sprite': edgeData.sprite ? ('https://res.cloudinary.com/dl7hskxab/image/sprite/v'+edgeData.sprite.version+'/'+edgeData.sprite.name): ''
                         });
                 }));
 
@@ -135,15 +135,15 @@ var loaded_sprites = [];
 function charger_tranche(tranche) {
     var sprite = tranche.data().sprite;
     if (sprite) {
-        console.log('Sprite : ' + tranche.data().sprite);
+        console.log('Loading sprite : ' + tranche.data().sprite);
         if (!loaded_sprites[sprite]) {
             jQuery('<link>')
                 .appendTo('head')
                 .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
         }
-        var precedente = tranche.prev();
-        tranche.replaceWith(jQuery('<div>').addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-')));
-        charger_tranche_suivante.call(precedente.next());
+        var elementWithSprite = jQuery('<div>').addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
+        tranche.replaceWith(elementWithSprite);
+        charger_tranche_suivante.call(elementWithSprite);
     }
     else {
         tranche

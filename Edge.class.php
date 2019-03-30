@@ -7,10 +7,9 @@ class Edge {
 	var $numero;
 	var $numero_reference;
 	var $est_visible=true;
-	var $sprite_name;
-	var $sprite_version;
+	var $sprite;
 
-    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $sprite_name = null, $sprite_version = null) {
+    function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $sprite = null) {
 		if (is_null($pays)) {
             return;
         }
@@ -19,8 +18,7 @@ class Edge {
 		$this->numero= $numero;
 		$this->numero_reference= $numero_reference;
         $this->est_visible = $visible;
-        $this->sprite_name = $sprite_name;
-        $this->sprite_version = $sprite_version;
+        $this->sprite = $sprite;
     }
 
 	function getImgHTML($small = false) {
@@ -57,16 +55,21 @@ class Edge {
                    numeros.Numero,
                    IFNULL(reference.NumeroReference, numeros.Numero_nospace) AS NumeroReference,
                    tp.ID                                                     AS EdgeID,
-                   GROUP_CONCAT(sprites.Sprite_name ORDER BY sprites.Sprite_size ASC) AS Sprite_names,
-                   GROUP_CONCAT(sprites.Sprite_size ORDER BY sprites.Sprite_size ASC) AS Sprite_sizes
+                   IF (tp.ID IS NULL,'', GROUP_CONCAT(
+                       IF(sprites.Sprite_name is null,'', JSON_OBJECT('name', sprites.Sprite_name, 'version', sprite_urls.Version, 'size', sprites.Sprite_size))
+                       ORDER BY sprites.Sprite_size ASC
+                   )) AS Sprites
             FROM numeros
-                   LEFT JOIN tranches_doublons reference
-                             ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND
-                                numeros.Numero_nospace = reference.Numero
-                   LEFT JOIN tranches_pretes tp
-                             ON CONCAT(numeros.Pays, '/', numeros.Magazine) = tp.publicationcode AND
-                                IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tp.issuenumber
-                   LEFT JOIN tranches_pretes_sprites sprites ON sprites.ID_Tranche = tp.ID
+            LEFT JOIN tranches_doublons reference
+                 ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND
+                    numeros.Numero_nospace = reference.Numero
+            LEFT JOIN tranches_pretes tp
+                 ON CONCAT(numeros.Pays, '/', numeros.Magazine) = tp.publicationcode AND
+                    IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tp.issuenumber
+            LEFT JOIN tranches_pretes_sprites sprites
+                ON sprites.ID_Tranche = tp.ID
+            LEFT JOIN tranches_pretes_sprites_urls sprite_urls
+                ON sprites.Sprite_name = sprite_urls.Sprite_name
             WHERE ID_Utilisateur = ?
             GROUP BY numeros.Pays, numeros.Magazine, numeros.Numero
             ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
@@ -81,13 +84,13 @@ class Edge {
         $spritesToUse = [];
 
         foreach($resultats_tranches as $resultat) {
-            if (!is_null($resultat['Sprite_names'])) {
-                foreach(explode(',', $resultat['Sprite_names']) as $i=>$spriteName) {
-                    $spriteSize = (int) explode(',', $resultat['Sprite_sizes'])[$i];
-                    if (!array_key_exists($spriteName, $spritesToUse)) {
-                        $spritesToUse[$spriteName] = ['size' => $spriteSize, 'edges' => []];
+            if (!empty($resultat['Sprites'])) {
+                $sprites = json_decode("[{$resultat['Sprites']}]", true);
+                foreach($sprites as $i=>$sprite) {
+                    if (!array_key_exists($sprite['name'], $spritesToUse)) {
+                        $spritesToUse[$sprite['name']] = $sprite + ['edges' => []];
                     }
-                    $spritesToUse[$spriteName]['edges'][] = $resultat['EdgeID'];
+                    $spritesToUse[$sprite['name']]['edges'][] = $resultat['EdgeID'];
                 }
             }
         }
@@ -98,9 +101,9 @@ class Edge {
         });
 
         $edgesUsingSprites = [];
-        foreach($spritesToUse as $spriteName => $sprite) {
+        foreach($spritesToUse as $sprite) {
             foreach($sprite['edges'] as $edgeId) {
-                $edgesUsingSprites[(int)$edgeId] = $spriteName;
+                $edgesUsingSprites[(int)$edgeId] = ['name' => $sprite['name'], 'version' => $sprite['version']];
             }
         }
 
@@ -145,16 +148,8 @@ class Edge {
                 if (array_key_exists($publication_code, $resultats_tranches_par_publication)
                  && array_key_exists($numero_indexe, $resultats_tranches_par_publication[$publication_code])) {
                     $numero = $resultats_tranches_par_publication[$publication_code][$numero_indexe];
-                    $spriteName = $edgesUsingSprites[$numero['EdgeID']] ?? null;
-                    if ($publication_code === 'fr/TP') {
-                        $spriteVersion = 1553095460;
-                        $spriteName = 'edges-fr-TP-1-10';
-                    }
-                    if ($publication_code === 'fr/PM') {
-                        $spriteVersion = 1553095423;
-                        $spriteName = 'edges-fr-PM-451-500';
-                    }
-                    $edgesData[]=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], !is_null($numero['EdgeID']), $spriteName, $spriteVersion);
+                    $sprite = $edgesUsingSprites[$numero['EdgeID']] ?? null;
+                    $edgesData[]=new Edge($numero['Pays'], $numero['Magazine'], $numero['Numero'], $numero['NumeroReference'], !is_null($numero['EdgeID']), $sprite);
                 }
             }
         }
