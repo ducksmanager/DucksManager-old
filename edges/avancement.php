@@ -14,7 +14,7 @@
             .num, #num_courant {
                 background-color: red;
             }
-
+            
             .dispo {
            		background-color: green !important;
             }
@@ -22,7 +22,7 @@
             .num.dispo {
                 cursor: pointer;
             }
-
+            
             .bordered {
                 border-right:1px solid black;
             }
@@ -82,9 +82,18 @@ if (isset($_GET['wanted'])) {
     if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
         die ('Valeur du wanted invalide');
     }
-    $requete_plus_demandes='SELECT Count(Numero) as cpt, Pays, Magazine, Numero '
-                          .'FROM numeros '
-                          .'GROUP BY Pays,Magazine,Numero ORDER BY cpt DESC, Pays, Magazine, Numero';
+    $requete_plus_demandes="
+        SELECT Count(Numero) as cpt, CONCAT(Pays,'/',Magazine) AS publicationcode, Numero
+        FROM numeros
+        WHERE NOT EXISTS(
+            SELECT 1
+            FROM tranches_pretes
+            WHERE CONCAT(numeros.Pays, '/', numeros.Magazine) = tranches_pretes.publicationcode
+              AND numeros.Numero_nospace = tranches_pretes.issuenumber
+        )
+        GROUP BY Pays,Magazine,Numero
+        ORDER BY cpt DESC, Pays, Magazine, Numero
+        LIMIT {$_GET['wanted']}";
 
     if (isset($_GET['user'])) {
         $id_user=DM_Core::$d->user_to_id($_GET['user']);
@@ -98,43 +107,25 @@ if (isset($_GET['wanted'])) {
             WHERE ID_Utilisateur = $id_user
             ORDER BY cpt DESC, Pays, Magazine, Numero
         ";
+        $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes);
+    }
+    else {
+        $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes, [(int)$_GET['wanted']]);
     }
 
-    $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes);
     $cpt=-1;
     $cptwanted=0;
 
     echo '--- WANTED ---';
-	$numeros_demandes= [];
-	foreach($resultat_plus_demandes as $num) {
-		$pays=$num['Pays'];
-		$magazine=$num['Magazine'];
-		$numero=$num['Numero'];
-		$cpt=$num['cpt'];
-
-		[$magazine,$numero] =Inducks::get_vrais_magazine_et_numero($pays, $magazine, $numero);
-    $publicationcode = $pays . '/' . $magazine;
-    $est_dispo = count(DM_Core::$d->requete('
-          SELECT 1
-          FROM tranches_pretes
-          WHERE publicationcode=? AND issuenumber=?'
-        , [$publicationcode, $numero])) > 0;
-    if (!$est_dispo) {
-      $numeros_demandes[] = ['cpt' => $cpt, 'publicationcode' => $publicationcode, 'numero' => $numero];
-      if ($cptwanted++ >= $_GET['wanted']) {
-        break;
-      }
-    }
-  }
-  $publicationcodes = array_unique(array_map(function($publicationcode) {
-      return $publicationcode['publicationcode'];
-  }, $numeros_demandes));
+    $publicationcodes = array_unique(array_map(function($publicationcode) {
+        return $publicationcode['publicationcode'];
+    }, $resultat_plus_demandes));
 	$liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 
-	foreach($numeros_demandes as $numero_demande) {
+	foreach($resultat_plus_demandes as $numero_demande) {
 		$publicationcode=$numero_demande['publicationcode'];
 		[$pays,$magazine] =explode('/',$publicationcode);
-		$numero=$numero_demande['numero'];
+		$numero=$numero_demande['Numero'];
 		$cpt=$numero_demande['cpt'];
 
 		$nom_magazine_complet = $liste_magazines[$publicationcode];
@@ -161,15 +152,12 @@ $resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete($requete_pays_maga
 $publicationcodes = array_map(function($publicationcode) {
 	return $publicationcode['publicationcode'];
 }, $resultat_pays_magazines_tranches_pretes);
-$publicationcodes_str = implode(', ', array_map(function($publicationcode) {
-    return "'".$publicationcode."'";
-}, $publicationcodes));
 
 $liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 $numeros_inducks=Inducks::get_liste_numeros_from_publicationcodes($publicationcodes);
-$requete_tranches_pretes = "
+$requete_tranches_pretes = '
   SELECT publicationcode, issuenumber
-  FROM tranches_pretes";
+  FROM tranches_pretes';
 
 $resultat_tranches_pretes = DM_Core::$d->requete($requete_tranches_pretes);
 $tranches_pretes = [];

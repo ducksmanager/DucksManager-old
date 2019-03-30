@@ -155,24 +155,7 @@ class Inducks {
 	}
 
     static function get_noms_complets_magazines($publication_codes) {
-        $liste_magazines_complets= [];
-
-        $publication_codes_chunks=array_chunk(array_values($publication_codes), 100);
-        foreach($publication_codes_chunks as $publication_codes_chunk) {
-            $publication_codes_chunk = array_map(function($publication_code) {
-                return "'".$publication_code."'";
-            }, $publication_codes_chunk);
-
-            $resultats_noms_magazines= self::requete('
-              SELECT publicationcode, title
-              FROM inducks_publication
-              WHERE publicationcode IN (?)'
-            , $publication_codes_chunk);
-            foreach($resultats_noms_magazines as $resultat) {
-                $liste_magazines_complets[$resultat['publicationcode']]=$resultat['title'];
-            }
-        }
-        return $liste_magazines_complets;
+        return (array) DmClient::get_service_results_for_dm('GET', '/coa/list/publications', [implode(',', array_values($publication_codes))]);
     }
 
 	static function get_liste_magazines($pays) {
