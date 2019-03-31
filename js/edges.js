@@ -128,6 +128,8 @@ function ajouter_etagere(afterElement) {
     else {
         jQuery('#bibliotheque').append(etagere);
     }
+
+    init_observers_tranches();
 }
 
 var loaded_sprites = [];
@@ -136,14 +138,22 @@ function charger_tranche(tranche) {
     var sprite = tranche.data().sprite;
     if (sprite) {
         console.log('Loading sprite : ' + tranche.data().sprite);
-        if (!loaded_sprites[sprite]) {
-            jQuery('<link>')
-                .appendTo('head')
-                .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
-        }
-        var elementWithSprite = jQuery('<div>').addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
-        tranche.replaceWith(elementWithSprite);
-        charger_tranche_suivante.call(elementWithSprite);
+        jQuery('<img>', {src: sprite+'.png'}).on('load', function() {
+            if (!loaded_sprites[sprite]) {
+                jQuery('<link>')
+                    .appendTo('head')
+                    .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
+            }
+            var elementWithSprite = jQuery('<div>', {id: tranche.attr('id')})
+                .addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
+            tranche.replaceWith(elementWithSprite);
+            var imageIsVisible = setInterval(function() {
+                if (elementWithSprite.width() > 0) {
+                    charger_tranche_suivante.call(elementWithSprite);
+                    clearInterval(imageIsVisible);
+                }
+            }, 1)
+        });
     }
     else {
         tranche
@@ -173,7 +183,6 @@ function charger_tranche_suivante() {
     else {
         if (tranche.closest('#bibliotheque').length) { // Contexte bibliothèque
             ajouter_etagere();
-            init_observers_tranches();
             charger_recherche();
         }
         else { // Contexte affichage dans les événements récents
@@ -540,6 +549,7 @@ function recherche_histoire(val_recherche) {
 
 function init_observers_tranches() {
     jQuery('.tranche')
+        .off('mousedown mouseover')
         .on('mousedown', function() {
             tranche_bib=jQuery(this);
             ouvrir_tranche();
