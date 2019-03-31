@@ -10,8 +10,7 @@ else {
 	$listes_existantes = Liste::set_types_listes();
 	$type=$_GET['type'];
 	if (array_key_exists($type, $listes_existantes)) {
-		$id_user=isset($_SESSION['user']) ? $_SESSION['id_user'] : null;
-		$l=DM_Core::$d->toList($id_user);
+		$l=DM_Core::$d->toList($_SESSION['id_user']);
 
 		ob_start();
 		$html = ''; ?>
