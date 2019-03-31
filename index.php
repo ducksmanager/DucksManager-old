@@ -887,13 +887,6 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
 
                         break;
                     case 'ajout_suppr':
-                        if (DM_Core::$d->est_utilisateur_vendeur_sans_email()) {
-                            ?>
-                            <div class="alert alert-warning">
-                            <?= ATTENTION_VENTE_SANS_EMAIL ?>
-                            <a href="?action=gerer&amp;onglet=compte"><?= GESTION_COMPTE_COURT ?></a>.
-                            </div><?php
-                        }
                         if ($_SESSION['user'] === 'demo') {
                             require_once 'init_demo.php';
                             $nb_minutes_avant_reset = 60 - strftime('%M', time());

@@ -93,21 +93,20 @@ if (isset($_GET['wanted'])) {
         )
         GROUP BY Pays,Magazine,Numero
         ORDER BY cpt DESC, Pays, Magazine, Numero
-        LIMIT {$_GET['wanted']}";
+        LIMIT ?";
 
     if (isset($_GET['user'])) {
-        $id_user=DM_Core::$d->user_to_id($_GET['user']);
-        $requete_plus_demandes="
+        $requete_plus_demandes= '
             SELECT
               (select Count(Numero) AS cpt from numeros tot where numeros.Pays = tot.Pays and numeros.Magazine = tot.Magazine and numeros.Numero = tot.Numero) as cpt,
               Pays,
               Magazine,
               Numero
             FROM numeros
-            WHERE ID_Utilisateur = $id_user
+            WHERE ID_Utilisateur = ?
             ORDER BY cpt DESC, Pays, Magazine, Numero
-        ";
-        $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes);
+        ';
+        $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes, [$_SESSION['id_user']]);
     }
     else {
         $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes, [(int)$_GET['wanted']]);

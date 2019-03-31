@@ -40,17 +40,17 @@ class Database {
 
 	function user_to_id($user) {
 		if (isset($_COOKIE['user'], $_COOKIE['pass']) && empty($user)) {
-        $user=$_COOKIE['user'];
+		    $user=$_COOKIE['user'];
 		}
-		$resultat=DM_Core::$d->requete('
-      SELECT ID
-      FROM users
-      WHERE username = ?'
-    , [$user]);
-		if (count($resultat) === 0) {
-			return null;
-		}
-		return $resultat[0]['ID'];
+        $resultat = DM_Core::$d->requete('
+            SELECT ID
+            FROM users
+            WHERE username = ?'
+        , [$user]);
+        if (count($resultat) === 0) {
+            return null;
+        }
+        return $resultat[0]['ID'];
 	}
 
 	function user_connects($user,$pass) {
@@ -101,17 +101,15 @@ class Database {
 	}
 
 	function update_numeros($pays,$magazine,$etat,$av,$liste,$id_acquisition) {
-		$id_user=$this->user_to_id($_SESSION['user']);
-
 		if ($etat === '_non_possede') {
             DM_Core::$d->requete('
               DELETE FROM numeros
               WHERE ID_Utilisateur=?
-                AND Numero IN (' . implode(',', array_fill(0, count($liste), '?')) . ')', array_merge([$id_user], $liste)
+                AND Numero IN (' . implode(',', array_fill(0, count($liste), '?')) . ')', array_merge([$_SESSION['id_user']], $liste)
             );
         }
         else {
-            $liste_user=$this->toList($id_user);
+            $liste_user=$this->toList($_SESSION['id_user']);
 
             $id_acquisition = (int) $id_acquisition;
             $id_acquisition_insert=$id_acquisition==='do_not_change' ? -1 : $id_acquisition;
@@ -124,7 +122,7 @@ class Database {
                     $liste_deja_possedes[] = $numero;
                 }
                 else {
-                    $numeros_insert[] = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$id_user];
+                    $numeros_insert[] = [$pays,$magazine,$numero,$etat,$id_acquisition_insert,$av_insert,$_SESSION['id_user']];
                 }
             }
 
@@ -161,7 +159,7 @@ class Database {
                   WHERE Pays=?
                     AND Magazine=?
                     AND ID_Utilisateur=?
-                    AND Numero IN (' . implode(',', array_fill(0, count($liste_deja_possedes), '?')) . ')', array_merge(array_values($changements), [$pays, $magazine, $id_user], $liste_deja_possedes)
+                    AND Numero IN (' . implode(',', array_fill(0, count($liste_deja_possedes), '?')) . ')', array_merge(array_values($changements), [$pays, $magazine, $_SESSION['id_user']], $liste_deja_possedes)
                 );
             }
 		}
@@ -193,12 +191,11 @@ class Database {
 	}
 
 	function ajouter_auteur($nomAuteurAbrege) {
-		$id_user=$this->user_to_id($_SESSION['user']);
-		$requete_nb_auteurs_surveilles="
+		$requete_nb_auteurs_surveilles= '
             SELECT NomAuteurAbrege
             FROM auteurs_pseudos
-            WHERE ID_User=$id_user";
-		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete($requete_nb_auteurs_surveilles);
+            WHERE ID_User=?';
+		$resultat_nb_auteurs_surveilles=DM_Core::$d->requete($requete_nb_auteurs_surveilles, [$_SESSION['id_user']]);
 		if (count($resultat_nb_auteurs_surveilles) >= 5) {
 			?><div class="alert alert-danger"><?=MAX_AUTEURS_SURVEILLES_ATTEINT?></div><?php
 		}
@@ -213,7 +210,7 @@ class Database {
                     $requete_ajout_auteur= '
                         INSERT INTO auteurs_pseudos(NomAuteurAbrege, ID_User, Notation)
                         VALUES (:nomAuteurAbrege, :idUser, :notation)';
-                    DM_Core::$d->requete($requete_ajout_auteur, ['nomAuteurAbrege' => $nomAuteurAbrege, 'idUser' => $id_user, 'notation' => -1]);
+                    DM_Core::$d->requete($requete_ajout_auteur, ['nomAuteurAbrege' => $nomAuteurAbrege, 'idUser' => $_SESSION['id_user'], 'notation' => -1]);
                 }
             }
         }
@@ -264,19 +261,16 @@ class Database {
 	}
 
 	function modifier_note_auteur($nomAuteurAbrege, $note) {
-        $id_user=$this->user_to_id($_SESSION['user']);
-
         $requete_notation="
           UPDATE auteurs_pseudos
           SET Notation=$note
           WHERE NomAuteurAbrege = :auteur
             AND ID_user=:id_user";
-        DM_Core::$d->requete($requete_notation, [':auteur' => $nomAuteurAbrege, ':id_user' => $id_user]);
+        DM_Core::$d->requete($requete_notation, [':auteur' => $nomAuteurAbrege, ':id_user' => $_SESSION['id_user']]);
 	}
 
 	function sous_liste($pays,$magazine) {
-        $id_user=$this->user_to_id($_SESSION['user']);
-        $l=DM_Core::$d->toList($id_user);
+        $l=DM_Core::$d->toList($_SESSION['id_user']);
 
 		$l_magazine=new Liste();
 		if (isset($l->collection[$pays][$magazine])) {
@@ -287,29 +281,19 @@ class Database {
 		return $l_magazine;
 	}
 
-	function est_utilisateur_vendeur_sans_email() {
-		$id_user=$this->user_to_id($_SESSION['user']);
-		$requete='SELECT 1 FROM users '
-				.'WHERE ID='.$id_user.' AND (Email IS NULL OR Email=\'\') '
-				  .'AND (SELECT COUNT(Numero) FROM numeros WHERE ID_Utilisateur='.$id_user.' AND AV=1) > 0';
-		return count($this->requete($requete)) === 1;
-	}
-
 	function get_niveaux() {
-		$id_user=$this->user_to_id($_SESSION['user']);
-
 		$requete_nb_photographies ="
             SELECT NbPoints AS cpt FROM users_points up
-            WHERE up.TypeContribution = 'photographe' AND up.ID_Utilisateur = $id_user";
+            WHERE up.TypeContribution = 'photographe' AND up.ID_Utilisateur = {$_SESSION['id_user']}";
 		$resultat_nb_photographies=DM_Core::$d->requete($requete_nb_photographies);
 
 		$requete_nb_creations =	"
             SELECT NbPoints AS cpt FROM users_points up
-            WHERE up.TypeContribution = 'createur' AND up.ID_Utilisateur = $id_user";
+            WHERE up.TypeContribution = 'createur' AND up.ID_Utilisateur = {$_SESSION['id_user']}";
 		$resultat_nb_creations=DM_Core::$d->requete($requete_nb_creations);
 
-		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur='.$id_user;
-		$resultat_nb_bouquineries=DM_Core::$d->requete($requete_nb_bouquineries);
+		$requete_nb_bouquineries='SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur=?';
+		$resultat_nb_bouquineries=DM_Core::$d->requete($requete_nb_bouquineries, [$_SESSION['id_user']]);
 
 		return Affichage::get_medailles([
             'Photographe'=> (int) ($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
