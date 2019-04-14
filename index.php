@@ -883,7 +883,7 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                             <a href="?action=gerer&amp;onglet=compte&amp;vider=true"><?= VIDER_LISTE ?></a><br/><br/>
                             <a href="?action=gerer&amp;onglet=compte&amp;supprimer=true"><?= SUPPRIMER_COMPTE ?></a>
                             <br/><?php
-
+                        }
 
                         break;
                     case 'ajout_suppr':
