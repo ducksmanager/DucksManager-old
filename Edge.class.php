@@ -57,7 +57,6 @@ class Edge {
                    tp.ID                                                     AS EdgeID,
                    IF (tp.ID IS NULL,'', GROUP_CONCAT(
                        IF(sprites.Sprite_name is null,'', JSON_OBJECT('name', sprites.Sprite_name, 'version', sprite_urls.Version, 'size', sprites.Sprite_size))
-                       ORDER BY sprites.Sprite_size ASC
                    )) AS Sprites
             FROM numeros
             LEFT JOIN tranches_doublons reference
@@ -98,6 +97,10 @@ class Edge {
         // On ne garde que les sprites dont au moins 80% des tranches sont possédées par l'utilisateur
         $spritesToUse = array_filter($spritesToUse, function($sprite) use ($USE_SPRITE_FROM_EDGE_PCT) {
             return count($sprite['edges']) >= $sprite['size'] * $USE_SPRITE_FROM_EDGE_PCT/100;
+        });
+
+        usort($spritesToUse, function($a, $b) {
+            return $a['size'] < $b['size'] ? -1 : ($a['size'] > $b['size'] ? 1 : 0);
         });
 
         $edgesUsingSprites = [];
