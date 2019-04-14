@@ -115,9 +115,7 @@ if (isset($_GET['pseudo_user'], $_GET['mdp_user'])) {
                         [$id_utilisateur, $date_achat, $description_achat]
                     );
 
-                    if (count($resultats_achats) === 0) {
-                        echo 'OK';
-                    }
+                    echo 'OK';
                 } else if (isset($_GET['get_achats'])) {
                     $resultats_achats = DmClient::get_query_results_from_dm_server('
                         SELECT ID_Acquisition, Date,Description
