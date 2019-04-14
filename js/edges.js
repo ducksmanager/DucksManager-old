@@ -134,26 +134,30 @@ function ajouter_etagere(afterElement) {
 
 var loaded_sprites = [];
 
-function charger_tranche(tranche) {
+function charger_tranche(tranche, ignoresprite) {
     var sprite = tranche.data().sprite;
-    if (sprite) {
+    if (sprite && !ignoresprite) {
         console.log('Loading sprite : ' + tranche.data().sprite);
-        jQuery('<img>', {src: sprite+'.png'}).on('load', function() {
-            if (!loaded_sprites[sprite]) {
-                jQuery('<link>')
-                    .appendTo('head')
-                    .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
-            }
-            var elementWithSprite = jQuery('<div>', {id: tranche.attr('id')})
-                .addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
-            tranche.replaceWith(elementWithSprite);
-            var imageIsVisible = setInterval(function() {
-                if (elementWithSprite.width() > 0) {
-                    charger_tranche_suivante.call(elementWithSprite);
-                    clearInterval(imageIsVisible);
+        jQuery('<img>', {src: sprite+'.png'})
+            .on('load', function() {
+                if (!loaded_sprites[sprite]) {
+                    jQuery('<link>')
+                        .appendTo('head')
+                        .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
                 }
-            }, 1)
-        });
+                var elementWithSprite = jQuery('<div>', {id: tranche.attr('id')})
+                    .addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
+                tranche.replaceWith(elementWithSprite);
+                var imageIsVisible = setInterval(function() {
+                    if (elementWithSprite.width() > 0) {
+                        charger_tranche_suivante.call(elementWithSprite);
+                        clearInterval(imageIsVisible);
+                    }
+                }, 1)
+            })
+            .on('error', function() {
+                charger_tranche(tranche, true);
+            });
     }
     else {
         tranche

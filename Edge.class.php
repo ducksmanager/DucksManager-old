@@ -68,7 +68,7 @@ class Edge {
                     IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tp.issuenumber
             LEFT JOIN tranches_pretes_sprites sprites
                 ON sprites.ID_Tranche = tp.ID
-            LEFT JOIN tranches_pretes_sprites_urls sprite_urls
+            INNER JOIN tranches_pretes_sprites_urls sprite_urls
                 ON sprites.Sprite_name = sprite_urls.Sprite_name
             WHERE ID_Utilisateur = ?
             GROUP BY numeros.Pays, numeros.Magazine, numeros.Numero
