@@ -150,6 +150,7 @@ function charger_tranche(tranche, ignoresprite) {
                 tranche.replaceWith(elementWithSprite);
                 var imageIsVisible = setInterval(function() {
                     if (elementWithSprite.width() > 0) {
+                        loaded_sprites[sprite] = true;
                         charger_tranche_suivante.call(elementWithSprite);
                         clearInterval(imageIsVisible);
                     }
