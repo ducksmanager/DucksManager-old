@@ -54,21 +54,26 @@ class Edge {
                    numeros.Magazine,
                    numeros.Numero,
                    IFNULL(reference.NumeroReference, numeros.Numero_nospace) AS NumeroReference,
-                   tp.ID                                                     AS EdgeID,
-                   IF (tp.ID IS NULL,'', GROUP_CONCAT(
-                       IF(sprites.Sprite_name is null,'', JSON_OBJECT('name', sprites.Sprite_name, 'version', sprite_urls.Version, 'size', sprites.Sprite_size))
+                   tp.ID AS EdgeID,
+                   IF(tp.ID IS NULL, '', GROUP_CONCAT(
+                       IF(sprites.Sprite_name is null, '',
+                          JSON_OBJECT('name', sprites.Sprite_name, 'version', sprites.Version, 'size', sprites.Sprite_size))
+                       ORDER BY sprites.Sprite_size ASC
                    )) AS Sprites
             FROM numeros
             LEFT JOIN tranches_doublons reference
-                 ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND
-                    numeros.Numero_nospace = reference.Numero
+                ON numeros.Pays = reference.Pays AND numeros.Magazine = reference.Magazine AND
+                   numeros.Numero_nospace = reference.Numero
             LEFT JOIN tranches_pretes tp
-                 ON CONCAT(numeros.Pays, '/', numeros.Magazine) = tp.publicationcode AND
-                    IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tp.issuenumber
-            LEFT JOIN tranches_pretes_sprites sprites
-                ON sprites.ID_Tranche = tp.ID
-            INNER JOIN tranches_pretes_sprites_urls sprite_urls
-                ON sprites.Sprite_name = sprite_urls.Sprite_name
+                ON CONCAT(numeros.Pays, '/', numeros.Magazine) = tp.publicationcode
+                AND IFNULL(reference.NumeroReference, numeros.Numero_nospace) = tp.issuenumber
+            LEFT JOIN (
+                SELECT sprites.ID_Tranche, sprites.sprite_name, sprites.Sprite_size, sprite_urls.Version
+                FROM tranches_pretes_sprites sprites
+                INNER JOIN tranches_pretes_sprites_urls sprite_urls
+                    ON sprites.Sprite_name = sprite_urls.Sprite_name
+            ) AS sprites
+            ON sprites.ID_Tranche = tp.ID
             WHERE ID_Utilisateur = ?
             GROUP BY numeros.Pays, numeros.Magazine, numeros.Numero
             ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
