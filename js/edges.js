@@ -153,7 +153,7 @@ function charger_tranche(tranche, ignoresprite) {
                 var imageIsVisible = setInterval(function() {
                     if (elementWithSprite.width() > 0) {
                         loaded_sprites[sprite] = true;
-                        charger_tranche_suivante.call(elementWithSprite);
+                        charger_tranche_suivante.call(tranche);
                         clearInterval(imageIsVisible);
                     }
                     else {
