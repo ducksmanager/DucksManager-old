@@ -159,6 +159,7 @@ function charger_tranche(tranche, ignoresprite) {
                     else {
                         if (retries >= 10) {
                             charger_tranche(tranche, true);
+                            clearInterval(imageIsVisible);
                         }
                     }
                     retries++;
