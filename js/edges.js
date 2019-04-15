@@ -148,12 +148,20 @@ function charger_tranche(tranche, ignoresprite) {
                 var elementWithSprite = jQuery('<div>', {id: tranche.attr('id')})
                     .addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
                 tranche.replaceWith(elementWithSprite);
+
+                var retries = 0;
                 var imageIsVisible = setInterval(function() {
                     if (elementWithSprite.width() > 0) {
                         loaded_sprites[sprite] = true;
                         charger_tranche_suivante.call(elementWithSprite);
                         clearInterval(imageIsVisible);
                     }
+                    else {
+                        if (retries >= 10) {
+                            charger_tranche(tranche, true);
+                        }
+                    }
+                    retries++;
                 }, 1)
             })
             .on('error', function() {
