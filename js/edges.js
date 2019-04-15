@@ -157,13 +157,13 @@ function charger_tranche(tranche, ignoresprite) {
                         clearInterval(imageIsVisible);
                     }
                     else {
-                        if (retries >= 10) {
+                        if (retries >= 100) {
                             charger_tranche(tranche, true);
                             clearInterval(imageIsVisible);
                         }
                     }
                     retries++;
-                }, 1)
+                }, 5)
             })
             .on('error', function() {
                 charger_tranche(tranche, true);
