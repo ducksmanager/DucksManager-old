@@ -140,30 +140,19 @@ function charger_tranche(tranche, ignoresprite) {
         console.log('Loading sprite : ' + tranche.data().sprite);
         jQuery('<img>', {src: sprite+'.png'})
             .on('load', function() {
-                if (!loaded_sprites[sprite]) {
-                    jQuery('<link>')
-                        .appendTo('head')
-                        .attr({href: sprite+'.css', type: 'text/css', rel: 'stylesheet'});
+                if (loaded_sprites[sprite]) {
+                    charger_tranche_depuis_sprite(tranche, sprite);
                 }
-                var elementWithSprite = jQuery('<div>', {id: tranche.attr('id')})
-                    .addClass('tranche edges-' + tranche.attr('name').replace(/[\/.]/g, '-'));
-                tranche.replaceWith(elementWithSprite);
-
-                var retries = 0;
-                var imageIsVisible = setInterval(function() {
-                    if (elementWithSprite.width() > 0) {
-                        loaded_sprites[sprite] = true;
-                        charger_tranche_suivante.call(elementWithSprite);
-                        clearInterval(imageIsVisible);
-                    }
-                    else {
-                        if (retries >= 100) {
+                else {
+                    jQuery
+                        .get(sprite+'.css', function (response) {
+                            loaded_sprites[sprite] = response
+                            jQuery("<style>").prop({type: "text/css"}).html(response).appendTo("head");
+                            charger_tranche_depuis_sprite(tranche, sprite);
+                        }).fail(function() {
                             charger_tranche(tranche, true);
-                            clearInterval(imageIsVisible);
-                        }
-                    }
-                    retries++;
-                }, 5)
+                        });
+                }
             })
             .on('error', function() {
                 charger_tranche(tranche, true);
@@ -179,6 +168,34 @@ function charger_tranche(tranche, ignoresprite) {
             return jQuery(src_similaire).attr('src');
         });
         tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
+    }
+}
+
+function charger_tranche_depuis_sprite(tranche, sprite) {
+    var spriteClass = 'edges-' + tranche.attr('name').replace(/[\/.]/g, '-');
+    if (loaded_sprites[sprite].indexOf('.' + spriteClass + ' {') !== -1) {
+        var elementWithSprite = jQuery('<div>', {id: tranche.attr('id')}).addClass('tranche ' + spriteClass);
+        tranche.after(elementWithSprite);
+
+        var retries = 0;
+        var imageIsVisible = setInterval(function() {
+            if (elementWithSprite.width() > 0) {
+                tranche.remove();
+                charger_tranche_suivante.call(elementWithSprite);
+                clearInterval(imageIsVisible);
+            }
+            else {
+                if (retries >= 100) {
+                    elementWithSprite.remove();
+                    charger_tranche(tranche, true);
+                    clearInterval(imageIsVisible);
+                }
+            }
+            retries++;
+        }, 5)
+    }
+    else {
+        charger_tranche(tranche, true);
     }
 }
 
