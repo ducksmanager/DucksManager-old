@@ -1,7 +1,7 @@
 <?php
 require_once 'Util.class.php';
 
-if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off')){
+if (!Util::isLocalHost() && !isset($_GET['action']) && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' || strpos($_SERVER['HTTP_HOST'],'www.')!==false)){
     $redirect = 'https://ducksmanager.net' . $_SERVER['REQUEST_URI'];
     header('HTTP/1.1 301 Moved Permanently');
     header('Location: ' . $redirect);
