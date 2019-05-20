@@ -220,7 +220,7 @@ class Affichage {
             }
         }
     }
-	
+
 	static function afficher_evenements_recents($evenements) {
         if (count($evenements->evenements) > 0) {
             include_once 'Edge.class.php';
@@ -367,9 +367,9 @@ class Affichage {
         }
 		?><?=NEWS_IL_Y_A_SUFFIXE?></span><?php
     }
-	
+
 	static function afficher_texte_numero($pays, $magazine, $numero, $allow_wrap = true) {
-        ?><span class="nowrap">
+        ?><span>
             <img src="images/flags/<?=$pays?>.png" />&nbsp;<?php
         if ($allow_wrap) {
             $magazine_parts = explode(' ', $magazine);
@@ -491,7 +491,7 @@ class Affichage {
 			<?=VOIR_PLUS?>
 		</a><?php
 	}
-	
+
 	static function valider_formulaire_inscription($user, $pass, $pass2) {
 		$erreur=null;
 		if (isset($user)) {
