@@ -377,7 +377,7 @@ function traiter_resultats_recherche_histoire(resultat, element_recherche_histoi
         .attr({id: 'conteneur_resultat_recherche'})
         .addClass('list-group');
 
-    if (resultat['liste_numeros'].length) {
+    if (resultat && resultat.liste_numeros.length) {
         if (!resultat.direct) {
             conteneur_resultats_recherche
                 .append(jQuery('<div>')
