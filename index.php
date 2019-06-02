@@ -1133,7 +1133,7 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                     ]);
 
                     DmClient::get_service_results_for_dm(
-                        'POST', "/ducksmanager/email/bookstore", is_null($id_user) ? [] : ['userid' => $id_user]
+                        'POST', "/ducksmanager/email/bookstore-suggestion", is_null($id_user) ? [] : ['userid' => $id_user]
                     );
                     ?>
                     <div class="alert alert-info">

@@ -4,17 +4,12 @@ include_once '../Database.class.php';
 include_once '../authentification.php';
 
 if (isset($_POST['ID'])) {
-    date_default_timezone_set('Europe/Paris');
-    $date = date('Y-m-d H:i:s');
-    $requete_maj_bouquinerie =
-        "UPDATE bouquineries
-        SET CoordX='{$_POST['CoordX']}',
-            CoordY='{$_POST['CoordY']}',
-            Actif=1,
-            DateAjout='$date'
-        WHERE ID={$_POST['ID']}";
-
-    DM_Core::$d->requete($requete_maj_bouquinerie);
+    DmClient::get_service_results_for_dm(
+        'POST', '/ducksmanager/email/bookstore-approved', [
+            'id' => $_POST['ID'],
+            'coordinates' => [$_POST['CoordX'], $_POST['CoordY']]
+        ]
+    );
 }
 
 $requete = 'SELECT ID, Nom, AdresseComplete, Pays, Commentaire, ID_Utilisateur, DateAjout, CONCAT(CoordX, ",", CoordY) As Coord from bouquineries WHERE Actif=0';
