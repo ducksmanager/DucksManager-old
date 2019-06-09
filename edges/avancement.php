@@ -14,7 +14,7 @@
             .num, #num_courant {
                 background-color: red;
             }
-            
+
             .dispo {
            		background-color: green !important;
             }
@@ -22,7 +22,7 @@
             .num.dispo {
                 cursor: pointer;
             }
-            
+
             .bordered {
                 border-right:1px solid black;
             }
@@ -79,9 +79,6 @@ if ($show) {
 }
 
 if (isset($_GET['wanted'])) {
-    if (!is_numeric($_GET['wanted']) || $_GET['wanted'] > 30) {
-        die ('Valeur du wanted invalide');
-    }
     $requete_plus_demandes="
         SELECT Count(Numero) as cpt, CONCAT(Pays,'/',Magazine) AS publicationcode, Numero
         FROM numeros
@@ -93,7 +90,7 @@ if (isset($_GET['wanted'])) {
         )
         GROUP BY Pays,Magazine,Numero
         ORDER BY cpt DESC, Pays, Magazine, Numero
-        LIMIT ?";
+        LIMIT 20";
 
     if (isset($_GET['user'])) {
         $requete_plus_demandes= '
@@ -103,13 +100,13 @@ if (isset($_GET['wanted'])) {
               Magazine,
               Numero
             FROM numeros
-            WHERE ID_Utilisateur = ?
+            WHERE ID_Utilisateur = (SELECT ID FROM users where username=?)
             ORDER BY cpt DESC, Pays, Magazine, Numero
         ';
         $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes, [$_SESSION['id_user']]);
     }
     else {
-        $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes, [(int)$_GET['wanted']]);
+        $resultat_plus_demandes=DM_Core::$d->requete($requete_plus_demandes);
     }
 
     $cpt=-1;
