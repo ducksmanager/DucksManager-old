@@ -387,17 +387,18 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                 ?><div class="alert alert-danger"><?=COA_KO_1?><br /><?=COA_KO_2?></div><?php
                 fin_de_page($locales);
             }
-            foreach($menus as $i=>$menu) {
-                if (! isset($menu->items)) {
-                    continue;
-                }
-                foreach($menu->items as $j=>$item) {
-                    if ($item->nom === $action && $item->est_prive === 'always' && !isset($_SESSION['user'])) {
-                        ?><div class="alert alert-warning">
-                            <?=IDENTIFICATION_OBLIGATOIRE?><br />
-                            <?=COMMENT_S_IDENTIFIER?>
-                        </div><?php
-                        $action=null;
+            foreach($menus as $menu) {
+                if (isset($menu->items)) {
+                    foreach($menu->items as $item) {
+                        if ($item->nom === $action && (
+                           ($item->est_prive === 'always' && !isset($id_user))
+                        || ($item->est_prive === 'always_except_user_provided' && !(isset($_GET['user']) || isset($id_user))))) {
+                            ?><div class="alert alert-warning">
+                                <?=IDENTIFICATION_OBLIGATOIRE?><br />
+                                <?=COMMENT_S_IDENTIFIER?>
+                            </div><?php
+                            $action=null;
+                        }
                     }
                 }
             }

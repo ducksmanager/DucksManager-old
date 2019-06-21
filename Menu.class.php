@@ -35,20 +35,20 @@ class Item {
 
 	function est_affiche() {
 		return ($this->est_prive==='no'
-		     || (in_array($this->est_prive, ['always', 'always__limited_external_access']) && isset($_SESSION['user']) &&!(self::$action==='logout'))
+		     || (in_array($this->est_prive, ['always', 'always_except_user_provided']) && isset($_SESSION['user']) &&!(self::$action==='logout'))
 			 || ($this->est_prive==='never'  &&!(isset($_SESSION['user']) &&!(self::$action==='logout'))));
 	}
 }
 
 class LigneVide extends Item{
 	function __construct() {
-		
+
 	}
-	
+
 	function afficher() {
 		?><li class="empty"></li><?php
 	}
-	
+
 }
 
 class Menu extends Item{
@@ -67,7 +67,7 @@ class Menu extends Item{
 		parent::__construct($nom, $est_prive, $texte, $icone);
 		$this->items = $items;
     }
-	
+
 	public function afficher() {
         $isActive = !isset($_GET['user']) && in_array($_GET['action'] ?? '', array_map(function (Item $i) {
             return $i->nom;
@@ -99,7 +99,7 @@ $menus= [
     new Menu('collection', 'no', COLLECTION, 'glyphicon glyphicon-home', [
             new Item('new', 'never', NOUVELLE_COLLECTION, 'glyphicon glyphicon-certificate'),
             new Item('open', 'never', OUVRIR_COLLECTION, 'glyphicon glyphicon-folder-open'),
-            new Item('bibliotheque', 'always__limited_external_access', BIBLIOTHEQUE_COURT, 'glyphicon glyphicon-book'),
+            new Item('bibliotheque', 'always_except_user_provided', BIBLIOTHEQUE_COURT, 'glyphicon glyphicon-book'),
             new Item('gerer', 'always', GERER_COLLECTION, 'glyphicon glyphicon-list-alt'),
             new Item('stats', 'always', STATISTIQUES_COLLECTION, 'glyphicon glyphicon-tasks'),
             new Item('agrandir', 'always', AGRANDIR_COLLECTION, 'glyphicon glyphicon-fire'),
