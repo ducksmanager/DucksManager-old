@@ -376,14 +376,17 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
         </a>
     </div>
     <div id="zone_logo2">
-        <div class="android-only android-banner cache">
-            <h5 class="title">What The Duck</h5>
-            <img class="logo_android" src="/images/WhatTheDuck.png" />
-            <div class="text"><?= PUB_WHATTHEDUCK_LONGUE ?></div>
-            <a class="store_link" href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck" target="_blank">
-                <img src="images/google-play-badge-<?=$_SESSION['lang']?>.png" />
-            </a>
-        </div>
+        <?php if (isset($_SESSION['user']) && isset($_GET['action']) && $_GET['action'] === 'gerer') { ?>
+            <div class="android-only android-banner cache">
+                <h5 class="title">What The Duck</h5>
+                <img class="logo_android" src="/images/WhatTheDuck.png" />
+                <div class="text"><?= PUB_WHATTHEDUCK_LONGUE ?></div>
+                <a class="store_link" href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck" target="_blank">
+                    <img src="/images/google-play-badge-<?=$_SESSION['lang']?>.png" />
+                </a>
+            </div><?php
+        }
+        ?>
         <?php if (!isset($_GET['action'])) {?>
             <h3 class="welcome"><?=BIENVENUE?></h3><?php
         }
