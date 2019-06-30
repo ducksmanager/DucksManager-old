@@ -70,6 +70,32 @@ a.important:HOVER {
 	clear: both;
 }
 
+.android-banner {
+	background: #454345;
+	padding: 20px;
+}
+
+.android-banner .title {
+	font-weight: bold;
+}
+
+.android-banner .text {
+	margin-bottom: 15px;
+}
+
+.android-banner .logo_android {
+	float: left;
+	padding: 10px;
+}
+
+.android-banner .store_link {
+	border-bottom: none !important;
+}
+
+.android-banner .store_link img {
+	width: 150px;
+}
+
 .show_overflow {
 	overflow-x: visible;
 }
@@ -232,13 +258,13 @@ img.medaille_objectif.droite {
 
 .ejs_context_menuitems{
 	padding-left:12px;
-	padding-right:7px; 
+	padding-right:7px;
 }
 
 .desactive {
 	filter : alpha(opacity=50);
     -moz-opacity : 0.5;
-    opacity : 0.5; 
+    opacity : 0.5;
 }
 
 .bold {
@@ -365,7 +391,7 @@ ul#choix_impression {
 
 ul#choix_impression>li {
 	list-style: none;
-	min-height: 150px;	
+	min-height: 150px;
 	margin-bottom: 30px;
 	padding-left: 170px;
 	padding-top: 12px;

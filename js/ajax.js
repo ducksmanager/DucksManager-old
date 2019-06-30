@@ -22,6 +22,10 @@ function charger_menu() {
     }
 }
 
+function charger_contenu_android() {
+    $('.android-only').toggleClass('cache', platform.os.family !== 'Android');
+}
+
 function init_observers_gerer_numeros() {
     get_achats(function() {
         init_menu_contextuel();

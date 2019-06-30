@@ -432,6 +432,7 @@ define('PROPOSER_BOUQUINERIE','Propose a second-hand bookshop');
 define('PUB_WHATTHEDUCK_1','New ! Take a picture of Disney issues to add them to your collection using ');
 define('PUB_WHATTHEDUCK_2',', DucksManager\'s mobile app !');
 define('PUB_WHATTHEDUCK_3','Available for free on Google Play.');
+define('PUB_WHATTHEDUCK_LONGUE','Did you know that DucksManager developed its official Android app called What The Duck? With What The Duck, take a picture of the cover of a magazine and the app will add it to your collection! Download it for free on your Android phone or tablet.');
 define('PUBLICATION','Publication');
 define('PUBLICATIONS','Publications');
 define('PUBLICATIONS_COURT','My issue collection');

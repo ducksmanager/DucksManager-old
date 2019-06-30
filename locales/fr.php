@@ -433,6 +433,7 @@ define('PROPOSER_BOUQUINERIE','Proposer une bouquinerie');
 define('PUB_WHATTHEDUCK_1','Nouveau ! Photographiez vos numéros pour les ajouter à votre collection avec ');
 define('PUB_WHATTHEDUCK_2',', l\'application mobile de DucksManager !');
 define('PUB_WHATTHEDUCK_3','Disponible gratuitement sur les téléphones et tablettes Android.');
+define('PUB_WHATTHEDUCK_LONGUE','Saviez-vous que DucksManager propose une application Android officielle nommée What The Duck ? Avec What The Duck, photographiez la couverture d\'un magazine et l\'application l\'ajoutera à votre collection ! A télécharger gratuitement sur téléphones et tablettes Android.');
 define('PUBLICATION','Publication');
 define('PUBLICATIONS','Publications');
 define('PUBLICATIONS_COURT','Ma collection de magazines');

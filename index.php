@@ -135,6 +135,8 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
+
         <script type="text/javascript" src="js/menu.js?VERSION"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
         <script type="text/javascript" src="js/l10n.js?VERSION"></script>
@@ -220,10 +222,8 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
     }
 
     ?>
-    <body id="body" style="margin:0" onload="charger_dropdowns();charger_evenements();charger_menu();<?php
+    <body id="body" style="margin:0" onload="charger_dropdowns();charger_evenements();charger_menu();charger_contenu_android();<?php
     switch($action) {
-        case 'open':
-            break;
         case 'bibliotheque':
             switch ($onglet) {
                 case 'affichage':
@@ -376,6 +376,14 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
         </a>
     </div>
     <div id="zone_logo2">
+        <div class="android-only android-banner cache">
+            <h5 class="title">What The Duck</h5>
+            <img class="logo_android" src="/images/WhatTheDuck.png" />
+            <div class="text"><?= PUB_WHATTHEDUCK_LONGUE ?></div>
+            <a class="store_link" href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck" target="_blank">
+                <img src="images/google-play-badge-<?=$_SESSION['lang']?>.png" />
+            </a>
+        </div>
         <?php if (!isset($_GET['action'])) {?>
             <h3 class="welcome"><?=BIENVENUE?></h3><?php
         }
