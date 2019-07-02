@@ -6,7 +6,7 @@ include_once '../authentification.php';
 $requete_tranches_pretes_pour_publication = '
   SELECT ID, Pays, Magazine, Numero
   FROM tranches_en_cours_modeles modeles
-  WHERE PretePourPublication=1
+  WHERE Active=1
   ORDER BY Pays, Magazine, Numero';
 $tranches_pretes_pour_publication = DM_Core::$d->requete($requete_tranches_pretes_pour_publication, [], 'db_edgecreator');
 
