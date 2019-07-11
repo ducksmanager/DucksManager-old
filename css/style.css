@@ -357,8 +357,10 @@ img.medaille_objectif.droite {
 }
 
 #zone_logo2 .welcome {
+	font-weight: bold;
 	margin-top: 0;
-	padding: 20px;
+	padding: 80px 20px 0 20px;
+	text-align: center;
 }
 
 #footer {
@@ -482,22 +484,21 @@ ul#choix_impression ul.caract li{
 }
 
 .carousel-caption.right {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
 	position: absolute;
 	left: auto;
 	right: 0;
 	width: 47%;
 	height: 100%;
 	text-align: left;
-	font-size: 12px;
+	font-size: 15px;
+	line-height: 20px;
 	padding-bottom: 0;
 	opacity: 0.8;
 	bottom: 0;
 	overflow-y: auto;
-}
-
-.carousel-caption.right.top-offset {
-	top: 75px;
-	height: inherit;
 }
 
 .carousel.small {

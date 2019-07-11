@@ -388,7 +388,8 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
         }
         ?>
         <?php if (!isset($_GET['action'])) {?>
-            <h3 class="welcome"><?=BIENVENUE?></h3><?php
+            <h2 class="welcome"><?=BIENVENUE?></h2>
+            <h5 style="text-align: center">The reference website for Disney comic book collectors</h5><?php
         }
         ?>
         <div id="contenu">
@@ -1221,12 +1222,10 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                             <div class="carousel-caption bottom">
                                 <h3><?=BIENVENUE?></h3>
                             </div>
-                            <div class="carousel-caption right top-offset">
-                                <?=PRESENTATION1?>
-                                <br /> <br />
-                                <?=PRESENTATION2?>
-                                <br /> <br />
-                                <?=GRATUIT_AUCUNE_LIMITE?>
+                            <div class="carousel-caption right">
+                                <div><?=PRESENTATION1?></div>
+                                <div><?=PRESENTATION2?></div>
+                                <div><?=GRATUIT_AUCUNE_LIMITE?></div>
                             </div>
                         </div>
                         <div class="item">
@@ -1234,12 +1233,10 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                             <div class="carousel-caption bottom">
                                 <h3><?=PRESENTATION_GERER_TITRE?></h3>
                             </div>
-                            <div class="carousel-caption right top-offset">
-                                <?=PRESENTATION_GERER_1?>
-                                <br /> <br />
-                                <?=PRESENTATION_GERER_2?>
-                                <br /> <br />
-                                <?=PRESENTATION_GERER_3?>
+                            <div class="carousel-caption right">
+                                <div><?=PRESENTATION_GERER_1?></div>
+                                <div><?=PRESENTATION_GERER_2?></div>
+                                <div><?=PRESENTATION_GERER_3?></div>
                             </div>
                         </div>
                         <div class="item">
@@ -1247,13 +1244,10 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                             <div class="carousel-caption bottom">
                                 <h3><?=PRESENTATION_STATS_TITRE?></h3>
                             </div>
-                            <div class="carousel-caption right top-offset">
-                                <?=PRESENTATION_STATS_1?>
-                                <br /> <br />
-                                <?=PRESENTATION_STATS_2?>
-                                <br /> <br />
-                                <?=PRESENTATION_STATS_3?>
-                                <br /> <br />
+                            <div class="carousel-caption right">
+                                <div><?=PRESENTATION_STATS_1?></div>
+                                <div><?=PRESENTATION_STATS_2?></div>
+                                <div><?=PRESENTATION_STATS_3?></div>
                             </div>
                         </div>
                         <div class="item">
@@ -1261,12 +1255,10 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                             <div class="carousel-caption bottom">
                                 <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
                             </div>
-                            <div class="carousel-caption right top-offset">
-                                <?=PRESENTATION_BIBLIOTHEQUE_1?>
-                                <br /> <br />
-                                <?=PRESENTATION_BIBLIOTHEQUE_2?>
-                                <br /> <br />
-                                <?=PRESENTATION_BIBLIOTHEQUE_3?>
+                            <div class="carousel-caption right">
+                                <div><?=PRESENTATION_BIBLIOTHEQUE_1?></div>
+                                <div><?=PRESENTATION_BIBLIOTHEQUE_2?></div>
+                                <div><?=PRESENTATION_BIBLIOTHEQUE_3?></div>
                             </div>
                         </div>
                     </div>
