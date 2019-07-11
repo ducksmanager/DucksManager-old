@@ -363,21 +363,24 @@ img.medaille_objectif.droite {
 
 #footer {
 	border-top: 1px solid white;
-	padding-top: 10px;
+	padding: 10px 10px 10px 30px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+#footer > * {
+    text-align: center;
 }
 
 #nb_users {
-	position: absolute;
-	float: left;
 	text-align: center;
 	vertical-align: middle;
 	padding-left: 4px;
-	width: 242px;
 }
 
 #flags {
-	position: absolute;
-	right: 0;
 	margin: 20px;
 }
 
@@ -642,6 +645,14 @@ ul#choix_impression ul.caract li{
 
 	body {
 		padding-left: 0;
+	}
+
+	#footer {
+		flex-direction: column;
+	}
+
+	#footer > * {
+		margin-bottom: 10px;
 	}
 
 	.num {

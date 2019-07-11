@@ -1304,32 +1304,26 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
         </div>
     </div>
     <div id="footer">
-        <div id="nb_users">
-            <?php
+        <div id="nb_users"><?php
             $resultat_cpt_users=DM_Core::$d->requete('SELECT count(username) as cpt_users FROM users');
-            echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS;
-            ?>
+            echo $resultat_cpt_users[0]['cpt_users'].' '.UTILISATEURS_INSCRITS; ?>
         </div>
-        <div id="flags">
-            <?php
+        <div>
+            <?=REMERCIEMENT_LOGO?>
+            <br /><br />
+            <?=LICENCE_INDUCKS1?>
+            <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
+            <br />
+            <?=LICENCE_INDUCKS3?>
+        </div>
+        <div id="flags"><?php
             foreach($locales as $nom_langue=>$nouvelle_url) {
                 ?>
                 <a class="drapeau_langue" href="<?=$nouvelle_url?>">
                     <img style="border:0" src="images/<?=$nom_langue?>.jpg" alt="<?=$nom_langue?>"/>
                 </a>
                 <?php
-            }
-            ?>
-        </div>
-        <div style="text-align: center">
-            <?=TEXTE_FORUMDESFANS?><a href="http://leforumdesfanspicsou.1fr1.net/ducksmanager-f18/"><?=LIEN_FORUM_DES_FANS?></a>
-            <br /><br />
-            <?=REMERCIEMENT_LOGO?>
-            <br />
-            <?=LICENCE_INDUCKS1?>
-            <a target="_blank" href="http://coa.inducks.org/inducks/COPYING"><?=LICENCE_INDUCKS2?></a>
-            <br />
-            <?=LICENCE_INDUCKS3?>
+            } ?>
         </div>
     </div>
 </body>
