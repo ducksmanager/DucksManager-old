@@ -1235,7 +1235,7 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                     <hr />
                     <div class="row">
                         <div class="col-md-offset-1 col-lg-5">
-                            <video src="./demos/bookcase%20demo.mp4" autoplay muted></video>
+                            <video src="./demos/bookcase_demo.mp4" autoplay muted></video>
                         </div>
                         <div class="col-lg-5">
                             <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
