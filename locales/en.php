@@ -419,11 +419,16 @@ define('PRESENTATION_GENERALE','A complete collection management, customized sta
 define('PRESENTATION_GERER_1','Our selection tool allows you to index your whole Disney issues collection in a matter of minutes.');
 define('PRESENTATION_GERER_2','Want DucksManager to remember the most precise details of your collection ? A right click will be enough!');
 define('PRESENTATION_GERER_3','You will be able to select the condition of your books, along with their purchase date, or even propose to sell them to the other DucksManager users.');
-define('PRESENTATION_GERER_TITRE','Select the issues you\'ve got in your collection in a few clicks!');
+define('PRESENTATION_GERER_TITRE','Add issues to your collection in a few clicks!');
 define('PRESENTATION_STATS_1','Updated everyday to take into account your collection changes, the DucksManager statistics inform you about the issues you have got, and tell you how much you need to get to complete your issues series.');
 define('PRESENTATION_STATS_2','If you specified the conditions of your issues, a graph will sum them up.');
 define('PRESENTATION_STATS_3','You like a script-writer or a drawer in particular ? DucksManager generates bar chart containing the proportion of stories from this author that you\'ve got in your collection.');
 define('PRESENTATION_STATS_TITRE','Complete statistics and all the tools to grow up your collection!');
+define('PRESENTATION_WHATTHEDUCK_1','Keep your Disney collection with you at all times and add magazines to your collection by simply take a photo of them using  ');
+define('PRESENTATION_WHATTHEDUCK_2',', DucksManager\'s mobile app !');
+define('PRESENTATION_WHATTHEDUCK_3','Available for free on Google Play.');
+define('PRESENTATION_WHATTHEDUCK_LONGUE','Did you know that DucksManager developed its official Android app called What The Duck? With What The Duck, take a picture of the cover of a magazine and the app will add it to your collection! Download it for free on your Android phone or tablet.');
+define('PRESENTATION_WHATTHEDUCK_TITRE','Your Disney collection in your pocket');
 define('PRIX_HONNETES','We are counting on your honnesty concerning the prices you mention, if any.');
 define('PROBLEME_BD','Problem when connecting to the database!');
 define('PROPOSE_LES_NUMEROS','wants to sell the following issues :');

@@ -380,7 +380,7 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
             <div class="android-only android-banner cache">
                 <h5 class="title">What The Duck</h5>
                 <img class="logo_android" src="/images/WhatTheDuck.png" />
-                <div class="text"><?= PUB_WHATTHEDUCK_LONGUE ?></div>
+                <div class="text"><?= PRESENTATION_WHATTHEDUCK_LONGUE ?></div>
                 <a class="store_link" href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck" target="_blank">
                     <img src="/images/google-play-badge-<?=$_SESSION['lang']?>.png" />
                 </a>
@@ -1209,87 +1209,73 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
             break;
 
             default:?>
-                <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                    <!-- Indicators -->
-                    <ol class="carousel-indicators">
-                        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#myCarousel" data-slide-to="1"></li>
-                        <li data-target="#myCarousel" data-slide-to="2"></li>
-                        <li data-target="#myCarousel" data-slide-to="3"></li>
-                    </ol>
-
-                    <div class="carousel-inner">
-                        <div class="item active">
+                <div class="showcase center-block">
+                    <div class="row">
+                        <div class="col-md-offset-1 col-lg-5">
                             <img src="images/montage DucksManager.jpg" alt="logo">
-                            <div class="carousel-caption bottom">
-                                <h3><?=BIENVENUE?></h3>
-                            </div>
-                            <div class="carousel-caption right">
-                                <div><?=PRESENTATION1?></div>
-                                <div><?=PRESENTATION2?></div>
-                                <div><?=GRATUIT_AUCUNE_LIMITE?></div>
-                            </div>
                         </div>
-                        <div class="item">
-                            <img src="images/demo2_2.png" alt="demo2_2">
-                            <div class="carousel-caption bottom">
-                                <h3><?=PRESENTATION_GERER_TITRE?></h3>
-                            </div>
-                            <div class="carousel-caption right">
-                                <div><?=PRESENTATION_GERER_1?></div>
-                                <div><?=PRESENTATION_GERER_2?></div>
-                                <div><?=PRESENTATION_GERER_3?></div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="images/demo3.png" alt="demo3">
-                            <div class="carousel-caption bottom">
-                                <h3><?=PRESENTATION_STATS_TITRE?></h3>
-                            </div>
-                            <div class="carousel-caption right">
-                                <div><?=PRESENTATION_STATS_1?></div>
-                                <div><?=PRESENTATION_STATS_2?></div>
-                                <div><?=PRESENTATION_STATS_3?></div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <iframe width="480" height="330" src="https://www.youtube.com/embed/n729j-57lKQ?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0&loop=1&playlist=n729j-57lKQ" frameborder="0" allowfullscreen></iframe>
-                            <div class="carousel-caption bottom">
-                                <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
-                            </div>
-                            <div class="carousel-caption right">
-                                <div><?=PRESENTATION_BIBLIOTHEQUE_1?></div>
-                                <div><?=PRESENTATION_BIBLIOTHEQUE_2?></div>
-                                <div><?=PRESENTATION_BIBLIOTHEQUE_3?></div>
-                            </div>
+                        <div class="col-lg-5">
+                            <div><?=PRESENTATION1?></div>
+                            <div><?=PRESENTATION2?></div>
+                            <div><?=GRATUIT_AUCUNE_LIMITE?></div>
                         </div>
                     </div>
-
-                    <!-- Left and right controls -->
-                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-offset-1 col-lg-5">
+                            <h3><?=PRESENTATION_GERER_TITRE?></h3>
+                            <div><?=PRESENTATION_GERER_1?></div>
+                            <div><?=PRESENTATION_GERER_2?></div>
+                            <div><?=PRESENTATION_GERER_3?></div>
+                        </div>
+                        <div class="col-lg-5">
+                            <img src="images/demo2_2.png" alt="demo2_2">
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-offset-1 col-lg-5">
+                            <video src="./demos/bookcase%20demo.mp4" autoplay muted></video>
+                        </div>
+                        <div class="col-lg-5">
+                            <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
+                            <div><?=PRESENTATION_BIBLIOTHEQUE_1?></div>
+                            <div><?=PRESENTATION_BIBLIOTHEQUE_2?></div>
+                            <div><?=PRESENTATION_BIBLIOTHEQUE_3?></div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-offset-1 col-lg-5">
+                            <h3><?=PRESENTATION_STATS_TITRE?></h3>
+                            <div><?=PRESENTATION_STATS_1?></div>
+                            <div><?=PRESENTATION_STATS_2?></div>
+                            <div><?=PRESENTATION_STATS_3?></div>
+                        </div>
+                        <div class="col-lg-5">
+                            <img src="images/demo3.png" alt="demo3">
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-offset-1 col-lg-5">
+                            <h3><?=PRESENTATION_WHATTHEDUCK_TITRE?></h3>
+                            <div><?=PRESENTATION_WHATTHEDUCK_1?><a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PRESENTATION_WHATTHEDUCK_2?>
+                            </div>
+                            <?=PRESENTATION_WHATTHEDUCK_3?>
+                        </div>
+                        <div class="col-lg-5">
+                            <video src="./demos/whattheduck_demo.mp4" autoplay muted></video>
+                        </div>
+                    </div>
+                    <div style="margin-right: 6px; text-align: center;">
+                        <h3>
+                            <a class="noborder btn btn-lg btn-success" href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
+                        </h3>
+                    </div>
                 </div>
-                <script type="text/javascript">
-                    jQuery('#myCarousel').carousel({
-                        interval: 15000
-                    });
-                </script>
-
-                <div style="margin-right: 6px; text-align: center;">
-                    <h3>
-                        <a class="noborder btn btn-success" href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
-                    </h3>
-                </div>
-            <?php encart_WhatTheDuck();?>
-            <br />
-                <?php
-                break;
+                <br /><?php
+                    break;
             }
             fin_de_page($locales);
 
@@ -1375,10 +1361,10 @@ function encart_WhatTheDuck() {
         </a>
 		<div style="margin-left:10px; text-align: center">
             <div style="text-align: left">
-                <?=PUB_WHATTHEDUCK_1?>
-                <a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PUB_WHATTHEDUCK_2?>
+                <?=PRESENTATION_WHATTHEDUCK_1?>
+                <a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PRESENTATION_WHATTHEDUCK_2?>
             </div>
-            <?=PUB_WHATTHEDUCK_3?><br /><br />
+            <?=PRESENTATION_WHATTHEDUCK_3?><br /><br />
             <iframe width="200" height="315" src="https://www.youtube.com/embed/_dYzwr6C5_M?autoplay=1&modestbranding=1&autohide=1&showinfo=0&rel=0" frameborder="0" allowfullscreen></iframe>
             <br /><br />
         </div>

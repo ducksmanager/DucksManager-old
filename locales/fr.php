@@ -425,6 +425,11 @@ define('PRESENTATION_STATS_1','Mises à jour quotidiennement pour prendre en com
 define('PRESENTATION_STATS_2','Si vous avez spécifié l\'état de vos revues, un graphique les résumera.');
 define('PRESENTATION_STATS_3','Vous aimez un scénariste ou un dessinateur en particulier ? DucksManager génère pour vous un histogramme résumant la proportion des histoires que vous possédez de cet auteur.');
 define('PRESENTATION_STATS_TITRE','Des statistiques complètes et tous les outils pour agrandir votre collection !');
+define('PRESENTATION_WHATTHEDUCK_1','Gardez votre collection en poche où que vous soyez, et ajoutez des numéros à votre collection simplement en photographiant leur couverture avec  ');
+define('PRESENTATION_WHATTHEDUCK_2',', l\'application mobile de DucksManager !');
+define('PRESENTATION_WHATTHEDUCK_3','Disponible gratuitement sur les téléphones et tablettes Android.');
+define('PRESENTATION_WHATTHEDUCK_LONGUE','Saviez-vous que DucksManager propose une application Android officielle nommée What The Duck ? Avec What The Duck, photographiez la couverture d\'un magazine et l\'application l\'ajoutera à votre collection ! A télécharger gratuitement sur téléphones et tablettes Android.');
+define('PRESENTATION_WHATTHEDUCK_TITRE','Votre collection Disney en poche, où que vous soyez');
 define('PRIX_HONNETES','Nous comptons sur votre honnêteté concernant les prix si vous en mentionnez.');
 define('PROBLEME_BD','Problème avec la base de données !');
 define('PROPOSE_LES_NUMEROS','propose les numéros suivants en vente :');
