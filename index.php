@@ -1235,7 +1235,7 @@ switch($action) {
                 <hr />
                 <div class="row">
                     <div class="col-md-offset-1 col-lg-5">
-                        <video src="./demos/bookcase_demo.mp4" autoplay muted></video>
+                        <video src="./demos/bookcase_demo.mp4" autoplay muted loop></video>
                     </div>
                     <div class="col-lg-5">
                         <h3><?=PRESENTATION_BIBLIOTHEQUE_TITRE?></h3>
@@ -1265,7 +1265,7 @@ switch($action) {
                         <?=PRESENTATION_WHATTHEDUCK_3?>
                     </div>
                     <div class="col-lg-5">
-                        <video src="./demos/whattheduck_demo.mp4" autoplay muted></video>
+                        <video src="./demos/whattheduck_demo.mp4" autoplay muted loop></video>
                     </div>
                 </div>
                 <div style="margin-right: 6px; text-align: center;">
