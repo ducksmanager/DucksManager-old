@@ -1,6 +1,6 @@
 ## DucksManager
 
-[Official website](www.ducksmanager.net)
+[Official website](https://www.ducksmanager.net)
 
 DucksManager is a free and open-source website enabling comic book collectors to manage their Disney collection.
 
