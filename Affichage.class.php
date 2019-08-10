@@ -65,7 +65,7 @@ class Affichage {
         <?php
     }
 
-	static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
+    static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
         ?><ul class="tabnav"><?php
         foreach($tab_onglets as $nom_onglet=>$infos_lien) {
             ?><li class="<?php
@@ -92,10 +92,10 @@ class Affichage {
                 </a>
             </li>
             <?php
-		}
-		?></ul>
-		<?php
-	}
+        }
+        ?></ul>
+        <?php
+    }
 
     /**
      * @param Liste $liste
@@ -221,7 +221,7 @@ class Affichage {
         }
     }
 
-	static function afficher_evenements_recents($evenements) {
+    static function afficher_evenements_recents($evenements) {
         if (count($evenements->evenements) > 0) {
             include_once 'Edge.class.php';
 
@@ -314,7 +314,7 @@ class Affichage {
                 }
             }
         }
-	}
+    }
 
     static function afficher_dernieres_tranches_publiees() {
         $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
@@ -365,10 +365,10 @@ class Affichage {
                 }
             }
         }
-		?><?=NEWS_IL_Y_A_SUFFIXE?></span><?php
+        ?><?=NEWS_IL_Y_A_SUFFIXE?></span><?php
     }
 
-	static function afficher_texte_numero($pays, $magazine, $numero, $allow_wrap = true) {
+    static function afficher_texte_numero($pays, $magazine, $numero, $allow_wrap = true) {
         ?><span>
             <img src="images/flags/<?=$pays?>.png" />&nbsp;<?php
         if ($allow_wrap) {
@@ -381,18 +381,18 @@ class Affichage {
             ?><?=$magazine?> <?=$numero?>
             </span><?php
         }
-	}
+    }
 
-	static function afficher_texte_numero_template() {
-		?><div class="template issue_title">
+    static function afficher_texte_numero_template() {
+        ?><div class="template issue_title">
             <span class="nowrap">
                 <img class="flag" />&nbsp;
             </span>
             <span class="publication_name"></span> <span class="issuenumber"></span>
         </div><?php
-	}
+    }
 
-	static function afficher_infobulle_tranche_template() {
+    static function afficher_infobulle_tranche_template() {
         ?><div class="template tooltip_edge_content">
             <?=DECOUVRIR_COUVERTURE?>.
             <div class="has-no-edge">
@@ -453,7 +453,7 @@ class Affichage {
         <?php
     }
 
-	static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros, $allow_wrap = true) {
+    static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros, $allow_wrap = true) {
         ob_start();
         self::afficher_texte_numero($pays,$magazine_complet,$numero, $allow_wrap);
         if ($nb_autres_numeros > 0) {
@@ -464,7 +464,7 @@ class Affichage {
         return ob_get_clean();
     }
 
-	static function afficher_texte_utilisateur($infos_utilisateur) {
+    static function afficher_texte_utilisateur($infos_utilisateur) {
         $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
         ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=utf8_encode($nom_utilisateur)?></i></b></a>
         <div class="cache tooltip_content">
@@ -483,21 +483,21 @@ class Affichage {
         </div><?php
     }
 
-	static function afficher_texte_histoire($code, $title, $comment) {
-		if (empty($title)) {
-			$title = SANS_TITRE.($comment ? ' ('.$comment.') ' : '');
-		}
-		?><?=$title?>&nbsp;<a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search=">
-			<?=VOIR_PLUS?>
-		</a><?php
-	}
+    static function afficher_texte_histoire($code, $title, $comment) {
+        if (empty($title)) {
+            $title = SANS_TITRE.($comment ? ' ('.$comment.') ' : '');
+        }
+        ?><?=$title?>&nbsp;<a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search=">
+            <?=VOIR_PLUS?>
+        </a><?php
+    }
 
-	static function valider_formulaire_inscription($user, $pass, $pass2) {
-		$erreur=null;
-		if (isset($user)) {
-			if (preg_match('#^[-_A-Za-z0-9]{3,15}$#', $user) === 0) {
-				return UTILISATEUR_INVALIDE;
-			}
+    static function valider_formulaire_inscription($user, $pass, $pass2) {
+        $erreur=null;
+        if (isset($user)) {
+            if (preg_match('#^[-_A-Za-z0-9]{3,15}$#', $user) === 0) {
+                return UTILISATEUR_INVALIDE;
+            }
             if (strlen($pass) <6) {
                 return MOT_DE_PASSE_6_CHAR_ERREUR;
             }
@@ -508,11 +508,11 @@ class Affichage {
                 return UTILISATEUR_EXISTANT;
             }
         }
-		else {
-			return UTILISATEUR_INVALIDE;
-		}
-		return null;
-	}
+        else {
+            return UTILISATEUR_INVALIDE;
+        }
+        return null;
+    }
 
     static function partager_page() {
         ?><div class="a2a_kit a2a_kit_size_32 a2a_default_style"

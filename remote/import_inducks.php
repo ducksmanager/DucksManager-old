@@ -20,10 +20,10 @@ switch($action) {
         }
 
         $resultats = DM_Core::$d->requete('
-			SELECT publicationcode
-			FROM inducks_publication
-			WHERE publicationcode IN (' . implode(',', array_fill(0, count($publication_codes), '?')) . ') '
-		, [$publication_codes], 'db_coa');
+            SELECT publicationcode
+            FROM inducks_publication
+            WHERE publicationcode IN (' . implode(',', array_fill(0, count($publication_codes), '?')) . ') '
+        , [$publication_codes], 'db_coa');
 
         $existing_publication_codes = array_map('flattenpublicationcode', $resultats);
         $missing_publication_codes = array_diff($publication_codes, $existing_publication_codes);

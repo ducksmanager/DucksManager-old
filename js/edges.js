@@ -114,8 +114,8 @@ function charger_bibliotheque() {
                     var premiere_tranche = element_conteneur_bibliotheque.find('.tranche:eq(0)');
                     charger_tranche(premiere_tranche);
                 }
-			}
-		});
+            }
+        });
 }
 
 function ajouter_etagere(afterElement) {
@@ -275,10 +275,10 @@ function charger_points_utilisateur(callback) {
 }
 
 function afficher_lien_partage() {
-	var zone_proposition_photos = jQuery('#partager_bibliotheque');
-	jQuery('#partager_bibliotheque_lien').on('click', function() {
-		zone_proposition_photos.addClass('cache');
-		jQuery.post('Edge.class.php', {partager_bibliotheque: 'true'}, function (response) {
+    var zone_proposition_photos = jQuery('#partager_bibliotheque');
+    jQuery('#partager_bibliotheque_lien').on('click', function() {
+        zone_proposition_photos.addClass('cache');
+        jQuery.post('Edge.class.php', {partager_bibliotheque: 'true'}, function (response) {
             zone_proposition_photos
                 .html(response)
                 .removeClass('cache');

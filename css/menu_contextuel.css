@@ -1,21 +1,21 @@
 .context-menu-list {
-	min-width: 300px !important;
-	padding: 0 !important;
+    min-width: 300px !important;
+    padding: 0 !important;
 }
 
 .context-menu-list:before {
-	height: 30px;
-	line-height: 25px;
-	font-size: 14px !important;
+    height: 30px;
+    line-height: 25px;
+    font-size: 14px !important;
 }
 
 .context-menu-list>:first-child {
-	margin-top: 30px !important;
+    margin-top: 30px !important;
 }
 
 .context-menu-list li.context-menu-item.selected {
-	background-color: rgb(165, 42, 42);
-	color: white;
+    background-color: rgb(165, 42, 42);
+    color: white;
 }
 
 .context-menu-list li.context-menu-item.context-menu-disabled {
@@ -23,121 +23,121 @@
 }
 
 .named-menu-separator {
-	border: 1px solid #e6e6e6;
-	border-top-width: 3px;
-	text-align: center;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 20px;
+    border: 1px solid #e6e6e6;
+    border-top-width: 3px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 20px;
 }
 
 .context-menu-list li.context-menu-icon {
-	line-height: 20px;
-	padding-top: 3px;
-	padding-left: 25px;
+    line-height: 20px;
+    padding-top: 3px;
+    padding-left: 25px;
 }
 
 .context-menu-list .context-menu-hover {
-	background-color: #4f5b69 !important;
+    background-color: #4f5b69 !important;
 }
 
 .context-menu-list .save {
-	height: 30px;
-	line-height: 30px;
-	font-size: 14px !important;
-	font-weight: bold;
-	text-align: center;
-	background-color: green;
-	color: white;
-	border-top: 3px solid #e6e6e6;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px !important;
+    font-weight: bold;
+    text-align: center;
+    background-color: green;
+    color: white;
+    border-top: 3px solid #e6e6e6;
 }
 
 .context-menu-list .context-menu-submenu .context-menu-list {
-	top: -20px !important;
-	min-width: 210px;
-	max-height: 300px;
-	overflow-x: hidden;
-	overflow-y: auto;
+    top: -20px !important;
+    min-width: 210px;
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase {
-	margin-top: 0 !important;
-	text-align: center;
-	display: block;
+    margin-top: 0 !important;
+    text-align: center;
+    display: block;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase:hover {
-	background-color: white !important;
+    background-color: white !important;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase:hover h5 {
-	color: #2f2f2f;
+    color: #2f2f2f;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase h5 {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .context-menu-list .context-menu-submenu .new_purchase input {
-	margin: 5px;
-	cursor: pointer;
+    margin: 5px;
+    cursor: pointer;
 }
 
 body>.context-menu-list:before {
-	content: attr(data-menutitle);
-	display: block;
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	background-color: rgb(61, 75, 95);
-	padding: 2px;
-	text-align: center;
+    content: attr(data-menutitle);
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    background-color: rgb(61, 75, 95);
+    padding: 2px;
+    text-align: center;
 
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	font-weight: bold;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
 }
 body>.context-menu-list>:first-child {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
 .context-menu-icon {
-	background: transparent url(../images/page.png) 3px 4px no-repeat;
-	background-size: 16px 16px;
+    background: transparent url(../images/page.png) 3px 4px no-repeat;
+    background-size: 16px 16px;
 }
 
 .context-menu-icon-sale_for_sale {
-	background-image: url(../images/av_petit.png);
+    background-image: url(../images/av_petit.png);
 }
 .context-menu-icon-sale_not_for_sale {
-	background-image: url(../images/pas_av_petit.png);
+    background-image: url(../images/pas_av_petit.png);
 }
 
 .context-menu-icon-condition_missing {
-	background-image: url(../images/non_possede.png);
+    background-image: url(../images/non_possede.png);
 }
 .context-menu-icon-condition_possessed {
-	background-image: url(../images/possede.png);
+    background-image: url(../images/possede.png);
 }
 .context-menu-icon-condition_bad {
-	background-image: url(../images/mauvais.png);
+    background-image: url(../images/mauvais.png);
 }
 .context-menu-icon-condition_notsogood {
-	background-image: url(../images/moyen.png);
+    background-image: url(../images/moyen.png);
 }
 .context-menu-icon-condition_good {
-	background-image: url(../images/bon.png);
+    background-image: url(../images/bon.png);
 }
 
 .context-menu-icon-purchase_link {
-	background-image: url(../images/date.png);
+    background-image: url(../images/date.png);
 }
 .context-menu-icon-purchase_unlink {
-	background-image: url(../images/pas_date.png);
+    background-image: url(../images/pas_date.png);
 }
 .context-menu-icon-purchase_link_small {
-	background-image: url(../images/date_petit.png);
+    background-image: url(../images/date_petit.png);
     background-position: 4px;
     background-size: 12px;
 }
@@ -147,6 +147,6 @@ body>.context-menu-list>:first-child {
 }
 
 .context-menu-icon-save {
-	font-weight: bold;
-	background-image: url(../images/page_save.png);
+    font-weight: bold;
+    background-image: url(../images/page_save.png);
 }

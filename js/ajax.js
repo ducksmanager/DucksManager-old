@@ -107,16 +107,16 @@ function maj_image(numero_wrapper, image) {
     numero_wrapper.data('cover', image || cover_not_found_image);
 
     var img = jQuery('<img>')
-	    .on('load', function() {
-	        charger_tooltip_couverture(numero_wrapper.find('.num'), numero_wrapper.data('cover'));
-	    })
-	    .on('error', function() {
-	        img
-		        .on('load', function() {
-		            charger_tooltip_couverture(numero_wrapper.find('.num'), cover_not_found_image);
-		        })
-		        .attr({src: cover_not_found_image});
-	    });
+        .on('load', function() {
+            charger_tooltip_couverture(numero_wrapper.find('.num'), numero_wrapper.data('cover'));
+        })
+        .on('error', function() {
+            img
+                .on('load', function() {
+                    charger_tooltip_couverture(numero_wrapper.find('.num'), cover_not_found_image);
+                })
+                .attr({src: cover_not_found_image});
+        });
     img.attr({src: numero_wrapper.data('cover')});
 }
 
@@ -134,8 +134,8 @@ function charger_tooltip_couverture(target, image) {
 }
 
 function charger_evenements() {
-	jQuery.post(
-	    'Database.class.php',
+    jQuery.post(
+        'Database.class.php',
         { database: 'true', evenements_recents: 'true'},
         function(response) {
            jQuery('#evenements')
@@ -146,7 +146,7 @@ function charger_evenements() {
                });
            charger_tooltips_utilisateurs();
        }
-	);
+    );
 }
 
 function charger_tooltips_utilisateurs() {
@@ -189,14 +189,14 @@ function callback_tranches_chargees(tooltip_content) {
 
 function initPays(inclure_tous_pays, selected) {
     if (jQuery('#liste_pays').length) {
-	    jQuery.post('Inducks.class.php',
-		    {get_pays: 'true', inclure_tous_pays: inclure_tous_pays, selected: selected},
+        jQuery.post('Inducks.class.php',
+            {get_pays: 'true', inclure_tous_pays: inclure_tous_pays, selected: selected},
             function(response) {
-			    jQuery('#liste_pays').html(response);
-			    if (jQuery('#liste_magazines').length)
-				    select_magazine();
-		    }
-	    );
+                jQuery('#liste_pays').html(response);
+                if (jQuery('#liste_magazines').length)
+                    select_magazine();
+            }
+        );
     }
 }
 
@@ -265,7 +265,7 @@ function select_magazine(valeur_magazine) {
         var id_pays=el_select.find('option:selected').attr('id');
         pays_sel=id_pays;
         var option_chargement=jQuery('<option>',{id: 'chargement_magazines'})
-	        .text('Chargement des magazines');
+            .text('Chargement des magazines');
         jQuery('#liste_magazines').html(option_chargement.html());
 
         jQuery.post('Inducks.class.php',
@@ -295,39 +295,39 @@ function select_magazine(valeur_magazine) {
 }
 
 function magazine_selected() {
-	var el_select_pays=jQuery('#liste_pays');
-	var el_select_magazine=jQuery('#liste_magazines');
-	var value_pays = el_select_pays.find('option:selected').attr('id');
-	var value_magazine = el_select_magazine.find('option:selected').attr('id');
-	jQuery('#form_magazine').val(value_magazine);
-	jQuery('#onglet_magazine').val([value_pays, value_magazine].join('/'));
+    var el_select_pays=jQuery('#liste_pays');
+    var el_select_magazine=jQuery('#liste_magazines');
+    var value_pays = el_select_pays.find('option:selected').attr('id');
+    var value_magazine = el_select_magazine.find('option:selected').attr('id');
+    jQuery('#form_magazine').val(value_magazine);
+    jQuery('#onglet_magazine').val([value_pays, value_magazine].join('/'));
 
 }
 
 function select_numero() {
-	var el_select=jQuery('#liste_magazines');
-	var el_select_pays=jQuery('#liste_pays');
-	if (el_select.find('>option:eq(0)').attr('id') !=='chargement_magazines') {
-		var nom_magazine=el_select.find('option:selected').text();
-		if (nom_magazine!==nom_magazine_old) {
-			nom_magazine_old = nom_magazine;
-			var id_magazine = el_select.find('>option:eq(0)').attr('id');
-			var id_pays = el_select_pays.find('>option:eq(0)').attr('id');
-			magazine_sel = id_magazine;
+    var el_select=jQuery('#liste_magazines');
+    var el_select_pays=jQuery('#liste_pays');
+    if (el_select.find('>option:eq(0)').attr('id') !=='chargement_magazines') {
+        var nom_magazine=el_select.find('option:selected').text();
+        if (nom_magazine!==nom_magazine_old) {
+            nom_magazine_old = nom_magazine;
+            var id_magazine = el_select.find('>option:eq(0)').attr('id');
+            var id_pays = el_select_pays.find('>option:eq(0)').attr('id');
+            magazine_sel = id_magazine;
 
-			// TODO use l10n
-			var option_chargement = jQuery('<option>', {id: 'chargement_numeros'})
-				.text("Chargement des numéros");
-			jQuery('#liste_numeros').html(option_chargement);
-			jQuery.post(
-			    'Inducks.class.php',
-				{get_numeros: 'true', pays: id_pays, magazine: id_magazine},
+            // TODO use l10n
+            var option_chargement = jQuery('<option>', {id: 'chargement_numeros'})
+                .text("Chargement des numéros");
+            jQuery('#liste_numeros').html(option_chargement);
+            jQuery.post(
+                'Inducks.class.php',
+                {get_numeros: 'true', pays: id_pays, magazine: id_magazine},
                 function (response) {
-					jQuery('#liste_numeros').html(response);
-				}
-			);
-		}
-	}
+                    jQuery('#liste_numeros').html(response);
+                }
+            );
+        }
+    }
 }
 
 function afficher_numeros(pays,magazine, numero) {
@@ -368,5 +368,5 @@ function afficher_numeros(pays,magazine, numero) {
 }
 
 function isLeftClick(event) {
-	return event.which === 1;
+    return event.which === 1;
 }

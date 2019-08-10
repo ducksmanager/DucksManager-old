@@ -16,7 +16,7 @@
             }
 
             .dispo {
-           		background-color: green !important;
+                background-color: green !important;
             }
 
             .num.dispo {
@@ -64,9 +64,9 @@
         </script>
     </head>
     <body>
-    	<div id="num_courant" class="init">
-    		Aucun numéro
-    	</div>
+        <div id="num_courant" class="init">
+            Aucun numéro
+        </div>
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . '..');
 include_once '../Inducks.class.php';
@@ -116,29 +116,29 @@ if (isset($_GET['wanted'])) {
     $publicationcodes = array_unique(array_map(function($publicationcode) {
         return $publicationcode['publicationcode'];
     }, $resultat_plus_demandes));
-	$liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
+    $liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
 
-	foreach($resultat_plus_demandes as $numero_demande) {
-		$publicationcode=$numero_demande['publicationcode'];
-		[$pays,$magazine] =explode('/',$publicationcode);
-		$numero=$numero_demande['Numero'];
-		$cpt=$numero_demande['cpt'];
+    foreach($resultat_plus_demandes as $numero_demande) {
+        $publicationcode=$numero_demande['publicationcode'];
+        [$pays,$magazine] =explode('/',$publicationcode);
+        $numero=$numero_demande['Numero'];
+        $cpt=$numero_demande['cpt'];
 
-		$nom_magazine_complet = $liste_magazines[$publicationcode];
-		if (is_null($nom_magazine_complet)) {
-			$nom_magazine_complet = $publicationcode;
-		}
-		?><div>
+        $nom_magazine_complet = $liste_magazines[$publicationcode];
+        if (is_null($nom_magazine_complet)) {
+            $nom_magazine_complet = $publicationcode;
+        }
+        ?><div>
             <div>
                 <u><?=$cpt?> utilisateurs <?=isset($_GET['user']) ? "<b><i>dont {$_GET['user']}</i></b>" : ""?> possèdent le numéro :</u>
-            </div>		&nbsp;
+            </div>&nbsp;
             <img src="../images/flags/<?=$pays?>.png" />
             <?=$nom_magazine_complet?> n°<?=$numero?>
         </div><?php
-	}
+    }
 }
 else {
-	?><a href="avancement.php?wanted=20">Voir les 20 tranches les plus demandées</a><?php
+    ?><a href="avancement.php?wanted=20">Voir les 20 tranches les plus demandées</a><?php
 }
 ?><hr /><?php
 
@@ -146,7 +146,7 @@ $requete_pays_magazines_tranches_pretes='SELECT DISTINCT publicationcode FROM tr
 $resultat_pays_magazines_tranches_pretes=DM_Core::$d->requete($requete_pays_magazines_tranches_pretes);
 
 $publicationcodes = array_map(function($publicationcode) {
-	return $publicationcode['publicationcode'];
+    return $publicationcode['publicationcode'];
 }, $resultat_pays_magazines_tranches_pretes);
 
 $liste_magazines = Inducks::get_noms_complets_magazines($publicationcodes);
@@ -163,7 +163,7 @@ array_walk($resultat_tranches_pretes, function($resultat) use (&$tranches_pretes
 
 $cpt_dispos=0;
 foreach($publicationcodes as $publicationcode) {
-	[$pays,$magazine] =explode('/',$publicationcode);
+    [$pays,$magazine] =explode('/',$publicationcode);
     ?><div class="publication" data-country="<?=$pays?>" data-magazine="<?=$magazine?>">
         <span class="publication_name">
             (<img src="../images/flags/<?=$pays?>.png" /> <?=$magazine?>)
@@ -197,8 +197,8 @@ foreach($publicationcodes as $publicationcode) {
 <?php } ?>
 
 
-	<br  /><br />
-	<b><?=$cpt_dispos?> tranches prêtes.</b><br />
+    <br /><br />
+    <b><?=$cpt_dispos?> tranches prêtes.</b><br />
         <br /><br />
         <u>Légende : </u><br />
         <span class="num">&nbsp;</span> Nous avons besoin d'une photo de cette tranche !<br />

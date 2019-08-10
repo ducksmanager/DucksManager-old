@@ -1,9 +1,9 @@
 function toggle_item_menu(element_clic) {
-	element_clic = jQuery(element_clic);
+    element_clic = jQuery(element_clic);
 
-	var tagName = element_clic.prop('tagName').toUpperCase();
+    var tagName = element_clic.prop('tagName').toUpperCase();
     if (tagName==='LI') {
-	    element_clic = element_clic.parent();
+        element_clic = element_clic.parent();
     }
     element_clic.parent().find('li.active').removeClass('active');
     element_clic.toggleClass('active');

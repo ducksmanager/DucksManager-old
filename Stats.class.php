@@ -149,7 +149,7 @@ class Stats {
     }
 
     static function getPurchaseHistory() {
-		    $resultat_achats = DM_Core::$d->requete('
+            $resultat_achats = DM_Core::$d->requete('
             SELECT IFNULL(DATE_FORMAT(Date,\'%Y-%m\'), \'?\') AS Mois, CONCAT(Pays, \'/\', Magazine) AS Publicationcode, Count(Numero) AS cpt
             FROM numeros n
             LEFT JOIN achats USING (ID_Acquisition)

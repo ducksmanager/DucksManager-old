@@ -1,26 +1,26 @@
 <?php
 
 class Item {
-	var $nom;
-	var $est_prive;
-	var $texte;
+    var $nom;
+    var $est_prive;
+    var $texte;
     var $icone;
-	var $beta=false;
-	var $nouveau=false;
-	static $beta_user=false;
-	static $action="";
+    var $beta=false;
+    var $nouveau=false;
+    static $beta_user=false;
+    static $action="";
 
     function __construct($nom, $est_prive, $texte, $icone = null, $beta = false, $nouveau = false) {
-		$this->nom = $nom;
-		$this->est_prive = $est_prive;
-		$this->texte = $texte;
+        $this->nom = $nom;
+        $this->est_prive = $est_prive;
+        $this->texte = $texte;
         $this->icone = $icone;
-		$this->beta = $beta;
-		$this->nouveau = $nouveau;
+        $this->beta = $beta;
+        $this->nouveau = $nouveau;
     }
 
-	function afficher() {
-		if ($this->est_affiche()) {?>
+    function afficher() {
+        if ($this->est_affiche()) {?>
             <li class="non-empty <?= $this->icone ? '' : 'no-icon' ?> <?= !isset($_GET['user']) && ($_GET['action'] ?? '') === $this->nom ? 'active' : '' ?>">
                 <a href="?action=<?= $this->nom ?>">
                     <i class="<?= $this->icone ?>"></i>
@@ -30,30 +30,30 @@ class Item {
                     }?>
                 </a>
             </li><?php
-		}
-	}
+        }
+    }
 
-	function est_affiche() {
-		return ($this->est_prive==='no'
-		     || (in_array($this->est_prive, ['always', 'always_except_user_provided']) && isset($_SESSION['user']) &&!(self::$action==='logout'))
-			 || ($this->est_prive==='never'  &&!(isset($_SESSION['user']) &&!(self::$action==='logout'))));
-	}
+    function est_affiche() {
+        return ($this->est_prive==='no'
+             || (in_array($this->est_prive, ['always', 'always_except_user_provided']) && isset($_SESSION['user']) &&!(self::$action==='logout'))
+             || ($this->est_prive==='never'  &&!(isset($_SESSION['user']) &&!(self::$action==='logout'))));
+    }
 }
 
 class LigneVide extends Item{
-	function __construct() {
+    function __construct() {
 
-	}
+    }
 
-	function afficher() {
-		?><li class="empty"></li><?php
-	}
+    function afficher() {
+        ?><li class="empty"></li><?php
+    }
 
 }
 
 class Menu extends Item{
-	/** @var Item[] $items */
-	var $items;
+    /** @var Item[] $items */
+    var $items;
 
     /**
      * Menu constructor.
@@ -64,35 +64,35 @@ class Menu extends Item{
      * @param Item[] $items
      */
     function __construct($nom, $est_prive, $texte, $icone, $items) {
-		parent::__construct($nom, $est_prive, $texte, $icone);
-		$this->items = $items;
+        parent::__construct($nom, $est_prive, $texte, $icone);
+        $this->items = $items;
     }
 
-	public function afficher() {
+    public function afficher() {
         $isActive = !isset($_GET['user']) && in_array($_GET['action'] ?? '', array_map(function (Item $i) {
             return $i->nom;
         }, $this->items), true);
         ?>
-	    <li data-toggle="collapse" data-target="#<?=$this->nom?>" class="collapsed <?=$isActive ? 'active' : ''?>">
-	        <a href="#"><i class="<?=$this->icone?>"></i> <?=$this->texte?> <span class="arrow"></span></a>
+        <li data-toggle="collapse" data-target="#<?=$this->nom?>" class="collapsed <?=$isActive ? 'active' : ''?>">
+            <a href="#"><i class="<?=$this->icone?>"></i> <?=$this->texte?> <span class="arrow"></span></a>
         </li>
         <ul class="sub-menu collapse in" id="<?=$this->nom?>"><?php
         foreach($this->items as $item) {
-        	$item->afficher();
+            $item->afficher();
         }
         ?></ul><?php
-	}
+    }
 
     /**
      * @param Menu[] $menus
      */
     static function afficherMenus($menus) {?>
         <ul id="menu-content" class="menu-content collapse"><?php
-		foreach($menus as $menu) {
-			$menu->afficher();
-		}?>
+        foreach($menus as $menu) {
+            $menu->afficher();
+        }?>
         </ul><?php
-	}
+    }
 }
 
 $menus= [

@@ -1,22 +1,22 @@
 html, body {
-	height:100%;
-	margin:0;
-	font:11px verdana,arial,sans-serif;
-	line-height:15px;
-	color: white;
+    height:100%;
+    margin:0;
+    font:11px verdana,arial,sans-serif;
+    line-height:15px;
+    color: white;
 }
 
 body {
-	background-color: rgb(61, 75, 95) !important;
+    background-color: rgb(61, 75, 95) !important;
 }
 
 object {
-	display: none;
+    display: none;
 }
 
 a {
-	color:#ffffff;
-	border-bottom: 1px dotted #ffffff;
+    color:#ffffff;
+    border-bottom: 1px dotted #ffffff;
 }
 
 a.noborder, a.btn, a.noborder:HOVER, a.btn:HOVER  {
@@ -24,42 +24,42 @@ a.noborder, a.btn, a.noborder:HOVER, a.btn:HOVER  {
 }
 
 .alert a {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .underlined {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .hidden, .template {
-	display: none !important;
+    display: none !important;
 }
 
 a:HOVER {
-	border-bottom: 1px dashed #ffffff !important;
+    border-bottom: 1px dashed #ffffff !important;
 }
 
 a, a:HOVER {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 a.has_tooltip, a.has_tooltip:HOVER {
-	white-space: normal;
-	border-bottom: 0 !important;
-	cursor: help;
+    white-space: normal;
+    border-bottom: 0 !important;
+    cursor: help;
 }
 
 del {
-	white-space:nowrap;
+    white-space:nowrap;
 }
 
 a.important:HOVER {
-	text-decoration:underline;
-	font-weight: bold;
+    text-decoration:underline;
+    font-weight: bold;
 }
 
 .cache {
-	display: none !important;
+    display: none !important;
 }
 
 .nowrap {
@@ -67,157 +67,157 @@ a.important:HOVER {
 }
 
 .clear {
-	clear: both;
+    clear: both;
 }
 
 .android-banner {
-	background: #454345;
-	padding: 20px;
+    background: #454345;
+    padding: 20px;
 }
 
 .android-banner .title {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .android-banner .text {
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .android-banner .logo_android {
-	float: left;
-	padding: 10px;
+    float: left;
+    padding: 10px;
 }
 
 .android-banner .store_link {
-	border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 .android-banner .store_link img {
-	width: 150px;
+    width: 150px;
 }
 
 .show_overflow {
-	overflow-x: visible;
+    overflow-x: visible;
 }
 
 .medaille_profil {
-	float: left;
-	text-align: center;
-	margin: 5px;
-	width: 160px;
+    float: left;
+    text-align: center;
+    margin: 5px;
+    width: 160px;
 }
 
 .medaille_profil img {
-	height: 70px;
+    height: 70px;
 }
 
 img.medaille_objectif {
-	height: 40px;
-	margin-top: -10px;
+    height: 40px;
+    margin-top: -10px;
 }
 
 img.medaille_objectif.gauche {
-	float: left;
+    float: left;
 }
 
 img.medaille_objectif.droite {
-	float: right;
+    float: right;
 }
 
 .progress-bar {
-	background-color: #268026;
+    background-color: #268026;
 }
 
 .progress-bar-striped {
-	text-shadow: 1px 1px 2px lightgrey;
-	color: rgb(40,40,40) !important;
-	background-image: linear-gradient(135deg, #268026 25%, transparent 25%, transparent 50%, #268026 50%, #268026 75%, transparent 75%, transparent);
+    text-shadow: 1px 1px 2px lightgrey;
+    color: rgb(40,40,40) !important;
+    background-image: linear-gradient(135deg, #268026 25%, transparent 25%, transparent 50%, #268026 50%, #268026 75%, transparent 75%, transparent);
 }
 
 #recemment {
-	position: absolute;
-	top: 450px;
-	padding: 5px 5px 20px 5px;
-	border-top: 1px solid #23282e;
+    position: absolute;
+    top: 450px;
+    padding: 5px 5px 20px 5px;
+    border-top: 1px solid #23282e;
 }
 
 #recemment h4 {
-	margin-left: 15px;
+    margin-left: 15px;
     margin-top: 0;
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 #recemment #evenements div.evenement {
-	margin-top: 12px;
+    margin-top: 12px;
 }
 
 #recemment #evenements div.evenement .date {
-	color: grey;
-	float: right;
+    color: grey;
+    float: right;
 }
 
 #contenu {
-	padding: 45px 20px 20px 20px;
-	min-height: 500px;
+    padding: 45px 20px 20px 20px;
+    min-height: 500px;
 }
 
 #liste_numeros .num_manque,
 #liste_numeros .num_possede {
-	display: none;
+    display: none;
 }
 
 .num_manque {
-	width:100%;
-	background-color:black;
-	cursor:default;
-	height:16px;
-	padding-top:4px;
+    width:100%;
+    background-color:black;
+    cursor:default;
+    height:16px;
+    padding-top:4px;
 }
 
 .num_possede {
-	width:100%;
-	background-color:rgb(200, 137, 100);
-	cursor:default;
-	height:16px;
-	padding-top:4px;
+    width:100%;
+    background-color:rgb(200, 137, 100);
+    cursor:default;
+    height:16px;
+    padding-top:4px;
 }
 
 #liste_numeros.manquants .num_manque,
 #liste_numeros.possedes .num_possede {
-	display: block;
+    display: block;
 }
 
 .num_checked {
-	background-image: url(../checkedbox.png);
-	background-repeat: no-repeat;
-	background-position: right center;
-	outline:1px solid white;
-	line-height: 11px;
+    background-image: url(../checkedbox.png);
+    background-repeat: no-repeat;
+    background-position: right center;
+    outline:1px solid white;
+    line-height: 11px;
 }
 
 .num_mauvais {
-	border-radius: 50%;
-	background-color:red;
+    border-radius: 50%;
+    background-color:red;
 }
 
 .num_moyen {
-	border-radius: 50%;
-	background-color:orange;
+    border-radius: 50%;
+    background-color:orange;
 }
 
 .num_bon {
-	border-radius: 50%;
-	background-color:#2CA77B;
+    border-radius: 50%;
+    background-color:#2CA77B;
 }
 
 .num_indefini {
-	border-radius: 50%;
-	background-color:#808080;
+    border-radius: 50%;
+    background-color:#808080;
 }
 
 .half_transparent {
-	opacity: 0.5;
-	filter: alpha(opacity=50);
+    opacity: 0.5;
+    filter: alpha(opacity=50);
 }
 
 .survole {
@@ -227,42 +227,42 @@ img.medaille_objectif.droite {
 }
 
 .colorselector_manque {
-	border:1px solid black;
-	cursor:default;
-	background-color:black;
+    border:1px solid black;
+    cursor:default;
+    background-color:black;
 }
 
 .colorselector_mauvais {
-	border:1px solid black;
-	cursor:default;
-	background-color:red;
+    border:1px solid black;
+    cursor:default;
+    background-color:red;
 }
 
 .colorselector_moyen {
-	border:1px solid black;
-	cursor:default;
-	background-color:orange;
+    border:1px solid black;
+    cursor:default;
+    background-color:orange;
 }
 
 .colorselector_bon {
-	border:1px solid black;
-	cursor:default;
-	background-color:#2CA77B;
+    border:1px solid black;
+    cursor:default;
+    background-color:#2CA77B;
 }
 
 .colorselector_indefini {
-	border:1px solid black;
-	cursor:default;
-	background-color:gray;
+    border:1px solid black;
+    cursor:default;
+    background-color:gray;
 }
 
 .ejs_context_menuitems{
-	padding-left:12px;
-	padding-right:7px;
+    padding-left:12px;
+    padding-right:7px;
 }
 
 .desactive {
-	filter : alpha(opacity=50);
+    filter : alpha(opacity=50);
     -moz-opacity : 0.5;
     opacity : 0.5;
 }
@@ -272,10 +272,10 @@ img.medaille_objectif.droite {
 }
 
 .beta, .nouveau {
-	font-size: xx-small;
+    font-size: xx-small;
     vertical-align: super;
     font-weight: bold;
-	margin-left: 3px;
+    margin-left: 3px;
 }
 
 .preview {
@@ -300,8 +300,8 @@ img.medaille_objectif.droite {
 }
 
 .details_numero.gauche {
-	float: left;
-	margin-right: 10px;
+    float: left;
+    margin-right: 10px;
 }
 
 .bloc_details {
@@ -320,29 +320,29 @@ img.medaille_objectif.droite {
 }
 
 #presentation_demo {
-	border:1px solid white;
-	margin-bottom: 20px;
-	padding: 5px 10px 10px 15px;
+    border:1px solid white;
+    margin-bottom: 20px;
+    padding: 5px 10px 10px 15px;
 }
 
 #presentation_demo h2 {
-	text-align: center;
+    text-align: center;
 }
 
 #main {
-	background-color: rgb(61, 75, 95);
+    background-color: rgb(61, 75, 95);
 }
 
 #zone_logo1 {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	background-color: rgb(200, 137, 100);
-	height: 180px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgb(200, 137, 100);
+    height: 180px;
 }
 
 #zone_logo1 a {
-	position: absolute;
+    position: absolute;
     border-bottom: none;
 }
 
@@ -352,27 +352,27 @@ img.medaille_objectif.droite {
 
 
 #zone_logo2 {
-	padding-left:5px;
-	vertical-align: top;
+    padding-left:5px;
+    vertical-align: top;
 }
 
 #zone_logo2 .welcome {
-	margin-top: 0;
-	padding: 60px 20px 0 20px;
-	text-align: center;
+    margin-top: 0;
+    padding: 60px 20px 0 20px;
+    text-align: center;
 }
 
 #zone_logo2 .welcome > h2 {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #footer {
-	border-top: 1px solid white;
-	padding: 10px 10px 10px 30px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
+    border-top: 1px solid white;
+    padding: 10px 10px 10px 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
 
 #footer > * {
@@ -380,45 +380,45 @@ img.medaille_objectif.droite {
 }
 
 #nb_users {
-	text-align: center;
-	vertical-align: middle;
-	padding-left: 4px;
+    text-align: center;
+    vertical-align: middle;
+    padding-left: 4px;
 }
 
 #flags {
-	margin: 20px;
+    margin: 20px;
 }
 
 #flags a.drapeau_langue, #flags a.drapeau_langue:HOVER, #flags a.drapeau_langue img {
-	border:0 !important;
+    border:0 !important;
 }
 
 ul#choix_impression {
-	margin-top: 31px;
+    margin-top: 31px;
 }
 
 ul#choix_impression>li {
-	list-style: none;
-	min-height: 150px;
-	margin-bottom: 30px;
-	padding-left: 170px;
-	padding-top: 12px;
-	background-color: transparent;
-	background-repeat: no-repeat;
-	background-position: left center;
-	min-width: 150px;
+    list-style: none;
+    min-height: 150px;
+    margin-bottom: 30px;
+    padding-left: 170px;
+    padding-top: 12px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: left center;
+    min-width: 150px;
 }
 
 ul#choix_impression ul.caract li{
-	margin-top: 14px;
+    margin-top: 14px;
 }
 
 .exclusif {
-	border: 1px solid #C88964;
-	padding: 3px;
-	margin-right: 5px;
-	color: #C88964;
-	white-space: nowrap;
+    border: 1px solid #C88964;
+    padding: 3px;
+    margin-right: 5px;
+    color: #C88964;
+    white-space: nowrap;
 }
 
 .toggler_aide_recherche_magazine {
@@ -426,11 +426,11 @@ ul#choix_impression ul.caract li{
 }
 
 #magazines_possedes {
-	margin-top: 25px;
+    margin-top: 25px;
 }
 
 #magazines_possedes img.flag {
-	vertical-align: inherit;
+    vertical-align: inherit;
 }
 
 #liste_pays,
@@ -439,121 +439,121 @@ ul#choix_impression ul.caract li{
 }
 
 #liste_numeros img.flag {
-	vertical-align: top;
+    vertical-align: top;
 }
 
 #whattheduck {
     margin-top: 20px;
-	padding: 20px 10px;
+    padding: 20px 10px;
     border: 1px solid white;
 }
 
 .iframe_map {
-	height: 700px;
+    height: 700px;
 }
 
 .showcase {
-	max-width: 960px;
-	font-size: 14px;
-	line-height: 20px;
+    max-width: 960px;
+    font-size: 14px;
+    line-height: 20px;
 }
 
 .showcase hr {
-	opacity: 0.8;
-	width: 50%;
-	-webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.75);
-	-moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.75);
-	box-shadow: 0px 1px 2px 0px rgba(255,255,255,0.75);
+    opacity: 0.8;
+    width: 50%;
+    -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 1px 2px 0px rgba(255,255,255,0.75);
 }
 
 .showcase img, .showcase video {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 .showcase h3 {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .showcase .row {
-	height: 300px;
-	margin-top: 50px;
-	margin-bottom: 50px;
+    height: 300px;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .showcase .row:first-child {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .showcase .row > div {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .carousel {
-	width: 960px;
-	margin: auto;
-	margin-bottom: 20px;
+    width: 960px;
+    margin: auto;
+    margin-bottom: 20px;
 }
 
 .carousel-indicators {
-	bottom: 60px !important;
+    bottom: 60px !important;
 }
 
 .carousel-control.left,
 .carousel-control.right {
-	width: 5%;
-	border-bottom: 0;
-	height: 75px;
+    width: 5%;
+    border-bottom: 0;
+    height: 75px;
 }
 
 .carousel-control.left:hover,
 .carousel-control.right:hover {
-	border-bottom: 0 !important;
+    border-bottom: 0 !important;
 }
 
 .carousel .item>img {
-	height: 330px !important;
+    height: 330px !important;
 }
 
 .carousel-caption.bottom {
-	background-color: rgba(0,0,0,.7);
-	left: 0;
-	bottom: 0;
-	padding-bottom: 0;
-	height: 80px;
+    background-color: rgba(0,0,0,.7);
+    left: 0;
+    bottom: 0;
+    padding-bottom: 0;
+    height: 80px;
 }
 
 .carousel-caption.right {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	position: absolute;
-	left: auto;
-	right: 0;
-	width: 47%;
-	height: 100%;
-	text-align: left;
-	font-size: 15px;
-	line-height: 20px;
-	padding-bottom: 0;
-	opacity: 0.8;
-	bottom: 0;
-	overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    position: absolute;
+    left: auto;
+    right: 0;
+    width: 47%;
+    height: 100%;
+    text-align: left;
+    font-size: 15px;
+    line-height: 20px;
+    padding-bottom: 0;
+    opacity: 0.8;
+    bottom: 0;
+    overflow-y: auto;
 }
 
 .carousel.small {
-	width: 250px;
-	margin: 15px 0 0;
+    width: 250px;
+    margin: 15px 0 0;
 }
 
 .carousel.small .carousel-inner {
-	padding-left: 25px;
+    padding-left: 25px;
 }
 
 .carousel.small .carousel-indicators {
-	top: 0;
+    top: 0;
 }
 
 .carousel.small .carousel-control .glyphicon {
@@ -561,90 +561,90 @@ ul#choix_impression ul.caract li{
 }
 
 .carousel.small .item .medaille_objectif {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 .carousel.small>.medaille_objectif {
-	position: absolute;
-	z-index: 10;
-	top: 35px;
+    position: absolute;
+    z-index: 10;
+    top: 35px;
 }
 
 .carousel.small>.medaille_objectif.gauche {
-	left: 25px;
+    left: 25px;
 }
 
 .carousel.small>.medaille_objectif.droite {
-	right: -25px;
+    right: -25px;
 }
 
 .carousel.small .wrapper_envoyer_tranches {
-	text-align: center;
-	margin-left: 25px;
+    text-align: center;
+    margin-left: 25px;
 }
 
 #import_inducks iframe, #import_inducks textarea {
-	height: 400px;
-	width: 100%;
+    height: 400px;
+    width: 100%;
 }
 
 #import_inducks pre {
-	padding: 2px;
-	display: inline;
+    padding: 2px;
+    display: inline;
 }
 
 #dm-loves-inducks {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	width: 350px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 350px;
 }
 
 #dm-logo-small {
-	width: 200px;
-	height: 30px;
-	background: url('/logo_nom.jpg') no-repeat;
-	background-size: contain;
-	background-position-y: center;
+    width: 200px;
+    height: 30px;
+    background: url('/logo_nom.jpg') no-repeat;
+    background-size: contain;
+    background-position-y: center;
 }
 
 #loves {
-	width: 32px;
-	height: 32px;
-	background: url('/images/heart.png') no-repeat;
-	background-size: contain;
-	background-position-y: center;
+    width: 32px;
+    height: 32px;
+    background: url('/images/heart.png') no-repeat;
+    background-size: contain;
+    background-position-y: center;
 }
 
 #inducks-logo {
-	width: 100px;
-	height: 30px;
-	background: url('/images/inducks_logo.png') no-repeat;
-	background-size: contain;
-	background-position-y: center;
+    width: 100px;
+    height: 30px;
+    background: url('/images/inducks_logo.png') no-repeat;
+    background-size: contain;
+    background-position-y: center;
 }
 
 @media (min-width: 767px) {
-	.mobile-only {
-		display: none;
-	}
+    .mobile-only {
+        display: none;
+    }
 
-	body {
-		padding: 0 0 0 310px !important;
-	}
+    body {
+        padding: 0 0 0 310px !important;
+    }
 
-	.text_input {
-		width: 300px;
-	}
+    .text_input {
+        width: 300px;
+    }
 
-	.text_input.short {
-		width: 80px;
-	}
+    .text_input.short {
+        width: 80px;
+    }
 
-	.logo_petit {
-		display: none;
-	}
+    .logo_petit {
+        display: none;
+    }
 
     #whattheduck {
         width: 300px;
@@ -654,108 +654,108 @@ ul#choix_impression ul.caract li{
         width: 400px;
     }
 
-	.iframe_map {
-		width: 70%;
-	}
+    .iframe_map {
+        width: 70%;
+    }
 
-	.carousel-indicators {
-		margin-left: -37.5% !important;
-		width: 25% !important;
-	}
+    .carousel-indicators {
+        margin-left: -37.5% !important;
+        width: 25% !important;
+    }
 
-	.carousel-control.right {
-		left: 480px !important;
-		margin-left: -5%;
-	}
+    .carousel-control.right {
+        left: 480px !important;
+        margin-left: -5%;
+    }
 
-	.carousel .item>img,
-	.carousel-caption.bottom {
-		width: 480px !important;
-	}
-	.carousel.small .carousel-control.right {
-		left: 300px !important;
-	}
+    .carousel .item>img,
+    .carousel-caption.bottom {
+        width: 480px !important;
+    }
+    .carousel.small .carousel-control.right {
+        left: 300px !important;
+    }
 
-	.carousel.small .carousel-indicators {
-		width: inherit !important;
-	}
+    .carousel.small .carousel-indicators {
+        width: inherit !important;
+    }
 }
 
 @media (max-width: 1200px) {
-	.showcase {
-		max-width: 500px;
-	}
+    .showcase {
+        max-width: 500px;
+    }
 
-	.showcase .row {
-		height: initial;
-	}
+    .showcase .row {
+        height: initial;
+    }
 
-	.showcase img, .showcase video {
-		margin: 25px 0;
-	}
+    .showcase img, .showcase video {
+        margin: 25px 0;
+    }
 
-	.showcase * {
-		/*text-align: center;*/
-	}
+    .showcase * {
+        /*text-align: center;*/
+    }
 }
 
 @media (max-width: 767px) {
-	.desktop-only {
-		display: none;
-	}
+    .desktop-only {
+        display: none;
+    }
 
-	body {
-		padding-left: 0;
-	}
+    body {
+        padding-left: 0;
+    }
 
-	#footer {
-		flex-direction: column;
-	}
+    #footer {
+        flex-direction: column;
+    }
 
-	#footer > * {
-		margin-bottom: 10px;
-	}
+    #footer > * {
+        margin-bottom: 10px;
+    }
 
-	.num {
-		float: left;
-		white-space: nowrap;
-		max-width: 170px;
-		overflow-x: hidden;
-	}
+    .num {
+        float: left;
+        white-space: nowrap;
+        max-width: 170px;
+        overflow-x: hidden;
+    }
 
-	.bloc_details {
-		padding-right: 0;
-	}
+    .bloc_details {
+        padding-right: 0;
+    }
 
-	.iframe_map {
-		width: 90%;
-	}
+    .iframe_map {
+        width: 90%;
+    }
 
-	.carousel {
-		width: inherit;
-	}
+    .carousel {
+        width: inherit;
+    }
 
-	.carousel-caption.right {
-		display: none;
-	}
+    .carousel-caption.right {
+        display: none;
+    }
 
-	.carousel .item>img,
-	.carousel-caption.bottom {
-		width: 100%;
-	}
+    .carousel .item>img,
+    .carousel-caption.bottom {
+        width: 100%;
+    }
 
-	.carousel-caption.bottom {
-		background-color: rgba(0,0,0,.4);
-	}
+    .carousel-caption.bottom {
+        background-color: rgba(0,0,0,.4);
+    }
 
-	.carousel-caption.bottom h3 {
-		font-size: 18px;
-	}
+    .carousel-caption.bottom h3 {
+        font-size: 18px;
+    }
 
-	.carousel .item>img {
-		padding-bottom: 100px;
-		height: inherit !important;
-	}
+    .carousel .item>img {
+        padding-bottom: 100px;
+        height: inherit !important;
+    }
 
     .carousel.small .item.active {
         margin-right: 40px;
@@ -769,9 +769,9 @@ ul#choix_impression ul.caract li{
         right: 15px;
     }
 
-	#bouquinerie_commentaires {
-		width: 100%;
-	}
+    #bouquinerie_commentaires {
+        width: 100%;
+    }
 
     #liste_pays,
     #liste_magazines {

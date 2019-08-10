@@ -2,26 +2,26 @@
 include_once 'DucksManager_Core.class.php';
 
 class Edge {
-	var $pays;
-	var $magazine;
-	var $numero;
-	var $numero_reference;
-	var $est_visible=true;
-	var $sprite;
+    var $pays;
+    var $magazine;
+    var $numero;
+    var $numero_reference;
+    var $est_visible=true;
+    var $sprite;
 
     function __construct($pays = null, $magazine = null, $numero = null, $numero_reference = null, $visible = null, $sprite = null) {
-		if (is_null($pays)) {
+        if (is_null($pays)) {
             return;
         }
-		$this->pays=$pays;
-		$this->magazine=$magazine;
-		$this->numero= $numero;
-		$this->numero_reference= $numero_reference;
+        $this->pays=$pays;
+        $this->magazine=$magazine;
+        $this->numero= $numero;
+        $this->numero_reference= $numero_reference;
         $this->est_visible = $visible;
         $this->sprite = $sprite;
     }
 
-	function getImgHTML($small = false) {
+    function getImgHTML($small = false) {
         ob_start();
         ?><img data-edge="<?=$this->est_visible ? 1 : 0?>"
              class="tranche"
@@ -30,7 +30,7 @@ class Edge {
              <?=$small ? 'onload="this.height*=0.75;this.onload=null"' : '' ?>
         /><?php
         return ob_get_clean();
-	}
+    }
 
     static function getPointsPhotographeAGagner($id_user){
         $requete_points_tranche = "
@@ -48,8 +48,8 @@ class Edge {
         }, $resultats_points_tranches);
     }
 
-	static function getBibliotheque($id_user, $publication_codes) {
-		$requete_tranches = "
+    static function getBibliotheque($id_user, $publication_codes) {
+        $requete_tranches = "
             SELECT numeros.Pays,
                    numeros.Magazine,
                    numeros.Numero,
@@ -78,9 +78,9 @@ class Edge {
             GROUP BY numeros.Pays, numeros.Magazine, numeros.Numero
             ORDER BY numeros.Pays, numeros.Magazine, numeros.Numero";
 
-		$resultats_tranches = DM_Core::$d->requete($requete_tranches, [$id_user]);
+        $resultats_tranches = DM_Core::$d->requete($requete_tranches, [$id_user]);
 
-		if (count($resultats_tranches) === 0) {
+        if (count($resultats_tranches) === 0) {
             return [];
         }
 
@@ -115,8 +115,8 @@ class Edge {
             }
         }
 
-		$resultats_tranches_par_publication = [];
-		foreach($resultats_tranches as $resultat) {
+        $resultats_tranches_par_publication = [];
+        foreach($resultats_tranches as $resultat) {
             $resultats_tranches_par_publication[$resultat['Pays'].'/'.$resultat['Magazine']][$resultat['Numero']] = $resultat;
         }
 
@@ -162,7 +162,7 @@ class Edge {
             }
         }
         return $edgesData;
-	}
+    }
 
     static function get_user_bibliotheque($user) {
         if ($user === '-1') {
@@ -234,24 +234,24 @@ elseif (isset($_POST['get_bibliotheque'])) {
 }
 
 elseif (isset($_POST['get_sous_textures'])) {
-	$id_user=$_SESSION['id_user'];
-	$requete_texture="
-	    SELECT Bibliotheque_Sous_Texture1 as texture1, Bibliotheque_Sous_Texture2 as texture2
-	    FROM users
-	    WHERE ID = '$id_user'
-	";
-	$resultat_texture=DM_Core::$d->requete($requete_texture);
+    $id_user=$_SESSION['id_user'];
+    $requete_texture="
+        SELECT Bibliotheque_Sous_Texture1 as texture1, Bibliotheque_Sous_Texture2 as texture2
+        FROM users
+        WHERE ID = '$id_user'
+    ";
+    $resultat_texture=DM_Core::$d->requete($requete_texture);
     $bookcaseData = ['textures' => [], 'current' => [$resultat_texture[0]['texture1'], $resultat_texture[0]['texture2']]];
 
-	$rep = 'edges/textures/bois';
-	$dir = opendir($rep);
-	while ($f = readdir($dir)) {
-		if( $f!=='.' && $f!=='..') {
-			$nom_sous_texture=substr($f,0, strrpos($f, '.'));
+    $rep = 'edges/textures/bois';
+    $dir = opendir($rep);
+    while ($f = readdir($dir)) {
+        if( $f!=='.' && $f!=='..') {
+            $nom_sous_texture=substr($f,0, strrpos($f, '.'));
             $bookcaseData['textures'][]=$nom_sous_texture;
-		}
-	}
-	sort($bookcaseData['textures']);
+        }
+    }
+    sort($bookcaseData['textures']);
 
     $bookcaseData['sorts'] = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
     $bookcaseData['publicationNames'] = Inducks::get_noms_complets_magazines($bookcaseData['sorts']);
