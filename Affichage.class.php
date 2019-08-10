@@ -5,7 +5,7 @@ class Affichage {
 
     static $niveaux_medailles=[
         'Photographe' => [1 => 50, 2 => 150, 3 => 600],
-        'Concepteur'  => [1 => 20, 2 => 70,  3 => 150],
+        'Createur'  => [1 => 20, 2 => 70,  3 => 150],
         'Duckhunter'  => [1 => 1, 2 => 3,  3 =>  5]
     ];
 
@@ -236,6 +236,16 @@ class Affichage {
                             case 'inscriptions':
                                 self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
                                 ?><?=NEWS_A_COMMENCE_COLLECTION?>
+                            <?php
+                            break;
+                            case 'medaille':
+                                switch($evenement->contribution) {
+                                    case 'photographe': $titre_medaille = TITRE_MEDAILLE_PHOTOGRAPHE; break;
+                                    case 'createur': $titre_medaille = TITRE_MEDAILLE_CREATEUR; break;
+                                    default: break 2;
+                                }
+                                self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
+                                ?><?=sprintf(NEWS_A_OBTENU_MEDAILLE, $titre_medaille, $evenement->niveau)?>
                             <?php
                             break;
                             case 'bouquineries':
@@ -547,7 +557,7 @@ class Affichage {
     public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $nbPhotographies, $nbCreations, $nbBouquineries) {
         $medailles = self::get_medailles([
             'Photographe'=> $nbPhotographies,
-            'Concepteur' => $nbCreations,
+            'Createur' => $nbCreations,
             'Duckhunter' => $nbBouquineries
         ]);
         foreach($medailles as $type=>$cpt_et_niveau) {

@@ -310,7 +310,7 @@ class Database
 
         return Affichage::get_medailles([
             'Photographe' => (int)($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
-            'Concepteur' => (int)($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
+            'Createur' => (int)($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
             'Duckhunter' => (int)($resultat_nb_bouquineries[0] ?? ['cpt' => 0])['cpt']
         ]);
     }
@@ -426,6 +426,35 @@ class Database
                 $evenements->evenements, $evenement, $groupe_courant['DiffSecondes'], 'tranches_pretes', null, $groupe_courant['Collaborateurs']);
         }
 
+        $nouvelles_medailles_affichees = array_filter(array_keys(Affichage::$niveaux_medailles), function($medaille) {
+            return $medaille !== 'Duckhunter'; // TODO duckhunter
+        });
+
+        $requete_nouvelles_medailles = implode(' UNION ', array_map(function($type_medaille) {
+            return implode(' UNION ', array_map(function($niveau) use ($type_medaille) {
+                $limite = Affichage::$niveaux_medailles[$type_medaille][$niveau];
+                $type_medaille = strtolower($type_medaille);
+                return "
+                    select ID_User, contribution, $niveau as niveau, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes
+                    from tranches_pretes_contributions
+                    where contribution = '$type_medaille'
+                      and points_total >= $limite and points_total - points_new < $limite
+                      and DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+                ";
+            }, array_keys(Affichage::$niveaux_medailles[$type_medaille])));
+        }, $nouvelles_medailles_affichees));
+
+        $resultat_nouvelles_medailles = DM_Core::$d->requete($requete_nouvelles_medailles);
+
+        foreach($resultat_nouvelles_medailles as $nouvelle_medaille) {
+            $evenement = [
+                'niveau' => $nouvelle_medaille['niveau'],
+                'contribution' => $nouvelle_medaille['contribution']
+            ];
+            ajouter_evenement(
+                $evenements->evenements, $evenement, $nouvelle_medaille['DiffSecondes'], 'medaille', $nouvelle_medaille['ID_User']);
+        }
+
         $evenements->publicationcodes = array_unique($evenements->publicationcodes);
         ksort($evenements->evenements);
 
@@ -494,7 +523,7 @@ class Database
     public function get_details_collections($idsUtilisateurs)
     {
         $requete_details_collections = "
-            SELECT 
+            SELECT
                 users.ID AS ID_Utilisateur, users.username AS Username, users.AccepterPartage,
                 COUNT(DISTINCT numeros.Pays) AS NbPays,
                 COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines,
@@ -513,7 +542,7 @@ class Database
                  SELECT COUNT(bouquineries.Nom) FROM bouquineries
                  WHERE bouquineries.ID_Utilisateur=users.ID AND bouquineries.Actif=1
                 ) AS NbBouquineries
-            FROM users            
+            FROM users
             LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
             WHERE users.ID IN (" . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ")
             GROUP BY users.ID";
