@@ -381,8 +381,9 @@ class Database
 
         /* Propositions de bouquineries */
         $requete_bouquineries = '
-            SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
+            SELECT uc.ID_user, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
             FROM bouquineries
+            INNER JOIN users_contributions uc ON bouquineries.ID = uc.ID_bookstore
             WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 
         $resultat_bouquineries = DM_Core::$d->requete($requete_bouquineries);
@@ -649,9 +650,12 @@ if (isset($_POST['database'])) {
         DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
             . 'WHERE ID_user=' . $id_user . ' AND NomAuteurAbrege = \'' . $_POST['auteur'] . '\'');
     } else if (isset($_POST['liste_bouquineries'])) {
-        $requete_bouquineries = 'SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\'' . SIGNALE_PAR . '\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
-            . 'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
-            . 'WHERE Actif=1';
+        $requete_bouquineries = '
+            SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\'' . SIGNALE_PAR . '\',IFNULL(username,\'' . UN_VISITEUR_ANONYME . '\')) AS Signature 
+            FROM bouquineries
+            LEFT JOIN users_contributions uc ON bouquineries.ID = uc.ID_bookstore
+            LEFT JOIN users ON uc.ID_User=users.ID
+            WHERE Actif=1';
         $resultat_bouquineries = DM_Core::$d->requete($requete_bouquineries);
         header('Content-type: application/json');
         echo json_encode($resultat_bouquineries);

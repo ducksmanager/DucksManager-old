@@ -509,6 +509,7 @@ define('TRANCHE_NON_DISPONIBLE3','Envoyez-nous une photo et gagnez');
 define('TRAVAUX_SECTION','Cette section est en travaux !');
 define('TYPE_LISTE','Type de liste');
 define('TYPE_LISTE_GLOBAL','Type de liste global');
+define('UN_VISITEUR_ANONYME','un visiteur anonyme');
 define('UTILISATEUR_INVALIDE','Le nom d\'utilisateur est invalide. Choisissez un nom d\'utilisateur d\'au moins 3 caractères contenant seulement des lettres, des chiffres et des tirets.');
 define('UTILISATEUR_EXISTANT','Ce nom d\'utilisateur est déjà utilisé !');
 define('UTILISATEUR_VALIDE','Utilisateur valide');

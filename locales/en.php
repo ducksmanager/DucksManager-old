@@ -508,6 +508,7 @@ define('TRANCHE_NON_DISPONIBLE3','Send it to us and earn');
 define('TRAVAUX_SECTION','This page is under (re)construction !');
 define('TYPE_LISTE','List type');
 define('TYPE_LISTE_GLOBAL','Global list type');
+define('UN_VISITEUR_ANONYME','an anonymous visitor');
 define('UTILISATEUR_INVALIDE','Invalid username. Choose a username with at least 3 characters and containing only letters, digits and dashes.');
 define('UTILISATEUR_EXISTANT','This username is already in use!');
 define('UTILISATEUR_VALIDE','Valid username');
