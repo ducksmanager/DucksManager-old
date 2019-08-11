@@ -242,6 +242,7 @@ class Affichage {
                                 switch($evenement->contribution) {
                                     case 'photographe': $titre_medaille = TITRE_MEDAILLE_PHOTOGRAPHE; break;
                                     case 'createur': $titre_medaille = TITRE_MEDAILLE_CREATEUR; break;
+                                    case 'duckhunter': $titre_medaille = TITRE_MEDAILLE_DUCKHUNTER; break;
                                     default: break 2;
                                 }
                                 self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
@@ -480,7 +481,14 @@ class Affichage {
         <div class="cache tooltip_content">
             <h4><?=$nom_utilisateur?></h4>
             <div>
-                <?php self::afficher_stats_collection($infos_utilisateur['NbPays'], $infos_utilisateur['NbMagazines'], $infos_utilisateur['NbNumeros'], $infos_utilisateur['NbPointsPhotographe'], $infos_utilisateur['NbPointsCreateur'], $infos_utilisateur['NbBouquineries']) ?>
+                <?php self::afficher_stats_collection(
+                    $infos_utilisateur['NbPays'],
+                    $infos_utilisateur['NbMagazines'],
+                    $infos_utilisateur['NbNumeros'],
+                    $infos_utilisateur['Points']['Photographe'],
+                    $infos_utilisateur['Points']['Createur'],
+                    $infos_utilisateur['Points']['Duckhunter']
+                )?>
                 <?php if ($infos_utilisateur['AccepterPartage'] === '1') {?>
                     <div class="lien_bibliotheque">
                         <img src="images/bibliotheque.png" />&nbsp;
@@ -541,13 +549,14 @@ class Affichage {
             . POSSESSION_MAGAZINES_3 . ' ' . $nb_pays . ' ' .  PAYS. '.';
     }
 
-    public static function get_medailles($nbPhotographiesCreationsBouquineries) {
-        $points_et_niveaux=[];
-        foreach($nbPhotographiesCreationsBouquineries as $type=>$points) {
-            $points_et_niveaux[$type]= ['Cpt'=>$points, 'Niveau' => 0];
-            foreach (self::$niveaux_medailles[$type] as $niveau=> $points_min) {
-                if ($points >= $points_min) {
-                    $points_et_niveaux[$type]['Niveau']=$niveau;
+    public static function get_medailles($points)
+    {
+        $points_et_niveaux = [];
+        foreach ($points as $contribution => $points_contribution) {
+            $points_et_niveaux[$contribution] = ['Cpt' => $points_contribution, 'Niveau' => 0];
+            foreach (self::$niveaux_medailles[$contribution] as $niveau => $points_min) {
+                if ($points_contribution >= $points_min) {
+                    $points_et_niveaux[$contribution]['Niveau'] = $niveau;
                 }
             }
         }

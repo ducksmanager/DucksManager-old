@@ -7,7 +7,7 @@ var textures;
 var popularite_numeros = [];
 var user_points = 0;
 var niveau_actuel = 0;
-var niveaux_medailles = {};
+var niveaux_medailles_photographe = {};
 var est_contexte_bibliotheque = false;
 
 var l10n_recherche = [
@@ -261,9 +261,9 @@ function charger_points_utilisateur(callback) {
         {database: 'true', get_points: 'true'},
         function(response) {
             user_points = response.points;
-            niveaux_medailles = response.niveaux_medailles;
+            niveaux_medailles_photographe = response.niveaux_medailles_photographe;
 
-            jQuery.each(niveaux_medailles, function(i, niveau_medaille) {
+            jQuery.each(niveaux_medailles_photographe, function(i, niveau_medaille) {
                 if (user_points > niveau_medaille) {
                     niveau_actuel = parseInt(i);
                 }
@@ -708,8 +708,8 @@ jQuery.fn.ajouterPropositionPhoto = function(progressWrapperTemplate, data, afte
         element.append(progressWrapper);
     }
 
-    var points_niveau_actuel=niveaux_medailles[niveau_actuel] || 0;
-    var points_niveau_objectif=niveaux_medailles[niveau_actuel+1];
+    var points_niveau_actuel=niveaux_medailles_photographe[niveau_actuel] || 0;
+    var points_niveau_objectif=niveaux_medailles_photographe[niveau_actuel+1];
 
     progressWrapper
         .afficher_medailles(niveau_actuel);
