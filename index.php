@@ -390,7 +390,7 @@ switch($action) {
     <?php if (!isset($_GET['action'])) {?>
         <div class="welcome">
         <h2><?=BIENVENUE?></h2>
-        <h5>The reference website for Disney comic book collectors</h5>
+        <h5><?=ACCROCHE?></h5>
         </div><?php
     }
     ?>
