@@ -1259,13 +1259,13 @@ switch($action) {
                 <hr />
                 <div class="row">
                     <div class="col-md-offset-1 col-lg-5">
+                        <video src="./demos/whattheduck_demo.mp4" autoplay muted loop></video>
+                    </div>
+                    <div class="col-lg-5">
                         <h3><?=PRESENTATION_WHATTHEDUCK_TITRE?></h3>
                         <div><?=PRESENTATION_WHATTHEDUCK_1?><a href="https://play.google.com/store/apps/details?id=net.ducksmanager.whattheduck"><b>What The Duck</b></a><?=PRESENTATION_WHATTHEDUCK_2?>
                         </div>
                         <?=PRESENTATION_WHATTHEDUCK_3?>
-                    </div>
-                    <div class="col-lg-5">
-                        <video src="./demos/whattheduck_demo.mp4" autoplay muted loop></video>
                     </div>
                 </div>
                 <div style="margin-right: 6px; text-align: center;">
