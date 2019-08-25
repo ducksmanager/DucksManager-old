@@ -302,7 +302,8 @@ switch($action) {
             $radius = 42;
             $circonference = M_PI * $radius * 2;
 
-            $niveaux=DM_Core::$d->get_niveaux();
+            $points=DM_Core::$d->get_points([$_SESSION['id_user']]);
+            $niveaux = Affichage::get_medailles($points[$_SESSION['id_user']]);
             foreach($niveaux as $type=>$cpt_et_niveau) {
                 if ($cpt_et_niveau['Cpt'] > 0) {
                     $cpt=$cpt_et_niveau['Cpt'];
@@ -708,8 +709,9 @@ switch($action) {
 
                 case 'contributeurs':
                     $requete_contributeurs_internes = "
-                            SELECT distinct ID, username AS Nom, '' AS Texte from users
-                            inner join tranches_pretes_contributeurs c on users.ID = c.contributeur";
+                            SELECT distinct users.ID, users.username AS Nom, '' AS Texte from users
+                            inner join users_contributions c on users.ID = c.ID_user
+                            where c.contribution IN ('photographe', 'createur')";
                     $contributeurs_internes = DM_Core::$d->requete($requete_contributeurs_internes);
 
                     $ids_contributeurs_internes = array_map(function($contributeur) {

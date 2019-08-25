@@ -293,26 +293,36 @@ class Database
         return $l_magazine;
     }
 
-    function get_niveaux()
+    function get_points(array $idsUtilisateurs)
     {
-        $requete_nb_photographies = "
-            SELECT NbPoints AS cpt FROM users_points up
-            WHERE up.TypeContribution = 'photographe' AND up.ID_Utilisateur = {$_SESSION['id_user']}";
-        $resultat_nb_photographies = DM_Core::$d->requete($requete_nb_photographies);
+        $requete_points = '
+            select type_contribution.contribution, ids_users.ID_User, ifnull(contributions_utilisateur.points_total, 0) as points_total
+            from (
+             select \'photographe\' as contribution
+             union
+             select \'createur\' as contribution
+             union
+             select \'duckhunter\' as contribution
+            ) as type_contribution
+            join (
+                SELECT ID AS ID_User
+                FROM users 
+                WHERE ID IN(' . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ')
+            ) AS ids_users
+            left join (
+                SELECT uc.ID_User, uc.contribution, sum(points_new) as points_total
+                FROM users_contributions uc
+                GROUP BY uc.ID_User, uc.contribution
+            ) as contributions_utilisateur
+                ON type_contribution.contribution = contributions_utilisateur.contribution
+               AND ids_users.ID_User = contributions_utilisateur.ID_user';
+        $resultats_points = DM_Core::$d->requete($requete_points, $idsUtilisateurs);
 
-        $requete_nb_creations = "
-            SELECT NbPoints AS cpt FROM users_points up
-            WHERE up.TypeContribution = 'createur' AND up.ID_Utilisateur = {$_SESSION['id_user']}";
-        $resultat_nb_creations = DM_Core::$d->requete($requete_nb_creations);
-
-        $requete_nb_bouquineries = 'SELECT COUNT(Nom) AS cpt FROM bouquineries WHERE Actif=1 AND ID_Utilisateur=?';
-        $resultat_nb_bouquineries = DM_Core::$d->requete($requete_nb_bouquineries, [$_SESSION['id_user']]);
-
-        return Affichage::get_medailles([
-            'Photographe' => (int)($resultat_nb_photographies[0] ?? ['cpt' => 0])['cpt'],
-            'Concepteur' => (int)($resultat_nb_creations[0] ?? ['cpt' => 0])['cpt'],
-            'Duckhunter' => (int)($resultat_nb_bouquineries[0] ?? ['cpt' => 0])['cpt']
-        ]);
+        $points = [];
+        foreach($resultats_points as $resultat_points) {
+            $points[$resultat_points['ID_User']][ucfirst($resultat_points['contribution'])] = (int) $resultat_points['points_total'];
+        }
+        return $points;
     }
 
     function get_evenements_recents()
@@ -371,8 +381,9 @@ class Database
 
         /* Propositions de bouquineries */
         $requete_bouquineries = '
-            SELECT bouquineries.ID_Utilisateur, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
+            SELECT uc.ID_user, bouquineries.Nom AS Nom, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(DateAjout)) AS DiffSecondes
             FROM bouquineries
+            INNER JOIN users_contributions uc ON bouquineries.ID = uc.ID_bookstore
             WHERE Actif=1 AND DateAjout > date_add(now(), interval -1 month)';
 
         $resultat_bouquineries = DM_Core::$d->requete($requete_bouquineries);
@@ -384,15 +395,15 @@ class Database
 
         /* Ajouts de tranches */
         $requete_tranches = "
-            SELECT publicationcode, issuenumber, GROUP_CONCAT(contributeur) AS collaborateurs, DATE(dateajout) DateAjout,
-               (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(dateajout)) AS DiffSecondes,
-               CONCAT(publicationcode,'/',issuenumber) AS Numero
-            FROM tranches_pretes
-            INNER JOIN tranches_pretes_contributeurs USING (publicationcode, issuenumber)
-            WHERE DateAjout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
-              AND NOT (publicationcode = 'fr/JM' AND issuenumber REGEXP '^[0-9]+$')
-            GROUP BY publicationcode, issuenumber
-            ORDER BY DateAjout DESC, collaborateurs";
+            SELECT tp.publicationcode, tp.issuenumber, GROUP_CONCAT(tpc.ID_user) AS collaborateurs, DATE(tp.dateajout) DateAjout,
+               (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes,
+               CONCAT(tp.publicationcode,'/',tp.issuenumber) AS Numero
+            FROM tranches_pretes tp
+            INNER JOIN users_contributions tpc ON tpc.ID_tranche = tp.ID
+            WHERE tp.dateajout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+              AND NOT (tp.publicationcode = 'fr/JM' AND tp.issuenumber REGEXP '^[0-9]+$')
+            GROUP BY tp.dateajout, tp.publicationcode, tp.issuenumber
+            ORDER BY tp.dateajout DESC, collaborateurs";
 
         $resultat_tranches = DM_Core::$d->requete($requete_tranches);
         $groupe_precedent = null;
@@ -424,6 +435,31 @@ class Database
         if (count($resultat_tranches) > 0) {
             ajouter_evenement(
                 $evenements->evenements, $evenement, $groupe_courant['DiffSecondes'], 'tranches_pretes', null, $groupe_courant['Collaborateurs']);
+        }
+
+        $requete_nouvelles_medailles = implode(' UNION ', array_map(function($type_medaille) {
+            return implode(' UNION ', array_map(function($niveau) use ($type_medaille) {
+                $limite = Affichage::$niveaux_medailles[$type_medaille][$niveau];
+                $type_medaille = strtolower($type_medaille);
+                return "
+                    select ID_User, contribution, $niveau as niveau, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(date)) AS DiffSecondes
+                    from users_contributions
+                    where contribution = '$type_medaille'
+                      and points_total >= $limite and points_total - points_new < $limite
+                      and date > DATE_ADD(NOW(), INTERVAL -1 MONTH)
+                ";
+            }, array_keys(Affichage::$niveaux_medailles[$type_medaille])));
+        }, array_keys(Affichage::$niveaux_medailles)));
+
+        $resultat_nouvelles_medailles = DM_Core::$d->requete($requete_nouvelles_medailles);
+
+        foreach($resultat_nouvelles_medailles as $nouvelle_medaille) {
+            $evenement = [
+                'niveau' => $nouvelle_medaille['niveau'],
+                'contribution' => $nouvelle_medaille['contribution']
+            ];
+            ajouter_evenement(
+                $evenements->evenements, $evenement, $nouvelle_medaille['DiffSecondes'], 'medaille', $nouvelle_medaille['ID_User']);
         }
 
         $evenements->publicationcodes = array_unique($evenements->publicationcodes);
@@ -493,54 +529,29 @@ class Database
 
     public function get_details_collections($idsUtilisateurs)
     {
-        $requete_details_collections = "
-            SELECT 
+        $requete_details_collections = '
+            SELECT
                 users.ID AS ID_Utilisateur, users.username AS Username, users.AccepterPartage,
                 COUNT(DISTINCT numeros.Pays) AS NbPays,
                 COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines,
-                COUNT(numeros.Numero) AS NbNumeros,
-                (SELECT IFNULL((
-                 SELECT NbPoints FROM users_points users_points_photographe
-                 WHERE users_points_photographe.ID_Utilisateur = users.ID
-                   AND users_points_photographe.TypeContribution = 'photographe'
-                ), 0)) AS NbPointsPhotographe,
-                (SELECT IFNULL((
-                 SELECT NbPoints FROM users_points users_points_createur
-                 WHERE users_points_createur.ID_Utilisateur = users.ID
-                   AND users_points_createur.TypeContribution = 'createur'
-                ), 0)) AS NbPointsCreateur,
-                (
-                 SELECT COUNT(bouquineries.Nom) FROM bouquineries
-                 WHERE bouquineries.ID_Utilisateur=users.ID AND bouquineries.Actif=1
-                ) AS NbBouquineries
-            FROM users            
+                COUNT(numeros.Numero) AS NbNumeros
+            FROM users
             LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
-            WHERE users.ID IN (" . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ")
-            GROUP BY users.ID";
+            WHERE users.ID IN (' . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ')
+            GROUP BY users.ID';
 
         $resultats = DM_Core::$d->requete($requete_details_collections, $idsUtilisateurs);
-        return array_combine(array_map(function ($resultat) {
+        $stats_utilisateurs = array_combine(array_map(function ($resultat) {
             return $resultat['ID_Utilisateur'];
         }, $resultats), array_values($resultats));
-    }
 
-    public function get_points_courants($id_user)
-    {
-        $requete_points_courants = "
-            SELECT
-                TypeContribution,
-                NbPoints
-            FROM users_points
-            WHERE ID_Utilisateur=$id_user";
-
-        $resultats = DM_Core::$d->requete($requete_points_courants);
-        $points = ['photographe' => 0, 'createur' => 0];
-        foreach ($resultats as $resultat) {
-            $points[$resultat['TypeContribution']] = (int)$resultat['NbPoints'];
+        $points_utilisateurs = $this->get_points($idsUtilisateurs);
+        foreach($stats_utilisateurs as $idUtilisateur => &$stat_utilisateur) {
+            $stat_utilisateur['Points'] = $points_utilisateurs[$idUtilisateur];
         }
-        return $points;
-    }
 
+        return $stats_utilisateurs;
+    }
 }
 
 if (isset($_POST['database'])) {
@@ -639,20 +650,22 @@ if (isset($_POST['database'])) {
         DM_Core::$d->requete('DELETE FROM auteurs_pseudos '
             . 'WHERE ID_user=' . $id_user . ' AND NomAuteurAbrege = \'' . $_POST['auteur'] . '\'');
     } else if (isset($_POST['liste_bouquineries'])) {
-        $requete_bouquineries = 'SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\'' . SIGNALE_PAR . '\',IFNULL(username,\'un visiteur anonyme\')) AS Signature FROM bouquineries '
-            . 'LEFT JOIN users ON bouquineries.ID_Utilisateur=users.ID '
-            . 'WHERE Actif=1';
+        $requete_bouquineries = '
+            SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\'' . SIGNALE_PAR . '\',IFNULL(username,\'' . UN_VISITEUR_ANONYME . '\')) AS Signature 
+            FROM bouquineries
+            LEFT JOIN users_contributions uc ON bouquineries.ID = uc.ID_bookstore
+            LEFT JOIN users ON uc.ID_User=users.ID
+            WHERE Actif=1';
         $resultat_bouquineries = DM_Core::$d->requete($requete_bouquineries);
         header('Content-type: application/json');
         echo json_encode($resultat_bouquineries);
     } else if (isset($_POST['get_points'])) {
         $id_user = $_SESSION['id_user'];
-        $niveauxMedaillesPhotographe = Affichage::$niveaux_medailles['Photographe'];
-        $pointsActuels = DM_Core::$d->get_points_courants($id_user);
+        $pointsActuels = DM_Core::$d->get_points([$id_user]);
         header('Content-type: application/json');
         echo json_encode([
-            'niveaux_medailles' => Affichage::$niveaux_medailles['Photographe'],
-            'points' => $pointsActuels['photographe']
+            'niveaux_medailles_photographe' => Affichage::$niveaux_medailles['Photographe'],
+            'points' => $pointsActuels[$id_user]['Photographe']
         ]);
     } else { // Vérification de l'utilisateur
         if (DM_Core::$d->user_exists($_POST['user'])) {
