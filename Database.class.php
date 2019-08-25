@@ -402,7 +402,7 @@ class Database
             INNER JOIN users_contributions tpc ON tpc.ID_tranche = tp.ID
             WHERE tp.dateajout > DATE_ADD(NOW(), INTERVAL -1 MONTH)
               AND NOT (tp.publicationcode = 'fr/JM' AND tp.issuenumber REGEXP '^[0-9]+$')
-            GROUP BY tp.publicationcode, tp.issuenumber
+            GROUP BY tp.dateajout, tp.publicationcode, tp.issuenumber
             ORDER BY tp.dateajout DESC, collaborateurs";
 
         $resultat_tranches = DM_Core::$d->requete($requete_tranches);
