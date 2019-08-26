@@ -595,10 +595,6 @@ class Affichage {
                     <img id="light" src="vert.png" alt="O" />&nbsp;
                     <span><?=$_SESSION['user']?></span><?php
                 }
-                else {?>
-                    <img id="light" src="rouge.png" alt="X" />&nbsp;
-                    <a href="?action=open"><?=NON_CONNECTE?></a><?php
-                }
             ?>
             </div>
         </div><?php

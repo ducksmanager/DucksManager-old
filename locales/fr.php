@@ -363,7 +363,6 @@ define('NIVEAU','niveau');
 define('NOM_BOUQUINERIE','Nom de la bouquinerie');
 define('NOM_UTILISATEUR','Nom d\'utilisateur');
 define('NON','Non');
-define('NON_CONNECTE','Non connecté(e)');
 define('NOUVEAU','Nouveau!');
 define('NOUVEAU_MAGAZINE','Nouveau magazine');
 define('NOUVEL_ACHAT','Nouvel achat');
