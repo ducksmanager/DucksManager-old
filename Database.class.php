@@ -293,8 +293,11 @@ class Database
         return $l_magazine;
     }
 
-    function get_points(array $idsUtilisateurs)
+    function get_points(array $idsUtilisateurs) : array
     {
+        if (empty($idsUtilisateurs)) {
+            return [];
+        }
         $requete_points = '
             select type_contribution.contribution, ids_users.ID_User, ifnull(contributions_utilisateur.points_total, 0) as points_total
             from (
