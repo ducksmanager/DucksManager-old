@@ -427,6 +427,7 @@ class Database
                 $evenement['numeros'][] = $numero_complet;
             } else {
                 if (!is_null($evenement)) {
+                    sort($evenement['numeros']);
                     ajouter_evenement(
                         $evenements->evenements, $evenement, $groupe_precedent['DiffSecondes'], 'tranches_pretes', null, $groupe_precedent['Collaborateurs']);
                 }
