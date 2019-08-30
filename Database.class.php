@@ -173,7 +173,7 @@ class Database
         }
     }
 
-    function toList($id_user = false)
+    function toList($id_user)
     {
         $resultats_numeros = Dm_Core::$d->requete('
             SELECT Pays, Magazine, REGEXP_REPLACE(Numero, \'[ ]+\', \' \') AS Numero, Etat, AV, achats.ID_Acquisition AS ID_Acquisition, achats.Date AS Date_Acquisition, achats.Description AS Description_Acquisition
