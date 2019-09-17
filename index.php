@@ -295,13 +295,13 @@ switch($action) {
 }
 ?>">
 <div id="menu">
-    <div id="medailles_et_login">
-        <?php
+    <div id="medailles_et_login"><?php
         if (isset($_SESSION['user']) && $action !== 'logout') {
             ?><div id="medailles"><?php
             $radius = 42;
             $circonference = M_PI * $radius * 2;
 
+            DmClient::get_service_results_for_dm('POST', '/collection/lastvisit');
             $points=DM_Core::$d->get_points([$_SESSION['id_user']]);
             $niveaux = Affichage::get_medailles($points[$_SESSION['id_user']]);
             foreach($niveaux as $type=>$cpt_et_niveau) {
@@ -325,8 +325,7 @@ switch($action) {
                             $diff_niveau_suivant,
                             constant('MEDAILLE_'.($niveau+1))
                         );
-                    }
-                    ?>
+                    } ?>
                     <div class="overlay">
                         <div class="title" title="<?=$title?>"></div><?php
                         if ($niveau < 3) {

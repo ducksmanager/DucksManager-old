@@ -300,13 +300,9 @@ class Database
         }
         $requete_points = '
             select type_contribution.contribution, ids_users.ID_User, ifnull(contributions_utilisateur.points_total, 0) as points_total
-            from (
-             select \'photographe\' as contribution
-             union
-             select \'createur\' as contribution
-             union
-             select \'duckhunter\' as contribution
-            ) as type_contribution
+            from ('.implode(' union ', array_map(function($medalType) {
+                return "select '$medalType' as contribution";
+            }, array_keys(Affichage::$niveaux_medailles))).') as type_contribution
             join (
                 SELECT ID AS ID_User
                 FROM users 
