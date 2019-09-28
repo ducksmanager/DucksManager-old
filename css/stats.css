@@ -14,13 +14,26 @@
     height: 500px !important;
 }
 
-#suggestions ul.liste_histoires {
-    margin: 0;
+ul.liste_histoires {
+    margin: 5px 0 10px 0 !important;
+    list-style: none;
+}
+
+ul.liste_histoires.no-indent {
+    padding-left: 0;
+}
+
+ul.liste_histoires li {
+    margin: 5px 0;
+}
+
+ul.liste_histoires li a {
+    font-weight: bold;
 }
 
 #suggestions .numero {
     display: inline-block;
-    margin-top: 20px;
+    margin: 20px 0 10px 0;
 }
 
 #suggestions .numero.top1 {
@@ -34,6 +47,11 @@
 #suggestions .numero.top3 {
     font-size: large;
 }
+#suggestions.small-titles .numero {
+    font-size: initial !important;
+    margin: 10px 0 !important;
+}
+
 #liste_notations .nom_auteur,
 #liste_notations .notation_auteur,
 #liste_notations .supprimer_auteur {

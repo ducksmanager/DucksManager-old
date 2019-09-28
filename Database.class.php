@@ -505,26 +505,19 @@ class Database
      */
     public function get_tranches_collection_ajoutees($id_user, $depuis_derniere_visite = false)
     {
-        if ($depuis_derniere_visite) {
-            $derniere_visite = Util::get_derniere_visite_utilisateur();
-            if (is_null($derniere_visite)) {
-                return [];
-            }
-            $derniere_visite_str = $derniere_visite->format('Y-m-d H:i:s');
-        } else {
-            $derniere_visite_str = '0000-00-00';
-        }
-
+        $conditionDateAjout = $depuis_derniere_visite
+            ? 'AND tp.dateajout>(SELECT ifnull(u.PrecedentAcces, current_date) FROM users u WHERE u.id = :user_id)'
+            : '';
         return DM_Core::$d->requete("
           SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
           FROM tranches_pretes tp, numeros n
-          WHERE n.ID_Utilisateur = ?
+          WHERE n.ID_Utilisateur = :user_id
             AND CONCAT(publicationcode,'/',issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
             AND DATEDIFF(NOW(), tp.dateajout) < 90
-            AND tp.dateajout>?
-          ORDER BY DiffSecondes ASC
+            $conditionDateAjout
+          ORDER BY DiffSecondes
           LIMIT 5"
-            , [$id_user, $derniere_visite_str]);
+            , [':user_id' => $id_user]);
     }
 
     public function get_details_collections($idsUtilisateurs)

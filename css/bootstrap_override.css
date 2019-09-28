@@ -105,3 +105,35 @@ input.form-control {
     line-height: 25px;
     font-size: 14px;
 }
+
+.badge {
+    background-color: #337ab7;
+}
+
+.panel-body a {
+    font-weight: bold;
+}
+
+.panel-body .footer {
+    padding-top: 20px;
+    font-size: 12px;
+}
+
+.panel-body a:hover, .panel-body a:focus {
+    text-decoration: underline;
+}
+
+.panel-title a:before {
+    font-family:'Glyphicons Halflings';
+    content:"\e113";
+    float:right;
+    font-size:12px;
+    font-weight:300;
+}
+.panel-title a.collapsed:before {
+    content:"\e114";
+}
+
+.glyphicon-info-sign {
+    color: #337ab7;
+}

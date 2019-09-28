@@ -152,19 +152,19 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
             $_GET['action'] = '';
         }
         switch($_GET['action']) {
-        case 'gerer':
-            ?><script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script>
-        <link rel="stylesheet" type="text/css" href="css/menu_contextuel.css?VERSION" />
+        case 'gerer': ?>
+            <script type="text/javascript" src="js/menu_contextuel.js?VERSION"></script>
+            <link rel="stylesheet" type="text/css" href="css/menu_contextuel.css?VERSION" />
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css" /><?php
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css" /><?php
         break;
         case 'bouquineries': ?>
             <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
-        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+            <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
             <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.4/mapbox-gl-geocoder.min.js'></script>
-        <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.4/mapbox-gl-geocoder.css' type='text/css' />
-        <link href='css/bouquineries.css' rel='stylesheet' /><?php
+            <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.4/mapbox-gl-geocoder.css' type='text/css' />
+            <link href='css/bouquineries.css' rel='stylesheet' /><?php
         break;
         case 'bibliotheque':
         if (isset($_GET['user'])) {
@@ -180,7 +180,7 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
             : 'affichage';
         ?>
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/sortable.css" />
+            <link rel="stylesheet" type="text/css" href="css/sortable.css" />
             <script type="text/javascript">
                 var user_bibliotheque = <?=is_null($user_bibliotheque) ? -1 : "'".$user_bibliotheque."'"?>;
                 var est_partage_bibliotheque = <?=$est_partage_bibliotheque ? 1 : 0?>;
@@ -193,18 +193,15 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
                 }
                 ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
 
-            switch($_GET['onglet']) {
-            case 'auteurs': ?>
-            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/src/css/star-rating-svg.min.css" />
-                <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"></script><?php
-                break;
-            }
-                break;
+                if ($_GET['onglet'] === 'auteurs'){ ?>
+                    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/src/css/star-rating-svg.min.css"/>
+                    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/star-rating-svg@3.5.0/dist/jquery.star-rating-svg.min.js"></script><?php
+                }
+            break;
             case 'agrandir':
                 ?><script type="text/javascript" src="js/stats.js?VERSION"></script><?php
         }
-    }
-    ?>
+    } ?>
 </head><?php
 $texte_debut='';
 if ($action==='demo') {
@@ -363,11 +360,9 @@ switch($action) {
         <div id="evenements"><?= CHARGEMENT ?></div>
     </div>
 
-    <div class="menu-list">
-        <?php
+    <div class="menu-list"><?php
         Menu::$action=$action;
-        Menu::afficherMenus($menus);
-        ?>
+        Menu::afficherMenus($menus); ?>
     </div>
 </div>
 <div id="zone_logo1">
@@ -385,15 +380,13 @@ switch($action) {
             <img src="/images/google-play-badge-<?=$_SESSION['lang']?>.png" />
         </a>
         </div><?php
-    }
-    ?>
-    <?php if (!isset($_GET['action'])) {?>
+    } ?><?php
+    if (!isset($_GET['action'])) {?>
         <div class="welcome">
         <h2><?=BIENVENUE?></h2>
         <h5><?=ACCROCHE?></h5>
         </div><?php
-    }
-    ?>
+    } ?>
     <div id="contenu">
         <?php
         echo $texte_debut;
@@ -975,11 +968,12 @@ switch($action) {
                                 <?= COLLECTION_CLIQUER_NOUVEAU_MAGAZINE ?><br/><br/><?php
                             }
                         } else {
+                            include_once 'Stats.class.php';
+                            Stats::showSuggestedPublications('ALL', true);
+                            Affichage::afficher_dernieres_tranches_publiees();
                             ?><?= POSSESSION_MAGAZINES_INTRO ?>
                             <?php Affichage::afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros); ?>
-                            <br/><?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/>
-                            <br/><?php
-                            Affichage::afficher_dernieres_tranches_publiees();
+                            <br/><?= CLIQUEZ_SUR_MAGAZINE_POUR_EDITER ?><br/><br/><?php
                         } ?>
                         <div id="recherche_histoire">
                             <?= RECHERCHER_GENERAL ?><br/>
@@ -1102,11 +1096,10 @@ switch($action) {
                                 <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
                                     <option id="chargement_pays"><?=CHARGEMENT?>
                                 </select>
-                                <div id="suggestions"><?php
+                                <?php
                                 include_once 'Stats.class.php';
                                 $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
                                 Stats::showSuggestedPublications($pays);
-                                ?></div><?php
                             }
                         }
                         else {
@@ -1129,11 +1122,11 @@ switch($action) {
         $erreur = false;
         foreach (['nom', 'adresse_complete', 'coordX', 'coordY', 'commentaire'] as $champ) {
         if (empty($_POST[$champ])) {
-        $erreur = true;?>
-        <div class="alert alert-danger">
-            <?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?>
-        </div><?php
-        }
+            $erreur = true;?>
+            <div class="alert alert-danger">
+                <?= CHAMP_OBLIGATOIRE_1 . ucfirst($champ) . CHAMP_OBLIGATOIRE_2 ?>
+            </div><?php
+            }
         }
         if (!$erreur) {
             $requete = '

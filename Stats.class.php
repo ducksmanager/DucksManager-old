@@ -239,7 +239,7 @@ class Stats {
         ];
     }
 
-    static function showSuggestedPublications($pays) {
+    static function showSuggestedPublications($pays, $sinceLastVisit = false) {
         $statsHasInit = count(DM_Core::$d->requete(
             'SELECT 1 FROM auteurs_pseudos WHERE ID_user=?',
         [$_SESSION['id_user']],
@@ -247,14 +247,23 @@ class Stats {
         )) > 0;
 
         if ($statsHasInit) {
-            $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues', is_null($pays) ? [] : [$pays]);
+            $suggestions = DmClient::get_service_results_for_dm('GET', '/collection/stats/suggestedissues',
+                array_merge(
+                    is_null($pays) ? ['ALL'] : [$pays],
+                    $sinceLastVisit ? ['since_previous_visit'] : ['_'],
+                )
+            );
 
             if (!isset($suggestions->issues) || count(get_object_vars($suggestions->issues)) === 0) {
-                ?><br /><?=AUCUNE_SUGGESTION?><?php
+                if (!$sinceLastVisit) {
+                    ?><br /><?=AUCUNE_SUGGESTION?><?php
+                }
             }
             else {
                 $minScore = $suggestions->minScore;
                 $maxScore = $suggestions->maxScore;
+
+                ob_start();
 
                 foreach($suggestions->issues as $issuecode => $issue) {
                     $publicationcode = $issue->publicationcode;
@@ -272,20 +281,28 @@ class Stats {
                     </div>
                     <ul class="liste_histoires"><?php
                     foreach($issue->stories as $author => $storiesOfAuthor) {
-                        ?><li>
-                            <div>
-                                <?=implode(' ', [count($storiesOfAuthor), count($storiesOfAuthor) === 1 ? HISTOIRE_INEDITE : HISTOIRES_INEDITES, DE, $suggestions->authors->$author])?>
-                            </div>
-                            <ul class="liste_histoires"><?php
-                              foreach($storiesOfAuthor as $storyCode) {
-                                ?><li><?php
-                                  Affichage::afficher_texte_histoire($storyCode, @$suggestions->storyDetails->$storyCode->title, @$suggestions->storyDetails->$storyCode->storycomment);
-                                ?></li><?php
-                              }?>
-                            </ul>
-                        </li><?php
-                    }
-                    ?></ul><?php
+                        foreach($storiesOfAuthor as $storyCode) {?>
+                            <li>
+                                <div class="badge"><?=$suggestions->authors->$author?></div>&nbsp;<?php
+                                Affichage::afficher_texte_histoire($storyCode, @$suggestions->storyDetails->$storyCode->title, @$suggestions->storyDetails->$storyCode->storycomment); ?>
+                            </li><?php
+                        }
+                    } ?>
+                    </ul><?php
+                }
+
+                $suggestionsText = ob_get_clean();
+
+                if ($sinceLastVisit) {
+                    Affichage::accordeon(
+                        'suggestions-accordion',
+                        'Since your last visit, '.count(get_object_vars($suggestions->issues)).' issues have been released with stories that you don\'t possess from your favorite authors',
+                        '<div id="suggestions" class="small-titles">'.$suggestionsText.'</div>',
+                        '<div><a href="/?action=agrandir">See all the suggestions for my collection</a></div>'
+                    );
+                }
+                else {?>
+                    <div id="suggestions"><?=$suggestionsText?></div><?php
                 }
             }
         }

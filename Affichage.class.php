@@ -334,23 +334,44 @@ class Affichage {
         $nb_nouvelles_tranches = count($resultat_tranches_collection_ajoutees);
 
         if ($nb_nouvelles_tranches > 0) {
-            ?>
-            <div class="alert alert-info">
-            <?php
-            $premiere_tranche = $resultat_tranches_collection_ajoutees[0];
-            $magazines_complets = Inducks::get_noms_complets_magazines([$premiere_tranche['publicationcode']]);
-            echo sprintf(
-                $nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE : BIBLIOTHEQUE_NOUVELLES_TRANCHES,
-                $nb_nouvelles_tranches,
-                self::get_texte_numero_multiple(
-                    explode('/', $premiere_tranche['publicationcode'])[0],
-                    $magazines_complets[$premiere_tranche['publicationcode']],
-                    $premiere_tranche['issuenumber'],
-                    $nb_nouvelles_tranches - 1
-                )
-            ); ?>
-            </div><?php
+            $magazines_complets = Inducks::get_noms_complets_magazines(array_map(function($tranche) { return $tranche['publicationcode']; }, $resultat_tranches_collection_ajoutees));
+            $liste_numeros = array_map(function($tranche) use ($magazines_complets) {
+                ob_start();
+                self::afficher_texte_numero(
+                    explode('/', $tranche['publicationcode'])[0],
+                    $magazines_complets[$tranche['publicationcode']],
+                    $tranche['issuenumber']
+                );
+                return '<li>'.ob_get_clean().'</li>';
+            }, $resultat_tranches_collection_ajoutees);
+            self::accordeon(
+                'nouvelles-tranches',
+                sprintf($nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE_TITRE : BIBLIOTHEQUE_NOUVELLES_TRANCHES_TITRE, $nb_nouvelles_tranches),
+                '<ul class="liste_histoires no-indent">'.implode('', $liste_numeros).'</ul>',
+                $nb_nouvelles_tranches === 1 ? BIBLIOTHEQUE_NOUVELLE_TRANCHE_CONTENU : BIBLIOTHEQUE_NOUVELLES_TRANCHES_CONTENU
+            );
         }
+    }
+
+    static function accordeon($id, $titre, $contenu, $footer, $icon = 'glyphicon-info-sign', $collapsed = true) {
+        ?><div class="panel-group" id="<?=$id?>" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="<?=$id?>-heading">
+                    <h4 class="panel-title">
+                        <a class="small<?=$collapsed ? ' collapsed' : ''?>" role="button" data-toggle="collapse" data-parent="#<?=$id?>" href="#<?=$id?>-collapse" aria-expanded="false" aria-controls="<?=$id?>-collapse">
+                            <i class="glyphicon <?=$icon?>"></i>
+                            <?=$titre?>
+                        </a>
+                    </h4>
+                </div>
+                <div id="<?=$id?>-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="<?=$id?>-heading">
+                    <div class="panel-body">
+                        <?=$contenu?>
+                        <div class="footer"><?=$footer?></div>
+                    </div>
+                </div>
+            </div>
+        </div><?php
     }
 
     static function afficher_temps_passe($diff_secondes) {
@@ -468,8 +489,7 @@ class Affichage {
         ob_start();
         self::afficher_texte_numero($pays,$magazine_complet,$numero, $allow_wrap);
         if ($nb_autres_numeros > 0) {
-            ?>
-            <?=ET?> <?=($nb_autres_numeros)?>
+            ?> <?=ET?> <?=($nb_autres_numeros)?>
             <?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?><?php
         }
         return ob_get_clean();
@@ -505,9 +525,8 @@ class Affichage {
         if (empty($title)) {
             $title = SANS_TITRE.($comment ? ' ('.$comment.') ' : '');
         }
-        ?><?=$title?>&nbsp;<a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search=">
-            <?=VOIR_PLUS?>
-        </a><?php
+        ?><?=$title?>&nbsp;
+        <a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search="><?=DETAILS_HISTOIRE?></a><?php
     }
 
     static function valider_formulaire_inscription($user, $pass, $pass2) {
@@ -544,9 +563,16 @@ class Affichage {
     }
 
     public static function afficher_stats_collection_court($nb_pays, $nb_magazines, $nb_numeros) {
-        echo $nb_numeros.' '.NUMEROS . '<br />'
-            . POSSESSION_MAGAZINES_2 . ' ' . $nb_magazines . ' '
-            . POSSESSION_MAGAZINES_3 . ' ' . $nb_pays . ' ' .  PAYS. '.';
+        echo sprintf(
+            '%s %s.<br />%s %s %s %s %s.',
+            $nb_numeros,
+            NUMEROS,
+            POSSESSION_MAGAZINES_2,
+            $nb_magazines,
+            POSSESSION_MAGAZINES_3,
+            $nb_pays,
+            PAYS
+        );
     }
 
     public static function get_medailles($points)

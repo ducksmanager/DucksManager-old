@@ -52,17 +52,17 @@ class Util {
         else {
             while (!feof($inF)) {
                 $str.=fgets($inF, 4096);
-            } 
+            }
         }
         return $str;
     }
-    
+
     static function ecrire_dans_fichier($nom_fichier,$str,$a_la_suite=false) {
         $inF = fopen($nom_fichier,$a_la_suite ? 'a+' : 'w');
         fwrite($inF,$str);
         fclose($inF);
     }
-    
+
     static function exit_if_not_logged_in() {
         if (!isset($_SESSION['user'])) {
             header('Location: https://ducksmanager.net');
@@ -107,28 +107,6 @@ class Util {
         }
         return $destination;
     }
-
-    /**
-     * @return DateTime
-     */
-    static function get_derniere_visite_utilisateur() {
-        $lastVisitXPath = '//result/lastVisits/row[position()=2]/lastActionTimestamp';
-
-        $piwik = parse_ini_file('piwik.ini');
-
-        $xml_obj = @simplexml_load_file("https://piwik.ducksmanager.net/?module=API&method=Live.getVisitorProfile&idSite=1&format=xml&segment=customVariableValue1=={$_SESSION['user']}&limitVisits=&token_auth={$piwik['token_auth']}");
-
-        if (empty($xml_obj)) {
-            return null;
-        }
-
-        $lastVisit = $xml_obj->xpath($lastVisitXPath);
-        if ($lastVisit === false || count($lastVisit) === 0) {
-            return null;
-        }
-        return new DateTime(date('Y-m-d H:i:s', (integer) $lastVisit[0]));
-    }
-
 }
 
 if (isset($_GET['magazines_supprimes'])) {
