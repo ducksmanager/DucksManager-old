@@ -302,50 +302,48 @@ switch($action) {
             $points=DM_Core::$d->get_points([$_SESSION['id_user']]);
             $niveaux = Affichage::get_medailles($points[$_SESSION['id_user']]);
             foreach($niveaux as $type=>$cpt_et_niveau) {
-                if ($cpt_et_niveau['Cpt'] > 0) {
-                    $cpt=$cpt_et_niveau['Cpt'];
-                    $niveau=$cpt_et_niveau['Niveau'];
-                    if ($niveau === 3) {
-                        $progres_niveau = 0;
-                        $title = sprintf(
-                            constant('DETAILS_MEDAILLE_'.strtoupper($type).'_MAX'),
-                            $cpt
-                        );
-                    }
-                    else {
-                        $min_cpt_niveau = $niveau === 0 ? 0 : Affichage::$niveaux_medailles[$type][$niveau];
-                        $min_cpt_niveau_suivant = Affichage::$niveaux_medailles[$type][$niveau+1];
-                        $diff_niveau_suivant = $min_cpt_niveau_suivant-$cpt;
-                        $title = sprintf(
-                            constant('DETAILS_MEDAILLE_'.strtoupper($type)),
-                            $cpt,
-                            $diff_niveau_suivant,
-                            constant('MEDAILLE_'.($niveau+1))
-                        );
-                    } ?>
-                    <div class="overlay">
-                        <div class="title" title="<?=$title?>"></div><?php
-                        if ($niveau < 3) {
-                            $progres_niveau = ($cpt-$min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
-                            if ($progres_niveau === 0) {
-                                $progres_niveau = .01;
-                            }
-                            switch($niveau) {
-                                case 0: $couleur ='bronze'; break;
-                                case 1: $couleur ='argent'; break;
-                                case 2: $couleur ='or'; break;
-                                default: $couleur = ''; break;
-                            }
-                            $pct = (1-$progres_niveau)*$circonference;
-                            ?>
-                            <svg width="100" height="100" viewport="0 0 0 0 " version="1.1" xmlns="http://www.w3.org/2000/svg">
-                            <circle r="<?=$radius?>" cx="50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" stroke-dashoffset="0"></circle>
-                            <circle transform="rotate(270,0,0)" class="bar <?=$couleur?>" r="<?=$radius?>" cx="-50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" style="stroke-dashoffset: <?=$pct?>px"></circle>
-                            </svg><?php
-                        }?>
-                    </div>
-                    <img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" /><?php
+                $cpt=$cpt_et_niveau['Cpt'];
+                $niveau=$cpt_et_niveau['Niveau'];
+                if ($niveau === 3) {
+                    $progres_niveau = 0;
+                    $title = sprintf(
+                        constant('DETAILS_MEDAILLE_'.strtoupper($type).'_MAX'),
+                        $cpt
+                    );
                 }
+                else {
+                    $min_cpt_niveau = $niveau === 0 ? 0 : Affichage::$niveaux_medailles[$type][$niveau];
+                    $min_cpt_niveau_suivant = Affichage::$niveaux_medailles[$type][$niveau+1];
+                    $diff_niveau_suivant = $min_cpt_niveau_suivant-$cpt;
+                    $title = sprintf(
+                        constant('DETAILS_MEDAILLE_'.strtoupper($type)),
+                        $cpt,
+                        $diff_niveau_suivant,
+                        constant('MEDAILLE_'.($niveau+1))
+                    );
+                } ?>
+                <div class="overlay">
+                    <div class="title" title="<?=$title?>"></div><?php
+                    if ($niveau < 3) {
+                        $progres_niveau = ($cpt-$min_cpt_niveau) / ($min_cpt_niveau_suivant-$min_cpt_niveau);
+                        if ($progres_niveau === 0) {
+                            $progres_niveau = .01;
+                        }
+                        switch($niveau) {
+                            case 0: $couleur ='bronze'; break;
+                            case 1: $couleur ='argent'; break;
+                            case 2: $couleur ='or'; break;
+                            default: $couleur = ''; break;
+                        }
+                        $pct = (1-$progres_niveau)*$circonference;
+                        ?>
+                        <svg width="100" height="100" viewport="0 0 0 0 " version="1.1" xmlns="http://www.w3.org/2000/svg">
+                        <circle r="<?=$radius?>" cx="50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" stroke-dashoffset="0"></circle>
+                        <circle transform="rotate(270,0,0)" class="bar <?=$couleur?>" r="<?=$radius?>" cx="-50" cy="50" fill="transparent" stroke-dasharray="<?=$circonference?>" style="stroke-dashoffset: <?=$pct?>px"></circle>
+                        </svg><?php
+                    }?>
+                </div>
+                <img class="medaille" src="images/medailles/<?=$type?>_<?=$niveau?>_<?=$_SESSION['lang']?>.png" /><?php
             }
             ?></div><?php
             Affichage::afficher_statut_connexion(true);

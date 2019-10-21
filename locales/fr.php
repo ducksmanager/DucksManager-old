@@ -167,7 +167,7 @@ define('DETAILS_MEDAILLE_CREATEUR','Vous avez %d points Concepteur de tranches, 
 define('DETAILS_MEDAILLE_CREATEUR_MAX','Vous avez %d points Concepteur de tranches');
 define('DETAILS_MEDAILLE_DUCKHUNTER','Vous avez signalé %d bouquineries, signalez-en %d de plus pour reevoir le badge %s!');
 define('DETAILS_MEDAILLE_DUCKHUNTER_MAX','Vous avez signalé %d bouquineries');
-define('DETAILS_MEDAILLE_PHOTOGRAPHE','Vous avez %d points Photographe de tranches, obtenez-en %d de plus pour recevoir le badge %s !');
+define('DETAILS_MEDAILLE_PHOTOGRAPHE','Vous avez %d points Photographe de tranches, envoyez-nous des photos de tranches depuis votre bibliothèque et obtenez %d points de plus pour recevoir le badge %s !');
 define('DETAILS_MEDAILLE_PHOTOGRAPHE_MAX','Vous avez %d points Photographe de tranches');
 define('DMSPIRAL_DESCRIPTION','Liste en spirale, particulièrement utile pour les magazines avec peu de numéros. Elle permet de bien repérer les suites de numéros.');
 define('DMSPIRAL_MOINS_1','Prend beaucoup d\'espace pour les magazines à fréquence élevée (Journal de Mickey,...)');

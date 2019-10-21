@@ -596,12 +596,11 @@ class Affichage {
             'Duckhunter' => $nbBouquineries
         ]);
         foreach($medailles as $type=>$cpt_et_niveau) {
-            if (($niveau = $cpt_et_niveau['Niveau']) > 0) {?>
-                <div class="medaille_profil">
-                    <img src="images/medailles/<?=$type?>_<?=$niveau?>_fond.png" /><br />
-                    <b><?=constant('TITRE_MEDAILLE_'.strtoupper($type))?><br /><?=NIVEAU?> <?=str_replace('avance', 'avancé', $niveau)?></b>
-                </div><?php
-            }
+            $niveau = $cpt_et_niveau['Niveau']; ?>
+            <div class="medaille_profil">
+                <img src="images/medailles/<?=$type?>_<?=$niveau?>_fond.png" /><br />
+                <b><?=constant('TITRE_MEDAILLE_'.strtoupper($type))?><br /><?=NIVEAU?> <?=str_replace('avance', 'avancé', $niveau)?></b>
+            </div><?php
         }
         ?>
         <div class="clear"><?php

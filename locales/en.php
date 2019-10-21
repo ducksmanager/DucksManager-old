@@ -164,7 +164,7 @@ define('DETAILS_MEDAILLE_CREATEUR','You have %d Edge designer points, get %d mor
 define('DETAILS_MEDAILLE_CREATEUR_MAX','You have %d Edge designer points');
 define('DETAILS_MEDAILLE_DUCKHUNTER','You have pinned %d second-hand bookshops, pin %d more to receive the %s badge!');
 define('DETAILS_MEDAILLE_DUCKHUNTER_MAX','You have pinned %d second-hand bookshops');
-define('DETAILS_MEDAILLE_PHOTOGRAPHE','You have %d Edge photographer points, get %d more to receive the %s badge!');
+define('DETAILS_MEDAILLE_PHOTOGRAPHE','You have %d Edge photographer points, send us edge photographs and get %d more points to receive the %s badge!');
 define('DETAILS_MEDAILLE_PHOTOGRAPHE_MAX','You have %d Edge photographer points');
 define('DMSPIRAL_DESCRIPTION','Spiral list, particularly useful for magazines with only a few hundreds of issues.');
 define('DMSPIRAL_MOINS_1','Takes a lot of space for frequently published magazines');
