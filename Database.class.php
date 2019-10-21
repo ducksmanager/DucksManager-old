@@ -512,7 +512,7 @@ class Database
           SELECT tp.publicationcode, tp.issuenumber, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes
           FROM tranches_pretes tp, numeros n
           WHERE n.ID_Utilisateur = :user_id
-            AND CONCAT(publicationcode,'/',issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
+            AND CONCAT(tp.publicationcode,'/',tp.issuenumber) = CONCAT(n.Pays,'/',n.Magazine,'/',n.Numero)
             AND DATEDIFF(NOW(), tp.dateajout) < 90
             $conditionDateAjout
           ORDER BY DiffSecondes
