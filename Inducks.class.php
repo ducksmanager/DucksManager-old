@@ -155,6 +155,9 @@ class Inducks {
     }
 
     static function get_noms_complets_magazines($publication_codes) {
+        if (empty($publication_codes)) {
+            return [];
+        }
         return (array) DmClient::get_service_results_for_dm('GET', '/coa/list/publications', [implode(',', array_values($publication_codes))]);
     }
 
