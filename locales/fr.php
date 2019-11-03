@@ -478,6 +478,8 @@ define('STATISTIQUES_COLLECTION','Statistiques de ma collection');
 define('STATISTIQUES_QUOTIDIENNES','Les statistiques sont mises à jour quotidiennement.');
 define('SUCCES','Succès!');
 define('SUGGESTIONS_ACHATS','Suggestions d\'achats');
+define('SUGGESTIONS_ACHATS_NOUVEAUTE','Since your last visit, %d issue has been released with new stories from your favorite authors!');
+define('SUGGESTIONS_ACHATS_NOUVEAUTES','Since your last visit, %d issues have been released with new stories from your favorite authors!');
 define('SUGGESTIONS_ACHATS_QUOTIDIENNES','Les suggestions d\'achat sont mises à jour quotidiennement.');
 define('SUGGESTIONS_PUBLICATIONS_DESACTIVE', 'Les suggestions d\'achat sont actuellement désactivées.');
 define('SUPPRESSION_ACQUISITION_CONFIRMATION','Confirmez-vous la suppression de cette acquisition ?\nLes numéros correspondant à cette date d\'acquisition seront conservés.');

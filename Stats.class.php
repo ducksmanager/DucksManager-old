@@ -254,7 +254,7 @@ class Stats {
                 )
             );
 
-            if (!isset($suggestions->issues) || count(get_object_vars($suggestions->issues)) === 0) {
+            if (!isset($suggestions->issues) || (($nbSuggestions = count(get_object_vars($suggestions->issues))) === 0)) {
                 if (!$sinceLastVisit) {
                     ?><br /><?=AUCUNE_SUGGESTION?><?php
                 }
@@ -296,7 +296,7 @@ class Stats {
                 if ($sinceLastVisit) {
                     Affichage::accordeon(
                         'suggestions-accordion',
-                        'Since your last visit, '.count(get_object_vars($suggestions->issues)).' issues have been released with stories that you don\'t possess from your favorite authors',
+                        sprintf($nbSuggestions === 1 ? SUGGESTIONS_ACHATS_NOUVEAUTE : SUGGESTIONS_ACHATS_NOUVEAUTES, $nbSuggestions),
                         '<div id="suggestions" class="small-titles">'.$suggestionsText.'</div>',
                         '<div><a href="/?action=agrandir">See all the suggestions for my collection</a></div>'
                     );

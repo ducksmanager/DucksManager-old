@@ -475,6 +475,8 @@ define('STATISTIQUES_COLLECTION','Statistics');
 define('STATISTIQUES_QUOTIDIENNES','The statistics are updated every day.');
 define('SUCCES','Success!');
 define('SUGGESTIONS_ACHATS','Purchase suggestor');
+define('SUGGESTIONS_ACHATS_NOUVEAUTE','Depuis votre dernière visite, %d magazine avec des histoires que vous ne possédez pas de vos auteurs préférés est sorti !');
+define('SUGGESTIONS_ACHATS_NOUVEAUTES','Depuis votre dernière visite, %d magazines avec des histoires que vous ne possédez pas de vos auteurs préférés sont sortis !');
 define('SUGGESTIONS_ACHATS_QUOTIDIENNES','The suggestions are updated every day.');
 define('SUGGESTIONS_PUBLICATIONS_DESACTIVE', 'The author suggestions are currently disabled.');
 define('SUPPRESSION_ACQUISITION_CONFIRMATION','Do you confirm the removal of this purchase ?\nThe issues corresponding to this purchase will not be removed from your collection.');
