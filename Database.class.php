@@ -192,7 +192,7 @@ class Database
                 }
                 $l->collection[$resultat['Pays']][$resultat['Magazine']][$resultat['Numero']] = $resultat_val;
             } else {
-                $l->collection[$resultat['Pays']] = [$resultat['Magazine'] => [$resultat_val]];
+                $l->collection[$resultat['Pays']] = [$resultat['Magazine'] => [$resultat['Numero'] => $resultat_val]];
             }
         }
         return $l;
