@@ -27,24 +27,25 @@ class Affichage {
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <?php foreach($onglets_pays as $nom_pays => $details_pays) {
-                            $nom_pays_abrege=$details_pays[0];
+                        <?php foreach($onglets_pays as $nom_pays_abrege => $nom_pays_complet) {
                             ?><li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     <img class="flag" src="images/flags/<?=$nom_pays_abrege?>.png" />
                                     <span class="<?=$pays_courant === $nom_pays_abrege ? 'bold' : '' ?>">
-                                        <?=$nom_pays?>
+                                        <?=$nom_pays_complet?>
                                     </span>
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <?php foreach(array_filter($onglets_magazines, function($nom_magazine_abrege) use($nom_pays_abrege) {
+                                    <?php $magazines_pour_onglet_pays_courant = array_filter($onglets_magazines, function ($nom_magazine_abrege) use ($nom_pays_abrege) {
                                         return explode('/', $nom_magazine_abrege)[0] === $nom_pays_abrege;
-                                    }, ARRAY_FILTER_USE_KEY) as $magazine) { ?>
+                                    }, ARRAY_FILTER_USE_KEY);
+
+                                    foreach($magazines_pour_onglet_pays_courant as $nom_magazine_abrege=> $nom_magazine_complet) { ?>
                                         <li>
-                                            <a href="?action=gerer&amp;onglet=ajout_suppr&onglet_magazine=<?=$magazine[0]?>">
-                                                <span class="<?=$magazine[0] === $magazine_courant ? 'bold' : '' ?>">
-                                                    <?=$magazine[1]?>
+                                            <a href="?action=gerer&amp;onglet=ajout_suppr&onglet_magazine=<?=$nom_magazine_abrege?>">
+                                                <span class="<?=$nom_magazine_abrege === $magazine_courant ? 'bold' : '' ?>">
+                                                    <?=is_array($nom_magazine_complet) ? $nom_magazine_complet[0] : $nom_magazine_complet?>
                                                 </span>
                                             </a>
                                         </li>

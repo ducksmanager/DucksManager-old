@@ -93,7 +93,7 @@ class Liste {
         return null;
     }
 
-    function liste_magazines($pays_magazine_supplementaire=null,$tri_noms_complets=true) {
+    function liste_magazines($pays_magazine_supplementaire=null) {
         $publication_codes= [];
         foreach($this->collection as $pays=>$numeros_pays) {
             foreach(array_keys($numeros_pays) as $magazine) {
@@ -105,22 +105,6 @@ class Liste {
         }
         $noms_pays = Inducks::get_noms_complets_pays($publication_codes);
         $noms_magazines = Inducks::get_noms_complets_magazines($publication_codes);
-        foreach(array_keys($noms_pays) as $nom_abrege) {
-            $noms_pays[$noms_pays[$nom_abrege]]= [$nom_abrege, $noms_pays[$nom_abrege]];
-            unset($noms_pays[$nom_abrege]);
-        }
-        foreach(array_keys($noms_magazines) as $nom_abrege) {
-            $noms_magazines[$nom_abrege]= [$nom_abrege, $noms_magazines[$nom_abrege]];
-        }
-
-        if ($tri_noms_complets) {
-            uasort($noms_magazines, function($a,$b) {
-                if ($a[1] === $b[1]) {
-                    return 0;
-                }
-                return ($a[1] < $b[1]) ? -1 : 1;
-            });
-        }
         return [$noms_pays,$noms_magazines];
     }
 
