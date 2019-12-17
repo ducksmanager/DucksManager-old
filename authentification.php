@@ -21,9 +21,9 @@ if (!is_null($user)) {
             $_SESSION['user']=$user;
             $_SESSION['pass']=$pass;
             $_SESSION['id_user']=DM_Core::$d->user_to_id($user);
-            setcookie('user',$user,time()+3600, '','ducksmanager.net');
-            setcookie('pass',$pass,time()+3600, '','ducksmanager.net');
-            setcookie('is_sha1','true',time()+3600, '','ducksmanager.net');
+            setcookie('user',$user,time()+3600, '',Util::DOMAIN);
+            setcookie('pass',$pass,time()+3600, '',Util::DOMAIN);
+            setcookie('is_sha1','true',time()+3600, '',Util::DOMAIN);
             $erreur='';
         }
         else {

@@ -4,6 +4,7 @@ if (!isset($no_database)) {
 }
 
 class Util {
+    public const DOMAIN='ducksmanager.net';
     static function isLocalHost() {
         return !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'ducksmanager' && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
     }
@@ -46,7 +47,7 @@ class Util {
 
     static function exit_if_not_logged_in() {
         if (!isset($_SESSION['user'])) {
-            header('Location: https://ducksmanager.net');
+            header('Location: https://'.self::DOMAIN);
             exit(0);
         }
     }

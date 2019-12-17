@@ -183,7 +183,7 @@ class Edge {
     }
 
     static function get_lien_bibliotheque($user) {
-        return "https://ducksmanager.net/?action=bibliotheque&user={$user}";
+        return 'https://' .Util::DOMAIN."/?action=bibliotheque&user=$user";
     }
 
 }

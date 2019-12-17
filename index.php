@@ -2,7 +2,7 @@
 require_once 'Util.class.php';
 
 if (!Util::isLocalHost() && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' || strpos($_SERVER['HTTP_HOST'],'www.')!==false)){
-    $redirect = 'https://ducksmanager.net' . $_SERVER['REQUEST_URI'];
+    $redirect = 'https://'.Util::DOMAIN . $_SERVER['REQUEST_URI'];
     header('HTTP/1.1 301 Moved Permanently');
     header('Location: ' . $redirect);
     exit();
@@ -25,15 +25,15 @@ else  {
 }
 
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
-    setcookie('user','',time()-3600, '', 'ducksmanager.net');
-    setcookie('pass','',time()-3600, '', 'ducksmanager.net');
-    setcookie('is_sha1','true',time()-3600, '', 'ducksmanager.net');
+    setcookie('user','',time()-3600, '', Util::DOMAIN);
+    setcookie('pass','',time()-3600, '', Util::DOMAIN);
+    setcookie('is_sha1','true',time()-3600, '', Util::DOMAIN);
 }
 else {
     if (isset($_SESSION['user']) && isset($_SESSION['pass']) && !isset($_COOKIE['user']) ) {
-        setcookie('user',$_SESSION['user'],time()+3600, '', 'ducksmanager.net');
-        setcookie('pass',$_SESSION['pass'],time()+3600, '', 'ducksmanager.net');
-        setcookie('is_sha1','true',time()+3600, '', 'ducksmanager.net');
+        setcookie('user',$_SESSION['user'],time()+3600, '', Util::DOMAIN);
+        setcookie('pass',$_SESSION['pass'],time()+3600, '', Util::DOMAIN);
+        setcookie('is_sha1','true',time()+3600, '', Util::DOMAIN);
         $_COOKIE['user'] = $_SESSION['user'];
         $_COOKIE['pass'] = $_SESSION['pass'];
         $_COOKIE['is_sha1'] = 'true';
@@ -41,9 +41,9 @@ else {
     if (isset($_COOKIE['user'], $_COOKIE['pass']) && !DM_Core::$d->user_connects($_COOKIE['user'], $_COOKIE['pass'])) {
         $_SESSION['user']=$_COOKIE['user'];
 
-        setcookie('user', $_COOKIE['user'],time()+3600, '','ducksmanager.net'); // On met les cookies à jour à chaque rafraichissement
-        setcookie('pass', $_COOKIE['pass'],time()+3600, '', 'ducksmanager.net');
-        setcookie('is_sha1', 'true',time()+3600, '', 'ducksmanager.net');
+        setcookie('user', $_COOKIE['user'],time()+3600, '',Util::DOMAIN); // On met les cookies à jour à chaque rafraichissement
+        setcookie('pass', $_COOKIE['pass'],time()+3600, '', Util::DOMAIN);
+        setcookie('is_sha1', 'true',time()+3600, '', Util::DOMAIN);
     }
 }
 
