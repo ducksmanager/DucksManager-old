@@ -17,5 +17,4 @@ RUN docker-php-ext-configure gd \
 
 RUN docker-php-ext-install opcache
 
-RUN pecl install xdebug \
- && docker-php-ext-enable xdebug
+COPY . /var/www/html
