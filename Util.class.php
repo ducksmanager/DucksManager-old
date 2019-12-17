@@ -4,25 +4,6 @@ if (!isset($no_database)) {
 }
 
 class Util {
-    static $nom_fic;
-    static function get_page($url) {
-        $handle = @fopen($url, "r");
-
-        if (isset($_GET['dbg'])) {
-            echo $url;
-        }
-        if ($handle) {
-            $buffer="";
-            while (!feof($handle)) {
-                $buffer.= fgets($handle, 4096);
-            }
-            fclose($handle);
-            return $buffer;
-        }
-
-        return ERREUR_CONNEXION_INDUCKS;
-    }
-
     static function isLocalHost() {
         return !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'ducksmanager' && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
     }
@@ -68,44 +49,6 @@ class Util {
             header('Location: https://ducksmanager.net');
             exit(0);
         }
-    }
-
-    static function get_random_string($length = 16) {
-        $validCharacters = "abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ";
-        $validCharNumber = strlen($validCharacters);
-        $result = "";
-        for ($i = 0; $i < $length; $i++) {
-            $result.=$validCharacters[mt_rand(0, $validCharNumber - 1)];
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param $destination string
-     * @param $sourceObject stdClass
-     * @return stdClass
-     */
-    static function cast($destination, $sourceObject) {
-        if (is_string($destination)) {
-            $destination = new $destination();
-        }
-        $sourceReflection = new ReflectionObject($sourceObject);
-        $destinationReflection = new ReflectionObject($destination);
-        $sourceProperties = $sourceReflection->getProperties();
-        foreach ($sourceProperties as $sourceProperty) {
-            $sourceProperty->setAccessible(true);
-            $name = $sourceProperty->getName();
-            $value = $sourceProperty->getValue($sourceObject);
-            if ($destinationReflection->hasProperty($name)) {
-                $propDest = $destinationReflection->getProperty($name);
-                $propDest->setAccessible(true);
-                $propDest->setValue($destination,$value);
-            } else {
-                $destination->$name = $value;
-            }
-        }
-        return $destination;
     }
 }
 
