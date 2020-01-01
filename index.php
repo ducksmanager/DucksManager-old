@@ -1,13 +1,6 @@
 <?php
 require_once 'Util.class.php';
 
-if (!Util::isLocalHost() && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' || strpos($_SERVER['HTTP_HOST'],'www.')!==false)){
-    $redirect = 'https://'.Util::DOMAIN . $_SERVER['REQUEST_URI'];
-    header('HTTP/1.1 301 Moved Permanently');
-    header('Location: ' . $redirect);
-    exit();
-}
-
 header('Content-Type: text/html; charset=utf-8');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date dans le passé
