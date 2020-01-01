@@ -1,7 +1,13 @@
 version: '2'
 services:
-  web:
-    container_name: ducksmanager
-    build: .
-    ports:
-     - "8000:80"
+    web:
+        container_name: ducksmanager
+        build: .
+        ports:
+            - "8000:80"
+        networks:
+            - workspace_global-front-network
+
+networks:
+    workspace_global-front-network:
+        external: true
