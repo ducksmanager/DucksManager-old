@@ -407,12 +407,21 @@ class Database
         $resultat_tranches = DM_Core::$d->requete($requete_tranches);
         $groupe_precedent = null;
         $evenement = null;
+        $ajouter_evenement_fn = function(&$evenements, $evenement, $groupe_courant) {
+            usort($evenement['numeros'], function($numero1, $numero2) {
+                return $numero1['DiffSecondes'] <=> $numero2['DiffSecondes'];
+            });
+            $evenement['numeros'] = array_reverse($evenement['numeros']);
+            ajouter_evenement(
+                $evenements->evenements, $evenement, $groupe_courant['DiffSecondes'], 'tranches_pretes', null, $groupe_courant['Collaborateurs']);
+        };
+
         foreach ($resultat_tranches as $tranche_prete) {
             $publicationcode = $tranche_prete['publicationcode'];
             $evenements->publicationcodes[] = $publicationcode;
 
             [$pays, $magazine, $numero] = explode('/', $tranche_prete['Numero']);
-            $numero_complet = ['Pays' => $pays, 'Magazine' => $magazine, 'Numero' => $numero];
+            $numero_complet = ['Pays' => $pays, 'Magazine' => $magazine, 'Numero' => $numero, 'DiffSecondes' => $tranche_prete['DiffSecondes']];
 
             $collaborateurs = explode(',', preg_replace('#(,{2,})#', ',', trim($tranche_prete['collaborateurs'], ',')));
             $groupe_courant = ['DiffSecondes' => $tranche_prete['DiffSecondes'], 'Collaborateurs' => $collaborateurs];
@@ -423,9 +432,7 @@ class Database
                 $evenement['numeros'][] = $numero_complet;
             } else {
                 if (!is_null($evenement)) {
-                    sort($evenement['numeros']);
-                    ajouter_evenement(
-                        $evenements->evenements, $evenement, $groupe_precedent['DiffSecondes'], 'tranches_pretes', null, $groupe_precedent['Collaborateurs']);
+                    $ajouter_evenement_fn($evenements, $evenement, $groupe_courant);
                 }
                 $evenement = ['numeros' => [$numero_complet]];
             }
@@ -433,8 +440,7 @@ class Database
         }
 
         if (count($resultat_tranches) > 0) {
-            ajouter_evenement(
-                $evenements->evenements, $evenement, $groupe_courant['DiffSecondes'], 'tranches_pretes', null, $groupe_courant['Collaborateurs']);
+            $ajouter_evenement_fn($evenements, $evenement, $groupe_courant);
         }
 
         $requete_nouvelles_medailles = implode(' UNION ', array_map(function($type_medaille) {
