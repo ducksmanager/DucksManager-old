@@ -163,7 +163,7 @@ class Database
                   UPDATE numeros
                   SET ' . implode(',', array_map(function ($champ) {
                         return "$champ=?";
-                    }, array_keys($changements))) . ' 
+                    }, array_keys($changements))) . '
                   WHERE Pays=?
                     AND Magazine=?
                     AND ID_Utilisateur=?
@@ -305,7 +305,7 @@ class Database
             }, array_keys(Affichage::$niveaux_medailles))).') as type_contribution
             join (
                 SELECT ID AS ID_User
-                FROM users 
+                FROM users
                 WHERE ID IN(' . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ')
             ) AS ids_users
             left join (
@@ -394,7 +394,7 @@ class Database
 
         /* Ajouts de tranches */
         $requete_tranches = "
-            SELECT tp.publicationcode, tp.issuenumber, GROUP_CONCAT(tpc.ID_user) AS collaborateurs, DATE(tp.dateajout) DateAjout,
+            SELECT tp.publicationcode, tp.issuenumber, GROUP_CONCAT(DISTINCT tpc.ID_user ORDER BY tpc.ID_user) AS collaborateurs, DATE(tp.dateajout) DateAjout,
                (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tp.dateajout)) AS DiffSecondes,
                CONCAT(tp.publicationcode,'/',tp.issuenumber) AS Numero
             FROM tranches_pretes tp
@@ -644,7 +644,7 @@ if (isset($_POST['database'])) {
             . 'WHERE ID_user=' . $id_user . ' AND NomAuteurAbrege = \'' . $_POST['auteur'] . '\'');
     } else if (isset($_POST['liste_bouquineries'])) {
         $requete_bouquineries = '
-            SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\'' . SIGNALE_PAR . '\',IFNULL(username,\'' . UN_VISITEUR_ANONYME . '\')) AS Signature 
+            SELECT Nom, AdresseComplete AS Adresse, Commentaire, CoordX, CoordY, CONCAT(\'' . SIGNALE_PAR . '\',IFNULL(username,\'' . UN_VISITEUR_ANONYME . '\')) AS Signature
             FROM bouquineries
             LEFT JOIN users_contributions uc ON bouquineries.ID = uc.ID_bookstore
             LEFT JOIN users ON uc.ID_User=users.ID
