@@ -93,7 +93,7 @@ class DmClient
     private static function get_service_results($method, $path, $parameters = [], $role = 'rawsql', $do_not_chunk = false)
     {
         $ch = curl_init();
-        $url = (Util::isLocalHost() ? 'http' : 'https').'://'.self::$dm_server->ip . self::$dm_server->web_root . $path;
+        $url = 'http://'.self::$dm_server->api_url_internal . self::$dm_server->web_root . $path;
 
         if ($method === 'GET') {
             if (count($parameters) > 0) {
