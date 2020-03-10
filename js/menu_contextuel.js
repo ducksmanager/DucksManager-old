@@ -4,7 +4,7 @@ var showPurchaseList = false;
 var menuItems;
 
 var selectedItems = {
-    condition_do_not_change: true,
+    condition_indefini: true,
     purchase_do_not_change: true,
     sale_do_not_change: true
 };
