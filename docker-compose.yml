@@ -1,11 +1,18 @@
 version: '2'
 services:
-    web:
-        container_name: ducksmanager
-        build: .
-        networks:
-            - workspace_global-front-network
+  web:
+    container_name: ducksmanager
+    build: .
+    networks:
+      dm-server_front-network:
+        aliases:
+          - ducksmanager
+      workspace_global-front-network:
+        aliases:
+          - ducksmanager
 
 networks:
-    workspace_global-front-network:
-        external: true
+  workspace_global-front-network:
+    external: true
+  dm-server_front-network:
+    external: true
