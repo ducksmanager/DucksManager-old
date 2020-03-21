@@ -3,6 +3,8 @@ services:
   web:
     container_name: ducksmanager
     build: .
+    environment:
+      ENV: 'production'
     networks:
       dm-server_front-network:
         aliases:

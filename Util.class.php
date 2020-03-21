@@ -6,7 +6,7 @@ if (!isset($no_database)) {
 class Util {
     public const DOMAIN='ducksmanager.net';
     static function isLocalHost() {
-        return !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'ducksmanager' && strpos($_SERVER['HTTP_HOST'],'localhost')===false);
+        return !isset($_ENV['ENV']) || $_ENV['ENV'] !== 'production';
     }
 
     static function magazinesSupprimesInducks() {
