@@ -432,7 +432,7 @@ class Database
                 $evenement['numeros'][] = $numero_complet;
             } else {
                 if (!is_null($evenement)) {
-                    $ajouter_evenement_fn($evenements, $evenement, $groupe_courant);
+                    $ajouter_evenement_fn($evenements, $evenement, $groupe_precedent);
                 }
                 $evenement = ['numeros' => [$numero_complet]];
             }
@@ -675,11 +675,11 @@ if (isset($_POST['database'])) {
     }
 }
 
-function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evenement, $id_utilisateur = null, $noms_utilisateurs = null)
+function ajouter_evenement(&$evenements, $evenement, $diff_secondes, $type_evenement, $id_utilisateur = null, $ids_utilisateurs = null)
 {
     $evenement['diffsecondes'] = $diff_secondes;
     $evenement['id_utilisateur'] = $id_utilisateur;
-    $evenement['ids_utilisateurs'] = $noms_utilisateurs;
+    $evenement['ids_utilisateurs'] = $ids_utilisateurs;
     if (!array_key_exists($diff_secondes, $evenements)) {
         $evenements[$diff_secondes] = new stdClass();
     }

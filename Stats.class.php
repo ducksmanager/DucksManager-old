@@ -265,7 +265,7 @@ class Stats {
 
                 ob_start();
 
-                foreach($suggestions->issues as $issuecode => $issue) {
+                foreach($suggestions->issues as $issue) {
                     $publicationcode = $issue->publicationcode;
                     $country = explode('/', $publicationcode)[0];
                     $issuenumber = $issue->issuenumber;
