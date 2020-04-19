@@ -507,7 +507,6 @@ switch($action) {
             session_unset();
             echo DECONNEXION_OK;
             break;
-            break;
         case 'inducks': ?>
             <h3 id="dm-loves-inducks">
                 <div id="dm-logo-small">&nbsp;</div>

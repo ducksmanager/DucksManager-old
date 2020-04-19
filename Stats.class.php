@@ -251,6 +251,7 @@ class Stats {
                 array_merge(
                     is_null($pays) ? ['ALL'] : [$pays],
                     $sinceLastVisit ? ['since_previous_visit'] : ['_'],
+                    $sinceLastVisit ? ['100'] : ['20'],
                 )
             );
 
