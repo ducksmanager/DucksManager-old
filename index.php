@@ -23,7 +23,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     setcookie('is_sha1','true',time()-3600, '', Util::DOMAIN);
 }
 else {
-    if (isset($_SESSION['user']) && isset($_SESSION['pass']) && !isset($_COOKIE['user']) ) {
+    if (isset($_SESSION['user'], $_SESSION['pass']) && !isset($_COOKIE['user'])) {
         setcookie('user',$_SESSION['user'],time()+3600, '', Util::DOMAIN);
         setcookie('pass',$_SESSION['pass'],time()+3600, '', Util::DOMAIN);
         setcookie('is_sha1','true',time()+3600, '', Util::DOMAIN);
@@ -250,29 +250,27 @@ switch($action) {
         }
         break;
     case 'stats':
-        if (isset($_SESSION['user'])) {
-            if (isset($_GET['onglet'])) {
-                switch($_GET['onglet']) {
-                    case 'auteurs':
-                        ?>
-                            init_autocompleter_auteurs();
-                            init_notations();
-                            afficher_histogramme_stats_auteurs();
-                        <?php
-                        break;
-                    case 'achats':
-                        ?>afficher_histogramme_achats();<?php
-                        break;
-                    case 'magazines':
-                        ?>afficher_diagramme_secteurs('publications');<?php
-                        break;
-                    case 'etats':
-                        ?>afficher_diagramme_secteurs('conditions');<?php
-                        break;
-                    case 'possessions':
-                        ?>afficher_histogramme_possessions();<?php
-                        break;
-                }
+        if (isset($_SESSION['user'], $_GET['onglet'])) {
+            switch($_GET['onglet']) {
+                case 'auteurs':
+                    ?>
+                        init_autocompleter_auteurs();
+                        init_notations();
+                        afficher_histogramme_stats_auteurs();
+                    <?php
+                    break;
+                case 'achats':
+                    ?>afficher_histogramme_achats();<?php
+                    break;
+                case 'magazines':
+                    ?>afficher_diagramme_secteurs('publications');<?php
+                    break;
+                case 'etats':
+                    ?>afficher_diagramme_secteurs('conditions');<?php
+                    break;
+                case 'possessions':
+                    ?>afficher_histogramme_possessions();<?php
+                    break;
             }
         }
         break;
@@ -362,7 +360,7 @@ switch($action) {
     </a>
 </div>
 <div id="zone_logo2">
-    <?php if (isset($_SESSION['user']) && isset($_GET['action']) && $_GET['action'] === 'gerer') { ?>
+    <?php if (isset($_SESSION['user'], $_GET['action']) && $_GET['action'] === 'gerer') { ?>
         <div class="android-only android-banner cache">
         <h5 class="title">What The Duck</h5>
         <img class="logo_android" src="/images/WhatTheDuck.png" />
@@ -1003,12 +1001,7 @@ switch($action) {
         case 'stats':
             ?><h2><?=STATISTIQUES_COLLECTION?></h2><br /><?php
         $l=DM_Core::$d->toList($id_user);
-        if (!isset($_GET['onglet'])) {
-            $onglet = 'magazines';
-        }
-        else {
-            $onglet = $_GET['onglet'];
-        }
+        $onglet = $_GET['onglet'] ?? 'magazines';
         $l->statistiques($onglet);
         break;
 
@@ -1019,12 +1012,8 @@ switch($action) {
                     <?=CLASSIQUE_DESCRIPTION?>
                     <br>
                     <ul class="caract">
-                        <li>
-                            <?=CLASSIQUE_PLUS_1?>
-                        </li>
-                        <li>
-                            <?=CLASSIQUE_MOINS_1?>
-                        </li>
+                        <li><?=CLASSIQUE_PLUS_1?></li>
+                        <li><?=CLASSIQUE_MOINS_1?></li>
                     </ul>
 
                     <br /><br /><a style="margin-top: 5px;" href="impression.php?type=classique" target="_blank"><?=IMPRESSION_COLLECTION_AVEC?><?=strtolower(CLASSIQUE_NOM)?></a><br>
@@ -1286,7 +1275,7 @@ function formulaire_inscription() {
     $pass2=$_POST['pass2'] ?? null;
     $email=$_POST['email'] ?? '';
     $erreur=null;
-    if (isset($_POST['user' ])) {
+    if (isset($_POST['user'])) {
         $erreur=Affichage::valider_formulaire_inscription($user, $pass, $pass2);
         if (!is_null($erreur)) {
             ?><div class="alert alert-danger"><?=$erreur?></div><?php
