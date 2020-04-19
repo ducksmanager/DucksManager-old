@@ -1051,63 +1051,49 @@ switch($action) {
             case 'agrandir':
                 $l=DM_Core::$d->toList($id_user);
 
-                $onglets= [
-                    SUGGESTIONS_ACHATS=> ['suggestions_achat',AUTEURS_FAVORIS_TEXTE]
-                ];
-
-                $onglet=$_GET['onglet'] ?? 'suggestions_achat';
-                Affichage::onglets($onglet, $onglets, 'onglet', '?action=agrandir');
-                switch($onglet) {
-                    case 'suggestions_achat':
-                        $requete_auteurs_surveilles="SELECT Notation FROM auteurs_pseudos WHERE ID_User=$id_user";
-                        $resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
-                        ?><div class="alert alert-info">
-                        <?=EXPLICATION_NOTATION_AUTEURS1?>
-                        <a href="?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
-                        <?=EXPLICATION_NOTATION_AUTEURS3?>
-                        <br /><br />
-                        <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?>
-                        </div>
+                $requete_auteurs_surveilles="SELECT Notation FROM auteurs_pseudos WHERE ID_User=$id_user";
+                $resultat_auteurs_surveilles=DM_Core::$d->requete($requete_auteurs_surveilles);
+                ?><div class="alert alert-info">
+                    <?=EXPLICATION_NOTATION_AUTEURS1?>
+                    <a href="?action=stats&onglet=auteurs"><?=EXPLICATION_NOTATION_AUTEURS2?></a>
+                    <?=EXPLICATION_NOTATION_AUTEURS3?>
+                    <br /><br />
+                    <?=SUGGESTIONS_ACHATS_QUOTIDIENNES?>
+                </div><?php
+                $auteur_note_existe=false;
+                foreach($resultat_auteurs_surveilles as $auteur_surveille) {
+                    if ($auteur_surveille['Notation']!==-1) {
+                        $auteur_note_existe=true;
+                    }
+                }
+                if (count($resultat_auteurs_surveilles)>0) {
+                    if (!$auteur_note_existe) {
+                        ?><div class="alert alert-warning"><?=AUTEURS_NON_NOTES?></div><?php
+                    }
+                    else {
+                        ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
+                        <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
+                            <option id="chargement_pays"><?=CHARGEMENT?>
+                        </select>
                         <?php
-                        $auteur_note_existe=false;
-                        foreach($resultat_auteurs_surveilles as $auteur_surveille) {
-                            if ($auteur_surveille['Notation']!==-1) {
-                                $auteur_note_existe=true;
-                            }
-                        }
-                        if (count($resultat_auteurs_surveilles)>0) {
-                            if (!$auteur_note_existe) {
-                                ?><div class="alert alert-warning">
-                                <?=AUTEURS_NON_NOTES?>
-                                </div><?php
-                            }
-                            else {
-                                ?><?=MONTRER_MAGAZINES_PAYS?>&nbsp;
-                                <select style="width:300px;" onchange="recharger_stats_auteurs()" id="liste_pays">
-                                    <option id="chargement_pays"><?=CHARGEMENT?>
-                                </select>
-                                <?php
-                                include_once 'Stats.class.php';
-                                $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
-                                Stats::showSuggestedPublications($pays);
-                            }
-                        }
-                        else {
-                            ?><div class="alert alert-warning">
-                            <?=AUCUN_AUTEUR_NOTE_1?>
-                            <?=sprintf(AUCUN_AUTEUR_NOTE_2_REDIRECTION, '<a href="?action=stats&onglet=auteurs">'.AUTEURS_COURT.'</a>')?>
-                            <?=AUCUN_AUTEUR_NOTE_3?>
-                            </div><?php
-                        }
-
-                        break;
+                        include_once 'Stats.class.php';
+                        $pays = (isset($_GET['pays']) && $_GET['pays'] !== 'ALL') ? $_GET['pays'] : null;
+                        Stats::showSuggestedPublications($pays);
+                    }
+                }
+                else {
+                    ?><div class="alert alert-warning">
+                        <?=AUCUN_AUTEUR_NOTE_1?>
+                        <?=sprintf(AUCUN_AUTEUR_NOTE_2_REDIRECTION, '<a href="?action=stats&onglet=auteurs">'.AUTEURS_COURT.'</a>')?>
+                        <?=AUCUN_AUTEUR_NOTE_3?>
+                    </div><?php
                 }
 
                 break;
         case 'bouquineries':
-            ?><h2><?=LISTE_BOUQUINERIES?></h2><?php
-            echo INTRO_BOUQUINERIES;
-            ?><br /><br /><?php
+            ?><h2><?=LISTE_BOUQUINERIES?></h2>
+            <?=INTRO_BOUQUINERIES?>
+            <br /><br /><?php
         if (isset($_POST['ajouter'])) {
         $erreur = false;
         foreach (['nom', 'adresse_complete', 'coordX', 'coordY', 'commentaire'] as $champ) {
