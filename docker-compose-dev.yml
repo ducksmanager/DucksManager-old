@@ -8,6 +8,7 @@ services:
     ports:
      - "8000:80"
     volumes:
+     - dm_sessions:/tmp
      - .:/var/www/html
      - ./php.xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     restart: always
@@ -16,3 +17,6 @@ services:
 networks:
   dmserver_front-network:
     external: true
+
+volumes:
+    dm_sessions:
