@@ -225,7 +225,7 @@ switch($action) {
         }
         break;
     case 'gerer':
-        if (isset($_SESSION['user'])) {
+        if (isset($_SESSION['id_user'])) {
             if ((!isset($_GET['onglet']) || $_GET['onglet'] === 'ajout_suppr') && !isset($_GET['onglet_magazine'])) {
                 $l=DM_Core::$d->toList($id_user);
                 $_GET['onglet_magazine'] = $l->get_publication_la_plus_possedee() ?: null;
@@ -250,7 +250,7 @@ switch($action) {
         }
         break;
     case 'stats':
-        if (isset($_SESSION['user'], $_GET['onglet'])) {
+        if (isset($_SESSION['id_user'], $_GET['onglet'])) {
             switch($_GET['onglet']) {
                 case 'auteurs':
                     ?>
@@ -284,7 +284,7 @@ switch($action) {
 ?>">
 <div id="menu">
     <div id="medailles_et_login"><?php
-        if (isset($_SESSION['user']) && $action !== 'logout') {
+        if (isset($_SESSION['id_user']) && $action !== 'logout') {
             ?><div id="medailles"><?php
             $radius = 42;
             $circonference = M_PI * $radius * 2;
@@ -355,12 +355,12 @@ switch($action) {
     </div>
 </div>
 <div id="zone_logo1">
-    <a href="<?= isset($_SESSION['user']) ? '/?action=gerer' : '/' ?>">
+    <a href="<?= isset($_SESSION['id_user']) ? '/?action=gerer' : '/' ?>">
         <img src="/logo_petit.png" />
     </a>
 </div>
 <div id="zone_logo2">
-    <?php if (isset($_SESSION['user'], $_GET['action']) && $_GET['action'] === 'gerer') { ?>
+    <?php if (isset($_SESSION['id_user'], $_GET['action']) && $_GET['action'] === 'gerer') { ?>
         <div class="android-only android-banner cache">
         <h5 class="title">What The Duck</h5>
         <img class="logo_android" src="/images/WhatTheDuck.png" />
@@ -379,7 +379,7 @@ switch($action) {
     <div id="contenu">
         <?php
         echo $texte_debut;
-        if (isset($_SESSION['user']) && $action !== 'logout' && !Inducks::connexion_ok()) {
+        if (isset($_SESSION['id_user']) && $action !== 'logout' && !Inducks::connexion_ok()) {
             ?><div class="alert alert-danger"><?=COA_KO_1?><br /><?=COA_KO_2?></div><?php
             fin_de_page($locales);
         }
@@ -404,7 +404,7 @@ switch($action) {
                 formulaire_inscription();
                 break;
             case 'open':
-                if (!isset($_SESSION['user'])) { ?>
+                if (!isset($_SESSION['id_user'])) { ?>
                     <h3><?= CONNEXION ?></h3>
                     <br />
                     <form method="post" action="?action=open" style="width: 250px">

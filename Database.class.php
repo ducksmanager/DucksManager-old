@@ -21,7 +21,7 @@ class Database
 
     function __construct()
     {
-        if (isset($_SESSION['user'])) {
+        if (isset($_SESSION['id_user'])) {
             DmClient::setUserdata(['user' => $_SESSION['user'], 'pass' => $_SESSION['pass']]);
         }
     }
@@ -80,7 +80,7 @@ class Database
 
     function user_afficher_video()
     {
-        if (isset($_SESSION['user'])) {
+        if (isset($_SESSION['id_user'])) {
             $resultat_afficher_video = DM_Core::$d->requete('
         SELECT AfficherVideo
         FROM users

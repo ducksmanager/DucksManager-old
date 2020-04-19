@@ -46,7 +46,7 @@ class Util {
     }
 
     static function exit_if_not_logged_in() {
-        if (!isset($_SESSION['user'])) {
+        if (!isset($_SESSION['user'], $_SESSION['id_user'])) {
             header('Location: https://'.self::DOMAIN);
             exit(0);
         }
