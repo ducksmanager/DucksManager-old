@@ -26,10 +26,12 @@ function start_selection(sel) {
     now_selecting=true;
 }
 
-function stop_selection(sel) {
+function stop_selection(fin_selection) {
     now_selecting=false;
 
-    var fin_selection=sel;
+    if (!debut_selection || !fin_selection) {
+        return;
+    }
 
     if (debut_selection>fin_selection) {
         var tmp=debut_selection;
