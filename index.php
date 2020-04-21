@@ -103,7 +103,7 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
             })();
         </script>
         <!-- End Piwik Code -->
-        <script src="https://browser.sentry-cdn.com/4.5.3/bundle.min.js" crossorigin="anonymous"></script>
+        <script src="https://browser.sentry-cdn.com/5.15.4/bundle.min.js" crossorigin="anonymous"></script>
         <script type="text/javascript">
             Sentry.init({ dsn: 'https://a225a6550b8c4c07914327618685a61c@sentry.io/1385898' });
         </script>
