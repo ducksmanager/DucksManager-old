@@ -849,16 +849,15 @@ switch($action) {
                                 $action = isset($_GET['vider']) ? 'vider' : 'supprimer';
                                 switch ($action) {
                                     case 'vider':
-                                        $requete = 'DELETE FROM numeros WHERE ID_Utilisateur=' . $id_user;
-                                        DM_Core::$d->requete($requete);
+                                        DM_Core::$d->requete("DELETE FROM numeros WHERE ID_Utilisateur=$id_user");
                                         echo NUMEROS_SUPPRIMES . '.<br />';
                                         break;
                                     case 'supprimer':
-                                        $requete = 'DELETE FROM numeros WHERE ID_Utilisateur=' . $id_user;
-                                        DM_Core::$d->requete($requete);
+                                        DM_Core::$d->requete("DELETE FROM achats WHERE ID_User=$id_user");
+                                        DM_Core::$d->requete("DELETE FROM users_options WHERE ID_User=$id_user");
+                                        DM_Core::$d->requete("DELETE FROM numeros WHERE ID_Utilisateur=$id_user");
                                         echo NUMEROS_SUPPRIMES . '<br />';
-                                        $requete_compte = 'DELETE FROM users WHERE ID=' . $id_user;
-                                        DM_Core::$d->requete($requete_compte);
+                                        DM_Core::$d->requete("DELETE FROM users WHERE ID=$id_user");
                                         session_destroy();
                                         echo COMPTE_SUPPRIME_DECONNECTE . '<br />';
                                         break;
