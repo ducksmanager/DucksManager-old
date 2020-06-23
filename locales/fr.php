@@ -460,6 +460,7 @@ define('RECHERCHER_BOUQUINERIES','Trouver des bouquineries');
 define('RECHERCHER_GENERAL','Rechercher une histoire');
 define('RECHERCHER_INTRO', '... ou recherchez un magazine à partir d\'une histoire qui le contient :');
 define('REFERENCES','référencés');
+define('REJOIGNEZ_NOUS','Rejoignez la communauté sur');
 define('REMERCIEMENT_LOGO','Les logos de DucksManager et de WhatTheDuck ont été réalisés par enigm.');
 define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Remplissez les informations ci-dessous pour que DucksManager détermine le nouveau magazine pour lequel vous souhaitez ajouter des numéros.');
 define('REMPLIR_PAYS_ET_MAGAZINE','Vous devez remplir les champs correspondant au pays et au nom du magazine\n pour lequel vous souhaitez ajouter des numéros !');

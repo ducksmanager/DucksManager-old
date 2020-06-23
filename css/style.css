@@ -628,6 +628,15 @@ ul#choix_impression ul.caract li{
     background-position-y: center;
 }
 
+#discord {
+    background: #7289d9 url('/images/discord.png') no-repeat center;
+    height: 120px;
+    font-size: 22px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
 @media (min-width: 767px) {
     .mobile-only {
         display: none;

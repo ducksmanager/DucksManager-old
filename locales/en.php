@@ -457,6 +457,7 @@ define('RECHERCHER_BOUQUINERIES','Find second-hand bookshops');
 define('RECHERCHER_GENERAL','Find a story');
 define('RECHERCHER_INTRO', '... or find an issue by searching for a story that\'s inside of it : ');
 define('REFERENCES','referenced');
+define('REJOIGNEZ_NOUS','Join the community on');
 define('REMERCIEMENT_LOGO','The DucksManager and WhatTheDuck logos are drawn by enigm.');
 define('REMPLIR_INFOS_NOUVEAU_MAGAZINE','Fill in the following fields in order DucksManager to determine the new magazine for which ou wish to add some issues.');
 define('REMPLIR_PAYS_ET_MAGAZINE','You must fill the fields corresponding to the country and the magazine\n for which you want to add some issues');

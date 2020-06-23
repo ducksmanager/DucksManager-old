@@ -372,9 +372,11 @@ switch($action) {
     } ?><?php
     if (!isset($_GET['action'])) {?>
         <div class="welcome">
+            <a href="https://discord.gg/ruk3FsD" target="_blank"><div id="discord"><?=REJOIGNEZ_NOUS?></div></a>
         <h2><?=BIENVENUE?></h2>
         <h5><?=ACCROCHE?></h5>
-        </div><?php
+        </div>
+        <?php
     } ?>
     <div id="contenu">
         <?php
