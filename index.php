@@ -1227,12 +1227,14 @@ switch($action) {
                         </div>
                         <?=PRESENTATION_WHATTHEDUCK_3?>
                     </div>
-                </div>
-                <div style="margin-right: 6px; text-align: center;">
-                    <h3>
-                        <a class="noborder btn btn-lg btn-success" href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
-                    </h3>
-                </div>
+                </div><?php
+                if (!isset($_SESSION['id_user'])) { ?>
+                    <div style="margin-right: 6px; text-align: center;">
+                        <h3>
+                            <a class="noborder btn btn-lg btn-success" href="?action=new"><?=INSCRIVEZ_VOUS?> </a>
+                        </h3>
+                    </div><?php
+                }?>
             </div>
         <br /><?php
             break;
