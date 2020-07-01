@@ -110,17 +110,7 @@ class Inducks {
     }
 
     static function get_pays() {
-        $resultat_requete= self::requete('
-      SELECT countrycode, countryname
-      FROM inducks_countryname
-      WHERE languagecode = ?
-      ORDER BY countryname'
-    , [$_SESSION['lang']]);
-        $liste_pays_courte= [];
-        foreach($resultat_requete as $pays) {
-            $liste_pays_courte[$pays['countrycode']]=$pays['countryname'];
-        }
-        return $liste_pays_courte;
+        return (array) DmClient::get_service_results_for_dm('GET', '/coa/list/countries/'.$_SESSION['lang']);
     }
 
     static function get_nom_complet_magazine($pays,$magazine) {

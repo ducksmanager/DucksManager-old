@@ -905,8 +905,7 @@ switch($action) {
                     }
 
                     if (isset($_GET['onglet_magazine']) && $_GET['onglet_magazine'] === 'new' && !isset($_POST['magazine'])) {
-                        echo REMPLIR_INFOS_NOUVEAU_MAGAZINE;
-                        ?>
+                        echo REMPLIR_INFOS_NOUVEAU_MAGAZINE; ?>
                         <br/><br/>
                         <form method="get" action="?">
                             <input type="hidden" name="action" value="gerer"/>
