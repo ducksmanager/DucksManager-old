@@ -103,7 +103,7 @@ $menus= [
             new Item('gerer', 'always', GERER_COLLECTION, 'glyphicon glyphicon-list-alt'),
             new Item('stats', 'always', STATISTIQUES_COLLECTION, 'glyphicon glyphicon-tasks'),
             new Item('agrandir', 'always', AGRANDIR_COLLECTION, 'glyphicon glyphicon-fire'),
-            new Item('importer_inducks', 'always', COLLECTION_INDUCKS, 'glyphicon custom-inducks', false, true),
+            new Item('importer_inducks', 'always', COLLECTION_INDUCKS, 'glyphicon custom-inducks'),
             new Item('print', 'always', IMPRIMER_COLLECTION, 'glyphicon glyphicon-print'),
             new Item('logout', 'always', DECONNEXION, 'glyphicon glyphicon-log-out')
         ]
