@@ -220,7 +220,7 @@ define('EXCLUSIF_DUCKSMANAGER','Exclusive in DucksManager');
 define('EXPLICATION_GRAPH_ACHATS_1', 'This graph allows you to trace back how your collection has evolved with time.');
 define('EXPLICATION_GRAPH_ACHATS_2', 'When did you get add the 10<sup>th</sup> issue in your collection? What about the 50<sup>th</sup>?');
 define('EXPLICATION_GRAPH_ACHATS_3', 'During what period did you buy the most issues in the past?');
-define('EXPLICATION_GRAPH_ACHATS_4', 'In order to trace back how your collection has evolved with time, indicate the purchase dates of your issues on the %s page, then come back here!');
+define('EXPLICATION_GRAPH_ACHATS_4', 'In order to trace back how your collection has evolved with time, indicate the purchase dates of your issues on the %s page, then come back here! If no purchase date is indicated for an issue, the date when it was added to the collection is used.');
 define('EXPLICATION_NOTATION_AUTEURS1','DucksManager uses the');
 define('EXPLICATION_NOTATION_AUTEURS2','ratings that you assign to your favorite authors');
 define('EXPLICATION_NOTATION_AUTEURS3','to suggest you publications that may interest you.');

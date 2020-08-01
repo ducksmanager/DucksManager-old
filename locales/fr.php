@@ -223,7 +223,7 @@ define('EXCLUSIF_DUCKSMANAGER','Exclusif DucksManager');
 define('EXPLICATION_GRAPH_ACHATS_1', 'Ce graphique vous permet de retracer l\'évolution de votre collection dans le temps.');
 define('EXPLICATION_GRAPH_ACHATS_2', 'A quel moment votre collection a-t-elle accueilli son 10<sup>ème</sup> numéro ? Son 50<sup>ème</sup> ?');
 define('EXPLICATION_GRAPH_ACHATS_3', 'Quand avez-vous acheté le plus de magazines dans le passé ?');
-define('EXPLICATION_GRAPH_ACHATS_4', 'Afin de retracer l\'évolution de votre collection, renseignez les dates d\'achat de vos numéros dans la page %s, puis revenez ici !');
+define('EXPLICATION_GRAPH_ACHATS_4', 'Afin de retracer l\'évolution de votre collection, renseignez les dates d\'achat de vos numéros dans la page %s, puis revenez ici ! Si une date d\'achat n\'a pas été indiquée pour un numéro, sa date d\'ajout dans la collection est utilisée');
 define('EXPLICATION_NOTATION_AUTEURS1','DucksManager se base sur les');
 define('EXPLICATION_NOTATION_AUTEURS2','notes que vous attribuez à vos auteurs préférés');
 define('EXPLICATION_NOTATION_AUTEURS3','pour vous proposer des magazines susceptibles de vous intéresser.');

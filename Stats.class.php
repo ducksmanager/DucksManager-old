@@ -150,12 +150,15 @@ class Stats {
 
     static function getPurchaseHistory() {
             $resultat_achats = DM_Core::$d->requete('
-            SELECT IFNULL(DATE_FORMAT(Date,\'%Y-%m\'), \'?\') AS Mois, CONCAT(Pays, \'/\', Magazine) AS Publicationcode, Count(Numero) AS cpt
+            SELECT
+                IF(Date is null or DateAjout IS NULL, \'?\', DATE_FORMAT(IFNULL(Date, DateAjout),\'%Y-%m\')) AS Mois,
+                   CONCAT(Pays, \'/\', Magazine) AS Publicationcode,
+                   Count(Numero) AS cpt
             FROM numeros n
             LEFT JOIN achats USING (ID_Acquisition)
             WHERE ID_Utilisateur=?
-            GROUP BY YEAR(Date), MONTH(Date), Pays,Magazine
-            ORDER BY YEAR(Date), MONTH(Date)
+            GROUP BY YEAR(IFNULL(Date, DateAjout)), MONTH(IFNULL(Date, DateAjout)), Pays,Magazine
+            ORDER BY YEAR(IFNULL(Date, DateAjout)), MONTH(IFNULL(Date, DateAjout))
         ', [static::$id_user]);
 
         $achats_magazines_nouv = [];
