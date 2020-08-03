@@ -148,7 +148,7 @@ class Inducks {
         if (empty($publication_codes)) {
             return [];
         }
-        return (array) DmClient::get_service_results_for_dm('GET', '/coa/list/publications', [implode(',', array_values($publication_codes))]);
+        return (array) DmClient::get_service_results_for_dm('GET', '/coa/list/publications', [implode(',', array_values(array_unique($publication_codes)))]);
     }
 
     static function get_liste_magazines($pays) {
