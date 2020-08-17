@@ -5,7 +5,7 @@ include_once '../authentification.php';
 
 if (isset($_POST['ID'])) {
     DmClient::get_service_results_for_dm(
-        'POST', '/ducksmanager/email/bookstore-approved', [
+        'POST', '/ducksmanager/bookstore/approve', [
             'id' => $_POST['ID'],
             'coordinates' => [$_POST['CoordX'], $_POST['CoordY']]
         ]
