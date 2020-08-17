@@ -1107,7 +1107,7 @@ switch($action) {
             ]);
 
             DmClient::get_service_results_for_dm(
-                'POST', "/ducksmanager/email/bookstore-suggestion", is_null($id_user) ? [] : ['userid' => $id_user]
+                'POST', "/ducksmanager/bookstore/suggest", is_null($id_user) ? [] : ['userId' => $id_user]
             );
             ?>
             <div class="alert alert-info">
