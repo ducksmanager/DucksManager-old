@@ -13,9 +13,8 @@ if (isset($_POST['ID'])) {
 }
 
 $requete = '
-    SELECT bouquineries.ID, Nom, AdresseComplete, Pays, Commentaire, uc.ID_user, DateAjout, CONCAT(CoordX, ",", CoordY) As Coord
+    SELECT ID, Nom, AdresseComplete, Pays, Commentaire, ID_Utilisateur, DateAjout, CONCAT(CoordX, ",", CoordY) As Coord
     from bouquineries
-    inner join users_contributions uc ON bouquineries.ID = uc.ID_bookstore
     WHERE Actif=0';
 
 $resultats = DM_Core::$d->requete($requete);
