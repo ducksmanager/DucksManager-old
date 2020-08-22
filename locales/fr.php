@@ -86,6 +86,7 @@ define('BIBLIOTHEQUE_OPTIONS','Définissez les options d\'affichage de votre bib
 define('BIBLIOTHEQUE_OPTIONS_COURT','Options de la bibliothèque');
 define('BIBLIOTHEQUE_PARTICIPER','Aidez-nous à afficher de belles bibliothèques pour tous les utilisateurs !');
 define('BIBLIOTHEQUE_PARTICIPER_COURT','Participer au projet !');
+define('BIBLIOTHEQUE_PRIVEE','La bibliothèque de cet utilisateur est privée.');
 define('BIBLIOTHEQUE_PROPOSITION_PARTAGE','Fier(e) de votre collection ? Montrez votre bibliothèque à vos amis !');
 define('BIBLIOTHEQUE_SAUVEGARDER_IMAGE','Sauvegarder l\'image de cette bibliothèque');
 define('BIENVENUE','Bienvenue sur DucksManager !');
@@ -518,6 +519,7 @@ define('TRAVAUX_SECTION','Cette section est en travaux !');
 define('TYPE_LISTE','Type de liste');
 define('TYPE_LISTE_GLOBAL','Type de liste global');
 define('UN_VISITEUR_ANONYME','un visiteur anonyme');
+define('UTILISATEUR_INEXISTANT','Ce nom d\'utilisateur n\'existe pas.');
 define('UTILISATEUR_INVALIDE','Le nom d\'utilisateur est invalide. Choisissez un nom d\'utilisateur d\'au moins 3 caractères contenant seulement des lettres, des chiffres et des tirets.');
 define('UTILISATEUR_EXISTANT','Ce nom d\'utilisateur est déjà utilisé !');
 define('UTILISATEUR_VALIDE','Utilisateur valide');

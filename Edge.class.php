@@ -174,10 +174,13 @@ class Edge {
               FROM users
               WHERE username=?'
             , [$user]);
+            if (empty($resultats_utilisateur)) {
+                return null;
+            }
             if ($resultats_utilisateur[0]['AccepterPartage'] === '1') {
                 return $resultats_utilisateur[0]['ID'];
             }
-            else return null;
+            return false;
         }
         return $id_user;
     }
@@ -201,8 +204,11 @@ elseif (isset($_POST['get_bibliotheque'])) {
     $user = $_POST['user_bibliotheque'];
     $id_user = Edge::get_user_bibliotheque($user);
 
-    if (is_null($id_user)) {
-        echo json_encode(['erreur' => 'La bibliothèque de cet utilisateur est privée.']);
+    if ($id_user === false) {
+        echo json_encode(['erreur' => BIBLIOTHEQUE_PRIVEE]);
+    }
+    else if (is_null($id_user)) {
+        echo json_encode(['erreur' => UTILISATEUR_INEXISTANT]);
     }
     else {
         $requete_textures = '
