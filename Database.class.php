@@ -448,7 +448,7 @@ class Database
                 $limite = Affichage::$niveaux_medailles[$type_medaille][$niveau];
                 $type_medaille = strtolower($type_medaille);
                 return "
-                    select ID_User, contribution, $niveau as niveau, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(date)) AS DiffSecondes
+                    select ID_User, contribution, $niveau as niveau, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(date)) - 60 AS DiffSecondes
                     from users_contributions
                     where contribution = '$type_medaille'
                       and points_total >= $limite and points_total - points_new < $limite
