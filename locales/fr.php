@@ -345,7 +345,7 @@ define('MOT_DE_PASSE_OUBLIE_EXPLICATION','Un mot de passe temporaire va vous êt
 define('MOT_DE_PASSE_OUBLIE_OK', 'Si l\'e-mail indiqué correspond à un compte DucksManager, un lien permettant de modifier votre mot de passe vient d\'y être envoyé. Si l\'e-mail ne vous parvient pas d\'ici quelques minutes, pensez à vérifier le dossier "Spam".');
 define('MOTS_DE_PASSE_DIFFERENTS','Les deux mots de passe ne correspondent pas !');
 define('MOYEN','Moyen');
-define('NEWS_A_AJOUTE_BOUQUINERIE','a proposé la bouquinerie');
+define('NEWS_A_AJOUTE_BOUQUINERIE','a ajouté la bouquinerie');
 define('NEWS_A_AJOUTE','a ajouté');
 define('NEWS_A_SA_COLLECTION','à sa collection');
 define('NEWS_AUTRE_NUMERO','autre numéro');
