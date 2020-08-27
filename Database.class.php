@@ -115,7 +115,9 @@ class Database
             DM_Core::$d->requete('
               DELETE FROM numeros
               WHERE ID_Utilisateur=?
-                AND Numero IN (' . implode(',', array_fill(0, count($liste), '?')) . ')', array_merge([$_SESSION['id_user']], $liste)
+                AND Pays=?
+                AND Magazine=?
+                AND Numero IN (' . implode(',', array_fill(0, count($liste), '?')) . ')', array_merge([$_SESSION['id_user'], $pays, $magazine], $liste)
             );
         } else {
             $liste_user = $this->toList($_SESSION['id_user']);
