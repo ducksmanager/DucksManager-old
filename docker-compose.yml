@@ -2,7 +2,10 @@ version: '2'
 services:
   web:
     container_name: ducksmanager
-    build: .
+    build:
+      context: .
+      args:
+        COMMIT_HASH: ${COMMIT_HASH}
     volumes:
     - dm_sessions:/tmp
     environment:

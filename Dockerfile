@@ -17,3 +17,8 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-install opcache
 
 COPY . /var/www/html
+
+ARG COMMIT_HASH
+ENV VERSION ${COMMIT_HASH}
+
+RUN sed -i "s/VERSION/$VERSION/g" /var/www/html/index.php
