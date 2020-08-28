@@ -304,8 +304,7 @@ class Affichage {
                                             $e=new Edge($numero->Pays, $numero->Magazine, $numero->Numero, $numero->Numero, true);
                                             echo $e->getImgHTML(true);
                                         }
-                                    ?></div>
-                                    <div class="etagere">&nbsp;</div><?php
+                                    ?></div><?php
                                     foreach($evenement->numeros as $numero) {
                                         self::afficher_texte_numero(
                                             $numero->Pays,

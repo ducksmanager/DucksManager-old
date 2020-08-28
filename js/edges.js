@@ -51,6 +51,7 @@ function ouvrir_tranche() {
 var element_conteneur_bibliotheque;
 
 function charger_bibliotheque() {
+    init_observers_tranches();
     est_contexte_bibliotheque = true;
 
     var conteneur=jQuery('#conteneur_bibliotheque');
@@ -85,14 +86,17 @@ function charger_bibliotheque() {
                 }
 
                 noms_magazines = response.noms_magazines;
+
                 textures = response.textures;
+                var bookshelfTextureUrl = '../edges/textures/'+textures[1].texture + '/' + textures[1].sous_texture+'.jpg'
+                $('<style type="text/css">.tranche:not(.livre-visible)::after { background: url("'+bookshelfTextureUrl+'");}</style>').appendTo("head");
 
                 jQuery('#titre_bibliotheque').text(response.titre);
                 jQuery('#chargement_bibliotheque').addClass('cache');
 
                 element_conteneur_bibliotheque = jQuery('#bibliotheque');
                 element_conteneur_bibliotheque.append(jQuery.map(response.edgesData, function(edgeData) {
-                    return jQuery('<img>')
+                    return jQuery('<div>')
                         .addClass('tranche')
                         .attr({
                             name: edgeData.pays+'/'+edgeData.magazine+'.'+edgeData.numero_reference,
@@ -116,20 +120,6 @@ function charger_bibliotheque() {
                 }
             }
         });
-}
-
-function ajouter_etagere(afterElement) {
-    var etagere = jQuery('<div>').addClass('etagere').html('&nbsp;').css({
-        backgroundImage: 'url(\'edges/textures/' + textures[1].texture + '/' + textures[1].sous_texture + '.jpg\')'
-    });
-    if (afterElement) {
-        afterElement.after(etagere);
-    }
-    else {
-        jQuery('#bibliotheque').append(etagere);
-    }
-
-    init_observers_tranches();
 }
 
 var loaded_sprites = [];
@@ -159,15 +149,25 @@ function charger_tranche(tranche, ignoresprite) {
             });
     }
     else {
-        tranche
-            .on('load',charger_tranche_suivante)
-            .on('error',charger_tranche_suivante);
 
-        var src=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
-        var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src+'"]'), function(i, src_similaire) {
+        var src_gen=tranche.attr('name').replace(new RegExp('([^/]+)/','g'),('$1/gen/'));
+        var src_similaires=jQuery.map(element_conteneur_bibliotheque.find('[src*="'+src_gen+'"]'), function(i, src_similaire) {
             return jQuery(src_similaire).attr('src');
         });
-        tranche.attr({src: src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src+'.png'});
+        var src = src_similaires[0] || 'https://edges.ducksmanager.net/edges/'+src_gen+'.png';
+        $('<img>').attr({src})
+            .on('load', function() {
+                var width = this.naturalWidth,
+                    height = this.naturalHeight;
+                if (tranche.hasClass('small')) {
+                    width *= 0.75;
+                    height *= 0.75;
+                }
+                tranche.css({width: width + 'px', height: height + 'px', backgroundSize: width + 'px ' + height + 'px'})
+                charger_tranche_suivante.call(tranche)
+            })
+            .on('error', function() { charger_tranche_suivante.call(tranche)});
+        tranche.css({backgroundImage: 'url(' + src + ')'});
     }
 }
 
@@ -204,16 +204,11 @@ function charger_tranche_suivante() {
     var precedente=tranche.prev('.tranche');
     var suivante=tranche.next('.tranche');
 
-    if (precedente.length && tranche.offset().left < precedente.offset().left) {
-        ajouter_etagere(precedente);
-    }
-
     if (suivante.length) {
         charger_tranche(suivante);
     }
     else {
         if (tranche.closest('#bibliotheque').length) { // Contexte bibliothèque
-            ajouter_etagere();
             charger_recherche();
         }
         else { // Contexte affichage dans les événements récents
@@ -579,18 +574,16 @@ function recherche_histoire(val_recherche) {
 }
 
 function init_observers_tranches() {
-    jQuery('.tranche')
-        .off('mousedown mouseover')
-        .on('mousedown', function() {
+    jQuery('#body').on('click', '.tranche', function() {
             tranche_bib=jQuery(this);
             ouvrir_tranche();
-        })
-        .on('mouseover', function() {
-            if (!action_en_cours && !couverture_ouverte) {
-                ouvrirInfoBulleEffectif(jQuery(this));
-            }
+        });
+
+    jQuery('#body').on('mouseover', '.tranche', function() {
+        if (!action_en_cours && !couverture_ouverte) {
+            ouvrirInfoBulleEffectif(jQuery(this));
         }
-    );
+    });
 
     jQuery('#body').on('hidden.bs.tooltip', function() {
         jQuery('.tooltip:not(.in)').remove();

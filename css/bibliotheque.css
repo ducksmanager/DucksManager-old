@@ -1,10 +1,8 @@
 #bibliotheque  {
     height:100%;
-    z-index:50;
+    overflow: hidden;
     margin-top: 35px;
-    padding-top: 10px;
-    padding-left:15px;
-    padding-right:5px;
+    padding: 10px 5px 10px 15px;
     background: transparent repeat left top;
     clear: both;
 }
@@ -101,11 +99,6 @@
     position: absolute;
 }
 
-.etagere {
-    margin: 0 -15px 10px -15px;
-    background: transparent url('../edges/textures/bois/KNOTTY PINE.jpg') repeat-x 10px 0;
-}
-
 .select_sous_texture {
     display: block !important;
 }
@@ -125,15 +118,6 @@
     opacity: 0.5;
 }
 
-#bibliotheque .etagere {
-    margin-top: -5px;
-    margin-right: -5px;
-}
-
-.etagere:last-child {
-    margin-bottom: 0;
-}
-
 .edge_container {
     line-height: 0;
     margin-left: -15px;
@@ -144,9 +128,33 @@
 }
 
 .tranche {
+    position: relative;
     display: inline-block;
-    z-index: 800;
     background-color:white;
+}
+
+.tranche:not(.livre-visible) {
+    left: 0!important;
+    top: 0!important;
+    margin-top: 20px;
+}
+
+.tranche:not(.livre-visible)::after {
+    position: absolute;
+    content: "";
+    top: 100%;
+    left: -100vw;
+    right: -100vw;
+    height: 15px;
+    z-index: 50;
+}
+
+.tooltip_content .tranche:not(.livre-visible)::after {
+    background: url("../edges/textures/bois/HONDURAS MAHOGANY.jpg");
+}
+
+.tranche:not(.livre-visible) + .tranche:not(.livre-visible)::after {
+    z-index: 0;
 }
 
 .titre_magazine {

@@ -8,6 +8,7 @@
     margin-top:-150px;
     left:50%;
     margin-left: -250px;
+    z-index: 60;
 }
 
 .magazine-viewport .magazine{
@@ -25,6 +26,7 @@
 
 .tranche.livre-visible{
     position: absolute;
+    z-index: 100;
 }
 
 .magazine-viewport .page{

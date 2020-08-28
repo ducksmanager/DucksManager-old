@@ -23,11 +23,10 @@ class Edge {
 
     function getImgHTML($small = false) {
         ob_start();
-        ?><img data-edge="<?=$this->est_visible ? 1 : 0?>"
-             class="tranche"
+        ?><div data-edge="<?=$this->est_visible ? 1 : 0?>"
+             class="tranche <?=($small ? 'small' : '')?>"
              name="<?=$this->pays?>/<?=$this->magazine?>.<?=$this->numero_reference?>"
              id="<?=$this->pays?>/<?=$this->magazine?>.<?=$this->numero?>"
-             <?=$small ? 'onload="this.height*=0.75;this.onload=null"' : '' ?>
         /><?php
         return ob_get_clean();
     }

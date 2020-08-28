@@ -9,6 +9,8 @@ RUN apt-get update \
       libpng-dev libfreetype6-dev libmcrypt-dev libjpeg-dev libpng-dev \
  && apt-get clean
 
+# Header set Access-Control-Allow-Origin "http://localhost:3000"
+
 RUN docker-php-ext-configure gd \
   --with-freetype-dir=/usr/include/freetype2 \
   --with-png-dir=/usr/include \
