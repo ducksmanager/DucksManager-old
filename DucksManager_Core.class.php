@@ -5,13 +5,8 @@ include_once 'Util.class.php';
 include_once 'Database.class.php';
 
 class DM_Core {
-    /**
-     * @var Database
-     */
+    /** @var Database */
     static $d;
-
-    function  __construct() {
-    }
 }
 if (!isset(DM_Core::$d)) {
     DM_Core::$d = new Database();

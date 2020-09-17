@@ -63,26 +63,6 @@ class DmClient
     }
 
     /**
-     * @param string   $method
-     * @param string   $path
-     * @param array    $parameters
-     * @return array|null|stdClass
-     */
-    public static function get_service_results_for_wtd($method, $path, $parameters = []) {
-        return self::get_service_results($method, $path, $parameters, 'whattheduck');
-    }
-
-    /**
-     * @param string   $method
-     * @param string   $path
-     * @param array    $parameters
-     * @return array|null|stdClass
-     */
-    public static function get_service_results_for_ec($method, $path, $parameters = []) {
-        return self::get_service_results($method, $path, $parameters, 'edgecreator');
-    }
-
-    /**
      * @param string $method
      * @param string $path
      * @param array $parameters

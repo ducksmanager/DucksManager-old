@@ -277,9 +277,7 @@ class Stats {
                     <div>
                         <span class="numero top<?=$importance?>"><?php
                         Affichage::afficher_texte_numero(
-                            $country,
-                            $suggestions->publicationTitles->$publicationcode,
-                            $issuenumber
+                            $country, $suggestions->publicationTitles->$publicationcode, $issuenumber
                         );
                         ?>&nbsp;</span><?=NUMERO_CONTIENT?>
                     </div>

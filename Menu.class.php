@@ -7,7 +7,6 @@ class Item {
     var $icone;
     var $beta=false;
     var $nouveau=false;
-    static $beta_user=false;
     static $action="";
 
     function __construct($nom, $est_prive, $texte, $icone = null, $beta = false, $nouveau = false) {

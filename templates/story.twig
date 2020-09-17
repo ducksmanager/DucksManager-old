@@ -1,0 +1,8 @@
+{% if title %}
+    {{ title }}
+{% else %}
+    {{ SANS_TITRE }}{% if comment %}({{ comment }}){% endif %}
+{% endif %}
+<a target="_blank" href="https://coa.inducks.org/story.php?c={{ code | url_encode }}">
+    {{ DETAILS_HISTOIRE }}
+</a>

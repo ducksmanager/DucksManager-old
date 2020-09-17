@@ -9,9 +9,6 @@ class Parametre_liste {
         $this->valeur=$valeur;
         $this->valeur_defaut=$defaut;
     }
-    function verif($valeur) {
-        echo 'Cette fonction ne peut pas être appelée directement (valeur : '.$valeur.')';
-    }
 }
 
 class Parametre_valeurs extends Parametre_liste{
@@ -20,24 +17,16 @@ class Parametre_valeurs extends Parametre_liste{
         $this->valeurs_possibles=$valeurs;
         parent::__construct($texte,$valeur,$defaut);
     }
-    
-    function verif($valeur) {
-        return in_array($valeur, $this->valeurs_possibles);
-    }
 }
 
 class Parametre_min_max extends Parametre_liste{
     var $min;
     var $max;
-    
+
     function  __construct($texte,$min,$max,$valeur,$defaut) {
         $this->min=$min;
         $this->max=$max;
         parent::__construct($texte,$valeur,$defaut);
-    }
-    
-    function verif($valeur) {
-        return $valeur >= $this->min && $valeur <= $this->max;
     }
 }
 

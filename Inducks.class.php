@@ -1,8 +1,7 @@
 <?php
 include_once 'Database.class.php';
 class Inducks {
-    static $noms_complets;
-    static $OUTDUCKS_ROOT = 'https://inducks.org/hr.php?normalsize=1&image=https://outducks.org/';
+    const OUTDUCKS_ROOT = 'https://inducks.org/hr.php?normalsize=1&image=https://outducks.org/';
 
     static function connexion_ok() {
         $requete='SELECT COUNT(*) As cpt FROM inducks_country';
@@ -33,14 +32,6 @@ class Inducks {
           return $resultat_get_redirection[0]['NomAbrege'];
       }
         return $magazine;
-    }
-
-    static function get_vrais_magazine_et_numero($pays,$magazine,$numero) {
-        $vrai_magazine=self::get_vrai_magazine($pays,$magazine);
-        if ($vrai_magazine !== $magazine) {
-            return [$vrai_magazine,substr($magazine, strlen($vrai_magazine)).$numero];
-        }
-        return [$magazine,str_replace(' ', '', $numero)];
     }
 
     static function get_liste_numeros_from_publicationcodes($publication_codes) {
@@ -196,22 +187,6 @@ class Inducks {
             WHERE storycode = '$story_code' AND storycode != ''
             ORDER BY publicationcode, issuenumber";
         return self::requete($requete);
-    }
-    static function get_magazines_ne_paraissant_plus($publication_codes) {
-        $liste_magazines= [];
-        foreach($publication_codes as $publicationcode) {
-            $liste_magazines[]="'".$publicationcode."'";
-        }
-           $requete_get_ne_parait_plus='SELECT CONCAT(PaysAbrege,\'/\',NomAbrege) AS publicationcode, NeParaitPlus FROM magazines WHERE publicationcode IN ('.implode(',',$liste_magazines).')';
-           $resultat_get_ne_parait_plus=DM_Core::$d->requete($requete_get_ne_parait_plus);
-
-        $magazines_ne_paraissant_plus= [];
-        foreach($resultat_get_ne_parait_plus as $resultat) {
-            if ($resultat['NeParaitPlus']===1) {
-                $magazines_ne_paraissant_plus[]=$resultat['publicationcode'];
-            }
-        }
-           return $magazines_ne_paraissant_plus;
     }
 
     public static function import() {
@@ -425,10 +400,10 @@ elseif (isset($_POST['get_cover'])) {
     foreach($resultat_get_extraits as $extrait) {
         switch($extrait['sitecode']) {
             case 'webusers': case 'thumbnails':
-                $url=Inducks::$OUTDUCKS_ROOT.'webusers/'.$extrait['url'];
+                $url=Inducks::OUTDUCKS_ROOT.'webusers/'.$extrait['url'];
             break;
             default:
-                $url=Inducks::$OUTDUCKS_ROOT.$extrait['sitecode'].'/'.$extrait['url'];
+                $url=Inducks::OUTDUCKS_ROOT.$extrait['sitecode'].'/'.$extrait['url'];
         }
 
         if (count($resultats) === 0) {
@@ -524,14 +499,6 @@ elseif (isset($_POST['get_magazines_histoire'])) {
 
     header('Content-Type: application/json');
     echo json_encode($retour);
-}
-
-function trier_resultats_recherche ($a,$b) {
-    if ($a['titre'] < $b['titre']) {
-        return -1;
-    }
-
-    return $a['titre'] === $b['titre'] ? 0 : 1;
 }
 
 function nettoyer_numero($numero) {

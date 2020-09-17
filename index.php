@@ -582,7 +582,7 @@ switch($action) {
                                 foreach ($resultat_tranches_collection_ajoutees as $tranche) {
                                     [$pays, $magazine] = explode('/', $tranche['publicationcode']);
                                     echo Affichage::afficher_texte_numero($pays, $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'])
-                                        . Affichage::afficher_temps_passe($tranche['DiffSecondes']) . '<br />';
+                                        . Affichage::afficher_temps_passe((int)$tranche['DiffSecondes']) . '<br />';
                                 }
                                 ?>
                             </div><br/><br/><?php
@@ -684,8 +684,7 @@ switch($action) {
                                 <input type="submit" class="btn btn-default" value="<?= VALIDER ?>"/>
                             </div>
                         </div>
-                    </form>
-                    <?php
+                    </form><?php
 
                     break;
 

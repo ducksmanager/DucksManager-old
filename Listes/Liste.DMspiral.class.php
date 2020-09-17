@@ -18,10 +18,6 @@ class dmspiral extends Format_liste {
             'taille_police'=>new Parametre_fixe($this->p('epaisseur')/4)]);
     }
 
-    static function est_listable($numero) {
-        return is_numeric($numero) || preg_match(Format_liste::$regex_numero_double, $numero, $numero)>0;
-    }
-
     function afficher($liste) {
 
         foreach($liste as $pays=>$numeros_pays) {

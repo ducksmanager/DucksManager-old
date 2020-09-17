@@ -10,3 +10,7 @@
 {% if allow_wrap %}
     {{ magazine_parts|slice(1)|join(' ') }} {{ issuenumber }}
 {% endif %}
+{% if other_issues_number %}
+    {{ ET }} {{ other_issues_number }}
+    {% if other_issues_number is same as (1) %}{{ NEWS_AUTRE_TRANCHE }}{% else %}{{ NEWS_AUTRES_TRANCHES }}{% endif %}
+{% endif %}

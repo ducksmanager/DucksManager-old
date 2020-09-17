@@ -3,11 +3,8 @@ require_once 'DucksManager_Core.class.php';
 require_once 'Affichage.class.php';
 require_once 'Inducks.class.php';
 class Liste {
-    var $contenu;
-    var $nom_fichier;
+    var $texte;
     var $collection= [];
-    var $very_max_centaines=1;
-    var $database;
     static $types_listes= [];
 
     static function set_types_listes() {
@@ -37,25 +34,6 @@ class Liste {
         $this->texte=$texte;
     }
 
-    function ajouter($pays,$magazine,$numero) {
-        if (!array_key_exists($pays, $this->collection)) {
-            $this->collection[$pays] = [];
-        }
-        if (!array_key_exists($magazine,$this->collection[$pays])) {
-            $this->collection[$pays][$magazine] = [];
-        }
-        if (in_array($numero, $this->collection[$pays][$magazine])) {
-            return;
-        }
-        $this->collection[$pays][$magazine][]=$numero;
-    }
-
-    function ListeExemple() {
-        $numeros_mp= [[2,'Excellent',false,-1], [273,'Bon',false,-1], [4,'Excellent',false,-1], [92,'Excellent',false,-1]];
-        $numeros_mad= [[6,'Indefini',false,-1], [16,'Bon',false,-1]];
-        $this->collection= ['fr'=> ['MP'=>$numeros_mp], 'us'=> ['MAD'=>$numeros_mad]];
-    }
-
     function sous_liste($pays,$magazine=false) {
         $nouvelle_liste=new Liste();
         if (!$magazine) {
@@ -67,16 +45,6 @@ class Liste {
             }
         }
         return $nouvelle_liste;
-    }
-
-    function liste_pays() {
-        $tab= [];
-        $liste=Inducks::get_pays();
-        foreach(array_keys($this->collection) as $pays) {
-            $pays_trouve=array_key_exists($pays,$liste);
-            $tab[$pays_trouve ? $liste[$pays] : $pays]= [$pays,$pays_trouve ? $liste[$pays] : $pays];
-        }
-        return $tab;
     }
 
     function get_publication_la_plus_possedee() {
@@ -259,26 +227,8 @@ class Liste {
                         </div>
                     </form>
                 </div><?php
-                break;
             break;
         }
-    }
-
-    function add_to_database($id_user) {
-        $cpt=0;
-        foreach($this->collection as $pays=>$numeros_pays) {
-            if ($pays!=='country') {
-                foreach($numeros_pays as $magazine=>$numeros) {
-                    foreach($numeros as $numero) {
-                        $requete='INSERT INTO numeros (Pays, Magazine, Numero, Etat, ID_Acquisition, AV, ID_Utilisateur) '
-                                .'VALUES (\''.$pays.'\',\''.$magazine.'\',\''.$numero.'\',\'indefini\',-1,0,'.$id_user.')';
-                        DM_Core::$d->requete($requete);
-                        $cpt++;
-                    }
-                }
-            }
-        }
-        return $cpt;
     }
 
     function remove_from_database($id_user) {
@@ -296,81 +246,6 @@ class Liste {
             }
         }
         return $cpt;
-    }
-
-    function synchro_to_database($ajouter_numeros=true,$supprimer_numeros=false) {
-            $id_user=$_SESSION['id_user'];
-            $l_ducksmanager=DM_Core::$d->toList($id_user);
-            $l_ducksmanager->compareWith($this,$ajouter_numeros,$supprimer_numeros);
-    }
-
-    function compareWith($other_list,$ajouter_numeros=false,$supprimer_numeros=false) {
-        $id_user=$_SESSION['id_user'];
-        $numeros_a_ajouter=$numeros_a_supprimer=$numeros_communs=0;
-
-        $liste_a_supprimer=new Liste();
-
-        foreach($this->collection as $pays=>$numeros_pays) {
-            foreach($numeros_pays as $magazine=>$numeros) {
-                sort($numeros);
-                foreach($numeros as $numero) {
-                    if (array_key_exists($pays, $other_list->collection)
-                     && array_key_exists($magazine, $other_list->collection[$pays])
-                     && in_array($numero[2], $other_list->collection[$pays][$magazine])) {
-                        $numeros_communs++;
-                    }
-                    else {
-                        $liste_a_supprimer->ajouter($pays, $magazine, $numero[4]);
-                        $numeros_a_supprimer++;
-                     }
-                }
-            }
-        }
-        if ($supprimer_numeros) {
-            $liste_a_supprimer->remove_from_database($id_user);
-        }
-        $liste_a_ajouter=new Liste();
-        foreach($other_list->collection as $pays=>$numeros_pays) {
-            foreach($numeros_pays as $magazine=>$numeros) {
-                if ($pays!=='country') {
-                    foreach($numeros as $numero) {
-                        $trouve=false;
-                        if (array_key_exists($pays,$this->collection)
-                        && array_key_exists($magazine,$this->collection[$pays])) {
-                            $numeros_possedes_magazine=count($this->collection[$pays][$magazine]);
-                            for ($i=0;$i<$numeros_possedes_magazine;$i++) {
-                                if ($numero === $this->collection[$pays][$magazine][$i][0]) {
-                                    $trouve = true;
-                                }
-                            }
-                        }
-                        if (!$trouve) {
-                            $liste_a_ajouter->ajouter($pays, $magazine, $numero);
-                            $numeros_a_ajouter++;
-                        }
-                    }
-                }
-            }
-        }
-        if ($ajouter_numeros) {
-            $liste_a_ajouter->add_to_database($id_user);
-        }
-        if (!$ajouter_numeros && !$supprimer_numeros) {
-            ?>
-            <ul>
-                <li style="margin-top:10px"><?=$numeros_a_ajouter?> <?=NUMEROS_A_AJOUTER?> :
-                    <?php $liste_a_ajouter->afficher('Classique'); ?>
-                </li>
-                <li style="margin-top:10px"><?=$numeros_a_supprimer?> <?=NUMEROS_A_SUPPRIMER?> :
-                    <?php $liste_a_supprimer->afficher('Classique'); ?>
-                </li>
-                <li style="margin-top:10px"><?=$numeros_communs?> <?=NUMEROS_COMMUNS?>
-                </li>
-            </ul>
-            <?php
-            return [$numeros_a_ajouter, $numeros_a_supprimer];
-        }
-        echo OPERATIONS_EXECUTEES.' <br />';
     }
 
     function afficher($type,$parametres=null) {
@@ -419,37 +294,12 @@ class Liste {
             }
         }
     }
-
-    static function import($liste_texte) {
-        $l=new Liste($liste_texte);
-        $ajouts = 0;
-        $suppressions = 0;
-        if ($l->collection === []) {
-            echo AUCUN_NUMERO_INDUCKS;
-            return [false,0,0];
-        }
-
-        if (isset($_SESSION['user'])) {
-            $id_user = $_SESSION['id_user'];
-            $l_ducksmanager = DM_Core::$d->toList($id_user);
-            [$ajouts,$suppressions] = $l_ducksmanager->compareWith($l);
-            if ($ajouts===0 && $suppressions===0) {
-                echo LISTES_IDENTIQUES;
-                return [true,0,0];
-            }
-        }
-        else {
-            echo RESULTAT_NUMEROS_INDUCKS;
-            $l->afficher('Classique');
-        }
-        return [true,$ajouts, $suppressions];
-    }
 }
 if (isset($_POST['parametres'])) {
     $_POST['parametres'] = str_replace('\"', '"', $_POST['parametres']);
 }
 
-function startswith($hay, $needle) { // From http://sunfox.org/blog/2007/03/21/startswith-et-endswith-en-php/
+function startswith($hay, $needle) {
     return $needle === $hay or strpos($hay, $needle) === 0;
 }
 

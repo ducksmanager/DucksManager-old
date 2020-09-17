@@ -193,7 +193,7 @@ class Affichage {
                                 }
                                 self::afficher_texte_utilisateur($details_collections[$evenement->id_utilisateur]);
                                 ?><?=NEWS_A_AJOUTE?>
-                                <?php self::afficher_texte_numero($numero->Pays,$magazines_complets[$numero->Pays.'/'.$numero->Magazine],$numero->Numero); ?>
+                                <?php self::afficher_texte_numero($numero->Pays, $magazines_complets[$numero->Pays . '/' . $numero->Magazine], $numero->Numero); ?>
                                 <?php
                                 if ($evenement->cpt > 0) {
                                     ?>
@@ -217,12 +217,11 @@ class Affichage {
                                 ?><?=count($contributeurs) === 1 ? NEWS_A_CREE_TRANCHE : NEWS_ONT_CREE_TRANCHE?>
                                 <a href="javascript:void(0)" class="has_tooltip edge_tooltip underlined">
                                     <?php
-                                    $nb_autres_numeros = count($evenement->numeros) - 1;
-                                    echo self::get_texte_numero_multiple(
+                                    self::afficher_texte_numero(
                                             $numero->Pays,
                                             $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
                                             $numero->Numero,
-                                            $nb_autres_numeros,
+                                            count($evenement->numeros) - 1,
                                             false
                                     );?>
                                 </a>
@@ -236,9 +235,7 @@ class Affichage {
                                     ?></div><?php
                                     foreach($evenement->numeros as $numero) {
                                         self::afficher_texte_numero(
-                                            $numero->Pays,
-                                            $magazines_complets[$numero->Pays.'/'.$numero->Magazine],
-                                            $numero->Numero
+                                            $numero->Pays, $magazines_complets[$numero->Pays . '/' . $numero->Magazine], $numero->Numero
                                         );
                                         ?><br /><?php
                                     }
@@ -248,7 +245,7 @@ class Affichage {
                                 <?php
                             break;
                         }
-                        self::afficher_temps_passe($evenement->diffsecondes);
+                        self::afficher_temps_passe((int)$evenement->diffsecondes);
                         ?></div><?php
                     }
                 }
@@ -267,9 +264,7 @@ class Affichage {
             $liste_numeros = array_map(function($tranche) use ($magazines_complets) {
                 ob_start();
                 self::afficher_texte_numero(
-                    explode('/', $tranche['publicationcode'])[0],
-                    $magazines_complets[$tranche['publicationcode']],
-                    $tranche['issuenumber']
+                    explode('/', $tranche['publicationcode'])[0], $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'],
                 );
                 return '<li>'.ob_get_clean().'</li>';
             }, $resultat_tranches_collection_ajoutees);
@@ -287,16 +282,11 @@ class Affichage {
     }
 
     static function afficher_temps_passe($diff_seconds) {
-        Twig::$twig->display('ago.twig', ['diff_seconds' => (int)$diff_seconds]);
+        Twig::$twig->display('ago.twig', compact('diff_seconds'));
     }
 
-    static function afficher_texte_numero($country, $magazine, $issuenumber, $allow_wrap = true) {
-        Twig::$twig->display('issue.twig', [
-            'country' => $country,
-            'magazine' => $magazine,
-            'issuenumber' => $issuenumber,
-            'allow_wrap' => $allow_wrap
-        ]);
+    static function afficher_texte_numero($country, $magazine, $issuenumber, $other_issues_number = 0, $allow_wrap = true) {
+        Twig::$twig->display('issue.twig', compact('country', 'magazine', 'issuenumber', 'other_issues_number', 'allow_wrap'));
     }
 
     static function afficher_texte_numero_template() {
@@ -369,16 +359,6 @@ class Affichage {
         <?php
     }
 
-    static function get_texte_numero_multiple($pays, $magazine_complet, $numero, $nb_autres_numeros, $allow_wrap = true) {
-        ob_start();
-        self::afficher_texte_numero($pays,$magazine_complet,$numero, $allow_wrap);
-        if ($nb_autres_numeros > 0) {
-            ?> <?=ET?> <?=($nb_autres_numeros)?>
-            <?=$nb_autres_numeros === 1 ? NEWS_AUTRE_TRANCHE : NEWS_AUTRES_TRANCHES?><?php
-        }
-        return ob_get_clean();
-    }
-
     static function afficher_texte_utilisateur($infos_utilisateur) {
         $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
         ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=utf8_encode($nom_utilisateur)?></i></b></a>
@@ -406,11 +386,7 @@ class Affichage {
     }
 
     static function afficher_texte_histoire($code, $title, $comment) {
-        if (empty($title)) {
-            $title = SANS_TITRE.($comment ? ' ('.$comment.') ' : '');
-        }
-        ?><?=$title?>&nbsp;
-        <a target="_blank" href="https://coa.inducks.org/story.php?c=<?=urlencode($code)?>&search="><?=DETAILS_HISTOIRE?></a><?php
+        Twig::$twig->display('story.twig', compact('code', 'title', 'comment'));
     }
 
     static function valider_formulaire_inscription($user, $pass, $pass2) {
@@ -494,13 +470,5 @@ class Affichage {
             </div>
         </div><?php
     }
-}
-
-function str_replace_last($search, $replace, $str ) {
-    if( ( $pos = strrpos( $str , $search ) ) !== false ) {
-        $search_length  = strlen( $search );
-        $str    = substr_replace( $str , $replace , $pos , $search_length );
-    }
-    return $str;
 }
 ?>

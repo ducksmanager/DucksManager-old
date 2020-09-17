@@ -104,11 +104,6 @@ class Database
         return true;
     }
 
-    function get_noms_complets_pays()
-    {
-        return Inducks::get_pays();
-    }
-
     function update_numeros($pays, $magazine, $etat, $av, $liste, $id_acquisition)
     {
         if ($etat === '_non_possede') {
@@ -280,19 +275,6 @@ class Database
           WHERE NomAuteurAbrege = :auteur
             AND ID_user=:id_user";
         DM_Core::$d->requete($requete_notation, [':auteur' => $nomAuteurAbrege, ':id_user' => $_SESSION['id_user']]);
-    }
-
-    function sous_liste($pays, $magazine)
-    {
-        $l = DM_Core::$d->toList($_SESSION['id_user']);
-
-        $l_magazine = new Liste();
-        if (isset($l->collection[$pays][$magazine])) {
-            foreach ($l->collection[$pays][$magazine] as $numero) {
-                $l_magazine->ajouter($pays, $magazine, $numero);
-            }
-        }
-        return $l_magazine;
     }
 
     function get_points(array $idsUtilisateurs) : array

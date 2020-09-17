@@ -39,12 +39,6 @@ class Util {
         return $str;
     }
 
-    static function ecrire_dans_fichier($nom_fichier,$str,$a_la_suite=false) {
-        $inF = fopen($nom_fichier,$a_la_suite ? 'a+' : 'w');
-        fwrite($inF,$str);
-        fclose($inF);
-    }
-
     static function exit_if_not_logged_in() {
         if (!isset($_SESSION['user'], $_SESSION['id_user'])) {
             header('Location: https://'.self::DOMAIN);
