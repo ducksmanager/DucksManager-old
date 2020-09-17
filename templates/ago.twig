@@ -1,0 +1,22 @@
+{% apply spaceless %}
+<span class="date">&nbsp;
+    {{ NEWS_IL_Y_A_PREFIXE }}
+    {% if diff_seconds < 60 %}
+        {{ diff_seconds }} {{ NEWS_TEMPS_SECONDE }}{% if diff_seconds > 1 %}s{% endif %}
+    {% else %}
+        {% set diff_minutes = (diff_seconds / 60)|round %}
+        {% if diff_minutes < 60 %}
+            {{ diff_minutes }} {{ NEWS_TEMPS_MINUTE }}{% if diff_minutes > 1 %}s{% endif %}
+        {% else %}
+            {% set diff_hours = (diff_minutes / 60)|round %}
+            {% if diff_hours < 24 %}
+                {{ diff_hours }} {{ NEWS_TEMPS_HEURE }}{% if diff_hours > 1 %}s{% endif %}
+            {% else %}
+                {% set diff_days = (diff_hours / 24)|round %}
+                {{ diff_days }} {{ NEWS_TEMPS_JOUR }}{% if diff_days > 1 %}s{% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    {{ NEWS_IL_Y_A_SUFFIXE }}
+</span>
+{% endapply %}

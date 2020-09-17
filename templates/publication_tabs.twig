@@ -1,0 +1,48 @@
+<nav id="magazines_possedes" class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">{{ LISTE_MAGAZINES }}</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {% for countrycode, countryname in country_names %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">
+                            <img class="flag" src="images/flags/{{ countrycode }}.png"/>
+                            <span class="{% if current_countrycode is same as (countrycode) %}bold{% endif %}">
+                            {{ countryname }}
+                        </span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for publicationcode, publicationname in publication_names|filter((_, publicationcode) => publicationcode|split('/')[0] is same as (countrycode)) %}
+                                <li>
+                                    <a href="?action=gerer&amp;onglet=ajout_suppr&onglet_magazine={{ publicationcode }}">
+                                    <span
+                                        class="{% if publicationcode is same as (current_publicationcode) %}bold{% endif %}">
+                                        {% if publicationname is iterable %}{{ publicationname[0] }}{% else %}{{ publicationname }}{% endif %}
+                                    </span>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                <li>
+                    <a href="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new" role="button">
+                        {{ NOUVEAU_MAGAZINE }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

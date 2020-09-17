@@ -1,0 +1,12 @@
+{% set magazine_parts = magazine|split(' ') %}
+<span>
+    <img src="images/flags/{{ country }}.png"/>&nbsp;
+    {% if allow_wrap %}
+        {{ magazine_parts[0] }}
+    {% else %}
+        {{ magazine }} {{ issuenumber }}
+    {% endif %}
+</span>
+{% if allow_wrap %}
+    {{ magazine_parts|slice(1)|join(' ') }} {{ issuenumber }}
+{% endif %}

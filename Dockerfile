@@ -12,9 +12,8 @@ RUN apt-get update \
 RUN docker-php-ext-configure gd \
   --with-freetype-dir=/usr/include/freetype2 \
   --with-png-dir=/usr/include \
-  --with-jpeg-dir=/usr/include
-
-RUN docker-php-ext-install opcache
+  --with-jpeg-dir=/usr/include \
+ && docker-php-ext-install opcache
 
 COPY . /var/www/html
 
@@ -22,3 +21,5 @@ ARG COMMIT_HASH
 ENV VERSION ${COMMIT_HASH}
 
 RUN sed -i "s/VERSION/$VERSION/g" /var/www/html/index.php
+
+CMD composer install && apache2-foreground

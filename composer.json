@@ -1,0 +1,15 @@
+{
+    "name": "bperel/ducksmanager",
+    "description": "DucksManager is a free and open-source website enabling comic book collectors to manage their Disney collection.",
+    "minimum-stability": "stable",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Bruno Perel",
+            "email": "admin@ducksmanager.net"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.0"
+    }
+}

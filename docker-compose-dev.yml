@@ -13,9 +13,9 @@ services:
      - ./php.xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     restart: always
     networks:
-      - dmserver_front-network
+      - dm-server_front-network
 networks:
-  dmserver_front-network:
+  dm-server_front-network:
     external: true
 
 volumes:

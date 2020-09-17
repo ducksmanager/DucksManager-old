@@ -1,6 +1,8 @@
 <?php
 include_once 'locales/lang.php';
 include_once 'Edge.class.php';
+include_once 'Twig.class.php';
+
 class Affichage {
 
     static $niveaux_medailles=[
@@ -9,93 +11,23 @@ class Affichage {
         'Duckhunter'  => [1 => 1, 2 => 3,  3 =>  5]
     ];
 
-    static function onglets_magazines($onglets_pays,$onglets_magazines) {
+    static function onglets_magazines(array $onglets_pays,array $onglets_magazines) {
         $magazine_courant = $_GET['onglet_magazine'] ?? null;
-        $pays_courant = is_null($magazine_courant) ? null : explode('/', $magazine_courant)[0];
-        ?>
-        <nav id="magazines_possedes" class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#"><?=LISTE_MAGAZINES?></a>
-                </div>
-
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <?php foreach($onglets_pays as $nom_pays_abrege => $nom_pays_complet) {
-                            ?><li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <img class="flag" src="images/flags/<?=$nom_pays_abrege?>.png" />
-                                    <span class="<?=$pays_courant === $nom_pays_abrege ? 'bold' : '' ?>">
-                                        <?=$nom_pays_complet?>
-                                    </span>
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <?php $magazines_pour_onglet_pays_courant = array_filter($onglets_magazines, function ($nom_magazine_abrege) use ($nom_pays_abrege) {
-                                        return explode('/', $nom_magazine_abrege)[0] === $nom_pays_abrege;
-                                    }, ARRAY_FILTER_USE_KEY);
-
-                                    foreach($magazines_pour_onglet_pays_courant as $nom_magazine_abrege=> $nom_magazine_complet) { ?>
-                                        <li>
-                                            <a href="?action=gerer&amp;onglet=ajout_suppr&onglet_magazine=<?=$nom_magazine_abrege?>">
-                                                <span class="<?=$nom_magazine_abrege === $magazine_courant ? 'bold' : '' ?>">
-                                                    <?=is_array($nom_magazine_complet) ? $nom_magazine_complet[0] : $nom_magazine_complet?>
-                                                </span>
-                                            </a>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
-                            </li>
-                        <?php } ?>
-                        <li>
-                            <a href="?action=gerer&amp;onglet=ajout_suppr&amp;onglet_magazine=new" role="button">
-                                <?=NOUVEAU_MAGAZINE?>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <?php
+        Twig::$twig->display('publication_tabs.twig', [
+            'country_names' => $onglets_pays,
+            'publication_names' => $onglets_magazines,
+            'current_publicationcode' => $magazine_courant,
+            'current_countrycode' => is_null($magazine_courant) ? null : explode('/', $magazine_courant)[0],
+        ]);
     }
 
     static function onglets($onglet_courant, $tab_onglets, $argument, $prefixe) {
-        ?><ul class="tabnav"><?php
-        foreach($tab_onglets as $nom_onglet=>$infos_lien) {
-            ?><li class="<?php
-
-            $lien=(empty($prefixe) || in_array($prefixe, ['?','.'])) ?'javascript:return false;':($prefixe.'&amp;'.$argument.'='.$infos_lien[0]);
-            if ($infos_lien[0]===$onglet_courant) {
-                echo 'active ';
-            }
-            if (empty($prefixe)) {
-                $nom = substr($infos_lien[0], 0,  strpos($infos_lien[0], '/'));
-            }
-            else {
-                if (in_array($argument, ['onglet_aide','onglet_type_param','previews'])) {
-                    $nom = $infos_lien[0];
-                }
-                else {
-                    $nom = '';
-                }
-            }
-            ?>"><a id="<?=$infos_lien[1]?>"
-                   name="<?=$nom?>"
-                   href="<?=$lien?>">
-                    <?=$nom_onglet?>
-                </a>
-            </li>
-            <?php
-        }
-        ?></ul>
-        <?php
+        Twig::$twig->display('tabs.twig', [
+            'current_tab' => $onglet_courant,
+            'tabs' => $tab_onglets,
+            'argument' => $argument,
+            'prefix' => $prefixe,
+        ]);
     }
 
     /**
@@ -146,15 +78,12 @@ class Affichage {
             ?>
             <span id="pays" style="display:none"><?=$pays?></span>
             <span id="magazine" style="display:none"><?=$magazine?></span>
-            <?php
-            $nom_complet=Inducks::get_nom_complet_magazine($pays, $magazine);
-            ?>
             <br />
             <table border="0" width="100%">
                 <tr>
                     <td rowspan="2">
                         <img class="flag" src="images/flags/<?=$pays?>.png" />
-                        <span style="font-size:15pt;font-weight:bold;"><?=$nom_complet?></span>
+                        <span style="font-size:15pt;font-weight:bold;"><?=Inducks::get_nom_complet_magazine($pays, $magazine)?></span>
                     </td>
                     <td align="right">
                         <table>
@@ -353,66 +282,21 @@ class Affichage {
         }
     }
 
-    static function accordeon($id, $titre, $contenu, $footer, $icon = 'glyphicon-info-sign', $collapsed = true) {
-        ?><div class="panel-group" id="<?=$id?>" role="tablist" aria-multiselectable="true">
-            <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="<?=$id?>-heading">
-                    <h4 class="panel-title">
-                        <a class="small<?=$collapsed ? ' collapsed' : ''?>" role="button" data-toggle="collapse" data-parent="#<?=$id?>" href="#<?=$id?>-collapse" aria-expanded="false" aria-controls="<?=$id?>-collapse">
-                            <i class="glyphicon <?=$icon?>"></i>
-                            <?=$titre?>
-                        </a>
-                    </h4>
-                </div>
-                <div id="<?=$id?>-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="<?=$id?>-heading">
-                    <div class="panel-body">
-                        <?=$contenu?>
-                        <div class="footer"><?=$footer?></div>
-                    </div>
-                </div>
-            </div>
-        </div><?php
+    static function accordeon($id, $title, $content, $footer, $icon = 'glyphicon-info-sign', $collapsed = true) {
+        Twig::$twig->display('accordion.twig', compact('id', 'collapsed', 'icon', 'title', 'content', 'footer'));
     }
 
-    static function afficher_temps_passe($diff_secondes) {
-        ?><span class="date">&nbsp;<?=NEWS_IL_Y_A_PREFIXE?>
-
-        <?php
-        if ($diff_secondes < 60) {
-            ?><?=$diff_secondes.' '.NEWS_TEMPS_SECONDE.($diff_secondes === 1 ? '':'s')?><?php
-        }
-        else {
-            $diff_secondes= (int)($diff_secondes / 60);
-            if ($diff_secondes < 60) {
-                ?><?=$diff_secondes.' '.NEWS_TEMPS_MINUTE.($diff_secondes === 1 ? '':'s')?><?php
-            }
-            else {
-                $diff_secondes= (int)($diff_secondes / 60);
-                if ($diff_secondes < 24) {
-                    ?><?=$diff_secondes.' '.NEWS_TEMPS_HEURE.($diff_secondes === 1 ? '':'s')?><?php
-                }
-                else {
-                    $diff_secondes= (int)($diff_secondes / 24);
-                    ?><?=$diff_secondes.' '.NEWS_TEMPS_JOUR.((int)$diff_secondes === 1 ? '':'s')?><?php
-                }
-            }
-        }
-        ?><?=NEWS_IL_Y_A_SUFFIXE?></span><?php
+    static function afficher_temps_passe($diff_seconds) {
+        Twig::$twig->display('ago.twig', ['diff_seconds' => (int)$diff_seconds]);
     }
 
-    static function afficher_texte_numero($pays, $magazine, $numero, $allow_wrap = true) {
-        ?><span>
-            <img src="images/flags/<?=$pays?>.png" />&nbsp;<?php
-        if ($allow_wrap) {
-            $magazine_parts = explode(' ', $magazine);
-            ?><?=$magazine_parts[0]?>
-            </span>
-            <?=implode(' ', array_slice($magazine_parts, 1))?> <?=$numero?><?php
-        }
-        else {
-            ?><?=$magazine?> <?=$numero?>
-            </span><?php
-        }
+    static function afficher_texte_numero($country, $magazine, $issuenumber, $allow_wrap = true) {
+        Twig::$twig->display('issue.twig', [
+            'country' => $country,
+            'magazine' => $magazine,
+            'issuenumber' => $issuenumber,
+            'allow_wrap' => $allow_wrap
+        ]);
     }
 
     static function afficher_texte_numero_template() {
@@ -595,21 +479,7 @@ class Affichage {
             'Createur' => $nbCreations,
             'Duckhunter' => $nbBouquineries
         ]);
-        foreach($medailles as $type=>$cpt_et_niveau) {
-            $niveau = $cpt_et_niveau['Niveau']; ?>
-            <div class="medaille_profil">
-                <img src="images/medailles/<?=$type?>_<?=$niveau?>_fond.png" /><br />
-                <b><?=constant('TITRE_MEDAILLE_'.strtoupper($type))?><br /><?=NIVEAU?> <?=str_replace('avance', 'avancé', $niveau)?></b>
-            </div><?php
-        }
-        ?>
-        <div class="clear"><?php
-            if ($nb_numeros > 0) {
-                echo $nb_numeros.' '.NUMEROS . '<br />'
-                   . $nb_magazines . ' ' . MAGAZINES . '<br />'
-                   . $nb_pays . ' ' .  PAYS;
-            }
-        ?></div><?php
+        Twig::$twig->display('user_stats.twig', ['medals' => $medailles, 'countries' => $nb_pays, 'publications' => $nb_magazines, 'issues' => $nb_numeros]);
     }
 
     public static function afficher_statut_connexion($est_connecte) {

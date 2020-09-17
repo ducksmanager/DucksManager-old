@@ -1,0 +1,14 @@
+{% for type, count_and_level in medals %}
+    {% set level = count_and_level['Niveau'] %}
+    <div class="medaille_profil">
+        <img src="images/medailles/{{ type }}_{{ level }}_fond.png" /><br />
+        <b>{{ _context['TITRE_MEDAILLE_'~(type|upper)] }}<br />{{ NIVEAU }} {{ level|replace({'avance': 'avancé'}) }}</b>
+    </div>
+{% endfor %}
+<div class="clear">
+    {% if issues > 0 %}
+        {{ issues }} {{ NUMEROS }}<br />
+        {{ publications }} {{ MAGAZINES }}<br />
+        {{ countries }} {{ PAYS }}<br />
+    {% endif %}
+</div>
