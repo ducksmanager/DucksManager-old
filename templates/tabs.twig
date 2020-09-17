@@ -2,7 +2,7 @@
     {% for tab_text, tab in tabs %}
         {% set tab_name = tab[0] %}
         {% set tab_id = tab[1] %}
-        {% set url = not prefix or prefix in ['?','.'] ? 'javascript:return false;':('#{prefix}&amp;#{argument}=#{tab_name}') %}
+        {% set url = not prefix or prefix in ['?','.'] ? 'javascript:return false;':"#{prefix}&#{argument}=#{tab_name}" %}
         {% set nom = not prefix ? '#^[^/]+'|preg_match_first_group(tab_name) : tab_name %}
         {% apply spaceless %}
             <li class="{% if tab_name is same as (current_tab) %}active{% endif %}">
