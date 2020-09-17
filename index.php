@@ -1188,7 +1188,7 @@ switch($action) {
                         <div><?=PRESENTATION_GERER_3?></div>
                     </div>
                     <div class="col-lg-5">
-                        <img src="images/demo2_2.png" alt="demo2_2">
+                        <img src="images/demo_gerer.png" alt="demo_gerer">
                     </div>
                 </div>
                 <hr />
@@ -1212,7 +1212,7 @@ switch($action) {
                         <div><?=PRESENTATION_STATS_3?></div>
                     </div>
                     <div class="col-lg-5">
-                        <img src="images/demo3.png" alt="demo3">
+                        <img src="images/demo_stats_auteur.png" alt="demo_stats_auteur">
                     </div>
                 </div>
                 <hr />

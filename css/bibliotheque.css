@@ -190,10 +190,6 @@
     background-image:url('../images/fleche_gauche.png');
 }
 
-.page_invisible {
-    background-image:url('../images/page_invisible_motif.jpg');
-}
-
 .page_arriere {
     z-index:400;
 }
