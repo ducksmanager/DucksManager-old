@@ -21,7 +21,7 @@ class collectable extends Format_liste {
     static function est_listable($numero) {
         return (preg_match('#^[\d]+$#', $numero) && $numero !=='0') || est_double($numero);
     }
-    
+
     function afficher($liste) {
         ?>
             <style type="text/css">
@@ -64,7 +64,7 @@ class collectable extends Format_liste {
                     max-width: none;
                     white-space: nowrap;
                 }
-            </style>        
+            </style>
         <?php
         $nb_lignes=100/$this->p('nb_numeros_ligne');
             ?><table class="collectable">
@@ -85,13 +85,7 @@ class collectable extends Format_liste {
             global $centaines_utilisees;
             $centaines_utilisees= [];
             ksort($liste);
-            
-            $publication_codes= [];
-            foreach($liste as $pays=>$numeros_pays) {
-                foreach(array_keys($numeros_pays) as $magazine) {
-                    $publication_codes[]=$pays.'/'.$magazine;
-                }
-            }
+
             foreach($liste as $pays=>$numeros_pays) {
                 ksort($numeros_pays);
                 foreach($numeros_pays as $magazine=>$numeros) {
@@ -232,7 +226,7 @@ class collectable extends Format_liste {
                             <?=$noms_magazines[$pays.'/'.$magazine]?>
                         </td><?php
                         if($i%2 === 1) {
-                            ?></tr><tr><?php 
+                            ?></tr><tr><?php
                         }
                         $i++;
                     }
@@ -244,7 +238,7 @@ class collectable extends Format_liste {
                         <table><tr><td align="center" class="achats">
                         <!-- <u><?=ACHATS?></u> -->
                     </td></td></tr></table>
-                    
+
       <?php }?>
                 </tr>
             </table>
@@ -289,7 +283,7 @@ function ajouter_a_liste($numero,$est_double=false) {
     if ($diz_et_unites > collectable::$max_diz_et_unites) {
         collectable::$max_diz_et_unites = $diz_et_unites;
     }
-    
+
     if ($est_double) {
         if (array_key_exists($numero,$liste_numeros_doubles)) {
             $liste_numeros_doubles[$numero]++;

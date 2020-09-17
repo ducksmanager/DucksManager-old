@@ -73,29 +73,27 @@ class Inducks {
             case "urls":
                 $urls= [];
                 $resultat_requete= self::requete('
-          SELECT issuenumber
-          FROM inducks_issue
-          WHERE publicationcode = ?'
-        , [$pays.'/'.$magazine]);
+                  SELECT issuenumber
+                  FROM inducks_issue
+                  WHERE publicationcode = ?'
+                , [$pays.'/'.$magazine]);
                 foreach($resultat_requete as $i=>$numero) {
                     $numeros[$i] = $fonction_nettoyage($numero['issuenumber']);
                     $urls[$i]='issue.php?c='.$pays.'%2F'.$magazine_depart.str_replace(' ','+',$numero['issuenumber']);
                 }
                 return [$numeros,$urls];
-            break;
             case "titres":
                 $titres= [];
                 $resultat_requete= self::requete('
-          SELECT issuenumber, title
-          FROM inducks_issue
-          WHERE publicationcode = ?'
-        , [$pays.'/'.$magazine]);
+                  SELECT issuenumber, title
+                  FROM inducks_issue
+                  WHERE publicationcode = ?'
+                , [$pays.'/'.$magazine]);
                 foreach($resultat_requete as $i=>$numero) {
                     $numeros[$i] = $fonction_nettoyage($numero['issuenumber']);
                     $titres[$i]=$numero['title'];
                 }
                 return [$numeros,$titres];
-            break;
         }
         return [];
     }

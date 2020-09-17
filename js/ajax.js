@@ -2,7 +2,6 @@ var nom_magazine_old="";
 var pays_sel=null;
 var magazine_sel=null;
 var liste_achats=[];
-var l10n_gerer;
 
 var isMobile = window.matchMedia("only screen and (max-width: 767px)");
 
@@ -166,7 +165,7 @@ function charger_tooltips_utilisateurs() {
                 $('.popover').on('mouseleave', function () {
                     $(_this).popover('hide');
                 });
-            }).on('mouseleave', function (e) {
+            }).on('mouseleave', function () {
                 var _this = this;
                 setTimeout(function () {
                     if (!$('.popover:hover').length) {

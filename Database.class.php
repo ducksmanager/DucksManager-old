@@ -265,6 +265,7 @@ class Database
             });
             return $notesAuteurs;
         }
+        return [];
     }
 
     function modifier_note_auteur($nomAuteurAbrege, $note)

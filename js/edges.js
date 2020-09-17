@@ -201,7 +201,6 @@ function charger_tranche_depuis_sprite(tranche, sprite) {
 
 function charger_tranche_suivante() {
     var tranche=jQuery(this);
-    var precedente=tranche.prev('.tranche');
     var suivante=tranche.next('.tranche');
 
     if (suivante.length) {
@@ -574,20 +573,19 @@ function recherche_histoire(val_recherche) {
 }
 
 function init_observers_tranches() {
-    jQuery('#body').on('click', '.tranche', function() {
+    jQuery('#body')
+        .on('click', '.tranche', function() {
             tranche_bib=jQuery(this);
             ouvrir_tranche();
+        })
+        .on('mouseover', '.tranche', function() {
+            if (!action_en_cours && !couverture_ouverte) {
+                ouvrirInfoBulleEffectif(jQuery(this));
+            }
+        })
+        .on('hidden.bs.tooltip', function() {
+            jQuery('.tooltip:not(.in)').remove();
         });
-
-    jQuery('#body').on('mouseover', '.tranche', function() {
-        if (!action_en_cours && !couverture_ouverte) {
-            ouvrirInfoBulleEffectif(jQuery(this));
-        }
-    });
-
-    jQuery('#body').on('hidden.bs.tooltip', function() {
-        jQuery('.tooltip:not(.in)').remove();
-    });
 }
 
 var isOutOfEdgesAndPopover = true;

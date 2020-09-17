@@ -72,7 +72,6 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
     <link rel="manifest" href="manifest.json">
     <title><?=$titre.' - DucksManager'?></title>
     <link rel="stylesheet" type="text/css" href="css/style.css?VERSION">
-    <link rel="stylesheet" type="text/css" href="css/autocompleter.css?VERSION">
     <link rel="stylesheet" type="text/css" href="css/csstabs.css?VERSION">
     <link rel="stylesheet" type="text/css" href="css/bibliotheque.css?VERSION">
     <link rel="stylesheet" type="text/css" href="css/stats.css?VERSION">
@@ -130,7 +129,6 @@ $id_user= empty($_SESSION['id_user']) ? null : $_SESSION['id_user'];
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.5/platform.min.js"></script>
 
-    <script type="text/javascript" src="js/menu.js?VERSION"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
     <script type="text/javascript" src="js/l10n.js?VERSION"></script>
     <script type="text/javascript" src="js/ajax.js?VERSION"></script>
