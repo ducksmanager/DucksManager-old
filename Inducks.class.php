@@ -289,12 +289,15 @@ class Inducks {
                             $publicationIssues = array_filter($results->issues, function($issue) use($publicationCode) {
                                 return $issue->publicationcode === $publicationCode;
                             });
-                            Affichage::accordion(
-                                $publicationCodeHyphen, $nomMagazine . ' x ' . count($publicationIssues), array_map(function ($issue) {
-                                return '<div>' . ucfirst(NUMERO) . ' ' . $issue->issuenumber . '</div>';
-                            }, $publicationIssues),
-                                true,
-                                'images/flags/' . explode('/', $publicationCode)[0] . '.png'
+                            [$countryCode,] = explode('/', $publicationCode);
+                            Affichage::accordeon(
+                                $publicationCodeHyphen,
+                                $nomMagazine . ' x ' . count($publicationIssues),
+                                implode("\n", array_map(function ($issue) {
+                                    return "<div>" . ucfirst(NUMERO) . " {$issue->issuenumber}</div>";
+                                }, $publicationIssues)),
+                                null,
+                                "images/flags/$countryCode.png"
                             );
                         }
                     ?></div>
@@ -303,11 +306,15 @@ class Inducks {
                 if (count($results->nonFoundIssues) > 0) { ?>
                     <div class="alert alert-warning">
                         <div><?=count($results->nonFoundIssues)?> <?=IMPORTER_INDUCKS_NUMEROS_NON_REFERENCES?></div><?php
-                            Affichage::accordion(
-                                'non-references', 'Numéros non référencés', array_map(function ($issue) {
-                                return '<div>' . ucfirst(NUMERO) . ' ' . $issue . '</div>';
-                            }, $results->nonFoundIssues),
-                            false
+                            Affichage::accordeon(
+                                'non-references',
+                                'Numéros non référencés',
+                                implode("\n", array_map(function ($issue) {
+                                    return '<div>' . ucfirst(NUMERO) . ' ' . $issue . '</div>';
+                                }, $results->nonFoundIssues)),
+                                null,
+                                null,
+                                false
                         );
                     ?>
                     </div><?php

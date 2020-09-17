@@ -3,7 +3,7 @@
         <div class="panel-heading" role="tab" id="{{ id }}-heading">
             <h4 class="panel-title">
                 <a class="small{% if collapsed %} collapsed{% endif %}" role="button" data-toggle="collapse" data-parent="#{{ id }}" href="#{{ id }}-collapse" aria-expanded="false" aria-controls="{{ id }}-collapse">
-                    <i class="glyphicon {{ icon }}"></i>
+                    {% if icon %}<i class="glyphicon {{ icon }}"></i>{% endif %}
                     {{ title }}
                 </a>
             </h4>
@@ -11,7 +11,7 @@
         <div id="{{ id }}-collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{ id }}-heading">
             <div class="panel-body">
                 {{ content|raw }}
-                <div class="footer">{{ footer | raw }}</div>
+                {% if footer %}<div class="footer">{{ footer | raw }}</div>{% endif %}
             </div>
         </div>
     </div>

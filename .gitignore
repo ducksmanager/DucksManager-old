@@ -8,3 +8,5 @@ edges/*/gen
 edges/*/photos
 edges/images_myfonts
 images/edges
+/vendor/
+/.idea/

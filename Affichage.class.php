@@ -282,7 +282,7 @@ class Affichage {
         }
     }
 
-    static function accordeon($id, $title, $content, $footer, $icon = 'glyphicon-info-sign', $collapsed = true) {
+    static function accordeon($id, $title, $content, $footer = null, $icon = 'glyphicon-info-sign', $collapsed = true) {
         Twig::$twig->display('accordion.twig', compact('id', 'collapsed', 'icon', 'title', 'content', 'footer'));
     }
 
@@ -491,21 +491,6 @@ class Affichage {
                     <span><?=$_SESSION['user']?></span><?php
                 }
             ?>
-            </div>
-        </div><?php
-    }
-
-    public static function accordion($id, $title, $data, $collapsed = true, $icon = null) {
-        ?><div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?=$id?>">
-                        <?=is_null($icon) ? '' : '<img src="'.$icon.'" />&nbsp;'?><?=$title?>
-                    </a>
-                </h4>
-            </div>
-            <div id="collapse<?=$id?>" class="panel-collapse collapse <?=$collapsed ? '' : 'in'?>">
-                <div class="panel-body"><?=implode("\n", $data)?></div>
             </div>
         </div><?php
     }
