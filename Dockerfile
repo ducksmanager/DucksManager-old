@@ -22,4 +22,6 @@ ENV VERSION ${COMMIT_HASH}
 
 RUN sed -i "s/VERSION/$VERSION/g" /var/www/html/index.php
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 CMD composer install && apache2-foreground
