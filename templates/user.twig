@@ -1,0 +1,15 @@
+<a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i>{{ user_data['Username'] }}</i></b></a>
+<div class="cache tooltip_content">
+    <h4>{{ user_data['Username'] }}</h4>
+    <div>
+        {% include 'user_stats.twig' with { 'country_number': user_data['country_number'], 'publication_number': user_data['publication_number'], 'issue_number': user_data['issue_number'], 'medals': medals } %}
+        {% if user_data['Bookcase_shared'] %}
+            <div class="lien_bibliotheque">
+                <img src="images/bibliotheque.png" />&nbsp;
+                <div class="btn btn-default btn-xs">
+                    <a target="_blank" href="https://{{ DOMAIN }}/?action=bibliotheque&user={{ user_data['Username'] }}">{{ VOIR_BIBLIOTHEQUE }}</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

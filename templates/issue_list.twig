@@ -1,0 +1,60 @@
+<span id="pays" style="display:none">{{ country }}</span>
+<span id="magazine" style="display:none">{{ publicationcode }}</span>
+<br />
+<table border="0" width="100%">
+    <tr>
+        <td rowspan="2">
+            <img class="flag" src="images/flags/{{ country }}.png" />
+            <span style="font-size:15pt;font-weight:bold;">{{ publicationname }}</span>
+        </td>
+        <td align="right">
+            <table>
+                <tr>
+                    <td>
+                        <input type="checkbox" id="sel_numeros_possedes" checked="checked" onclick="changer_affichage('possedes')"/>
+                    </td>
+                    <td>
+                        <label for="sel_numeros_possedes">{{ AFFICHER_NUMEROS_POSSEDES }} ({{ possessed_number }})</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <input type="checkbox" id="sel_numeros_manquants" checked="checked" onclick="changer_affichage('manquants')"/>
+                    </td>
+                    <td>
+                        <label for="sel_numeros_manquants">{{ AFFICHER_NUMEROS_MANQUANTS }} ({{ non_possessed_number }})</label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% for rowNumber, issue_data in issues %}
+    <div class="num_wrapper num_{% if issue_data.est_possede %}possede{% else %}manque{% endif %}"
+         id="n{{ rowNumber }}" title="{{ issue_data.numero }}">
+        <a name="{{ issue_data.numero }}"></a>
+        <img class="preview" src="images/icones/view.png" />
+        <span class="num">
+            n°{{ issue_data.numero }}&nbsp;
+            <span class="soustitre">{{ issue_data.sous_titre }}</span>
+        </span>
+        {% if issue_data.est_possede %}
+            <div class="bloc_details">
+                <div class="details_numero num_{{ issue_data.etat }} detail_{{ issue_data.etat }}"
+                     title="{{ _context['ETAT_'~(issue_data.etat|upper)] }}"></div>
+                {% if issue_data.date_acquisition %}
+                    <div class="details_numero detail_date" class="achat_{{ issue_data.id_acquisition }}">
+                        <img src="images/date.png" title="{{ ACHETE_LE }} {{ issue_data.date_acquisition|format('d/m/Y') }}"/>
+                    </div>
+                {% else %}
+                    <div class="details_numero detail_date"></div>
+                {% endif %}
+                <div class="details_numero detail_a_vendre">
+                    {% if issue_data.av %}
+                        <img height="16px" src="images/av_{{ locale }}_petit.png" alt="AV" title="{{ A_VENDRE }}"/>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}

@@ -515,10 +515,10 @@ class Database
     {
         $requete_details_collections = '
             SELECT
-                users.ID AS ID_Utilisateur, users.username AS Username, users.AccepterPartage,
-                COUNT(DISTINCT numeros.Pays) AS NbPays,
-                COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS NbMagazines,
-                COUNT(numeros.Numero) AS NbNumeros
+                users.ID AS ID_Utilisateur, users.username AS Username, users.AccepterPartage AS Bookcase_shared,
+                COUNT(DISTINCT numeros.Pays) AS country_number,
+                COUNT(DISTINCT numeros.Pays, numeros.Magazine) AS publication_number,
+                COUNT(numeros.Numero) AS issue_number
             FROM users
             LEFT JOIN numeros ON users.ID = numeros.ID_Utilisateur
             WHERE users.ID IN (' . implode(',', array_fill(0, count($idsUtilisateurs), '?')) . ')

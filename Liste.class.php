@@ -3,9 +3,9 @@ require_once 'DucksManager_Core.class.php';
 require_once 'Affichage.class.php';
 require_once 'Inducks.class.php';
 class Liste {
-    var $texte;
-    var $collection= [];
-    static $types_listes= [];
+    public $texte;
+    public $collection= [];
+    public static $types_listes= [];
 
     static function set_types_listes() {
         $rep = "Listes/";
@@ -250,8 +250,10 @@ class Liste {
 
     function afficher($type,$parametres=null) {
         $type=strtolower($type);
-        if (@require_once 'Listes/Liste.'.$type.'.class.php') {
-            /** @var Liste $o */
+        $list_file = 'Listes/Liste.'.$type.'.class.php';
+        if (file_exists($list_file)) {
+            @require_once $list_file;
+            /** @var Format_liste $o */
             $o=new $type();
             if (!is_null($parametres)) {
                 foreach($parametres as $nom_parametre=>$parametre) {

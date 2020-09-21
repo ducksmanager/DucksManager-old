@@ -47,7 +47,6 @@ define('ATTENTION_VENTE_SANS_EMAIL','Warning ! Your collection contains some iss
 define('AUCUNE_ACQUISITION','No saved purchase');
 define('AUCUNE_DATE_ACQUISITION','You haven\'t added any purchase date for the moment');
 define('AUCUNE_NOTE','No scoring');
-define('AUCUN_NUMERO_IMPORTE','No issue reported for magazine ');
 define('AUCUN_NUMERO_INDUCKS','DucksManager didn\'t find any issue in your Inducks account!');
 define('AUCUN_AUTEUR_NOTE_1','No author rate.');
 define('AUCUN_AUTEUR_NOTE_2_REDIRECTION', 'Go to the %s page to rate your favorite authors.');
@@ -56,6 +55,7 @@ define('AUCUN_AUTEUR_NOTE_3','Thanks to these grades, DucksManager will calculat
 define('AUCUN_NUMERO_POSSEDE_1','You don\'t possess any comic book! Click ');
 define('AUCUN_NUMERO_POSSEDE_2','in order to add some comics to your collection!');
 define('AUCUN_NUMERO_PROPOSE','For now, you already have in your collection the issues proposed by other DucksManager users.');
+define('AUCUN_NUMERO_REPERTORIE','No issue reported for magazine ');
 define('AUCUN_AUTEUR_SURVEILLE', 'No watched author. Add your favorite authors hereunder to know what percentage of their stories you have in your collection.');
 define('AUCUNE_SUGGESTION','You already possess all the issues containing stories from your favorite authors for the selected country.');
 define('AUTEUR_DEJA_DANS_LISTE','This author is already in your list!');

@@ -46,7 +46,6 @@ define('ATTENTION_VENTE_SANS_EMAIL','Attention ! Votre collection contient des n
 define('AUCUNE_ACQUISITION','Aucune acquisition enregistrée');
 define('AUCUNE_DATE_ACQUISITION','Vous n\'avez entré aucune date d\'acquisition pour le moment');
 define('AUCUNE_NOTE','Aucune note');
-define('AUCUN_NUMERO_IMPORTE','Aucun numéro n\'est répertorié pour ');
 define('AUCUN_NUMERO_INDUCKS','DucksManager n\'a trouvé aucun numéro dans votre compte Inducks !');
 define('AUCUN_AUTEUR_NOTE_1','Aucun auteur noté.');
 define('AUCUN_AUTEUR_NOTE_2_REDIRECTION', 'Rendez vous sur la page %s pour noter vos auteurs préférés.');
@@ -55,6 +54,7 @@ define('AUCUN_AUTEUR_NOTE_3','Grâce à ces notes, DucksManager déterminera ens
 define('AUCUN_NUMERO_POSSEDE_1','Vous ne possédez aucun numéro ! Cliquez ');
 define('AUCUN_NUMERO_POSSEDE_2','pour en ajouter à votre collection !');
 define('AUCUN_NUMERO_PROPOSE','Pour l\'instant, vous possédez tous les numéros proposés à la vente par les autres utilisateurs.');
+define('AUCUN_NUMERO_REPERTORIE','Aucun numéro n\'est répertorié pour ');
 define('AUCUN_AUTEUR_SURVEILLE', 'Aucun auteur surveillé. Ajoutez vos auteurs préférés ci-dessous pour savoir quel pourcentage de leurs histoires vous possédez.');
 define('AUCUNE_SUGGESTION','Vous possédez toutes les publications contenant des histoires de vos auteurs favoris pour le pays sélectionné.');
 define('AUTEUR_DEJA_DANS_LISTE','Cet auteur est déjà dans votre liste !');

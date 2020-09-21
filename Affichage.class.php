@@ -40,114 +40,43 @@ class Affichage {
         [$numeros,$sous_titres] =Inducks::get_numeros($pays,$magazine);
 
         if ($numeros==false) {
-            echo AUCUN_NUMERO_IMPORTE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
+            echo AUCUN_NUMERO_REPERTORIE.$magazine.' ('.PAYS_PUBLICATION.' : '.$pays.')';
             ?><br /><br /><?php
             echo QUESTION_SUPPRIMER_MAGAZINE;
-            $l_magazine=$liste->sous_liste($pays,$magazine);
-
-            $l_magazine->afficher('Classique');
+            $liste->sous_liste($pays,$magazine)->afficher('Classique');
             ?><br />
             <a href="?action=gerer&supprimer_magazine=<?=$pays.'.'.$magazine?>"><?=OUI?></a>&nbsp;
             <a href="?action=gerer"><?=NON?></a><?php
             if (!Util::isLocalHost()) {
-                @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_IMPORTE . $magazine . ' (' . PAYS_PUBLICATION . ' : ' . $pays . ')');
+                @mail('admin@ducksmanager.net', 'Erreur de recuperation de numeros', AUCUN_NUMERO_REPERTORIE . $magazine . ' (' . PAYS_PUBLICATION . ' : ' . $pays . ')');
             }
         }
         else {
             $liste->nettoyer_collection();
-            $nb_possedes=0;
-            $numeros = array_map(function($numero, $sous_titre) use($liste, $pays, $magazine, &$nb_possedes) {
-                $infos_numero = $liste->get_numero_collection($pays,$magazine,$numero);
-                $o=new stdClass();
-                $o->est_possede=false;
+            $nb_possedes = 0;
+            $numeros = array_map(function ($numero, $sous_titre) use ($liste, $pays, $magazine, &$nb_possedes) {
+                $infos_numero = $liste->get_numero_collection($pays, $magazine, $numero);
+                $o = new stdClass();
+                $o->est_possede = false;
                 if (!is_null($infos_numero)) {
                     $nb_possedes++;
-                    $o->est_possede=true;
+                    $o->est_possede = true;
                     [/*Pays*/, /*Magazine*/, /*Numero*/, $o->etat, $o->av, $o->id_acquisition, $o->date_acquisition, $o->description_acquisition] = $infos_numero;
-                    $o->etat = array_key_exists($o->etat,Database::$etats) ? $o->etat : 'indefini';
+                    $o->etat = array_key_exists($o->etat, Database::$etats) ? $o->etat : 'indefini';
                 }
-                $o->sous_titre=$sous_titre;
-                $o->numero=$numero;
-
+                $o->sous_titre = $sous_titre;
+                $o->numero = $numero;
                 return $o;
-            }, $numeros,$sous_titres);
-
-            $nb_non_possedes=count($numeros)-$nb_possedes;
-
-            $cpt=0;
-            ?>
-            <span id="pays" style="display:none"><?=$pays?></span>
-            <span id="magazine" style="display:none"><?=$magazine?></span>
-            <br />
-            <table border="0" width="100%">
-                <tr>
-                    <td rowspan="2">
-                        <img class="flag" src="images/flags/<?=$pays?>.png" />
-                        <span style="font-size:15pt;font-weight:bold;"><?=Inducks::get_nom_complet_magazine($pays, $magazine)?></span>
-                    </td>
-                    <td align="right">
-                        <table>
-                            <tr>
-                                <td>
-                                    <input type="checkbox" id="sel_numeros_possedes" checked="checked" onclick="changer_affichage('possedes')"/>
-                                </td>
-                                <td>
-                                    <label for="sel_numeros_possedes"><?=AFFICHER_NUMEROS_POSSEDES?> (<?=$nb_possedes?>)</label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-                                    <input type="checkbox" id="sel_numeros_manquants" checked="checked" onclick="changer_affichage('manquants')"/>
-                                </td>
-                                <td>
-                                    <label for="sel_numeros_manquants"><?=AFFICHER_NUMEROS_MANQUANTS?> (<?=$nb_non_possedes?>)</label>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-            <?php
-            foreach($numeros as $infos) {
-                $numero=$infos->numero;
-                $sous_titre=$infos->sous_titre;
-                $possede=$infos->est_possede;
-                ?>
-                <div class="num_wrapper num_<?=$possede ? 'possede' : 'manque'?>"
-                     id="n<?=($cpt++)?>" title="<?=$numero?>">
-                    <a name="<?=$numero?>"></a>
-                    <img class="preview" src="images/icones/view.png" />
-                    <span class="num">n°<?=$numero?>&nbsp;
-                        <span class="soustitre"><?=$sous_titre?></span>
-                    </span><?php
-                    if ($possede) {
-                        $etat=$infos->etat;
-                        $id_acquisition=$infos->id_acquisition;
-                        $av=$infos->av;
-                        ?><div class="bloc_details">
-                            <div class="details_numero num_<?=$etat?> detail_<?=$etat?>" title="<?=get_constant('ETAT_'.strtoupper($etat))?>">
-                        </div><?php
-                        if (!is_null($id_acquisition)) {
-                            $date=new DateTime($infos->date_acquisition);
-                            if (!empty($date)) { ?>
-                                <div class="details_numero detail_date" class="achat_<?= $infos->id_acquisition ?>">
-                                    <img src="images/date.png" title="<?= ACHETE_LE . ' ' . $date->format('d/m/Y') ?>"/>
-                                </div><?php
-                            }
-                        }
-                        else { ?>
-                            <div class="details_numero detail_date"></div><?php
-                        }
-                        ?><div class="details_numero detail_a_vendre"><?php
-                        if ($av) {
-                            ?><img height="16px" src="images/av_<?=$_SESSION['lang']?>_petit.png" alt="AV" title="<?A_VENDRE?>"/><?php
-                        }
-                        ?></div>
-                     </div><?php
-                    } ?>
-                </div>
-                <?php
-            }
+            }, $numeros, $sous_titres);
+            Twig::$twig->display('issue_list.twig', [
+                'country' => $pays,
+                'publicationcode' => $magazine,
+                'publicationname' => Inducks::get_nom_complet_magazine($pays, $magazine),
+                'possessed_number' => $nb_possedes,
+                'non_possessed_number' => count($numeros) - $nb_possedes,
+                'issues' => $numeros,
+                'locale' => $_SESSION['lang']
+            ]);
         }
     }
 
@@ -262,11 +191,11 @@ class Affichage {
         if ($nb_nouvelles_tranches > 0) {
             $magazines_complets = Inducks::get_noms_complets_magazines(array_map(function($tranche) { return $tranche['publicationcode']; }, $resultat_tranches_collection_ajoutees));
             $liste_numeros = array_map(function($tranche) use ($magazines_complets) {
-                ob_start();
-                self::afficher_texte_numero(
-                    explode('/', $tranche['publicationcode'])[0], $magazines_complets[$tranche['publicationcode']], $tranche['issuenumber'],
-                );
-                return '<li>'.ob_get_clean().'</li>';
+                return '<li>'.Twig::$twig->render('issue.twig', [
+                    'country' => explode('/', $tranche['publicationcode'])[0],
+                    'magazine' => $magazines_complets[$tranche['publicationcode']],
+                    'issuenumber' => $tranche['issuenumber']
+                ]).'</li>';
             }, $resultat_tranches_collection_ajoutees);
             self::accordeon(
                 'nouvelles-tranches',
@@ -359,30 +288,13 @@ class Affichage {
         <?php
     }
 
-    static function afficher_texte_utilisateur($infos_utilisateur) {
-        $nom_utilisateur = utf8_decode($infos_utilisateur['Username']);
-        ?><a href="javascript:void(0)" class="has_tooltip user_tooltip"><b><i><?=utf8_encode($nom_utilisateur)?></i></b></a>
-        <div class="cache tooltip_content">
-            <h4><?=$nom_utilisateur?></h4>
-            <div>
-                <?php self::afficher_stats_collection(
-                    $infos_utilisateur['NbPays'],
-                    $infos_utilisateur['NbMagazines'],
-                    $infos_utilisateur['NbNumeros'],
-                    $infos_utilisateur['Points']['Photographe'],
-                    $infos_utilisateur['Points']['Createur'],
-                    $infos_utilisateur['Points']['Duckhunter']
-                )?>
-                <?php if ($infos_utilisateur['AccepterPartage'] === '1') {?>
-                    <div class="lien_bibliotheque">
-                        <img src="images/bibliotheque.png" />&nbsp;
-                        <div class="btn btn-default btn-xs">
-                            <a target="_blank" href="<?=Edge::get_lien_bibliotheque($infos_utilisateur['Username'])?>"><?=VOIR_BIBLIOTHEQUE?></a>
-                        </div>
-                    </div><?php
-                }?>
-            </div>
-        </div><?php
+    static function afficher_texte_utilisateur($userData) {
+        $medals = self::get_medailles([
+            'Photographe'=> $userData['Points']['Photographe'],
+            'Createur' => $userData['Points']['Createur'],
+            'Duckhunter' => $userData['Points']['Duckhunter']
+        ]);
+        Twig::$twig->display('user.twig', ['DOMAIN' => Util::DOMAIN, 'user_data' => $userData, 'medals' => $medals]);
     }
 
     static function afficher_texte_histoire($code, $title, $comment) {
@@ -447,15 +359,6 @@ class Affichage {
             }
         }
         return $points_et_niveaux;
-    }
-
-    public static function afficher_stats_collection($nb_pays, $nb_magazines, $nb_numeros, $nbPhotographies, $nbCreations, $nbBouquineries) {
-        $medailles = self::get_medailles([
-            'Photographe'=> $nbPhotographies,
-            'Createur' => $nbCreations,
-            'Duckhunter' => $nbBouquineries
-        ]);
-        Twig::$twig->display('user_stats.twig', ['medals' => $medailles, 'countries' => $nb_pays, 'publications' => $nb_magazines, 'issues' => $nb_numeros]);
     }
 
     public static function afficher_statut_connexion($est_connecte) {
