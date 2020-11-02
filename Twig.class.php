@@ -18,7 +18,7 @@ class Twig {
     public static $twig;
 }
 
-$loader = new FilesystemLoader('templates');
+$loader = new FilesystemLoader(__DIR__.'/templates');
 Twig::$twig = new Environment($loader, ['debug' => true]);
 Twig::$twig->addExtension(new TwigGlobalsExtension());
 Twig::$twig->addFilter(new TwigFilter('preg_match_first_group', function($pattern, $subject) {
