@@ -639,7 +639,7 @@ switch($action) {
                             DM_Core::$d->requete($requete_update_sous_texture, [$_POST['sous_texture' . $i], $id_user]);
                         }
                         $publicationSorts = array_values(array_filter($_POST['publicationcodes']));
-                        DmClient::get_service_results_for_dm('POST', '/collection/bookcase/sort', ['sorts' => $publicationSorts]);
+                        DmClient::get_service_results_for_dm('POST', '/bookcase/sort', ['sorts' => $publicationSorts]);
                     }
 
                     function buildTextureSelect($id, $title) { ?>

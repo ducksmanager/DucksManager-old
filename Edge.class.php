@@ -211,7 +211,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
     }
     else {
         $requete_textures = '
-          SELECT Bibliotheque_Texture1, Bibliotheque_Sous_Texture1, Bibliotheque_Texture2, Bibliotheque_Sous_Texture2
+          SELECT username, Bibliotheque_Texture1, Bibliotheque_Sous_Texture1, Bibliotheque_Texture2, Bibliotheque_Sous_Texture2
           FROM users
           WHERE ID = ?';
         $resultats_params_bibliotheque = DM_Core::$d->requete($requete_textures, [$id_user]);
@@ -226,11 +226,12 @@ elseif (isset($_POST['get_bibliotheque'])) {
             ],
         ];
 
-        $publication_codes = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
+        $publication_codes = DmClient::get_service_results_for_dm('GET', "/bookcase/{$resultats_params_bibliotheque[0]['username']}/sort");
         $edgesData = Edge::getBibliotheque($id_user, $publication_codes);
 
         echo json_encode([
             'titre' => $user === '-1' ? BIBLIOTHEQUE_COURT : (BIBLIOTHEQUE_DE . $user),
+            'publication_codes' => $publication_codes,
             'edgesData' => $edgesData,
             'textures' => $textures,
             'noms_magazines' => Inducks::get_noms_complets_magazines($publication_codes)
@@ -241,7 +242,7 @@ elseif (isset($_POST['get_bibliotheque'])) {
 elseif (isset($_POST['get_sous_textures'])) {
     $id_user=$_SESSION['id_user'];
     $requete_texture="
-        SELECT Bibliotheque_Sous_Texture1 as texture1, Bibliotheque_Sous_Texture2 as texture2
+        SELECT username, Bibliotheque_Sous_Texture1 as texture1, Bibliotheque_Sous_Texture2 as texture2
         FROM users
         WHERE ID = '$id_user'
     ";
@@ -258,7 +259,7 @@ elseif (isset($_POST['get_sous_textures'])) {
     }
     sort($bookcaseData['textures']);
 
-    $bookcaseData['sorts'] = DmClient::get_service_results_for_dm('GET', "/ducksmanager/bookcase/$id_user/sort");
+    $bookcaseData['sorts'] = DmClient::get_service_results_for_dm('GET', "/bookcase/{$resultat_texture[0]['username']}/sort");
     $bookcaseData['publicationNames'] = Inducks::get_noms_complets_magazines($bookcaseData['sorts']);
 
     header('Content-type: application/json');
