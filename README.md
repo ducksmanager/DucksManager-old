@@ -1,7 +1,7 @@
 ## DucksManager
 
-This repository corresponds to the old DucksManager website that was online until 2020. Since December 2020 
-[DucksManager-next](https://github.com/bperel/DucksManager-next) is the repository containing the current website.
+**This repository corresponds to the old DucksManager website that was online until 2020. Since December 2020 
+[DucksManager-next](https://github.com/bperel/DucksManager-next) is the repository containing the current website.**
 
 [Official website](https://www.ducksmanager.net)
 
